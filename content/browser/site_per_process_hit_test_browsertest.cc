@@ -7272,14 +7272,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
   EXPECT_TRUE(ApproximatelyEqual(
       TransformRectToQuadF(gfx::Rect(100, 100), expected_transform1),
       TransformRectToQuadF(hit_test_data[3])));
-  if (base::FeatureList::IsEnabled(blink::features::kHitTestOpaqueness)) {
-    // The iframe is behind a pointer-events:none div. Because the div is
-    // transparent to hit test, the iframe surface can handle hit tests
-    // directly as if the div didn't exist.
-    EXPECT_EQ(kFastHitTestFlags, hit_test_data[3].flags);
-  } else {
-    EXPECT_EQ(kSlowHitTestFlags, hit_test_data[3].flags);
-  }
+  // The iframe is behind a pointer-events:none div. Because the div is
+  // transparent to hit test, the iframe surface can handle hit tests directly
+  // as if the div didn't exist.
+  EXPECT_EQ(kFastHitTestFlags, hit_test_data[3].flags);
 
   EXPECT_TRUE(ApproximatelyEqual(
       TransformRectToQuadF(gfx::Rect(100, 100), expected_transform2),

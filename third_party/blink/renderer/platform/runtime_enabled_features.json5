@@ -1801,11 +1801,6 @@
       name: "FastClearNeedsRepaint",
       status: "stable",
     },
-    {
-      name: "FastNonCompositedScrollHitTest",
-      depends_on: ["HitTestOpaqueness", "RasterInducingScroll"],
-      status: "stable",
-    },
     // Kill switch.
     {
       name: "FastPathSingleSelectorExactMatch",
@@ -2302,17 +2297,6 @@
     },
     {
       name: "HighlightsFromPoint",
-    },
-    {
-      name: "HitTestOpaqueness",
-      status: "stable",
-    },
-    // This is a kill switch for a fix that disables painting of line box hit
-    // test data with HitTestOpaqueness.
-    {
-      name: "HitTestOpaquenessOmitLineBox",
-      depends_on: ["HitTestOpaqueness"],
-      status: "stable",
     },
     {
       name: "HrefTranslate",

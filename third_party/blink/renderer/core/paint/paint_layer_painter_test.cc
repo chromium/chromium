@@ -173,17 +173,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
   auto* filler_layer = To<LayoutBoxModelObject>(filler)->Layer();
 
   auto chunks = ContentPaintChunks();
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 6);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 4, 2);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*inner_content_layer, chunks.begin() + 5, 1);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler_layer, chunks.begin() + 6, 1);
-  } else {
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 5);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 3, 2);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*inner_content_layer, chunks.begin() + 4, 1);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler_layer, chunks.begin() + 5, 1);
-  }
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 6);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 4, 2);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*inner_content_layer, chunks.begin() + 5, 1);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler_layer, chunks.begin() + 6, 1);
 
   auto container_properties =
       container->FirstFragment().LocalBorderBoxProperties();
@@ -193,65 +186,34 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
       container->FirstFragment().PaintProperties()->ScrollTranslation();
   scroll_hit_test->scroll_hit_test_rect = gfx::Rect(0, 0, 150, 150);
 
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_THAT(
-        chunks,
-        ElementsAre(
-            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(container_layer->Id(), DisplayItem::kLayerChunk),
-                container_properties, nullptr, gfx::Rect(0, 0, 150, 150)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
-                container_properties, scroll_hit_test,
-                gfx::Rect(0, 0, 150, 150)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(container->Id(), kScrollingBackgroundChunkType),
-                content_properties, nullptr, gfx::Rect(0, 0, 300, 400)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(content_layer->Id(), DisplayItem::kLayerChunk),
-                content_properties, nullptr, gfx::Rect(0, 0, 200, 100)),
-            IsPaintChunk(1, 1,
-                         PaintChunk::Id(inner_content_layer->Id(),
-                                        DisplayItem::kLayerChunk),
-                         content_properties, nullptr,
-                         gfx::Rect(0, 0, 100, 100)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(filler_layer->Id(), DisplayItem::kLayerChunk),
-                content_properties, nullptr, gfx::Rect(0, 100, 300, 300))));
-  } else {
-    EXPECT_THAT(
-        chunks,
-        ElementsAre(
-            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(container_layer->Id(), DisplayItem::kLayerChunk),
-                container_properties, nullptr, gfx::Rect(0, 0, 150, 150)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
-                container_properties, scroll_hit_test,
-                gfx::Rect(0, 0, 150, 150)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(content_layer->Id(), DisplayItem::kLayerChunk),
-                content_properties, nullptr, gfx::Rect(0, 0, 200, 100)),
-            IsPaintChunk(1, 1,
-                         PaintChunk::Id(inner_content_layer->Id(),
-                                        DisplayItem::kLayerChunk),
-                         content_properties, nullptr,
-                         gfx::Rect(0, 0, 100, 100)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(filler_layer->Id(), DisplayItem::kLayerChunk),
-                content_properties, nullptr, gfx::Rect(0, 100, 300, 300))));
-  }
+  EXPECT_THAT(
+      chunks,
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+          IsPaintChunk(
+              1, 1,
+              PaintChunk::Id(container_layer->Id(), DisplayItem::kLayerChunk),
+              container_properties, nullptr, gfx::Rect(0, 0, 150, 150)),
+          IsPaintChunk(
+              1, 1,
+              PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
+              container_properties, scroll_hit_test, gfx::Rect(0, 0, 150, 150)),
+          IsPaintChunk(
+              1, 1,
+              PaintChunk::Id(container->Id(), kScrollingBackgroundChunkType),
+              content_properties, nullptr, gfx::Rect(0, 0, 300, 400)),
+          IsPaintChunk(
+              1, 1,
+              PaintChunk::Id(content_layer->Id(), DisplayItem::kLayerChunk),
+              content_properties, nullptr, gfx::Rect(0, 0, 200, 100)),
+          IsPaintChunk(1, 1,
+                       PaintChunk::Id(inner_content_layer->Id(),
+                                      DisplayItem::kLayerChunk),
+                       content_properties, nullptr, gfx::Rect(0, 0, 100, 100)),
+          IsPaintChunk(
+              1, 1,
+              PaintChunk::Id(filler_layer->Id(), DisplayItem::kLayerChunk),
+              content_properties, nullptr, gfx::Rect(0, 100, 300, 300))));
 
   To<HTMLElement>(inner_content->GetNode())
       ->setAttribute(
@@ -272,7 +234,6 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
                    kBackgroundType)));
 
   chunks = ContentPaintChunks();
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 6);
     EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 4, 2);
     EXPECT_SUBSEQUENCE_FROM_CHUNK(*inner_content_layer, chunks.begin() + 5, 1);
@@ -308,39 +269,6 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
                 2, 2,
                 PaintChunk::Id(filler_layer->Id(), DisplayItem::kLayerChunk),
                 content_properties, nullptr, gfx::Rect(0, 100, 300, 300))));
-  } else {
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 5);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 3, 2);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*inner_content_layer, chunks.begin() + 4, 1);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler_layer, chunks.begin() + 5, 1);
-
-    EXPECT_THAT(
-        ContentPaintChunks(),
-        ElementsAre(
-            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(container_layer->Id(), DisplayItem::kLayerChunk),
-                container_properties, nullptr, gfx::Rect(0, 0, 150, 150)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
-                container_properties, scroll_hit_test,
-                gfx::Rect(0, 0, 150, 150)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(content_layer->Id(), DisplayItem::kLayerChunk),
-                content_properties, nullptr, gfx::Rect(0, 0, 200, 100)),
-            IsPaintChunk(1, 2,
-                         PaintChunk::Id(inner_content_layer->Id(),
-                                        DisplayItem::kLayerChunk),
-                         content_properties, nullptr,
-                         gfx::Rect(0, 100, 100, 100)),
-            IsPaintChunk(
-                2, 2,
-                PaintChunk::Id(filler_layer->Id(), DisplayItem::kLayerChunk),
-                content_properties, nullptr, gfx::Rect(0, 100, 300, 300))));
-  }
 }
 
 TEST_P(PaintLayerPainterTest, CachedSubsequenceOnCullRectChange) {

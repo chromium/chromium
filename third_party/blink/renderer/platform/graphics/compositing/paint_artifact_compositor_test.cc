@@ -1227,9 +1227,7 @@ TEST_P(PaintArtifactCompositorTest, ScrollHitTestLayerOrder) {
   ASSERT_EQ(scroll.GetCompositorElementId(), scroll_node->element_id);
   EXPECT_EQ(scroll.GetCompositorElementId(),
             ScrollHitTestLayerAt(0)->element_id());
-  EXPECT_EQ(RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-                ? cc::HitTestOpaqueness::kOpaque
-                : cc::HitTestOpaqueness::kMixed,
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
             ScrollHitTestLayerAt(0)->hit_test_opaqueness());
 
   // The second content layer should appear after the first.
@@ -1278,13 +1276,9 @@ TEST_P(PaintArtifactCompositorTest, NestedScrollableLayerOrder) {
   EXPECT_LT(LayerIndex(ScrollHitTestLayerAt(1)),
             LayerIndex(NonScrollHitTestLayerAt(0)));
 
-  auto expected_hit_test_opaqueness =
-      RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-          ? cc::HitTestOpaqueness::kOpaque
-          : cc::HitTestOpaqueness::kMixed;
-  EXPECT_EQ(expected_hit_test_opaqueness,
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
             ScrollHitTestLayerAt(0)->hit_test_opaqueness());
-  EXPECT_EQ(expected_hit_test_opaqueness,
+  EXPECT_EQ(cc::HitTestOpaqueness::kOpaque,
             ScrollHitTestLayerAt(1)->hit_test_opaqueness());
 }
 
@@ -1622,11 +1616,7 @@ TEST_P(PaintArtifactCompositorTest, FixedPositionScrollState) {
   EXPECT_EQ(1, layer_a->transform_tree_index());
 
   auto* fixed_layer = LayerAt(1);
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_EQ(2, fixed_layer->scroll_tree_index());
-  } else {
-    EXPECT_EQ(1, fixed_layer->scroll_tree_index());
-  }
+  EXPECT_EQ(2, fixed_layer->scroll_tree_index());
   EXPECT_EQ(CcNodeId(*fixed_transform), fixed_layer->transform_tree_index());
   auto* fixed_transform_node = transform_tree.Node(3);
   EXPECT_EQ(1, fixed_transform_node->parent_id);
@@ -1696,11 +1686,7 @@ TEST_P(PaintArtifactCompositorTest, NonScrollingChildUnderFixedPosition) {
   EXPECT_EQ(2, layer_b->transform_tree_index());
 
   auto* fixed_layer = LayerAt(2);
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    EXPECT_EQ(2, fixed_layer->scroll_tree_index());
-  } else {
-    EXPECT_EQ(3, fixed_layer->scroll_tree_index());
-  }
+  EXPECT_EQ(2, fixed_layer->scroll_tree_index());
   EXPECT_EQ(CcNodeId(*fixed_transform), fixed_layer->transform_tree_index());
   auto* fixed_transform_node = transform_tree.Node(4);
   EXPECT_EQ(3, fixed_transform_node->parent_id);

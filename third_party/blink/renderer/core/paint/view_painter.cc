@@ -90,8 +90,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool painting_background_in_contents_space =
       paint_info.IsPaintingBackgroundInContentsSpace();
   bool paints_hit_test_data =
-      (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-       painting_background_in_contents_space) ||
+      painting_background_in_contents_space ||
       ObjectPainter(layout_view).ShouldRecordSpecialHitTestData(paint_info);
 
   Element* element = DynamicTo<Element>(layout_view.GetNode());

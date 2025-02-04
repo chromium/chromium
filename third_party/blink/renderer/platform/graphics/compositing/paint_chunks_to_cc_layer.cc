@@ -1292,7 +1292,7 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
     }
   }
 
-  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled() &&
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() &&
       hit_test_data.scroll_translation) {
     CHECK_EQ(chunk.id.type, DisplayItem::Type::kScrollHitTest);
     AddNonCompositedScroll(chunk);
@@ -1330,7 +1330,7 @@ LayerPropertiesUpdater::TopNonCompositedScroll(
 }
 
 void LayerPropertiesUpdater::AddNonCompositedScroll(const PaintChunk& chunk) {
-  DCHECK(RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled());
+  DCHECK(RuntimeEnabledFeatures::RasterInducingScrollEnabled());
   const auto& scroll_translation = *chunk.hit_test_data->scroll_translation;
   const auto& top_scroll = TopNonCompositedScroll(scroll_translation);
   if (&top_scroll == &scroll_translation) {
@@ -1364,7 +1364,7 @@ void LayerPropertiesUpdater::UpdatePreviousNonCompositedScrolls(
   if (top_non_composited_scrolls_.empty()) {
     return;
   }
-  DCHECK(RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled());
+  DCHECK(RuntimeEnabledFeatures::RasterInducingScrollEnabled());
 
   if (chunk.hit_test_data && chunk.hit_test_data->scroll_translation) {
     // ScrollHitTest has been handled in AddNonCompositedScroll().

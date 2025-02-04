@@ -37,16 +37,13 @@ namespace {
 bool DrawingShouldFillScrollingContentsLayer(
     const PropertyTreeState& layer_state,
     const cc::PictureLayer& layer) {
-  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    return false;
-  }
   if (!layer.draws_content()) {
     return false;
   }
   if (const auto* scroll_node = layer_state.Transform().ScrollNode()) {
     // If the layer covers the whole scrolling contents area, we should fill
-    // the layer with (empty) drawing to disable UseRecordedBoundsForTiling
-    // for this layer, to avoid tiling rect change during scroll.
+    // the layer with (empty) drawing to avoid recorded bounds and tiling rect
+    // changes (which cause re-rasterization) during scroll.
     return layer.bounds().width() >= scroll_node->ContentsRect().width() &&
            layer.bounds().height() >= scroll_node->ContentsRect().height();
   }
@@ -148,7 +145,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   cc_picture_layer_->SetOffsetToTransformParent(layer_offset);
 
   cc_picture_layer_->SetBounds(layer_bounds);
-  pending_layer.UpdateCcLayerHitTestOpaqueness();
+  cc_picture_layer_->SetHitTestOpaqueness(pending_layer.GetHitTestOpaqueness());
 
   // If nothing changed in the layer, keep the original display item list.
   // Here check layer_bounds because RasterInvalidator doesn't issue raster

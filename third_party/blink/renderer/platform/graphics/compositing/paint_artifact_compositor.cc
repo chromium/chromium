@@ -170,13 +170,9 @@ PaintArtifactCompositor::ScrollTranslationStateForLayer(
     return pending_layer.ScrollTranslationForScrollHitTestLayer();
   }
 
-  // When HitTestOpaqueness is enabled, use the correct scroll state for fixed
-  // position content, so scrolls on fixed content is correctly handled on the
-  // compositor if the fixed content is opaque to hit test.
-  const auto& transform = pending_layer.GetPropertyTreeState().Transform();
-  return RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-             ? transform.ScrollTranslationState()
-             : transform.NearestScrollTranslationNode();
+  return pending_layer.GetPropertyTreeState()
+      .Transform()
+      .ScrollTranslationState();
 }
 
 bool PaintArtifactCompositor::NeedsCompositedScrolling(
