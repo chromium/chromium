@@ -2740,27 +2740,30 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
   // Disable context menu in locked fullscreen mode to prevent users from
   // exiting this mode (the menu is not really disabled as the user can still
   // open it, but all the individual context menu entries are disabled / greyed
-  // out). We enable page navigation commands as well as extension ones when
-  // locked for OnTask (only relevant for non-web browser scenarios).
+  // out). We also extend the same restrictions with or without locked
+  // fullscreen mode for OnTask to enforce consistency in UX, with the exception
+  // of page navigation commands as well as extension ones being enabled in this
+  // setup (only relevant for non-web browser scenarios).
   //
   // NOTE: If new commands are being added, please disable them by default and
   // notify the ChromeOS team by filing a bug under this component --
   // b/?q=componentid:1389107.
   Browser* const browser = GetBrowser();
+  bool should_disable_command_for_locked_fullscreen_or_on_task = false;
   if (browser && platform_util::IsBrowserLockedFullscreen(browser)) {
-    bool should_disable_command_for_locked_fullscreen = true;
+    should_disable_command_for_locked_fullscreen_or_on_task = true;
+  }
 #if BUILDFLAG(IS_CHROMEOS)
-    if (browser->IsLockedForOnTask()) {
-      bool is_page_nav_command =
-          (id == IDC_BACK) || (id == IDC_FORWARD) || (id == IDC_RELOAD);
-      should_disable_command_for_locked_fullscreen =
-          !is_page_nav_command &&
-          !ContextMenuMatcher::IsExtensionsCustomCommandId(id);
-    }
+  if (browser && browser->IsLockedForOnTask()) {
+    bool is_page_nav_command =
+        (id == IDC_BACK) || (id == IDC_FORWARD) || (id == IDC_RELOAD);
+    should_disable_command_for_locked_fullscreen_or_on_task =
+        !is_page_nav_command &&
+        !ContextMenuMatcher::IsExtensionsCustomCommandId(id);
+  }
 #endif
-    if (should_disable_command_for_locked_fullscreen) {
-      return false;
-    }
+  if (should_disable_command_for_locked_fullscreen_or_on_task) {
+    return false;
   }
 
   {
