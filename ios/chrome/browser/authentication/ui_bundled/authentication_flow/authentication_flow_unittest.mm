@@ -207,6 +207,9 @@ class AuthenticationFlowTest : public PlatformTest {
     // completion block should not be called synchronously.
     EXPECT_EQ(signin::Tribool::kUnknown, signin_result_);
 
+    [[performer_ expect] completePostSignInActions:PostSignInActionSet()
+                                      withIdentity:identity
+                                           browser:browser_.get()];
     CheckSignInCompletion(/*expected_signed_in=*/true);
   }
 

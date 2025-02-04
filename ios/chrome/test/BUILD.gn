@@ -206,6 +206,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/app_store_rating/ui_bundled:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/account_menu:unit_tests",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/cells:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/identity_chooser:unit_tests",
