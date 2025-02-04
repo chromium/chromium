@@ -75,9 +75,6 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Set up guest URL via cli flag or default to finch param value.
   source->AddString("glicGuestURL", GetGuestURL().spec());
 
-  // Add current global hotkey configuration.
-  source->AddString("glicHotkeyString", GetHotkeyString());
-
   // Set up FRE URL via cli flag, or default to the finch param value.
   source->AddString("glicFreURL", GetFreURL().spec());
 

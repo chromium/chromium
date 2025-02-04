@@ -44,20 +44,9 @@ function onNewWindow(e: any) {
   e.stopPropagation();
 }
 
-function getWebviewSrc() {
-  // If a valid hotkey configuration is used, append the string as a query
-  // parameter to the given FRE URL.
-  const glicHotkeyString = loadTimeData.getString('glicHotkeyString');
-  const hotkeyQueryParamString =
-      glicHotkeyString ? '&hotkey=' + glicHotkeyString : '';
-  // TODO(cuianthony): For now, borrow the configuration of the glic guest URL,
-  // to be replaced with the correct configuration set up for the FRE.
-  return loadTimeData.getString('glicFreURL') + hotkeyQueryParamString;
-}
-
 // Blocking on cookie syncing here introduces latency, we should consider ways
 // to avoid it.
 freHandler.syncWebviewCookies().then(() => {
   // Load the web client only after cookie sync is complete.
-  webview.src = getWebviewSrc();
+  webview.src = loadTimeData.getString('glicFreURL');
 });
