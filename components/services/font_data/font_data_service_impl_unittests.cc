@@ -121,6 +121,35 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameMemoryCacheSize) {
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 3u);
   EXPECT_EQ(out_result.get(), nullptr);
 }
+
+TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterNoLanguageTags) {
+  mojom::MatchFamilyNameResultPtr out_result;
+  std::string family_name = "Segoe UI";
+  EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
+  SkUnichar uni_char = 0x0041;  // 'A'
+
+  font_service_->MatchFamilyNameCharacter(
+      family_name, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
+      {}, uni_char, &out_result);
+  EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
+  EXPECT_TRUE(out_result->typeface_data->is_font_file());
+  EXPECT_TRUE(out_result->typeface_data->get_font_file().IsValid());
+}
+
+TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterWithLanguageTags) {
+  mojom::MatchFamilyNameResultPtr out_result;
+  std::string family_name = "Segoe UI";
+  EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
+  SkUnichar uni_char = 0x0041;  // 'A'
+
+  font_service_->MatchFamilyNameCharacter(
+      family_name, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
+      {"zh"}, uni_char, &out_result);
+  EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
+  EXPECT_TRUE(out_result->typeface_data->is_font_file());
+  EXPECT_TRUE(out_result->typeface_data->get_font_file().IsValid());
+}
+
 }  // namespace
 
 }  // namespace font_data_service

@@ -102,9 +102,90 @@ void FontDataServiceImpl::MatchFamilyName(const std::string& family_name,
   // family request.
   SkFontStyle sk_font_style(style->weight, style->width,
                             ConvertToFontStyle(style->slant));
-  auto result = mojom::MatchFamilyNameResult::New();
   sk_sp<SkTypeface> typeface =
       font_manager_->matchFamilyStyle(family_name.c_str(), sk_font_style);
+
+  std::move(callback).Run(CreateMatchFamilyNameResult(typeface));
+}
+
+void FontDataServiceImpl::MatchFamilyNameCharacter(
+    const std::string& family_name,
+    mojom::TypefaceStylePtr style,
+    const std::vector<std::string>& bcp47s,
+    int32_t character,
+    MatchFamilyNameCharacterCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT("fonts", "FontDataServiceImpl::MatchFamilyNameCharacter",
+              "family_name", family_name);
+
+  // Call the font manager of the browser process to process the proxied match
+  // family request.
+  SkFontStyle sk_font_style(style->weight, style->width,
+                            ConvertToFontStyle(style->slant));
+
+  // Skia passes the language tags as an array of null-terminated c-strings with
+  // a count. We transform that to an std::vector<std::string> to pass it over
+  // mojo, but have to recreate the same structure before passing it to skia
+  // functions again.
+  std::vector<const char*> bcp47s_array;
+  for (const auto& bcp47 : bcp47s) {
+    bcp47s_array.push_back(bcp47.c_str());
+  }
+
+  sk_sp<SkTypeface> typeface = font_manager_->matchFamilyStyleCharacter(
+      family_name.c_str(), sk_font_style, bcp47s_array.data(), bcp47s.size(),
+      character);
+
+  std::move(callback).Run(CreateMatchFamilyNameResult(typeface));
+}
+
+size_t FontDataServiceImpl::GetOrCreateAssetIndex(
+    std::unique_ptr<SkStreamAsset> asset) {
+  TRACE_EVENT("fonts", "FontDataServiceImpl::GetOrCreateAssetIndex");
+
+  // An asset can be used for multiple typefaces (a.k.a different ttc_index).
+
+  // On Windows, with DWrite font manager.
+  //     SkDWriteFontFileStream : public SkStreamMemory
+  // getMemoryBase would not be a nullptr in this case.
+  intptr_t memory_base = reinterpret_cast<intptr_t>(asset->getMemoryBase());
+  // Check into the memory assets cache.
+  if (auto iter = address_to_asset_index_.find(memory_base);
+      iter != address_to_asset_index_.end()) {
+    return iter->second;
+  }
+
+  size_t asset_length = asset->getLength();
+  base::MappedReadOnlyRegion shared_memory_region =
+      base::ReadOnlySharedMemoryRegion::Create(asset_length);
+  PCHECK(shared_memory_region.IsValid());
+
+  size_t asset_index = assets_.size();
+
+  {
+    TRACE_EVENT("fonts",
+                "FontDataServiceImpl::GetOrCreateAssetIndex - memory copy",
+                "size", asset_length);
+    size_t bytes_read = asset->read(shared_memory_region.mapping.memory(),
+                                    shared_memory_region.mapping.size());
+    CHECK_EQ(bytes_read, asset_length);
+  }
+
+  assets_.push_back(std::make_unique<MappedAsset>(
+      std::move(asset), std::move(shared_memory_region)));
+
+  // Update the assets cache.
+  address_to_asset_index_[memory_base] = asset_index;
+
+  return asset_index;
+}
+
+mojom::MatchFamilyNameResultPtr
+FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto result = mojom::MatchFamilyNameResult::New();
+
   if (typeface) {
     auto iter = typeface_to_asset_index_.find(typeface->uniqueID());
     if (iter != typeface_to_asset_index_.end()) {
@@ -154,8 +235,7 @@ void FontDataServiceImpl::MatchFamilyName(const std::string& family_name,
   }
 
   if (!result->typeface_data) {
-    std::move(callback).Run(nullptr);
-    return;
+    return nullptr;
   }
 
   const int axis_count = typeface->getVariationDesignPosition(nullptr, 0);
@@ -176,54 +256,8 @@ void FontDataServiceImpl::MatchFamilyName(const std::string& family_name,
           });
     }
   }
-  std::move(callback).Run(std::move(result));
-}
 
-size_t FontDataServiceImpl::GetOrCreateAssetIndex(
-    std::unique_ptr<SkStreamAsset> asset) {
-  TRACE_EVENT("fonts", "FontDataServiceImpl::GetOrCreateAssetIndex");
-
-  // An asset can be used for multiple typefaces (a.k.a different ttc_index).
-
-  // On Windows, with DWrite font manager.
-  //     SkDWriteFontFileStream : public SkStreamMemory
-  // getMemoryBase would not be a nullptr in this case.
-  intptr_t memory_base = reinterpret_cast<intptr_t>(asset->getMemoryBase());
-  // Check into the memory assets cache.
-  if (auto iter = address_to_asset_index_.find(memory_base);
-      iter != address_to_asset_index_.end()) {
-    return iter->second;
-  }
-
-  size_t asset_length = asset->getLength();
-  base::MappedReadOnlyRegion shared_memory_region =
-      base::ReadOnlySharedMemoryRegion::Create(asset_length);
-  PCHECK(shared_memory_region.IsValid());
-
-  size_t asset_index = assets_.size();
-
-  // There is a memory copy for the content of the font. This could be
-  // mitigated by having either access to the memory address of the asset
-  // or finding the path and passing Handle. Both avenues worth being
-  // explored. As an initial safe step, the copy is not that expensive and
-  // it is shared by the process for all the renderers; only one time
-  // copy by font.
-  {
-    TRACE_EVENT("fonts",
-                "FontDataServiceImpl::GetOrCreateAssetIndex - memory copy",
-                "size", asset_length);
-    size_t bytes_read = asset->read(shared_memory_region.mapping.memory(),
-                                    shared_memory_region.mapping.size());
-    CHECK_EQ(bytes_read, asset_length);
-  }
-
-  assets_.push_back(std::make_unique<MappedAsset>(
-      std::move(asset), std::move(shared_memory_region)));
-
-  // Update the assets cache.
-  address_to_asset_index_[memory_base] = asset_index;
-
-  return asset_index;
+  return result;
 }
 
 }  // namespace font_data_service

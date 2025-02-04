@@ -63,4 +63,14 @@ interface FontDataService {
   MatchFamilyName(string family_name, TypefaceStyle style) =>
      (MatchFamilyNameResult? result);
 
+  // Returns the best match for |family_name| and |style| for a given
+  // |character| in the languages described by |bcp47s|.
+  // On error, returns null.
+  [Sync]
+  MatchFamilyNameCharacter(
+    string family_name,
+    TypefaceStyle style,
+    array<string> bcp47s,
+    int32 character) =>
+     (MatchFamilyNameResult? result);
 };
