@@ -3726,9 +3726,8 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-// TODO(crbug.com/1427939): Flaky.
 AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'DISABLED_SelectWithOptGroup', async function() {
+    'ChromeVoxBackgroundTest', 'SelectWithOptGroup', async function() {
       const mockFeedback = this.createMockFeedback();
       const site = `
     <select>
