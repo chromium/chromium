@@ -1366,7 +1366,8 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
                RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
       CSSParserTokenStream::BlockGuard guard(stream);
       state_.StyleBuilder().SetHasAttrFunction();
-      success &= ResolveAttrInto(stream, resolver, context, out);
+      success &=
+          ResolveAttrInto(stream, resolver, context, function_context, out);
     } else if (token.FunctionId() ==
                CSSValueID::kInternalAutoBase) {
       CSSParserTokenStream::BlockGuard guard(stream);
@@ -1846,6 +1847,7 @@ bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
 bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    CascadeResolver& resolver,
                                    const CSSParserContext& context,
+                                   FunctionContext* function_context,
                                    TokenSequence& out) {
   AtomicString local_name = ConsumeVariableName(stream);
   using Attribute = CascadeResolver::Attribute;
@@ -1869,10 +1871,9 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
   if (!attribute_value.IsNull() && !attr_type->IsString()) {
     TokenSequence substituted_attribute_token_sequence;
     CSSParserTokenStream attribute_value_stream(attribute_value);
-    if (!ResolveTokensInto(attribute_value_stream, resolver, context,
-                           /* function_context */ nullptr,
-                           /* stop_type */ kEOFToken,
-                           substituted_attribute_token_sequence)) {
+    if (!ResolveTokensInto(
+            attribute_value_stream, resolver, context, function_context,
+            /* stop_type */ kEOFToken, substituted_attribute_token_sequence)) {
       return false;
     }
     substituted_attribute_value =
@@ -1888,8 +1889,7 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     stream.ConsumeWhitespace();
 
     TokenSequence fallback;
-    if (!ResolveTokensInto(stream, resolver, context,
-                           /* function_context */ nullptr,
+    if (!ResolveTokensInto(stream, resolver, context, function_context,
                            /* stop_type */ kEOFToken, fallback)) {
       return false;
     }
