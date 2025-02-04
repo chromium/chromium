@@ -10,7 +10,11 @@
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/mutator_host_client.h"
-#include "ui/gfx/geometry/vector2d_f.h"
+
+namespace gfx {
+class Vector2dF;
+class Transform;
+}  // namespace gfx
 
 namespace cc {
 
@@ -66,6 +70,10 @@ class PropertyTreeDelegate {
   virtual void OnElementOpacityMutated(ElementId element_id,
                                        ElementListType list_type,
                                        float opacity) = 0;
+
+  virtual void OnElementTransformMutated(ElementId element_id,
+                                         ElementListType list_type,
+                                         const gfx::Transform& transform) = 0;
 };
 
 }  // namespace cc

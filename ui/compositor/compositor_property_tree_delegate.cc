@@ -113,6 +113,17 @@ void CompositorPropertyTreeDelegate::OnElementOpacityMutated(
       element_id, list_type, opacity);
 }
 
+void CompositorPropertyTreeDelegate::OnElementTransformMutated(
+    cc::ElementId element_id,
+    cc::ElementListType list_type,
+    const gfx::Transform& transform) {
+  // TODO(crbug.com/389771428): Implement this w/ layer lists. For now,
+  // just call the base class implementation to ensure that we don't get
+  // out of date.
+  cc::PropertyTreeLayerTreeDelegate::OnElementTransformMutated(
+      element_id, list_type, transform);
+}
+
 void CompositorPropertyTreeDelegate::SetObserverForTesting(Observer* observer) {
   observer_ = observer;
 }

@@ -148,4 +148,13 @@ void PropertyTreeLayerListDelegate::OnElementOpacityMutated(
   return;
 }
 
+void PropertyTreeLayerListDelegate::OnElementTransformMutated(
+    ElementId element_id,
+    ElementListType list_type,
+    const gfx::Transform& transform) {
+  host()->property_trees()->transform_tree_mutable().OnTransformAnimated(
+      element_id, transform);
+  return;
+}
+
 }  // namespace cc

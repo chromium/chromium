@@ -107,4 +107,29 @@ void PropertyTreeLayerTreeDelegate::OnElementOpacityMutated(
   host()->SetNeedsUpdateLayers();
 }
 
+void PropertyTreeLayerTreeDelegate::OnElementTransformMutated(
+    ElementId element_id,
+    ElementListType list_type,
+    const gfx::Transform& transform) {
+  Layer* layer = host()->LayerByElementId(element_id);
+  DCHECK(layer);
+  layer->OnTransformAnimated(transform);
+
+  if (layer->has_transform_node()) {
+    TransformNode* node =
+        host()->property_trees()->transform_tree_mutable().Node(
+            layer->transform_tree_index());
+    if (node->local == transform) {
+      return;
+    }
+
+    node->local = transform;
+    node->needs_local_transform_update = true;
+    node->has_potential_animation = true;
+    host()->property_trees()->transform_tree_mutable().set_needs_update(true);
+  }
+
+  host()->SetNeedsUpdateLayers();
+}
+
 }  // namespace cc

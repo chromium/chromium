@@ -1853,29 +1853,8 @@ void LayerTreeHost::SetElementTransformMutated(
   if (list_type != ElementListType::ACTIVE)
     return;
 
-  if (IsUsingLayerLists()) {
-    property_trees()->transform_tree_mutable().OnTransformAnimated(element_id,
-                                                                   transform);
-    return;
-  }
-
-  Layer* layer = LayerByElementId(element_id);
-  DCHECK(layer);
-  layer->OnTransformAnimated(transform);
-
-  if (layer->has_transform_node()) {
-    TransformNode* node = property_trees()->transform_tree_mutable().Node(
-        layer->transform_tree_index());
-    if (node->local == transform)
-      return;
-
-    node->local = transform;
-    node->needs_local_transform_update = true;
-    node->has_potential_animation = true;
-    property_trees()->transform_tree_mutable().set_needs_update(true);
-  }
-
-  SetNeedsUpdateLayers();
+  property_tree_delegate_->OnElementTransformMutated(element_id, list_type,
+                                                     transform);
 }
 
 void LayerTreeHost::SetElementScrollOffsetMutated(
