@@ -17,7 +17,6 @@ For each dependency in `build.gradle`:
 
 import argparse
 import collections
-import concurrent.futures
 import contextlib
 import fnmatch
 import logging
@@ -192,6 +191,16 @@ def DeleteDirectory(dir_path):
     if os.path.exists(dir_path):
         logging.debug('rmdir [%s]', dir_path)
         shutil.rmtree(dir_path)
+
+
+def Symlink(src_dir, src_paths, dst_dir, dst_paths):
+    for src_path, dst_path in zip(src_paths, dst_paths):
+        abs_src_path = os.path.join(src_dir, src_path)
+        abs_dst_path = os.path.join(dst_dir, dst_path)
+        shutil.rmtree(abs_dst_path, ignore_errors=True)
+        os.unlink(abs_dst_path)
+        MakeDirectory(os.path.dirname(abs_dst_path))
+        os.symlink(abs_src_path, abs_dst_path)
 
 
 def Copy(src_dir, src_paths, dst_dir, dst_paths, src_path_must_exist=True):
@@ -556,8 +565,13 @@ def main():
         build_android_deps_dir = os.path.join(build_dir, android_deps_subdir)
 
         logging.info('Using build directory: %s', build_dir)
-        Copy(_PRIMARY_ANDROID_DEPS_DIR, _PRIMARY_ANDROID_DEPS_FILES,
-             build_android_deps_dir, _PRIMARY_ANDROID_DEPS_FILES)
+        if args.build_dir:
+            # Always use the latest files from the repo when debugging.
+            Symlink(_PRIMARY_ANDROID_DEPS_DIR, _PRIMARY_ANDROID_DEPS_FILES,
+                    build_android_deps_dir, _PRIMARY_ANDROID_DEPS_FILES)
+        else:
+            Copy(_PRIMARY_ANDROID_DEPS_DIR, _PRIMARY_ANDROID_DEPS_FILES,
+                 build_android_deps_dir, _PRIMARY_ANDROID_DEPS_FILES)
         Copy(args.android_deps_dir, [_BUILD_GRADLE], build_android_deps_dir,
              [_BUILD_GRADLE])
         Copy(args.android_deps_dir,
