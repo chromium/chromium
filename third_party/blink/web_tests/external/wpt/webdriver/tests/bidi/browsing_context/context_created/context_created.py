@@ -344,5 +344,5 @@ async def test_existing_context_via_user_context(bidi_session, create_user_conte
         children=None,
         url="about:blank",
         parent=None,
-        user_context="default"
+        user_context=user_context
     )

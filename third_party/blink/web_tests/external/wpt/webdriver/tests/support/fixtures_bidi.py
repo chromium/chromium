@@ -155,6 +155,47 @@ def wait_for_event(bidi_session, event_loop):
 
 
 @pytest.fixture
+def wait_for_events(bidi_session, configuration):
+    """Wait until the BiDi session emits events."""
+
+    class Waiter:
+        def __init__(self, event_names):
+            self.event_names = event_names
+            self.remove_listeners = []
+            self.events = []
+
+        async def get_events(self, predicate, timeout: float = 2.0):
+            wait = AsyncPoll(
+                bidi_session,
+                timeout=timeout * configuration["timeout_multiplier"],
+                message="Didn't receive expected events"
+            )
+            await wait.until(lambda _: predicate(self.events))
+            return self.events
+
+        def __enter__(self):
+            async def on_event(method, data):
+                self.events.append((method, data))
+
+            for event_name in self.event_names:
+                remove_listener = bidi_session.add_event_listener(event_name, on_event)
+                self.remove_listeners.append(remove_listener)
+
+            return self
+
+
+        def __exit__(self, *args):
+            for remove_listener in self.remove_listeners:
+                remove_listener()
+
+
+    def wait_for_events(event_names):
+        return Waiter(event_names)
+
+    yield wait_for_events
+
+
+@pytest.fixture
 def wait_for_future_safe(configuration):
     """Wait for the given future for a given amount of time.
     Fails gracefully if the future does not resolve within the given timeout."""

@@ -386524,7 +386524,7 @@
        },
        "imagebitmap": {
         "canvas-createImageBitmap-resize-expected.txt": [
-         "656bd91e48d2ee5ce84aaef477131983c1672fbc",
+         "212b95d8085c57f47e1f702ab3d1d74d25572175",
          []
         ],
         "common.sub.js": [
@@ -412514,7 +412514,7 @@
      []
     ],
     "sethtml-safety.sub.dat": [
-     "4ec50f3ea06bb29bf3e73a31f390a35215a3cd4d",
+     "685bbeae465ed5ad1f5826f82b391af899d4385b",
      []
     ],
     "sethtml-tree-construction.sub.dat": [
@@ -412522,7 +412522,7 @@
      []
     ],
     "sethtml-unsafety.sub.dat": [
-     "8f3c2dea889a936cdd54a7bdf6edbe69132a7e3f",
+     "ee5dae64fd46f91c3b9939019214def50fbcb7bd",
      []
     ],
     "support": {
@@ -425126,7 +425126,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "4749bfd25492f7ddfcb484f66706190f4e9dd2eb",
+       "c391f2b5a4100200643e2354648c90d9e8fc3114",
        []
       ],
       "fixtures_http.py": [
@@ -496876,8 +496876,22 @@
        {}
       ]
      ],
+     "dashed-function-cycles.tentative.html": [
+      "18558c5cc8a681cacc826f4dcc485fe502ced6c9",
+      [
+       null,
+       {}
+      ]
+     ],
      "dashed-function-eval.html": [
       "7726e832e0267b57852d099349c779d920aaa2e3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "local-attr-substitution.html": [
+      "74b7986306b62f9009c36c3632d4af8bd3876b75",
       [
        null,
        {}
@@ -518945,6 +518959,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "visual-scrollIntoView.html": [
+      "78a3203c58587b6cf9d78faa607105dc8751179d",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "window-screen-height-immutable.html": [
@@ -629462,7 +629485,7 @@
        ],
        "current-pixel-density": {
         "basic.html": [
-         "f7d47b3640dfc03516aafcb744c9e9d32295e452",
+         "b2d3b53b55814850cf10029391876a6ff0001eb5",
          [
           null,
           {}
@@ -683243,14 +683266,21 @@
      ]
     ],
     "sanitizer-basic-filtering.tentative.html": [
-     "8a3aa4f757b2eff692818fe3767a14c0afc0e0ac",
+     "0b6924b0980d8295d02a5ed3d552ba4e58beb212",
+     [
+      null,
+      {}
+     ]
+    ],
+    "sanitizer-boolean-defaults.tentative.html": [
+     "f56daa483823706aa3dcf5451f1b9dec0fb68e97",
      [
       null,
       {}
      ]
     ],
     "sanitizer-config.tentative.html": [
-     "bad18483fc4af686c988176add0c0a6eef668db1",
+     "d57de20911628db69399d4f8d16765275ed1e8e6",
      [
       null,
       {}
@@ -819039,7 +819069,7 @@
        },
        "context_created": {
         "context_created.py": [
-         "9cbf2043eaaa6c265c8d7c1f9e865f039c15bbe5",
+         "152bcdb018b120f9d4bc9164168f78905f0e6fd7",
          [
           null,
           {}
@@ -820660,7 +820690,7 @@
          ]
         ],
         "user_contexts.py": [
-         "df4335ae0c100c6a1ec712771a774a030b32e0bf",
+         "ee7c65ca44d06c392695bccfeccdc013b020855e",
          [
           null,
           {}
