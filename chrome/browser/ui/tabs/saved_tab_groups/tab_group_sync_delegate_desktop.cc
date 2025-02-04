@@ -185,16 +185,7 @@ void TabGroupSyncDelegateDesktop::CreateLocalTabGroup(
 void TabGroupSyncDelegateDesktop::CloseLocalTabGroup(
     const LocalTabGroupID& local_id) {
   CHECK(!service_->GetGroup(local_id));
-  if (!listener_->IsTrackingLocalTabGroup(local_id)) {
-    // Remove the group from the tabstrip if we come across a local id that we
-    // are not tracking. This prevents a crash during session restore but after
-    // the sync bridge initializes and removes the associated group from the
-    // model.
-    // See crbug.com/392174867 for more details.
-    SavedTabGroupUtils::RemoveGroupFromTabstrip(/*browser=*/nullptr, local_id);
-  } else {
-    listener_->RemoveLocalGroupFromSync(local_id);
-  }
+  listener_->RemoveLocalGroupFromSync(local_id);
 }
 
 void TabGroupSyncDelegateDesktop::ConnectLocalTabGroup(
