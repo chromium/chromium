@@ -166,7 +166,17 @@ SkCanvas* SoftwareOutputDeviceWinSwapChain::BeginPaintDelegated() {
   HRESULT hr =
       d3d11_device_context_->Map(d3d11_staging_texture_.Get(), 0,
                                  D3D11_MAP_READ_WRITE, 0, &mapped_subresource);
-  CHECK_EQ(hr, S_OK);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "ID3D11DeviceContext::Map failed: "
+               << logging::SystemErrorCodeToString(hr);
+    CHECK_EQ(hr, DXGI_ERROR_DEVICE_REMOVED);
+    hr = d3d11_device_->GetDeviceRemovedReason();
+    // Filter out results that include physical device removals and internal
+    // errors as these are not in the application's control.
+    CHECK(hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET ||
+          hr == DXGI_ERROR_DRIVER_INTERNAL_ERROR);
+    return nullptr;
+  }
 
   D3D11_TEXTURE2D_DESC d3d11_texture_desc;
   d3d11_staging_texture_->GetDesc(&d3d11_texture_desc);
