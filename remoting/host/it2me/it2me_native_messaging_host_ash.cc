@@ -23,102 +23,6 @@
 
 namespace remoting {
 
-namespace {
-
-bool ShouldSuppressNotifications(
-    const mojom::SupportSessionParams& params,
-    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
-  if (enterprise_params.has_value()) {
-    return enterprise_params->suppress_notifications;
-  }
-
-  // On non-debug builds, do not allow setting this value through the Mojom API.
-#if !defined(NDEBUG)
-  return params.suppress_notifications;
-#else
-  return false;
-#endif
-}
-
-bool ShouldSuppressUserDialog(
-    const mojom::SupportSessionParams& params,
-    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
-  if (enterprise_params.has_value()) {
-    return enterprise_params->suppress_user_dialogs;
-  }
-
-  // On non-debug builds, do not allow setting this value through the Mojom API.
-#if !defined(NDEBUG)
-  return params.suppress_user_dialogs;
-#else
-  return false;
-#endif
-}
-
-bool ShouldTerminateUponInput(
-    const mojom::SupportSessionParams& params,
-    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
-  if (enterprise_params.has_value()) {
-    return enterprise_params->terminate_upon_input;
-  }
-
-  // On non-debug builds, do not allow setting this value through the Mojom API.
-#if !defined(NDEBUG)
-  return params.terminate_upon_input;
-#else
-  return false;
-#endif
-}
-
-bool ShouldCurtainLocalUserSession(
-    const mojom::SupportSessionParams& params,
-    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
-  if (enterprise_params.has_value()) {
-    return enterprise_params->curtain_local_user_session;
-  }
-
-  // On non-debug builds, do not allow setting this value through the Mojom API.
-#if !defined(NDEBUG)
-  return params.curtain_local_user_session;
-#else
-  return false;
-#endif
-}
-
-bool ShouldShowTroubleshootingTools(
-    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
-  if (enterprise_params.has_value()) {
-    return enterprise_params->show_troubleshooting_tools;
-  }
-  return false;
-}
-
-bool ShouldAllowTroubleshootingTools(
-    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
-  if (enterprise_params.has_value()) {
-    return enterprise_params->allow_troubleshooting_tools;
-  }
-  return false;
-}
-
-bool ShouldAllowReconnections(
-    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
-  if (enterprise_params.has_value()) {
-    return enterprise_params->allow_reconnections;
-  }
-  return false;
-}
-
-bool ShouldAllowFileTransfer(
-    const std::optional<ChromeOsEnterpriseParams>& enterprise_params) {
-  if (enterprise_params.has_value()) {
-    return enterprise_params->allow_file_transfer;
-  }
-  return false;
-}
-
-}  // namespace
-
 It2MeNativeMessageHostAsh::It2MeNativeMessageHostAsh(
     std::unique_ptr<It2MeHostFactory> host_factory)
     : host_factory_(std::move(host_factory)) {}
@@ -184,21 +88,11 @@ void It2MeNativeMessageHostAsh::Connect(
           .Set(kMessageType, kConnectMessage)
           .Set(kUserName, params.user_name)
           .Set(kAccessToken, access_token)
-          .Set(kSuppressUserDialogs,
-               ShouldSuppressUserDialog(params, enterprise_params))
-          .Set(kSuppressNotifications,
-               ShouldSuppressNotifications(params, enterprise_params))
-          .Set(kTerminateUponInput,
-               ShouldTerminateUponInput(params, enterprise_params))
-          .Set(kCurtainLocalUserSession,
-               ShouldCurtainLocalUserSession(params, enterprise_params))
-          .Set(kShowTroubleshootingTools,
-               ShouldShowTroubleshootingTools(enterprise_params))
-          .Set(kAllowTroubleshootingTools,
-               ShouldAllowTroubleshootingTools(enterprise_params))
-          .Set(kAllowReconnections, ShouldAllowReconnections(enterprise_params))
-          .Set(kAllowFileTransfer, ShouldAllowFileTransfer(enterprise_params))
           .Set(kIsEnterpriseAdminUser, enterprise_params.has_value());
+  if (enterprise_params.has_value()) {
+    message.Merge(enterprise_params->ToDict());
+  }
+
   if (params.authorized_helper.has_value()) {
     message.Set(kAuthorizedHelper, *params.authorized_helper);
   }

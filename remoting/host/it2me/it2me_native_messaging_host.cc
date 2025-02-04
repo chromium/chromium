@@ -106,31 +106,6 @@ bool IsValidEmailAddress(const std::string& email) {
              .size() == 2U;
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
-ChromeOsEnterpriseParams BuildEnterpriseParams(
-    const base::Value::Dict& message) {
-  ChromeOsEnterpriseParams params;
-  params.suppress_user_dialogs =
-      message.FindBool(kSuppressUserDialogs).value_or(false);
-  params.suppress_notifications =
-      message.FindBool(kSuppressNotifications).value_or(false);
-  params.terminate_upon_input =
-      message.FindBool(kTerminateUponInput).value_or(false);
-  params.curtain_local_user_session =
-      message.FindBool(kCurtainLocalUserSession).value_or(false);
-  params.show_troubleshooting_tools =
-      message.FindBool(kShowTroubleshootingTools).value_or(false);
-  params.allow_troubleshooting_tools =
-      message.FindBool(kAllowTroubleshootingTools).value_or(false);
-  params.allow_reconnections =
-      message.FindBool(kAllowReconnections).value_or(false);
-  params.allow_file_transfer =
-      message.FindBool(kAllowFileTransfer).value_or(false);
-  // TODO: joedow - Add new enterprise fields.
-  return params;
-}
-#endif
-
 std::unique_ptr<It2MeHost::DeferredConnectContext>
 CreateDelegatedSignalingDeferredConnectContext(
     std::unique_ptr<remoting::SignalStrategy> signal_strategy,
@@ -362,7 +337,8 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   if (is_enterprise_admin_user) {
     const auto* reconnect_params_ptr = message.FindDict(kReconnectParamsDict);
     if (reconnect_params_ptr) {
-      CHECK(message.FindBool(kAllowReconnections).value_or(false));
+      auto enterprise_params = ChromeOsEnterpriseParams::FromDict(message);
+      CHECK(enterprise_params.allow_reconnections);
       reconnect_params.emplace(
           ReconnectParams::FromDict(*reconnect_params_ptr));
     }
@@ -448,7 +424,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   if (is_enterprise_admin_user) {
     dialog_style = It2MeConfirmationDialog::DialogStyle::kEnterprise;
     it2me_host_->set_chrome_os_enterprise_params(
-        BuildEnterpriseParams(message));
+        ChromeOsEnterpriseParams::FromDict(message));
 
     if (reconnect_params.has_value()) {
       it2me_host_->set_reconnect_params(std::move(*reconnect_params));
