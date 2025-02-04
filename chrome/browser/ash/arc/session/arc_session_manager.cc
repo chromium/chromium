@@ -1318,11 +1318,18 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
   // Check whether ARC is expected to be used soon.
   if (base::FeatureList::IsEnabled(
           kDeferArcActivationUntilUserSessionStartUpTaskCompletion)) {
-    if (activation_is_allowed_ || session_manager::SessionManager::Get()
-                                      ->IsUserSessionStartUpTaskCompleted()) {
+    if (activation_is_allowed_ ||
+        session_manager::SessionManager::Get()
+            ->IsUserSessionStartUpTaskCompleted() ||
+        GetManagementTransition(profile_) !=
+            ArcManagementTransition::NO_TRANSITION) {
       // If the activation is already allowed, it is out of the targets to
       // defer. Or, if session start up task is already completed, it does not
       // need to wait activating ARC.
+      // If this is running in the process of management transition, e.g. family
+      // member to child account, we start ARC now, because it is happening as a
+      // part of OOBE flow, and ARC is expected to run on background to complete
+      // the transition.
       base::UmaHistogramEnumeration("Arc.DeferActivation.Category",
                                     DeferArcActivationCategory::kNotTarget);
     } else {
