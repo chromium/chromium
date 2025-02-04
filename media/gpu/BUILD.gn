@@ -662,6 +662,7 @@ source_set("unit_tests") {
       "windows/scoped_d3d_buffers_unittest.cc",
       "windows/supported_profile_helpers_unittest.cc",
     ]
+    deps += [ "//gpu:test_support" ]
     libs = [
       "dxguid.lib",
       "d3d12.lib",
