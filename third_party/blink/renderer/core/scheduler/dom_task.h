@@ -40,7 +40,16 @@ class DOMTask final : public GarbageCollected<DOMTask> {
 
   virtual void Trace(Visitor*) const;
 
+  void OnPendingPromiseSettled();
+
  private:
+  enum class ExecutionState {
+    kNotStarted,
+    kRunningSync,
+    kRunningAsync,
+    kFinished,
+  };
+
   // Entry point for running this DOMTask's |callback_|.
   void Invoke();
   // Internal step of Invoke that handles invoking the callback, including
@@ -62,6 +71,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   Member<DOMScheduler::DOMTaskQueue> task_queue_;
   const base::TimeDelta delay_;
   const uint64_t task_id_for_tracing_;
+  ExecutionState execution_state_ = ExecutionState::kNotStarted;
   Member<scheduler::TaskAttributionInfo> parent_task_;
 };
 

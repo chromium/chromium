@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -113,6 +114,12 @@ class InteractiveGlicTestT : public T {
                                     Test::embedded_test_server()
                                         ->GetURL("/glic/test_client/index.html")
                                         .spec());
+
+    // Mark the glic FRE as accepted by default.
+    // TODO(cuianthony): Move this logic to glic_test_util.h after
+    // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
+    PrefService* prefs = InProcessBrowserTest::browser()->profile()->GetPrefs();
+    prefs->SetBoolean(prefs::kGlicCompletedFre, true);
   }
 
   // Ensures that the WebContents for some combination of glic host and contents

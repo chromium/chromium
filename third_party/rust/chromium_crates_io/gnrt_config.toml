@@ -162,6 +162,9 @@ ban_features = [
     'extra_traits',
 ]
 
+[crate.libm]
+license_files= ["LICENSE.txt"]
+
 [crate.log]
 
 [crate.nom]

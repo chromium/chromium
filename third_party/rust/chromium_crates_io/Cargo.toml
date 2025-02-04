@@ -60,6 +60,11 @@ features = ["serde", "std"]
 version = "1.4.2"
 features = ["nightly"]  # For optimized aarch64 implementation.
 
+[dependencies.icu_capi]
+version = "2.0.0-beta1"
+default-features = false
+features = ["calendar", "compiled_data"]
+
 [dependencies.tinyvec]
 version = "1.6.0"
 features = ["rustc_1_55"]

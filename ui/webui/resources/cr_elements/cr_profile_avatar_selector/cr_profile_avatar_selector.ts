@@ -125,7 +125,7 @@ export class CrProfileAvatarSelectorElement extends CrLitElement {
 
     // Autoscroll to selected avatar if it is not completely visible.
     const avatarList =
-        this.shadowRoot!.querySelectorAll<HTMLElement>('.avatar-container');
+        this.shadowRoot.querySelectorAll<HTMLElement>('.avatar-container');
     assert(avatarList.length > 0);
     const selectedAvatarElement = avatarList[index];
     selectedAvatarElement!.scrollIntoViewIfNeeded();

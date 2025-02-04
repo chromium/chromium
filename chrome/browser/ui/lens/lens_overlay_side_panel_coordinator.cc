@@ -185,9 +185,7 @@ bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
     auto text_fragments =
         shared_highlighting::ExtractTextFragments(nav_url.ref());
 
-    // TODO(crbug.com/383575917): PDFs will likely need a different function
-    // call to PDFDocumentHelper to render these text highlights. Create and
-    // attach a `TextFinderManager` to the primary page.
+    // Create and attach a `TextFinderManager` to the primary page.
     content::Page& page = lens_overlay_controller_->GetTabInterface()
                               ->GetContents()
                               ->GetPrimaryPage();

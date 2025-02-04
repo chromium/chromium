@@ -102,6 +102,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -247,6 +248,11 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
                                     "--expose_gc");
 
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "WebOTP");
+
+    // URLLoaderFactoryNotTrusted test could trigger ReportBadMessage and crash
+    // network service process. Use kIgnoreBadMessageForTesting switch to
+    // ignore the bad message.
+    command_line->AppendSwitch(network::switches::kIgnoreBadMessageForTesting);
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }

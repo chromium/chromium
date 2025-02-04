@@ -5,8 +5,9 @@
 version_id: 7
 
 # List of SPKI hashes of certificates that are treated as captive portal
-# certificates. See chrome/browser/ssl/ssl_error_assistant.proto for the full
-# format.
+# certificates. See
+# components/security_interstitials/content/ssl_error_assistant.proto for the
+# full format.
 
 # https://captive-portal.badssl.com leaf.
 # This is a test certificate, always keep it at the top.

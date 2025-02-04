@@ -1,0 +1,7 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Lowering error in MyOpaqueStruct::new_broken: Opaque passed by value in input: MyOpaqueStruct
+Lowering error in MyOpaqueStruct::do_thing_broken: Method `MyOpaqueStruct_do_thing_broken` takes an opaque by value as the self parameter, but opaques as inputs must be behind refs
+

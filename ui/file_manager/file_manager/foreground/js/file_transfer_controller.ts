@@ -771,7 +771,7 @@ export class FileTransferController {
     const items = this.selectionHandler_.selection.entries.length;
 
     const container =
-        this.document_.body.querySelector<HTMLDivElement>('#drag-container')!;
+        this.document_.body.querySelector<HTMLElement>('#drag-container')!;
     const html = `
       ${items > 1 ? `<div class='drag-box drag-multiple'></div>` : ''}
       <div class='drag-box drag-contents'>

@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/filling/form_filler_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -51,6 +52,16 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   void set_credit_card_access_manager(
       std::unique_ptr<CreditCardAccessManager> manager) {
     manager_->credit_card_access_manager_ = std::move(manager);
+  }
+
+  void set_amount_extraction_manager(
+      std::unique_ptr<payments::AmountExtractionManager> manager) {
+    manager_->amount_extraction_manager_ = std::move(manager);
+  }
+
+  payments::AmountExtractionManager&
+  get_amount_extraction_manager_for_testing() {
+    return *manager_->amount_extraction_manager_;
   }
 
   void OnCreditCardFetched(const FormData& form,

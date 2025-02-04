@@ -1,0 +1,60 @@
+// @generated
+/// Implement `DataProvider<HebrewYearNamesV1Marker>` on the given struct using the data
+/// hardcoded in this file. This allows the struct to be used with
+/// `icu`'s `_unstable` constructors.
+///
+/// Using this implementation will embed the following data in the binary's data segment:
+/// * 277B for the lookup data structure (49 data identifiers)
+/// * 1190B[^1] for the actual data (19 unique structs)
+///
+/// [^1]: these numbers can be smaller in practice due to linker deduplication
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_hebrew_year_names_v1_marker {
+    ($ provider : ty) => {
+        #[clippy::msrv = "1.71.1"]
+        const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
+        #[clippy::msrv = "1.71.1"]
+        impl $provider {
+            const DATA_HEBREW_YEAR_NAMES_V1_MARKER: icu_provider_baked::zerotrie::Data<icu::datetime::provider::neo::HebrewYearNamesV1Marker> = icu_provider_baked::zerotrie::Data { trie: icu_provider_baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xCDafhiklmrstuyz\x0BEVZ^bgy\x8B\x96\xA2\xBFr\x1E\xC3345\x01\x02\x80\x80\x80\xC4afir\n\x19\x1C\x1E\xC3345\x01\x02\x81\x81\x81-Adlm\x1E\xC3345\x01\x02\x82\x82\x82\x1E5\x8C\xC2\x1E-\t\xC3345\x01\x02\x83\x83\x8CCA\x1E\xC234\x01\x84\x84\xC2eu\x03\x1E5\x8D\x1E\xC3345\x01\x02\x85\x85\x85s\x1E5\x8Co\x1E5\x8Ev\x1E5\x8Fr\x1E5\x90\0\xC2ou\n\x1E\xC3345\x01\x02\x86\x86\x86\x1E5\x90\x01\xC2cv\x0B\x1E\xC3345\x01\x02\x87\x87\x90\x02\x1E5\x8Ch\x1E\xC3345\x01\x02\x88\x88\x88nd\x1E\xC3345\x01\x02\x84\x84\x84ue\xC2\x1E-\t\xC3345\x01\x02\x89\x89\x89Hans\x1E\xC3345\x01\x02\x8A\x8A\x8Ah\xC2\x1E-\t\xC3345\x01\x02\x8B\x8B\x8BHant\x1E\xC3345\x01\x02\x89\x89\x89" }, values: &[icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD8\xB5") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD8\xAA\xD9\x82\xD9\x88\xDB\x8C\xD9\x85 \xD8\xB9\xD8\xA8\xD8\xB1\xDB\x8C") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xF0\x9E\xA4\x80\xF0\x9E\xA4\x8E") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0A. M.") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0AM") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0T\xC3\x89") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0A.M.") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0a.m.") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xB8\xA2.\xE0\xB8\xA8.") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE5\x89\xB5\xE4\xB8\x96\xE7\xB4\x80\xE5\x85\x83") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE5\x88\x9B\xE4\xB8\x96\xE7\xBA\xAA\xE5\x85\x83") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE5\xB8\x8C\xE4\xBC\xAF\xE6\x9D\xA5\xE5\x8E\x86") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0Anno Mundi") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD7\x9C\xD7\x91\xD7\xA8\xD7\x99\xD7\x90\xD7\xAA \xD7\x94\xD7\xA2\xD7\x95\xD7\x9C\xD7\x9D") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xEC\x9C\xA0\xEB\x8C\x80\xEB\xA0\xA5") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0kop\xC5\xA1 pasaules rad\xC4\xAB\xC5\xA1anas") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xA4\x8D\xE0\xA4\xA8\xE0\xA5\x8D\xE0\xA4\xA8\xE0\xA5\x8B \xE0\xA4\xAE\xE0\xA5\x81\xE0\xA4\x82\xE0\xA4\xA1\xE0\xA5\x80") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD0\xBE\xD1\x82 \xD1\x81\xD0\xBE\xD1\x82\xD0\xB2\xD0\xBE\xD1\x80\xD0\xB5\xD0\xBD\xD0\xB8\xD1\x8F \xD0\xBC\xD0\xB8\xD1\x80\xD0\xB0") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0annu de su mundu") })] };
+        }
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::DataProvider<icu::datetime::provider::neo::HebrewYearNamesV1Marker> for $provider {
+            fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::datetime::provider::neo::HebrewYearNamesV1Marker>, icu_provider::DataError> {
+                let mut metadata = icu_provider::DataResponseMetadata::default();
+                let payload = if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_HEBREW_YEAR_NAMES_V1_MARKER, req.id, req.metadata.attributes_prefix_match) {
+                    payload
+                } else {
+                    const FALLBACKER: icu::locale::fallback::LocaleFallbackerWithConfig<'static> = icu::locale::fallback::LocaleFallbacker::new().for_config(<icu::datetime::provider::neo::HebrewYearNamesV1Marker as icu_provider::DataMarker>::INFO.fallback_config);
+                    let mut fallback_iterator = FALLBACKER.fallback_for(req.id.locale.clone());
+                    loop {
+                        if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_HEBREW_YEAR_NAMES_V1_MARKER, icu_provider::DataIdentifierBorrowed::for_marker_attributes_and_locale(req.id.marker_attributes, fallback_iterator.get()), req.metadata.attributes_prefix_match) {
+                            metadata.locale = Some(fallback_iterator.take());
+                            break payload;
+                        }
+                        if fallback_iterator.get().is_default() {
+                            return Err(icu_provider::DataErrorKind::IdentifierNotFound.with_req(<icu::datetime::provider::neo::HebrewYearNamesV1Marker as icu_provider::DataMarker>::INFO, req));
+                        }
+                        fallback_iterator.step();
+                    }
+                };
+                Ok(icu_provider::DataResponse { payload: icu_provider::DataPayload::from_static_ref(payload), metadata })
+            }
+        }
+    };
+    ($ provider : ty , ITER) => {
+        __impl_hebrew_year_names_v1_marker!($provider);
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::IterableDataProvider<icu::datetime::provider::neo::HebrewYearNamesV1Marker> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok(icu_provider_baked::DataStore::iter(&Self::DATA_HEBREW_YEAR_NAMES_V1_MARKER).collect())
+            }
+        }
+    };
+    ($ provider : ty , DRY) => {};
+    ($ provider : ty , DRY , ITER) => {
+        __impl_hebrew_year_names_v1_marker!($provider, ITER);
+    };
+}
+#[doc(inline)]
+pub use __impl_hebrew_year_names_v1_marker as impl_hebrew_year_names_v1_marker;

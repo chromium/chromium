@@ -50,6 +50,7 @@ BASE_DECLARE_FEATURE(kBottomBrowserControlsRefactor);
 BASE_DECLARE_FEATURE(kBrowserControlsEarlyResize);
 BASE_DECLARE_FEATURE(kCacheActivityTaskID);
 BASE_DECLARE_FEATURE(kCastDeviceFilter);
+BASE_DECLARE_FEATURE(kCCTAdaptiveButton);
 BASE_DECLARE_FEATURE(kCCTAuthTab);
 BASE_DECLARE_FEATURE(kCCTAuthTabDisableAllExternalIntents);
 BASE_DECLARE_FEATURE(kCCTAuthTabEnableHttpsRedirects);

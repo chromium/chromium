@@ -1,0 +1,8 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Lowering error in BrokenStruct: Found FFI-unsafe type Option<u8> in struct field BrokenStruct.regular_option, consider using DiplomatOption<u8>
+Lowering error in BrokenStruct: Found FFI-unsafe type Option<CustomStruct> in struct field BrokenStruct.regular_option, consider using DiplomatOption<CustomStruct>
+Lowering error in Foo::diplo_option_ref: found DiplomatOption<&T>, please use Option<&T> (DiplomatOption is for primitives, structs, and enums)
+Lowering error in Foo::diplo_option_box: found DiplomatOption<Box<T>>, please use Option<Box<T>> (DiplomatOption is for primitives, structs, and enums)

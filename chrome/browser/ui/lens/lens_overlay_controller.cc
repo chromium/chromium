@@ -723,7 +723,7 @@ bool LensOverlayController::IsContextualSearchbox() {
 }
 
 void LensOverlayController::LoadURLInResultsFrame(const GURL& url) {
-  if (!IsOverlayShowing() && state() != State::kLivePageAndResults) {
+  if (state() == State::kOff) {
     return;
   }
 

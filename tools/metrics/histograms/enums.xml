@@ -11056,6 +11056,7 @@ from previous Chrome versions.
   <int value="-1224643496" label="EnableClipboardDataControlsAndroid:disabled"/>
   <int value="-1224312575"
       label="AutofillEnableAllowlistForBmoCardCategoryBenefits:disabled"/>
+  <int value="-1223003562" label="CCTAdaptiveButton:enabled"/>
   <int value="-1222805155" label="PdfIsolation:enabled"/>
   <int value="-1222757260" label="DefaultMeetWebApp:enabled"/>
   <int value="-1222556118" label="VirtualDesks:disabled"/>
@@ -12438,6 +12439,7 @@ from previous Chrome versions.
   <int value="-674265959" label="AppPreloadService:enabled"/>
   <int value="-673804828" label="EnablePlayStoreAppSearch:disabled"/>
   <int value="-673149604" label="RelatedSearches:enabled"/>
+  <int value="-672179392" label="CCTAdaptiveButton:disabled"/>
   <int value="-672031550" label="HttpsFirstModeV2ForEngagedSites:enabled"/>
   <int value="-671992446" label="TranslateRankerEnforcement:disabled"/>
   <int value="-670732156" label="PeripheralsLogging:enabled"/>

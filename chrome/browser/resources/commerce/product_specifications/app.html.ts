@@ -13,6 +13,7 @@ export function getHtml(this: ProductSpecificationsElement) {
   <div id="appContainer">
     <product-specifications-header id="header" .subtitle="${this.setName_}"
         .menuButtonDisabled="${this.loadingState_.loading}"
+        ?is-page-title-clickable="${this.id_ !== null}"
         @delete-click="${this.onHeaderMenuDeleteClick_}"
         @name-change="${this.updateSetName_}"
         @see-all-click="${this.seeAllSets_}">

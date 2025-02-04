@@ -1,0 +1,79 @@
+# This file is part of ICU4X. For terms of use, please see the file
+# called LICENSE at the top level of the ICU4X source tree
+# (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
+
+[package]
+name = "icu_calendar"
+description = "API for supporting various types of calendars"
+
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+homepage.workspace = true
+include.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+calendrical_calculations = { workspace = true }
+displaydoc = { workspace = true }
+icu_provider = { workspace = true, features = ["macros"] }
+icu_locale_core = { workspace = true }
+ixdtf = { workspace = true, optional = true }
+tinystr = { workspace = true, features = ["alloc", "zerovec"] }
+zerovec = { workspace = true, features = ["derive"] }
+writeable = { workspace = true }
+
+databake = { workspace = true, features = ["derive"], optional = true }
+serde = { workspace = true, features = ["derive", "alloc"], optional = true }
+
+icu_calendar_data = { workspace = true, optional = true }
+
+[dev-dependencies]
+icu = { path = "../../components/icu", default-features = false }
+icu_benchmark_macros = { path = "../../tools/benchmark/macros" }
+serde = { workspace = true, features = ["derive", "alloc"] }
+serde_json = { workspace = true }
+simple_logger = { workspace = true }
+
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+criterion = { workspace = true }
+
+
+[features]
+default = ["compiled_data", "ixdtf"]
+ixdtf = ["dep:ixdtf"]
+logging = ["calendrical_calculations/logging"]
+std = ["icu_provider/std", "icu_locale_core/std", "calendrical_calculations/std"]
+serde = ["dep:serde", "zerovec/serde", "tinystr/serde", "icu_provider/serde"]
+datagen = ["serde", "dep:databake", "zerovec/databake", "tinystr/databake"]
+bench = []
+compiled_data = ["dep:icu_calendar_data"]
+
+[package.metadata.cargo-all-features]
+# Bench feature gets tested separately and is only relevant for CI
+denylist = ["bench"]
+
+[[bench]]
+name = "date"
+harness = false
+
+[[bench]]
+name = "datetime"
+harness = false
+
+[[bench]]
+name = "convert"
+harness = false
+
+[[example]]
+name = "iso_date_manipulations"
+
+[[example]]
+name = "iso_datetime_manipulations"

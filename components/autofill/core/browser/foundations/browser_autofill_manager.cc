@@ -104,6 +104,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
@@ -1585,6 +1586,17 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
         .suggestion_is_shown = ToOptionalBoolean(show_suggestions),
     });
   }
+
+  // When user clicks on the credit card form on the merchant checkout pages,
+  // `this` checks `amount_extraction_manager_` if amount extraction should
+  // happen, and if so, triggers amount extraction.
+  if (amount_extraction_manager_->ShouldTriggerAmountExtraction(
+          context,
+          ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
+          !suggestions.empty())) {
+    amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+  }
+
   if (show_suggestions) {
     // Send Autofill suggestions (could be an empty list).
     external_delegate_->OnSuggestionsReturned(field.global_id(), suggestions,

@@ -34,7 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.TestActivity;
 
-/** Unit tests for {@link TabGroupRowView}. */
+/** Unit tests for {@link TabGroupFaviconQuarter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGroupFaviconQuarterUnitTest {
     private static final int PLUS_COUNT = 123;

@@ -69,7 +69,7 @@ suite('cr-icon-button', function() {
 
   test('cr-icon created, reused, removed based on |ironIcon|', async () => {
     function queryIcon() {
-      return button.shadowRoot!.querySelector('cr-icon');
+      return button.shadowRoot.querySelector('cr-icon');
     }
 
     assertFalse(!!queryIcon());
@@ -84,7 +84,7 @@ suite('cr-icon-button', function() {
     // cr-icon reused.
     button.ironIcon = 'cr:open-in-new';
     await button.updateComplete;
-    assertEquals(1, button.shadowRoot!.querySelectorAll('cr-icon').length);
+    assertEquals(1, button.shadowRoot.querySelectorAll('cr-icon').length);
     icon = queryIcon();
     assertTrue(!!icon);
     assertEquals(button.ironIcon, icon.icon);
@@ -99,9 +99,9 @@ suite('cr-icon-button', function() {
     button.ironIcon = 'cr:clear';
     await microtasksFinished();
     assertTrue(!!button.shadowRoot);
-    const ironIcons = button.shadowRoot!.querySelectorAll('cr-icon');
+    const ironIcons = button.shadowRoot.querySelectorAll('cr-icon');
     assertEquals(1, ironIcons.length);
-    const iconChildren = ironIcons[0]!.shadowRoot!.querySelectorAll('svg, img');
+    const iconChildren = ironIcons[0]!.shadowRoot.querySelectorAll('svg, img');
     assertEquals(1, iconChildren.length);
     assertEquals(iconChildren[0]!.getAttribute('role'), 'none');
   });
@@ -178,7 +178,7 @@ suite('cr-icon-button', function() {
   test('multiple iron icons', async () => {
     button.ironIcon = ['cr:search', 'cr:open-in-new'].join(',');
     await button.updateComplete;
-    const elements = button.shadowRoot!.querySelectorAll('cr-icon');
+    const elements = button.shadowRoot.querySelectorAll('cr-icon');
     assertEquals(2, elements.length);
     assertEquals('cr:search', elements[0]!.icon);
     assertEquals('cr:open-in-new', elements[1]!.icon);

@@ -568,6 +568,24 @@ const FeatureEntry::Choice KWebXrHandAnonymizationChoices[] = {
 #endif  // ENABLE_VR
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableOpenInBrowser[] = {
+    {"open_in_browser", "true"},
+    {"voice", "false"}};
+const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableVoice[] = {
+    {"open_in_browser", "false"},
+    {"cct_voice", "true"}};
+const FeatureEntry::FeatureParam kCCTAdaptiveButtonEnableBoth[] = {
+    {"open_in_browser", "true"},
+    {"voice", "true"}};
+const FeatureEntry::FeatureVariation kCCTAdaptiveButtonVariations[] = {
+    {"(+ open in browser)", kCCTAdaptiveButtonEnableOpenInBrowser,
+     std::size(kCCTAdaptiveButtonEnableOpenInBrowser), nullptr},
+    {"(+ voice)", kCCTAdaptiveButtonEnableVoice,
+     std::size(kCCTAdaptiveButtonEnableVoice), nullptr},
+    {"(+ open../voice)", kCCTAdaptiveButtonEnableBoth,
+     std::size(kCCTAdaptiveButtonEnableBoth), nullptr},
+};
+
 const FeatureEntry::FeatureParam kCCTAuthTabHttpsVerificationTimeout10000Ms[] =
     {{"verification_timeout_ms", "10000"}};
 const FeatureEntry::FeatureParam kCCTAuthTabHttpsVerificationTimeout1000Ms[] = {
@@ -4771,7 +4789,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"list-all-display-modes", flag_descriptions::kListAllDisplayModesName,
      flag_descriptions::kListAllDisplayModesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kListAllDisplayModes)},
-    {"enable-hardware_mirror-mode",
+    {"enable-hardware_mirror-mode-deprecated",
      flag_descriptions::kEnableHardwareMirrorModeName,
      flag_descriptions::kEnableHardwareMirrorModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kEnableHardwareMirrorMode)},
@@ -7430,6 +7448,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"cct-adaptive-button", flag_descriptions::kCCTAdaptiveButtonName,
+     flag_descriptions::kCCTAdaptiveButtonDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCCTAdaptiveButton,
+                                    kCCTAdaptiveButtonVariations,
+                                    "CCTAdaptiveButton")},
     {"cct-auth-tab", flag_descriptions::kCCTAuthTabName,
      flag_descriptions::kCCTAuthTabDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTAuthTab)},

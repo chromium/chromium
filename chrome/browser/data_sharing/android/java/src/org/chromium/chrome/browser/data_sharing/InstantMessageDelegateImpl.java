@@ -50,6 +50,7 @@ import org.chromium.ui.util.ColorUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Responsible for displaying browser and OS messages for share. This is effectively a singleton,
@@ -408,7 +409,23 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         String syncId = MessageUtils.extractSyncTabGroupId(message);
         @Nullable SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(syncId);
         if (syncGroup == null) return;
-        dataSharingNotificationManager.showOtherJoinedNotification(contentTitle, syncGroup.syncId);
+
+        int notificationId = notificationIdFromMessage(message);
+        dataSharingNotificationManager.showOtherJoinedNotification(
+                contentTitle, syncGroup.syncId, notificationId);
+    }
+
+    private static int notificationIdFromMessage(InstantMessage message) {
+        String messageId = MessageUtils.extractMessageId(message);
+        // Even on failure, we'll still be okay. Messages will just always override.
+        if (messageId == null) return 0;
+        try {
+            // Consistently grab the same 32 bits.
+            UUID uuid = UUID.fromString(messageId);
+            return (int) uuid.getLeastSignificantBits();
+        } catch (IllegalArgumentException iae) {
+            return 0;
+        }
     }
 
     private void showGenericMessage(

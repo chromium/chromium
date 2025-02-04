@@ -1889,18 +1889,40 @@ suite('AppTest', () => {
   });
 
   suite('Header', () => {
-    test('displays correct subtitle for retrieved sets', async () => {
-      const specsSet = createSpecsSet({
-        name: 'fooName',
+    suite('empty state', () => {
+      setup(async () => {
+        router.setResultFor('getCurrentQuery', '');
+        await createAppElement();
       });
-      shoppingServiceApi.setResultFor(
-          'getProductSpecificationsSetByUuid',
-          Promise.resolve({set: specsSet}));
 
-      const promiseValues = createAppPromiseValues({idParam: testId});
-      await createAppElementWithPromiseValues(promiseValues);
+      test('displays correct subtitle', async () => {
+        assertEquals(null, appElement.$.header.subtitle);
+      });
 
-      assertEquals('fooName', appElement.$.header.subtitle);
+      test('page title is not clickable', async () => {
+        assertFalse(appElement.$.header.isPageTitleClickable);
+      });
+    });
+
+    suite('existing set', () => {
+      setup(async () => {
+        const specsSet = createSpecsSet({
+          name: 'fooName',
+        });
+        shoppingServiceApi.setResultFor(
+            'getProductSpecificationsSetByUuid',
+            Promise.resolve({set: specsSet}));
+        const promiseValues = createAppPromiseValues({idParam: testId});
+        await createAppElementWithPromiseValues(promiseValues);
+      });
+
+      test('displays correct subtitle', async () => {
+        assertEquals('fooName', appElement.$.header.subtitle);
+      });
+
+      test('page title is clickable', () => {
+        assertTrue(appElement.$.header.isPageTitleClickable);
+      });
     });
 
     test('displays correct subtitle for created sets', async () => {
@@ -1914,13 +1936,6 @@ suite('AppTest', () => {
       // TODO(b/338427523): Parameterize this test once there is UI for
       // choosing the name.
       assertEquals('title', appElement.$.header.subtitle);
-    });
-
-    test('displays correct subtitle for empty state', async () => {
-      router.setResultFor('getCurrentQuery', '');
-      await createAppElement();
-
-      assertEquals(null, appElement.$.header.subtitle);
     });
   });
 

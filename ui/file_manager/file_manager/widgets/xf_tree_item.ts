@@ -184,7 +184,7 @@ export class XfTreeItem extends XfBase {
   @state() private level_ = 1;
 
   @query('li') private $treeItem_!: HTMLLIElement;
-  @query('.tree-row') private $treeRow_!: HTMLDivElement;
+  @query('.tree-row') private $treeRow_!: HTMLElement;
   @query('slot:not([name])') private $childrenSlot_!: HTMLSlotElement;
 
   /** The child tree items. */

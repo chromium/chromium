@@ -51,6 +51,7 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
     ~ErrorView() override;
 
     // views::BoxLayoutView:
+    void SetVisible(bool visible) override;
     void AddedToWidget() override;
     void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 

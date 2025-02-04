@@ -19,7 +19,7 @@ export function setUpPage() {
 
 export async function testToast(done: VoidCallback) {
   const toast = document.querySelector<FilesToast>('files-toast')!;
-  const text = toast.shadowRoot!.querySelector<HTMLDivElement>('#text')!;
+  const text = toast.shadowRoot!.querySelector<HTMLElement>('#text')!;
   const action = toast.shadowRoot!.querySelector<CrButtonElement>('#action')!;
 
   const waitFor = async (f: () => boolean) => {

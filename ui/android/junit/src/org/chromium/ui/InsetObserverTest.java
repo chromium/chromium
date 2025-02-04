@@ -132,15 +132,17 @@ public class InsetObserverTest {
                         SYSTEM_GESTURES_INSETS.bottom);
         clearInvocations(mObserver);
 
-        // Apply the insets a second time; the observer should not be notified.
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
-        verify(mObserver, never()).onInsetChanged();
+        // Apply the insets a second time; the insets observer should still be notified.
+        verify(mObserver, times(1)).onInsetChanged();
+        // The gesture insets observer should not be notified.
         verify(mObserver, never())
                 .onSystemGestureInsetsChanged(anyInt(), anyInt(), anyInt(), anyInt());
+        clearInvocations(mObserver);
 
         mInsetObserver.onApplyWindowInsets(mContentView, mModifiedInsets);
-        verify(mObserver).onInsetChanged();
-        verify(mObserver)
+        verify(mObserver, times(1)).onInsetChanged();
+        verify(mObserver, times(1))
                 .onSystemGestureInsetsChanged(
                         SYSTEM_GESTURES_INSETS_MODIFIED.left,
                         SYSTEM_GESTURES_INSETS_MODIFIED.top,

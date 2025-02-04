@@ -89,14 +89,14 @@ void CorpHostStatusLogger::OnSessionStateChange(
                  << "logged.";
     return;
   }
-  internal::ReportSessionDisconnectedRequestStruct request{
-      .session_authz_id = session_id,
-      .session_authz_reauth_token =
-          authenticator.reauthorizer()
-              ? authenticator.reauthorizer()->session_reauth_token()
-              : "",
-      .error_code = session.error(),
-  };
+  internal::ReportSessionDisconnectedRequestStruct request;
+  request.session_authz_id = session_id;
+  request.session_authz_reauth_token =
+      authenticator.reauthorizer()
+          ? authenticator.reauthorizer()->session_reauth_token()
+          : "";
+  request.host_token = authenticator.host_token();
+  request.error_code = session.error();
   // The effective session policies are technically held by ClientSession, but
   // it's difficult to plumb it through multiple layers of abstraction, so we
   // just figure out the effective session policies ourselves here.

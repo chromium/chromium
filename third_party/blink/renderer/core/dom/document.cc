@@ -3579,6 +3579,8 @@ void Document::open(LocalDOMWindow* entered_window,
 
 // https://html.spec.whatwg.org/C/dynamic-markup-insertion.html#document-open-steps
 void Document::open() {
+  TRACE_EVENT("blink", "Document::open");
+
   DCHECK(!ignore_opens_during_unload_count_);
   if (ScriptableDocumentParser* parser = GetScriptableDocumentParser())
     DCHECK(!parser->IsParsing() || !parser->IsExecutingScript());
@@ -3904,6 +3906,8 @@ void Document::close(ExceptionState& exception_state) {
 
 // https://html.spec.whatwg.org/C/dynamic-markup-insertion.html#dom-document-close
 void Document::close() {
+  TRACE_EVENT("blink", "Document::close");
+
   // If there is no script-created parser associated with the document, then
   // return.
   if (!GetScriptableDocumentParser() ||
@@ -4411,6 +4415,8 @@ bool Document::ShouldScheduleLayout() const {
 void Document::write(const String& text,
                      LocalDOMWindow* entered_window,
                      ExceptionState& exception_state) {
+  TRACE_EVENT("blink", "Document::write");
+
   if (!IsA<HTMLDocument>(this)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Only HTML documents support write().");

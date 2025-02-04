@@ -243,6 +243,12 @@ The CL description contains a link to a Google-internal document with audit deta
 """
 
 [[audits.autocfg]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "1.4.0"
+notes = "Contains no unsafe"
+
+[[audits.autocfg]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.1.0 -> 1.2.0"
@@ -539,6 +545,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.8.0 -> 1.9.0"
 notes = "Reviewed in https://crrev.com/c/6072366."
 
+[[audits.calendrical_calculations]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.1.2"
+notes = "Contains no unsafe"
+
 [[audits.cfg-if]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
@@ -802,6 +814,12 @@ Reviewed in https://crrev.com/c/5171063
 
 Previously reviewed during security review and the audit is grandparented in.
 """
+
+[[audits.core_maths]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.1.1"
+notes = "Contains no unsafe"
 
 [[audits.crc32fast]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -1110,10 +1128,40 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = "does-not-implement-crypto"
 delta = "1.0.129 -> 1.0.130"
 
+[[audits.diplomat]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.9.0"
+notes = "Unsafe code pertaining to defining FFI interfaces"
+
+[[audits.diplomat-runtime]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.9.0"
+notes = "Unsafe code pertaining to defining FFI-compatible types, with safety comments."
+
+[[audits.diplomat_core]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.9.0"
+notes = "No unsafe code"
+
+[[audits.displaydoc]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.2.5"
+notes = "No unsafe code"
+
 [[audits.either]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 version = "1.9.0"
+
+[[audits.either]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "1.13.0"
+notes = "Unsafe code pertaining to wrapping Pin APIs. Mostly passes invariants down."
 
 [[audits.either]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -1206,6 +1254,12 @@ notes = "No new unsafe, fs, net."
 who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.5.3 -> 1.5.5"
+
+[[audits.fixed_decimal]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.6.0"
+notes = "Contains no unsafe"
 
 [[audits.flate2]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -1461,6 +1515,246 @@ Reviewed in https://crrev.com/c/5171063
 Previously reviewed during security review and the audit is grandparented in.
 """
 
+[[audits.icu_calendar]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "2.0.0-beta1"
+notes = "Contains no unsafe"
+
+[[audits.icu_calendar_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_capi]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "2.0.0-beta1"
+notes = "Despite being an FFI crate, it is 100% safe code since it uses Diplomat for bindings."
+
+[[audits.icu_casemap]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Safety review: One bit of unsafe DST construction from constant values. One checklisted ULE impl for a simple type wrapping RawBytesULE."
+
+[[audits.icu_casemap_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_collator]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = """
+All unsafe code commented:
+ - enum construction from discriminant with masks or other checks
+ - from_u32 for Hangul Jamo, with math that is in range
+ - from_u32 from a packed type that maintains a valid char invariant
+"""
+
+[[audits.icu_collator_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_collections]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "2.0.0-beta1"
+notes = """
+Two instances of unsafe :
+ - Non-safety related unsafe API that imposes additional invariants
+ - `from_utf8` for known-UTF8 integer
+
+Comments added/improved in https://github.com/unicode-org/icu4x/pull/6056.
+"""
+
+[[audits.icu_datetime]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = """
+All unsafe code commented:
+  - Checklisted ULE impls
+  - from-utf8 code based on type invariants
+
+Comments added/improved in https://github.com/unicode-org/icu4x/pull/6056.
+"""
+
+[[audits.icu_datetime_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_decimal]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "2.0.0-beta1"
+notes = "Contains no unsafe"
+
+[[audits.icu_decimal_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_experimental]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.2.0"
+
+[[audits.icu_experimental_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.2.0-dev"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_list]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "2.0.0-beta1"
+notes = "Simple well-commented unsafe around regex-automata DFA construction."
+
+[[audits.icu_list_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_locale]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Covariant transform transmute; since rustc does not understand that ZeroMap is invariant"
+
+[[audits.icu_locale_core]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = """
+All unsafe code commented:
+  - A checklisted ULE impl
+  - from-utf8 code on known-ASCII
+  - Some unchecked indexing around maintained invariants
+
+Comments added/improved in https://github.com/unicode-org/icu4x/pull/6056.
+"""
+
+[[audits.icu_locale_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_normalizer]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+version = "2.0.0-beta1"
+
+[[audits.icu_normalizer_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_pattern]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "0.3.0"
+notes = """
+Simple unsafe around repr(transparent), and one checklist-commented VarULE impl.
+
+Comments improved in https://github.com/unicode-org/icu4x/pull/6056
+"""
+
+[[audits.icu_plurals]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "2.0.0-beta1"
+notes = """
+Unsafe code pertaining to checklisted ULE/VarULE impls.
+
+Comments added/improved in https://github.com/unicode-org/icu4x/pull/6056.
+"""
+
+[[audits.icu_plurals_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_properties]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+version = "2.0.0-beta1"
+
+[[audits.icu_properties_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_provider]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "2.0.0-beta1"
+notes = """
+All unsafe code commented:
+  - Minor unsafe transmutes between types which are identical but not type-system-provably so.
+  - One unsafe EqULE impl
+  - Some repr(transparent) transmutes
+  - A from_utf8_unchecked for an ascii-validated string
+
+Comment improvements can be found in https://github.com/unicode-org/icu4x/pull/6056
+"""
+
+[[audits.icu_provider_adapters]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "2.0.0-beta1"
+notes = "Contains no unsafe"
+
+[[audits.icu_provider_baked]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+version = "2.0.0-beta1"
+
+[[audits.icu_provider_macros]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "2.0.0-beta1"
+notes = "Does not contain any unsafe code"
+
+[[audits.icu_segmenter]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "2.0.0-beta1"
+notes = "Unsafe code pertaining to unchecked indexing, with length checks right before it"
+
+[[audits.icu_segmenter_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
+[[audits.icu_timezone]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "2.0.0-beta1"
+notes = "Simple, commented unsafe code around string mutation with checked ASCII-only bytes"
+
+[[audits.icu_timezone_data]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "2.0.0-beta1"
+notes = "Contains codegenned unsafe only, using safe Bake impls from zerovec/zerotrie"
+
 [[audits.itertools]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1506,6 +1800,12 @@ notes = """
 Unsafe review at https://crrev.com/c/6051067
 """
 
+[[audits.ixdtf]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.3.0"
+notes = "Contains no unsafe"
+
 [[audits.lazy_static]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -1524,6 +1824,17 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.4.0 -> 1.5.0"
 notes = "Unsafe review notes: https://crrev.com/c/5650836"
+
+[[audits.libm]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.2.11"
+
+[[audits.litemap]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.7.4"
+notes = "Contains no unsafe"
 
 [[audits.log]]
 who = "danakj <danakj@chromium.org>"
@@ -1620,6 +1931,29 @@ notes = """
 Reviewed in https://chromium-review.googlesource.com/c/chromium/src/+/5046153
 """
 
+[[audits.num-bigint]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.4.6"
+
+[[audits.num-integer]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.1.46"
+notes = "Contains no unsafe"
+
+[[audits.num-rational]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.4.2"
+notes = "Contains no unsafe"
+
+[[audits.num-traits]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "0.2.19"
+notes = "Contains a single line of float-to-int unsafe with decent safety comments"
+
 [[audits.png]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
@@ -1648,6 +1982,12 @@ delta = "0.17.14 -> 0.17.15"
 who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.17.15 -> 0.17.16"
+
+[[audits.potential_utf]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.1.0"
+notes = "Contains a handful of lines of from-UTF8 unsafety and some `repr(transparent)` casting unsafety. Reasonably well commented, could do with listing invariants explicitly."
 
 [[audits.ppv-lite86]]
 who = "danakj@chromium.org"
@@ -2082,6 +2422,12 @@ Reviewed in https://crrev.com/c/5171063
 
 Previously reviewed during security review and the audit is grandparented in.
 """
+
+[[audits.regex-syntax]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.8.5"
+notes = "Contains no unsafe"
 
 [[audits.regex-syntax]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -2738,6 +3084,17 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.1.1 -> 0.1.2"
 notes = "I don't fully understand the changes in `lib.rs` but they seem to meet the low bar of `safe-to-run`."
 
+[[audits.smallvec]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+version = "1.13.2"
+
+[[audits.stable_deref_trait]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "1.2.0"
+notes = "Purely a trait, crates using this should be carefully vetted since self-referential stuff can be super tricky around various unsafe rust edges."
+
 [[audits.static_assertions]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
@@ -2753,6 +3110,11 @@ unsafe review comments can be found in https://crrev.com/c/5353376.
 This crate has been added to Chromium in https://crrev.com/c/3736562.  The CL
 description contains a link to a document with an additional security review.
 """
+
+[[audits.strck]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+version = "1.0.0"
 
 [[audits.strsim]]
 who = "danakj@chromium.org"
@@ -2810,6 +3172,12 @@ Reviewed in https://crrev.com/c/5171063
 Previously reviewed during security review and the audit is grandparented in.
 """
 
+[[audits.synstructure]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.13.1"
+notes = "Exposes unsafe codegen APIs but does not itself contain unsafe"
+
 [[audits.termcolor]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -2830,6 +3198,11 @@ notes = "No `unsafe`."
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.4.0 -> 1.4.1"
+
+[[audits.tinystr]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.8.0"
 
 [[audits.tinyvec]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -2870,6 +3243,12 @@ delta = "1.7.0 -> 1.8.0"
 who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.8.0 -> 1.8.1"
+
+[[audits.unicode-bidi]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "0.3.18"
+notes = "Contains one line of repr(transparent) unsafe"
 
 [[audits.unicode-ident]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
@@ -2942,6 +3321,16 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.1.13 -> 0.1.14"
 
+[[audits.utf16_iter]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.0.5"
+
+[[audits.utf8_iter]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+version = "1.0.4"
+
 [[audits.winapi]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -2973,6 +3362,18 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.1.8 -> 0.1.9"
 notes = "The delta only changes Cargo.toml."
 
+[[audits.write16]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "1.0.0"
+notes = "No unsafe code."
+
+[[audits.writeable]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "0.6.0"
+notes = "Contains three lines of unsafe, thoroughly commented: one is for from-UTF8 on ASCII, the other two are for from-UTF8 on a datastructure that keeps track of a buffer with partial UTF8 validation. Relatively straigtforward."
+
 [[audits.wycheproof]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -2982,6 +3383,45 @@ Reviewed in https://crrev.com/c/5171063
 
 Previously reviewed during security review and the audit is grandparented in.
 """
+
+[[audits.yoke]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto"]
+version = "0.7.5"
+
+[[audits.yoke-derive]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.7.5"
+notes = "Custom derive implementing the `Yokeable` trait. Generally generates simple code that asserts covariance."
+
+[[audits.zerofrom]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.1.5"
+notes = "Contains no unsafe"
+
+[[audits.zerofrom-derive]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.1.5"
+notes = "Contains no unsafe"
+
+[[audits.zerotrie]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "0.2.0"
+notes = "Minor repr(transparent) unsafe code. Improved comments in https://github.com/unicode-org/icu4x/pull/6054"
+
+[[audits.zerovec]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.11.0"
+
+[[audits.zerovec-derive]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "does-not-implement-crypto"
+version = "0.11.0"
 
 [[trusted.libc]]
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -3035,6 +3475,12 @@ Same justification as for the other `trusted.libc` entry above.
 user-id 55123 maps to https://crates.io/users/rust-lang-owner who has published
 https://crates.io/crates/libc/0.2.161
 """
+
+[[trusted.libm]]
+criteria = ["safe-to-deploy", "ub-risk-2"]
+user-id = 55123 # rust-lang-owner
+start = "2024-10-26"
+end = "2026-02-02"
 
 [[trusted.windows-sys]]
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

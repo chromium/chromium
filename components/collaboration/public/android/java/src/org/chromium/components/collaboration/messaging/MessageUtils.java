@@ -101,4 +101,9 @@ public class MessageUtils {
                 ? null
                 : message.attribution.tabMetadata.lastKnownUrl;
     }
+
+    /** Returns the message id or null. */
+    public static @Nullable String extractMessageId(@Nullable InstantMessage message) {
+        return message == null || message.attribution == null ? null : message.attribution.id;
+    }
 }

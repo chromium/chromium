@@ -25,25 +25,25 @@ suite('CrPolicyIndicator', function() {
   });
 
   function getIconTooltipText(): string {
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon');
+    const icon = indicator.shadowRoot.querySelector('cr-tooltip-icon');
     assertTrue(!!icon);
     return icon.tooltipText;
   }
 
   function getIconVisible(): boolean {
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon');
+    const icon = indicator.shadowRoot.querySelector('cr-tooltip-icon');
     assertTrue(!!icon);
     return isVisible(icon);
   }
 
   function getIconClass(): string {
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon');
+    const icon = indicator.shadowRoot.querySelector('cr-tooltip-icon');
     assertTrue(!!icon);
     return icon.iconClass;
   }
 
   test('none', function() {
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon')!;
+    const icon = indicator.shadowRoot.querySelector('cr-tooltip-icon')!;
     assertTrue(icon.hidden);
   });
 
@@ -121,7 +121,7 @@ suite('CrPolicyIndicator', function() {
   // </if>
 
   test('indicator', async () => {
-    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon')!;
+    const icon = indicator.shadowRoot.querySelector('cr-tooltip-icon')!;
     indicator.indicatorType = CrPolicyIndicatorType.USER_POLICY;
     await microtasksFinished();
 

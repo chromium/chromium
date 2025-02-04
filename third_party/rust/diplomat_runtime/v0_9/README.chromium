@@ -1,0 +1,10 @@
+Name: diplomat-runtime
+URL: https://crates.io/crates/diplomat-runtime
+Version: 0.9.0
+Revision: 9e627e2f9744e322a0e9715ce9ce0acfb9388e03
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/diplomat-runtime-0.9.0/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Common runtime utilities used by diplomat codegen

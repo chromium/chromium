@@ -5,25 +5,8 @@
 # When Optimization Guide Bots run AI related API tests, the default
 # TestExpectations file is ignored and this file is referred.
 
-# Temporary marking Writer/Rewriter API tests as flaky because it will be broken
-# until we get a new prompt.
-crbug.com/372099809 wpt_internal/ai/rewriter-api-slow.https.any.html [ Failure Pass Timeout ]
-crbug.com/372099809 wpt_internal/ai/rewriter-api-slow.https.any.worker.html [ Failure Pass Timeout ]
-crbug.com/372099809 wpt_internal/ai/writer-api-slow.https.any.html [ Failure Pass Timeout ]
-crbug.com/372099809 wpt_internal/ai/writer-api-slow.https.any.worker.html [ Failure Pass Timeout ]
-
 # Mark following tests as broken until they are fixed.
 crbug.com/378549335 external/wpt/ai/language_detection/detector.https.tentative.any.html [ Crash Failure ]
 crbug.com/378549335 external/wpt/ai/language_detection/detector.https.tentative.any.serviceworker.html [ Crash Failure ]
 crbug.com/378549335 external/wpt/ai/language_detection/detector.https.tentative.any.sharedworker.html [ Crash Failure ]
 crbug.com/378549335 external/wpt/ai/language_detection/detector.https.tentative.any.worker.html [ Crash Failure ]
-crbug.com/378549335 wpt_internal/ai/rewriter-api-abort.https.any.html [ Crash Failure ]
-crbug.com/378549335 wpt_internal/ai/rewriter-api-abort.https.any.worker.html [ Crash Failure ]
-crbug.com/378549335 wpt_internal/ai/rewriter-api-from-detached-iframe.https.window.html [ Crash Failure ]
-crbug.com/378549335 wpt_internal/ai/rewriter-api.https.any.html [ Crash Failure ]
-crbug.com/378549335 wpt_internal/ai/rewriter-api.https.any.worker.html [ Crash Failure ]
-crbug.com/378549335 wpt_internal/ai/writer-api-abort.https.any.html [ Crash Failure ]
-crbug.com/378549335 wpt_internal/ai/writer-api-abort.https.any.worker.html [ Crash Failure ]
-crbug.com/378549335 wpt_internal/ai/writer-api-from-detached-iframe.https.window.html [ Crash Failure ]
-crbug.com/378549335 wpt_internal/ai/writer-api.https.any.html [ Crash Failure ]
-crbug.com/378549335 wpt_internal/ai/writer-api.https.any.worker.html [ Crash Failure ]

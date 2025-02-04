@@ -82,6 +82,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import java.util.UUID;
 
 /** Unit tests for {@link InstantMessageDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -418,11 +419,12 @@ public class InstantMessageDelegateImplUnitTest {
     public void testSystemNotification() {
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         message.level = InstantNotificationLevel.SYSTEM;
+        message.attribution.id = UUID.fromString("00000000-0000-0000-0000-000000000009").toString();
 
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 
         verify(mDataSharingNotificationManager)
-                .showOtherJoinedNotification(any(), eq(SYNC_GROUP_ID1));
+                .showOtherJoinedNotification(any(), eq(SYNC_GROUP_ID1), eq(9));
         verify(mSuccessCallback).onResult(true);
     }
 }

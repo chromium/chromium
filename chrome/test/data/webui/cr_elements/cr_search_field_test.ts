@@ -65,7 +65,7 @@ suite('cr-search-field', function() {
     field.$.clearSearch.click();
     assertEquals('', field.getValue());
     await microtasksFinished();
-    assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
+    assertEquals(field.$.searchInput, field.shadowRoot.activeElement);
     assertFalse(field.hasSearchText);
   });
 
@@ -78,7 +78,7 @@ suite('cr-search-field', function() {
     field.$.clearSearch.click();
     assertEquals('', field.getValue());
     await microtasksFinished();
-    assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
+    assertEquals(field.$.searchInput, field.shadowRoot.activeElement);
     assertFalse(field.hasSearchText);
   });
 

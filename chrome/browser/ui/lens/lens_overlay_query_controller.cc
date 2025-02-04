@@ -1155,7 +1155,6 @@ void LensOverlayQueryController::PerformPageContentRequest(
     std::vector<std::string> headers) {
   page_content_access_token_fetcher_.reset();
 
-  // Pass no response callback because this is a fire and forget request.
   page_content_request_in_progress_ = true;
   PerformFetchRequest(
       &request, &headers,
@@ -1175,6 +1174,11 @@ void LensOverlayQueryController::PageContentResponseHandler(
     std::unique_ptr<EndpointResponse> response) {
   page_content_endpoint_fetcher_.reset();
 
+  // The upload progress handler is not guaranteed to execute, so if a response
+  // is received, mark the request as no longer in progress to allow the
+  // interaction request to be sent.
+  PageContentUploadFinished();
+
   SendLatencyGen204IfEnabled(
       LatencyType::kPageContentUploadLatency, page_contents_request_start_time_,
       VitQueryParamValueForMimeType(underlying_content_type_),
@@ -1186,11 +1190,15 @@ void LensOverlayQueryController::PageContentUploadProgressHandler(
     uint64_t position,
     uint64_t total) {
   if (position == total) {
-    page_content_request_in_progress_ = false;
-    if (pending_contextual_query_callback_) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(pending_contextual_query_callback_));
-    }
+    PageContentUploadFinished();
+  }
+}
+
+void LensOverlayQueryController::PageContentUploadFinished() {
+  page_content_request_in_progress_ = false;
+  if (pending_contextual_query_callback_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(pending_contextual_query_callback_));
   }
 }
 

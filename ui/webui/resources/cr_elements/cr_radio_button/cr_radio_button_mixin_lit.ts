@@ -108,7 +108,7 @@ export const CrRadioButtonMixinLit =
         }
 
         override focus() {
-          const button = this.shadowRoot!.querySelector<HTMLElement>('#button');
+          const button = this.shadowRoot.querySelector<HTMLElement>('#button');
           assert(button);
           button.focus();
         }

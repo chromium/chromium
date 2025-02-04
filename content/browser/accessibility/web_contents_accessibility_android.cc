@@ -1451,16 +1451,33 @@ jint WebContentsAccessibilityAndroid::FindElementType(
   // this functionality.
   if (is_only_talkback_enabled) {
     base::UmaHistogramEnumeration(
-        "Accessibility.Android.FindElementType.Usage.OnlyTalkBackRunning",
+        "Accessibility.Android.FindElementType.Usage2.TalkBack",
         EnumForPredicate(element_type));
   } else if (is_talkback_enabled) {
     base::UmaHistogramEnumeration(
-        "Accessibility.Android.FindElementType.Usage."
-        "TalkBackRunningWithOtherAT",
+        "Accessibility.Android.FindElementType.Usage2."
+        "TalkBackWithOtherAT",
         EnumForPredicate(element_type));
   } else {
+    // When TalkBack isn't running, split by AXMode (for TB we know we will for
+    // sure be in a mode with kScreenReader).
+    BrowserAccessibilityStateImpl* accessibility_state =
+        BrowserAccessibilityStateImpl::GetInstance();
+    ui::AXMode mode = accessibility_state->GetAccessibilityMode();
+    std::string suffix;
+
+    if (mode == ui::kAXModeBasic) {
+      suffix = "Basic";
+    } else if (mode == ui::kAXModeWebContentsOnly) {
+      suffix = "WebContentsOnly";
+    } else if (mode == ui::kAXModeFormControls) {
+      suffix = "FormControls";
+    } else {
+      suffix = "Unnamed";
+    }
+
     base::UmaHistogramEnumeration(
-        "Accessibility.Android.FindElementType.Usage.NotTalkBackAT",
+        "Accessibility.Android.FindElementType.Usage2.NoTalkBack." + suffix,
         EnumForPredicate(element_type));
   }
 

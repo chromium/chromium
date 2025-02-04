@@ -1100,7 +1100,7 @@ export class FileManager {
     assert(this.androidAppListModel_);
     assert(this.crostini_);
 
-    const treeContainerDiv = this.dialogDom_.querySelector<HTMLDivElement>(
+    const treeContainerDiv = this.dialogDom_.querySelector<HTMLElement>(
         '.dialog-navigation-list-contents');
     assert(treeContainerDiv);
 

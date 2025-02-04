@@ -370,6 +370,10 @@ class LensOverlayQueryController {
   // Handles the prgress of the page content upload request.
   void PageContentUploadProgressHandler(uint64_t position, uint64_t total);
 
+  // Marks that the page content upload is no longer in progress and sends the
+  // pending contextual query.
+  void PageContentUploadFinished();
+
   // Creates a full image request with the partial page content bytes and sends
   // it to the server.
   void PrepareAndFetchPartialPageContentRequest();

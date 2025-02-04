@@ -1,0 +1,57 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "icu_decimal"
+  epoch = "2"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta1/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta1/src/format.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta1/src/grouper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta1/src/options.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta1/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_decimal-2.0.0-beta1/src/size_test_macro.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "2.0.0-beta1"
+  cargo_pkg_authors = "The ICU4X Project Developers"
+  cargo_pkg_name = "icu_decimal"
+  cargo_pkg_description =
+      "API for formatting basic decimal numbers in a locale-sensitive way"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/displaydoc/v0_2:lib",
+    "//third_party/rust/fixed_decimal/v0_6:lib",
+    "//third_party/rust/icu_decimal_data/v2:lib",
+    "//third_party/rust/icu_provider/v2:lib",
+    "//third_party/rust/tinystr/v0_8:lib",
+    "//third_party/rust/writeable/v0_6:lib",
+    "//third_party/rust/zerovec/v0_11:lib",
+  ]
+  features = [ "compiled_data" ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+}

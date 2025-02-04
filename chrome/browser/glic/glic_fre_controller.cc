@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_fre_controller.h"
 
 #include "base/command_line.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
 
@@ -30,14 +32,10 @@ GlicFreController::~GlicFreController() = default;
 bool GlicFreController::ShouldShowFreDialog(Profile* profile) {
   // If the given profile has not previously completed the FRE, then it should
   // be shown.
-  // TODO(cuianthony): currently this pref condition is flipped so as to prevent
-  // the FRE from showing in all cases - all existing and new preferences are
-  // registered as false. Flip this condition back once the remaining FRE code
-  // lands.
   // Always show the FRE if `--glic-always-open-fre` is present, for
   // testing convenience.
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  return profile->GetPrefs()->GetBoolean(prefs::kGlicCompletedFre) ||
+  return !profile->GetPrefs()->GetBoolean(prefs::kGlicCompletedFre) ||
          command_line->HasSwitch(::switches::kGlicAlwaysOpenFre);
 }
 
@@ -73,8 +71,11 @@ void GlicFreController::ShowFreDialog(Profile* profile, Browser* browser) {
 void GlicFreController::AcceptFre(Profile* profile) {
   // Update FRE related preferences.
   profile->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
-  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
-                                               true);
+  // TODO(stluong): Update this for additional channels as support is added.
+  if (chrome::GetChannel() == version_info::Channel::CANARY) {
+    g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                                 true);
+  }
 
   DismissFre();
 

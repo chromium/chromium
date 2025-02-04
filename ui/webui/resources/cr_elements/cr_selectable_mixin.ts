@@ -148,7 +148,7 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
     }
 
     getSlot(): HTMLSlotElement {
-      const slot = this.shadowRoot!.querySelector('slot');
+      const slot = this.shadowRoot.querySelector('slot');
       assert(slot);
       return slot;
     }

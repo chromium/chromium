@@ -316,6 +316,7 @@ bool UtilityProcessHost::StartProcess() {
         network::switches::kAdditionalTrustTokenKeyCommitments,
         network::switches::kForceEffectiveConnectionType,
         network::switches::kHostResolverRules,
+        network::switches::kIgnoreBadMessageForTesting,
         network::switches::kIgnoreCertificateErrorsSPKIList,
         network::switches::kTestThirdPartyCookiePhaseout,
         network::switches::kDisableSharedDictionaryStorageCleanupForTesting,

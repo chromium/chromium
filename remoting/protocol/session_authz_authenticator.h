@@ -60,6 +60,11 @@ class SessionAuthzAuthenticator : public Authenticator {
   // will be an empty string.
   const std::string& session_id() const { return session_id_; }
 
+  // The host token returned by the SessionAuthz server. This is only set if
+  // the GenerateHostToken API call has completed and succeeded. Otherwise, this
+  // will be an empty string.
+  const std::string& host_token() const { return host_token_; }
+
   // Authenticator implementation.
   CredentialsType credentials_type() const override;
   const Authenticator& implementing_authenticator() const override;
@@ -78,6 +83,7 @@ class SessionAuthzAuthenticator : public Authenticator {
   void SetReauthorizerForTesting(
       std::unique_ptr<SessionAuthzReauthorizer> reauthorizer);
   void SetSessionIdForTesting(std::string_view session_id);
+  void SetHostTokenForTesting(std::string_view host_token);
 
  private:
   enum class SessionAuthzState {

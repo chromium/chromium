@@ -111,6 +111,7 @@ proto_library("mediapipe_proto") {
   sources = [
     "src/mediapipe/calculators/audio/mfcc_mel_calculators.proto",
     "src/mediapipe/calculators/audio/rational_factor_resample_calculator.proto",
+    "src/mediapipe/calculators/audio/resample_time_series_calculator.proto",
     "src/mediapipe/calculators/audio/spectrogram_calculator.proto",
     "src/mediapipe/calculators/audio/stabilized_log_calculator.proto",
     "src/mediapipe/calculators/audio/time_series_framer_calculator.proto",
@@ -210,6 +211,9 @@ source_set("com_google_audio_tools") {
     "src/third_party/com_google_audio_tools/audio/dsp/mfcc/mfcc.h",
     "src/third_party/com_google_audio_tools/audio/dsp/number_util.cc",
     "src/third_party/com_google_audio_tools/audio/dsp/number_util.h",
+    "src/third_party/com_google_audio_tools/audio/dsp/portable/rational_factor_resampler_kernel.c",
+    "src/third_party/com_google_audio_tools/audio/dsp/resampler_q.cc",
+    "src/third_party/com_google_audio_tools/audio/dsp/resampler_q.h",
     "src/third_party/com_google_audio_tools/audio/dsp/spectrogram/spectrogram.cc",
     "src/third_party/com_google_audio_tools/audio/dsp/spectrogram/spectrogram.h",
     "src/third_party/com_google_audio_tools/audio/dsp/window_functions.cc",
@@ -230,6 +234,7 @@ source_set("com_google_audio_tools") {
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_internal_config",
     ":mediapipe_config",
+    "//third_party/eigen3:eigen_includes",
   ]
 }
 
@@ -241,6 +246,7 @@ source_set("com_google_audio_tools") {
 tflite_source_set("mediapipe_tasks_always_link") {
   sources = [
     "src/mediapipe/calculators/audio/mfcc_mel_calculators.cc",
+    "src/mediapipe/calculators/audio/resample_time_series_calculator.cc",
     "src/mediapipe/calculators/audio/spectrogram_calculator.cc",
     "src/mediapipe/calculators/audio/stabilized_log_calculator.cc",
     "src/mediapipe/calculators/tensor/bert_preprocessor_calculator.cc",

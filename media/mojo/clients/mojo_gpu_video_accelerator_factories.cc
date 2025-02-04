@@ -261,17 +261,6 @@ MojoGpuVideoAcceleratorFactories::CreateVideoEncodeAccelerator() {
   return codec_factory_->CreateVideoEncodeAccelerator();
 }
 
-std::unique_ptr<gfx::GpuMemoryBuffer>
-MojoGpuVideoAcceleratorFactories::CreateGpuMemoryBuffer(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
-  if (gpu_memory_buffer_manager_) {
-    return gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-        size, format, usage, gpu::kNullSurfaceHandle, nullptr);
-  }
-  return nullptr;
-}
 bool MojoGpuVideoAcceleratorFactories::ShouldUseGpuMemoryBuffersForVideoFrames(
     bool for_media_stream) const {
   return for_media_stream ? enable_media_stream_gpu_memory_buffers_

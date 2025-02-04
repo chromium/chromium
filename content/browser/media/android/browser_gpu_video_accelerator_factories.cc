@@ -142,14 +142,6 @@ BrowserGpuVideoAcceleratorFactories::CreateVideoEncodeAccelerator() {
   return nullptr;
 }
 
-std::unique_ptr<gfx::GpuMemoryBuffer>
-BrowserGpuVideoAcceleratorFactories::CreateGpuMemoryBuffer(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
-  return nullptr;
-}
-
 bool BrowserGpuVideoAcceleratorFactories::
     ShouldUseGpuMemoryBuffersForVideoFrames(bool for_media_stream) const {
   return false;

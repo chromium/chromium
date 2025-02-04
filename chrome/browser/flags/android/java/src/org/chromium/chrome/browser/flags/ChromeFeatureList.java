@@ -243,6 +243,7 @@ public abstract class ChromeFeatureList {
     public static final String BROWSING_DATA_MODEL = "BrowsingDataModel";
     public static final String CACHE_ACTIVITY_TASKID = "CacheActivityTaskID";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
+    public static final String CCT_ADAPTIVE_BUTTON = "CCTAdaptiveButton";
     public static final String CCT_AUTH_TAB = "CCTAuthTab";
     public static final String CCT_AUTH_TAB_DISABLE_ALL_EXTERNAL_INTENTS =
             "CCTAuthTabDisableAllExternalIntents";
@@ -617,6 +618,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sBookmarkPaneAndroid =
             newCachedFlag(BOOKMARK_PANE_ANDROID, false);
+    public static final CachedFlag sCctAdaptiveButton = newCachedFlag(CCT_ADAPTIVE_BUTTON, false);
     public static final CachedFlag sCctAuthTab = newCachedFlag(CCT_AUTH_TAB, true);
     public static final CachedFlag sCctAuthTabDisableAllExternalIntents =
             newCachedFlag(CCT_AUTH_TAB_DISABLE_ALL_EXTERNAL_INTENTS, false);
@@ -838,6 +840,7 @@ public abstract class ChromeFeatureList {
                     sAsyncNotificationManager,
                     sBlockIntentsWhileLocked,
                     sBookmarkPaneAndroid,
+                    sCctAdaptiveButton,
                     sCctAuthTab,
                     sCctAuthTabDisableAllExternalIntents,
                     sCctAuthTabEnableHttpsRedirects,
@@ -1020,6 +1023,10 @@ public abstract class ChromeFeatureList {
 
     // CachedFeatureParam instances.
     /* Alphabetical order by feature name, arbitrary order by param name: */
+    public static final BooleanCachedFeatureParam sCctAdaptiveButtonEnableOpenInBrowser =
+            newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "open_in_browser", false);
+    public static final BooleanCachedFeatureParam sCctAdaptiveButtonEnableVoice =
+            newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "voice", false);
     public static final IntCachedFeatureParam sAndroidAppIntegrationV2ContentTtlHours =
             newIntCachedFeatureParam(ANDROID_APP_INTEGRATION_V2, "content_ttl_hours", 168);
     public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconSkipDeviceCheck =
@@ -1332,6 +1339,8 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFaviconSkipSchemaCheck,
                     sAndroidAppIntegrationWithFaviconUseLargeFavicon,
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
+                    sCctAdaptiveButtonEnableOpenInBrowser,
+                    sCctAdaptiveButtonEnableVoice,
                     sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs,
                     sCctAutoTranslatePackageNamesAllowlist,
                     sCctAutoTranslateAllowAllFirstParties,

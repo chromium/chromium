@@ -27,7 +27,7 @@ class ButtonThreeElement extends CrLitElement {
   }
 
   getFocusableElement() {
-    return this.shadowRoot!.querySelector('button');
+    return this.shadowRoot.querySelector('button');
   }
 }
 customElements.define(ButtonThreeElement.is, ButtonThreeElement);

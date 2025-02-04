@@ -1,0 +1,13 @@
+[package]
+name = "utf16_iter"
+version = "1.0.5"
+edition = "2021"
+description = "Iterator by char over potentially-invalid UTF-16 in &[u16]"
+authors = ["Henri Sivonen <hsivonen@hsivonen.fi>"]
+license = "Apache-2.0 OR MIT"
+readme = "README.md"
+documentation = "https://docs.rs/utf16_iter/"
+homepage = "https://docs.rs/utf16_iter/"
+repository = "https://github.com/hsivonen/utf16_iter"
+keywords = ["encoding", "UTF-16", "unicode", "iterator"]
+categories = ["text-processing", "encoding", "internationalization"]

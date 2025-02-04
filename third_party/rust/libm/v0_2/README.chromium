@@ -1,0 +1,10 @@
+Name: libm
+URL: https://crates.io/crates/libm
+Version: 0.2.11
+Revision: cdbf42389e40e15350745cc29e86cd5d93cb2a76
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/libm-0.2.11/LICENSE.txt
+Shipped: yes
+Security Critical: yes
+
+Description: libm in pure Rust

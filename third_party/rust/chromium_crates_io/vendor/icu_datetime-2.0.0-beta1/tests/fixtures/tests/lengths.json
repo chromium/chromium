@@ -1,0 +1,90 @@
+[
+    {
+        "input": {
+            "value": "2020-02-20T00:12:00.000",
+            "options": {
+                "length": {
+                    "time": "medium",
+                    "date": "medium"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en" : "Feb 20, 2020, 12:12:00\u202fAM",
+                "en-u-ca-buddhist": "Feb 20, 2563 BE, 12:12:00\u202fAM",
+                "en-u-ca-japanese": "Feb 20, 2 Reiwa, 12:12:00\u202fAM"
+            }
+        }
+    },
+    {
+        "input": {
+            "value": "2000-01-30T22:15:11.000",
+            "options": {
+                "length": {
+                    "time": "short",
+                    "date": "short"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": "1/30/00, 10:15\u202fPM"
+            }
+        }
+    },
+    {
+        "input": {
+            "value": "2045-02-01T18:45:10.000",
+            "options": {
+                "length": {
+                    "time": null,
+                    "date": "long"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": "February 1, 2045",
+                "en-u-ca-buddhist": "February 1, 2588 BE",
+                "en-u-ca-japanese": "February 1, 27 Reiwa",
+                "ja-u-ca-japanese": "令和27年2月1日"
+            }
+        }
+    },
+    {
+        "input": {
+            "value": "2045-02-01T18:45:10.000",
+            "options": {
+                "length": {
+                    "time": "medium",
+                    "date": null
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "en": "6:45:10\u202fPM"
+            }
+        }
+    },
+    {
+        "input": {
+
+            "value": "2020-03-21T08:25:07.000",
+            "options": {
+                "length": {
+                    "time": "short",
+                    "date": "medium"
+                }
+            }
+        },
+        "output": {
+            "values": {
+                "ru": "21 мар. 2020\u202fг., 08:25",
+                "ru-u-ca-buddhist": "21 мар. 2563\u202fг. BE, 08:25",
+                "ja-u-ca-japanese": "令和2年3月21日 8:25"
+            }
+        }
+    }
+]

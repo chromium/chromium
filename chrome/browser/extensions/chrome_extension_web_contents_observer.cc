@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/chrome_extension_frame_host.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/window_controller.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"

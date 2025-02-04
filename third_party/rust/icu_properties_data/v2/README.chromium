@@ -1,0 +1,10 @@
+Name: icu_properties_data
+URL: https://crates.io/crates/icu_properties_data
+Version: 2.0.0-beta1
+Revision: a55a78a30248fbd3b888fbb33ba19d9233059941
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/icu_properties_data-2.0.0-beta1/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Data for the icu_properties crate

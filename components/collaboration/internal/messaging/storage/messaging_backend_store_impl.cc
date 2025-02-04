@@ -14,6 +14,14 @@
 namespace collaboration::messaging {
 
 namespace {
+
+// Interval of the timer to clean up old messages.
+constexpr base::TimeDelta kMessageCleanUpDuration = base::Days(1);
+
+// TTL of the database messages. Expired messages will be deleted from the
+// database.
+constexpr base::TimeDelta kMessageExpireDuration = base::Days(31);
+
 // Return if the message is more recent than other_message.
 bool IsMessageMoreRecent(const collaboration_pb::Message& message,
                          const collaboration_pb::Message& other_message) {
@@ -29,6 +37,13 @@ bool IsDirty(const collaboration_pb::Message& message, DirtyType dirty_type) {
 int ClearDirty(const collaboration_pb::Message& message, DirtyType dirty_type) {
   return message.dirty() & ~static_cast<int>(dirty_type);
 }
+
+bool IsMessageExpired(const collaboration_pb::Message& message,
+                      const base::Time& now) {
+  const time_t expiration_time = (now - kMessageExpireDuration).ToTimeT();
+  return message.event_timestamp() < expiration_time;
+}
+
 }  // namespace
 
 MessagesPerGroup::MessagesPerGroup() = default;
@@ -371,8 +386,59 @@ void MessagingBackendStoreImpl::OnDatabaseLoaded(
     for (const auto& [key, message] : data) {
       AddMessage(message);
     }
+
+    DeleteExpiredMessages();
+    delete_expired_messages_timer_ = std::make_unique<base::RepeatingTimer>();
+    delete_expired_messages_timer_->Start(
+        FROM_HERE, kMessageCleanUpDuration,
+        base::BindRepeating(&MessagingBackendStoreImpl::DeleteExpiredMessages,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
+
   std::move(on_load_callback).Run(success);
+}
+
+void MessagingBackendStoreImpl::DeleteExpiredMessages() {
+  std::vector<std::string> ids_to_remove;
+
+  // Loop through every message in the store, remove them if they are expired.
+  base::Time now = base::Time::Now();
+  for (auto& [key, messages_per_group] : messages_) {
+    auto& tab_messages = messages_per_group->tab_messages;
+    for (auto it = tab_messages.begin(); it != tab_messages.end();) {
+      if (IsMessageExpired(it->second, now)) {
+        ids_to_remove.push_back(it->second.uuid());
+        it = tab_messages.erase(it);
+      } else {
+        ++it;
+      }
+    }
+
+    auto& tab_group_messages = messages_per_group->tab_group_messages;
+    for (auto it = tab_group_messages.begin();
+         it != tab_group_messages.end();) {
+      if (IsMessageExpired(it->second, now)) {
+        ids_to_remove.push_back(it->second.uuid());
+        it = tab_group_messages.erase(it);
+      } else {
+        ++it;
+      }
+    }
+
+    auto& collab_messages = messages_per_group->collaboration_messages;
+    for (auto it = collab_messages.begin(); it != collab_messages.end();) {
+      if (IsMessageExpired(*it, now)) {
+        ids_to_remove.push_back(it->uuid());
+        it = collab_messages.erase(it);
+      } else {
+        ++it;
+      }
+    }
+
+    if (!ids_to_remove.empty()) {
+      database_->Delete(ids_to_remove);
+    }
+  }
 }
 
 }  // namespace collaboration::messaging

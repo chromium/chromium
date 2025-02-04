@@ -101,6 +101,7 @@ XMLDocument* DOMImplementation::createDocument(
 }
 
 Document* DOMImplementation::createHTMLDocument(const String& title) {
+  TRACE_EVENT("blink", "DOMImplementation::createHTMLDocument");
   DocumentInit init =
       DocumentInit::Create()
           .WithExecutionContext(document_->GetExecutionContext())

@@ -1,0 +1,287 @@
+[
+    {
+        "description": "h11 in the english locale",
+        "input": {
+            "value": "2020-01-07T00:25:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric",
+                    "minute": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "minuteExact"
+                },
+                "hourCycle": "h11"
+            }
+        },
+        "output": {
+            "values": {
+                "en": {
+                    "formatted": "0:25\u202fAM",
+                    "pattern": "K:mm\u202fa"
+                }
+            }
+        }
+    },
+    {
+        "description": "h12 in the english locale",
+        "input": {
+            "value": "2020-01-07T00:25:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric",
+                    "minute": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "minuteExact"
+                },
+                "hourCycle": "h12"
+            }
+        },
+        "output": {
+            "values": {
+                "en": {
+                    "formatted": "12:25\u202fAM",
+                    "pattern": "h:mm\u202fa"
+                }
+            }
+        }
+    },
+    {
+        "description": "h23 in the english locale",
+        "input": {
+            "value": "2020-01-07T00:25:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric",
+                    "minute": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "minuteExact"
+                },
+                "hourCycle": "h23"
+            }
+        },
+        "output": {
+            "values": {
+                "en": {
+                    "formatted": "00:25",
+                    "pattern": "HH:mm"
+                }
+            }
+        }
+    },
+    {
+        "description": "h24 in the english locale",
+        "input": {
+            "value": "2020-01-07T00:25:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric",
+                    "minute": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "minuteExact"
+                },
+                "hourCycle": "h24"
+            }
+        },
+        "output": {
+            "values": {
+                "en": {
+                    "formatted": "24:25",
+                    "pattern": "kk:mm"
+                }
+            }
+        }
+    },
+
+    {
+        "description": "h11 in the arabic locale",
+        "input": {
+            "value": "2020-01-07T00:25:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric",
+                    "minute": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "minuteExact"
+                },
+                "hourCycle": "h11"
+            }
+        },
+        "output": {
+            "values": {
+                "ar-EG": "٠:٢٥ ص"
+            }
+        }
+    },
+    {
+        "description": "h12 in the arabic locale",
+        "input": {
+            "value": "2020-01-07T00:25:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric",
+                    "minute": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "minuteExact"
+                },
+                "hourCycle": "h12"
+            }
+        },
+        "output": {
+            "values": {
+                "ar-EG": "١٢:٢٥ ص"
+            }
+        }
+    },
+    {
+        "description": "h23 in the arabic locale",
+        "input": {
+            "value": "2020-01-07T00:25:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric",
+                    "minute": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "minuteExact"
+                },
+                "hourCycle": "h23"
+            }
+        },
+        "output": {
+            "values": {
+                "ar-EG": "٠٠:٢٥"
+            }
+        }
+    },
+    {
+        "description": "h24 in the arabic locale",
+        "input": {
+            "value": "2020-01-07T00:25:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric",
+                    "minute": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "minuteExact"
+                },
+                "hourCycle": "h24"
+            }
+        },
+        "output": {
+            "values": {
+                "ar-EG": "٢٤:٢٥"
+            }
+        }
+    },
+    {
+        "description": "h11 with singleton h",
+        "input": {
+            "value": "2002-12-31T00:05:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "hourExact"
+                },
+                "hourCycle": "h11"
+            }
+        },
+        "output": {
+            "values": {
+                "en": "0\u202fAM"
+            }
+        }
+    },
+    {
+        "description": "h12 with singleton h",
+        "input": {
+            "value": "2002-12-31T00:05:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "hourExact"
+                },
+                "hourCycle": "h12"
+            }
+        },
+        "output": {
+            "values": {
+                "en": "12\u202fAM"
+            }
+        }
+    },
+    {
+        "description": "h23 with singleton h",
+        "input": {
+            "value": "2002-12-31T00:05:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "hourExact"
+                },
+                "hourCycle": "h23"
+            }
+        },
+        "output": {
+            "values": {
+                "en": "00"
+            }
+        }
+    },
+    {
+        "description": "h24 with singleton h",
+        "input": {
+            "value": "2002-12-31T00:05:07.000",
+            "options": {
+                "components": {
+                    "hour": "numeric"
+                },
+                "semantic": {
+                    "fieldSet": ["time"],
+                    "length": "short",
+                    "timePrecision": "hourExact"
+                },
+                "hourCycle": "h24"
+            }
+        },
+        "output": {
+            "values": {
+                "en": "24"
+            }
+        }
+    }
+]

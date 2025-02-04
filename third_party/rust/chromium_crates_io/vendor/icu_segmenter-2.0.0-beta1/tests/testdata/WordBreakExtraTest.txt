@@ -1,0 +1,30 @@
+# Additional word breaking tests, not in WordBreakTest.txt
+#
+# https://github.com/unicode-org/icu4x/issues/4417
+÷ 0041 × 002E × 00AD × 0042 ÷ # ÷ ALetter × MidNumLet × Format × ALetter ÷
+÷ 0041 × 002E × 0308 × 0042 ÷ # ÷ ALetter × MidNumLet × Extend × ALetter ÷
+÷ 0041 × 002E × 200D × 0042 ÷ # ÷ ALetter × MidNumLet × ZWJ × ALetter ÷
+÷ 0041 × 002E × 00AD × 05D0 ÷ # ÷ ALetter × MidNumLet × Format × Hebrew_Letter ÷
+÷ 0041 × 002E × 0308 × 05D0 ÷ # ÷ ALetter × MidNumLet × Extend × Hebrew_Letter ÷
+÷ 0041 × 002E × 200D × 05D0 ÷ # ÷ ALetter × MidNumLet × ZWJ × Hebrew_Letter ÷
+÷ 0041 × 0027 × 00AD × 0042 ÷ # ÷ ALetter × Single_Quote × Format × ALetter ÷
+÷ 0041 × 0027 × 0308 × 0042 ÷ # ÷ ALetter × Single_Quote × Extend × ALetter ÷
+÷ 0041 × 0027 × 200D × 0042 ÷ # ÷ ALetter × Single_Quote × ZWJ × ALetter ÷
+÷ 0041 × 0027 × 00AD × 05D0 ÷ # ÷ ALetter × Single_Quote × Format × Hebrew_Letter ÷
+÷ 0041 × 0027 × 0308 × 05D0 ÷ # ÷ ALetter × Single_Quote × Extend × Hebrew_Letter ÷
+÷ 0041 × 0027 × 200D × 05D0 ÷ # ÷ ALetter × Single_Quote × ZWJ × Hebrew_Letter ÷
+÷ 05D0 × 002E × 00AD × 05D0 ÷ # ÷ Hebrew_Letter × MidNumLet × Format × Hebrew_Letter ÷
+÷ 05D0 × 002E × 0308 × 05D0 ÷ # ÷ Hebrew_Letter × MidNumLet × Extend × Hebrew_Letter ÷
+÷ 05D0 × 002E × 200D × 05D0 ÷ # ÷ Hebrew_Letter × MidNumLet × ZWJ × Hebrew_Letter ÷
+÷ 05D0 × 002E × 00AD × 0041 ÷ # ÷ Hebrew_Letter × MidNumLet × Format × ALetter ÷
+÷ 05D0 × 002E × 0308 × 0041 ÷ # ÷ Hebrew_Letter × MidNumLet × Extend × ALetter ÷
+÷ 05D0 × 002E × 200D × 0041 ÷ # ÷ Hebrew_Letter × MidNumLet × ZWJ × ALetter ÷
+÷ 05D0 × 0027 × 00AD × 0041 ÷ # ÷ Hebrew_Letter × Single_Quote × Format × ALetter ÷
+÷ 05D0 × 0027 × 0308 × 0041 ÷ # ÷ Hebrew_Letter × Single_Quote × Extend × ALetter ÷
+÷ 05D0 × 0027 × 200D × 0041 ÷ # ÷ Hebrew_Letter × Single_Quote × ZWJ × ALetter ÷
+÷ 05D0 × 0027 × 00AD × 05D0 ÷ # ÷ Hebrew_Letter × Single_Quote × Format × Hebrew_Letter ÷
+÷ 05D0 × 0027 × 0308 × 05D0 ÷ # ÷ Hebrew_Letter × Single_Quote × Extend × Hebrew_Letter ÷
+÷ 05D0 × 0027 × 200D × 05D0 ÷ # ÷ Hebrew_Letter × Single_Quote × ZWJ × Hebrew_Letter ÷
+÷ 05D0 × 0022 × 00AD × 05D0 ÷ # ÷ Hebrew_Letter × Double_Quote × Format × Hebrew_Letter ÷
+÷ 05D0 × 0022 × 0308 × 05D0 ÷ # ÷ Hebrew_Letter × Double_Quote × Extend × Hebrew_Letter ÷
+÷ 05D0 × 0022 × 200D × 05D0 ÷ # ÷ Hebrew_Letter × Double_Quote × ZWJ × Hebrew_Letter ÷

@@ -1,0 +1,75 @@
+// @generated
+/// Implement `DataProvider<Bcp47ToIanaMapV1Marker>` on the given struct using the data
+/// hardcoded in this file. This allows the struct to be used with
+/// `icu`'s `_unstable` constructors.
+///
+/// Using this implementation will embed the following data in the binary's data segment:
+/// * 7630B[^1] for the singleton data struct
+///
+/// [^1]: these numbers can be smaller in practice due to linker deduplication
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_bcp47_to_iana_map_v1_marker {
+    ($ provider : ty) => {
+        #[clippy::msrv = "1.71.1"]
+        const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
+        #[clippy::msrv = "1.71.1"]
+        impl $provider {
+            #[doc(hidden)]
+            pub const SINGLETON_BCP47_TO_IANA_MAP_V1_MARKER: &'static <icu::timezone::provider::names::Bcp47ToIanaMapV1Marker as icu_provider::DynamicDataMarker>::DataStruct = &icu::timezone::provider::names::Bcp47ToIanaMapV1 { bcp47_ids_checksum: 1359598211242524719u64, canonical_iana_ids: unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\xBD\x01\x0E\0\x18\0\"\x001\0A\0N\0Z\0i\0v\0\x86\0\x96\0\xAF\0\xC0\0\xD2\0\xE3\0\xF5\0\x05\x01\x15\x01&\x01D\x01]\x01x\x01\x92\x01\xA9\x01\xC3\x01\xDC\x01\xFA\x01\x11\x02*\x02D\x02]\x02n\x02{\x02\x8D\x02\xA2\x02\xB4\x02\xC4\x02\xD3\x02\xE3\x02\xF5\x02\x08\x03\x1B\x03/\x03>\x03N\x03[\x03d\x03s\x03\x83\x03\x8D\x03\x9C\x03\xAE\x03\xBA\x03\xC6\x03\xD6\x03\xE7\x03\xF7\x03\x02\x04\x10\x04\"\x043\x04@\x04Q\x04_\x04s\x04\x83\x04\x92\x04\xA3\x04\xB1\x04\xBF\x04\xD2\x04\xE4\x04\xF2\x04\x03\x05\x10\x05 \x05.\x05:\x05I\x05U\x05c\x05r\x05\x82\x05\x95\x05\xA6\x05\xB7\x05\xC6\x05\xD5\x05\xE4\x05\xF4\x05\x02\x06\x12\x06!\x062\x06B\x06V\x06k\x06y\x06\x8D\x06\xA1\x06\xAF\x06\xC1\x06\xD6\x06\xE6\x06\xF2\x06\x03\x07\x12\x07\x1F\x071\x07>\x07L\x07]\x07k\x07\x7F\x07\x8F\x07\x9C\x07\xA9\x07\xB4\x07\xC2\x07\xD4\x07\xE2\x07\xF5\x07\x05\x08\x13\x08\x1F\x08,\x089\x08H\x08W\x08h\x08x\x08\x8D\x08\x9B\x08\xAC\x08\xBD\x08\xCB\x08\xD7\x08\xE6\x08\xF3\x08\xFF\x08\x0E\t\x1B\t-\t<\tL\tX\th\tv\t\x85\t\x92\t\xA0\t\xAC\t\xBD\t\xC6\t\xD3\t\xE2\t\xEE\t\xFD\t\x0C\n\x18\n(\n<\nH\n\\\ni\nv\n}\n\x8B\n\x9D\n\xAC\n\xC1\n\xCE\n\xDB\n\xF1\n\x02\x0B\x0E\x0B\x1B\x0B)\x0B4\x0BB\x0BU\x0Bb\x0Bx\x0B\x87\x0B\x94\x0B\xA0\x0B\xAD\x0B\xBB\x0B\xC8\x0B\xDA\x0B\xE6\x0B\xF3\x0B\xFF\x0B\n\x0C\x1C\x0C'\x0C5\x0CB\x0CQ\x0C[\x0Ce\x0Cs\x0C\x7F\x0C\x8E\x0C\xA0\x0C\xAE\x0C\xBC\x0C\xC9\x0C\xD9\x0C\xE7\x0C\xF1\x0C\xFC\x0C\n\r\x14\r\x1F\r*\r5\rB\rP\rY\rg\rr\r\x82\r\x8E\r\x9A\r\xA9\r\xB6\r\xC4\r\xD5\r\xE0\r\xEE\r\xFF\r\x0C\x0E\x1B\x0E+\x0E>\x0EO\x0E]\x0Ej\x0Ew\x0E\x82\x0E\x8B\x0E\x9B\x0E\xA5\x0E\xB3\x0E\xC5\x0E\xD6\x0E\xE8\x0E\xF4\x0E\x04\x0F\x13\x0F\"\x0F3\x0FH\x0FV\x0Fh\x0Fy\x0F\x8C\x0F\x9A\x0F\xAB\x0F\xBB\x0F\xCA\x0F\xE0\x0F\xEF\x0F\xFB\x0F\x0C\x10\x19\x10(\x106\x10C\x10R\x10^\x10m\x10}\x10\x88\x10\x96\x10\xA3\x10\xAF\x10\xBF\x10\xCE\x10\xD9\x10\xE7\x10\xF3\x10\x02\x11\x13\x11!\x115\x11I\x11T\x11`\x11m\x11}\x11\x8D\x11\xA0\x11\xB0\x11\xBD\x11\xCC\x11\xD9\x11\xE9\x11\xF3\x11\x01\x12\x11\x12 \x120\x12<\x12F\x12Q\x12]\x12i\x12{\x12\x88\x12\x98\x12\xA5\x12\xB1\x12\xBE\x12\xCF\x12\xD8\x12\xE8\x12\xF6\x12\x04\x13\x16\x13 \x130\x13=\x13J\x13Z\x13j\x13|\x13\x88\x13\x95\x13\xA0\x13\xB3\x13\xBE\x13\xCD\x13\xDD\x13\xEB\x13\xFD\x13\r\x14 \x141\x14@\x14Q\x14]\x14m\x14\x7F\x14\x8A\x14\x99\x14\xAC\x14\xC1\x14\xCE\x14\xDC\x14\xEE\x14\xFD\x14\r\x15\x18\x15$\x151\x15@\x15I\x15V\x15b\x15s\x15\x82\x15\x97\x15\xA7\x15\xB2\x15\xC6\x15\xD1\x15\xE2\x15\xF0\x15\xFC\x15\n\x16\x16\x16-\x16>\x16K\x16Z\x16h\x16w\x16\x87\x16\xA3\x16\xB8\x16\xC6\x16\xDA\x16\xED\x16\x08\x17\x19\x174\x17F\x17a\x17\x7F\x17\x8F\x17\xA8\x17\xB4\x17\xC3\x17\xD0\x17\xE9\x17\0\x18\x1A\x185\x18D\x18K\x18T\x18]\x18f\x18o\x18x\x18\x81\x18\x8A\x18\x93\x18\x9C\x18\xA6\x18\xB0\x18\xBA\x18\xC4\x18\xCE\x18\xD7\x18\xE0\x18\xE9\x18\xF2\x18\xFB\x18\x04\x19\r\x19\x16\x19\x1F\x19)\x193\x19=\x19O\x19]\x19j\x19x\x19\x8A\x19\x99\x19\xA8\x19\xB9\x19\xC9\x19\xD6\x19\xE4\x19\xF0\x19\xF9\x19\x07\x1A\x1A\x1A'\x1AEurope/AndorraAsia/DubaiAsia/KabulAmerica/AntiguaAmerica/AnguillaEurope/TiraneAsia/YerevanAmerica/CuracaoAfrica/LuandaAntarctica/CaseyAntarctica/DavisAntarctica/DumontDUrvilleAntarctica/MawsonAntarctica/McMurdoAntarctica/PalmerAntarctica/RotheraAntarctica/SyowaAntarctica/TrollAntarctica/VostokAmerica/Argentina/Buenos_AiresAmerica/Argentina/CordobaAmerica/Argentina/CatamarcaAmerica/Argentina/La_RiojaAmerica/Argentina/JujuyAmerica/Argentina/San_LuisAmerica/Argentina/MendozaAmerica/Argentina/Rio_GallegosAmerica/Argentina/SaltaAmerica/Argentina/TucumanAmerica/Argentina/San_JuanAmerica/Argentina/UshuaiaPacific/Pago_PagoEurope/ViennaAustralia/AdelaideAustralia/Broken_HillAustralia/BrisbaneAustralia/DarwinAustralia/EuclaAustralia/HobartAustralia/LindemanAustralia/Lord_HoweAustralia/MelbourneAntarctica/MacquarieAustralia/PerthAustralia/SydneyAmerica/ArubaAsia/BakuEurope/SarajevoAmerica/BarbadosAsia/DhakaEurope/BrusselsAfrica/OuagadougouEurope/SofiaAsia/BahrainAfrica/BujumburaAfrica/Porto-NovoAtlantic/BermudaAsia/BruneiAmerica/La_PazAmerica/KralendijkAmerica/AraguainaAmerica/BelemAmerica/Boa_VistaAmerica/CuiabaAmerica/Campo_GrandeAmerica/EirunepeAmerica/NoronhaAmerica/FortalezaAmerica/ManausAmerica/MaceioAmerica/Porto_VelhoAmerica/Rio_BrancoAmerica/RecifeAmerica/Sao_PauloAmerica/BahiaAmerica/SantaremAmerica/NassauAsia/ThimphuAfrica/GaboroneEurope/MinskAmerica/BelizeAmerica/CrestonAmerica/EdmontonAmerica/Fort_NelsonAmerica/Glace_BayAmerica/Goose_BayAmerica/HalifaxAmerica/IqaluitAmerica/MonctonAmerica/ResoluteAmerica/ReginaAmerica/St_JohnsAmerica/TorontoAmerica/VancouverAmerica/WinnipegAmerica/Blanc-SablonAmerica/Cambridge_BayAmerica/DawsonAmerica/Dawson_CreekAmerica/Rankin_InletAmerica/InuvikAmerica/WhitehorseAmerica/Swift_CurrentAmerica/AtikokanIndian/CocosAfrica/LubumbashiAfrica/KinshasaAfrica/BanguiAfrica/BrazzavilleEurope/ZurichAfrica/AbidjanPacific/RarotongaPacific/EasterAmerica/Punta_ArenasAmerica/SantiagoAfrica/DoualaAsia/ShanghaiAsia/UrumqiAmerica/BogotaAmerica/Costa_RicaAmerica/HavanaAtlantic/Cape_VerdeIndian/ChristmasAsia/FamagustaAsia/NicosiaEurope/PragueEurope/BerlinEurope/BusingenAfrica/DjiboutiEurope/CopenhagenAmerica/DominicaAmerica/Santo_DomingoAfrica/AlgiersPacific/GalapagosAmerica/GuayaquilEurope/TallinnAfrica/CairoAfrica/El_AaiunAfrica/AsmaraAfrica/CeutaAtlantic/CanaryEurope/MadridAfrica/Addis_AbabaEurope/HelsinkiEurope/MariehamnPacific/FijiAtlantic/StanleyPacific/KosraePacific/PohnpeiPacific/ChuukAtlantic/FaroeEurope/ParisAfrica/LibrevilleAsia/GazaEurope/LondonAmerica/GrenadaAsia/TbilisiAmerica/CayenneEurope/GuernseyAfrica/AccraEurope/GibraltarAmerica/DanmarkshavnAmerica/NuukAmerica/ScoresbysundAmerica/ThuleAfrica/BanjulEtc/GMTAfrica/ConakryAmerica/GuadeloupeAmerica/MarigotAmerica/St_BarthelemyAfrica/MalaboEurope/AthensAtlantic/South_GeorgiaAmerica/GuatemalaPacific/GuamAfrica/BissauAmerica/GuyanaAsia/HebronAsia/Hong_KongAmerica/TegucigalpaEurope/ZagrebAmerica/Port-au-PrinceEurope/BudapestAsia/JayapuraAsia/JakartaAsia/MakassarAsia/PontianakEurope/DublinEurope/Isle_of_ManAsia/KolkataIndian/ChagosAsia/BaghdadAsia/TehranAtlantic/ReykjavikEurope/RomeAsia/JerusalemEurope/JerseyAmerica/JamaicaAsia/AmmanAsia/TokyoAfrica/NairobiAsia/BishkekAsia/Phnom_PenhPacific/KiritimatiPacific/KantonPacific/TarawaIndian/ComoroAmerica/St_KittsAsia/PyongyangAsia/SeoulAsia/KuwaitAmerica/CaymanAsia/AqtauAsia/AqtobeAsia/AlmatyAsia/AtyrauAsia/QostanayAsia/QyzylordaAsia/OralAsia/VientianeAsia/BeirutAmerica/St_LuciaEurope/VaduzAsia/ColomboAfrica/MonroviaAfrica/MaseruEurope/VilniusEurope/LuxembourgEurope/RigaAfrica/TripoliAfrica/CasablancaEurope/MonacoEurope/ChisinauEurope/PodgoricaIndian/AntananarivoPacific/KwajaleinPacific/MajuroEurope/SkopjeAfrica/BamakoAsia/YangonAsia/HovdAsia/UlaanbaatarAsia/MacauPacific/SaipanAmerica/MartiniqueAfrica/NouakchottAmerica/MontserratEurope/MaltaIndian/MauritiusIndian/MaldivesAfrica/BlantyreAmerica/ChihuahuaAmerica/Ciudad_JuarezAmerica/CancunAmerica/HermosilloAmerica/MatamorosAmerica/Mexico_CityAmerica/MeridaAmerica/MonterreyAmerica/MazatlanAmerica/OjinagaAmerica/Bahia_BanderasAmerica/TijuanaAsia/KuchingAsia/Kuala_LumpurAfrica/MaputoAfrica/WindhoekPacific/NoumeaAfrica/NiameyPacific/NorfolkAfrica/LagosAmerica/ManaguaEurope/AmsterdamEurope/OsloAsia/KathmanduPacific/NauruPacific/NiuePacific/AucklandPacific/ChathamAsia/MuscatAmerica/PanamaAmerica/LimaPacific/GambierPacific/MarquesasPacific/TahitiPacific/Port_MoresbyPacific/BougainvilleAsia/ManilaAsia/KarachiEurope/WarsawAmerica/MiquelonPacific/PitcairnAmerica/Puerto_RicoAtlantic/MadeiraEurope/LisbonAtlantic/AzoresPacific/PalauAmerica/AsuncionAsia/QatarIndian/ReunionEurope/BucharestEurope/BelgradeEurope/AstrakhanAsia/BarnaulAsia/ChitaAsia/AnadyrAsia/MagadanAsia/IrkutskEurope/KaliningradAsia/KhandygaAsia/KrasnoyarskEurope/SamaraEurope/KirovEurope/MoscowAsia/NovokuznetskAsia/OmskAsia/NovosibirskAsia/KamchatkaEurope/SaratovAsia/SrednekolymskAsia/TomskEurope/UlyanovskAsia/Ust-NeraAsia/SakhalinEurope/VolgogradAsia/VladivostokAsia/YekaterinburgAsia/YakutskAfrica/KigaliAsia/RiyadhPacific/GuadalcanalIndian/MaheAfrica/KhartoumEurope/StockholmAsia/SingaporeAtlantic/St_HelenaEurope/LjubljanaArctic/LongyearbyenEurope/BratislavaAfrica/FreetownEurope/San_MarinoAfrica/DakarAfrica/MogadishuAmerica/ParamariboAfrica/JubaAfrica/Sao_TomeAmerica/El_SalvadorAmerica/Lower_PrincesAsia/DamascusAfrica/MbabaneAmerica/Grand_TurkAfrica/NdjamenaIndian/KerguelenAfrica/LomeAsia/BangkokAsia/DushanbePacific/FakaofoAsia/DiliAsia/AshgabatAfrica/TunisPacific/TongatapuEurope/IstanbulAmerica/Port_of_SpainPacific/FunafutiAsia/TaipeiAfrica/Dar_es_SalaamEurope/KyivEurope/SimferopolAfrica/KampalaPacific/WakePacific/MidwayAmerica/AdakAmerica/Indiana/MarengoAmerica/AnchorageAmerica/BoiseAmerica/ChicagoAmerica/DenverAmerica/DetroitPacific/HonoluluAmerica/Indiana/IndianapolisAmerica/Indiana/VevayAmerica/JuneauAmerica/Indiana/KnoxAmerica/Los_AngelesAmerica/Kentucky/LouisvilleAmerica/MenomineeAmerica/Kentucky/MonticelloAmerica/MetlakatlaAmerica/North_Dakota/CenterAmerica/North_Dakota/New_SalemAmerica/New_YorkAmerica/Indiana/VincennesAmerica/NomeAmerica/PhoenixAmerica/SitkaAmerica/Indiana/Tell_CityAmerica/Indiana/WinamacAmerica/Indiana/PetersburgAmerica/North_Dakota/BeulahAmerica/YakutatEtc/UTCEtc/GMT-1Etc/GMT-2Etc/GMT-3Etc/GMT-4Etc/GMT-5Etc/GMT-6Etc/GMT-7Etc/GMT-8Etc/GMT-9Etc/GMT-10Etc/GMT-11Etc/GMT-12Etc/GMT-13Etc/GMT-14Etc/GMT+1Etc/GMT+2Etc/GMT+3Etc/GMT+4Etc/GMT+5Etc/GMT+6Etc/GMT+7Etc/GMT+8Etc/GMT+9Etc/GMT+10Etc/GMT+11Etc/GMT+12America/MontevideoAsia/SamarkandAsia/TashkentEurope/VaticanAmerica/St_VincentAmerica/CaracasAmerica/TortolaAmerica/St_ThomasAsia/Ho_Chi_MinhPacific/EfatePacific/WallisPacific/ApiaAsia/AdenIndian/MayotteAfrica/JohannesburgAfrica/LusakaAfrica/Harare") } };
+        }
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::DataProvider<icu::timezone::provider::names::Bcp47ToIanaMapV1Marker> for $provider {
+            fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::timezone::provider::names::Bcp47ToIanaMapV1Marker>, icu_provider::DataError> {
+                if req.id.locale.is_default() {
+                    Ok(icu_provider::DataResponse { payload: icu_provider::DataPayload::from_static_ref(Self::SINGLETON_BCP47_TO_IANA_MAP_V1_MARKER), metadata: Default::default() })
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::timezone::provider::names::Bcp47ToIanaMapV1Marker as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+    };
+    ($ provider : ty , ITER) => {
+        __impl_bcp47_to_iana_map_v1_marker!($provider);
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::IterableDataProvider<icu::timezone::provider::names::Bcp47ToIanaMapV1Marker> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok([Default::default()].into_iter().collect())
+            }
+        }
+    };
+    ($ provider : ty , DRY) => {
+        __impl_bcp47_to_iana_map_v1_marker!($provider);
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::DryDataProvider<icu::timezone::provider::names::Bcp47ToIanaMapV1Marker> for $provider {
+            fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
+                if req.id.locale.is_default() {
+                    Ok(Default::default())
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::timezone::provider::names::Bcp47ToIanaMapV1Marker as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+    };
+    ($ provider : ty , DRY , ITER) => {
+        __impl_bcp47_to_iana_map_v1_marker!($provider);
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::DryDataProvider<icu::timezone::provider::names::Bcp47ToIanaMapV1Marker> for $provider {
+            fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
+                if req.id.locale.is_default() {
+                    Ok(Default::default())
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::timezone::provider::names::Bcp47ToIanaMapV1Marker as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::IterableDataProvider<icu::timezone::provider::names::Bcp47ToIanaMapV1Marker> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok([Default::default()].into_iter().collect())
+            }
+        }
+    };
+}
+#[doc(inline)]
+pub use __impl_bcp47_to_iana_map_v1_marker as impl_bcp47_to_iana_map_v1_marker;

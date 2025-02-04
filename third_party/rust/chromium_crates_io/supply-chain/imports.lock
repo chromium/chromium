@@ -7,6 +7,12 @@ when = "2024-12-19"
 user-id = 55123
 user-login = "rust-lang-owner"
 
+[[publisher.libm]]
+version = "0.2.11"
+when = "2024-10-28"
+user-id = 55123
+user-login = "rust-lang-owner"
+
 [[publisher.windows-sys]]
 version = "0.52.0"
 when = "2023-11-15"
@@ -277,3 +283,27 @@ who = [
 criteria = ["does-not-implement-crypto", "ub-risk-2"]
 version = "1.13.1"
 notes = "Reviewed in CL 561111794"
+
+[[audits.google.audits.strck]]
+who = "Manish Goregaokar <manishearth@google.com>"
+criteria = "ub-risk-1"
+version = "1.0.0"
+notes = "Reviewed in CL 685732460"
+
+[[audits.google.audits.yoke]]
+who = "Luca Versari <veluca@google.com>"
+criteria = ["does-not-implement-crypto", "ub-risk-2"]
+version = "0.7.4"
+notes = """
+Reviewed in https://github.com/unicode-org/icu4x/pull/5046
+Review performed as PR: https://github.com/unicode-org/icu4x/pull/5046. Minor docs improvements, plus known currently-unsolvable issue around potential future noalias UB (https://github.com/unicode-org/icu4x/issues/2095)
+"""
+
+[[audits.google.audits.yoke]]
+who = "Luca Versari <veluca@google.com>"
+criteria = ["does-not-implement-crypto", "ub-risk-2"]
+delta = "0.7.4 -> 0.7.5"
+notes = """
+Reviewed in CL 700087030
+Patches from last review all applied
+"""

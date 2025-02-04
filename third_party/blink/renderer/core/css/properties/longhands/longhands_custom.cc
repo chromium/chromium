@@ -5237,6 +5237,14 @@ const blink::Color InternalVisitedFill::ColorIncludingFallback(
                                     style.UsedColorScheme(), is_current_color);
 }
 
+const CSSValue* ColumnRuleBreak::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.ColumnRuleBreak());
+}
+
 const blink::Color InternalVisitedColumnRuleColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style,

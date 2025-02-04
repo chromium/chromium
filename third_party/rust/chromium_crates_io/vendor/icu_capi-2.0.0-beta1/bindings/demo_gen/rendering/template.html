@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="runtime.mjs" type="module"></script>
+    </head>
+    <body>
+        <div id="render"></div>
+        <template id="terminus">
+            <div>
+                <h1><slot name="func-name"></slot></h1>
+                <slot name="parameters"></slot>
+                <button type="submit" data-submit>Submit</button>
+                <div>
+                    Output
+                    <p><slot name="output">Output Shown Here</slot></p>
+                </div>
+            </div>
+        </template>
+
+        <template id="parameter">
+            <div>
+                <slot name="param-name"></slot>
+                <slot name="parameter"></slot>
+            </div>
+        </template>
+
+        <template id="enum">
+            <select data-oninput data-options>
+                <!-- Select doesn't evaluate anything other than option nodes, so to allow dropdowns (in addition to other HTML elements), we just search for data-options to append options to.-->
+            </select>
+        </template>
+
+        <template id="enum-option">
+            <option>
+                <slot name="option-text"></slot>
+            </option>
+        </template>
+
+        <template id="string">
+            <input type="text" data-oninput/>
+        </template>
+
+        <template id="string-array">
+            <textarea data-oninput></textarea>
+        </template>
+
+        <template id="number">
+            <!-- Floats not supported by the example ICU4XFixedDecimal type for whatever reason. -->
+            <input type="number" data-oninput/>
+        </template>
+
+        <template id="boolean">
+            <input type="checkbox" id="bool" data-oninput/>
+        </template>
+	</body>
+</html>

@@ -1279,6 +1279,11 @@
     "hanging",
     "mathematical",
 
+    // column-rule-break
+    // none
+    "intersection",
+    "spanning-item",
+
     // dominant-baseline
     // auto
     "use-script",

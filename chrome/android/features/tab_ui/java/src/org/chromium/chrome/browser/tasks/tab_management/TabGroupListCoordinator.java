@@ -16,7 +16,6 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Consumer;
 
 import org.chromium.base.Callback;
@@ -169,8 +168,8 @@ public class TabGroupListCoordinator {
         }
     }
 
-    @VisibleForTesting
-    static FaviconResolver buildFaviconResolver(
+    /** TODO(crbug.com)394154545: Move to a better location. */
+    public static FaviconResolver buildFaviconResolver(
             Context context, Profile profile, TabListFaviconProvider fallbackProvider) {
         return (GURL url, Callback<Drawable> callback) -> {
             if (UrlUtilities.isInternalScheme(url)) {
