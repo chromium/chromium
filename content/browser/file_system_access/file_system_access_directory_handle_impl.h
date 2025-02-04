@@ -99,17 +99,22 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
       storage::FileSystemURL child_url);
   // This method creates the file if it does not currently exists. I.e. it is
   // the implementation for passing create=true to GetFile.
-  void GetFileWithWritePermission(const storage::FileSystemURL& child_url,
+  void GetFileWithWritePermission(const std::string& basename,
+                                  const storage::FileSystemURL& child_url,
                                   GetFileCallback callback);
-  void DoGetFile(bool create,
+  void DoGetFile(const std::string& basename,
+                 bool create,
                  storage::FileSystemURL child_url,
                  GetFileCallback callback,
                  FileSystemAccessPermissionContext::SensitiveEntryResult
                      sensitive_entry_result);
 #if BUILDFLAG(IS_ANDROID)
-  void DidGetFileQueryUri(GetFileCallback callback, base::FilePath child_path);
+  void DidGetFileQueryUri(const std::string& basename,
+                          GetFileCallback callback,
+                          base::FilePath child_path);
 #endif
-  void DidGetFile(storage::FileSystemURL child_url,
+  void DidGetFile(const std::string& basename,
+                  storage::FileSystemURL child_url,
                   GetFileCallback callback,
                   base::File::Error result);
 #if BUILDFLAG(IS_ANDROID)

@@ -183,6 +183,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>
   CreateFileHandle(const BindingContext& binding_context,
                    const storage::FileSystemURL& url,
+                   const std::string& display_name,
                    const SharedHandleState& handle_state);
 
   // Creates a new FileSystemAccessDirectoryHandleImpl for a given url. Assumes
@@ -535,6 +536,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void CreateTransferTokenImpl(
       const storage::FileSystemURL& url,
       const blink::StorageKey& storage_key,
+      const std::string& display_name,
       const SharedHandleState& handle_state,
       FileSystemAccessPermissionContext::HandleType handle_type,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
@@ -560,6 +562,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void DidGetSandboxedBucketForDeserializeHandle(
       const FileSystemAccessHandleData& data,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token,
+      const std::string& display_name,
       const storage::FileSystemURL& url);
 
   // FileSystemAccessFileModificationHosts may reserve too much capacity
