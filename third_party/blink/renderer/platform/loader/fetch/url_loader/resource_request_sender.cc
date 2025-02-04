@@ -535,7 +535,7 @@ void ResourceRequestSender::OnReceivedRedirect(
   CHECK(request_info_->url_loader);
 
   if (code_cache_fetcher_) {
-    code_cache_fetcher_->SetCurrentUrl(KURL(redirect_info.new_url));
+    code_cache_fetcher_->OnReceivedRedirect(KURL(redirect_info.new_url));
   }
 
   request_info_->local_response_start = redirect_ipc_arrival_time;
@@ -716,13 +716,13 @@ void ResourceRequestSender::DidReceiveCachedCode() {
 }
 
 bool ResourceRequestSender::ShouldDeferTask() const {
-  return (code_cache_fetcher_ && code_cache_fetcher_->is_waiting()) ||
+  return (code_cache_fetcher_ && code_cache_fetcher_->IsWaiting()) ||
          !pending_tasks_.empty();
 }
 
 void ResourceRequestSender::MaybeRunPendingTasks() {
   if (!request_info_ ||
-      (code_cache_fetcher_ && code_cache_fetcher_->is_waiting()) ||
+      (code_cache_fetcher_ && code_cache_fetcher_->IsWaiting()) ||
       (request_info_->freeze_mode != LoaderFreezeMode::kNone)) {
     return;
   }

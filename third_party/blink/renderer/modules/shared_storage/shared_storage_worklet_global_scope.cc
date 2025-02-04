@@ -1090,7 +1090,7 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   module_script_downloader_.reset();
 
   // If we haven't received the code cache data, defer handing the response.
-  if (code_cache_fetcher_ && code_cache_fetcher_->is_waiting()) {
+  if (code_cache_fetcher_ && code_cache_fetcher_->IsWaiting()) {
     handle_script_download_response_after_code_cache_response_ = WTF::BindOnce(
         &SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
         WrapPersistent(this), script_source_url, std::move(callback),
