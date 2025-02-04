@@ -497,9 +497,6 @@ class CORE_EXPORT LocalFrameView final
 
   void AddAnimatingScrollableArea(PaintLayerScrollableArea*);
   void RemoveAnimatingScrollableArea(PaintLayerScrollableArea*);
-  const ScrollableAreaSet* AnimatingScrollableAreas() const {
-    return animating_scrollable_areas_.Get();
-  }
 
   // Used when UnifiedScrollableAreas is disabled.
   void AddUserScrollableArea(PaintLayerScrollableArea&);
@@ -1110,12 +1107,13 @@ class CORE_EXPORT LocalFrameView final
 
   // Scrollable areas which overflow in the block flow direction.
   // Needed for calculating scroll anchoring.
-  Member<ScrollableAreaSet> scroll_anchoring_scrollable_areas_;
-  Member<ScrollableAreaSet> animating_scrollable_areas_;
+  ScrollableAreaSet scroll_anchoring_scrollable_areas_;
+  ScrollableAreaSet animating_scrollable_areas_;
   // All scrollable areas in the frame's document,
   // or user-scrollable ones if UnifiedScrollableAreas is disabled.
   ScrollableAreaMap scrollable_areas_;
   ScrollableAreaSet scrollable_areas_with_scroll_node_;
+
   BoxModelObjectSet background_attachment_fixed_objects_;
   Member<FrameViewAutoSizeInfo> auto_size_info_;
 
