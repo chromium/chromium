@@ -8,6 +8,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,6 +35,7 @@ using bookmarks::BookmarkNode;
 using bookmarks::test::AddNodesFromModelString;
 using bookmarks::test::ModelStringFromNode;
 using testing::_;
+using testing::InSequence;
 using testing::Mock;
 using testing::Pair;
 using testing::UnorderedElementsAre;
@@ -59,6 +61,16 @@ MATCHER_P(HasOrderedChildren, expected_children, "") {
   }
 
   return true;
+}
+
+MATCHER_P(HasParent, parent, "") {
+  const BookmarkNode* node = arg.as_non_permanent_folder();
+  if (!node) {
+    // `parent` can't be root.
+    return false;
+  }
+  CHECK(node->parent());
+  return BookmarkParentFolder::FromFolderNode(node->parent()) == parent;
 }
 
 base::Value::List ConstructManagedBookmarks(size_t managed_bookmarks_size) {
@@ -413,7 +425,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
                           "A1 A2 A3 ");
   AddNodesFromModelString(&model(), model().account_other_node(), "A4 A5 A6 ");
 
-  testing::InSequence s;
+  InSequence s;
   // Move from local bookmark bar to local other node.
   // Move node "2" in bookmark bar to be after "4" in other node.
   const BookmarkNode* node = model().bookmark_bar_node()->children()[1].get();
@@ -650,9 +662,31 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeData) {
   const BookmarkNode* node_to_copy =
       model().bookmark_bar_node()->children()[3].get();
   const bookmarks::BookmarkNodeData::Element node_data(node_to_copy);
-  const BookmarkNode* destination = model().other_node()->children()[3].get();
-  service().AddNodesAsCopiesOfNodeData(
-      {node_data}, BookmarkParentFolder::FromFolderNode(destination), 1);
+  const BookmarkParentFolder destination = BookmarkParentFolder::FromFolderNode(
+      model().other_node()->children()[3].get());
+
+  // Register second observer.
+  MockBookmarkMergedSurfaceServiceObserver mock_service_observer2;
+  base::ScopedObservation<BookmarkMergedSurfaceService,
+                          BookmarkMergedSurfaceServiceObserver>
+      obs2_{&mock_service_observer2};
+  obs2_.Observe(&service());
+
+  InSequence sequence;
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(destination, 1u));
+  EXPECT_CALL(mock_service_observer2, BookmarkNodeAdded(destination, 1u));
+
+  EXPECT_CALL(mock_service_observer(),
+              BookmarkNodeAdded(HasParent(destination), 0u));
+  EXPECT_CALL(mock_service_observer2,
+              BookmarkNodeAdded(HasParent(destination), 0u));
+
+  EXPECT_CALL(mock_service_observer(),
+              BookmarkNodeAdded(HasParent(destination), 1u));
+  EXPECT_CALL(mock_service_observer2,
+              BookmarkNodeAdded(HasParent(destination), 1u));
+
+  service().AddNodesAsCopiesOfNodeData({node_data}, destination, 1);
 
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
             "1 2 3 f1:[ 4 5 ] ");
@@ -673,9 +707,14 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataMultipleNodes) {
   nodes_data.emplace_back(n1);
   nodes_data.emplace_back(n2);
 
-  const BookmarkNode* destination = model().other_node()->children()[3].get();
-  service().AddNodesAsCopiesOfNodeData(
-      nodes_data, BookmarkParentFolder::FromFolderNode(destination), 0);
+  const BookmarkParentFolder destination = BookmarkParentFolder::FromFolderNode(
+      model().other_node()->children()[3].get());
+
+  InSequence sequence;
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(destination, 0u));
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(destination, 1u));
+
+  service().AddNodesAsCopiesOfNodeData(nodes_data, destination, 0);
 
   EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
             "1 2 3 f1:[ 4 5 ] ");
@@ -685,38 +724,120 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataMultipleNodes) {
 TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeToPermanentFolder) {
   CreateBookmarkMergedSurfaceService();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
-  AddNodesFromModelString(&model(), model().other_node(), "6 7 8 f2:[ 9 ] ");
+  AddNodesFromModelString(&model(), model().other_node(),
+                          "6 7 8 f2:[ 9 f3:[ 1 ] 2 ] ");
 
   // Copy node "7" and "8" to bookmark bar.
-  const BookmarkNode* n1 = model().other_node()->children()[1].get();
-  const BookmarkNode* n2 = model().other_node()->children()[2].get();
   std::vector<bookmarks::BookmarkNodeData::Element> nodes_data;
-  nodes_data.emplace_back(n1);
-  nodes_data.emplace_back(n2);
-
+  nodes_data.emplace_back(model().other_node()->children()[1].get());
+  nodes_data.emplace_back(model().other_node()->children()[2].get());
   const BookmarkParentFolder bb_folder(
       BookmarkParentFolder::BookmarkBarFolder());
-  service().AddNodesAsCopiesOfNodeData(nodes_data, bb_folder, 1);
 
-  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "1 7 8 2 3 ");
-  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 1),
-            model().bookmark_bar_node()->children()[1].get());
-  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 2),
-            model().bookmark_bar_node()->children()[2].get());
+  {
+    InSequence sequence;
+    EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(bb_folder, 1u));
+    EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(bb_folder, 2u));
+
+    service().AddNodesAsCopiesOfNodeData(nodes_data, bb_folder, 1);
+
+    EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "1 7 8 2 3 ");
+    EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 1),
+              model().bookmark_bar_node()->children()[1].get());
+    EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 2),
+              model().bookmark_bar_node()->children()[2].get());
+  }
 
   // New nodes are added to the account node.
   model().CreateAccountPermanentFolders();
+  // Copy node "6" and "F2" to bookmark bar.
   nodes_data.clear();
   nodes_data.emplace_back(model().other_node()->children()[0].get());
   nodes_data.emplace_back(model().other_node()->children()[3].get());
-  // Copy node "6" and "F2" to bookmark bar.
-  service().AddNodesAsCopiesOfNodeData(nodes_data, bb_folder, 2);
-  EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
-            "6 f2:[ 9 ] ");
-  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 2),
-            model().account_bookmark_bar_node()->children()[0].get());
-  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 3),
-            model().account_bookmark_bar_node()->children()[1].get());
+  {
+    InSequence sequence;
+    // Register second observer.
+    MockBookmarkMergedSurfaceServiceObserver mock_service_observer2;
+    base::ScopedObservation<BookmarkMergedSurfaceService,
+                            BookmarkMergedSurfaceServiceObserver>
+        obs2_{&mock_service_observer2};
+    obs2_.Observe(&service());
+
+    EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(bb_folder, 2u));
+    EXPECT_CALL(mock_service_observer2, BookmarkNodeAdded(bb_folder, 2u));
+
+    EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(bb_folder, 3u));
+    EXPECT_CALL(mock_service_observer2, BookmarkNodeAdded(bb_folder, 3u));
+
+    EXPECT_CALL(mock_service_observer(),
+                BookmarkNodeAdded(HasParent(bb_folder), 0u));
+    EXPECT_CALL(mock_service_observer2,
+                BookmarkNodeAdded(HasParent(bb_folder), 0u));
+
+    EXPECT_CALL(mock_service_observer(),
+                BookmarkNodeAdded(HasParent(bb_folder), 1u));
+    EXPECT_CALL(mock_service_observer2,
+                BookmarkNodeAdded(HasParent(bb_folder), 1u));
+
+    BookmarkParentFolder obs1_expected_f3 = bb_folder;
+    BookmarkParentFolder obs2_expected_f3 = bb_folder;
+    EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(_, 0u))
+        .WillOnce(testing::SaveArg<0>(&obs1_expected_f3));
+    EXPECT_CALL(mock_service_observer2, BookmarkNodeAdded(_, 0u))
+        .WillOnce(testing::SaveArg<0>(&obs2_expected_f3));
+
+    EXPECT_CALL(mock_service_observer(),
+                BookmarkNodeAdded(HasParent(bb_folder), 2u));
+    EXPECT_CALL(mock_service_observer2,
+                BookmarkNodeAdded(HasParent(bb_folder), 2u));
+
+    service().AddNodesAsCopiesOfNodeData(nodes_data, bb_folder, 2);
+
+    EXPECT_EQ(ModelStringFromNode(model().account_bookmark_bar_node()),
+              "6 f2:[ 9 f3:[ 1 ] 2 ] ");
+    EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 2),
+              model().account_bookmark_bar_node()->children()[0].get());
+    EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 3),
+              model().account_bookmark_bar_node()->children()[1].get());
+    EXPECT_EQ(obs1_expected_f3.as_non_permanent_folder(),
+              model()
+                  .account_bookmark_bar_node()
+                  ->children()[1]
+                  ->children()[1]
+                  .get());
+    EXPECT_EQ(obs1_expected_f3, obs2_expected_f3);
+  }
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest, ScopedAddNewNodesReset) {
+  CreateBookmarkMergedSurfaceService();
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
+  AddNodesFromModelString(&model(), model().other_node(), "6 7 8 f2:[ 9 ] ");
+
+  // Copy node "7" to bookmark bar.
+  bookmarks::BookmarkNodeData::Element node_data(
+      model().other_node()->children()[1].get());
+  const BookmarkParentFolder bb_folder(
+      BookmarkParentFolder::BookmarkBarFolder());
+  InSequence sequence;
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(bb_folder, 1u));
+  service().AddNodesAsCopiesOfNodeData({node_data}, bb_folder, 1);
+
+  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "1 7 2 3 ");
+  EXPECT_EQ(service().GetNodeAtIndex(bb_folder, 1),
+            model().bookmark_bar_node()->children()[1].get());
+
+  // Copy node "1" to "f2".
+  const BookmarkNode* node_to_copy =
+      model().bookmark_bar_node()->children()[0].get();
+  const BookmarkParentFolder destination = BookmarkParentFolder::FromFolderNode(
+      model().other_node()->children()[3].get());
+
+  EXPECT_CALL(mock_service_observer(), BookmarkNodeAdded(destination, 1u));
+
+  service().AddNodesAsCopiesOfNodeData(
+      {bookmarks::BookmarkNodeData::Element(node_to_copy)}, destination, 1);
+  EXPECT_EQ(ModelStringFromNode(model().other_node()), "6 7 8 f2:[ 9 1 ] ");
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest,

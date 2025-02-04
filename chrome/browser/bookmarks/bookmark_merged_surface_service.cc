@@ -340,12 +340,44 @@ void BookmarkMergedSurfaceService::AddNodesAsCopiesOfNodeData(
     size_t index) {
   CHECK(!IsParentFolderManaged(new_parent));
   if (new_parent.as_permanent_folder()) {
+    CHECK(!scoped_add_new_nodes_);
+    base::AutoReset<bool> adding_new_nodes(&scoped_add_new_nodes_, true);
     GetPermanentFolderOrderingTracker(*new_parent.as_permanent_folder())
         .AddNodesAsCopiesOfNodeData(elements, index);
-  } else {
-    bookmarks::CloneBookmarkNode(model_, elements,
-                                 new_parent.as_non_permanent_folder(), index,
-                                 /*reset_node_times=*/true);
+    CHECK_GE(GetChildrenCount(new_parent), index + elements.size());
+
+    // Notify after
+    // `PermanentFolderOrderingTracker::AddNodesAsCopiesOfNodeData()` has
+    // completed to ensure the correctness of the index.
+    for (size_t i = index; i < index + elements.size(); i++) {
+      for (auto& observer : observers_) {
+        observer.BookmarkNodeAdded(new_parent, i);
+      }
+      NotifyBookmarkNodeAddedForAllDescendants(GetNodeAtIndex(new_parent, i));
+    }
+    return;
+  }
+  // Add new nodes to non-permanent folder.
+  // `CloneBookmarkNode` will trigger `BookmarkNodeAdded()` which will notify
+  // the observers of this class with the new nodes.
+  bookmarks::CloneBookmarkNode(model_, elements,
+                               new_parent.as_non_permanent_folder(), index,
+                               /*reset_node_times=*/true);
+}
+
+void BookmarkMergedSurfaceService::NotifyBookmarkNodeAddedForAllDescendants(
+    const BookmarkNode* node) {
+  if (node->children().empty()) {
+    return;
+  }
+
+  CHECK(node->is_folder());
+  BookmarkParentFolder parent(BookmarkParentFolder::FromFolderNode(node));
+  for (size_t i = 0; i < node->children().size(); i++) {
+    for (auto& observer : observers_) {
+      observer.BookmarkNodeAdded(parent, i);
+    }
+    NotifyBookmarkNodeAddedForAllDescendants(node->children()[i].get());
   }
 }
 
@@ -475,6 +507,13 @@ void BookmarkMergedSurfaceService::BookmarkNodeAdded(
   if (parent->is_root()) {
     // Observers will be notified for the child nodes. Account nodes are
     // invisible to merged surfaces, as they rely on the `BookmarkParentFolder`.
+    return;
+  }
+
+  if (scoped_add_new_nodes_) {
+    // Nodes are being added to a permanent folder through
+    // `AddNodesAsCopiesOfNodeData()` which will notify the observers of this
+    // class with the new nodes.
     return;
   }
 

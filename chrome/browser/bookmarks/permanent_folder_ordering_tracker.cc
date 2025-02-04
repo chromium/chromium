@@ -191,14 +191,15 @@ void PermanentFolderOrderingTracker::AddNodesAsCopiesOfNodeData(
   // Check if moving the new nodes is required to satisfy the `index` provided.
   const BookmarkNode* new_node = parent->children()[in_storage_index].get();
   CHECK_EQ(new_node->parent()->type(), tracked_type_);
-  const size_t current_start_index = GetIndexOf(new_node);
-  if (current_start_index == index) {
+  CHECK_LT(index, GetChildrenCount());
+  if (GetNodeAtIndex(index) == new_node) {
     return;
   }
 
-  // If the ordering is not tracked, the `current_start_index` must be equal to
-  // `index`.
+  // If the ordering is not tracked, the node at `index` must be equal to
+  // `new_node`.
   CHECK(ShouldTrackOrdering());
+  const size_t current_start_index = GetIndexOf(new_node);
   CHECK_GE(ordering_.size(), current_start_index + elements_size);
   std::vector<const BookmarkNode*> new_nodes(
       ordering_.cbegin() + current_start_index,
