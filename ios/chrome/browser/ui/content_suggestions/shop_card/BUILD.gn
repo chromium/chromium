@@ -1,0 +1,20 @@
+source_set("shop_card") {
+  sources = [
+    "shop_card_item.h",
+    "shop_card_item.mm",
+  ]
+  deps = [
+    ":shop_card_data",
+    "//base:base",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+  ]
+}
+
+source_set("shop_card_data") {
+  sources = [
+    "shop_card_data.h",
+    "shop_card_data.mm",
+  ]
+  deps = []
+}

@@ -197,6 +197,7 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kPlaceholder:
+    case ContentSuggestionsModuleType::kShopCard:
       // Ephemeral Card
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
     case ContentSuggestionsModuleType::kSendTabPromo:

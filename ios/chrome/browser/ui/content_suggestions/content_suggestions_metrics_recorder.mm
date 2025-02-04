@@ -106,6 +106,11 @@ const float kMaxModuleEngagementIndex = 50;
       UMA_HISTOGRAM_EXACT_LINEAR(kMagicStackModuleEngagementTipsIndexHistogram,
                                  index, kMaxModuleEngagementIndex);
       break;
+    case ContentSuggestionsModuleType::kShopCard:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementShopCardIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kInvalid:
       break;

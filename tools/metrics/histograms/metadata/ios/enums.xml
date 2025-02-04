@@ -546,6 +546,7 @@ the generic promo launch. -->
   <int value="16" label="Tips (with Product Image)"/>
   <int value="17" label="Tips"/>
   <int value="18" label="Send Tab to Self Promo"/>
+  <int value="21" label="ShopCard"/>
 </enum>
 
 <enum name="IOSMiniMapConsentOutcome">
