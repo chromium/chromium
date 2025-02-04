@@ -155,6 +155,11 @@ void SessionAuthzAuthenticator::SetSessionIdForTesting(
   session_id_ = session_id;
 }
 
+void SessionAuthzAuthenticator::SetHostTokenForTesting(
+    std::string_view host_token) {
+  host_token_ = host_token;
+}
+
 void SessionAuthzAuthenticator::GenerateHostToken(
     base::OnceClosure resume_callback) {
   session_authz_state_ = SessionAuthzState::GENERATING_HOST_TOKEN;
