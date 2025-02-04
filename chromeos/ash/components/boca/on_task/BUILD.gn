@@ -46,10 +46,20 @@ static_library("activity") {
     "activity/active_tab_tracker.cc",
     "activity/active_tab_tracker.h",
   ]
+
   deps = [
     "//base",
     "//chromeos/ash/components/boca",
   ]
+}
+
+static_library("util") {
+  sources = [
+    "util/mock_clock.cc",
+    "util/mock_clock.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
