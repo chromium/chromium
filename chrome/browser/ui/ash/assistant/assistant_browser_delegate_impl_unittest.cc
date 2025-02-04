@@ -76,6 +76,11 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
             std::make_unique<web_app::FakeWebAppDatabaseFactory>());
   }
 
+  void TearDown() override {
+    delegate_.reset();
+    ChromeAshTestBase::TearDown();
+  }
+
  protected:
   Profile* profile() const { return profile_.get(); }
 

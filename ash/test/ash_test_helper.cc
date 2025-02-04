@@ -165,10 +165,12 @@ AshTestHelper::~AshTestHelper() {
 
   SimpleGeolocationProvider::DestroyForTesting();
 
-  // Ensure the next test starts with a null display::Screen.  This must be done
-  // here instead of in TearDown() since some tests test access to the Screen
-  // after the shell shuts down (which they use TearDown() to trigger).
-  ScreenAsh::DeleteScreenForShutdown();
+  if (destroy_screen_) {
+    // Ensure the next test starts with a null display::Screen.  This must be
+    // done here instead of in TearDown() since some tests test access to the
+    // Screen after the shell shuts down (which they use TearDown() to trigger).
+    ScreenAsh::DeleteScreenForShutdown();
+  }
 
   // This should never have a meaningful effect, since either there is no
   // ViewsTestHelperAura instance or the instance is currently in its
@@ -285,6 +287,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   create_global_cras_audio_handler_ =
       init_params.create_global_cras_audio_handler;
   create_quick_pair_mediator_ = init_params.create_quick_pair_mediator;
+  destroy_screen_ = init_params.destroy_screen;
 
   if (create_global_cras_audio_handler_) {
     // Create `CrasAudioHandler` for testing since `g_browser_process` is not

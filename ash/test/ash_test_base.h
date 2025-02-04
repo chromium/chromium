@@ -254,6 +254,9 @@ class AshTestBase : public testing::Test {
       std::list<base::OnceClosure>* tasks,
       bool is_touch);
 
+  // Called when AshTestHelper will be soon destroyed.
+  virtual void OnHelperWillBeDestroyed() {}
+
  protected:
   enum UserSessionBlockReason {
     FIRST_BLOCK_REASON,
