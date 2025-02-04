@@ -113,14 +113,15 @@ SkAlphaType GPUCanvasContext::GetAlphaType() const {
 }
 
 SkColorType GPUCanvasContext::GetSkColorType() const {
-  if (!swap_buffers_) {
-    return kN32_SkColorType;
-  }
-  return viz::ToClosestSkColorType(swap_buffers_->Format());
+  return viz::ToClosestSkColorType(GetSharedImageFormat());
 }
 
 viz::SharedImageFormat GPUCanvasContext::GetSharedImageFormat() const {
-  return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
+  if (!swap_buffers_) {
+    return GetN32FormatForCanvas();
+    ;
+  }
+  return swap_buffers_->Format();
 }
 
 gfx::ColorSpace GPUCanvasContext::GetColorSpace() const {
