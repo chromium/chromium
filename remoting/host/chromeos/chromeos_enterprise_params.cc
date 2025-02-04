@@ -4,6 +4,8 @@
 
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 
+#include "base/json/values_util.h"
+
 namespace remoting {
 
 namespace {
@@ -15,7 +17,8 @@ constexpr char kAllowTroubleshootingTools[] = "allowTroubleshootingTools";
 constexpr char kShowTroubleshootingTools[] = "showTroubleshootingTools";
 constexpr char kAllowReconnections[] = "allowReconnections";
 constexpr char kAllowFileTransfer[] = "allowFileTransfer";
-// TODO: joedow - Add new enterprise values here.
+constexpr char kConnectionDialogRequired[] = "connectionDialogRequired";
+constexpr char kConnectionAutoAcceptTimeout[] = "connectionAutoAcceptTimeout";
 }  // namespace
 
 ChromeOsEnterpriseParams::ChromeOsEnterpriseParams() = default;
@@ -47,7 +50,11 @@ ChromeOsEnterpriseParams ChromeOsEnterpriseParams::FromDict(
       dict.FindBool(kAllowReconnections).value_or(false);
   params.allow_file_transfer =
       dict.FindBool(kAllowFileTransfer).value_or(false);
-  // TODO: joedow - Add new enterprise values here.
+  params.connection_dialog_required =
+      dict.FindBool(kConnectionDialogRequired).value_or(false);
+  params.connection_auto_accept_timeout =
+      base::ValueToTimeDelta(dict.Find(kConnectionAutoAcceptTimeout))
+          .value_or(base::TimeDelta());
   return params;
 }
 
@@ -60,8 +67,10 @@ base::Value::Dict ChromeOsEnterpriseParams::ToDict() const {
       .Set(kShowTroubleshootingTools, show_troubleshooting_tools)
       .Set(kAllowTroubleshootingTools, allow_troubleshooting_tools)
       .Set(kAllowReconnections, allow_reconnections)
-      .Set(kAllowFileTransfer, allow_file_transfer);
-  // TODO: joedow - Add new enterprise values here.
+      .Set(kAllowFileTransfer, allow_file_transfer)
+      .Set(kConnectionDialogRequired, connection_dialog_required)
+      .Set(kConnectionAutoAcceptTimeout,
+           base::TimeDeltaToValue(connection_auto_accept_timeout));
 }
 
 }  // namespace remoting
