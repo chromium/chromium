@@ -448,17 +448,19 @@ class ExtensionPrefs : public KeyedService {
   // like Sync where unknown reasons can be synced from newer versions of the
   // browser to older versions. Most code should use the above methods. We want
   // to limit the use of the methods below, so they are guarded by a passkey.
-  base::flat_set<int> GetDisableReasons(DisableReasonRawManipulationPasskey,
-                                        const ExtensionId& extension_id) const;
-  void ReplaceDisableReasons(DisableReasonRawManipulationPasskey,
-                             const ExtensionId& extension_id,
-                             const base::flat_set<int>& disable_reasons);
-  void AddDisableReasons(DisableReasonRawManipulationPasskey,
-                         const ExtensionId& extension_id,
-                         const base::flat_set<int>& disable_reasons);
-  void SetExtensionDisabled(DisableReasonRawManipulationPasskey,
+  base::flat_set<int> GetRawDisableReasons(
+      DisableReasonRawManipulationPasskey,
+      const ExtensionId& extension_id) const;
+  void ReplaceRawDisableReasons(DisableReasonRawManipulationPasskey,
+                                const ExtensionId& extension_id,
+                                const base::flat_set<int>& disable_reasons);
+  void AddRawDisableReasons(DisableReasonRawManipulationPasskey,
                             const ExtensionId& extension_id,
                             const base::flat_set<int>& disable_reasons);
+  void SetExtensionDisabledWithRawReasons(
+      DisableReasonRawManipulationPasskey,
+      const ExtensionId& extension_id,
+      const base::flat_set<int>& disable_reasons);
 
   // Clears disable reasons that do not apply to component extensions.
   void ClearInapplicableDisableReasonsForComponentExtension(

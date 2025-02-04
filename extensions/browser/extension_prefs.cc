@@ -975,7 +975,7 @@ DisableReasonSet ExtensionPrefs::GetDisableReasons(
   return ReadDisableReasonsFromPrefs(extension_id);
 }
 
-base::flat_set<int> ExtensionPrefs::GetDisableReasons(
+base::flat_set<int> ExtensionPrefs::GetRawDisableReasons(
     DisableReasonRawManipulationPasskey,
     const ExtensionId& extension_id) const {
   return ReadDisableReasonsFromPrefs(extension_id);
@@ -1007,10 +1007,10 @@ void ExtensionPrefs::AddDisableReasons(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
   auto passkey = DisableReasonRawManipulationPasskey();
-  AddDisableReasons(passkey, extension_id, disable_reasons);
+  AddRawDisableReasons(passkey, extension_id, disable_reasons);
 }
 
-void ExtensionPrefs::AddDisableReasons(
+void ExtensionPrefs::AddRawDisableReasons(
     DisableReasonRawManipulationPasskey,
     const ExtensionId& extension_id,
     const base::flat_set<int>& incoming_reasons) {
@@ -1056,10 +1056,10 @@ void ExtensionPrefs::ReplaceDisableReasons(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
   auto passkey = DisableReasonRawManipulationPasskey();
-  ReplaceDisableReasons(passkey, extension_id, disable_reasons);
+  ReplaceRawDisableReasons(passkey, extension_id, disable_reasons);
 }
 
-void ExtensionPrefs::ReplaceDisableReasons(
+void ExtensionPrefs::ReplaceRawDisableReasons(
     DisableReasonRawManipulationPasskey,
     const ExtensionId& extension_id,
     const base::flat_set<int>& disable_reasons) {
@@ -1448,10 +1448,10 @@ void ExtensionPrefs::SetExtensionDisabled(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
   auto passkey = DisableReasonRawManipulationPasskey();
-  SetExtensionDisabled(passkey, extension_id, disable_reasons);
+  SetExtensionDisabledWithRawReasons(passkey, extension_id, disable_reasons);
 }
 
-void ExtensionPrefs::SetExtensionDisabled(
+void ExtensionPrefs::SetExtensionDisabledWithRawReasons(
     DisableReasonRawManipulationPasskey,
     const ExtensionId& extension_id,
     const base::flat_set<int>& disable_reasons) {

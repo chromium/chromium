@@ -1388,22 +1388,22 @@ TEST_F(ExtensionPrefsSimpleTest, DisableReasonsRawManipulation) {
   constexpr int kKnownReason_2 = disable_reason::DISABLE_PERMISSIONS_INCREASE;
 
   // Disable the extension with known and unknown reasons.
-  extension_prefs->SetExtensionDisabled(passkey, extension_id,
-                                        {kKnownReason_1, kUnknownReason_1});
-  EXPECT_THAT(extension_prefs->GetDisableReasons(passkey, extension_id),
+  extension_prefs->SetExtensionDisabledWithRawReasons(
+      passkey, extension_id, {kKnownReason_1, kUnknownReason_1});
+  EXPECT_THAT(extension_prefs->GetRawDisableReasons(passkey, extension_id),
               testing::UnorderedElementsAre(kKnownReason_1, kUnknownReason_1));
 
   // Add one known and one unknown reason.
-  extension_prefs->AddDisableReasons(passkey, extension_id,
-                                     {kKnownReason_2, kUnknownReason_2});
-  EXPECT_THAT(extension_prefs->GetDisableReasons(passkey, extension_id),
+  extension_prefs->AddRawDisableReasons(passkey, extension_id,
+                                        {kKnownReason_2, kUnknownReason_2});
+  EXPECT_THAT(extension_prefs->GetRawDisableReasons(passkey, extension_id),
               testing::UnorderedElementsAre(kKnownReason_1, kUnknownReason_1,
                                             kKnownReason_2, kUnknownReason_2));
 
   // Try replacing the disable reason set.
-  extension_prefs->ReplaceDisableReasons(passkey, extension_id,
-                                         {kUnknownReason_3, kKnownReason_1});
-  EXPECT_THAT(extension_prefs->GetDisableReasons(passkey, extension_id),
+  extension_prefs->ReplaceRawDisableReasons(passkey, extension_id,
+                                            {kUnknownReason_3, kKnownReason_1});
+  EXPECT_THAT(extension_prefs->GetRawDisableReasons(passkey, extension_id),
               testing::UnorderedElementsAre(kUnknownReason_3, kKnownReason_1));
 }
 

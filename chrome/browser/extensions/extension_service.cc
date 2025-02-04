@@ -900,13 +900,14 @@ void ExtensionService::DisableExtension(
   extension_registrar_.DisableExtension(extension_id, disable_reasons);
 }
 
-void ExtensionService::DisableExtension(
+void ExtensionService::DisableExtensionWithRawReasons(
     ExtensionPrefs::DisableReasonRawManipulationPasskey,
     const ExtensionId& extension_id,
     const base::flat_set<int>& disable_reasons) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
-  extension_registrar_.DisableExtension(passkey, extension_id, disable_reasons);
+  extension_registrar_.DisableExtensionWithRawReasons(passkey, extension_id,
+                                                      disable_reasons);
 }
 
 void ExtensionService::DisableExtensionWithSource(

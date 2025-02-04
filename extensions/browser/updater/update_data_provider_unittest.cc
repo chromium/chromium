@@ -150,7 +150,7 @@ class UpdateDataProviderTest : public ExtensionsTest {
         // tests pass unknown reasons in the `disable_reasons` set.
         ExtensionPrefs::DisableReasonRawManipulationPasskey passkey;
         ExtensionPrefs::Get(browser_context())
-            ->AddDisableReasons(passkey, extension_id, disable_reasons);
+            ->AddRawDisableReasons(passkey, extension_id, disable_reasons);
       }
     }
 
