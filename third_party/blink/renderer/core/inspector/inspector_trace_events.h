@@ -214,10 +214,6 @@ void Data(perfetto::TracedValue context,
           const StyleChangeReasonForTracing&);
 }
 
-namespace inspector_style_resolver_resolve_style_event {
-void Data(perfetto::TracedValue context, Element*, PseudoId);
-}
-
 String DescendantInvalidationSetToIdString(const InvalidationSet&);
 
 namespace inspector_style_invalidator_invalidate_event {

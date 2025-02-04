@@ -733,18 +733,6 @@ void inspector_style_recalc_invalidation_tracking_event::Data(
     dict.Add("stackTrace", source_location);
 }
 
-void inspector_style_resolver_resolve_style_event::Data(
-    perfetto::TracedValue context,
-    Element* element,
-    PseudoId pseudo_id) {
-  auto dict = std::move(context).WriteDictionary();
-  dict.Add("nodeId", IdentifiersFactory::IntIdForNode(element));
-  Element* parent = element->parentElement();
-  dict.Add("parentNodeId",
-           parent != nullptr ? IdentifiersFactory::IntIdForNode(parent) : 0);
-  dict.Add("pseudoId", pseudo_id);
-}
-
 void inspector_layout_event::BeginData(perfetto::TracedValue context,
                                        LocalFrameView* frame_view) {
   bool is_partial;
