@@ -23,7 +23,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_message_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
 #include "media/audio/audio_device_name.h"
@@ -596,7 +595,7 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
 
 #if BUILDFLAG(IS_MAC)
   CreateAudioManagerForTesting<AudioManagerMac>();
-#elif BUILDFLAG(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(USE_CRAS) && BUILDFLAG(IS_CHROMEOS)
   CreateAudioManagerForTesting<AudioManagerCras>();
 #endif
 

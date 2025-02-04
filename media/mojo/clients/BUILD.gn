@@ -94,7 +94,6 @@ source_set("clients") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//media/gpu",
     "//media/mojo/common",
     "//services/service_manager/public/cpp",

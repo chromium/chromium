@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//media/media_options.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -143,7 +142,6 @@ source_set("audio") {
     "//base",
     "//build:android_buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//media/base",
     "//third_party/flac",
     "//third_party/opus:opus",
@@ -394,7 +392,6 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
 
     # Do not add any other //media deps except this; it will automatically pull
     # a dep on //media which is required to ensure test_support targets all use
@@ -439,7 +436,6 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -478,7 +474,7 @@ source_set("unit_tests") {
     weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 13.0
   }
 
-  if (is_chromeos_ash || is_castos || is_cast_android) {
+  if (is_chromeos || is_castos || is_cast_android) {
     sources += [
       "flac_audio_handler_unittest.cc",
       "test_data.h",

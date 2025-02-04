@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 
 declare_args() {
@@ -11,23 +10,20 @@ declare_args() {
 
   # Indicates if Video4Linux2 codec is used. This is used for all CrOS
   # platforms which have v4l2 hardware encoder / decoder.
-  use_v4l2_codec =
-      is_chromeos_lacros && (target_cpu == "arm" || target_cpu == "arm64")
+  use_v4l2_codec = false
 
   # Indicates if VA-API-based hardware acceleration is to be used. This
   # is typically the case on x86-based ChromeOS devices.
   # VA-API should also be compiled by default on x11/wayland linux devices
   # using x86/x64.
-  use_vaapi = (is_chromeos_lacros ||
-               (is_linux && !is_castos &&
-                (ozone_platform_x11 || ozone_platform_wayland))) &&
+  use_vaapi = is_linux && !is_castos &&
+              (ozone_platform_x11 || ozone_platform_wayland) &&
               (target_cpu == "x86" || target_cpu == "x64")
 
   # Indicates if ChromeOS protected media support exists. This is used
   # to enable the CDM daemon in Chrome OS as well as support for
-  # encrypted content with HW video decoders. This is always enabled for Lacros
-  # because it detects support at runtime.
-  use_chromeos_protected_media = is_chromeos_lacros
+  # encrypted content with HW video decoders.
+  use_chromeos_protected_media = false
 
   # Indicates if the ChromeOS protected media functionality should also be
   # utilized by HW video decoding for ARC.
@@ -59,5 +55,5 @@ if (use_chromeos_protected_av1) {
 declare_args() {
   # VA-API also allows decoding of images, but we don't want to use this
   # outside of chromeos, even if video decoding is enabled.
-  use_vaapi_image_codecs = use_vaapi && is_chromeos_ash
+  use_vaapi_image_codecs = use_vaapi && is_chromeos
 }

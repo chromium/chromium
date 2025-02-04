@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
@@ -110,7 +109,6 @@ source_set("common") {
   deps = [
     ":fourcc",
     "//base",
-    "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
     "//media",
@@ -264,7 +262,7 @@ source_set("unit_tests") {
     "video_decoder_pipeline_unittest.cc",
     "video_frame_resource_unittest.cc",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps +=
         [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
@@ -290,7 +288,6 @@ test("image_processor_test") {
   deps = [
     ":chromeos",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//media:test_support",
     "//media/gpu:buildflags",
     "//media/gpu:video_frame_mapper_common",

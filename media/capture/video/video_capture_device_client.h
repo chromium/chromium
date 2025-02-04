@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_collision_warner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "media/capture/video/video_capture_device.h"
@@ -99,7 +98,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient :
 #endif
     public VideoCaptureDevice::Client {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   VideoCaptureDeviceClient(
       std::unique_ptr<VideoFrameReceiver> receiver,
       scoped_refptr<VideoCaptureBufferPool> buffer_pool,
@@ -109,7 +108,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient :
       std::unique_ptr<VideoFrameReceiver> receiver,
       scoped_refptr<VideoCaptureBufferPool> buffer_pool,
       std::optional<VideoEffectsContext> video_effects_context);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   VideoCaptureDeviceClient(const VideoCaptureDeviceClient&) = delete;
   VideoCaptureDeviceClient& operator=(const VideoCaptureDeviceClient&) = delete;
@@ -222,11 +221,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient :
   const std::unique_ptr<VideoFrameReceiver> receiver_;
   std::vector<int> buffer_ids_known_by_receiver_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   VideoCaptureJpegDecoderFactoryCB optional_jpeg_decoder_factory_callback_;
   std::unique_ptr<VideoCaptureJpegDecoder> external_jpeg_decoder_;
   base::OnceClosure on_started_using_gpu_cb_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // The pool of shared-memory buffers used for capturing.
   const scoped_refptr<VideoCaptureBufferPool> buffer_pool_;

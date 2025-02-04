@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/logging.gni")
 import("//build/config/ui.gni")
@@ -390,7 +389,6 @@ source_set("common") {
   deps = [
     ":buildflags",
     "//base",
-    "//build:chromeos_buildflags",
     "//media",
     "//ui/gfx:buffer_types",
     "//ui/gfx:memory_buffer",
@@ -642,10 +640,7 @@ source_set("unit_tests") {
 
   if (use_av1_hw_decoder && media_use_ffmpeg) {
     sources += [ "av1_decoder_unittest.cc" ]
-    deps += [
-      "//build:chromeos_buildflags",
-      "//third_party/ffmpeg",
-    ]
+    deps += [ "//third_party/ffmpeg" ]
   }
 
   if (is_win) {

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
@@ -98,7 +97,6 @@ component("services") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//gpu/ipc/service",
     "//media",
     "//media:shared_memory_support",
@@ -205,7 +203,7 @@ component("services") {
     deps += [ "//ui/gfx/mojom:dxgi_info" ]
   }
 
-  if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {
+  if ((is_chromeos || is_linux) && (use_vaapi || use_v4l2_codec)) {
     sources += [
       "stable_video_decoder_factory_process_service.cc",
       "stable_video_decoder_factory_process_service.h",
@@ -321,13 +319,13 @@ source_set("unit_tests") {
     deps += [ "//third_party/widevine/cdm:headers" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//components/chromeos_camera:mjpeg_decode_accelerator_service_unittest",
     ]
   }
 
-  if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {
+  if ((is_chromeos || is_linux) && (use_vaapi || use_v4l2_codec)) {
     sources += [ "stable_video_decoder_service_unittest.cc" ]
     deps += [ "//gpu:test_support" ]
   }

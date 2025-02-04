@@ -18,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -194,7 +193,7 @@ void VaapiImageProcessorBackend::ProcessFrame(
   }
 
   bool use_protected = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   VAProtectedSessionID va_protected_session_id = VA_INVALID_ID;
   if (input_frame->metadata().hw_va_protected_session_id.has_value()) {
     static_assert(
@@ -208,7 +207,7 @@ void VaapiImageProcessorBackend::ProcessFrame(
         input_frame->metadata().hw_va_protected_session_id.value();
     use_protected = va_protected_session_id != VA_INVALID_ID;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (needs_context_ && !vaapi_wrapper_->CreateContext(gfx::Size())) {
     VLOGF(1) << "Failed to create context for VPP";
@@ -237,12 +236,12 @@ void VaapiImageProcessorBackend::ProcessFrame(
                                    dst_va_surface->id(), dst_va_surface->size(),
                                    input_frame->visible_rect(),
                                    output_frame->visible_rect()
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                                        ,
                                    va_protected_session_id
 #endif
                                    )) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (use_protected &&
         vaapi_wrapper_->IsProtectedSessionDead(va_protected_session_id)) {
       DCHECK_NE(va_protected_session_id, VA_INVALID_ID);
@@ -258,7 +257,7 @@ void VaapiImageProcessorBackend::ProcessFrame(
       std::move(cb).Run(std::move(output_frame));
       return;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     error_cb_.Run();
     return;
   }

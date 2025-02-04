@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/media_options.gni")
@@ -102,7 +101,6 @@ source_set("capture_device_specific") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//gpu/ipc/common:common",
     "//media",
@@ -156,7 +154,6 @@ component("capture_lib") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//media",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",
@@ -274,7 +271,7 @@ component("capture_lib") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "video/chromeos/camera_3a_controller.cc",
       "video/chromeos/camera_3a_controller.h",
@@ -425,7 +422,6 @@ source_set("test_support") {
   deps = [
     ":capture_lib",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common:common",
     "//media:test_support",
@@ -435,7 +431,7 @@ source_set("test_support") {
     "//ui/gfx:test_support",
   ]
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
       "video/linux/fake_device_provider.cc",
       "video/linux/fake_device_provider.h",
@@ -444,7 +440,7 @@ source_set("test_support") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "video/chromeos/mock_camera_module.cc",
       "video/chromeos/mock_camera_module.h",
@@ -489,7 +485,6 @@ test("capture_unittests") {
     ":capture",
     ":test_support",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/viz/test:test_support",
     "//gpu:test_support",
     "//gpu/command_buffer/client",
@@ -510,7 +505,7 @@ test("capture_unittests") {
     deps += [ "//components/viz/test:test_support" ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
       "video/linux/v4l2_capture_delegate_unittest.cc",
       "video/linux/video_capture_device_factory_v4l2_unittest.cc",
@@ -590,11 +585,11 @@ test("capture_unittests") {
   }
 
   # TODO(crbug.com/40115082): use is_linux.
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//media/gpu/test:local_gpu_memory_buffer_manager" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "video/chromeos/camera_3a_controller_unittest.cc",
       "video/chromeos/camera_device_delegate_unittest.cc",

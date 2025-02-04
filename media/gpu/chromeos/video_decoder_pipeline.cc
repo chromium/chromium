@@ -1182,14 +1182,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     main_frame_pool_.reset();
     return *viable_candidate;
   }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros should always use a PlatformVideoFramePool outside of tests (because
-  // it doesn't need to handle ARC++/ARCVM requests) with no custom allocator
-  // (because buffers are allocated with minigbm).
-  CHECK(!allocator.has_value());
-  CHECK(main_frame_pool_->AsPlatformVideoFramePool() ||
-        main_frame_pool_->IsFakeVideoFramePool());
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   // Ash Chrome can use any type of frame pool (because it may get requests from
   // ARC++/ARCVM) but never a custom allocator.
   CHECK(!allocator.has_value());
@@ -1256,9 +1249,8 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     // that callers of this method don't need to inspect GetGpuBufferLayout()
     // of this class' GetVideoFramePool().
 
-#if BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS_ASH)
-    // Linux and Lacros do not check the modifiers,
-    // since they do not set any.
+#if BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS)
+    // Linux does not check the modifiers since it does not set any.
     const GpuBufferLayout layout(std::move(status_or_layout).value());
     if (layout.modifier() == viable_candidate->modifier) {
       return *viable_candidate;
@@ -1275,7 +1267,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     }
 #else
     return *viable_candidate;
-#endif  // BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS)
   }
 
   // We haven't found a |viable_candidate|, and need to instantiate an

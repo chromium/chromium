@@ -38,7 +38,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/base/platform_features.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -419,7 +418,7 @@ TEST_F(VaapiTest, VbrAndCbrResolutionsMatch) {
 }
 
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Verifies that VAProfileProtected is indeed supported by the command line
 // vainfo utility.
 TEST_F(VaapiTest, VaapiProfileProtected) {
@@ -437,7 +436,7 @@ TEST_F(VaapiTest, VaapiProfileProtected) {
     EXPECT_EQ(impl, VAImplementation::kMesaGallium);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
 // Verifies that if JPEG decoding and encoding are supported by VaapiWrapper,
@@ -522,8 +521,8 @@ TEST_F(VaapiTest, TooManyDecoderInstances) {
 // Verifies that VaapiWrapper::Create...() fails when an EncryptionScheme is
 // specified for a non-protected CodecMode.
 TEST_F(VaapiTest, EncryptionSchemeNeedsCodecMode) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  GTEST_SKIP() << "This test only applies to Chrome Ash builds.";
+#if !BUILDFLAG(IS_CHROMEOS)
+  GTEST_SKIP() << "This test only applies to ChromeOS builds.";
 #else
   std::map<VAProfile, std::vector<VAEntrypoint>> configurations =
       VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(

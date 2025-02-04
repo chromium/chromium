@@ -34,14 +34,14 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // gn check does not account for BUILDFLAG(), so including these headers will
-// make gn check fail for builds other than ash-chrome. See gn help nogncheck
+// make gn check fail for builds other than ChromeOS. See gn help nogncheck
 // for more information.
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"  // nogncheck
 #include "media/gpu/chromeos/secure_buffer.pb.h"                  // nogncheck
 #include "third_party/cros_system_api/constants/cdm_oemcrypto.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace media {
 namespace {
@@ -82,7 +82,7 @@ std::string VectorToString(const std::vector<T>& vec) {
   return result.str();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 scoped_refptr<DecoderBuffer> DecryptBitstreamBuffer(
     BitstreamBuffer bitstream_buffer) {
   // Check to see if we have our secure buffer tag and then extract the
@@ -172,7 +172,7 @@ scoped_refptr<DecoderBuffer> DecryptBitstreamBuffer(
   }
   return buffer;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -269,11 +269,11 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
     client_ = client;
   }
   media::CdmContext* cdm_context = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   is_encrypted_ = config.is_encrypted();
   if (is_encrypted_)
     cdm_context = chromeos::ChromeOsCdmFactory::GetArcCdmContext();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   VideoDecoderConfig vd_config(
       VideoCodecProfileToVideoCodec(config.profile), config.profile,
       VideoDecoderConfig::AlphaMode::kIsOpaque, config.container_color_space,
@@ -302,7 +302,7 @@ void VdVideoDecodeAccelerator::OnInitializeDone(DecoderStatus status) {
 
 void VdVideoDecodeAccelerator::Decode(BitstreamBuffer bitstream_buffer) {
   const int32_t bitstream_id = bitstream_buffer.id();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (is_encrypted_) {
     scoped_refptr<DecoderBuffer> buffer =
         DecryptBitstreamBuffer(std::move(bitstream_buffer));
@@ -314,7 +314,7 @@ void VdVideoDecodeAccelerator::Decode(BitstreamBuffer bitstream_buffer) {
     Decode(std::move(buffer), bitstream_id);
     return;
   }
-#endif  // BUILFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILFLAG(IS_CHROMEOS)
   Decode(bitstream_buffer.ToDecoderBuffer(), bitstream_id);
 }
 

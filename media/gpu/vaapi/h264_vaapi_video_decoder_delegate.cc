@@ -44,7 +44,7 @@ constexpr std::array<uint8_t, 64> kZigzagScan8x8 = {
     58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63,
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 int GetSliceHeaderCounter() {
   // Needs to be static in case there are multiple active at once, in which case
   // they all need unique values.
@@ -57,7 +57,7 @@ int GetSliceHeaderCounter() {
 
 // This is the size of the data block which the AMD_SLICE_PARAMS is stored in.
 constexpr size_t kAmdEncryptedSliceHeaderSize = 1024;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // These structures match what AMD uses to pass back the extra slice header
 // parameters we need for CENCv1. This is stored in the first 1KB of the
 // encrypted subsample returned by the cdm-oemcrypto daemon on ChromeOS.
@@ -75,7 +75,7 @@ typedef struct AMD_SLICE_PARAMS {
 
 static_assert(sizeof(AMD_SLICE_PARAMS) <= kAmdEncryptedSliceHeaderSize,
               "Invalid size for AMD_SLICE_PARAMS");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 H264VaapiVideoDecoderDelegate::H264VaapiVideoDecoderDelegate(
     VaapiDecodeSurfaceHandler* const vaapi_dec,
@@ -135,9 +135,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
                "H264VaapiVideoDecoderDelegate::SubmitFrameMetadata");
   VAPictureParameterBufferH264 pic_param;
   memset(&pic_param, 0, sizeof(pic_param));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   memset(&crypto_params_, 0, sizeof(crypto_params_));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   full_sample_ = false;
 
 #define FROM_SPS_TO_PP(a) pic_param.a = sps->a
@@ -252,7 +252,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   DCHECK(!subsamples.empty());
   DCHECK(!data.empty());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto slice_param_buf = std::make_unique<VACencSliceParameterBufferH264>();
   // For AMD, we get the slice parameters as structures in the last encrypted
   // range.
@@ -431,7 +431,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   }
   slice_header_out->full_sample_encryption = true;
   return DecodeStatus::kOk;
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // BUILDFLAG(IS_CHROMEOS)
   return DecodeStatus::kFail;
 #endif
 }
@@ -461,7 +461,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
                : DecodeStatus::kFail;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (IsEncryptedSession()) {
     const ProtectedSessionState state = SetupDecryptDecode(
         /*full_sample=*/false, size, &crypto_params_, &encryption_segment_info_,
@@ -474,7 +474,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
       return DecodeStatus::kTryAgain;
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   VASliceParameterBufferH264 slice_param;
   memset(&slice_param, 0, sizeof(slice_param));
 
@@ -589,19 +589,19 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("media,gpu", "H264VaapiVideoDecoderDelegate::SubmitDecode");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (IsEncryptedSession() && !full_sample_ &&
       !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
                                     sizeof(crypto_params_), &crypto_params_)) {
     return DecodeStatus::kFail;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   const VaapiH264Picture* vaapi_pic = pic->AsVaapiH264Picture();
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
       vaapi_pic->va_surface_id());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   encryption_segment_info_.clear();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (!success && NeedsProtectedSessionRecovery())
     return DecodeStatus::kTryAgain;
 
@@ -623,9 +623,9 @@ bool H264VaapiVideoDecoderDelegate::OutputPicture(
 
 void H264VaapiVideoDecoderDelegate::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   encryption_segment_info_.clear();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   vaapi_wrapper_->DestroyPendingBuffers();
 }
 
