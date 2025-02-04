@@ -5,15 +5,20 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_PENDING_CONTRIBUTIONS_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_PENDING_CONTRIBUTIONS_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <optional>
+#include <set>
 #include <vector>
 
+#include "base/numerics/safe_conversions.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 
 namespace content {
 
@@ -34,10 +39,15 @@ class CONTENT_EXPORT PrivateAggregationPendingContributions {
   // Contributions can be merged if they have matching keys.
   struct ContributionMergeKey {
     explicit ContributionMergeKey(
+        const blink::mojom::AggregatableReportHistogramContribution&
+            contribution)
+        : bucket(contribution.bucket),
+          filtering_id(contribution.filtering_id.value_or(0)) {}
+
+    explicit ContributionMergeKey(
         const blink::mojom::AggregatableReportHistogramContributionPtr&
             contribution)
-        : bucket(contribution->bucket),
-          filtering_id(contribution->filtering_id.value_or(0)) {}
+        : ContributionMergeKey(*contribution) {}
 
     auto operator<=>(const ContributionMergeKey& a) const = default;
 
@@ -47,7 +57,159 @@ class CONTENT_EXPORT PrivateAggregationPendingContributions {
 
   class Wrapper;
 
-  // TODO(crbug.com/381788013): Implement this class.
+  // For a single contribution, whether the budgeter approved its budget usage
+  // (including provisionally) or denied it.
+  enum BudgeterResult {
+    kApproved,
+    kDenied,
+  };
+
+  // Note that if the limit has been reached and there is no space for this
+  // report, the entire report will be dropped with a fatal error.
+  enum PendingReportLimitResult {
+    // Indicates the limit has not been reached.
+    kNotAtLimit,
+
+    // Indicates the limit has been reached with this report, i.e. the report
+    // can still be processed.
+    kAtLimit
+  };
+
+  // Indicates the reason for the PrivateAggregationHost mojo pipe closing.
+  // TODO(crbug.com/381788013): Consider moving this enum to
+  // `PrivateAggregationHost` once the feature is fully launched and the
+  // circular dependency is avoided.
+  enum TimeoutOrDisconnect {
+    // The timeout was reached.
+    kTimeout,
+
+    // The pipe was disconnected by the caller API (e.g. due to the script
+    // completing).
+    kDisconnect
+  };
+
+  // Mirrors `PrivateAggregationHost::NullReportBehavior` to avoid a circular
+  // dependency.
+  // TODO(crbug.com/381788013): Merge these enums once the feature is fully
+  // launched and the circular dependency is avoided.
+  enum class NullReportBehavior {
+    kSendNullReport,
+    kDontSendReport,
+  };
+
+  explicit PrivateAggregationPendingContributions(
+      base::StrictNumeric<size_t> max_num_contributions);
+
+  PrivateAggregationPendingContributions(
+      PrivateAggregationPendingContributions&& other);
+  PrivateAggregationPendingContributions& operator=(
+      PrivateAggregationPendingContributions&& other);
+
+  ~PrivateAggregationPendingContributions();
+
+  const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
+  unconditional_contributions() const {
+    return unconditional_contributions_;
+  }
+
+  // Returns false if this object has any unconditional or conditional
+  // contributions.
+  bool IsEmpty() const;
+
+  // Tracks contributions not conditional on any error event (i.e. passed via
+  // `ContributeToHistogram()`). Drops contributions with value 0.
+  void AddUnconditionalContributions(
+      std::vector<blink::mojom::AggregatableReportHistogramContribution>
+          contributions);
+
+  // Tracks contributions conditional on an error event (i.e. passed via
+  // `ContributeToHistogramOnEvent()`). Drops contributions with value 0.
+  void AddConditionalContributions(
+      blink::mojom::PrivateAggregationErrorEvent error_event,
+      std::vector<blink::mojom::AggregatableReportHistogramContribution>
+          contributions);
+
+  // Should be called exactly once per object when no further contributions can
+  // be made. `finalization_cause` should indicate whether the mojo pipe
+  // disconnected or timed out.
+  void MarkContributionsFinalized(TimeoutOrDisconnect finalization_cause);
+
+  // Applies the results of the test budget call, i.e. filtering out
+  // unconditional contributions that were denied in that call and possibly
+  // triggering conditional contributions, and then compiles (and returns) a
+  // final list of unmerged contributions. This consists of any conditional
+  // contributions for error events that were triggered followed by any
+  // unconditional contributions. 'Truncates' the resulting list by assuming all
+  // contributions would be approved by the budgeter and removing any
+  // contributions that would not fit into the report *after merging is
+  // performed*. In other words, this 'truncation' determines the first n
+  // `ContributionMergeKey`s in this list, where n is `max_contributions_` and
+  // removes any contributions with other `ContributionMergeKey`s. Note that
+  // `test_budgeter_results` must a length equal to the number of unconditional
+  // contributions before the call. Can only be called after
+  // `MarkContributionsFinalized()`.
+  const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
+  CompileFinalUnmergedContributions(
+      std::vector<BudgeterResult> test_budgeter_results,
+      PendingReportLimitResult pending_report_limit_result,
+      NullReportBehavior null_report_behavior);
+
+  // Applies the results of the final budget call to the result of
+  // `CompileFinalUnmergedContributions()`, i.e. filtering out any contributions
+  // denied by the budgeter, and then merges (approved) contributions where
+  // possible (i.e. have the same `ContributionMergeKey`). Given the
+  // 'truncation' performed earlier, no further truncation is needed to ensure
+  // the overall length fits in limits. Consumes this object and returns the
+  // final vector of merged (and truncated) contributions. Can only be called
+  // after `CompileFinalUnmergedContributions()`.
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+  TakeFinalContributions(std::vector<BudgeterResult> final_budgeter_results) &&;
+
+ private:
+  // Adds `contributions` to the end of the `final_unmerged_contributions_`
+  // vector, adding each associated `ContributionMergeKey` to
+  // `accepted_merge_keys`. However, if a contribution would cause
+  // `accepted_merge_keys.size()` to grow beyond `max_contributions_`, the
+  // contribution is instead dropped and its `ContributionMergeKey` is added to
+  // `truncated_merge_keys`. The contributions are processed in the order given.
+  void AddToFinalUnmergedContributions(
+      std::vector<blink::mojom::AggregatableReportHistogramContribution>
+          contributions,
+      std::set<ContributionMergeKey>& accepted_merge_keys,
+      std::set<ContributionMergeKey>& truncated_merge_keys);
+
+  void ApplyTestBudgeterResults(
+      std::vector<BudgeterResult> results,
+      PendingReportLimitResult pending_report_limit_result,
+      NullReportBehavior null_report_behavior);
+  void ApplyFinalBudgeterResults(std::vector<BudgeterResult> results);
+
+  bool are_contributions_finalized_ = false;
+
+  // Contributions passed to `ContributeToHistogram()` for the associated mojo
+  // receiver. Only very loose truncation (to limit worst-case memory usage) and
+  // dropping zero-value contributions has occurred. No contribution merging has
+  // been occurred. This is consumed in `CompileFinalUnmergedContributions()`.
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      unconditional_contributions_;
+
+  // Same considerations as `unconditional_contributions_`, but for
+  // contributions passed to `ContributeToHistogramOnEvent()`.
+  std::map<blink::mojom::PrivateAggregationErrorEvent,
+           std::vector<blink::mojom::AggregatableReportHistogramContribution>>
+      conditional_contributions_;
+
+  // For each error event, whether the error has been triggered or not. No entry
+  // for an error event if it hasn't yet been determined.
+  std::map<blink::mojom::PrivateAggregationErrorEvent, bool>
+      was_error_triggered_;
+
+  // Only populated when `CompileFinalUnmergedContributions()` is called. The
+  // return value of that call is a const reference to this object.
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      final_unmerged_contributions_;
+
+  size_t max_contributions_;
 };
 
 // This is a simple union class that holds contributions in the appropriate
