@@ -62,6 +62,11 @@ source_set("factory") {
   ]
 }
 
+source_set("constants") {
+  sources = [ "sharing_state.h" ]
+  deps = []
+}
+
 source_set("test_support") {
   testonly = true
   sources = [

@@ -14,6 +14,7 @@
 #import "components/collaboration/test_support/mock_collaboration_service.h"
 #import "components/collaboration/test_support/mock_messaging_backend_service.h"
 #import "components/data_sharing/public/features.h"
+#import "components/data_sharing/test_support/mock_data_sharing_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
@@ -101,6 +102,8 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
         std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
     collaboration_service_ =
         std::make_unique<collaboration::MockCollaborationService>();
+    data_sharing_service_ = std::make_unique<
+        ::testing::NiceMock<data_sharing::MockDataSharingService>>();
 
     base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
     std::vector<SavedTabGroupTab> saved_tabs = SavedTabGroupTabsFromTabs(
@@ -118,6 +121,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
          tabGroupSyncService:tab_group_sync_service_.get()
              shareKitService:share_kit_service_.get()
         collaborationService:collaboration_service_.get()
+          dataSharingService:data_sharing_service_.get()
                     tabGroup:tab_group_->GetWeakPtr()
                     consumer:tab_group_consumer_
                 gridConsumer:consumer_
@@ -147,6 +151,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
   std::unique_ptr<ShareKitService> share_kit_service_;
   std::unique_ptr<collaboration::MockCollaborationService>
       collaboration_service_;
+  std::unique_ptr<data_sharing::MockDataSharingService> data_sharing_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   TabGridModeHolder* mode_holder_;
@@ -330,7 +335,6 @@ TEST_F(TabGroupMediatorTest, CreateAnotherGroupAndCloseTabs) {
 // Tests that CollaborationIDChangedForGroup does not update facePile UI when
 // the group id does not match.
 TEST_F(TabGroupMediatorTest, CollaborationIDChangedForInvalidGroup) {
-  OCMReject([tab_group_consumer_ setGroupShared:OCMOCK_ANY]);
   OCMReject([tab_group_consumer_ setFacePileViewController:OCMOCK_ANY]);
 
   SavedTabGroup other_saved_group(
@@ -348,7 +352,6 @@ TEST_F(TabGroupMediatorTest, CollaborationIDChangedForInvalidGroup) {
 // Tests that CollaborationIDChangedForGroup correctly updates the facePile UI
 // when the group is shared.
 TEST_F(TabGroupMediatorTest, CollaborationIDChangedForGroupShared) {
-  OCMExpect([tab_group_consumer_ setGroupShared:YES]);
   OCMExpect([tab_group_consumer_ setFacePileViewController:OCMOCK_ANY]);
 
   const SavedTabGroup saved_group =

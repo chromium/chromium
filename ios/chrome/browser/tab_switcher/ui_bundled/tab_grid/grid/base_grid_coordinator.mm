@@ -383,6 +383,10 @@
   [self.tabContextMenuDelegate manageTabGroup:tabGroup];
 }
 
+- (void)showShareForGroup:(base::WeakPtr<const TabGroup>)tabGroup {
+  [self.tabContextMenuDelegate shareTabGroup:tabGroup];
+}
+
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate
 
 - (void)createOrEditTabGroupCoordinatorDidDismiss:

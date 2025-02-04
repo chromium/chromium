@@ -18,6 +18,10 @@ class MessagingBackendService;
 }  // namespace messaging
 }  // namespace collaboration
 
+namespace data_sharing {
+class DataSharingService;
+}  // namespace data_sharing
+
 namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
@@ -60,6 +64,7 @@ class WebStateList;
          shareKitService:(ShareKitService*)shareKitService
     collaborationService:
         (collaboration::CollaborationService*)collaborationService
+      dataSharingService:(data_sharing::DataSharingService*)dataSharingService
                 tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                 consumer:(id<TabGroupConsumer>)consumer
             gridConsumer:(id<TabCollectionConsumer>)gridConsumer

@@ -6,6 +6,7 @@ include_rules = [
   "+components/saved_tab_groups/public",
   "+components/saved_tab_groups/test_support",
   "+ios/chrome/browser/toolbar/ui_bundled",
+  "+ios/chrome/browser/data_sharing/model",
 ]
 
 specific_include_rules = {
