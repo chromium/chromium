@@ -22,12 +22,21 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/pdf/common/constants.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_user_data.h"
+#include "pdf/buildflags.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace page_content_annotations {
 
@@ -41,6 +50,21 @@ HistoryVisit CreateHistoryVisitFromWebContents(
       web_contents->GetLastCommittedURL());
   return visit;
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+void RecordPdfPageCountMetrics(
+    ukm::SourceId source_id,
+    pdf::mojom::PdfListener::GetPdfBytesStatus status,
+    const std::vector<uint8_t>& bytes,
+    uint32_t page_count) {
+  if (status == pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed) {
+    return;
+  }
+  ukm::builders::OptimizationGuide_AnnotatedPdfContent(source_id)
+      .SetPdfPageCount(ukm::GetExponentialBucketMinForCounts1000(page_count))
+      .Record(ukm::UkmRecorder::Get());
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace
 
@@ -120,6 +144,12 @@ class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
       return;
     }
 
+    if (web_contents_->GetContentsMimeType() == pdf::kPDFMimeType) {
+      // Pdfs don't provide a FirstContentfulPaint signal, so skip waiting for
+      // it for these Documents.
+      waiting_for_fcp_ = false;
+    }
+
     waiting_for_load_ = false;
     RequestContentIfReady();
   }
@@ -144,23 +174,30 @@ class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
       return;
     }
 
-    if (delay_.is_zero()) {
-      RequestContentIfReadySync();
-      return;
+    if (web_contents_->GetContentsMimeType() == pdf::kPDFMimeType) {
+#if BUILDFLAG(ENABLE_PDF)
+      content::GetUIThreadTaskRunner()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&AnnotatedPageContentRequest::RequestPdfPageCount,
+                         weak_factory_.GetWeakPtr()),
+          page_content_annotations::features::
+              GetAnnotatedPageContentCaptureDelay());
+#endif  // BUILDFLAG(ENABLE_PDF)
+    } else {
+      if (delay_.is_zero()) {
+        RequestAnnotatedPageContentSync();
+        return;
+      }
+      content::GetUIThreadTaskRunner()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              &AnnotatedPageContentRequest::RequestAnnotatedPageContentSync,
+              weak_factory_.GetWeakPtr()),
+          delay_);
     }
-
-    content::GetUIThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&AnnotatedPageContentRequest::RequestContentIfReadySync,
-                       weak_factory_.GetWeakPtr()),
-        delay_);
   }
 
-  void RequestContentIfReadySync() {
-    if (!Ready()) {
-      return;
-    }
-
+  void RequestAnnotatedPageContentSync() {
     optimization_guide::GetAIPageContent(
         web_contents_, request_.Clone(),
         base::BindOnce(&AnnotatedPageContentRequest::OnPageContentReceived,
@@ -197,6 +234,22 @@ class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
                                 result->inner_text.length() / 1024, 10, 5000,
                                 50);
   }
+
+#if BUILDFLAG(ENABLE_PDF)
+  void RequestPdfPageCount() {
+    CHECK(web_contents_->GetContentsMimeType() == pdf::kPDFMimeType);
+    pdf::PDFDocumentHelper* pdf_helper =
+        pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents_);
+    if (pdf_helper) {
+      // Fetch zero PDF bytes to just receive the total page count.
+      pdf_helper->GetPdfBytes(
+          /*size_limit=*/0,
+          base::BindOnce(
+              &RecordPdfPageCountMetrics,
+              web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId()));
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   const raw_ptr<content::WebContents> web_contents_;
   const blink::mojom::AIPageContentOptionsPtr request_;
