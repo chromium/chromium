@@ -2225,7 +2225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FencedFrame.FailedSandboxLoadInTopLevelFrame"
-    enum="BooleanYesNo" expires_after="2025-02-16">
+    enum="BooleanYesNo" expires_after="2025-08-04">
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
   <owner>lbrady@google.com</owner>
@@ -2267,7 +2267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FencedFrame.MandatoryUnsandboxedFlagsSandboxed"
-    enum="WebSandboxFlags" expires_after="2025-02-16">
+    enum="WebSandboxFlags" expires_after="2025-08-04">
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
   <owner>lbrady@google.com</owner>
