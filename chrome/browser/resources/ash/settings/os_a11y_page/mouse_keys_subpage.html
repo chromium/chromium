@@ -1,6 +1,7 @@
 <style include="settings-shared">
   :host {
     --cr-section-indent-width: 60px;
+    --illustration-width: 344px;
   }
 
   .background {
@@ -14,13 +15,17 @@
     gap: 10px;
   }
 
+  .grid-item p {
+    width: var(--illustration-width);
+  }
+
   h2 {
     margin-bottom: 20px;
   }
 
   .illustration {
     height: 135px;
-    width: 344px;
+    width: var(--illustration-width);
   }
 
   .keyboard-preview {
