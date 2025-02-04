@@ -235,6 +235,7 @@ public class EmbeddedPermissionPromptTest {
         PermissionsAndroidFeatureList.ONE_TIME_PERMISSION,
         PermissionsAndroidFeatureList.PERMISSION_ELEMENT
     })
+    @DisabledTest(message = "crbug.com/394097674")
     public void testAskPromptTextWithOneTime() throws Exception {
         String[] requestablePermission =
                 new String[] {
