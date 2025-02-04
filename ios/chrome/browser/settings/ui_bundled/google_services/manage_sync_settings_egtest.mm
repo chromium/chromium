@@ -178,7 +178,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 }
 
 // Tests that Sync settings is dismissed when the primary account is removed.
-- (void)testSignoutWhileManageSyncSettingsOpened {
+// TODO(crbug.com/394154430): The test is flaky.
+- (void)FLAKY_testSignoutWhileManageSyncSettingsOpened {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
