@@ -74,6 +74,10 @@ export class PrintPreviewMediaTypeSettingsElement extends
       this.setSetting('mediaType', defaultOption, /*noSticky=*/ true);
     }
   }
+
+  private isSelectionBoxDisabled_(): boolean {
+    return this.disabled || this.getSetting('mediaType').setByDestinationPolicy;
+  }
 }
 
 declare global {

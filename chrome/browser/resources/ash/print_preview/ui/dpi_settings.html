@@ -8,7 +8,9 @@
   <div slot="controls">
     <print-preview-settings-select aria-label="$i18n{dpiLabel}"
         capability="[[capabilityWithLabels_]]" setting-name="dpi"
-        settings="{{settings}}" disabled="[[disabled]]">
+        disabled="[[isSelectionBoxDisabled_(
+          disabled, settings.dpi.setByDestinationPolicy)]]"
+        settings="{{settings}}">
     </print-preview-settings-select>
   </div>
 </print-preview-settings-section>

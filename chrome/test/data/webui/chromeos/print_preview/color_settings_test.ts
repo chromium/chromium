@@ -55,12 +55,21 @@ suite('ColorSettingsTest', function() {
   // <if expr="is_chromeos">
   // Tests that if the setting is enforced by enterprise policy it is
   // disabled.
-  test('disabled by policy', function() {
+  test('disabled by global policy', function() {
     // Verify that the selected option and names are as expected.
     const select = colorSection.shadowRoot!.querySelector('select')!;
     assertFalse(select.disabled);
 
     model.set('settings.color.setByGlobalPolicy', true);
+    assertTrue(select.disabled);
+  });
+
+  test('disabled by destination policy', function() {
+    // Verify that the selected option and names are as expected.
+    const select = colorSection.shadowRoot!.querySelector('select')!;
+    assertFalse(select.disabled);
+
+    model.set('settings.color.setByDestinationPolicy', true);
     assertTrue(select.disabled);
   });
   // </if>

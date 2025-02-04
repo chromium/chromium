@@ -32,7 +32,8 @@ export class PrintPreviewColorSettingsElement extends
       disabled_: {
         type: Boolean,
         computed: 'computeDisabled_(disabled, ' +
-            'settings.color.setByGlobalPolicy)',
+            'settings.color.setByGlobalPolicy, ' +
+            'settings.color.setByDestinationPolicy)',
       },
     };
   }
@@ -49,12 +50,18 @@ export class PrintPreviewColorSettingsElement extends
   }
 
   /**
-   * @param disabled Whether color selection is disabled.
-   * @param managed Whether color selection is managed.
+   * Returns whether setting UI controls should be disabled.
+   * @param disabled Whether this setting controls are already disabled.
+   * @param managedByGlobalPolicy Whether this setting is managed by the global
+   * policy (applied to all printers available to user).
+   * @param managedByDestinationPolicy Whether this setting is managed by the
+   * destination policy (applied only to the currently selected printer).
    * @return Whether drop-down should be disabled.
    */
-  private computeDisabled_(disabled: boolean, managed: boolean): boolean {
-    return disabled || managed;
+  private computeDisabled_(
+      disabled: boolean, managedByGlobalPolicy: boolean,
+      managedByDestinationPolicy: boolean): boolean {
+    return disabled || managedByGlobalPolicy || managedByDestinationPolicy;
   }
 
   /** @param value The new select value. */

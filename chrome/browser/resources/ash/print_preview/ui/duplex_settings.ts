@@ -94,13 +94,20 @@ export class PrintPreviewDuplexSettingsElement extends
         (this.getSettingValue('duplex') as boolean);
   }
 
+
   /**
-   * @param managed Whether the setting is managed by policy.
-   * @param disabled value of this.disabled
-   * @return Whether the controls should be disabled.
+   * Returns whether setting UI controls should be disabled.
+   * @param disabled Whether this setting controls are already disabled.
+   * @param managedByGlobalPolicy Whether this setting is managed by the global
+   * policy (applied to all printers available to user).
+   * @param managedByDestinationPolicy Whether this setting is managed by the
+   * destination policy (applied only to the currently selected printer).
+   * @return Whether drop-down should be disabled.
    */
-  private getDisabled_(managed: boolean, disabled: boolean): boolean {
-    return managed || disabled;
+  private getDisabled_(
+      disabled: boolean, managedByGlobalPolicy: boolean,
+      managedByDestinationPolicy: boolean): boolean {
+    return disabled || managedByGlobalPolicy || managedByDestinationPolicy;
   }
 
   /**
