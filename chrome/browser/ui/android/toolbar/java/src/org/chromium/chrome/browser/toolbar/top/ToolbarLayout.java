@@ -645,7 +645,8 @@ public abstract class ToolbarLayout extends FrameLayout
                 && event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE) {
             int action = event.getActionMasked();
             if (action == MotionEvent.ACTION_BUTTON_PRESS
-                    || action == MotionEvent.ACTION_BUTTON_RELEASE) {
+                    || action == MotionEvent.ACTION_BUTTON_RELEASE
+                    || action == MotionEvent.ACTION_SCROLL) {
                 return true;
             }
         }

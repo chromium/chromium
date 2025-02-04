@@ -536,15 +536,17 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     @Override
     public boolean onGenericMotionEvent(MotionEvent event) {
-        // Consume mouse events to ensure clicks do not bleed through to sibling views that
-        // are obscured by the list.  crbug.com/968414
+        // For some reason, RecyclerView.onGenericMotionEvent() always returns false even after
+        // handling events. Consume mouse events to ensure clicks and mouse wheel scroll do not
+        // bleed through to sibling views that are obscured by the list.  crbug.com/968414
         int action = event.getActionMasked();
-        boolean shouldIgnoreGenericMotionEvent =
+        boolean shouldConsumeGenericMotionEvent =
                 (event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0
                         && event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE
                         && (action == MotionEvent.ACTION_BUTTON_PRESS
-                                || action == MotionEvent.ACTION_BUTTON_RELEASE);
-        return shouldIgnoreGenericMotionEvent || super.onGenericMotionEvent(event);
+                                || action == MotionEvent.ACTION_BUTTON_RELEASE
+                                || action == MotionEvent.ACTION_SCROLL);
+        return super.onGenericMotionEvent(event) || shouldConsumeGenericMotionEvent;
     }
 
     @Override
