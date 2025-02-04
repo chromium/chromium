@@ -18,7 +18,7 @@ namespace glic {
 
 namespace {
 
-constexpr base::TimeDelta kDebounceDelay = base::Seconds(0.5);
+constexpr base::TimeDelta kDebounceDelay = base::Seconds(0.1);
 
 }  // namespace
 
