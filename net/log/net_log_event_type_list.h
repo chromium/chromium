@@ -1191,6 +1191,19 @@ EVENT_TYPE(HTTP_CACHE_CALLER_REQUEST_HEADERS)
 EVENT_TYPE(HTTP_CACHE_RESTART_PARTIAL_REQUEST)
 EVENT_TYPE(HTTP_CACHE_RE_SEND_PARTIAL_REQUEST)
 
+// Indicates that an entry from the NoVarySearchCache was used to rewrite the
+// URL for this request.
+// For the BEGIN phase, the following parameters are attached:
+//   {
+//     "request_url": <String of the URL we were requested to retrieve>,
+//     "cached_url": <String of the URL that we will use instead>,
+//   }
+// For the END phase, the following parameter is optionally attached:
+//   {
+//     "restart_reason": <String of one of NoVarySearchUseResult enum's values>
+//   }
+EVENT_TYPE(HTTP_CACHE_USING_NO_VARY_SEARCH_CACHE_URL)
+
 // ------------------------------------------------------------------------
 // Disk Cache / Memory Cache
 // ------------------------------------------------------------------------

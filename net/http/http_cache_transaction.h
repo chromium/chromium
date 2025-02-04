@@ -633,6 +633,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   int RestartWithoutNoVarySearchCache(RestartCacheEntryAction entry_action,
                                       NoVarySearchUseResult restart_reason);
 
+  static std::string_view NoVarySearchUseResultToString(
+      NoVarySearchUseResult result);
+
   // If `mutable_request_` has not been initialized, initialize it by making a
   // shallow copy of `request_`, and then modify `request_` to point to it.
   void EnsureMutableRequest();
