@@ -4,7 +4,6 @@
 
 package org.chromium.components.autofill;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -12,24 +11,26 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Autofill address information.
- * The creation and/or modification of an AutofillProfile is assumed to involve the user (e.g.
- * data reviewed by the user in the {@link
+ * Autofill address information. The creation and/or modification of an AutofillProfile is assumed
+ * to involve the user (e.g. data reviewed by the user in the {@link
  * org.chromium.chrome.browser.autofill.settings.AddressEditor}), therefore all new values gain
  * {@link VerificationStatus.USER_VERIFIED} status.
  */
 @JNINamespace("autofill")
 @SuppressWarnings("UnusedMethod") // Some of private getters are unused, but exist for completeness.
+@NullMarked
 public class AutofillProfile {
     private String mGUID;
     private @RecordType int mRecordType;
     private Map<Integer, ValueWithStatus> mFields;
-    private String mLabel;
+    private @Nullable String mLabel;
     private String mLanguageCode;
 
     @VisibleForTesting
@@ -302,7 +303,7 @@ public class AutofillProfile {
         return mRecordType;
     }
 
-    public String getLabel() {
+    public @Nullable String getLabel() {
         return mLabel;
     }
 
@@ -422,7 +423,7 @@ public class AutofillProfile {
 
     /** Used by ArrayAdapter in credit card settings. */
     @Override
-    public String toString() {
+    public @Nullable String toString() {
         return mLabel;
     }
 }
