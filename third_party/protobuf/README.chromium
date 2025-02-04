@@ -3,15 +3,14 @@ Short Name: protobuf
 URL: https://github.com/google/protobuf
 License: BSD-3-Clause
 License File: LICENSE
-Version: 21.12
-CPEPrefix: cpe:/a:google:protobuf:21.12
-Revision: f0dc78d7e6e331b8c6bb2d5283e06aa26883ca7c
+Version: 29.3
+CPEPrefix: cpe:/a:google:protobuf:29.3
+Revision: b407e8416e3893036aee5af9a12bd9b6a0e2b2e6
 Security Critical: yes
 Shipped: yes
-Mitigated: CVE-2024-7254
-CVE-2024-7254: Denial of service, outside our threat model. crbug.com/369473715
 
 Steps used to create the current version (or roll a newer one):
+
 0. Nuke third_party/protobuf from orbit (rm -rf `third_party/protobuf`). Note
    that this removes this README.chromium so you may want it open in code search
    or remember the steps up until 2. where you get it back.
@@ -23,8 +22,7 @@ Steps used to create the current version (or roll a newer one):
 2. Add back chromium's non-upstream files (from this directory):
 
    $ git checkout main BUILD.gn DEPS DIR_METADATA OWNERS README.chromium \
-     gen_chromium_file_lists.py gen_extra_chromium_files.py proto_library.gni \
-     patches/
+     gen_extra_chromium_files.py proto_library.gni proto_sources.gni patches/
 
    Note: Ideally we wouldn't do this but instead have a
    `third_party/protobuf/src/` subdirectory where upstream code goes directly
@@ -51,13 +49,12 @@ Steps used to create the current version (or roll a newer one):
    upstream any patches out of band from unblocking the roll so we can
    eventually remove it here as well.
 
+   Run `git add src/google/protobuf/compiler/csharp/csharp_names.h` to pick up
+   the file added by 0048-csharp-names-redirect.patch
+
    Probably worth committing locally here too.
 
-4. Generate `proto_sources.gni` using the script `./gen_chromium_file_lists.py`.
-
-   Add and commit `proto_sources.gni`,
-
-5. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
+4. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
    the same directory as this file.
 
    $ ./gen_extra_chromium_files.py -C ../../out/Default
@@ -65,7 +62,26 @@ Steps used to create the current version (or roll a newer one):
    Add and commit `python/google/protobuf/descriptor_pb2.py` and
    `python/google/protobuf/compiler/plugin_pb2.py` as well.
 
+5. Run:
+
+   $ cd python/
+   $ /usr/bin/bazel build embedded_python_edition_defaults_generate --enable_bzlmod
+   $ cp ../bazel-bin/python/google/protobuf/internal/python_edition_defaults.py google/protobuf/internal/
+   $ git add google/protobuf/internal/python_edition_defaults.py
+
+   TODO: generalize this and add it to gen_extra_chromium_files.py
+
 6. Update Version, CPEPrefix and Revision in this file.
+
+7. Address breakages.
+
+   The CQ will help you identify problems that need fixing.
+
+   Manually update BUILD.gn and proto_sources.gni as necessary. Hopefully this
+   means just adding or moving around some source files, but might also include
+   tweaks like modifying compiler flags or macro defines.
+
+   You may need to add new code modifications and diffs in patches/ as well.
 
 Notes (hints) for the next roll(er):
 
@@ -93,6 +109,9 @@ Notes (hints) for the next roll(er):
   violations as your built-in type is defined in multiple files. If that happens
   you may want to move the copy that should never have been checked in into its
   own namespace, complete the roll and then cleanup the local copy.
+* The protobuf wheel for vpython3 needs to stay in sync with this protobuf, at
+  least if there are breaking changes in protobuf's python bindings. See
+  https://chromium.googlesource.com/infra/infra/+/refs/heads/main/infra/tools/dockerbuild/README.wheels.md
 
 Note about vpython:
 
@@ -114,29 +133,13 @@ Description of the patches:
   These patches uninline some functions, resulting in a significant reduction
   (somewhere between 500 KB and 1 MB) of binary size.
 
-- 0021-Fix-protobuf-s-library-.gitinore-file.patch
-
-  Un-ignores python/google/protobuf/descriptor_pb2.py and
-  python/google/protobuf/compiler/plugin_pb2.py
-
 - 0022-Allow-deprecated-fields.patch
 
-  Allows deprecated fields to be used without extra C++ compiler warnings. Other
-  deprecated methods like ByteSize() should remain deprecated.
-
-- 0026-remove-sprintf.patch
-
-  Imports
-  https://github.com/protocolbuffers/protobuf/commit/c0fc2e881bc36aafb0bf539bf41889611370f60c
-  to remove use of sprintf.
-
-- 0027-no-noreturn.patch
-
-  Removes an instance of [[noreturn]]. The attribute is correct, but the way
-  protobuf's GOOGLE_LOG(FATAL) is defined, the compiler can't see this and it
-  trips -Winvalid-noreturn. See https://github.com/protocolbuffers/protobuf/issues/9817
+  Allows deprecated fields to be used without extra C++ compiler warnings.
 
 - 0029-make-initializers-optimizable.patch
+
+  Removes a static initializer from Linux and Android builds.
 
   Makes the InitProtobufDefaults() static initializer optimizable by Clang when
   built with libc++. It patches out the OnShutdownDestroyString call, which we
@@ -145,6 +148,9 @@ Description of the patches:
   InitProtobufDefaults() without synchronizing with the start of main().
   (Anything which happens after main() starts can rely on the initializer
   running.)
+
+  Later updated to patch out PROTOBUF_DESCRIPTOR_WEAK_MESSAGES_ALLOWED code
+  which was not optimizable.
 
 - 0030-workaround-window-constinit.patch
 
@@ -157,61 +163,6 @@ Description of the patches:
 
   See https://github.com/protocolbuffers/protobuf/issues/10159.
 
-- 0031-workaround-cfi-unrelated-cast.patch
-
-  A workaround for Clang's Control Flow Integrity check for casting pointers to
-  memory that his not yet initialized to be of that type for empty arrays, does
-  not work, and still fails. This patch removes the workaround and instead
-  disables cfi-unrelated-cast for the affected methods and simplifies them.
-
-  See https://github.com/protocolbuffers/protobuf/issues/10186.
-  See https://bugs.chromium.org/p/chromium/issues/detail?id=1294200#c26.
-
-- 0032-cxx20.patch
-
-  Fixes necessary to build in --std=c++20 mode.
-
-  Imports https://critique.corp.google.com/cl/451177197 (a portion of
-  https://github.com/protocolbuffers/protobuf/commit/6dd8af4ecfa7987bddb309862932886b84f1e4ef
-  ).
-
-- 0033-no-enum-conversion-warn.patch
-
-  Avoid hitting the clang error -Wenum-constexpr-conversion by specifying width
-  of the enum.
-
-  Imports https://critique.corp.google.com/cl/466986872.
-
-- 0034-change-macro-to-avoid-pedantic-warning.patch
-
-  Avoid hitting -Wextra-semi.
-
-  Imports (rebased):
-  https://github.com/protocolbuffers/protobuf/commit/def602dd07b7eae1cac6823705975317b5607fc3
-
-- 0035-fix-shared-library-constants
-
-  Fixes for component build when building with MediaPipe. AnyMetadata::PackFrom
-  is called which require string constants to be exported.
-
-- 0036-fix-undefined-memcpy-call.patch
-
-  Fixes an undefined call to memcpy which may be passed NULL, 0. NULL, 0 is
-  forbidden in C, due to a mistake in the C language specification. This
-  partially integrates
-  https://github.com/protocolbuffers/protobuf/commit/b2e1d7d8a1b1959c782595cd815c22fb690ac8e2
-  from upstream and may be removed when protobuf is updated past that commit.
-
-- 0037-fix-wextra-semi.patch
-
-  Removes an extra semicolon, fixed in upstream
-  https://github.com/protocolbuffers/protobuf/commit/3e6f8ee152db71ae49cc95649feab50d2faacdfa
-
-- 0038-silence-implicit-precision-loss.patch
-
-  Silences -Wshorten-64-to-32 for now. Fixed in upstream
-  https://github.com/protocolbuffers/protobuf/commit/d85c9944c55fb38f4eae149979a0f680ea125ecb
-
 - 0039-generate-mediapipe-anylite.patch
 
   Workaround to allow generating protobuf code compatible with
@@ -219,13 +170,57 @@ Description of the patches:
   https://crbug.com/332939935, which when/if resolved should make this patch
   obsolete.
 
-- 0040-fix-ndk-major.patch
+- 0042-fix-undefined-protobuf-custom-vtable.patch
 
-  Fix Android compile error that affects webrtc. Fixed in upstream
-  https://github.com/protocolbuffers/protobuf/commit/9471a882256eaf01027524e8b6c15cbb5e42bef6
+  Fixes the build when PROTOBUF_CUSTOM_VTABLE is not defined.
 
-- 0041-android-newline.patch
+- 0043-unreachable-code-return.patch
 
-  Fixes missing newline in Android logging. This code is gone upstream as of
-  https://github.com/protocolbuffers/protobuf/commit/a9f1ea6371c108876649f27a5940a59cc8594768
-  and so this patch should probably be dropped with the next protobuf roll.
+  Fix unreachable code warning via `if constexpr`.
+
+- 0044-trim-protoc-main.patch
+
+  Remove parts of protoc's main.cc that aren't necessary for Chromium (languages
+  such as PHP).
+
+- 0045-string-resize.patch
+
+  Replaces usage of absl internal string routines with std::string::resize().
+
+- 0046-absl-log.patch
+
+  Remove unused includes of absl/log.h (usages have already been updated to
+  absl_log.h i.e. ABSL_LOG). Note this is already fixed on trunk protobuf.
+
+- 0047-perfetto-backcompat.patch
+
+  Undoes protobuf breaking change to support Perfetto's use of
+  MultiFileErrorCollector. See https://github.com/google/perfetto/issues/992
+
+- 0048-csharp-names-redirect.patch
+
+  A header file moved and this is added to redirect code that hasn't been
+  updated for newer protobuf to the new location. This code isn't actually
+  linked. This can be removed after GRPC is rolled. NB this has to be manually
+  added with `git add` if you are following the instructions above.
+
+- 0049-deprecated-declarations-pragma.patch
+
+  Modify a compiler diagnostic pragma to work on Windows.
+
+- 0050-remove-unreachable-code.patch
+
+  Remove some unreachable code.
+
+- 0051-export-template-define.patch
+
+  Adds some missing export defines to fix Windows component build.
+
+- 0052-remove-dynanmic-annotations.patch
+
+  This removes dynamic annotations (for containers; an ASAN tool). The use of
+  absl's dynamic_annotations is banned in Chromium (see
+  //third_party/abseil-cpp/BUILD.gn), on top of which, Protobuf's usage is
+  buggy. PlacementNew copies RepeatedFields wholesale via memcp, which triggers
+  false positive out-of-bounds reads. See
+  https://github.com/google/sanitizers/wiki/AddressSanitizerContainerOverflow

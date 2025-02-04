@@ -1,32 +1,9 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 // Author: kenton@google.com (Kenton Varda)
 //  Based on original Protocol Buffers design by
@@ -35,17 +12,18 @@
 #ifndef GOOGLE_PROTOBUF_TEST_UTIL_H__
 #define GOOGLE_PROTOBUF_TEST_UTIL_H__
 
-#include <google/protobuf/unittest.pb.h>
+#include "absl/strings/string_view.h"
+#include "google/protobuf/unittest.pb.h"
 
 #define UNITTEST ::protobuf_unittest
 #define UNITTEST_IMPORT ::protobuf_unittest_import
 // Must be included when the preprocessor symbols above are defined.
-#include <google/protobuf/test_util.inc>
+#include "google/protobuf/test_util.inc"
 #undef UNITTEST
 #undef UNITTEST_IMPORT
 
 // Must be included last.
-#include <google/protobuf/port_def.inc>
+#include "google/protobuf/port_def.inc"
 
 namespace google {
 namespace protobuf {
@@ -63,6 +41,8 @@ class ReflectionTester {
   // the latter case, ReflectionTester searches for extension fields in
   // its file.
   explicit ReflectionTester(const Descriptor* base_descriptor);
+  ReflectionTester(const ReflectionTester&) = delete;
+  ReflectionTester& operator=(const ReflectionTester&) = delete;
 
   void SetAllFieldsViaReflection(Message* message);
   void ModifyRepeatedFieldsViaReflection(Message* message);
@@ -120,42 +100,55 @@ class ReflectionTester {
   void ExpectAllFieldsSetViaReflection1(const Message& message);
   void ExpectAllFieldsSetViaReflection2(const Message& message);
   void ExpectAllFieldsSetViaReflection3(const Message& message);
-
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(ReflectionTester);
 };
 
 inline TestUtil::ReflectionTester::ReflectionTester(
     const Descriptor* base_descriptor)
     : base_descriptor_(base_descriptor) {
   const DescriptorPool* pool = base_descriptor->file()->pool();
-  std::string package = base_descriptor->file()->package();
-  const FieldDescriptor* import_descriptor =
-      pool->FindFieldByName(package + ".TestAllTypes.optional_import_message");
-  std::string import_package =
+  const absl::string_view package = base_descriptor->file()->package();
+  const FieldDescriptor* import_descriptor = pool->FindFieldByName(
+      absl::StrCat(package, ".TestAllTypes.optional_import_message"));
+  const absl::string_view import_package =
       import_descriptor->message_type()->file()->package();
 
-  nested_b_ = pool->FindFieldByName(package + ".TestAllTypes.NestedMessage.bb");
-  foreign_c_ = pool->FindFieldByName(package + ".ForeignMessage.c");
-  import_d_ = pool->FindFieldByName(import_package + ".ImportMessage.d");
-  import_e_ = pool->FindFieldByName(import_package + ".PublicImportMessage.e");
-  nested_foo_ = pool->FindEnumValueByName(package + ".TestAllTypes.FOO");
-  nested_bar_ = pool->FindEnumValueByName(package + ".TestAllTypes.BAR");
-  nested_baz_ = pool->FindEnumValueByName(package + ".TestAllTypes.BAZ");
-  foreign_foo_ = pool->FindEnumValueByName(package + ".FOREIGN_FOO");
-  foreign_bar_ = pool->FindEnumValueByName(package + ".FOREIGN_BAR");
-  foreign_baz_ = pool->FindEnumValueByName(package + ".FOREIGN_BAZ");
-  import_foo_ = pool->FindEnumValueByName(import_package + ".IMPORT_FOO");
-  import_bar_ = pool->FindEnumValueByName(import_package + ".IMPORT_BAR");
-  import_baz_ = pool->FindEnumValueByName(import_package + ".IMPORT_BAZ");
+  nested_b_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestAllTypes.NestedMessage.bb"));
+  foreign_c_ =
+      pool->FindFieldByName(absl::StrCat(package, ".ForeignMessage.c"));
+  import_d_ =
+      pool->FindFieldByName(absl::StrCat(import_package, ".ImportMessage.d"));
+  import_e_ = pool->FindFieldByName(
+      absl::StrCat(import_package, ".PublicImportMessage.e"));
+  nested_foo_ =
+      pool->FindEnumValueByName(absl::StrCat(package, ".TestAllTypes.FOO"));
+  nested_bar_ =
+      pool->FindEnumValueByName(absl::StrCat(package, ".TestAllTypes.BAR"));
+  nested_baz_ =
+      pool->FindEnumValueByName(absl::StrCat(package, ".TestAllTypes.BAZ"));
+  foreign_foo_ =
+      pool->FindEnumValueByName(absl::StrCat(package, ".FOREIGN_FOO"));
+  foreign_bar_ =
+      pool->FindEnumValueByName(absl::StrCat(package, ".FOREIGN_BAR"));
+  foreign_baz_ =
+      pool->FindEnumValueByName(absl::StrCat(package, ".FOREIGN_BAZ"));
+  import_foo_ =
+      pool->FindEnumValueByName(absl::StrCat(import_package, ".IMPORT_FOO"));
+  import_bar_ =
+      pool->FindEnumValueByName(absl::StrCat(import_package, ".IMPORT_BAR"));
+  import_baz_ =
+      pool->FindEnumValueByName(absl::StrCat(import_package, ".IMPORT_BAZ"));
 
   if (base_descriptor_->name() == "TestAllExtensions") {
-    group_a_ = pool->FindFieldByName(package + ".OptionalGroup_extension.a");
-    repeated_group_a_ =
-        pool->FindFieldByName(package + ".RepeatedGroup_extension.a");
+    group_a_ = pool->FindFieldByName(
+        absl::StrCat(package, ".OptionalGroup_extension.a"));
+    repeated_group_a_ = pool->FindFieldByName(
+        absl::StrCat(package, ".RepeatedGroup_extension.a"));
   } else {
-    group_a_ = pool->FindFieldByName(package + ".TestAllTypes.OptionalGroup.a");
-    repeated_group_a_ =
-        pool->FindFieldByName(package + ".TestAllTypes.RepeatedGroup.a");
+    group_a_ = pool->FindFieldByName(
+        absl::StrCat(package, ".TestAllTypes.OptionalGroup.a"));
+    repeated_group_a_ = pool->FindFieldByName(
+        absl::StrCat(package, ".TestAllTypes.RepeatedGroup.a"));
   }
 
   EXPECT_TRUE(group_a_ != nullptr);
@@ -181,11 +174,12 @@ inline const FieldDescriptor* TestUtil::ReflectionTester::F(
   const FieldDescriptor* result = nullptr;
   if (base_descriptor_->name() == "TestAllExtensions" ||
       base_descriptor_->name() == "TestPackedExtensions") {
-    result = base_descriptor_->file()->FindExtensionByName(name + "_extension");
+    result = base_descriptor_->file()->FindExtensionByName(
+        absl::StrCat(name, "_extension"));
   } else {
     result = base_descriptor_->FindFieldByName(name);
   }
-  GOOGLE_CHECK(result != nullptr);
+  ABSL_CHECK(result != nullptr);
   return result;
 }
 
@@ -230,6 +224,8 @@ inline void TestUtil::ReflectionTester::SetAllFieldsViaReflection(
 
   reflection->SetString(message, F("optional_string_piece"), "124");
   reflection->SetString(message, F("optional_cord"), "125");
+  reflection->SetString(message, F("optional_bytes_cord"),
+                        "optional bytes cord");
 
   sub_message =
       reflection->MutableMessage(message, F("optional_public_import_message"));
@@ -498,6 +494,7 @@ inline void TestUtil::ReflectionTester::ExpectAllFieldsSetViaReflection1(
 
   EXPECT_TRUE(reflection->HasField(message, F("optional_string_piece")));
   EXPECT_TRUE(reflection->HasField(message, F("optional_cord")));
+  EXPECT_TRUE(reflection->HasField(message, F("optional_bytes_cord")));
 
   EXPECT_EQ(101, reflection->GetInt32(message, F("optional_int32")));
   EXPECT_EQ(102, reflection->GetInt64(message, F("optional_int64")));
@@ -558,6 +555,14 @@ inline void TestUtil::ReflectionTester::ExpectAllFieldsSetViaReflection1(
   EXPECT_EQ("125", reflection->GetString(message, F("optional_cord")));
   EXPECT_EQ("125", reflection->GetStringReference(message, F("optional_cord"),
                                                   &scratch));
+
+  EXPECT_EQ("optional bytes cord",
+            reflection->GetString(message, F("optional_bytes_cord")));
+  EXPECT_EQ("optional bytes cord",
+            reflection->GetStringReference(message, F("optional_bytes_cord"),
+                                           &scratch));
+  EXPECT_EQ("optional bytes cord",
+            reflection->GetCord(message, F("optional_bytes_cord")));
 
   EXPECT_TRUE(reflection->HasField(message, F("oneof_bytes")));
   EXPECT_EQ("604", reflection->GetString(message, F("oneof_bytes")));
@@ -919,6 +924,7 @@ inline void TestUtil::ReflectionTester::ExpectClearViaReflection(
 
   EXPECT_FALSE(reflection->HasField(message, F("optional_string_piece")));
   EXPECT_FALSE(reflection->HasField(message, F("optional_cord")));
+  EXPECT_FALSE(reflection->HasField(message, F("optional_bytes_cord")));
 
   // Optional fields without defaults are set to zero or something like it.
   EXPECT_EQ(0, reflection->GetInt32(message, F("optional_int32")));
@@ -984,6 +990,11 @@ inline void TestUtil::ReflectionTester::ExpectClearViaReflection(
   EXPECT_EQ("", reflection->GetString(message, F("optional_cord")));
   EXPECT_EQ("", reflection->GetStringReference(message, F("optional_cord"),
                                                &scratch));
+
+  EXPECT_EQ("", reflection->GetString(message, F("optional_bytes_cord")));
+  EXPECT_EQ("", reflection->GetStringReference(
+                    message, F("optional_bytes_cord"), &scratch));
+  EXPECT_EQ("", reflection->GetCord(message, F("optional_bytes_cord")));
 
   // Repeated fields are empty.
   EXPECT_EQ(0, reflection->FieldSize(message, F("repeated_int32")));
@@ -1223,7 +1234,7 @@ inline void TestUtil::ReflectionTester::ExpectMessagesReleasedViaReflection(
       "optional_foreign_message",
       "optional_import_message",
   };
-  for (int i = 0; i < GOOGLE_ARRAYSIZE(fields); i++) {
+  for (int i = 0; i < ABSL_ARRAYSIZE(fields); i++) {
     Message* released = reflection->ReleaseMessage(message, F(fields[i]));
     switch (expected_release_state) {
       case IS_NULL:
@@ -1272,6 +1283,6 @@ inline void ExpectAllFieldsAndExtensionsInOrder(const std::string& serialized) {
 }  // namespace protobuf
 }  // namespace google
 
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"
 
 #endif  // GOOGLE_PROTOBUF_TEST_UTIL_H__

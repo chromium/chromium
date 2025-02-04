@@ -23,8 +23,6 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 
-protobuf_mutator::protobuf::LogSilencer log_silencer;
-
 using skia_image_filter_proto_converter::Input;
 using skia_image_filter_proto_converter::Converter;
 

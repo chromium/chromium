@@ -39,6 +39,11 @@ config("grpc_config") {
   ]
 
   defines = [
+    # Override some unused functionality in config_protobuf.h to sidestep
+    # compilation errors.
+    "GRPC_CUSTOM_JSONUTIL=::google::protobuf",
+    "GRPC_CUSTOM_UTIL_STATUS=int",
+
     "GRPC_USE_PROTO_LITE",
     "HAVE_CONFIG_H",
     "PB_FIELD_16BIT",
@@ -2197,17 +2202,17 @@ if (current_toolchain == host_toolchain) {
       "src/src/compiler/cpp_generator.h",
       "src/src/compiler/cpp_generator_helpers.h",
       "src/src/compiler/cpp_plugin.h",
-      "src/src/compiler/csharp_generator.cc",
+      # "src/src/compiler/csharp_generator.cc",
       "src/src/compiler/csharp_generator.h",
       "src/src/compiler/csharp_generator_helpers.h",
       "src/src/compiler/generator_helpers.h",
       "src/src/compiler/node_generator.cc",
       "src/src/compiler/node_generator.h",
       "src/src/compiler/node_generator_helpers.h",
-      "src/src/compiler/objective_c_generator.cc",
+      # "src/src/compiler/objective_c_generator.cc",
       "src/src/compiler/objective_c_generator.h",
       "src/src/compiler/objective_c_generator_helpers.h",
-      "src/src/compiler/php_generator.cc",
+      # "src/src/compiler/php_generator.cc",
       "src/src/compiler/php_generator.h",
       "src/src/compiler/php_generator_helpers.h",
       "src/src/compiler/proto_parser_helper.cc",
