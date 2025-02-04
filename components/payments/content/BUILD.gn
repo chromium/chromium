@@ -226,13 +226,10 @@ source_set("unit_tests") {
     "secure_payment_confirmation_app_unittest.cc",
     "secure_payment_confirmation_model_unittest.cc",
     "secure_payment_confirmation_no_creds_model_unittest.cc",
+    "secure_payment_confirmation_service_unittest.cc",
     "service_worker_payment_app_finder_unittest.cc",
     "web_app_manifest_section_table_unittest.cc",
   ]
-
-  if (is_android) {
-    sources += [ "secure_payment_confirmation_service_unittest.cc" ]
-  }
 
   if (!is_android) {
     sources += [
