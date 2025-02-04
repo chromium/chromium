@@ -42,7 +42,7 @@ class MockAudioManagerCrasBase : public AudioManagerCrasBase {
   bool IsDefault(const std::string& device_id, bool is_input) override {
     return true;
   }
-  enum CRAS_CLIENT_TYPE GetClientType() { return CRAS_CLIENT_TYPE_LACROS; }
+  enum CRAS_CLIENT_TYPE GetClientType() { return CRAS_CLIENT_TYPE_UNKNOWN; }
 
   // We need to override this function in order to skip checking the number
   // of active output streams. It is because the number of active streams
