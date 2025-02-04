@@ -4128,6 +4128,11 @@
       origin_trial_allows_third_party: true,
     },
     {
+      name: "StandardizedTimerClamping",
+      status: "experimental",
+      public: true,
+    },
+    {
       name: "StaticAnimationOptimization",
       status: "stable",
     },
