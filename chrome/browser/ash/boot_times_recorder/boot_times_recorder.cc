@@ -17,7 +17,6 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/pref_names.h"
@@ -53,6 +52,12 @@ const std::string GetTabUrl(RenderWidgetHost* rwh) {
     }
   }
   return std::string();
+}
+
+// Clear saved logout-started metric in Local State. This method is called when
+// logout-state was written to file.
+void ClearLogoutStartedLastPreference(PrefService& local_state) {
+  local_state.ClearPref(prefs::kLogoutStartedLast);
 }
 
 }  // namespace
@@ -128,16 +133,9 @@ void BootTimesRecorder::AddLoginTimeMarkerWithURL(const char* marker_name,
   LoginEventRecorder::Get()->AddLoginTimeMarkerWithURL(marker_name, url, false);
 }
 
-// static
-void BootTimesRecorder::ClearLogoutStartedLastPreference() {
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->ClearPref(prefs::kLogoutStartedLast);
-}
-
-void BootTimesRecorder::OnChromeProcessStart() {
-  PrefService* local_state = g_browser_process->local_state();
+void BootTimesRecorder::OnChromeProcessStart(PrefService& local_state) {
   const std::string logout_started_last_str =
-      local_state->GetString(prefs::kLogoutStartedLast);
+      local_state.GetString(prefs::kLogoutStartedLast);
   if (logout_started_last_str.empty())
     return;
 
@@ -158,7 +156,7 @@ void BootTimesRecorder::OnChromeProcessStart() {
 
   if (logout_started_last >= uptime) {
     // Reboot happened.
-    ClearLogoutStartedLastPreference();
+    ClearLogoutStartedLastPreference(local_state);
     return;
   }
 
@@ -166,7 +164,7 @@ void BootTimesRecorder::OnChromeProcessStart() {
   constexpr char kLogoutStarted[] = "logout-started";
   logout_started_last_stats.RecordStatsWithCallback(
       kLogoutStarted, /*write_flag_file=*/true,
-      base::BindOnce(&BootTimesRecorder::ClearLogoutStartedLastPreference));
+      base::BindOnce(&ClearLogoutStartedLastPreference, std::ref(local_state)));
 }
 
 void BootTimesRecorder::OnLogoutStarted(PrefService* state) {
