@@ -5674,7 +5674,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5098" label="WebAuthentication_AttestationFormats"/>
   <int value="5099" label="CssDisplayPropertyMultipleValues"/>
   <int value="5100" label="DocumentPolicyExpectNoLinkedResources"/>
-  <int value="5101" label="SelectionIsCollapsedBehaviorChange"/>
+  <int value="5101" label="OBSOLETE_SelectionIsCollapsedBehaviorChange"/>
   <int value="5102" label="TopicsAPIAll"/>
   <int value="5103" label="PaymentRequestDeprecatedPaymentMethod"/>
   <int value="5104"
