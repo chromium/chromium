@@ -500,6 +500,15 @@ void EventRouter::AddListenerForServiceWorker(
 void EventRouter::AddLazyListenerForMainThread(const ExtensionId& extension_id,
                                                const std::string& event_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // TODO(https://crbug.com/394042459): Perform more IPC validation here.
+  if (!crx_file::id_util::IdIsValid(extension_id)) {
+    bad_message::ReceivedBadMessage(
+        GetRenderProcessHostForCurrentReceiver(),
+        bad_message::ER_INVALID_EXTENSION_ID_FOR_PROCESS);
+    return;
+  }
+
   std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
       event_name, extension_id, browser_context_, false, GURL(), std::nullopt);
   AddLazyEventListenerImpl(std::move(listener), RegisteredEventType::kLazy);
@@ -599,6 +608,15 @@ void EventRouter::RemoveLazyListenerForMainThread(
     const ExtensionId& extension_id,
     const std::string& event_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // TODO(https://crbug.com/394042459): Perform more IPC validation here.
+  if (!crx_file::id_util::IdIsValid(extension_id)) {
+    bad_message::ReceivedBadMessage(
+        GetRenderProcessHostForCurrentReceiver(),
+        bad_message::ER_INVALID_EXTENSION_ID_FOR_PROCESS);
+    return;
+  }
+
   std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
       event_name, extension_id, browser_context_, false, GURL(), std::nullopt);
   RemoveLazyEventListenerImpl(std::move(listener), RegisteredEventType::kLazy);
