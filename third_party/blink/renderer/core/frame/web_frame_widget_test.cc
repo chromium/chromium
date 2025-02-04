@@ -1755,7 +1755,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
           border: none;
         }
       </style>
-      <div id='d' style='height: 0;'/>
+      <div id='d' style='height: 0;'></div>
       <input type='text' id='first' class='target' />
       )HTML");
   Compositor().BeginFrame();
@@ -1769,7 +1769,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
   first->Focus();
   first->SetValue("hello world");
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
-  Vector<gfx::Rect>& expected = widget->GetVisibleLineBoundsOnScreen();
+  Vector<gfx::Rect> expected = widget->GetVisibleLineBoundsOnScreen();
   // Offset each line bound by 200 pixels downwards (for after layout shift).
   for (auto& i : expected) {
     i.Offset(0, 200);
