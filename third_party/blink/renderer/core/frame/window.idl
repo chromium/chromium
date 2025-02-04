@@ -70,7 +70,7 @@
 
     // indexed properties
     // https://html.spec.whatwg.org/C/browsers.html#windowproxy-getownproperty
-    [NotEnumerable, CrossOrigin, Measure] getter Window (unsigned long index);
+    [NotEnumerable, CrossOrigin] getter Window (unsigned long index);
 
     // named properties
     // The spec defines the named getter on the Window interface, but we inject

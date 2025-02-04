@@ -4683,6 +4683,8 @@ enum WebFeature {
   kV8Window_Focus_Method = 5297,
   kV8Window_PostMessage_Method = 5298,
   kHTMLImageElementNaturalSizeDiffersForSvgImage = 5299,
+  kWindowProxyIndexedGetter = 5300,
+  kWindowProxyNamedGetter = 5301
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
