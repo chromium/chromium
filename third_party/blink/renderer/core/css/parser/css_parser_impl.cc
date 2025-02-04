@@ -1393,7 +1393,6 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
   HeapVector<Member<StyleRuleBase>, 4> rules;
   ConsumeRuleListOrNestedDeclarationList(
       stream,
-      /* is_nested_group_rule */ nesting_type == CSSNestingType::kNesting,
       nesting_type, parent_rule_for_nesting, &rules);
 
   if (observer_) {
@@ -1439,7 +1438,6 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
   HeapVector<Member<StyleRuleBase>, 4> rules;
   ConsumeRuleListOrNestedDeclarationList(
       stream,
-      /* is_nested_group_rule */ nesting_type == CSSNestingType::kNesting,
       nesting_type, parent_rule_for_nesting, &rules);
 
   if (observer_) {
@@ -1475,7 +1473,6 @@ StyleRuleStartingStyle* CSSParserImpl::ConsumeStartingStyleRule(
   HeapVector<Member<StyleRuleBase>, 4> rules;
   ConsumeRuleListOrNestedDeclarationList(
       stream,
-      /* is_nested_group_rule */ nesting_type == CSSNestingType::kNesting,
       nesting_type, parent_rule_for_nesting, &rules);
 
   if (observer_) {
@@ -2089,7 +2086,6 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   HeapVector<Member<StyleRuleBase>, 4> rules;
   ConsumeRuleListOrNestedDeclarationList(
       stream,
-      /* is_nested_group_rule */ nesting_type == CSSNestingType::kNesting,
       nesting_type, parent_rule_for_nesting, &rules);
 
   if (observer_) {
@@ -2189,7 +2185,6 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
   HeapVector<Member<StyleRuleBase>, 4> rules;
   ConsumeRuleListOrNestedDeclarationList(
       stream,
-      /* is_nested_group_rule */ nesting_type == CSSNestingType::kNesting,
       nesting_type, parent_rule_for_nesting, &rules);
 
   if (observer_) {
@@ -2373,7 +2368,6 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   StyleRule* fake_parent_rule = StyleRule::Create(base::span_from_ref(dummy));
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
   ConsumeRuleListOrNestedDeclarationList(stream,
-                                         /*is_nested_group_rule=*/true,
                                          CSSNestingType::kNesting,
                                          fake_parent_rule, &child_rules);
   for (StyleRuleBase* child_rule : child_rules) {
@@ -2767,19 +2761,19 @@ void CSSParserImpl::ConsumeBlockContents(
 }
 
 // Consumes a list of style rules and stores the result in `child_rules`,
-// or (if `is_nested_group_rule` is true) consumes the interior of a nested
-// group rule [1]. Nested group rules allow a list of declarations to appear
+// or (for nested group rules) consumes the interior of a nested group rule [1].
+// Nested group rules allow a list of declarations to appear
 // directly in place of where a list of rules would normally go.
 //
 // [1] https://drafts.csswg.org/css-nesting-1/#nested-group-rules
 void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
     CSSParserTokenStream& stream,
-    bool is_nested_group_rule,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
     HeapVector<Member<StyleRuleBase>, 4>* child_rules) {
   DCHECK(child_rules);
 
+  bool is_nested_group_rule = nesting_type == CSSNestingType::kNesting;
   if (is_nested_group_rule) {
     // This is a nested group rule, which (in addition to rules) allows
     // *declarations* to appear directly within the body of the rule, e.g.:
