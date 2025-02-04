@@ -1921,7 +1921,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ErrorCodesForIsolatedAppScheme" enum="NetErrorCodes"
-    expires_after="2025-05-31">
+    expires_after="2025-08-03">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
   <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
@@ -3015,7 +3015,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicChromiumClientStream.Http3DatagramDroppedOnWriteConnectUdpPayload"
-    enum="BooleanSuccess" expires_after="2025-06-04">
+    enum="BooleanSuccess" expires_after="2025-08-03">
   <owner>ciaramcmullin@google.com</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -3387,7 +3387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicProxyDatagramClientSocket.MaxQueueSizeReached"
-    enum="BooleanSuccess" expires_after="2025-06-04">
+    enum="BooleanSuccess" expires_after="2025-08-03">
   <owner>ciaramcmullin@google.com</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3422,7 +3422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.AcceptChForOrigin" enum="Boolean"
-    expires_after="2025-03-30">
+    expires_after="2025-08-03">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

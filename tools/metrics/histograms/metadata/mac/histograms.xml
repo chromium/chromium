@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Mac.AppClonefileError" enum="MacErrno"
-    expires_after="2025-06-03">
+    expires_after="2025-08-03">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppCodeSignCloneCount" units="count"
-    expires_after="2025-06-03">
+    expires_after="2025-08-03">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppCodeSignCloneExists" enum="MacCloneExists"
-    expires_after="2025-06-03">
+    expires_after="2025-08-03">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppHardLinkError" enum="MacErrno"
-    expires_after="2025-06-03">
+    expires_after="2025-08-03">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
@@ -157,7 +157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.ProcessRequirement.CurrentProcessValid"
-    enum="BooleanSuccess" expires_after="2025-06-01">
+    enum="BooleanSuccess" expires_after="2025-08-03">
   <owner>markrowe@chromium.org</owner>
   <owner>src/base/mac/OWNERS</owner>
   <summary>
@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.ProcessRequirement.FallbackValidationCategory.Result"
-    enum="CodeSigningOSStatus" expires_after="2025-06-01">
+    enum="CodeSigningOSStatus" expires_after="2025-08-03">
   <owner>markrowe@chromium.org</owner>
   <owner>src/base/mac/OWNERS</owner>
   <summary>
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.ProcessRequirement.Timing.{Operation}" units="ms"
-    expires_after="2025-06-01">
+    expires_after="2025-08-03">
   <owner>markrowe@chromium.org</owner>
   <owner>src/base/mac/OWNERS</owner>
   <summary>
@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.ProcessRequirement.ValidationCategory.Result"
-    enum="MacErrno" expires_after="2025-06-01">
+    enum="MacErrno" expires_after="2025-08-03">
   <owner>markrowe@chromium.org</owner>
   <owner>src/base/mac/OWNERS</owner>
   <summary>
@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.ProcessRequirement.ValidationRequired"
-    enum="BooleanSuccess" expires_after="2025-06-01">
+    enum="BooleanSuccess" expires_after="2025-08-03">
   <owner>markrowe@chromium.org</owner>
   <owner>src/base/mac/OWNERS</owner>
   <summary>
@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.ProcessRequirement.{Field}.HasExpectedValue"
-    enum="BooleanSuccess" expires_after="2025-06-01">
+    enum="BooleanSuccess" expires_after="2025-08-03">
   <owner>markrowe@chromium.org</owner>
   <owner>src/base/mac/OWNERS</owner>
   <summary>

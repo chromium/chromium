@@ -1961,7 +1961,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.ErrorHasFilename" enum="Boolean"
-    expires_after="2025-05-31">
+    expires_after="2025-08-03">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -1973,7 +1973,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Authorized"
-    enum="GeolocationAPI" expires_after="2025-05-31">
+    enum="GeolocationAPI" expires_after="2025-08-03">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -1986,7 +1986,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Denied"
-    enum="GeolocationAPI" expires_after="2025-05-31">
+    enum="GeolocationAPI" expires_after="2025-08-03">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -1999,7 +1999,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.NotDetermined"
-    enum="GeolocationAPI" expires_after="2025-05-31">
+    enum="GeolocationAPI" expires_after="2025-08-03">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -2064,7 +2064,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.ScriptExecutionFailed" enum="Boolean"
-    expires_after="2025-05-31">
+    expires_after="2025-08-03">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -3434,7 +3434,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PartialTranslate.Outcome" enum="PartialTranslateOutcome"
-    expires_after="2025-05-30">
+    expires_after="2025-08-03">
   <owner>olivierrobin@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>The outcome of the partial translate feature.</summary>
@@ -3569,7 +3569,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PaymentsBottomSheetV3.Triggered" enum="Boolean"
-    expires_after="2025-04-20">
+    expires_after="2025-08-03">
   <owner>vincb@google.com</owner>
   <owner>noemies@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -4817,7 +4817,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Spotlight.Action" enum="IOSSpotlightAction"
-    expires_after="2025-05-30">
+    expires_after="2025-08-03">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>The Spotlight Action pressed by the user.</summary>
@@ -5369,7 +5369,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Variations.FirstRun.SeedApplicationStage"
-    enum="VariationsFirstRunSeedApplicationStage" expires_after="2025-06-01">
+    enum="VariationsFirstRunSeedApplicationStage" expires_after="2025-08-03">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>huitingyu@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>

@@ -533,7 +533,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.HfpTelephonyEvent" enum="CrasHfpTelephonyEvent"
-    expires_after="2025-06-01">
+    expires_after="2025-08-03">
   <owner>whalechang@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
