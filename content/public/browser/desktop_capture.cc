@@ -12,9 +12,7 @@
 #include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "content/browser/media/capture/aura_window_to_mojo_device_adapter.h"
 #include "content/browser/media/capture/desktop_capturer_ash.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #endif
 
 #if defined(WEBRTC_USE_PIPEWIRE)
@@ -98,15 +96,6 @@ std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer() {
 #endif
   return webrtc::DesktopCapturer::CreateWindowCapturer(options);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void BindAuraWindowCapturer(
-    mojo::PendingReceiver<video_capture::mojom::Device> receiver,
-    const content::DesktopMediaID& id) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<AuraWindowToMojoDeviceAdapter>(id), std::move(receiver));
-}
-#endif
 
 bool CanUsePipeWire() {
 #if defined(WEBRTC_USE_PIPEWIRE)
