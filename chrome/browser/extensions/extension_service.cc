@@ -888,14 +888,21 @@ void ExtensionService::EnableExtension(const std::string& extension_id) {
   extension_registrar_.EnableExtension(extension_id);
 }
 
-void ExtensionService::DisableExtension(const std::string& extension_id,
-                                        int disable_reasons) {
+void ExtensionService::DisableExtension(
+    const ExtensionId& extension_id,
+    disable_reason::DisableReason disable_reason) {
+  DisableExtension(extension_id, DisableReasonSet({disable_reason}));
+}
+
+void ExtensionService::DisableExtension(
+    const ExtensionId& extension_id,
+    const DisableReasonSet& disable_reasons) {
   extension_registrar_.DisableExtension(extension_id, disable_reasons);
 }
 
 void ExtensionService::DisableExtension(
     ExtensionPrefs::DisableReasonRawManipulationPasskey,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const base::flat_set<int>& disable_reasons) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
@@ -904,10 +911,10 @@ void ExtensionService::DisableExtension(
 
 void ExtensionService::DisableExtensionWithSource(
     const Extension* source_extension,
-    const std::string& extension_id,
-    disable_reason::DisableReason disable_reasons) {
-  extension_registrar_.DisableExtensionWithSource(
-      source_extension, extension_id, disable_reasons);
+    const ExtensionId& extension_id,
+    disable_reason::DisableReason disable_reason) {
+  extension_registrar_.DisableExtensionWithSource(source_extension,
+                                                  extension_id, disable_reason);
 }
 
 void ExtensionService::DisableUserExtensionsExcept(
@@ -1135,6 +1142,7 @@ void ExtensionService::CheckManagementPolicy() {
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
     if (system_->management_policy()->MustRemainDisabled(extension.get(),
                                                          &disable_reason)) {
+      DCHECK_NE(disable_reason, disable_reason::DISABLE_NONE);
       to_disable[extension->id()] = disable_reason;
     }
   }
@@ -1246,8 +1254,9 @@ void ExtensionService::CheckManagementPolicy() {
     }
   }
 
-  for (const auto& i : to_disable)
+  for (const auto& i : to_disable) {
     DisableExtension(i.first, i.second);
+  }
 
   // No extension is getting re-enabled here after disabling because |to_enable|
   // is mutually exclusive to |to_disable|.

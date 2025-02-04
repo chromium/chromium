@@ -1367,9 +1367,8 @@ TEST_F(StartupAppLauncherTest,
   // Disable the secodnary app for a reason different than user action - that
   // disable reason should not be overriden during the kiosk launch.
   service()->DisableExtension(
-      kSecondaryAppId,
-      extensions::disable_reason::DISABLE_USER_ACTION |
-          extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY);
+      kSecondaryAppId, {extensions::disable_reason::DISABLE_USER_ACTION,
+                        extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY});
 
   InitializeLauncherWithNetworkReady();
   ASSERT_TRUE(DownloadAndInstallPrimaryApp(*primary_app));

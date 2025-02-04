@@ -302,12 +302,12 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
 
 void ExtensionPlatformBrowserTest::DisableExtension(
     const ExtensionId& extension_id) {
-  DisableExtension(extension_id, disable_reason::DISABLE_USER_ACTION);
+  DisableExtension(extension_id, {disable_reason::DISABLE_USER_ACTION});
 }
 
 void ExtensionPlatformBrowserTest::DisableExtension(
     const ExtensionId& extension_id,
-    int disable_reasons) {
+    const DisableReasonSet& disable_reasons) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionSystem::Get(profile())->extension_service()->DisableExtension(
       extension_id, disable_reasons);

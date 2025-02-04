@@ -185,8 +185,8 @@ bool DesktopAndroidExtensionSystem::AddExtension(
 }
 
 void DesktopAndroidExtensionSystem::DisableExtension(
-    const std::string& extension_id,
-    int disable_reasons) {
+    const ExtensionId& extension_id,
+    const DisableReasonSet& disable_reasons) {
   registrar_->DisableExtension(extension_id, disable_reasons);
 }
 

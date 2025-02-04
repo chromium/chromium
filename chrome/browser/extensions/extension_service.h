@@ -318,35 +318,34 @@ class ExtensionService : public ExtensionServiceInterface,
       const Blocklist::BlocklistStateMap& blocklist_state_map);
 
   // Disables the extension. If the extension is already disabled, just adds
-  // the |disable_reasons| (a bitmask of disable_reason::DisableReason - there
-  // can be multiple DisableReasons e.g. when an extension comes in disabled
-  // from Sync). If the extension cannot be disabled (due to policy), does
-  // nothing.
-  void DisableExtension(const std::string& extension_id, int disable_reasons);
+  // the incoming disable reason(s). If the extension cannot be disabled (due to
+  // policy), does nothing.
+  void DisableExtension(const ExtensionId& extension_id,
+                        disable_reason::DisableReason disable_reason);
+  void DisableExtension(const ExtensionId& extension_id,
+                        const DisableReasonSet& disable_reasons);
 
-  // The method above will start accepting a flat_set of DisableReason soon
-  // (see crbug.com/372186532). When that happens, writing unknown reasons to
-  // prefs will be disallowed. This is because casting unknown reasons (integer)
-  // to `DisableReason` enum is undefined behavior. This isn't a problem in the
-  // bitflag representation because there is no casting involved.
-  //
   // Any code which needs to write unknown reasons should use the
   // methods below, which operate on raw integers. This is needed for scenarios
   // like Sync where unknown reasons can be synced from newer versions of the
-  // browser to older versions. Most code should use the above method. We want
-  // to limit the use of the method below, so it is guarded by a passkey.
+  // browser to older versions. The methods above will trigger undefined
+  // behavior when unknown values are casted to DisableReason while constructing
+  // DisableReasonSet. Most code should use the methods above. We want to limit
+  // the usage of the method below, so it is guarded by a passkey.
+  //
+  // TODO(crbug.com/372186532): Think of a better name for this method and its
+  // equivalent in ExtensionRegistrar. DisableExtensionWithUnknownReasons?
   void DisableExtension(ExtensionPrefs::DisableReasonRawManipulationPasskey,
-                        const std::string& extension_id,
+                        const ExtensionId& extension_id,
                         const base::flat_set<int>& disable_reasons);
 
   // Same as |DisableExtension|, but assumes that the request to disable
   // |extension_id| originates from |source_extension| when evaluating whether
   // the extension can be disabled. Please see |ExtensionMayModifySettings|
   // for details.
-  void DisableExtensionWithSource(
-      const Extension* source_extension,
-      const std::string& extension_id,
-      disable_reason::DisableReason disable_reasons);
+  void DisableExtensionWithSource(const Extension* source_extension,
+                                  const ExtensionId& extension_id,
+                                  disable_reason::DisableReason disable_reason);
 
   // Disable non-default and non-managed extensions with ids not in
   // |except_ids|. Default extensions are those from the Web Store with

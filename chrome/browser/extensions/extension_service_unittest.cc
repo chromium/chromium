@@ -1969,8 +1969,8 @@ TEST_F(ExtensionServiceTest,
 
   // Disable the extension due to a supposed permission increase, but retain its
   // granted permissions.
-  service()->DisableExtension(id, disable_reason::DISABLE_PERMISSIONS_INCREASE |
-                                      disable_reason::DISABLE_USER_ACTION);
+  service()->DisableExtension(id, {disable_reason::DISABLE_PERMISSIONS_INCREASE,
+                                   disable_reason::DISABLE_USER_ACTION});
   EXPECT_TRUE(registry()->disabled_extensions().Contains(id));
   EXPECT_TRUE(prefs->HasDisableReason(
       id, disable_reason::DISABLE_PERMISSIONS_INCREASE));
@@ -4455,9 +4455,8 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsDisable) {
       ExtensionPrefs::Get(profile())->GetDisableReasons(good_crx).empty());
 
   // Internal disable reasons are allowed.
-  service()->DisableExtension(
-      good_crx,
-      disable_reason::DISABLE_CORRUPTED | disable_reason::DISABLE_USER_ACTION);
+  service()->DisableExtension(good_crx, {disable_reason::DISABLE_CORRUPTED,
+                                         disable_reason::DISABLE_USER_ACTION});
 
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
   EXPECT_EQ(1u, registry()->disabled_extensions().size());
