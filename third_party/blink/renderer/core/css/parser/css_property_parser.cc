@@ -262,6 +262,7 @@ static inline bool QuasiLowercaseIntoBuffer(const UChar* src,
     }
     dst[i] = ToASCIILower(c);
   }
+  dst[length] = '\0';
   return true;
 }
 
@@ -339,7 +340,7 @@ static CSSPropertyID UnresolvedCSSPropertyID(
     return CSSPropertyID::kInvalid;
   }
 
-  char buffer[kMaxCSSPropertyNameLength];
+  char buffer[kMaxCSSPropertyNameLength + 1];  // 1 for null character
   if (!QuasiLowercaseIntoBuffer(property_name, length, buffer)) {
     return CSSPropertyID::kInvalid;
   }
@@ -385,7 +386,7 @@ CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
 template <typename CharacterType>
 static CSSValueID CssValueKeywordID(const CharacterType* value_keyword,
                                     unsigned length) {
-  char buffer[kMaxCSSValueKeywordLength];
+  char buffer[kMaxCSSValueKeywordLength + 1];  // 1 for null character
   if (!QuasiLowercaseIntoBuffer(value_keyword, length, buffer)) {
     return CSSValueID::kInvalid;
   }
