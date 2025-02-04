@@ -121,7 +121,8 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest,
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
 
-  void DisableExtension(const std::string& extension_id, int disable_reasons);
+  void DisableExtension(const ExtensionId& extension_id,
+                        const DisableReasonSet& disable_reasons);
 
   // Loads unpacked extension from |path| with manifest |manifest_relative_path|
   // and imitates that it is a component extension.

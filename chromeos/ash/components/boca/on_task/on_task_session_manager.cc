@@ -270,6 +270,7 @@ void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
   should_lock_window_ = lock_window;
   notifications_manager_->ConfigureForLockedMode(should_lock_window_);
   if (should_lock_window_) {
+    system_web_app_manager_->SetAllChromeTabsMuted(/*muted=*/true);
     extensions_manager_->DisableExtensions();
     if (locked_mode_state_changed) {
       // Show notification before locking the window.

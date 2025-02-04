@@ -193,7 +193,7 @@ TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
       ::-webkit-scrollbar { display: none }
       body { margin: 0 }
       div { width: 100px; height: 100px; background: blue; }
-      container { display: block; width: 200px; height: 200px;
+      container { display: block; width: 400px; height: 400px;
                   overflow: scroll; will-change: transform; }
     </style>
     <container id='container'>
@@ -211,18 +211,18 @@ TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
   auto& div3 = *GetLayoutObjectByElementId("div3");
   auto& div4 = *GetLayoutObjectByElementId("div4");
 
-  EXPECT_EQ(gfx::Rect(0, 0, 2200, 2200),
+  EXPECT_EQ(gfx::Rect(0, 0, 2400, 2400),
             container.FirstFragment().GetContentsCullRect().Rect());
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(div1.Id(), kBackgroundType),
                           IsSameId(div2.Id(), kBackgroundType)));
   auto* container_scroll_hit_test = MakeGarbageCollected<HitTestData>();
-  container_scroll_hit_test->scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
+  container_scroll_hit_test->scroll_hit_test_rect = gfx::Rect(0, 0, 400, 400);
   container_scroll_hit_test->scroll_translation =
       container.FirstFragment().PaintProperties()->ScrollTranslation();
   container_scroll_hit_test->scrolling_contents_cull_rect =
-      gfx::Rect(0, 0, 2200, 2200);
+      gfx::Rect(0, 0, 2400, 2400);
   EXPECT_THAT(
       ContentPaintChunks(),
       ElementsAre(
@@ -231,31 +231,28 @@ TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
               1, 1,
               PaintChunk::Id(container.Layer()->Id(), DisplayItem::kLayerChunk),
               container.FirstFragment().LocalBorderBoxProperties(), nullptr,
-              gfx::Rect(0, 0, 200, 200)),
+              gfx::Rect(0, 0, 400, 400)),
           IsPaintChunk(
               1, 1, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
               container.FirstFragment().LocalBorderBoxProperties(),
-              container_scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
+              container_scroll_hit_test, gfx::Rect(0, 0, 400, 400)),
           IsPaintChunk(
               1, 3,
-              PaintChunk::Id(container.Id(),
-                             RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-                                 ? kScrollingBackgroundChunkType
-                                 : kClippedContentsBackgroundChunkType),
+              PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
               container.FirstFragment().ContentsProperties())));
 
   container.GetScrollableArea()->SetScrollOffset(
       ScrollOffset(4000, 4000), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(gfx::Rect(2000, 2000, 4200, 4200),
+  EXPECT_EQ(gfx::Rect(2000, 2000, 4400, 4400),
             container.FirstFragment().GetContentsCullRect().Rect());
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(div3.Id(), kBackgroundType),
                           IsSameId(div4.Id(), kBackgroundType)));
   container_scroll_hit_test->scrolling_contents_cull_rect =
-      gfx::Rect(2000, 2000, 4200, 4200);
+      gfx::Rect(2000, 2000, 4400, 4400);
   EXPECT_THAT(
       ContentPaintChunks(),
       ElementsAre(
@@ -264,17 +261,14 @@ TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
               1, 1,
               PaintChunk::Id(container.Layer()->Id(), DisplayItem::kLayerChunk),
               container.FirstFragment().LocalBorderBoxProperties(), nullptr,
-              gfx::Rect(0, 0, 200, 200)),
+              gfx::Rect(0, 0, 400, 400)),
           IsPaintChunk(
               1, 1, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
               container.FirstFragment().LocalBorderBoxProperties(),
-              container_scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
+              container_scroll_hit_test, gfx::Rect(0, 0, 400, 400)),
           IsPaintChunk(
               1, 3,
-              PaintChunk::Id(container.Id(),
-                             RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-                                 ? kScrollingBackgroundChunkType
-                                 : kClippedContentsBackgroundChunkType),
+              PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
               container.FirstFragment().ContentsProperties())));
 }
 
@@ -558,10 +552,7 @@ TEST_P(PaintControllerPaintTest,
               container_scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
           IsPaintChunk(
               2, 3,
-              PaintChunk::Id(container.Id(),
-                             RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-                                 ? kScrollingBackgroundChunkType
-                                 : kClippedContentsBackgroundChunkType),
+              PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
               container.FirstFragment().ContentsProperties()),
           IsPaintChunk(
               3, 4,

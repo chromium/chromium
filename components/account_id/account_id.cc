@@ -272,17 +272,17 @@ std::string AccountId::Serialize() const {
 
 // static
 std::optional<AccountId> AccountId::Deserialize(std::string_view serialized) {
-  std::optional<base::Value> value(base::JSONReader::Read(serialized));
-  if (!value || !value->is_dict()) {
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(serialized);
+  if (!value) {
     return std::nullopt;
   }
 
   AccountType account_type = AccountType::GOOGLE;
-  base::Value::Dict& dict = value->GetDict();
-  const std::string* gaia_id = dict.FindString(kGaiaIdKey);
-  const std::string* user_email = dict.FindString(kEmailKey);
-  const std::string* obj_guid = dict.FindString(kObjGuid);
-  const std::string* account_type_string = dict.FindString(kAccountTypeKey);
+  const std::string* gaia_id = value->FindString(kGaiaIdKey);
+  const std::string* user_email = value->FindString(kEmailKey);
+  const std::string* obj_guid = value->FindString(kObjGuid);
+  const std::string* account_type_string = value->FindString(kAccountTypeKey);
   if (account_type_string) {
     account_type = StringToAccountType(*account_type_string);
   }

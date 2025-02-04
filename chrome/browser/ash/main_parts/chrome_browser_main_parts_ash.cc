@@ -1199,7 +1199,8 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
 
     ui::SetShowEmojiKeyboardCallback(base::BindRepeating(&EmojiUI::Show));
 
-    BootTimesRecorder::Get()->OnChromeProcessStart();
+    BootTimesRecorder::Get()->OnChromeProcessStart(
+        CHECK_DEREF(g_browser_process->local_state()));
 
     // Initialize the network portal detector for Chrome OS. The network
     // portal detector starts to listen for notifications from

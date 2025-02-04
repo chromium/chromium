@@ -559,6 +559,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     // for other report types.
     std::optional<std::vector<uint8_t>> real_time_histogram;
 
+    // The flip probability that was used to calculate the real time report's
+    // noise using RAPPOR.
+    std::optional<double> real_time_report_flip_probability;
+
     url::Origin frame_origin;
     network::mojom::ClientSecurityState client_security_state;
 

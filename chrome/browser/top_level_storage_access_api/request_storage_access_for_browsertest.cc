@@ -119,11 +119,17 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUp() override {
-    features_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+    features_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                            GetDisabledFeatures());
     InProcessBrowserTest::SetUp();
   }
 
-  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const {
+    return {};
+  }
+
+  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const {
     return {};
   }
 
@@ -1376,6 +1382,12 @@ class TopLevelStorageExemptionReasonMetricTest
 
   const std::vector<int64_t>& expected_metric_value() {
     return GetParam().expected_metric_value;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    return {
+        content_settings::features::kTrackingProtection3pcd,
+    };
   }
 };
 

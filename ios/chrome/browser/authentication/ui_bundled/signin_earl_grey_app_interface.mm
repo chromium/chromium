@@ -105,6 +105,19 @@
   return base::SysUTF8ToNSString(info.email);
 }
 
++ (NSSet<NSString*>*)accountsInProfileGaiaIDs {
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  std::vector<CoreAccountInfo> infos =
+      IdentityManagerFactory::GetForProfile(profile)
+          ->GetAccountsWithRefreshTokens();
+
+  NSMutableSet<NSString*>* gaias = [[NSMutableSet alloc] init];
+  for (const CoreAccountInfo& info : infos) {
+    [gaias addObject:info.gaia.ToNSString()];
+  }
+  return gaias;
+}
+
 + (BOOL)isSignedOut {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
 

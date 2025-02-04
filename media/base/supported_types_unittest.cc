@@ -5,7 +5,6 @@
 #include "media/base/supported_types.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -187,8 +186,8 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9Profiles) {
 
 // VP9 Profile2 are supported on x86, ChromeOS on ARM and Mac/Win on ARM64.
 // See third_party/libvpx/BUILD.gn.
-#if defined(ARCH_CPU_X86_FAMILY) ||                                 \
-    (defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)) || \
+#if defined(ARCH_CPU_X86_FAMILY) ||                             \
+    (defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS)) || \
     (defined(ARCH_CPU_ARM64) && (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)))
   EXPECT_TRUE(IsDecoderSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE2, kUnspecifiedLevel, kColorSpace}));
@@ -378,8 +377,8 @@ TEST(SupportedTypesTest, IsEncoderSupportedVideoType_VP9Profiles) {
 
 // VP9 Profile2 are supported on x86, ChromeOS on ARM and Mac/Win on ARM64.
 // See third_party/libvpx/BUILD.gn.
-#if defined(ARCH_CPU_X86_FAMILY) ||                                 \
-    (defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)) || \
+#if defined(ARCH_CPU_X86_FAMILY) ||                             \
+    (defined(ARCH_CPU_ARM_FAMILY) && BUILDFLAG(IS_CHROMEOS)) || \
     (defined(ARCH_CPU_ARM64) && (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)))
   EXPECT_TRUE(
       IsEncoderSupportedVideoType({VideoCodec::kVP9, VP9PROFILE_PROFILE2}));

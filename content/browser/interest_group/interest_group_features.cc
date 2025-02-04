@@ -27,11 +27,6 @@ BASE_FEATURE(kEnableBandAPrivateAggregation,
              "EnableBandAPrivateAggregation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable deals support from B&A response.
-BASE_FEATURE(kEnableBandADealSupport,
-             "EnableBandADealSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable parsing forDebuggingOnly reports from B&A response, for down sampling.
 BASE_FEATURE(kEnableBandASampleDebugReports,
              "EnableBandASampleDebugReports",
@@ -46,6 +41,11 @@ BASE_FEATURE(kEnableBandATriggeredUpdates,
 BASE_FEATURE(kFledgeBiddingAndAuctionNonceSupport,
              "FledgeBiddingAndAuctionNonceSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable un-noised real time reporting for certain user settings.
+BASE_FEATURE(kFledgeEnableUnNoisedRealTimeReport,
+             "FledgeAllowUnNoisedRealTimeReport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable the user agent header in auction requests to be overridden.
 BASE_FEATURE(kFledgeEnableUserAgentOverrides,

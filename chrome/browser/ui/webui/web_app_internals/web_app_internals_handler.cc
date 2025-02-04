@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/to_value_list.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -75,44 +76,33 @@ constexpr char kNeedsRecordWebAppDebugInfo[] =
     "No debugging info available! Please enable: "
     "chrome://flags/#record-web-app-debug-info";
 
-template <typename T>
-std::string ConvertToString(const T& value) {
-  std::stringstream ss;
-  ss << value;
-  return ss.str();
-}
-
 base::Value::Dict BuildIndexJson() {
-  base::Value::Dict root;
-  base::Value::List& index = *root.EnsureList("Index");
-
-  index.Append(kInstalledWebApps);
-  index.Append(kPreinstalledWebAppConfigs);
-  index.Append(kUserUninstalledPreinstalledWebAppPrefs);
-  index.Append(kWebAppPreferences);
-  index.Append(kWebAppIphPreferences);
-  index.Append(kWebAppMlPreferences);
-  index.Append(kWebAppIphLcPreferences);
-  index.Append(kShouldGarbageCollectStoragePartitions);
-  index.Append(kLockManager);
-  index.Append(kNavigationCapturing);
-  index.Append(kCommandManager);
-  index.Append(kIconErrorLog);
-  index.Append(kInstallationProcessErrorLog);
+  return base::Value::Dict().Set(
+      "Index", base::Value::List()
+                   .Append(kInstalledWebApps)
+                   .Append(kPreinstalledWebAppConfigs)
+                   .Append(kUserUninstalledPreinstalledWebAppPrefs)
+                   .Append(kWebAppPreferences)
+                   .Append(kWebAppIphPreferences)
+                   .Append(kWebAppMlPreferences)
+                   .Append(kWebAppIphLcPreferences)
+                   .Append(kShouldGarbageCollectStoragePartitions)
+                   .Append(kLockManager)
+                   .Append(kNavigationCapturing)
+                   .Append(kCommandManager)
+                   .Append(kIconErrorLog)
+                   .Append(kInstallationProcessErrorLog)
 #if BUILDFLAG(IS_MAC)
-  index.Append(kAppShimRegistryLocalStorage);
+                   .Append(kAppShimRegistryLocalStorage)
 #endif
-  index.Append(kIsolatedWebAppUpdateManager);
-  index.Append(kIsolatedWebAppPolicyManager);
-  index.Append(kWebAppDirectoryDiskState);
-
-  return root;
+                   .Append(kIsolatedWebAppUpdateManager)
+                   .Append(kIsolatedWebAppPolicyManager)
+                   .Append(kWebAppDirectoryDiskState));
 }
 
 base::Value::Dict BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
-  base::Value::Dict root;
-  root.Set(kInstalledWebApps, provider.registrar_unsafe().AsDebugValue());
-  return root;
+  return base::Value::Dict().Set(kInstalledWebApps,
+                                 provider.registrar_unsafe().AsDebugValue());
 }
 
 base::Value::Dict BuildPreinstalledWebAppConfigsJson(
@@ -126,136 +116,98 @@ base::Value::Dict BuildPreinstalledWebAppConfigsJson(
     return root;
   }
 
-  base::Value::Dict& preinstalled_web_app_configs =
-      *root.EnsureDict(kPreinstalledWebAppConfigs);
+  auto config_to_dict = [](const auto& config) {
+    return base::Value::Dict()
+        .Set("!Reason", config.second)
+        .Set("Config", config.first.AsDebugValue());
+  };
 
-  base::Value::List& config_parse_errors =
-      *preinstalled_web_app_configs.EnsureList("ConfigParseErrors");
-  for (const std::string& parse_error : debug_info->parse_errors) {
-    config_parse_errors.Append(parse_error);
-  }
-
-  base::Value::List& uninstall_configs =
-      *preinstalled_web_app_configs.EnsureList("UninstallConfigs");
-  for (const std::pair<web_app::ExternalInstallOptions, std::string>&
-           uninstall_config : debug_info->uninstall_configs) {
-    base::Value::Dict entry;
-    entry.Set("!Reason", uninstall_config.second);
-    entry.Set("Config", uninstall_config.first.AsDebugValue());
-    uninstall_configs.Append(std::move(entry));
-  }
-
-  base::Value::List& install_configs =
-      *preinstalled_web_app_configs.EnsureList("InstallConfigs");
-  for (const std::pair<web_app::ExternalInstallOptions, std::string>&
-           install_config : debug_info->install_configs) {
-    base::Value::Dict entry;
-    entry.Set("!Reason", install_config.second);
-    entry.Set("Config", install_config.first.AsDebugValue());
-    install_configs.Append(std::move(entry));
-  }
-
-  base::Value::List& ignore_configs =
-      *preinstalled_web_app_configs.EnsureList("IgnoreConfigs");
-  for (const std::pair<web_app::ExternalInstallOptions, std::string>&
-           ignore_config : debug_info->ignore_configs) {
-    base::Value::Dict entry;
-    entry.Set("!Reason", ignore_config.second);
-    entry.Set("Config", ignore_config.first.AsDebugValue());
-    ignore_configs.Append(std::move(entry));
-  }
-
-  base::Value::List& install_results =
-      *preinstalled_web_app_configs.EnsureList("InstallResults");
-  for (std::pair<const GURL&,
-                 const web_app::ExternallyManagedAppManager::InstallResult&>
-           install_result : debug_info->install_results) {
-    base::Value::Dict entry;
-    entry.Set("InstallUrl", install_result.first.spec());
-    entry.Set("ResultCode", ConvertToString(install_result.second.code));
-    entry.Set("DidUninstallAndReplace",
-              install_result.second.did_uninstall_and_replace);
-    install_results.Append(std::move(entry));
-  }
-
-  preinstalled_web_app_configs.Set("IsStartUpTaskComplete",
-                                   debug_info->is_start_up_task_complete);
-
-  base::Value::List& uninstall_results =
-      *preinstalled_web_app_configs.EnsureList("UninstallResults");
-  for (std::pair<const GURL&, webapps::UninstallResultCode> uninstall_result :
-       debug_info->uninstall_results) {
-    base::Value::Dict entry;
-    entry.Set("InstallUrl", uninstall_result.first.spec());
-    entry.Set("Success", base::ToString(uninstall_result.second));
-    uninstall_results.Append(std::move(entry));
-  }
+  root.Set(
+      kPreinstalledWebAppConfigs,
+      base::Value::Dict()
+          .Set("ConfigParseErrors", base::ToValueList(debug_info->parse_errors))
+          .Set("UninstallConfigs",
+               base::ToValueList(debug_info->uninstall_configs, config_to_dict))
+          .Set("InstallConfigs",
+               base::ToValueList(debug_info->install_configs, config_to_dict))
+          .Set("IgnoreConfigs",
+               base::ToValueList(debug_info->ignore_configs, config_to_dict))
+          .Set("InstallResults",
+               base::ToValueList(
+                   debug_info->install_results,
+                   [](const auto& install_result) {
+                     return base::Value::Dict()
+                         .Set("InstallUrl", install_result.first.spec())
+                         .Set("ResultCode",
+                              base::ToString(install_result.second.code))
+                         .Set("DidUninstallAndReplace",
+                              install_result.second.did_uninstall_and_replace);
+                   }))
+          .Set("IsStartUpTaskComplete", debug_info->is_start_up_task_complete)
+          .Set("UninstallResults",
+               base::ToValueList(
+                   debug_info->uninstall_results,
+                   [](const auto& uninstall_result) {
+                     return base::Value::Dict()
+                         .Set("InstallUrl", uninstall_result.first.spec())
+                         .Set("Success",
+                              base::ToString(uninstall_result.second));
+                   })));
 
   return root;
 }
 
 base::Value::Dict BuildUserUninstalledPreinstalledWebAppPrefsJson(
     Profile* profile) {
-  base::Value::Dict root;
-  root.Set(kUserUninstalledPreinstalledWebAppPrefs,
-           profile->GetPrefs()
-               ->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref)
-               .Clone());
-  return root;
+  return base::Value::Dict().Set(
+      kUserUninstalledPreinstalledWebAppPrefs,
+      profile->GetPrefs()
+          ->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref)
+          .Clone());
 }
 
 base::Value::Dict BuildWebAppsPrefsJson(Profile* profile) {
-  base::Value::Dict root;
-  root.Set(kWebAppPreferences,
-           profile->GetPrefs()->GetDict(prefs::kWebAppsPreferences).Clone());
-  return root;
+  return base::Value::Dict().Set(
+      kWebAppPreferences,
+      profile->GetPrefs()->GetDict(prefs::kWebAppsPreferences).Clone());
 }
 
 base::Value::Dict BuildWebAppIphPrefsJson(Profile* profile) {
-  base::Value::Dict root;
-  root.Set(
+  return base::Value::Dict().Set(
       kWebAppIphPreferences,
       profile->GetPrefs()->GetDict(prefs::kWebAppsAppAgnosticIphState).Clone());
-  return root;
 }
 
 base::Value::Dict BuildWebAppMlPrefsJson(Profile* profile) {
-  base::Value::Dict root;
-  root.Set(
+  return base::Value::Dict().Set(
       kWebAppMlPreferences,
       profile->GetPrefs()->GetDict(prefs::kWebAppsAppAgnosticMlState).Clone());
-  return root;
 }
 
 base::Value::Dict BuildWebAppLinkCapturingIphPrefsJson(Profile* profile) {
-  base::Value::Dict root;
-  root.Set(kWebAppIphLcPreferences,
-           profile->GetPrefs()
-               ->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState)
-               .Clone());
-  return root;
+  return base::Value::Dict().Set(
+      kWebAppIphLcPreferences,
+      profile->GetPrefs()
+          ->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState)
+          .Clone());
 }
 
 base::Value::Dict BuildShouldGarbageCollectStoragePartitionsPrefsJson(
     Profile* profile) {
-  base::Value::Dict root;
-  root.Set(kShouldGarbageCollectStoragePartitions,
-           profile->GetPrefs()->GetBoolean(
-               prefs::kShouldGarbageCollectStoragePartitions));
-  return root;
+  return base::Value::Dict().Set(
+      kShouldGarbageCollectStoragePartitions,
+      profile->GetPrefs()->GetBoolean(
+          prefs::kShouldGarbageCollectStoragePartitions));
 }
 
 base::Value::Dict BuildLockManagerJson(web_app::WebAppProvider& provider) {
-  base::Value::Dict root;
-  root.Set(kLockManager,
-           provider.command_manager().lock_manager().ToDebugValue());
-  return root;
+  return base::Value::Dict().Set(
+      kLockManager, provider.command_manager().lock_manager().ToDebugValue());
 }
 
 base::Value::Dict BuildCommandManagerJson(web_app::WebAppProvider& provider) {
-  base::Value::Dict root;
-  root.Set(kCommandManager, provider.command_manager().ToDebugValue());
-  return root;
+  return base::Value::Dict().Set(kCommandManager,
+                                 provider.command_manager().ToDebugValue());
 }
 
 base::Value::Dict BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
@@ -269,10 +221,7 @@ base::Value::Dict BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
     return root;
   }
 
-  base::Value::List& icon_error_log = *root.EnsureList(kIconErrorLog);
-  for (const std::string& error : *error_log) {
-    icon_error_log.Append(error);
-  }
+  root.Set(kIconErrorLog, base::ToValueList(*error_log));
 
   return root;
 }
@@ -289,21 +238,16 @@ base::Value::Dict BuildInstallProcessErrorLogJson(
     return root;
   }
 
-  base::Value::List& installation_process_error_log =
-      *root.EnsureList(kInstallationProcessErrorLog);
-  for (const base::Value& error : *error_log) {
-    installation_process_error_log.Append(error.Clone());
-  }
+  root.Set(kInstallationProcessErrorLog,
+           base::ToValueList(*error_log, &base::Value::Clone));
 
   return root;
 }
 
 #if BUILDFLAG(IS_MAC)
 base::Value::Dict BuildAppShimRegistryLocalStorageJson() {
-  base::Value::Dict root;
-  root.Set(kAppShimRegistryLocalStorage,
-           AppShimRegistry::Get()->AsDebugDict().Clone());
-  return root;
+  return base::Value::Dict().Set(kAppShimRegistryLocalStorage,
+                                 AppShimRegistry::Get()->AsDebugDict().Clone());
 }
 #endif
 
@@ -359,17 +303,15 @@ base::Value BuildWebAppDiskStateJson(base::FilePath root_directory,
   base::Value::Dict contents;
   BuildDirectoryState(root_directory, &contents);
 
-  base::Value::Dict section;
-  section.Set(kWebAppDirectoryDiskState, std::move(contents));
-  root.Append(std::move(section));
+  root.Append(
+      base::Value::Dict().Set(kWebAppDirectoryDiskState, std::move(contents)));
   return base::Value(std::move(root));
 }
 
 base::Value::Dict BuildNavigationCapturingLog(
     web_app::WebAppProvider& provider) {
-  base::Value::Dict root;
-  root.Set(kNavigationCapturing, provider.navigation_capturing_log().GetLog());
-  return root;
+  return base::Value::Dict().Set(kNavigationCapturing,
+                                 provider.navigation_capturing_log().GetLog());
 }
 
 }  // namespace
@@ -380,27 +322,28 @@ void WebAppInternalsHandler::BuildDebugInfo(
     base::OnceCallback<void(base::Value root)> callback) {
   auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
 
-  base::Value::List root;
-  root.Append(BuildIndexJson());
-  root.Append(BuildInstalledWebAppsJson(*provider));
-  root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
-  root.Append(BuildUserUninstalledPreinstalledWebAppPrefsJson(profile));
-  root.Append(BuildWebAppsPrefsJson(profile));
-  root.Append(BuildWebAppIphPrefsJson(profile));
-  root.Append(BuildWebAppMlPrefsJson(profile));
-  root.Append(BuildWebAppLinkCapturingIphPrefsJson(profile));
-  root.Append(BuildShouldGarbageCollectStoragePartitionsPrefsJson(profile));
-  root.Append(BuildLockManagerJson(*provider));
-  root.Append(BuildNavigationCapturingLog(*provider));
-  root.Append(BuildCommandManagerJson(*provider));
-  root.Append(BuildIconErrorLogJson(*provider));
-  root.Append(BuildInstallProcessErrorLogJson(*provider));
+  base::Value::List root =
+      base::Value::List()
+          .Append(BuildIndexJson())
+          .Append(BuildInstalledWebAppsJson(*provider))
+          .Append(BuildPreinstalledWebAppConfigsJson(*provider))
+          .Append(BuildUserUninstalledPreinstalledWebAppPrefsJson(profile))
+          .Append(BuildWebAppsPrefsJson(profile))
+          .Append(BuildWebAppIphPrefsJson(profile))
+          .Append(BuildWebAppMlPrefsJson(profile))
+          .Append(BuildWebAppLinkCapturingIphPrefsJson(profile))
+          .Append(BuildShouldGarbageCollectStoragePartitionsPrefsJson(profile))
+          .Append(BuildLockManagerJson(*provider))
+          .Append(BuildNavigationCapturingLog(*provider))
+          .Append(BuildCommandManagerJson(*provider))
+          .Append(BuildIconErrorLogJson(*provider))
+          .Append(BuildInstallProcessErrorLogJson(*provider))
 #if BUILDFLAG(IS_MAC)
-  root.Append(BuildAppShimRegistryLocalStorageJson());
+          .Append(BuildAppShimRegistryLocalStorageJson())
 #endif
-  root.Append(BuildIsolatedWebAppUpdaterManagerJson(*provider));
-  root.Append(BuildIsolatedWebAppPolicyManagerJson(*provider));
-  root.Append(BuildIwaKeyDistributionInfoProviderJson());
+          .Append(BuildIsolatedWebAppUpdaterManagerJson(*provider))
+          .Append(BuildIsolatedWebAppPolicyManagerJson(*provider))
+          .Append(BuildIwaKeyDistributionInfoProviderJson());
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,

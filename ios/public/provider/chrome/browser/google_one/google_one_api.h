@@ -7,13 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol SystemIdentity;
+#import "ios/chrome/browser/google_one/shared/google_one_entry_point.h"
 
-enum class GoogleOneEntryPoint {
-  kSettings,
-  kSaveToDriveAlert,
-  kSaveToPhotosAlert,
-};
+@protocol SystemIdentity;
 
 // The configuration for the GoogleOneController.
 @interface GoogleOneConfiguration : NSObject

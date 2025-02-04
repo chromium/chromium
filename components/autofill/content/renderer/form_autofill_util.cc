@@ -1248,8 +1248,7 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
   if (!element.IsConnected() || !IsAutofillableElement(element) ||
       !element.IsEnabled() || element.IsReadOnly() ||
       IsCheckableElement(element) ||
-      (!IsWebElementFocusableForAutofill(element) &&
-       !IsSelectElement(element))) {
+      (!element.IsFocusable() && !IsSelectElement(element))) {
     base::UmaHistogramEnumeration(kSkipReasonHistogram,
                                   SkipReason::kUnfillable);
     return true;
@@ -1544,7 +1543,7 @@ bool IsWebElementVisible(const WebElement& element) {
     constexpr int kMinPixelSize = 10;
     return size.width() >= kMinPixelSize && size.height() >= kMinPixelSize;
   };
-  return element && IsWebElementFocusableForAutofill(element) &&
+  return element && element.IsFocusable() &&
          (IsCheckableElement(element) || HasMinSize(element.GetClientSize()) ||
           HasMinSize(element.GetScrollSize()));
 }
@@ -1658,8 +1657,8 @@ bool IsVisibleIframe(const WebElement& element) {
   // positive bounds. The threshold of 10 pixels is chosen rather arbitrarily.
   constexpr int kMinPixelSize = 10;
   gfx::Rect bounds = element.BoundsInWidget();
-  return IsWebElementFocusableForAutofill(element) &&
-         bounds.width() > kMinPixelSize && bounds.height() > kMinPixelSize;
+  return element.IsFocusable() && bounds.width() > kMinPixelSize &&
+         bounds.height() > kMinPixelSize;
 }
 
 // A necessary condition for an iframe to be added to FormData::child_frames.
@@ -1965,7 +1964,7 @@ void WebFormControlElementToFormField(
   // The browser doesn't need to differentiate between preview and autofill.
   field->set_is_autofilled(element.IsAutofilled());
   field->set_is_user_edited(element.UserHasEditedTheField());
-  field->set_is_focusable(IsWebElementFocusableForAutofill(element));
+  field->set_is_focusable(element.IsFocusable());
   field->set_is_visible(kAutofillDetectFieldVisibilityEnabled
                             ? IsWebElementVisible(element)
                             : field->is_focusable());
@@ -2321,10 +2320,6 @@ bool IsWebauthnTaggedElement(const WebFormControlElement& element) {
 
 bool IsElementEditable(const WebInputElement& element) {
   return element.IsEnabled() && !element.IsReadOnly();
-}
-
-bool IsWebElementFocusableForAutofill(const WebElement& element) {
-  return element.IsFocusable();
 }
 
 FormRendererId GetFormRendererId(const WebElement& e) {

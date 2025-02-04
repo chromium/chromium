@@ -5,14 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_CODE_CACHE_FETCHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_CODE_CACHE_FETCHER_H_
 
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
@@ -28,56 +24,44 @@ class CodeCacheHost;
 class BLINK_PLATFORM_EXPORT CodeCacheFetcher
     : public WTF::RefCounted<CodeCacheFetcher> {
  public:
+  CodeCacheFetcher() = default;
+  CodeCacheFetcher(const CodeCacheFetcher&) = delete;
+  CodeCacheFetcher& operator=(const CodeCacheFetcher&) = delete;
+
+  // Creates a new fetcher for the given `request` and issues the async request
+  // to fetch the associated code cache metadata.
   static scoped_refptr<CodeCacheFetcher> TryCreateAndStart(
       const network::ResourceRequest& request,
       CodeCacheHost& code_cache_host,
       base::OnceClosure done_closure);
 
-  CodeCacheFetcher(CodeCacheHost& code_cache_host,
-                   mojom::blink::CodeCacheType code_cache_type,
-                   const KURL& url,
-                   base::OnceClosure done_closure);
+  // Called when the request associated with the fetcher responds with code
+  // cache metadata.
+  virtual void DidReceiveCachedMetadataFromUrlLoader() = 0;
 
-  CodeCacheFetcher(const CodeCacheFetcher&) = delete;
-  CodeCacheFetcher& operator=(const CodeCacheFetcher&) = delete;
+  // Called during resource loading to take the fetched code cache metadata, if
+  // it exists.
+  virtual std::optional<mojo_base::BigBuffer> TakeCodeCacheForResponse(
+      const network::mojom::URLResponseHead& response_head) = 0;
 
-  bool is_waiting() const { return is_waiting_; }
+  // Called when the request associated with the fetcher has been redirected to
+  // `new_url`.
+  virtual void OnReceivedRedirect(const KURL& new_url) = 0;
 
-  void SetCurrentUrl(const KURL& new_url) { current_url_ = new_url; }
-  void DidReceiveCachedMetadataFromUrlLoader();
-  std::optional<mojo_base::BigBuffer> TakeCodeCacheForResponse(
-      const network::mojom::URLResponseHead& response_head);
+  // Indicates whether the fetcher has made a request to fetch the code cache
+  // metadata and is waiting on the response.
+  virtual bool IsWaiting() const = 0;
 
- private:
+  // Starts the async request for the associated code cache, called after the
+  // fetcher is constructed. Note this is not inlined into the constructor as
+  // the async fetch task needs to take a ref-counted reference to this, and a
+  // ref-counted reference cannot be taken until this has first been
+  // constructed.
+  virtual void Start() = 0;
+
+ protected:
   friend class WTF::RefCounted<CodeCacheFetcher>;
-  ~CodeCacheFetcher() = default;
-
-  void Start();
-
-  void DidReceiveCachedCode(base::Time response_time,
-                            mojo_base::BigBuffer data);
-
-  void ClearCodeCacheEntryIfPresent();
-
-  base::WeakPtr<CodeCacheHost> code_cache_host_;
-  mojom::blink::CodeCacheType code_cache_type_;
-  base::TimeTicks time_of_last_fetch_start_;
-
-  // The initial URL used for code cache fetching, prior to redirects. This
-  // should match the initial URL for script fetching.
-  const KURL initial_url_;
-
-  // The current URL used for code cache fetching. This should match / will be
-  // updated to the current url for script fetching (either initial or
-  // redirected).
-  KURL current_url_;
-
-  base::OnceClosure done_closure_;
-
-  bool is_waiting_ = true;
-  bool did_receive_cached_metadata_from_url_loader_ = false;
-  std::optional<mojo_base::BigBuffer> code_cache_data_;
-  base::Time code_cache_response_time_;
+  virtual ~CodeCacheFetcher() = default;
 };
 
 }  // namespace blink

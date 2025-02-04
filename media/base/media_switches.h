@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media_export.h"
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
@@ -95,9 +94,6 @@ MEDIA_EXPORT extern const char kOverrideHardwareSecureCodecsForTesting[];
 MEDIA_EXPORT extern const char kEnableLiveCaptionPrefForTesting[];
 
 #if BUILDFLAG(IS_CHROMEOS)
-MEDIA_EXPORT extern const char kLacrosEnablePlatformHevc[];
-MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[];
-MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedAv1[];
 MEDIA_EXPORT extern const char kAllowRAInDevMode[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -480,10 +476,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(
     kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kExposeOutOfProcessVideoDecodingToLacros);
+#if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kBackgroundListening);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 // Note: please use GetOutOfProcessVideoDecodingMode() to determine if OOP-VD is

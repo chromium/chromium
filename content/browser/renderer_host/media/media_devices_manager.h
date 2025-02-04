@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/system/system_monitor.h"
 #include "base/timer/timer.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/common/content_export.h"
@@ -72,6 +73,9 @@ class CONTENT_EXPORT MediaDevicesManager
    public:
     BoolDeviceTypes() { fill(false); }
   };
+
+  using DeviceMonitoringMode =
+      base::StrongAlias<class DeviceMonitoringModeTag, bool>;
 
   enum class PermissionDeniedState { kDenied, kNotDenied };
 
@@ -156,8 +160,24 @@ class CONTENT_EXPORT MediaDevicesManager
   // enumeration results for the device types supported by the monitor.
   void StartMonitoring();
 
+  // Attempts to start device monitoring for audio and/or video.
+  // Calling `audio_device_monitoring_mode(true)` ensures audio monitoring
+  // starts while leaving the video monitoring state unchanged. Similarly,
+  // `video_device_monitoring_mode(true)` starts video monitoring without
+  // affecting the audio monitoring state.
+  void StartMonitoring(DeviceMonitoringMode audio_device_monitoring_mode,
+                       DeviceMonitoringMode video_device_monitoring_mode);
+
   // Stops device monitoring and disables caching for all device types.
   void StopMonitoring();
+
+  // Attempts to stop device monitoring for audio and/or video.
+  // Calling `audio_device_monitoring_mode(true)` ensures audio monitoring stops
+  // while leaving the video monitoring state unchanged. Similarly,
+  // `video_device_monitoring_mode(true)` stops video monitoring without
+  // affecting the audio monitoring state.
+  void StopMonitoring(DeviceMonitoringMode audio_device_monitoring_mode,
+                      DeviceMonitoringMode video_device_monitoring_mode);
 
   // Implements base::SystemMonitor::DevicesChangedObserver.
   // This function is only called in response to physical audio/video device
@@ -235,6 +255,17 @@ class CONTENT_EXPORT MediaDevicesManager
         mojo_device_notifier_;
   };
 
+  // The NO_CACHE policy is such that no previous results are used when
+  // EnumerateDevices is called. The results of a new or in-progress low-level
+  // device enumeration are used.
+  // The SYSTEM_MONITOR policy is such that previous results are reused,
+  // provided they were produced by a low-level device enumeration issued after
+  // the last call to OnDevicesChanged.
+  enum class CachePolicy {
+    NO_CACHE,
+    SYSTEM_MONITOR,
+  };
+
  private:
   friend class MediaDevicesManagerTest;
   struct EnumerationRequest;
@@ -278,17 +309,6 @@ class CONTENT_EXPORT MediaDevicesManager
     int num_pending_audio_input_capabilities;
     MediaDeviceEnumeration raw_enumeration_results;
     std::vector<blink::WebMediaDeviceInfoArray> hashed_enumeration_results;
-  };
-
-  // The NO_CACHE policy is such that no previous results are used when
-  // EnumerateDevices is called. The results of a new or in-progress low-level
-  // device enumeration are used.
-  // The SYSTEM_MONITOR policy is such that previous results are re-used,
-  // provided they were produced by a low-level device enumeration issued after
-  // the last call to OnDevicesChanged.
-  enum class CachePolicy {
-    NO_CACHE,
-    SYSTEM_MONITOR,
   };
 
   // Manually sets a caching policy for a given device type.
@@ -422,7 +442,10 @@ class CONTENT_EXPORT MediaDevicesManager
   BoolDeviceTypes cache_is_populated_;
   std::vector<EnumerationRequest> requests_;
   MediaDeviceEnumeration current_snapshot_;
-  bool monitoring_started_;
+  DeviceMonitoringMode monitoring_started_for_audio_{false};
+  DeviceMonitoringMode monitoring_started_for_video_{false};
+
+  bool added_device_changed_observer_ = false;
 
   uint32_t last_subscription_id_ = 0u;
   base::flat_map<uint32_t, SubscriptionRequest> subscriptions_;

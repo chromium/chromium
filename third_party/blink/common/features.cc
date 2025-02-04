@@ -811,7 +811,7 @@ BASE_FEATURE_PARAM(bool,
                    kSmallScrollersUseMinCullRect,
                    &kExpandCompositedCullRect,
                    "small_scroller_opt",
-                   false);
+                   true);
 
 // Enable the <fencedframe> element; see crbug.com/1123606. Note that enabling
 // this feature does not automatically expose this element to the web, it only
@@ -2025,6 +2025,12 @@ BASE_FEATURE(kPreloadingViewportHeuristics,
 BASE_FEATURE(kPrerender2InNewTab,
              "Prerender2InNewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Firing pagehide events for intended prerender cancellation. See
+// crbug.com/353628449 for more details.
+BASE_FEATURE(kPageHideEventForPrerender2,
+             "PageHideEventForPrerender2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrerender2MainFrameNavigation,
              "Prerender2MainFrameNavigation",

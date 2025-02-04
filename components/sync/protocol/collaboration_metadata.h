@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <string>
 
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -21,6 +22,7 @@ class CollaborationMetadata {
   CollaborationMetadata& operator=(const CollaborationMetadata& other);
   CollaborationMetadata(CollaborationMetadata&& other);
   CollaborationMetadata& operator=(CollaborationMetadata&& other);
+  ~CollaborationMetadata();
 
   static CollaborationMetadata FromRemoteProto(
       const sync_pb::SyncEntity::CollaborationMetadata& remote_metadata);
@@ -32,7 +34,7 @@ class CollaborationMetadata {
   // and `last_updated_by`.
   static CollaborationMetadata ForLocalChange(
       const GaiaId& changed_by,
-      std::string_view collaboration_id);
+      const CollaborationId& collaboration_id);
 
   // The account that created the entity (may be empty).
   const GaiaId& created_by() const { return created_by_; }
@@ -41,8 +43,7 @@ class CollaborationMetadata {
   const GaiaId& last_updated_by() const { return last_updated_by_; }
 
   // The collaboration ID of the entity.
-  // TODO(crbug.com/380406615): use CollaborationId instead.
-  const std::string& collaboration_id() const { return collaboration_id_; }
+  const CollaborationId& collaboration_id() const { return collaboration_id_; }
 
   sync_pb::SyncEntity::CollaborationMetadata ToRemoteProto() const;
   sync_pb::EntityMetadata::CollaborationMetadata ToLocalProto() const;
@@ -52,11 +53,11 @@ class CollaborationMetadata {
  private:
   CollaborationMetadata(GaiaId created_by,
                         GaiaId last_updated_by,
-                        std::string collaboration_id);
+                        CollaborationId collaboration_id);
 
   GaiaId created_by_;
   GaiaId last_updated_by_;
-  std::string collaboration_id_;
+  CollaborationId collaboration_id_;
 };
 
 // gMock printer helper.

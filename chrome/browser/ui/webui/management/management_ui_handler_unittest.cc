@@ -152,7 +152,7 @@ struct ContextualManagementSourceUpdate {
 #if BUILDFLAG(IS_CHROMEOS)
 namespace {
 const char kUser[] = "user@domain.com";
-const char kGaiaId[] = "gaia_id";
+const GaiaId::Literal kGaiaId("gaia_id");
 }  // namespace
 
 // This class is just to mock the behaviour of the few flags we need for
@@ -487,8 +487,7 @@ class ManagementUIHandlerTests :
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
 
-    const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kUser, GaiaId(kGaiaId)));
+    const AccountId account_id(AccountId::FromUserEmailGaiaId(kUser, kGaiaId));
     fake_user_manager_->AddGaiaUser(account_id,
                                     user_manager::UserType::kRegular);
     user_ = fake_user_manager_->FindUserAndModify(account_id);
@@ -621,7 +620,7 @@ class ManagementUIHandlerTests :
   void OnProfileCreationStarted(Profile* profile,
                                 Profile::CreateMode create_mode) override {
     ash::AnnotatedAccountId::Set(
-        profile, AccountId::FromUserEmailGaiaId(kUser, GaiaId(kGaiaId)));
+        profile, AccountId::FromUserEmailGaiaId(kUser, kGaiaId));
   }
 
   void OnProfileCreationFinished(Profile* profile,
@@ -654,8 +653,7 @@ class ManagementUIHandlerTests :
 
 #if BUILDFLAG(IS_CHROMEOS)
     fake_user_manager_->OnUserProfileCreated(
-        AccountId::FromUserEmailGaiaId(kUser, GaiaId(kGaiaId)),
-        profile_->GetPrefs());
+        AccountId::FromUserEmailGaiaId(kUser, kGaiaId), profile_->GetPrefs());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     web_contents_ = content::WebContents::Create(

@@ -335,7 +335,7 @@ DeletionDialogController::DialogMetadata::~DialogMetadata() = default;
 DeletionDialogController::DialogState::DialogState(
     DialogType type_,
     ui::DialogModel* dialog_model_,
-    base::OnceCallback<void()> callback_,
+    base::OnceCallback<void(DeletionDialogTiming)> callback_,
     std::optional<base::OnceCallback<void()>> keep_groups_)
     : type(type_),
       dialog_model(dialog_model_),
@@ -367,7 +367,7 @@ bool DeletionDialogController::IsShowingDialog() {
 
 bool DeletionDialogController::MaybeShowDialog(
     const DialogMetadata& metadata,
-    base::OnceCallback<void()> callback,
+    base::OnceCallback<void(DeletionDialogTiming)> callback,
     std::optional<base::OnceCallback<void()>> keep_groups) {
   if (IsDialogKeepType(metadata.type)) {
     CHECK(keep_groups.has_value());
@@ -380,7 +380,7 @@ bool DeletionDialogController::MaybeShowDialog(
   }
 
   if (IsDialogSkippedByUserSettings(profile_, metadata.type)) {
-    std::move(callback).Run();
+    std::move(callback).Run(DeletionDialogTiming::Synchronous);
     return false;
   }
 
@@ -422,13 +422,13 @@ void DeletionDialogController::OnDialogOk() {
   if (IsDialogKeepType(state_->type)) {
     std::move(state_->keep_groups.value()).Run();
   }
-  std::move(state_->callback).Run();
+  std::move(state_->callback).Run(DeletionDialogTiming::Asynchronous);
   state_.reset();
 }
 
 void DeletionDialogController::OnDialogCancel() {
   if (IsDialogKeepType(state_->type)) {
-    std::move(state_->callback).Run();
+    std::move(state_->callback).Run(DeletionDialogTiming::Asynchronous);
   }
   state_.reset();
 }

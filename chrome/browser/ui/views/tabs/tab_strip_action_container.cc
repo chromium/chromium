@@ -11,8 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/types/pass_key.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -390,9 +388,9 @@ void TabStripActionContainer::OnTabDeclutterButtonDismissed() {
 }
 
 void TabStripActionContainer::OnGlicNudgeButtonClicked() {
-  contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
-      tab_strip_controller_->GetProfile())
-      ->CueingNudgeClicked();
+  CHECK(glic_nudge_controller_);
+  glic_nudge_controller_->OnNudgeActivity(
+      tabs::GlicNudgeActivity::kNudgeClicked);
   tab_strip_controller_->GetBrowserWindowInterface()
       ->GetUserEducationInterface()
       ->NotifyFeaturePromoFeatureUsed(
@@ -408,9 +406,9 @@ void TabStripActionContainer::OnGlicNudgeButtonClicked() {
 }
 
 void TabStripActionContainer::OnGlicNudgeButtonDismissed() {
-  contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
-      tab_strip_controller_->GetProfile())
-      ->CueingNudgeDismissed();
+  glic_nudge_controller_->OnNudgeActivity(
+      tabs::GlicNudgeActivity::kNudgeDismissed);
+
   ExecuteHideTabStripNudge(glic_nudge_button_);
 }
 
@@ -425,9 +423,8 @@ void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
   glic_nudge_button_->SetText(base::UTF8ToUTF16(label));
 
   if (!label.empty()) {
-    contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
-        tab_strip_controller_->GetProfile())
-        ->CueingNudgeShown();
+    glic_nudge_controller_->OnNudgeActivity(
+        tabs::GlicNudgeActivity::kNudgeShown);
     ShowTabStripNudge(glic_nudge_button_);
   } else {
     HideTabStripNudge(glic_nudge_button_);

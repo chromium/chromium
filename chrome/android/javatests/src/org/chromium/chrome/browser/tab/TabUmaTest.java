@@ -102,7 +102,8 @@ public class TabUmaTest {
                 null,
                 rootUiCoordinator.getToolbarManager().getTabStripHeightSupplier(),
                 new OneshotSupplierImpl<ModuleRegistry>(),
-                new ObservableSupplierImpl<>());
+                new ObservableSupplierImpl<>(),
+                cta.getStartupMetricsTracker());
     }
 
     private Tab createLazilyLoadedTab(boolean show) throws ExecutionException {

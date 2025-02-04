@@ -85,6 +85,8 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -490,16 +492,22 @@ std::vector<backdrop::Image> TimeOfDayImageSet() {
       backdrop::Image::IMAGE_TYPE_DARK_MODE};
 
   std::vector<backdrop::Image> images;
-  for (size_t i = 0; i < image_types.size(); ++i) {
-    const uint64_t asset_id = i + 99;
-    const std::string url =
-        base::StringPrintf("https://preferred_wallpaper/images/%zu", asset_id);
-    backdrop::Image image;
-    image.set_asset_id(asset_id);
-    image.set_unit_id(wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId);
-    image.set_image_type(image_types[i]);
-    image.set_image_url(url);
-    images.push_back(image);
+  uint64_t current_asset_id = 99;
+  for (const auto unit_id :
+       {wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId,
+        wallpaper_constants::kAlternateTimeOfDayWallpaperUnitId}) {
+    for (const auto image_type : image_types) {
+      const uint64_t asset_id = current_asset_id;
+      current_asset_id++;
+      const std::string url = base::StringPrintf(
+          "https://preferred_wallpaper/images/%zu", asset_id);
+      backdrop::Image image;
+      image.set_asset_id(asset_id);
+      image.set_unit_id(unit_id);
+      image.set_image_type(image_type);
+      image.set_image_url(url);
+      images.push_back(image);
+    }
   }
   return images;
 }
@@ -1754,6 +1762,46 @@ TEST_P(WallpaperControllerTest,
   EXPECT_EQ(WallpaperType::kOnline, actual_info.type);
   EXPECT_EQ(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
             actual_info.collection_id);
+  EXPECT_EQ(wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId,
+            actual_info.unit_id.value_or(0));
+  histogram_tester().ExpectTotalCount("Ash.Wallpaper.IsSetToTimeOfDayAfterOobe",
+                                      1);
+}
+
+TEST_P(WallpaperControllerTest,
+       ActiveUserPrefServiceChanged_SetTimeOfDayWallpaperAlternateUnitId) {
+  if (!IsTimeOfDayEnabled()) {
+    return;
+  }
+
+  auto* fake_statistics_provider = static_cast<system::FakeStatisticsProvider*>(
+      system::StatisticsProvider::GetInstance());
+  fake_statistics_provider->ClearAllMachineStatistics();
+  fake_statistics_provider->SetMachineStatistic(
+      system::kCustomizationIdKey,
+      std::string(wallpaper_constants::kAlternateWallpaperCustomizationId));
+
+  base::test::TestFuture<void> on_machine_statistics_loaded_future;
+  fake_statistics_provider->ScheduleOnMachineStatisticsLoaded(
+      on_machine_statistics_loaded_future.GetCallback());
+  ASSERT_TRUE(on_machine_statistics_loaded_future.Wait());
+
+  auto images = TimeOfDayImageSet();
+  client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+                        images);
+  WallpaperInfo local_info = InfoWithType(WallpaperType::kDefault);
+  pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
+  SetSessionState(SessionState::OOBE);
+  // Log in and trigger `OnActiveUserPrefServiceChange`.
+  SimulateUserLogin(kAccountId1);
+  RunAllTasksUntilIdle();
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual_info));
+  EXPECT_EQ(WallpaperType::kOnline, actual_info.type);
+  EXPECT_EQ(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+            actual_info.collection_id);
+  EXPECT_EQ(wallpaper_constants::kAlternateTimeOfDayWallpaperUnitId,
+            actual_info.unit_id.value_or(0));
   histogram_tester().ExpectTotalCount("Ash.Wallpaper.IsSetToTimeOfDayAfterOobe",
                                       1);
 }

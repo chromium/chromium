@@ -216,10 +216,7 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
               scroll_hit_test_data, gfx::Rect(0, 0, 200, 200)),
           IsPaintChunk(
               2, 3,
-              PaintChunk::Id(container.Id(),
-                             RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-                                 ? kScrollingBackgroundChunkType
-                                 : kClippedContentsBackgroundChunkType),
+              PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
               scrolling_contents_properties)));
 
   // We always create scroll node for the root layer.

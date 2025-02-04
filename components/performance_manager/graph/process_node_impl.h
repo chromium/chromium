@@ -181,7 +181,6 @@ class ProcessNodeImpl
 
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
 
-  base::WeakPtr<ProcessNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<ProcessNodeImpl> GetWeakPtr();
 
   static PassKey CreatePassKeyForTesting() { return PassKey(); }
@@ -273,7 +272,6 @@ class ProcessNodeImpl
 
   NodeSet worker_nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtr<ProcessNodeImpl> weak_this_;
   base::WeakPtrFactory<ProcessNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };

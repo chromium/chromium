@@ -5654,14 +5654,14 @@ SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
 }
 
 SkColorType WebGLRenderingContextBase::GetSkColorType() const {
-  if (drawing_buffer_ && drawing_buffer_->StorageFormat() == GL_RGBA16F) {
-    return kRGBA_F16_SkColorType;
-  }
-  return kN32_SkColorType;
+  return viz::ToClosestSkColorType(GetSharedImageFormat());
 }
 
 viz::SharedImageFormat WebGLRenderingContextBase::GetSharedImageFormat() const {
-  return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
+  if (drawing_buffer_ && drawing_buffer_->StorageFormat() == GL_RGBA16F) {
+    return viz::SinglePlaneFormat::kRGBA_F16;
+  }
+  return GetN32FormatForCanvas();
 }
 
 gfx::ColorSpace WebGLRenderingContextBase::GetColorSpace() const {

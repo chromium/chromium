@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_animation_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/z_orderable_tab_container_element.h"
 #include "chrome/grit/theme_resources.h"
@@ -435,8 +436,8 @@ void TabContainerImpl::ToggleTabGroup(
         GetGroupViews(group)->header()->GetCollapsedHeaderWidth();
     const CloseTabSource source =
         origin == ToggleTabGroupCollapsedStateOrigin::kMouse
-            ? CloseTabSource::CLOSE_TAB_FROM_MOUSE
-            : CloseTabSource::CLOSE_TAB_FROM_TOUCH;
+            ? CloseTabSource::kFromMouse
+            : CloseTabSource::kFromTouch;
 
     EnterTabClosingMode(
         tabs_view_model_.ideal_bounds(GetTabCount() - 1).right() -
@@ -680,6 +681,12 @@ int TabContainerImpl::GetAvailableWidthForTabContainer() const {
 
 void TabContainerImpl::EnterTabClosingMode(std::optional<int> override_width,
                                            CloseTabSource source) {
+  // Tab closing mode only makes sense if the tab was closed as a direct result
+  // of a mouse or touch event on the tab.
+  if (source == CloseTabSource::kFromNonUIEvent) {
+    return;
+  }
+
   in_tab_close_ = true;
   if (override_width.has_value()) {
     override_available_width_for_tabs_ = override_width;
@@ -692,7 +699,7 @@ void TabContainerImpl::EnterTabClosingMode(std::optional<int> override_width,
   }
 
   resize_layout_timer_.Stop();
-  if (source == CLOSE_TAB_FROM_TOUCH) {
+  if (source == CloseTabSource::kFromTouch) {
     StartResizeLayoutTabsFromTouchTimer();
   } else {
     AddMessageLoopObserver();

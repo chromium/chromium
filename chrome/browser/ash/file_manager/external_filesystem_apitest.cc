@@ -486,7 +486,8 @@ class MultiProfileDriveFileSystemExtensionApiTest
     session_manager::SessionManager::Get()->CreateSession(
         AccountId::FromUserEmailGaiaId(kSecondProfileAccount,
                                        kSecondProfileGaiaId),
-        kSecondProfileHash, false);
+        kSecondProfileHash, user_manager::UserType::kRegular,
+        /*has_active_session=*/false);
     base::FilePath profile_dir = user_data_directory.AppendASCII(
         ash::BrowserContextHelper::GetUserBrowserContextDirName(
             kSecondProfileHash));

@@ -140,8 +140,6 @@ void ContentSubresourceFilterThrottleManager::FrameDeleted(
 // it for later filtering of child frame navigations.
 void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
     content::NavigationHandle* navigation_handle) {
-  ready_to_commit_navigations_.insert(navigation_handle->GetNavigationId());
-
   content::RenderFrameHost* frame_host =
       navigation_handle->GetRenderFrameHost();
 
@@ -223,9 +221,6 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
     ongoing_activation_throttles_.erase(throttle_it);
   }
 
-  bool passed_through_ready_to_commit =
-      ready_to_commit_navigations_.erase(navigation_handle->GetNavigationId());
-
   // Do nothing if the navigation finished in the same document.
   if (navigation_handle->IsSameDocument()) {
     return;
@@ -246,9 +241,6 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
                 navigation_handle->GetPreviousRenderFrameHostId());
   if (!frame_host)
     return;
-
-  RecordExperimentalUmaHistogramsForNavigation(navigation_handle,
-                                               passed_through_ready_to_commit);
 
   const content::FrameTreeNodeId frame_tree_node_id =
       navigation_handle->GetFrameTreeNodeId();
@@ -341,54 +333,6 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
   }
 
   DestroyRulesetHandleIfNoLongerUsed();
-}
-
-void ContentSubresourceFilterThrottleManager::
-    RecordExperimentalUmaHistogramsForNavigation(
-        content::NavigationHandle* navigation_handle,
-        bool passed_through_ready_to_commit) {
-  // For subframe navigations that pass through ready to commit, we record
-  // whether they eventually committed. We also break this out by whether the
-  // navigation matches the restricted navigation heuristic and by ad status.
-  // The observed frequency will reveal the scope of current mishandling of such
-  // navigations by Ad Tagging. Navigations to URLs that inherit activation
-  // (e.g. about:srcdoc) are excluded as no load policy would be calculated.
-  // Navigations with dead RenderFrames are also excluded as any load policy
-  // sent to the renderer won't be used.
-  // TODO(alexmt): Remove once frequency is determined.
-  // TODO(crbug.com/40202987): Record histograms for fenced frame roots and fix
-  // |is_same_domain_to_main_frame_| below.
-  if (!passed_through_ready_to_commit || navigation_handle->IsInMainFrame() ||
-      ShouldInheritActivation(navigation_handle->GetURL()) ||
-      !navigation_handle->GetRenderFrameHost()->IsRenderFrameLive()) {
-    return;
-  }
-
-  base::UmaHistogramBoolean(
-      "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2",
-      navigation_handle->HasCommitted());
-  blink::mojom::FilterListResult latest_filter_list_result =
-      EnsureFrameAdEvidence(navigation_handle).latest_filter_list_result();
-  bool is_same_domain_to_outermost_main_frame =
-      net::registry_controlled_domains::SameDomainOrHost(
-          navigation_handle->GetURL(),
-          navigation_handle->GetRenderFrameHost()
-              ->GetOutermostMainFrame()
-              ->GetLastCommittedURL(),
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  bool is_restricted_navigation =
-      latest_filter_list_result ==
-          blink::mojom::FilterListResult::kMatchedAllowingRule ||
-      (latest_filter_list_result ==
-           blink::mojom::FilterListResult::kMatchedNoRules &&
-       is_same_domain_to_outermost_main_frame);
-  if (is_restricted_navigation &&
-      base::Contains(ad_frames_, navigation_handle->GetFrameTreeNodeId())) {
-    base::UmaHistogramBoolean(
-        "SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2."
-        "RestrictedAdFrameNavigation",
-        navigation_handle->HasCommitted());
-  }
 }
 
 AsyncDocumentSubresourceFilter*

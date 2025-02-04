@@ -21,20 +21,40 @@ GlicNudgeController::GlicNudgeController(
 
 GlicNudgeController::~GlicNudgeController() = default;
 
-bool GlicNudgeController::GlicNudgeCriteriaMet() {
-  return false;
-}
-
 void GlicNudgeController::UpdateNudgeLabel(content::WebContents* web_contents,
-                                           const std::string& nudge_label) {
+                                           const std::string& nudge_label,
+                                           GlicNudgeActivityCallback callback) {
   auto* const tab_interface =
       browser_window_interface_->GetActiveTabInterface();
   if (tab_interface->GetContents() != web_contents) {
     return;
   }
+  if (browser_window_interface_->GetUserEducationInterface() &&
+      browser_window_interface_->GetUserEducationInterface()
+          ->IsFeaturePromoActive(feature_engagement::kIPHGlicPromoFeature)) {
+    // Do nothing if feature promo is active.
+    return;
+  }
 
+  nudge_activity_callback_ = callback;
   for (auto& observer : observers_) {
     observer.OnTriggerGlicNudgeUI(nudge_label);
+  }
+}
+
+void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
+  if (!nudge_activity_callback_) {
+    return;
+  }
+  switch (activity) {
+    case GlicNudgeActivity::kNudgeShown:
+      nudge_activity_callback_.Run(GlicNudgeActivity::kNudgeShown);
+      break;
+    case GlicNudgeActivity::kNudgeClicked:
+    case GlicNudgeActivity::kNudgeDismissed:
+      nudge_activity_callback_.Run(activity);
+      nudge_activity_callback_.Reset();
+      break;
   }
 }
 
@@ -43,6 +63,7 @@ void GlicNudgeController::OnActiveTabChanged(
   for (auto& observer : observers_) {
     observer.OnTriggerGlicNudgeUI(std::string());
   }
+  OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeDismissed);
 }
 
 }  // namespace tabs

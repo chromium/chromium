@@ -88,6 +88,7 @@ vs-chromium-project.txt
 /MODULE.bazel
 /MODULE.bazel.lock
 
+/_chrome
 /_out
 /android_emulator_sdk
 /ash/ash_unittests_run.xml

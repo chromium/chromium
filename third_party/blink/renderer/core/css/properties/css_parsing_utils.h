@@ -596,7 +596,7 @@ CSSValue* ParseSpacing(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeSingleContainerName(CSSParserTokenStream&,
                                      const CSSParserContext&);
 CSSValue* ConsumeContainerName(CSSParserTokenStream&, const CSSParserContext&);
-CSSValue* ConsumeContainerType(CSSParserTokenStream&);
+CSSValue* ConsumeContainerType(CSSParserTokenStream&, const CSSParserContext&);
 
 UnitlessQuirk UnitlessUnlessShorthand(const CSSParserLocalContext&);
 

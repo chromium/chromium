@@ -3426,6 +3426,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/glic:browser_tests",
         "//chrome/browser/glic:glic",
+        "//chrome/browser/glic:test_support",
         "//chrome/browser/glic/launcher:browser_tests",
         "//chrome/browser/glic/launcher:launcher",
       ]
@@ -7454,8 +7455,6 @@ test("unit_tests") {
       "../browser/component_updater/soda_component_installer_unittest.cc",
       "../browser/component_updater/soda_language_pack_component_installer_unittest.cc",
       "../browser/component_updater/zxcvbn_data_component_installer_unittest.cc",
-      "../browser/contextual_cueing/contextual_cueing_helper_unittest.cc",
-      "../browser/contextual_cueing/contextual_cueing_service_unittest.cc",
       "../browser/data_sharing/desktop/data_sharing_conversion_utils_unittest.cc",
       "../browser/device_identity/device_oauth2_token_service_unittest.cc",
       "../browser/device_notifications/device_connection_tracker_unittest.cc",
@@ -7768,6 +7767,7 @@ test("unit_tests") {
       "../browser/ui/webui/downloads/downloads_list_tracker_unittest.cc",
       "../browser/ui/webui/downloads/mock_downloads_page.cc",
       "../browser/ui/webui/downloads/mock_downloads_page.h",
+      "../browser/ui/webui/favicon_source_unittest.cc",
       "../browser/ui/webui/feedback/feedback_ui_unittest.cc",
       "../browser/ui/webui/flags/flags_ui_handler_unittest.cc",
       "../browser/ui/webui/history/browsing_history_handler_unittest.cc",
@@ -7865,7 +7865,7 @@ test("unit_tests") {
     ]
 
     deps += [
-      "//chrome/browser/contextual_cueing",
+      "//chrome/browser/contextual_cueing:unit_tests",
       "//chrome/browser/ui/bookmarks:unit_tests",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/startup:startup_tab",
@@ -8000,11 +8000,6 @@ test("unit_tests") {
     }
     if (is_posix) {
       sources += [ "../browser/process_singleton_posix_unittest.cc" ]
-    }
-
-    # Disabling tests on tsan due to flakiness.
-    if (!is_tsan) {
-      sources += [ "../browser/ui/webui/favicon_source_unittest.cc" ]
     }
 
     if (is_linux) {
@@ -9365,6 +9360,7 @@ test("unit_tests") {
       "../browser/safe_browsing/phishy_interaction_tracker_unittest.cc",
       "../browser/safe_browsing/safe_browsing_service_unittest.cc",
       "../browser/safe_browsing/tailored_security/chrome_tailored_security_service_unittest.cc",
+      "../browser/safe_browsing/tailored_security/message_retry_handler_unittest.cc",
       "../browser/safe_browsing/tailored_security/tailored_security_url_observer_unittest.cc",
       "../browser/safe_browsing/verdict_cache_manager_factory_unittest.cc",
       "../common/safe_browsing/binary_feature_extractor_unittest.cc",
@@ -11960,7 +11956,6 @@ if (!is_android) {
         "//chrome/browser/ash/app_list/arc",
         "//chrome/browser/ash/app_list/test:test_support",
         "//chrome/browser/ash/crosapi",
-        "//chrome/browser/ash/crosapi:browser_util",
         "//chrome/browser/ash/floating_sso",
         "//chrome/browser/ash/floating_sso:test_support",
         "//chrome/browser/ash/printing",

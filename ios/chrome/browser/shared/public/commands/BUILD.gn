@@ -29,6 +29,7 @@ source_set("commands") {
     "find_in_page_commands.h",
     "generate_qr_code_command.h",
     "generate_qr_code_command.mm",
+    "google_one_commands.h",
     "help_commands.h",
     "lens_commands.h",
     "lens_overlay_commands.h",
@@ -111,6 +112,7 @@ source_set("commands") {
     "//components/supervised_user/core/common",
     "//ios/chrome/browser/browsing_data/model:model_remove_mask",
     "//ios/chrome/browser/discover_feed/model:constants",
+    "//ios/chrome/browser/google_one/shared",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/web/public/annotations:custom_text_check_result",
   ]

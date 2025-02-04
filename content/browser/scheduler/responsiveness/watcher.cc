@@ -6,7 +6,6 @@
 
 #include <variant>
 
-#include "base/cpu_reduction_experiment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
@@ -50,25 +49,16 @@ void Watcher::WillRunTaskOnUIThread(const base::PendingTask* task,
 void Watcher::DidRunTaskOnUIThread(const base::PendingTask* task) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (base::IsRunningCpuReductionExperiment()) {
-    // Capturing `this` is safe because the callback is invoked synchronously by
-    // `DidRunTask()`.
-    auto lambda = [this](base::TimeTicks queue_time,
-                         base::TimeTicks execution_start_time,
-                         base::TimeTicks execution_finish_time) {
-      calculator_->TaskOrEventFinishedOnUIThread(
-          queue_time, execution_start_time, execution_finish_time);
-    };
-    DidRunTask(task, &currently_running_metadata_ui_,
-               &mismatched_task_identifiers_ui_, lambda);
-  } else {
-    // Unretained() is safe because the callback is invoked synchronously by
-    // `DidRunTask()`.
-    auto callback = base::BindOnce(&Calculator::TaskOrEventFinishedOnUIThread,
-                                   base::Unretained(calculator_.get()));
-    DidRunTask(task, &currently_running_metadata_ui_,
-               &mismatched_task_identifiers_ui_, std::move(callback));
-  }
+  // Capturing `this` is safe because the callback is invoked synchronously by
+  // `DidRunTask()`.
+  auto lambda = [this](base::TimeTicks queue_time,
+                       base::TimeTicks execution_start_time,
+                       base::TimeTicks execution_finish_time) {
+    calculator_->TaskOrEventFinishedOnUIThread(queue_time, execution_start_time,
+                                               execution_finish_time);
+  };
+  DidRunTask(task, &currently_running_metadata_ui_,
+             &mismatched_task_identifiers_ui_, lambda);
 }
 
 void Watcher::WillRunTaskOnIOThread(const base::PendingTask* task,
@@ -82,25 +72,16 @@ void Watcher::WillRunTaskOnIOThread(const base::PendingTask* task,
 void Watcher::DidRunTaskOnIOThread(const base::PendingTask* task) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (base::IsRunningCpuReductionExperiment()) {
-    // Capturing `this` is safe because the callback is invoked synchronously by
-    // `DidRunTask()`.
-    auto lambda = [this](base::TimeTicks queue_time,
-                         base::TimeTicks execution_start_time,
-                         base::TimeTicks execution_finish_time) {
-      calculator_io_->TaskOrEventFinishedOnIOThread(
-          queue_time, execution_start_time, execution_finish_time);
-    };
-    DidRunTask(task, &currently_running_metadata_io_,
-               &mismatched_task_identifiers_io_, lambda);
-  } else {
-    // Unretained() is safe because the callback is invoked synchronously by
-    // `DidRunTask()` below.
-    auto callback = base::BindOnce(&Calculator::TaskOrEventFinishedOnIOThread,
-                                   base::Unretained(calculator_io_));
-    DidRunTask(task, &currently_running_metadata_io_,
-               &mismatched_task_identifiers_io_, std::move(callback));
-  }
+  // Capturing `this` is safe because the callback is invoked synchronously by
+  // `DidRunTask()`.
+  auto lambda = [this](base::TimeTicks queue_time,
+                       base::TimeTicks execution_start_time,
+                       base::TimeTicks execution_finish_time) {
+    calculator_io_->TaskOrEventFinishedOnIOThread(
+        queue_time, execution_start_time, execution_finish_time);
+  };
+  DidRunTask(task, &currently_running_metadata_io_,
+             &mismatched_task_identifiers_io_, lambda);
 }
 
 void Watcher::WillRunTask(const base::PendingTask* task,
@@ -165,18 +146,7 @@ void Watcher::DidRunTask(const base::PendingTask* task,
   DCHECK_LE(queue_time, metadata.execution_start_time);
   DCHECK_LE(metadata.execution_start_time, execution_finish_time);
 
-  absl::visit(
-      base::Overloaded{
-          [&](base::FunctionRef<TaskOrEventFinishedSignature>& function_ref) {
-            function_ref(queue_time, metadata.execution_start_time,
-                         execution_finish_time);
-          },
-          [&](base::OnceCallback<TaskOrEventFinishedSignature>& base_callback) {
-            std::move(base_callback)
-                .Run(queue_time, metadata.execution_start_time,
-                     execution_finish_time);
-          }},
-      callback);
+  callback(queue_time, metadata.execution_start_time, execution_finish_time);
 }
 
 void Watcher::WillRunEventOnUIThread(const void* opaque_identifier) {

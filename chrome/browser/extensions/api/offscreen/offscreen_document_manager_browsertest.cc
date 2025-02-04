@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
     // document should be closed.
     ExtensionHostTestHelper host_waiter(profile());
     host_waiter.RestrictToHost(offscreen_document);
-    DisableExtension(extension->id(), disable_reason::DISABLE_USER_ACTION);
+    DisableExtension(extension->id(), {disable_reason::DISABLE_USER_ACTION});
     host_waiter.WaitForHostDestroyed();
     // Note: `offscreen_document` is destroyed at this point.
   }

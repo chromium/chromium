@@ -5,14 +5,9 @@
 #include "base/command_line.h"
 
 #include "base/android/jni_string.h"
-#include "build/robolectric_buildflags.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#if BUILDFLAG(IS_ROBOLECTRIC)
-#include "base/base_robolectric_jni/CommandLine_jni.h"  // nogncheck
-#else
 #include "base/command_line_jni/CommandLine_jni.h"
-#endif
 
 using base::CommandLine;
 using base::android::JavaParamRef;

@@ -870,7 +870,8 @@ TEST_F(FileSystemAccessManagerImplTest,
       base::FilePath::FromUTF8Unsafe("test/foo/bar"));
   test_file_url.SetBucket(default_bucket);
   FileSystemAccessFileHandleImpl file(manager_.get(), kBindingContext,
-                                      test_file_url, {ask_grant_, ask_grant_});
+                                      test_file_url, "bar",
+                                      {ask_grant_, ask_grant_});
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
   manager_->CreateTransferToken(file,
                                 token_remote.InitWithNewPipeAndPassReceiver());
@@ -898,7 +899,8 @@ TEST_F(FileSystemAccessManagerImplTest,
   ASSERT_OK_AND_ASSIGN(auto bucket, CreateBucketForTesting());
   test_file_url.SetBucket(std::move(bucket));
   FileSystemAccessFileHandleImpl file(manager_.get(), kBindingContext,
-                                      test_file_url, {ask_grant_, ask_grant_});
+                                      test_file_url, "bar",
+                                      {ask_grant_, ask_grant_});
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
   manager_->CreateTransferToken(file,
                                 token_remote.InitWithNewPipeAndPassReceiver());
@@ -1923,6 +1925,7 @@ TEST_F(FileSystemAccessManagerImplTest, GetUniqueId) {
   test_url.SetBucket(default_bucket);
 
   FileSystemAccessFileHandleImpl file(manager_.get(), kBindingContext, test_url,
+                                      kTestPathInfo.display_name,
                                       {ask_grant_, ask_grant_});
   auto file_id = manager_->GetUniqueId(file);
   // Ensure a valid ID is provided.
@@ -1942,8 +1945,9 @@ TEST_F(FileSystemAccessManagerImplTest, GetUniqueId) {
       kTestStorageKey, storage::kFileSystemTypeTemporary,
       kTestPathInfo.path.AppendASCII("bar"));
   other_url.SetBucket(default_bucket);
-  FileSystemAccessFileHandleImpl other_file(
-      manager_.get(), kBindingContext, other_url, {ask_grant_, ask_grant_});
+  FileSystemAccessFileHandleImpl other_file(manager_.get(), kBindingContext,
+                                            other_url, "bar",
+                                            {ask_grant_, ask_grant_});
   auto other_id = manager_->GetUniqueId(other_file);
   EXPECT_TRUE(other_id.is_valid());
   EXPECT_NE(other_id, file_id);

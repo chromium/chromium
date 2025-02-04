@@ -288,6 +288,8 @@ class BASE_EXPORT MetricsSubSampler {
   MetricsSubSampler();
   bool ShouldSample(double probability) const;
 
+  void Reseed();
+
   // Make any call to ShouldSample for any instance of MetricsSubSampler
   // return true for testing. Cannot be used in conjunction with
   // ScopedNeverSampleForTesting.
@@ -309,6 +311,19 @@ class BASE_EXPORT MetricsSubSampler {
  private:
   InsecureRandomGenerator generator_;
 };
+
+// Returns true with `probability` using a pseudo-random number generator (or
+// always/never returns true if a `ScopedAlwaysSampleForTesting` or
+// `ScopedNeverSampleForTesting` is in scope).  This function is intended for
+// sub-sampled metric recording only. Do not use it for any other purpose,
+// especially where cryptographic randomness is required.
+// Uses a thread local MetricsSubSampler.
+BASE_EXPORT bool ShouldRecordSubsampledMetric(double probability);
+
+// Reseeds the MetricsSubsampler used by ShouldRecordSubsampledMetric. Used
+// after forking a zygote to avoid having multiple processes sharing initial
+// RNG state.
+BASE_EXPORT void ReseedSharedMetricsSubsampler();
 
 }  // namespace base
 

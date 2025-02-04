@@ -88,7 +88,6 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
-#include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -121,6 +120,7 @@
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -302,7 +302,6 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/window_properties.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -1017,15 +1016,27 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   devtools_web_view->SetID(VIEW_ID_DEV_TOOLS_DOCKED);
   devtools_web_view->SetVisible(false);
 
-  auto contents_web_view =
-      std::make_unique<ContentsWebView>(browser_->profile());
-  contents_web_view->SetID(VIEW_ID_TAB_CONTAINER);
-
   auto contents_container = std::make_unique<views::View>();
   devtools_web_view_ =
       contents_container->AddChildView(std::move(devtools_web_view));
-  contents_web_view_ =
-      contents_container->AddChildView(std::move(contents_web_view));
+
+  views::View* contents_view;
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    auto multi_contents_view =
+        std::make_unique<MultiContentsView>(browser_->profile());
+    contents_web_view_ = multi_contents_view->active_contents_view();
+    multi_contents_view_ =
+        contents_container->AddChildView(std::move(multi_contents_view));
+    contents_view = multi_contents_view_;
+  } else {
+    auto contents_web_view =
+        std::make_unique<ContentsWebView>(browser_->profile());
+    contents_web_view_ =
+        contents_container->AddChildView(std::move(contents_web_view));
+    contents_view = contents_web_view_;
+  }
+
+  contents_web_view_->SetID(VIEW_ID_TAB_CONTAINER);
   contents_web_view_->set_is_primary_web_contents_for_window(true);
   contents_scrim_view_ =
       contents_container->AddChildView(std::make_unique<ScrimView>());
@@ -1051,11 +1062,11 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
 #if BUILDFLAG(ENABLE_GLIC)
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_web_view_, contents_scrim_view_,
-      glic_border_, watermark_view_));
+      devtools_web_view_, contents_view, contents_scrim_view_, glic_border_,
+      watermark_view_));
 #else
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_web_view_, contents_scrim_view_, nullptr,
+      devtools_web_view_, contents_view, contents_scrim_view_, nullptr,
       watermark_view_));
 #endif
 
@@ -1436,18 +1447,36 @@ views::Widget* BrowserView::GetWidgetForAnchoring() {
   return GetWidget();
 }
 
+const tabs::TabInterface* BrowserView::GetInactiveSplitTab() {
+  // TODO(crbug.com/392951786): Use the Collections API for accessing the tabs
+  // in a split view, rather than searching by index.
+  int active_index = browser_->tab_strip_model()->active_index();
+  const std::vector<int> potential_split_indices = {active_index - 1,
+                                                    active_index + 1};
+  for (int index : potential_split_indices) {
+    if (index < 0 || index >= browser_->tab_strip_model()->GetTabCount()) {
+      continue;
+    }
+    const tabs::TabInterface* potential_split_tab =
+        browser_->tab_strip_model()->GetTabAtIndex(index);
+    if (potential_split_tab->IsSplit()) {
+      return potential_split_tab;
+    }
+  }
+  return nullptr;
+}
+
 void BrowserView::ShowSplitView() {
-  // TODO(crbug.com/391894786): Update contents_container_ and/or
-  // contents_web_view_ to show a split view, eliminating the below
-  // placeholder.
-  status_bubble_->SetStatus(u"In split view");
+  CHECK(multi_contents_view_);
+  const tabs::TabInterface* inactive_split_tab = GetInactiveSplitTab();
+  CHECK(inactive_split_tab != nullptr);
+  multi_contents_view_->SetWebContents(inactive_split_tab->GetContents(),
+                                       false);
 }
 
 void BrowserView::HideSplitView() {
-  // TODO(crbug.com/391894786): Update contents_container_ and/or
-  // contents_web_view_ to hide a split view if one is currently shown,
-  // eliminating the below placeholder.
-  status_bubble_->SetStatus(u"Out of split view");
+  CHECK(multi_contents_view_);
+  multi_contents_view_->SetWebContents(nullptr, false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1820,6 +1849,12 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
                                      int reason) {
   DCHECK(new_contents);
   TRACE_EVENT0("ui", "BrowserView::OnActiveTabChanged");
+  // TODO(crbug.com/393451405): Remove in favor of multi_contents_view_
+  // handling any potential conflicts around setting a webcontents that is
+  // already set to a different ContentsWebView.
+  if (multi_contents_view_) {
+    multi_contents_view_->SetWebContents(nullptr, false);
+  }
 
   if (old_contents && !old_contents->IsBeingDestroyed()) {
     // We do not store the focus when closing the tab to work-around bug 4633.
@@ -1952,7 +1987,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     SetWindowManagementPermissionSubscriptionForBorderlessMode(new_contents);
   }
 
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+  if (multi_contents_view_) {
     const tabs::TabInterface* active_tab =
         tabs::TabInterface::GetFromContents(new_contents);
     if (active_tab->IsSplit()) {
@@ -3425,7 +3460,8 @@ DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
   }
   DCHECK(toolbar_button_provider_);
   if (auto* download_button = toolbar_button_provider_->GetDownloadButton()) {
-    return download_button->bubble_controller();
+    return static_cast<DownloadToolbarButtonView*>(download_button)
+        ->bubble_controller();
   }
   return nullptr;
 }
@@ -4767,11 +4803,6 @@ void BrowserView::AddedToWidget() {
 #endif
 
   toolbar_->Init();
-  if (download::IsDownloadBubbleEnabled() &&
-      features::IsToolbarPinningEnabled() &&
-      base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
-    browser_->GetFeatures().download_toolbar_ui_controller()->Init();
-  }
 
   // TODO(pbos): Investigate whether the side panels should be creatable when
   // the ToolbarView does not create a button for them. This specifically seems
@@ -4817,6 +4848,12 @@ void BrowserView::AddedToWidget() {
   // hosted app frame).
   if (!toolbar_button_provider_) {
     SetToolbarButtonProvider(toolbar_);
+  }
+
+  if (download::IsDownloadBubbleEnabled() &&
+      features::IsToolbarPinningEnabled() &&
+      base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
+    browser_->GetFeatures().download_toolbar_ui_controller()->Init();
   }
 
   frame_->OnBrowserViewInitViewsComplete();

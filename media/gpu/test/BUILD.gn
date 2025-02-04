@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (is_chromeos || is_linux) {
-  import("//build/config/chromeos/ui_mode.gni")
-}
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
@@ -136,10 +133,6 @@ source_set("frame_validator") {
     ":test_helpers",
     "//media/gpu",
   ]
-
-  if (is_chromeos || is_linux) {
-    deps += [ "//build:chromeos_buildflags" ]
-  }
 }
 
 source_set("frame_file_writer") {
@@ -153,10 +146,6 @@ source_set("frame_file_writer") {
     "//media/gpu",
     "//ui/gfx/codec:codec",
   ]
-
-  if (is_chromeos || is_linux) {
-    deps += [ "//build:chromeos_buildflags" ]
-  }
 }
 
 source_set("test_helpers") {
@@ -232,10 +221,6 @@ static_library("video_player_test_environment") {
     ":video_test_environment",
     "//media/gpu",
   ]
-
-  if (is_chromeos || is_linux) {
-    deps += [ "//build:chromeos_buildflags" ]
-  }
 }
 
 static_library("video_encoder") {
@@ -274,11 +259,7 @@ static_library("video_encoder_test_environment") {
     ":video_test_environment",
     "//media/gpu",
   ]
-  deps = [ "//base:base" ]
-
-  if (is_chromeos || is_linux) {
-    deps += [ "//build:chromeos_buildflags" ]
-  }
+  deps = [ "//base" ]
 }
 
 if (use_vaapi || use_v4l2_codec) {
@@ -296,16 +277,11 @@ if (use_vaapi || use_v4l2_codec) {
       "//testing/gtest",
       "//third_party/libyuv",
     ]
-
-    if (is_chromeos || is_linux) {
-      deps += [ "//build:chromeos_buildflags" ]
-    }
-
     data = [ "//media/test/data/" ]
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   static_library("local_gpu_memory_buffer_manager") {
     testonly = true
     sources = [

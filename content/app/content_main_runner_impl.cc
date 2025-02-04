@@ -41,6 +41,7 @@
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -132,6 +133,7 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "base/threading/thread_restrictions.h"
+#include "content/app/ios/appex/child_process_sandbox.h"
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -623,6 +625,10 @@ NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
         base::BindOnce(&base::SetStackSmashingEmitsDebugMessage));
   }
 
+  // Reseed the shared subsampler used to subsample UMA histograms, to avoid
+  // having the forked child share the parent process' RNG state.
+  base::ReseedSharedMetricsSubsampler();
+
   // The zygote sets up base::GlobalDescriptors with all of the FDs passed to
   // the new child, so populate base::FileDescriptorStore with a subset of the
   // FDs currently stored in base::GlobalDescriptors.
@@ -1040,6 +1046,8 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
       process_type == switches::kZygoteProcess) {
     PreSandboxInit();
   }
+#elif BUILDFLAG(IS_IOS)
+  ChildProcessEnterSandbox();
 #endif
 
   delegate_->SandboxInitialized(process_type);

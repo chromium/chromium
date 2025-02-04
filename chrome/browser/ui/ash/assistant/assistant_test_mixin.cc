@@ -42,11 +42,11 @@ namespace ash::assistant {
 namespace {
 
 constexpr const char kTestUser[] = "test_user@gmail.com";
-constexpr const char kTestUserGaiaId[] = "test_user_gaia_id";
+constexpr const GaiaId::Literal kTestUserGaiaId("test_user_gaia_id");
 
 LoginManagerMixin::TestUserInfo GetTestUserInfo() {
   return LoginManagerMixin::TestUserInfo(
-      AccountId::FromUserEmailGaiaId(kTestUser, GaiaId(kTestUserGaiaId)));
+      AccountId::FromUserEmailGaiaId(kTestUser, kTestUserGaiaId));
 }
 
 // Waiter that blocks in the |Wait| method until a given |AssistantStatus|

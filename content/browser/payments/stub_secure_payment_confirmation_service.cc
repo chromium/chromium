@@ -31,6 +31,11 @@ StubSecurePaymentConfirmationService::StubSecurePaymentConfirmationService(
         receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
+void StubSecurePaymentConfirmationService::IsSecurePaymentConfirmationAvailable(
+    IsSecurePaymentConfirmationAvailableCallback callback) {
+  std::move(callback).Run(false);
+}
+
 void StubSecurePaymentConfirmationService::StorePaymentCredential(
     const std::vector<uint8_t>& credential_id,
     const std::string& rp_id,

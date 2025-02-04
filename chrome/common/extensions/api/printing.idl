@@ -153,6 +153,7 @@ namespace printing {
   callback CancelJobCallback = void();
   callback GetPrintersCallback = void(Printer[] printers);
   callback GetPrinterInfoCallback = void(GetPrinterInfoResponse response);
+  callback getJobStatusCallback = void(JobStatus status);
 
   interface Functions {
     // Submits the job for printing. If the extension is not listed in
@@ -183,6 +184,14 @@ namespace printing {
     static void getPrinterInfo(
         DOMString printerId,
         GetPrinterInfoCallback callback);
+
+    // Returns the status of the print job. This call will fail with a runtime
+    // error if the print job with the given `jobId` doesn't exist.
+    // `jobId`: The id of the print job to return the status of. This should be
+    // the same id received in a $(ref:SubmitJobResponse).
+    static void getJobStatus(
+        DOMString jobId,
+        getJobStatusCallback callback);
   };
 
   interface Properties {

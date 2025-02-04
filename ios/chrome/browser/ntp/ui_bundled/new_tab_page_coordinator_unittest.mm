@@ -369,7 +369,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     DynamicallyCallSelector(coordinator_, coordinator_selector,
                             [coordinator_ class]);
 
-    [view_controller_mock verify];
+    EXPECT_OCMOCK_VERIFY(view_controller_mock);
     coordinator_.NTPViewController = original_vc;
   }
 

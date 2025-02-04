@@ -49,11 +49,12 @@ class BluetoothPowerControllerImplTest : public testing::Test {
     user_manager::UserManagerImpl::RegisterPrefs(local_state()->registry());
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(local_state()));
+    session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
   }
 
   void TearDown() override {
-    fake_user_manager_.Reset();
     session_manager_.reset();
+    fake_user_manager_.Reset();
   }
 
   void Init() {
@@ -81,8 +82,13 @@ class BluetoothPowerControllerImplTest : public testing::Test {
 
     // Create a session in SessionManager. This will also login the user in
     // UserManager.
-    session_manager_->CreateSession(user->GetAccountId(), user->username_hash(),
-                                    /*is_child=*/false);
+    session_manager_->CreateSession(
+        user->GetAccountId(),
+        // TODO(crbug.com/278643115): Looks incorrect.
+        // User's username_hash should be set inside CreateSession via
+        // UserManager::UserLoggedIn().
+        user->username_hash(), user->GetType(),
+        /*has_active_session=*/false);
     session_manager_->SessionStarted();
 
     // Logging in doesn't set the user in UserManager as the active user if
@@ -123,9 +129,9 @@ class BluetoothPowerControllerImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable local_state_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
 
   sync_preferences::TestingPrefServiceSyncable active_user_prefs_;
 

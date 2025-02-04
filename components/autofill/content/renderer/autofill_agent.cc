@@ -2018,7 +2018,7 @@ void AutofillAgent::OnProvisionallySaveForm(
         formless_elements_user_edited_, [](const FieldRendererId field_id) {
           WebFormControlElement field =
               form_util::GetFormControlByRendererId(field_id);
-          return field && form_util::IsWebElementFocusableForAutofill(field);
+          return field && field.IsFocusable();
         });
     formless_elements_user_edited_.insert(
         form_util::GetFieldRendererId(element));

@@ -82,6 +82,9 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
  private:
   font_data_service::mojom::FontDataService& GetRemoteFontDataService() const;
 
+  sk_sp<SkTypeface> CreateTypefaceFromMatchResult(
+      mojom::MatchFamilyNameResultPtr match_result) const;
+
   // Key of the typeface_cache_.
   struct MatchFamilyRequest {
     std::string name;

@@ -370,6 +370,11 @@ bool ProfileAuthenticatorWillDoUserVerification(
 #endif
 }
 
+inline bool IsModalRequest(UIPresentation ui_presentation) {
+  return ui_presentation == UIPresentation::kModal ||
+         ui_presentation == UIPresentation::kModalImmediate;
+}
+
 }  // namespace
 
 AuthenticatorRequestDialogController::EphemeralState::EphemeralState() =
@@ -469,7 +474,7 @@ void AuthenticatorRequestDialogController::OnRecoverSecurityDomainClosed() {
   // dismissed the recovery window. This will ensure the users to have a backup
   // such as hybrid.
   if (transport_availability_.request_type == FidoRequestType::kGetAssertion &&
-      ui_presentation_ == UIPresentation::kModal &&
+      IsModalRequest(ui_presentation_) &&
       model_->step() == Step::kRecoverSecurityDomain) {
     model_->StartOver();
     return;
@@ -673,6 +678,7 @@ void AuthenticatorRequestDialogController::StartFlow(
 
   switch (ui_presentation_) {
     case UIPresentation::kModal:
+    case UIPresentation::kModalImmediate:
       StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
       break;
     case UIPresentation::kAutofill:
@@ -1622,7 +1628,7 @@ void AuthenticatorRequestDialogController::RecordMacOsStartedHistogram() {
     }
   } else if (transport_availability_.request_type ==
                  device::FidoRequestType::kGetAssertion &&
-             ui_presentation_ == UIPresentation::kModal) {
+             IsModalRequest(ui_presentation_)) {
     const bool profile =
         transport_availability_.has_platform_authenticator_credential ==
         device::FidoRequestHandlerBase::RecognizedCredential::
@@ -1723,7 +1729,7 @@ void AuthenticatorRequestDialogController::ProvideChallengeUrl(
   // Conditional requests don't initiate a challenge fetch unless and until the
   // user triggers it, but modal requests always perform the fetch so it can
   // be started immediately.
-  if (ui_presentation_ == UIPresentation::kModal) {
+  if (IsModalRequest(ui_presentation_)) {
     MaybeStartChallengeFetch();
   }
 }
@@ -2093,7 +2099,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   bool specific_phones_listed = false;
   bool specific_local_passkeys_listed = false;
   bool enclave_passkeys_shown = false;
-  if (is_get_assertion && ui_presentation_ == UIPresentation::kModal) {
+  if (is_get_assertion && IsModalRequest(ui_presentation_)) {
     // List passkeys instead of mechanisms for platform & GPM authenticators.
     for (const auto& cred : transport_availability_.recognized_credentials) {
       if (cred.source == AuthenticatorType::kPhone && !list_phone_passkeys) {
@@ -2207,7 +2213,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   }
   if (enclave_enabled_status_ ==
           EnclaveEnabledStatus::kEnabledAndReauthNeeded &&
-      ui_presentation_ == UIPresentation::kModal &&
+      IsModalRequest(ui_presentation_) &&
       model_->relying_party_id != "google.com") {
     // Show a button that lets the user sign in again to restore sync. This
     // cancels the request, so we can't do it for conditional UI requests.
@@ -2284,8 +2290,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         transport_availability_.has_icloud_keychain_credential ==
             device::FidoRequestHandlerBase::RecognizedCredential::
                 kNoRecognizedCredential &&
-        paired_phones_.size() == 1 &&
-        ui_presentation_ == UIPresentation::kModal &&
+        paired_phones_.size() == 1 && IsModalRequest(ui_presentation_) &&
         transport_availability_.is_only_hybrid_or_internal;
     if (skip_to_phone_confirmation) {
       FIDO_LOG(EVENT)
@@ -2361,7 +2366,7 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
   // button.
   if (enclave_enabled_status_ ==
           EnclaveEnabledStatus::kEnabledAndReauthNeeded &&
-      ui_presentation_ == UIPresentation::kModal) {
+      IsModalRequest(ui_presentation_)) {
     return std::nullopt;
   }
 

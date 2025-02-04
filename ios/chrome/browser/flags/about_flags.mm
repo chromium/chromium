@@ -1247,23 +1247,28 @@ const FeatureEntry::FeatureVariation kFullscreenTransitionVariations[] = {
     {"Medium offset", kMediumFullscreenTransitionOffset,
      std::size(kMediumFullscreenTransitionOffset), nullptr}};
 
-const FeatureEntry::FeatureParam kDeprecateFeedHeaderVariationAddFeedLabel[] = {
-    {kDeprecateFeedHeaderParameterFeedLabel, "true"}};
-const FeatureEntry::FeatureParam kDeprecateFeedHeaderVariationAddTopPadding[] =
-    {{kDeprecateFeedHeaderParameterTopPadding, "true"}};
 const FeatureEntry::FeatureParam
-    kDeprecateFeedHeaderVariationAddTopPaddingAndEnlargeElements[] = {
+    kDeprecateFeedHeaderVariationRemoveFeedLabel[] = {
+        {kDeprecateFeedHeaderParameterRemoveLabel, "true"}};
+const FeatureEntry::FeatureParam
+    kDeprecateFeedHeaderVariationAbovePlusAddTopPadding[] = {
+        {kDeprecateFeedHeaderParameterRemoveLabel, "true"},
+        {kDeprecateFeedHeaderParameterTopPadding, "true"}};
+const FeatureEntry::FeatureParam
+    kDeprecateFeedHeaderVariationAbovePlusEnlargeElements[] = {
+        {kDeprecateFeedHeaderParameterRemoveLabel, "true"},
         {kDeprecateFeedHeaderParameterTopPadding, "true"},
         {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
 
 const FeatureEntry::FeatureVariation kDeprecateFeedHeaderVariations[] = {
-    {" (with feed label)", kDeprecateFeedHeaderVariationAddFeedLabel,
-     std::size(kDeprecateFeedHeaderVariationAddFeedLabel), nullptr},
-    {" (with top padding)", kDeprecateFeedHeaderVariationAddTopPadding,
-     std::size(kDeprecateFeedHeaderVariationAddTopPadding), nullptr},
-    {" (with top padding and large doodle)",
-     kDeprecateFeedHeaderVariationAddTopPaddingAndEnlargeElements,
-     std::size(kDeprecateFeedHeaderVariationAddTopPaddingAndEnlargeElements),
+    {" (remove feed label)", kDeprecateFeedHeaderVariationRemoveFeedLabel,
+     std::size(kDeprecateFeedHeaderVariationRemoveFeedLabel), nullptr},
+    {" (also add top padding)",
+     kDeprecateFeedHeaderVariationAbovePlusAddTopPadding,
+     std::size(kDeprecateFeedHeaderVariationAbovePlusAddTopPadding), nullptr},
+    {" (and enlarge doodle too)",
+     kDeprecateFeedHeaderVariationAbovePlusEnlargeElements,
+     std::size(kDeprecateFeedHeaderVariationAbovePlusEnlargeElements),
      nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
@@ -2362,7 +2367,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFullscreenTransitionDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kFullscreenTransition,
                                     kFullscreenTransitionVariations,
-                                    "IOSFullscreenTransition")},
+                                    "IOSFull`screenTransition")},
     {"ios-deprecate-feed-header",
      flag_descriptions::kDeprecateFeedHeaderExperimentName,
      flag_descriptions::kDeprecateFeedHeaderExperimentDescription,
@@ -2370,6 +2375,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kDeprecateFeedHeader,
                                     kDeprecateFeedHeaderVariations,
                                     "IOSDeprecateFeedHeader")},
+    {"refactor-toolbar-ui", flag_descriptions::kRefactorToolbarUIName,
+     flag_descriptions::kRefactorToolbarUIDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kRefactorToolbarUI)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

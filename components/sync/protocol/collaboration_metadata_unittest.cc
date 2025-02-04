@@ -57,7 +57,7 @@ TEST(CollaborationMetadataTest, SerializeLocalChangeToProtos) {
 
   CollaborationMetadata collaboration_metadata =
       CollaborationMetadata::ForLocalChange(GaiaId(kCreatorId),
-                                            kCollaborationId);
+                                            CollaborationId(kCollaborationId));
   EXPECT_THAT(collaboration_metadata.ToLocalProto(),
               EqualsProto(expected_local_proto));
   EXPECT_THAT(collaboration_metadata.ToRemoteProto(),

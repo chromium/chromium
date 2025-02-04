@@ -11,6 +11,7 @@
 #include "base/containers/adapters.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace ash {
 namespace {

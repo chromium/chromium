@@ -44,7 +44,6 @@ static_library("birch") {
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/calendar",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/file_suggest",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/release_notes",

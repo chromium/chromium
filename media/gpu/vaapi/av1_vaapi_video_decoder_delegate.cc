@@ -18,7 +18,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "build/chromeos_buildflags.h"
 #include "media/gpu/av1_picture.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
@@ -791,7 +790,7 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
     base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const DecryptConfig* decrypt_config = pic.decrypt_config();
   if (decrypt_config && !SetDecryptConfig(decrypt_config->Clone()))
     return DecodeStatus::kFail;
@@ -821,7 +820,7 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
         return DecodeStatus::kFail;
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // libgav1 ensures that tile_columns is >= 0 and <= MAX_TILE_COLS.
   DCHECK_LE(0, pic.frame_header.tile_info.tile_columns);
@@ -867,7 +866,7 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
       {{picture_params_->id(),
         {picture_params_->type(), picture_params_->size(), &pic_param}}};
   buffers.reserve(3 + slice_params.size());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (IsTranscrypted()) {
     CHECK(decrypt_config);
     CHECK_EQ(decrypt_config->subsamples().size(), 2u);
@@ -892,7 +891,7 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
          {encoded_data->type(), encoded_data->size(),
           data.data() + decrypt_config->subsamples()[0].clear_bytes}});
   } else {
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
                                                   data.size_bytes());
     if (!encoded_data)
@@ -900,14 +899,14 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
     buffers.push_back(
         {encoded_data->id(),
          {encoded_data->type(), encoded_data->size(), data.data()}});
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   }
   if (uses_crypto) {
     buffers.push_back(
         {crypto_params_->id(),
          {crypto_params_->type(), crypto_params_->size(), &crypto_param}});
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   for (size_t i = 0; i < slice_params.size(); ++i) {
     buffers.push_back({slice_params_va_buffers[i]->id(),

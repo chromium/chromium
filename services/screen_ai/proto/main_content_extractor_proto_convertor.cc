@@ -135,6 +135,7 @@ screenai::UiElement CreateUiElementProto(
   bool offscreen = false;
   gfx::RectF bounds =
       tree.GetTreeBounds(node, &offscreen, /* clip_bounds= */ false);
+  AddAttribute("/extras/styles/offscreen", offscreen, uie);
 
   // Bounding Box Pixels. Note: this does a floor on the bounds, as bounds is
   // a rect_f and the proto fields are int32_t.

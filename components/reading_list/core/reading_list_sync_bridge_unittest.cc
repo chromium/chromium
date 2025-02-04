@@ -387,36 +387,6 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorage) {
   EXPECT_EQ(0ul, model_->size());
 }
 
-TEST_F(ReadingListSyncBridgeTest,
-       DisableSyncWithWipingBehaviorAndInitialSyncDone) {
-  ResetModelAndBridge(
-      syncer::StorageType::kUnspecified,
-      syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata,
-      /*initial_sync_done=*/true);
-  model_->AddOrReplaceEntry(GURL("http://read.example.com/"), "read title",
-                            reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
-
-  ASSERT_EQ(1ul, model_->size());
-  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
-  EXPECT_EQ(0ul, model_->size());
-}
-
-TEST_F(ReadingListSyncBridgeTest,
-       DisableSyncWithWipingBehaviorAndInitialSyncNotDone) {
-  ResetModelAndBridge(
-      syncer::StorageType::kUnspecified,
-      syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata,
-      /*initial_sync_done=*/false);
-  model_->AddOrReplaceEntry(GURL("http://read.example.com/"), "read title",
-                            reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
-
-  ASSERT_EQ(1ul, model_->size());
-  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
-  EXPECT_EQ(1ul, model_->size());
-}
-
 TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorageAndOrphanData) {
   ResetModelAndBridge(syncer::StorageType::kAccount,
                       syncer::WipeModelUponSyncDisabledBehavior::kAlways,

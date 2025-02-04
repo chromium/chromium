@@ -229,6 +229,9 @@ class BookmarkMergedSurfaceService : public KeyedService,
   size_t GetIndexAcrossStorage(const bookmarks::BookmarkNode* node,
                                size_t in_storage_index) const;
 
+  void NotifyBookmarkNodeAddedForAllDescendants(
+      const bookmarks::BookmarkNode* node);
+
   const raw_ptr<bookmarks::BookmarkModel> model_;
   const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   const base::flat_map<BookmarkParentFolder::PermanentFolderType,
@@ -254,6 +257,16 @@ class BookmarkMergedSurfaceService : public KeyedService,
   // `BookmarkNodeMoved()`.
   std::optional<std::pair<size_t, raw_ptr<const bookmarks::BookmarkNode>>>
       cached_index_for_node_move_;
+
+  // The service is making a move using `Move()`.
+  // Delay `BookmarkModel` notifications as the index could change as a result
+  // of custom reorder between account and local nodes.
+  bool scoped_move_change_ = false;
+
+  // The service is adding new nodes through `AddNodesAsCopiesOfNodeData()`.
+  // Delay `BookmarkModel` notification as the index could change as a result
+  // of custom reorder between account and local nodes.
+  bool scoped_add_new_nodes_ = false;
 
   base::ObserverList<BookmarkMergedSurfaceServiceObserver> observers_;
 

@@ -4,16 +4,13 @@
 
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#error This file should only be built for Ash.
-#endif
-
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
@@ -24,6 +21,9 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS),
+              "This file should only be built for ChromeOS.");
 
 using base::test::RunClosure;
 using ::testing::_;

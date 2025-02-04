@@ -24,6 +24,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
+#include "services/device/public/cpp/test/scoped_usb_device_manager_overrider.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -235,10 +236,7 @@ class ChromeUsbTestHelper {
   }
 
   device::FakeUsbDeviceManager* device_manager() {
-    if (!device_manager_) {
-      device_manager_ = std::make_unique<device::FakeUsbDeviceManager>();
-    }
-    return device_manager_.get();
+    return usb_device_manager_overrider_.device_manager();
   }
 
   BrowserContextKeyedServiceFactory::TestingFactory
@@ -343,21 +341,19 @@ class ChromeUsbTestHelper {
     // eligible for persistent permissions and the second device is only
     // eligible for ephemeral permissions.
     auto device_info = device_manager()->AddDevice(device);
-    context->GrantDevicePermission(origin, *device_info);
     auto ephemeral_device_info = device_manager()->AddDevice(ephemeral_device);
-    context->GrantDevicePermission(origin, *ephemeral_device_info);
-
-    // Create the WebUsbService and register a `mock_client` to receive
-    // notifications on device connections and disconnections. GetDevices is
-    // called to ensure the service is started and the client is set.
     mojo::Remote<blink::mojom::WebUsbService> web_usb_service;
     ConnectToService(web_usb_service.BindNewPipeAndPassReceiver());
     MockDeviceManagerClient mock_client;
     web_usb_service->SetClient(mock_client.CreateInterfacePtrAndBind());
+    // GetDevices is called to ensure the service is started, the client is set,
+    // and the callback from adding device to the device manager is settled.
+    GetDevicesBlocking(web_usb_service.get(), {});
+
+    context->GrantDevicePermission(origin, *ephemeral_device_info);
+    context->GrantDevicePermission(origin, *device_info);
     GetDevicesBlocking(web_usb_service.get(),
                        {device->guid(), ephemeral_device->guid()});
-    EXPECT_TRUE(context->HasDevicePermission(origin, *device_info));
-    EXPECT_TRUE(context->HasDevicePermission(origin, *ephemeral_device_info));
 
     // Simulate a device service crash. The ephemeral permission should be
     // revoked.
@@ -689,7 +685,7 @@ class ChromeUsbTestHelper {
   bool supports_usb_connection_tracker_ = false;
 
  private:
-  std::unique_ptr<device::FakeUsbDeviceManager> device_manager_;
+  device::ScopedUsbDeviceManagerOverrider usb_device_manager_overrider_;
 };
 
 class ChromeUsbDelegateRenderFrameTestBase

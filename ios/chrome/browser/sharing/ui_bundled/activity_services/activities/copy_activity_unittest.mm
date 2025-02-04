@@ -113,7 +113,7 @@ TEST_F(CopyActivityTest, ExecuteActivityJustURL) {
 
   run_loop.Run();
 
-  [activity_partial_mock verify];
+  EXPECT_OCMOCK_VERIFY(activity_partial_mock);
   NSURL* expected_url = GetExpectedURL();
   EXPECT_TRUE([expected_url isEqual:UIPasteboard.generalPasteboard.URL]);
 }
@@ -139,7 +139,7 @@ TEST_F(CopyActivityTest, ExecuteActivityMultipleURLs) {
 
   run_loop.Run();
 
-  [activity_partial_mock verify];
+  EXPECT_OCMOCK_VERIFY(activity_partial_mock);
 
   ASSERT_TRUE(UIPasteboard.generalPasteboard.hasURLs);
   ASSERT_TRUE(UIPasteboard.generalPasteboard.hasStrings);
@@ -174,7 +174,7 @@ TEST_F(CopyActivityTest, ExecuteActivityURLAndAdditionalText) {
 
   run_loop.Run();
 
-  [activity_partial_mock verify];
+  EXPECT_OCMOCK_VERIFY(activity_partial_mock);
 
   ASSERT_TRUE(UIPasteboard.generalPasteboard.hasURLs);
   ASSERT_TRUE(UIPasteboard.generalPasteboard.hasStrings);

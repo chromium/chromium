@@ -285,12 +285,14 @@ void SavedTabGroupModelListener::DisconnectLocalTabGroup(
 
 void SavedTabGroupModelListener::RemoveLocalGroupFromSync(
     tab_groups::TabGroupId local_group_id) {
-  if (!base::Contains(local_tab_group_listeners_, local_group_id)) {
-    return;
+  if (base::Contains(local_tab_group_listeners_, local_group_id)) {
+    // Prevent further observations for `local_group_id` as we attempt to close
+    // the tab group.
+    DisconnectLocalTabGroup(local_group_id, ClosingSource::kDeletedFromSync);
   }
 
-  local_tab_group_listeners_.at(local_group_id).GroupRemovedFromSync();
-  DisconnectLocalTabGroup(local_group_id, ClosingSource::kDeletedFromSync);
+  SavedTabGroupUtils::RemoveGroupFromTabstrip(/*browser=*/nullptr,
+                                              local_group_id);
 }
 
 void SavedTabGroupModelListener::UpdateLocalGroupFromSync(

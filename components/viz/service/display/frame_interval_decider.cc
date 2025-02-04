@@ -8,10 +8,10 @@
 
 #include <utility>
 
-#include "base/cpu_reduction_experiment.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -89,7 +89,7 @@ void FrameIntervalDecider::Decide(
     }
   }
 
-  if (base::ShouldLogHistogramForCpuReductionExperiment()) {
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
     base::UmaHistogramEnumeration("Viz.FrameIntervalDecider.ResultMatcherType",
                                   matcher_type);
     if (match_result &&

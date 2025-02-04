@@ -918,10 +918,13 @@ crbug.com/angleproject/8315 [ chromeos chromeos-board-amd64-generic passthrough 
 crbug.com/326755442 [ chromeos intel mesa_ge_21.0 passthrough ] conformance2/extensions/ext-render-snorm.html [ Failure ]
 
 ## Volteer ##
+crbug.com/332743717 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
+crbug.com/324952609 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/extensions/oes-draw-buffers-indexed.html [ RetryOnFailure ]
 crbug.com/40947854 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 crbug.com/40947856 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/40947856 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
-crbug.com/324952609 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/extensions/oes-draw-buffers-indexed.html [ RetryOnFailure ]
+# Fragment position generation rounds incorrectly on intel line primitives.
+crbug.com/40947858 [ chromeos intel passthrough ] deqp/functional/gles3/clipping.html [ Failure ]
 
 ##############################
 # Linux Failures #

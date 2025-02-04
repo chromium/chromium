@@ -16,10 +16,10 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/cpu_reduction_experiment.h"
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -361,7 +361,7 @@ void ReportTopControlsMetric(
         base::Histogram::FactoryMicrosecondsTimeGet(
             versioned_name, bucketing->min, bucketing->max, bucketing->count,
             base::HistogramBase::kUmaTargetedHistogramFlag));
-  } else if (base::ShouldLogHistogramForCpuReductionExperiment()) {
+  } else if (base::ShouldRecordSubsampledMetric(0.001)) {
     // We want to sub-sample the reports with top controls not moving. As they
     // dominate in volume.
     std::string versioned_name = name + kTopControlsDidNotMoveName;
@@ -1016,8 +1016,8 @@ void CompositorFrameReporter::EndCurrentStage(base::TimeTicks end_time) {
 }
 
 void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
-  // Subsampling these metrics reduced CPU utilization (crbug.com/1295441).
-  if (!base::ShouldLogHistogramForCpuReductionExperiment()) {
+  // Subsampling these metrics to reduce CPU utilization.
+  if (!base::ShouldRecordSubsampledMetric(0.001)) {
     return;
   }
 

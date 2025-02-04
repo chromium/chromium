@@ -19,6 +19,9 @@
 #import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_enterprise_sheet.h"
 #import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet.h"
 #import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet_delegate.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -53,10 +56,12 @@ CGFloat const kHalfSheetCornerRadius = 20;
   id<SnackbarCommands> snackbarHandler =
       static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
   __weak __typeof(self) weakSelf = self;
-  // TODO(crbug.com/374935670): Add a11y strings.
   [snackbarHandler
-      showSnackbarWithMessage:@"Opened in Chrome Incognito"
-                   buttonText:@"LEARN MORE"
+      showSnackbarWithMessage:l10n_util::GetNSString(
+                                  IDS_IOS_YOUTUBE_INCOGNITO_SNACKBAR_MESSAGE)
+                   buttonText:
+                       l10n_util::GetNSString(
+                           IDS_IOS_YOUTUBE_INCOGNITO_SNACKBAR_BUTTON_TITLE)
                 messageAction:^{
                   [weakSelf.tabOpener
                       dismissModalsAndMaybeOpenSelectedTabInMode:

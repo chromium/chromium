@@ -13,6 +13,8 @@ if (!is_android && !is_ios) {
       "caption_bubble_controller.h",
       "caption_bubble_session_observer.h",
       "caption_bubble_settings.h",
+      "caption_controller_base.cc",
+      "caption_controller_base.h",
       "live_caption_bubble_settings.cc",
       "live_caption_bubble_settings.h",
       "live_caption_controller.cc",
@@ -135,6 +137,7 @@ if (!is_android && !is_ios) {
         "//components/pref_registry",
         "//components/soda",
         "//components/soda:constants",
+        "//ui/native_theme",
         "//ui/views",
       ]
     }

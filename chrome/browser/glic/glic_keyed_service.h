@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_H_
 #define CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/callback_list.h"
@@ -15,23 +16,21 @@
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/glic_profile_configuration.h"
-#include "chrome/browser/glic/glic_window_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class BrowserWindowInterface;
-
-namespace content {
-class BrowserContext;
-}  // namespace content
+class Profile;
 
 namespace signin {
 class IdentityManager;
 }  // namespace signin
 
 namespace glic {
+class AuthController;
 class GlicFocusedTabManager;
 class GlicMetrics;
 class GlicProfileManager;
+class GlicWindowController;
 class GlicWindowController;
 class GlicScreenshotCapturer;
 
@@ -43,7 +42,7 @@ class GlicScreenshotCapturer;
 // and cause the UI to respond to it.
 class GlicKeyedService : public KeyedService {
  public:
-  explicit GlicKeyedService(content::BrowserContext* browser_context,
+  explicit GlicKeyedService(Profile* profile,
                             signin::IdentityManager* identity_manager,
                             GlicProfileManager* profile_manager);
   GlicKeyedService(const GlicKeyedService&) = delete;
@@ -58,7 +57,7 @@ class GlicKeyedService : public KeyedService {
   void ToggleUI(BrowserWindowInterface* bwi);
 
   GlicMetrics* metrics() { return metrics_.get(); }
-  GlicWindowController& window_controller() { return window_controller_; }
+  GlicWindowController& window_controller() { return *window_controller_; }
 
   // Called when a webview guest is created within a chrome://glic WebUI.
   void GuestAdded(content::WebContents* guest_contents);
@@ -68,6 +67,8 @@ class GlicKeyedService : public KeyedService {
 
   // Called when a `GlicPageHandler` is about to be destroyed.
   void PageHandlerRemoved(GlicPageHandler* page_handler);
+
+  bool IsWindowShowing() const;
 
   // Private API for the glic WebUI.
 
@@ -87,6 +88,7 @@ class GlicKeyedService : public KeyedService {
   void ShowProfilePicker();
   void SetPanelDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
   void SetContextAccessIndicator(bool show);
+  void NotifyWindowIntentToShow();
 
   // Callback for changes to focused tab. When there is no focused tab,
   // |WebContents| will be nullptr.
@@ -132,20 +134,17 @@ class GlicKeyedService : public KeyedService {
   void CaptureScreenshot(
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
 
-  void SyncWebviewCookies(
-      mojom::PageHandler::SyncWebviewCookiesCallback callback);
+  AuthController& GetAuthController() { return *auth_controller_; }
 
   void SyncWebviewCookiesForFre(
-      mojom::PageHandler::SyncWebviewCookiesCallback callback);
+      glic::mojom::FrePageHandler::SyncWebviewCookiesCallback callback);
 
   void WebClientCreated();
 
   base::CallbackListSubscription AddWebClientCreatedCallback(
       base::OnceCallback<void()> callback);
 
-  bool IsActiveWebContents(content::WebContents* contents) {
-    return contents && contents == window_controller().GetWebContents();
-  }
+  bool IsActiveWebContents(content::WebContents* contents);
 
   void TryPreload();
   void ReloadWebview();
@@ -165,10 +164,10 @@ class GlicKeyedService : public KeyedService {
   // The state of the context access indicator as set by the client.
   bool is_context_access_indicator_enabled_ = false;
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<Profile> profile_;
 
   GlicProfileConfiguration configuration_;
-  GlicWindowController window_controller_;
+  std::unique_ptr<GlicWindowController> window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   // The glic FRE uses a different webview from the main glic WebUI. This also
@@ -176,8 +175,8 @@ class GlicKeyedService : public KeyedService {
   // instances of `GlicCookieSynchronizer` to handle the two different webviews
   // as they require different storage partitions.
   GlicCookieSynchronizer fre_cookie_synchronizer_;
-  GlicCookieSynchronizer cookie_synchronizer_;
   std::unique_ptr<GlicMetrics> metrics_;
+  std::unique_ptr<AuthController> auth_controller_;
   // Unowned
   raw_ptr<GlicProfileManager> profile_manager_;
   base::OnceCallbackList<void()> web_client_created_callbacks_;

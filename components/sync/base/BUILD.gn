@@ -36,6 +36,7 @@ static_library("base") {
     "account_pref_utils.h",
     "client_tag_hash.cc",
     "client_tag_hash.h",
+    "collaboration_id.h",
     "command_line_switches.cc",
     "command_line_switches.h",
     "data_type.cc",

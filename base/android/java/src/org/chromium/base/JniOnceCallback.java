@@ -35,12 +35,14 @@ public final class JniOnceCallback<T extends @Nullable Object> implements Callba
         if (mNativePointer != 0) {
             JniCallbackUtils.runNativeCallback(this, result);
             mNativePointer = 0;
+            LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
         } else {
             // TODO(mheikal): maybe store destroy callstack to output here?
             assert false : "Called destroyed callback";
         }
     }
 
+    /** Frees the owned base::OnceCallback's memory */
     public void destroy() {
         if (mNativePointer != 0) {
             JniCallbackUtils.destroyNativeCallback(this);

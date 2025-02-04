@@ -1,6 +1,6 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXPopUpButton AXDescription='Currency for purchase' AXRoleDescription='pop up button' AXValue='USD United States Dollar $'
+++++AXPopUpButton AXDescription='Currency for purchase' AXRoleDescription='pop up button' AXValue='USD'
 ++++++AXMenu AXRoleDescription='menu'
 ++++++++AXMenuItem AXRoleDescription='menu item' AXValue='EUR Euro'
 ++++++++++AXGroup AXRoleDescription='group'

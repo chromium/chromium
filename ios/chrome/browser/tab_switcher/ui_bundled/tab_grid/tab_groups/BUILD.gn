@@ -38,6 +38,8 @@ source_set("tab_groups") {
     "//ios/chrome/browser/collaboration/model:collaboration_delegate",
     "//ios/chrome/browser/collaboration/model:features",
     "//ios/chrome/browser/collaboration/model/messaging",
+    "//ios/chrome/browser/data_sharing/model",
+    "//ios/chrome/browser/data_sharing/model:observer_bridge",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/main/model",
@@ -46,6 +48,7 @@ source_set("tab_groups") {
     "//ios/chrome/browser/saved_tab_groups/favicon/ui",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/share_kit/model:constants",
     "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -153,6 +156,7 @@ source_set("tab_groups_ui") {
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/saved_tab_groups/favicon/ui",
     "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/share_kit/model:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -235,7 +239,10 @@ source_set("tab_group_consumer") {
     "tab_group_creation_consumer.h",
   ]
 
-  deps = [ "//components/tab_groups" ]
+  deps = [
+    "//components/tab_groups",
+    "//ios/chrome/browser/share_kit/model:constants",
+  ]
 }
 
 source_set("tab_groups_constant") {
@@ -270,6 +277,7 @@ source_set("unit_tests") {
     ":tab_groups_ui",
     "//base/test:test_support",
     "//components/collaboration:test_support",
+    "//components/data_sharing:test_support",
     "//components/data_sharing/public",
     "//components/policy/core/common:common_constants",
     "//components/prefs:test_support",

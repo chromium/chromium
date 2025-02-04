@@ -153,6 +153,7 @@ class UILockControllerTest : public test::ExoTestBase {
   }
 
   void TearDown() override {
+    auth_events_recorder_.reset();
     seat_.reset();
     test::ExoTestBase::TearDown();
   }

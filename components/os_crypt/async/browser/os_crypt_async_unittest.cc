@@ -529,10 +529,17 @@ TEST_F(OSCryptAsyncTest, TestEncryptorIsEncryptionAvailable) {
 }
 
 class FailingKeyProvider : public TestKeyProvider {
+ public:
+  FailingKeyProvider(KeyProvider::KeyError reason, const std::string& name)
+      : reason_(reason), name_(name) {}
+
  private:
   void GetKey(KeyCallback callback) override {
-    std::move(callback).Run("BLAH", std::nullopt);
+    std::move(callback).Run(name_, base::unexpected(reason_));
   }
+
+  const KeyProvider::KeyError reason_;
+  const std::string name_;
 };
 
 // Some tests require a working OSCrypt.
@@ -575,8 +582,10 @@ TEST_F(OSCryptAsyncTestWithOSCrypt, Empty) {
 
 TEST_F(OSCryptAsyncTestWithOSCrypt, FailingKeyProvider) {
   ProviderList providers;
-  providers.emplace_back(/*precedence=*/10u,
-                         std::make_unique<FailingKeyProvider>());
+  providers.emplace_back(
+      /*precedence=*/10u,
+      std::make_unique<FailingKeyProvider>(
+          KeyProvider::KeyError::kPermanentlyUnavailable, "BLAH"));
   OSCryptAsync factory(std::move(providers));
   // TODO: Work out how best to handle provider failures.
   Encryptor encryptor = GetInstanceSync(factory);
@@ -599,6 +608,111 @@ TEST_F(OSCryptAsyncTestWithOSCrypt, FailingKeyProvider) {
     // this case, there are no providers at all.
     EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
     EXPECT_EQ("secrets", plaintext);
+  }
+}
+
+TEST_F(OSCryptAsyncTestWithOSCrypt, TemporarilyFailingKeyProvider) {
+  std::optional<std::vector<uint8_t>> ciphertext;
+
+  // First, encrypt some data with the BLAH key provider.
+  {
+    ProviderList providers;
+    providers.emplace_back(
+        /*precedence=*/10u,
+        std::make_unique<TestKeyProvider>("BLAH", /*use_for_encryption=*/true));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    ciphertext = encryptor.EncryptString("secrets");
+    EXPECT_TRUE(ciphertext);
+  }
+
+  // Next, cause this key provider to fail temporarily. This should cause
+  // decryption to fail but with kFailureKeyTemporarilyUnavailable.
+  {
+    ProviderList providers;
+    providers.emplace_back(
+        /*precedence=*/10u,
+        std::make_unique<FailingKeyProvider>(
+            KeyProvider::KeyError::kTemporarilyUnavailable, "BLAH"));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    Encryptor::DecryptFlags flags;
+    const auto plaintext = encryptor.DecryptData(*ciphertext, &flags);
+    EXPECT_FALSE(plaintext);
+    EXPECT_TRUE(flags.temporarily_unavailable);
+
+    // Encryption should still work, even with a temporarily failing key
+    // provider, but it will delegate to OSCrypt.
+    {
+      const auto ciphertext2 = encryptor.EncryptString("secret");
+      EXPECT_TRUE(ciphertext2);
+      std::string plaintext2;
+      EXPECT_TRUE(OSCrypt::DecryptString(
+          std::string(ciphertext2->begin(), ciphertext2->end()), &plaintext2));
+      EXPECT_EQ(plaintext2, "secret");
+    }
+  }
+
+  // Test permanently unavailable.
+  {
+    ProviderList providers;
+    providers.emplace_back(
+        /*precedence=*/10u,
+        std::make_unique<FailingKeyProvider>(
+            KeyProvider::KeyError::kPermanentlyUnavailable, "BLAH"));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    Encryptor::DecryptFlags flags;
+    const auto plaintext = encryptor.DecryptData(*ciphertext, &flags);
+    // Since there is no key at all, this case has fallback to OSCrypt sync
+    // which cannot decrypt data encrypted with BLAH key.
+    EXPECT_FALSE(plaintext);
+    EXPECT_FALSE(flags.temporarily_unavailable);
+
+    // With no key provided at all (a permanent failure), encryption is
+    // delegated to OSCrypt.
+    {
+      const auto ciphertext2 = encryptor.EncryptString("secret");
+      EXPECT_TRUE(ciphertext2);
+      std::string plaintext2;
+      EXPECT_TRUE(OSCrypt::DecryptString(
+          std::string(ciphertext2->begin(), ciphertext2->end()), &plaintext2));
+      EXPECT_EQ(plaintext2, "secret");
+    }
+  }
+}
+
+TEST_F(OSCryptAsyncTest, MultipleKeysSomeTemporarilyUnavailable) {
+  std::optional<std::vector<uint8_t>> ciphertext;
+  {
+    ProviderList providers;
+    providers.emplace_back(
+        /*precedence=*/10u,
+        std::make_unique<TestKeyProvider>("BLAH", /*use_for_encryption=*/true));
+    // Note: TEST is higher precedence so would normally be picked for
+    // encryption, were it not unavailable.
+    providers.emplace_back(
+        /*precedence=*/15u,
+        std::make_unique<FailingKeyProvider>(
+            KeyProvider::KeyError::kTemporarilyUnavailable, "TEST"));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    ciphertext = encryptor.EncryptString("secret data");
+    EXPECT_TRUE(ciphertext);
+  }
+
+  // Verify that BLAH is used by creating a new encryptor with only BLAH and
+  // decrypting.
+  {
+    ProviderList providers;
+    providers.emplace_back(
+        /*precedence=*/10u,
+        std::make_unique<TestKeyProvider>("BLAH", /*use_for_encryption=*/true));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    const auto plaintext = encryptor.DecryptData(*ciphertext);
+    EXPECT_TRUE(plaintext);
+    EXPECT_EQ(*plaintext, "secret data");
   }
 }
 

@@ -40,6 +40,7 @@ public class JniRepeatingCallback<T extends @Nullable Object> implements Callbac
         }
     }
 
+    /** Frees the owned base::RepeatingCallback's memory */
     public void destroy() {
         if (mNativePointer != 0) {
             JniCallbackUtils.destroyNativeCallback(this);

@@ -180,6 +180,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.AppModeFetching.Outcome"
+    enum="IOSAppModeFetchingOutcomeType" expires_after="2025-06-30">
+  <owner>erahmaoui@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    This event is recorded each time an application mode fetching is completed.
+    The enumeration indicates the nature of the application mode fetching
+    outcome.
+  </summary>
+</histogram>
+
 <histogram name="IOS.AppStoreRating.UserIsEligible" enum="Boolean"
     expires_after="2024-07-14">
   <owner>hiramahmood@google.com</owner>
@@ -959,6 +970,52 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserBannerPromo.ManuallyDismissed" units="count"
+    expires_after="2025-09-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the default browser banner promo being manually dismissed by the
+    user. The value is how many times the promo has been shown before in this
+    promo session (e.g. the user dismissed the promo after seeing it on 2
+    pages).
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserBannerPromo.PromoSessionEnded"
+    enum="IOSDefaultBrowserBannerPromoPromoSessionEndedReason"
+    expires_after="2025-09-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records when a default browser banner promo session ends and what the cause
+    was.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserBannerPromo.Shown" units="count"
+    expires_after="2025-09-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the default browser banner promo being shown on one webpage. The
+    value is how many times the promo has been shown before in this promo
+    session (e.g. the user loaded 2 pages with the promo already, so this is the
+    3rd).
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserBannerPromo.Tapped" units="count"
+    expires_after="2025-09-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the default browser banner promo being tapped. The value is how many
+    times the promo has been shown before in this promo session (e.g. the user
+    tapped the promo after seeing it on 2 pages).
+  </summary>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserFullscreenPromo"
     enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-08-05">
   <owner>sebsg@chromium.org</owner>
@@ -1165,6 +1222,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Source">
     <variant name="" summary="Opened from any source"/>
+    <variant name=".BannerPromo" summary="Opened from banner promo"/>
     <variant name=".ExternalAction"
         summary="Opened from external action (URL passed to Chrome with
                  &quot;ChromeExternalAction&quot; as host)"/>
@@ -1961,7 +2019,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.ErrorHasFilename" enum="Boolean"
-    expires_after="2025-05-31">
+    expires_after="2025-08-03">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -1973,7 +2031,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Authorized"
-    enum="GeolocationAPI" expires_after="2025-05-31">
+    enum="GeolocationAPI" expires_after="2025-08-03">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -1986,7 +2044,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Denied"
-    enum="GeolocationAPI" expires_after="2025-05-31">
+    enum="GeolocationAPI" expires_after="2025-08-03">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -1999,7 +2057,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.NotDetermined"
-    enum="GeolocationAPI" expires_after="2025-05-31">
+    enum="GeolocationAPI" expires_after="2025-08-03">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -2064,7 +2122,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.JavaScript.ScriptExecutionFailed" enum="Boolean"
-    expires_after="2025-05-31">
+    expires_after="2025-08-03">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -3434,7 +3492,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PartialTranslate.Outcome" enum="PartialTranslateOutcome"
-    expires_after="2025-05-30">
+    expires_after="2025-08-03">
   <owner>olivierrobin@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>The outcome of the partial translate feature.</summary>
@@ -3569,7 +3627,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PaymentsBottomSheetV3.Triggered" enum="Boolean"
-    expires_after="2025-04-20">
+    expires_after="2025-08-03">
   <owner>vincb@google.com</owner>
   <owner>noemies@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -4817,7 +4875,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Spotlight.Action" enum="IOSSpotlightAction"
-    expires_after="2025-05-30">
+    expires_after="2025-08-03">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>The Spotlight Action pressed by the user.</summary>
@@ -4942,7 +5000,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Start.Impression" enum="IOSNTPImpressionType"
-    expires_after="2025-06-01">
+    expires_after="2025-08-03">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -5369,7 +5427,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Variations.FirstRun.SeedApplicationStage"
-    enum="VariationsFirstRunSeedApplicationStage" expires_after="2025-06-01">
+    enum="VariationsFirstRunSeedApplicationStage" expires_after="2025-08-03">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>huitingyu@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>

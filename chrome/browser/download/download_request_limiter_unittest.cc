@@ -1097,7 +1097,7 @@ TEST_F(DownloadRequestLimiterTest, OpaqueOrigins) {
   ExpectAndResetCounts(0, 1, 0, __LINE__);
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
             download_request_limiter_->GetDownloadStatus(web_contents()));
-  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   // Trigger another download from about:blank, that should prompt user
@@ -1155,7 +1155,7 @@ TEST_F(DownloadRequestLimiterTest,
   ExpectAndResetCounts(0, 1, 0, __LINE__);
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
             download_request_limiter_->GetDownloadStatus(web_contents()));
-  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   CanDownload(kTestURL);

@@ -7,7 +7,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 export interface GlicBrowserProxy {
   setGlicOsLauncherEnabled(enabled: boolean): void;
   getGlicShortcut(): Promise<string>;
-  setGlicShortcut(shortcut: string): void;
+  setGlicShortcut(shortcut: string): Promise<void>;
   setShortcutSuspensionState(isSuspended: boolean): void;
 }
 
@@ -21,7 +21,7 @@ export class GlicBrowserProxyImpl implements GlicBrowserProxy {
   }
 
   setGlicShortcut(shortcut: string) {
-    chrome.send('setGlicShortcut', [shortcut]);
+    return sendWithPromise('setGlicShortcut', shortcut);
   }
 
   setShortcutSuspensionState(shouldSuspend: boolean) {

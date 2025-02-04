@@ -45,6 +45,12 @@ export class PrintPreviewMediaSizeSettingsElement extends
       },
 
       disabled: Boolean,
+
+      disableSelectionBox_: {
+        type: Boolean,
+        computed: 'computeDisableSelectionBox_(disabled, ' +
+            'settings.mediaSize.setByDestinationPolicy)',
+      },
     };
   }
 
@@ -52,6 +58,7 @@ export class PrintPreviewMediaSizeSettingsElement extends
   disabled: boolean;
   private disableBorderlessCheckbox_: boolean;
   private lastSelectedValue_: string = '';
+  private disableSelectionBox_: boolean;
 
   static get observers() {
     return [
@@ -117,6 +124,11 @@ export class PrintPreviewMediaSizeSettingsElement extends
 
   private onBorderlessCheckboxChange_() {
     this.setSetting('borderless', this.$.borderless.checked);
+  }
+
+  private computeDisableSelectionBox_(
+      disabled: boolean, managedByDestinationPolicy: boolean): boolean {
+    return disabled || managedByDestinationPolicy;
   }
 }
 

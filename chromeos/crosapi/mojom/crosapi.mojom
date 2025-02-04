@@ -498,20 +498,9 @@ interface Crosapi {
       pending_remote<chromeos.sensors.mojom.SensorHalClient> receiver);
 
   // BindSharesheet@70 was removed.
-
   // BindSmartReaderClient@107 was removed.
-
   // BindSpeechRecognition@84 was removed.
-
-  // Binds the StableVideoDecoderFactory, which allows lacros-chrome to request
-  // hardware accelerated video decoding. We need to use a
-  // GenericPendingReceiver to avoid dependency circularities.
-  // TODO(b/202188196): split StableVideoDecoder API to try to avoid dependency
-  // issues.
-  // Added in M96.
-  [MinVersion=52]
-  BindStableVideoDecoderFactory@56(
-      mojo_base.mojom.GenericPendingReceiver receiver);
+  // BindStableVideoDecoderFactory@56 was removed.
 
   // Binds the StructuredMetricsService interface to record events.
   // Added in M96.

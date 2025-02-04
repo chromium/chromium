@@ -190,10 +190,11 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // Adds an action button that can be clicked to fetch smart actions.
   virtual void AddSmartActionsButton() = 0;
 
-  // Called when Scanner actions have been fetched. This will add action buttons
-  // corresponding to `scanner_actions` and stop loading animations if needed.
+  // Called when the Scanner feature has processed a captured image to suggest
+  // available Scanner actions. This will stop loading animations and add action
+  // buttons corresponding to `actions_response`, or show an error if needed.
   virtual void OnScannerActionsFetched(
-      std::vector<ScannerActionViewModel> scanner_actions) = 0;
+      ScannerSession::FetchActionsResponse actions_response) = 0;
 
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;

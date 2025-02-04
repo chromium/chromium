@@ -75,9 +75,6 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Set up guest URL via cli flag or default to finch param value.
   source->AddString("glicGuestURL", GetGuestURL().spec());
 
-  // Add current global hotkey configuration.
-  source->AddString("glicHotkeyString", GetHotkeyString());
-
   // Set up FRE URL via cli flag, or default to the finch param value.
   source->AddString("glicFreURL", GetFreURL().spec());
 
@@ -121,9 +118,10 @@ void GlicUI::BindInterface(
 }
 
 void GlicUI::CreatePageHandler(
-    mojo::PendingReceiver<glic::mojom::PageHandler> receiver) {
-  page_handler_ = std::make_unique<GlicPageHandler>(web_ui()->GetWebContents(),
-                                                    std::move(receiver));
+    mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
+    mojo::PendingRemote<glic::mojom::Page> page) {
+  page_handler_ = std::make_unique<GlicPageHandler>(
+      web_ui()->GetWebContents(), std::move(receiver), std::move(page));
 }
 
 void GlicUI::CreateFrePageHandler(

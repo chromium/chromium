@@ -252,9 +252,10 @@ float PaintFlags::DynamicRangeLimitMixture::ComputeHdrHeadroom(
   const float high_mix = 1.f - constrained_high_mix - standard_mix;
 
   // Average the headrooms in log-space.
-  const float log2_standard_headroom = 0.f;
-  const float log2_constrained_high_headroom = 1.f;
   const float log2_high_headroom = std::log2(target_hdr_headroom);
+  const float log2_constrained_high_headroom =
+      std::min(1.f, log2_high_headroom);
+  const float log2_standard_headroom = 0.f;
   return std::exp2(standard_mix * log2_standard_headroom +
                    constrained_high_mix * log2_constrained_high_headroom +
                    high_mix * log2_high_headroom);

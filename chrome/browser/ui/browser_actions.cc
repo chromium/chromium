@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
@@ -420,7 +421,8 @@ void BrowserActions::InitializeBrowserActions() {
             .SetEnabled(!is_guest_session)
             .Build());
 
-    if (IsChromeLabsEnabled()) {
+    if (IsChromeLabsEnabled() &&
+        !web_app::AppBrowserController::IsWebApp(browser)) {
       // TODO(b/354758327): Update `ShouldShowChromeLabsUI()` to not require
       // `model` as a parameter, then use to set visibility of action item.
       root_action_item_->AddChild(

@@ -52,7 +52,7 @@ PlatformKeysTestBase::PlatformKeysTestBase(
       user_status_(user_status),
       account_id_(AccountId::FromUserEmailGaiaId(
           policy::AffiliationTestHelper::kEnterpriseUserEmail,
-          GaiaId(policy::AffiliationTestHelper::kEnterpriseUserGaiaId))) {
+          policy::AffiliationTestHelper::kEnterpriseUserGaiaId)) {
   // Command line should not be tweaked as if user is already logged in.
   set_chromeos_user_ = false;
   // We log in without running browser.

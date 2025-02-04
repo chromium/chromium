@@ -58,6 +58,13 @@ class CONTENT_EXPORT TraceReportHandler
       GetPrivacyFilterEnabledCallback callback) override;
   void SetPrivacyFilterEnabled(bool enable) override;
 
+  void SetScenariosConfigFromString(
+      const std::string& config_string,
+      SetScenariosConfigFromStringCallback callback) override;
+  void SetScenariosConfigFromBuffer(
+      mojo_base::BigBuffer config_pb,
+      SetScenariosConfigFromBufferCallback callback) override;
+
 #if BUILDFLAG(IS_WIN)
   void GetSystemTracingState(GetSystemTracingStateCallback callback) override;
   void GetSecurityShieldIconUrl(
@@ -69,6 +76,8 @@ class CONTENT_EXPORT TraceReportHandler
  private:
   void OnGetAllReportsTaskComplete(GetAllTraceReportsCallback callback,
                                    std::vector<ClientTraceReport> results);
+  bool SetScenariosConfig(
+      const perfetto::protos::gen::ChromeFieldTracingConfig& config);
 
   mojo::Receiver<trace_report::mojom::PageHandler> receiver_;
   mojo::PendingRemote<trace_report::mojom::Page> page_;

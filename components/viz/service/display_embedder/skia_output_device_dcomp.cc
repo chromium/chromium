@@ -7,6 +7,7 @@
 #include <memory>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/debug/alias.h"
 #include "base/memory/scoped_refptr.h"
@@ -219,6 +220,9 @@ void SkiaOutputDeviceDComp::OnPresentFinished(
 
 void SkiaOutputDeviceDComp::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
+  std::vector<gl::DCLayerOverlayParams> out_overlays;
+  out_overlays.reserve(overlays.size());
+
   for (auto& dc_layer : overlays) {
     // This is not necessarily an error, DCLayerTree can succeed with any
     // combination of overlay image and background color. However, it's wasteful
@@ -234,7 +238,7 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
       CHECK(dc_layer.mailbox.IsZero());
     }
 
-    auto params = std::make_unique<gl::DCLayerOverlayParams>();
+    gl::DCLayerOverlayParams& params = out_overlays.emplace_back();
 
     const gpu::Mailbox& mailbox = dc_layer.mailbox;
     if (!mailbox.IsZero()) {
@@ -244,39 +248,39 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
         DLOG(ERROR) << "Failed to ProduceOverlay or GetDCLayerOverlayImage";
         continue;
       }
-      params->overlay_image = std::move(overlay_image);
+      params.overlay_image = std::move(overlay_image);
+      scheduled_overlay_mailboxes_.insert(mailbox);
     }
 
-    params->background_color = dc_layer.color;
-    params->z_order = dc_layer.plane_z_order;
+    params.background_color = dc_layer.color;
+    params.z_order = dc_layer.plane_z_order;
 
     // SwapChainPresenter uses the size of the overlay's resource in pixels to
     // calculate its swap chain size. `uv_rect` maps the portion of
     // `resource_size_in_pixels` that will be displayed.
-    params->content_rect = gfx::ScaleRect(
+    params.content_rect = gfx::ScaleRect(
         dc_layer.uv_rect, dc_layer.resource_size_in_pixels.width(),
         dc_layer.resource_size_in_pixels.height());
 
-    params->quad_rect = gfx::ToRoundedRect(dc_layer.display_rect);
+    params.quad_rect = gfx::ToRoundedRect(dc_layer.display_rect);
     CHECK(absl::holds_alternative<gfx::Transform>(dc_layer.transform));
-    params->transform = absl::get<gfx::Transform>(dc_layer.transform);
-    params->clip_rect = dc_layer.clip_rect;
-    params->opacity = dc_layer.opacity;
-    params->rounded_corner_bounds = dc_layer.rounded_corners;
-    params->nearest_neighbor_filter = dc_layer.nearest_neighbor_filter;
-    params->aggregated_layer_id = dc_layer.aggregated_layer_id;
-    params->video_params.protected_video_type = dc_layer.protected_video_type;
-    params->video_params.color_space = dc_layer.color_space;
-    params->video_params.hdr_metadata = dc_layer.hdr_metadata;
-    params->video_params.is_p010_content =
+    params.transform = absl::get<gfx::Transform>(dc_layer.transform);
+    params.clip_rect = dc_layer.clip_rect;
+    params.opacity = dc_layer.opacity;
+    params.rounded_corner_bounds = dc_layer.rounded_corners;
+    params.nearest_neighbor_filter = dc_layer.nearest_neighbor_filter;
+    params.aggregated_layer_id = dc_layer.aggregated_layer_id;
+    params.video_params.protected_video_type = dc_layer.protected_video_type;
+    params.video_params.color_space = dc_layer.color_space;
+    params.video_params.hdr_metadata = dc_layer.hdr_metadata;
+    params.video_params.is_p010_content =
         (dc_layer.format == MultiPlaneFormat::kP010);
-    params->video_params.possible_video_fullscreen_letterboxing =
+    params.video_params.possible_video_fullscreen_letterboxing =
         dc_layer.possible_video_fullscreen_letterboxing;
-
-    // Schedule DC layer overlay to be presented at next SwapBuffers().
-    presenter_->ScheduleDCLayer(std::move(params));
-    scheduled_overlay_mailboxes_.insert(mailbox);
   }
+
+  // Schedule DC layer overlays to be presented at next SwapBuffers().
+  presenter_->ScheduleDCLayers(std::move(out_overlays));
 }
 
 std::optional<gl::DCLayerOverlayImage>

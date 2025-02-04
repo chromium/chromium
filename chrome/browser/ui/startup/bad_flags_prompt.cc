@@ -165,10 +165,6 @@ const char* const kBadFlags[] = {
     // This flag enables loading a developer-signed certificate for Cast
     // streaming receivers and should only be used for testing purposes.
     cast_certificate::switches::kCastDeveloperCertificatePath,
-
-    // This flag ignores potential bad mojo messages received in network
-    // service process instead of collecting dump about their occurrence.
-    network::switches::kIgnoreBadMessageForTesting,
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 

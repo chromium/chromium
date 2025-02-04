@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h"
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_model.h"

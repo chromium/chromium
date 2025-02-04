@@ -123,15 +123,21 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         findPreference(PREF_NOTIFICATIONS_REVIEW),
                         this,
                         NotificationPermissionReviewBridge.getForProfile(getProfile()));
-        SafetyHubAccountPasswordsModuleMediator accountPasswordsModuleMediator =
-                new SafetyHubAccountPasswordsModuleMediator(
-                        findPreference(PREF_PASSWORDS),
+
+        SafetyHubAccountPasswordsDataSource accountPasswordsDataSource =
+                new SafetyHubAccountPasswordsDataSource(
                         this,
                         mDelegate,
                         UserPrefs.get(getProfile()),
                         safetyHubFetchService,
                         IdentityServicesProvider.get().getSigninManager(getProfile()),
                         getProfile());
+        SafetyHubAccountPasswordsModuleMediator accountPasswordsModuleMediator =
+                new SafetyHubAccountPasswordsModuleMediator(
+                        findPreference(PREF_PASSWORDS),
+                        accountPasswordsDataSource,
+                        this,
+                        mDelegate);
 
         mModuleMediators =
                 new ArrayList<SafetyHubModuleMediator>(

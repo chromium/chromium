@@ -35,7 +35,7 @@ namespace ash {
 
 namespace {
 
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 
 class ScopedLogIn {
  public:
@@ -186,22 +186,22 @@ class ProjectorUtilsManagedTest : public ProjectorUtilsTest {
 TEST_F(ProjectorUtilsTest, IsProjectorAllowedForProfile_RegularAccount) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
+                        profile()->GetProfileUserName(), kTestGaiaId));
   EXPECT_TRUE(IsProjectorAllowedForProfile(profile()));
 }
 
 TEST_F(ProjectorUtilsManagedTest, IsProjectorAllowedForProfile_ManagedAccount) {
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::FromUserEmailGaiaId(
-                        FakeGaiaMixin::kEnterpriseUser1,
-                        GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)));
+  ScopedLogIn login(
+      GetFakeUserManager(),
+      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
+                                     FakeGaiaMixin::kEnterpriseUser1GaiaId));
   EXPECT_TRUE(IsProjectorAllowedForProfile(profile()));
 }
 
 TEST_F(ProjectorUtilsChildTest, IsProjectorAllowedForProfile_ChildUser) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)),
+                        profile()->GetProfileUserName(), kTestGaiaId),
                     user_manager::UserType::kChild);
 
   EXPECT_TRUE(IsProjectorAllowedForProfile(profile()));
@@ -229,22 +229,22 @@ TEST_F(ProjectorUtilsTest, IsProjectorAllowedForProfile_KioskAppAccount) {
 TEST_F(ProjectorUtilsTest, IsProjectorAppEnabled_RegularAccount) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
+                        profile()->GetProfileUserName(), kTestGaiaId));
   EXPECT_TRUE(IsProjectorAppEnabled(profile()));
 }
 
 TEST_F(ProjectorUtilsManagedTest, IsProjectorAppEnabled_ManagedAccount) {
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::FromUserEmailGaiaId(
-                        FakeGaiaMixin::kEnterpriseUser1,
-                        GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)));
+  ScopedLogIn login(
+      GetFakeUserManager(),
+      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
+                                     FakeGaiaMixin::kEnterpriseUser1GaiaId));
   EXPECT_TRUE(IsProjectorAppEnabled(profile()));
 }
 
 TEST_F(ProjectorUtilsChildTest, IsProjectorAppEnabled_ChildUser) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)),
+                        profile()->GetProfileUserName(), kTestGaiaId),
                     user_manager::UserType::kChild);
 
   EXPECT_TRUE(IsProjectorAppEnabled(profile()));

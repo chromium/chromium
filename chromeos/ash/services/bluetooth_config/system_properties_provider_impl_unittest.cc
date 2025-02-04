@@ -81,6 +81,7 @@ class SystemPropertiesProviderImplTest : public testing::Test {
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
+    session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
 
     provider_ = std::make_unique<SystemPropertiesProviderImpl>(
         &fake_adapter_state_controller_, &fake_device_cache_,
@@ -89,8 +90,8 @@ class SystemPropertiesProviderImplTest : public testing::Test {
 
   void TearDown() override {
     provider_.reset();
-    fake_user_manager_.Reset();
     session_manager_.reset();
+    fake_user_manager_.Reset();
   }
 
   void SetSystemState(mojom::BluetoothSystemState system_state) {
@@ -117,8 +118,13 @@ class SystemPropertiesProviderImplTest : public testing::Test {
 
     // Create a session in SessionManager. This will also login the user in
     // UserManager.
-    session_manager_->CreateSession(user->GetAccountId(), user->username_hash(),
-                                    /*is_child=*/false);
+    session_manager_->CreateSession(
+        user->GetAccountId(),
+        // TODO(crbug.com/278643115): Looks incorrect.
+        // User's username_hash should be set inside CreateSession via
+        // UserManager::UserLoggedIn().
+        user->username_hash(), user->GetType(),
+        /*has_active_session=*/false);
     session_manager_->SessionStarted();
 
     // Logging in doesn't set the user in UserManager as the active user if
@@ -161,9 +167,9 @@ class SystemPropertiesProviderImplTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
 
   FakeAdapterStateController fake_adapter_state_controller_;
   FakeDeviceCache fake_device_cache_{&fake_adapter_state_controller_};

@@ -114,5 +114,22 @@ suite('DuplexSettingsTest', function() {
     assertTrue(checkbox.disabled);
     assertTrue(select.disabled);
   });
+
+  test('disabled by destination policy', function() {
+    const checkbox = duplexSection.shadowRoot!.querySelector('cr-checkbox')!;
+    assertFalse(checkbox.disabled);
+
+    duplexSection.setSetting('duplex', true);
+    const select = duplexSection.shadowRoot!.querySelector('select')!;
+    assertFalse(select.disabled);
+
+    model.set('settings.duplex.setByDestinationPolicy', true);
+    assertTrue(checkbox.disabled);
+    assertFalse(select.disabled);
+
+    model.set('settings.duplexShortEdge.setByDestinationPolicy', true);
+    assertTrue(checkbox.disabled);
+    assertTrue(select.disabled);
+  });
   // </if>
 });

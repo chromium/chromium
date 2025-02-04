@@ -30,7 +30,7 @@ class WebNNConstantOperand;
 // TODO(crbug.com/349428379): Consider allowing this class to be extended by
 // backend-specific implementations, which can stream the constant data into the
 // form needed by the backend.
-class COMPONENT_EXPORT(WEBNN_UTILS) WebNNPendingConstantOperand
+class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNPendingConstantOperand
     : public WebNNObjectImpl<blink::WebNNPendingConstantToken> {
  public:
   // Create a constant operand from bytes with an unknown shape.

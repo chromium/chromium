@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -1367,9 +1366,8 @@ TEST_F(StartupAppLauncherTest,
   // Disable the secodnary app for a reason different than user action - that
   // disable reason should not be overriden during the kiosk launch.
   service()->DisableExtension(
-      kSecondaryAppId,
-      extensions::disable_reason::DISABLE_USER_ACTION |
-          extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY);
+      kSecondaryAppId, {extensions::disable_reason::DISABLE_USER_ACTION,
+                        extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY});
 
   InitializeLauncherWithNetworkReady();
   ASSERT_TRUE(DownloadAndInstallPrimaryApp(*primary_app));

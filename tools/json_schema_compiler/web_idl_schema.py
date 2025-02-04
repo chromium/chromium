@@ -8,7 +8,7 @@ import os.path
 import sys
 import linecache
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 from json_parse import OrderedDict
 
 # This file is a peer to json_schema.py and idl_schema.py. Each of these files
@@ -184,12 +184,19 @@ class Type():
     self.type_node = type_node
 
   def Process(self) -> dict:
-    """Returns a dict with the core information for the type.
+    """Processes type and returns a dict with the core information.
 
     For custom types this will have '$ref' key set to the name of the custom
     type. Other basic types instead use the 'type' key set to the name of the
     corresponding type the schema compiler expects to see. Promise types will
     also have a 'parameters' key for the underlying type they will resolve with.
+
+    Returns:
+      A dictionary with the core information for the type.
+
+    Raises:
+      SchemaCompilerError if the child of the IDL Type node is a class we don't
+      have handling for yet.
     """
 
     properties = OrderedDict()
@@ -200,7 +207,7 @@ class Type():
     type_details = self.type_node.GetChildren()[0]
 
     if type_details.IsA('PrimitiveType', 'StringType'):
-      properties['type'] = self._TranslatePrimitiveType(type_details)
+      properties['type'] = self._TranslateBasicType(type_details)
     elif type_details.IsA('Typeref'):
       # For custom types the name indicates the underlying referenced type.
       # TODO(crbug.com/340297705): We should verify this ref name is actually a
@@ -220,17 +227,27 @@ class Type():
                                 type_details)
     return properties
 
-  def _TranslatePrimitiveType(
-      self, type_details: IDLNode) -> Union[str, UndefinedType]:
-    """Translates an IDL primitive type into the corresponding python type"""
+  def _TranslateBasicType(self, type_details: IDLNode) -> str:
+    """Translates a basic IDL type into the corresponding python type.
+
+    Handles both PrimitiveType and StringType class nodes, as their handling is
+    the same.
+
+    Returns:
+      A string representing the name of the equivalent python type the schema
+      compiler uses.
+
+    Raises:
+      SchemaCompilerError if the PrimitiveType 'void' was used as it is
+      deprecated, or if we encountered a basic type we don't have handling for
+      yet.
+    """
+
     type_name = type_details.GetName()
-    # For fundamental types we translate the name of the node into the
-    # corresponding python type.
     if type_name == 'void':
-      # TODO(crbug.com/340297705): Change this to throw a SchemaCompilerError
-      # and change all uses of void to Undefined, as per the webIDL spec
-      # recommendations.
-      return UndefinedType
+      raise SchemaCompilerError(
+          'Usage of "void" in IDL is deprecated, use "Undefined" instead.',
+          type_details)
     if type_name == 'boolean':
       return 'boolean'
     if type_name == 'double':
@@ -245,7 +262,15 @@ class Type():
 
   def _ExtractParametersFromPromiseType(self,
                                         type_details: IDLNode) -> List[dict]:
-    """Extracts details for the type a promise will resolve to."""
+    """Extracts details for the type a promise will resolve to.
+
+    Returns:
+      A list with a single dictionary that represents the details of the type
+      the promise will resolve to. Note: Even though this can only be a single
+      element, this uses a list to mirror the 'parameters' key used on function
+      definitions.
+    """
+
     promise_type = PromiseType(type_details).Process()
     if 'type' in promise_type and promise_type['type'] is UndefinedType:
       # If the promise type was 'Undefined' we represent it as an empty list.
@@ -426,6 +451,8 @@ class Namespace:
     functions = []
     types = []
     description = GetNodeDescription(self.namespace)
+    nodoc = False
+    platforms = None
 
     for node in self.namespace.GetListOf('Operation'):
       functions.append(Operation(node).process())
@@ -436,10 +463,12 @@ class Namespace:
     for node in self.namespace.GetParent().GetListOf('Dictionary'):
       types.append(Dictionary(node).process())
 
-    nodoc = 'nodoc' in [
-        attribute.GetName()
-        for attribute in GetExtendedAttributes(self.namespace)
-    ]
+    for extended_attribute in GetExtendedAttributes(self.namespace):
+      attribute_name = extended_attribute.GetName()
+      if attribute_name == 'nodoc':
+        nodoc = True
+      elif attribute_name == 'platforms':
+        platforms = extended_attribute.GetProperty('VALUE')
 
     return {
         'namespace': self.name,
@@ -447,6 +476,7 @@ class Namespace:
         'types': types,
         'nodoc': nodoc,
         'description': description,
+        'platforms': platforms
     }
 
 

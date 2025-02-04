@@ -10,7 +10,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media.h"
 #include "media/base/media_client.h"
 #include "media/base/media_switches.h"
@@ -236,21 +235,11 @@ bool IsDecoderHevcProfileSupported(const VideoType& type) {
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/171813538): For Lacros, the supplemental profile cache will be
-  // asking lacros-gpu, but we will be doing decoding in ash-gpu. Until the
-  // codec detection is plumbed through to ash-gpu we can do this extra check
-  // for HEVC support.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kLacrosEnablePlatformHevc)) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return GetSupplementalDecoderVideoProfileCache()->IsProfileSupported(
       type.profile);
 #else

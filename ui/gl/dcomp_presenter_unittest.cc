@@ -214,13 +214,13 @@ DCLayerOverlayImage CreateDCompSurface(
 
 // Create a |DCLayerOverlayParams| from an |image| and set the |content_rect| to
 // the bounds of |image|, or |content_rect_override|, if set.
-std::unique_ptr<DCLayerOverlayParams> CreateParamsFromImage(
+DCLayerOverlayParams CreateParamsFromImage(
     DCLayerOverlayImage image,
     std::optional<gfx::RectF> content_rect_override = {}) {
-  auto params = std::make_unique<DCLayerOverlayParams>();
-  params->content_rect =
+  DCLayerOverlayParams params;
+  params.content_rect =
       content_rect_override.value_or(gfx::RectF(image.size()));
-  params->overlay_image = std::move(image);
+  params.overlay_image = std::move(image);
   return params;
 }
 
@@ -279,6 +279,14 @@ class DCompPresenterTestBase : public testing::Test {
     return presenter;
   }
 
+  void ScheduleOverlay(DCLayerOverlayParams overlay) {
+    pending_overlays_.push_back(std::move(overlay));
+  }
+
+  void ScheduleOverlays(std::vector<DCLayerOverlayParams> overlays) {
+    std::ranges::move(overlays, std::back_inserter(pending_overlays_));
+  }
+
   // DCompPresenter is surfaceless--it's root surface is achieved via an
   // overlay the size of the window.
   // We can also present a manual initialized root surface with specific size
@@ -288,14 +296,16 @@ class DCompPresenterTestBase : public testing::Test {
     // Schedule the root surface as a normal overlay
     auto params =
         CreateParamsFromImage(CreateDCompSurface(window_size, initial_color));
-    params->z_order = 0;
-    params->quad_rect = gfx::Rect(window_size);
-    params->overlay_image = CreateDCompSurface(window_size, initial_color);
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.z_order = 0;
+    params.quad_rect = gfx::Rect(window_size);
+    params.overlay_image = CreateDCompSurface(window_size, initial_color);
+    ScheduleOverlay(std::move(params));
   }
 
   // Wait for |presenter_| to present asynchronously check the swap result.
   void PresentAndCheckSwapResult(gfx::SwapResult expected_swap_result) {
+    presenter_->ScheduleDCLayers(std::move(pending_overlays_));
+
     base::RunLoop wait_for_present;
     presenter_->Present(
         base::BindOnce(
@@ -328,6 +338,8 @@ class DCompPresenterTestBase : public testing::Test {
   base::test::ScopedFeatureList enabled_features_;
   std::vector<base::test::FeatureRef> enabled_features_list_;
   std::vector<base::test::FeatureRef> disabled_features_list_;
+
+  std::vector<DCLayerOverlayParams> pending_overlays_;
 };
 
 class DCompPresenterTest : public DCompPresenterTestBase,
@@ -357,9 +369,9 @@ TEST_P(DCompPresenterTest, NoPresentTwice) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = gfx::Rect(100, 100);
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = gfx::Rect(100, 100);
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
   }
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
@@ -382,9 +394,9 @@ TEST_P(DCompPresenterTest, NoPresentTwice) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = gfx::Rect(100, 100);
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = gfx::Rect(100, 100);
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -405,9 +417,9 @@ TEST_P(DCompPresenterTest, NoPresentTwice) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = gfx::Rect(100, 100);
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = gfx::Rect(100, 100);
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -441,9 +453,9 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = quad_rect;
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = quad_rect;
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -468,9 +480,9 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = quad_rect;
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = quad_rect;
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -501,9 +513,9 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = quad_rect;
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = quad_rect;
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -523,9 +535,9 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = quad_rect;
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = quad_rect;
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -556,11 +568,11 @@ TEST_P(DCompPresenterTest, ProtectedVideos) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = gfx::Rect(window_size);
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    params->video_params.protected_video_type = gfx::ProtectedVideoType::kClear;
+    params.quad_rect = gfx::Rect(window_size);
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    params.video_params.protected_video_type = gfx::ProtectedVideoType::kClear;
 
-    presenter_->ScheduleDCLayer(std::move(params));
+    ScheduleOverlay(std::move(params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
         presenter_->GetLayerSwapChainForTesting(0);
@@ -578,12 +590,12 @@ TEST_P(DCompPresenterTest, ProtectedVideos) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = gfx::Rect(window_size);
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    params->video_params.protected_video_type =
+    params.quad_rect = gfx::Rect(window_size);
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    params.video_params.protected_video_type =
         gfx::ProtectedVideoType::kSoftwareProtected;
 
-    presenter_->ScheduleDCLayer(std::move(params));
+    ScheduleOverlay(std::move(params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
         presenter_->GetLayerSwapChainForTesting(0);
@@ -607,9 +619,9 @@ TEST_P(DCompPresenterTest, NoBackgroundColorSurfaceForNonColorOverlays) {
 
   auto root_surface =
       CreateParamsFromImage(CreateDCompSurface(window_size, SkColors::kBlack));
-  root_surface->quad_rect = gfx::Rect(window_size);
-  root_surface->z_order = 1;
-  presenter_->ScheduleDCLayer(std::move(root_surface));
+  root_surface.quad_rect = gfx::Rect(window_size);
+  root_surface.z_order = 1;
+  ScheduleOverlay(std::move(root_surface));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
@@ -637,11 +649,11 @@ TEST_P(DCompPresenterTest, BackgroundColorSurfaceTrim) {
     // overlays in the frame.
     {
       for (size_t i = 0; i < num_buffers; i++) {
-        auto params = std::make_unique<DCLayerOverlayParams>();
-        params->quad_rect = gfx::Rect(window_size);
-        params->background_color = SkColor4f::FromColor(SkColorSetRGB(i, 0, 0));
-        params->z_order = i + 1;
-        presenter_->ScheduleDCLayer(std::move(params));
+        DCLayerOverlayParams params;
+        params.quad_rect = gfx::Rect(window_size);
+        params.background_color = SkColor4f::FromColor(SkColorSetRGB(i, 0, 0));
+        params.z_order = i + 1;
+        ScheduleOverlay(std::move(params));
       }
       PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
       EXPECT_EQ(num_buffers, layer_tree->GetNumSurfacesInPoolForTesting());
@@ -671,11 +683,11 @@ TEST_P(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
 
   {
     for (size_t i = 0; i < colors.size(); i++) {
-      auto params = std::make_unique<DCLayerOverlayParams>();
-      params->quad_rect = gfx::Rect(window_size);
-      params->background_color = colors[i];
-      params->z_order = i + 1;
-      presenter_->ScheduleDCLayer(std::move(params));
+      DCLayerOverlayParams params;
+      params.quad_rect = gfx::Rect(window_size);
+      params.background_color = colors[i];
+      params.z_order = i + 1;
+      ScheduleOverlay(std::move(params));
     }
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -694,11 +706,11 @@ TEST_P(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
     std::swap(colors[0], colors[1]);
 
     for (size_t i = 0; i < colors.size(); i++) {
-      auto params = std::make_unique<DCLayerOverlayParams>();
-      params->quad_rect = gfx::Rect(window_size);
-      params->background_color = colors[i];
-      params->z_order = i + 1;
-      presenter_->ScheduleDCLayer(std::move(params));
+      DCLayerOverlayParams params;
+      params.quad_rect = gfx::Rect(window_size);
+      params.background_color = colors[i];
+      params.z_order = i + 1;
+      ScheduleOverlay(std::move(params));
     }
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -761,14 +773,14 @@ TEST_P(DCompPresenterTest, VisualsReused) {
   // overlay 1: swapchain z-order = 1 (overlay)
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlue);
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::RectF(texture_size);
-    params->quad_rect = gfx::Rect(100, 100);
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
+    DCLayerOverlayParams params;
+    params.overlay_image.emplace(texture_size, texture);
+    params.content_rect = gfx::RectF(texture_size);
+    params.quad_rect = gfx::Rect(100, 100);
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     // Overlay
-    params->z_order = 1;
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.z_order = 1;
+    ScheduleOverlay(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -785,14 +797,14 @@ TEST_P(DCompPresenterTest, VisualsReused) {
   // overlay 1: swapchain z-order = -1 (underlay)
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlue);
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::RectF(texture_size);
-    params->quad_rect = gfx::Rect(100, 100);
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
+    DCLayerOverlayParams params;
+    params.overlay_image.emplace(texture_size, texture);
+    params.content_rect = gfx::RectF(texture_size);
+    params.quad_rect = gfx::Rect(100, 100);
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     // Underlay
-    params->z_order = -1;
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.z_order = -1;
+    ScheduleOverlay(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -807,17 +819,17 @@ TEST_P(DCompPresenterTest, VisualsReused) {
 #endif  // DCHECK_IS_ON()
 }
 
-void ScheduleDCLayer(scoped_refptr<gl::Presenter> presenter,
-                     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-                     const gfx::Size& swap_chain_size,
-                     int z_order) {
-  auto params = std::make_unique<DCLayerOverlayParams>();
-  params->overlay_image = DCLayerOverlayImage(swap_chain_size, swap_chain);
-  params->content_rect = gfx::RectF(swap_chain_size);
-  params->quad_rect = gfx::Rect(100, 100);
-  params->video_params.color_space = gfx::ColorSpace::CreateSRGB();
-  params->z_order = z_order;
-  presenter->ScheduleDCLayer(std::move(params));
+DCLayerOverlayParams CreateOverlayWithSwapChain(
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
+    const gfx::Size& swap_chain_size,
+    int z_order) {
+  DCLayerOverlayParams params;
+  params.overlay_image = DCLayerOverlayImage(swap_chain_size, swap_chain);
+  params.content_rect = gfx::RectF(swap_chain_size);
+  params.quad_rect = gfx::Rect(100, 100);
+  params.video_params.color_space = gfx::ColorSpace::CreateSRGB();
+  params.z_order = z_order;
+  return params;
 }
 
 void CreateSwapChain(IDXGIFactory2* dxgi_factory,
@@ -893,12 +905,12 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   CreateSwapChain(dxgi_factory.Get(), d3d11_device.Get(), desc, swap_chainM);
 
   // Frame 1: RootSurface, A B C D E F
-  ScheduleDCLayer(presenter_, swap_chainA, swap_chain_size, 1);
-  ScheduleDCLayer(presenter_, swap_chainB, swap_chain_size, 2);
-  ScheduleDCLayer(presenter_, swap_chainC, swap_chain_size, 3);
-  ScheduleDCLayer(presenter_, swap_chainD, swap_chain_size, 4);
-  ScheduleDCLayer(presenter_, swap_chainE, swap_chain_size, 5);
-  ScheduleDCLayer(presenter_, swap_chainF, swap_chain_size, 6);
+  ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainA, swap_chain_size, 1));
+  ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainB, swap_chain_size, 2));
+  ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainC, swap_chain_size, 3));
+  ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainD, swap_chain_size, 4));
+  ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainE, swap_chain_size, 5));
+  ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainF, swap_chain_size, 6));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
@@ -928,11 +940,11 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
 
   // Frame 2: RootSurface, A L D C M
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlue);
-  ScheduleDCLayer(presenter_, swap_chainA, swap_chain_size, 1);
-  ScheduleDCLayer(presenter_, swap_chainL, swap_chain_size, 2);
-  ScheduleDCLayer(presenter_, swap_chainD, swap_chain_size, 3);
-  ScheduleDCLayer(presenter_, swap_chainC, swap_chain_size, 4);
-  ScheduleDCLayer(presenter_, swap_chainM, swap_chain_size, 5);
+  ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainA, swap_chain_size, 1));
+  ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainL, swap_chain_size, 2));
+  ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainD, swap_chain_size, 3));
+  ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainC, swap_chain_size, 4));
+  ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainM, swap_chain_size, 5));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
@@ -979,29 +991,29 @@ TEST_P(DCompPresenterTest, VeryLargeOnscreenSize) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = gfx::Rect(1, 1);
+    params.quad_rect = gfx::Rect(1, 1);
 
     // This transform will make us have an onscreen size with a dimension larger
     // than the D3D11 max texture size.
-    params->transform =
+    params.transform =
         gfx::Transform::MakeScale(D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1, 10);
 
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
   }
 
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = gfx::Rect(1, 1);
+    params.quad_rect = gfx::Rect(1, 1);
 
     // This transform will make us have an onscreen size with a dimension larger
     // than the D3D11 max texture size.
-    params->transform =
+    params.transform =
         gfx::Transform::MakeScale(10, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1);
 
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
   }
 
   EXPECT_FALSE(presenter_->GetLayerSwapChainForTesting(0));
@@ -1081,10 +1093,10 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase {
     auto params = CreateParamsFromImage(
         DCLayerOverlayImage(texture_size, texture),
         /*content_rect_override=*/gfx::RectF(content_rect));
-    params->quad_rect = quad_rect;
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    params->video_params.is_p010_content = is_p010;
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = quad_rect;
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    params.video_params.is_p010_content = is_p010;
+    ScheduleOverlay(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
@@ -1106,23 +1118,23 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase {
                             {gfx::Rect(1, 0, 1, 1), SkColors::kGreen},
                             {gfx::Rect(0, 1, 1, 1), SkColors::kBlue},
                             {gfx::Rect(1, 1, 1, 1), SkColors::kBlack}}));
-    dc_layer_params->z_order = 1;
-    dc_layer_params->nearest_neighbor_filter = true;
+    dc_layer_params.z_order = 1;
+    dc_layer_params.nearest_neighbor_filter = true;
 
     if (scale_via_buffer) {
       // Pick a large quad rect so the buffer is scaled up
-      dc_layer_params->quad_rect = gfx::Rect(window_size);
+      dc_layer_params.quad_rect = gfx::Rect(window_size);
     } else {
       // Pick a small quad rect and assign a transform so the quad rect is
       // scaled up
-      dc_layer_params->quad_rect =
-          gfx::ToNearestRect(dc_layer_params->content_rect);
-      dc_layer_params->transform = gfx::Transform::MakeScale(
-          window_size.width() / dc_layer_params->quad_rect.width(),
-          window_size.height() / dc_layer_params->quad_rect.height());
+      dc_layer_params.quad_rect =
+          gfx::ToNearestRect(dc_layer_params.content_rect);
+      dc_layer_params.transform = gfx::Transform::MakeScale(
+          window_size.width() / dc_layer_params.quad_rect.width(),
+          window_size.height() / dc_layer_params.quad_rect.height());
     }
 
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    ScheduleOverlay(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
     SkBitmap pixels = GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
@@ -1165,10 +1177,9 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase {
   // This test uses the colors defined above to test for coverage: the resulting
   // image should only contain |kOverlayExpectedColor| where the hole was and
   // |kRootSurfaceInitialColor| elsewhere.
-  void CheckOverlayExactlyFillsHole(
-      const gfx::Size& window_size,
-      const gfx::Rect& root_surface_hole,
-      std::unique_ptr<DCLayerOverlayParams> fit_in_hole_overlay) {
+  void CheckOverlayExactlyFillsHole(const gfx::Size& window_size,
+                                    const gfx::Rect& root_surface_hole,
+                                    DCLayerOverlayParams fit_in_hole_overlay) {
     EXPECT_TRUE(gfx::Rect(window_size).Contains(root_surface_hole));
 
     EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
@@ -1176,11 +1187,11 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase {
     auto root_surface = CreateParamsFromImage(
         CreateDCompSurface(window_size, kRootSurfaceInitialColor,
                            {{root_surface_hole, kRootSurfaceHiddenColor}}));
-    root_surface->quad_rect = gfx::Rect(window_size);
-    root_surface->z_order = 0;
-    presenter_->ScheduleDCLayer(std::move(root_surface));
+    root_surface.quad_rect = gfx::Rect(window_size);
+    root_surface.z_order = 0;
+    ScheduleOverlay(std::move(root_surface));
 
-    presenter_->ScheduleDCLayer(std::move(fit_in_hole_overlay));
+    ScheduleOverlay(std::move(fit_in_hole_overlay));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
@@ -1328,9 +1339,9 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTestBase,
     {
       auto params =
           CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-      params->quad_rect = gfx::Rect(texture_size);
-      params->video_params.color_space = color_space;
-      presenter_->ScheduleDCLayer(std::move(params));
+      params.quad_rect = gfx::Rect(texture_size);
+      params.video_params.color_space = color_space;
+      ScheduleOverlay(std::move(params));
     }
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -1340,9 +1351,9 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTestBase,
     {
       auto params =
           CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-      params->quad_rect = gfx::Rect(window_size);
-      params->video_params.color_space = color_space;
-      presenter_->ScheduleDCLayer(std::move(params));
+      params.quad_rect = gfx::Rect(window_size);
+      params.video_params.color_space = color_space;
+      ScheduleOverlay(std::move(params));
     }
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -1404,9 +1415,9 @@ TEST_P(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
 
   auto params = CreateParamsFromImage(
       DCLayerOverlayImage(y_size, nv12_pixmap.data(), stride));
-  params->quad_rect = gfx::Rect(window_size);
-  params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-  presenter_->ScheduleDCLayer(std::move(params));
+  params.quad_rect = gfx::Rect(window_size);
+  params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+  ScheduleOverlay(std::move(params));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   Sleep(1000);
@@ -1472,9 +1483,9 @@ TEST_P(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
   auto params =
       CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture),
                             /*content_rect_override=*/gfx::RectF());
-  params->quad_rect = gfx::Rect(window_size);
-  params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-  presenter_->ScheduleDCLayer(std::move(params));
+  params.quad_rect = gfx::Rect(window_size);
+  params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+  ScheduleOverlay(std::move(params));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
@@ -1694,9 +1705,9 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = gfx::Rect(window_size);
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = gfx::Rect(window_size);
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -1716,9 +1727,9 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture),
                               /*content_rect_override=*/gfx::RectF(30, 30));
-    params->quad_rect = gfx::Rect(window_size);
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = gfx::Rect(window_size);
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -1739,10 +1750,10 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = on_screen_rect;
-    params->clip_rect = on_screen_rect;
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = on_screen_rect;
+    params.clip_rect = on_screen_rect;
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -1770,9 +1781,9 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
   {
     auto params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    params->quad_rect = on_screen_rect;
-    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    presenter_->ScheduleDCLayer(std::move(params));
+    params.quad_rect = on_screen_rect;
+    params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    ScheduleOverlay(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -1816,10 +1827,10 @@ TEST_P(DCompPresenterPixelTest, SwapChainImage) {
 
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
-    dc_layer_params->quad_rect = gfx::Rect(window_size);
-    dc_layer_params->z_order = 1;
+    dc_layer_params.quad_rect = gfx::Rect(window_size);
+    dc_layer_params.z_order = 1;
 
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    ScheduleOverlay(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorRED;
@@ -1836,9 +1847,9 @@ TEST_P(DCompPresenterPixelTest, SwapChainImage) {
 
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
-    dc_layer_params->quad_rect = gfx::Rect(window_size);
+    dc_layer_params.quad_rect = gfx::Rect(window_size);
 
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    ScheduleOverlay(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorGREEN;
@@ -1858,9 +1869,9 @@ TEST_P(DCompPresenterPixelTest, SwapChainImage) {
 
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
-    dc_layer_params->quad_rect = gfx::Rect(window_size);
+    dc_layer_params.quad_rect = gfx::Rect(window_size);
 
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    ScheduleOverlay(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorRED;
@@ -1877,9 +1888,9 @@ TEST_P(DCompPresenterPixelTest, SwapChainImage) {
 
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
-    dc_layer_params->quad_rect = gfx::Rect(window_size);
+    dc_layer_params.quad_rect = gfx::Rect(window_size);
 
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    ScheduleOverlay(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorRED;
@@ -1906,11 +1917,11 @@ TEST_P(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
 
   auto dc_layer_params = CreateParamsFromImage(
       CreateDCompSurface(quad_rect.size(), SkColors::kRed));
-  dc_layer_params->quad_rect = quad_rect;
-  dc_layer_params->transform = quad_to_root_transform;
-  dc_layer_params->z_order = 1;
+  dc_layer_params.quad_rect = quad_rect;
+  dc_layer_params.transform = quad_to_root_transform;
+  dc_layer_params.z_order = 1;
 
-  presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+  ScheduleOverlay(std::move(dc_layer_params));
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   // We expect DComp to display the overlay with the same bounds as if viz were
@@ -1964,8 +1975,8 @@ TEST_P(DCompPresenterPixelTest, ContentRectScalesUpBuffer) {
   // Provide an overlay that's smaller than the hole it needs to fill
   auto overlay = CreateParamsFromImage(
       CreateDCompSurface(gfx::Size(1, 1), kOverlayExpectedColor));
-  overlay->quad_rect = root_surface_hole;
-  overlay->z_order = 1;
+  overlay.quad_rect = root_surface_hole;
+  overlay.z_order = 1;
   CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
                                std::move(overlay));
 }
@@ -1979,8 +1990,8 @@ TEST_P(DCompPresenterPixelTest, ContentRectScalesDownBuffer) {
   // Provide an overlay that's larger than the hole it needs to fill
   auto overlay = CreateParamsFromImage(
       CreateDCompSurface(gfx::Size(75, 100), kOverlayExpectedColor));
-  overlay->quad_rect = root_surface_hole;
-  overlay->z_order = 1;
+  overlay.quad_rect = root_surface_hole;
+  overlay.z_order = 1;
   CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
                                std::move(overlay));
 }
@@ -2002,8 +2013,8 @@ TEST_P(DCompPresenterPixelTest, ContentRectClipsBuffer) {
       CreateDCompSurface(window_size, kOverlayImageHiddenColor,
                          {{tex_coord, kOverlayExpectedColor}}),
       /*content_rect_override=*/gfx::RectF(tex_coord));
-  overlay->quad_rect = root_surface_hole;
-  overlay->z_order = 1;
+  overlay.quad_rect = root_surface_hole;
+  overlay.z_order = 1;
   CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
                                std::move(overlay));
 }
@@ -2026,12 +2037,12 @@ TEST_P(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
       CreateDCompSurface(window_size, kOverlayImageHiddenColor,
                          {{tex_coord, kOverlayExpectedColor}}),
       /*content_rect_override=*/gfx::RectF(tex_coord));
-  overlay->quad_rect = root_surface_hole;
-  overlay->z_order = 1;
+  overlay.quad_rect = root_surface_hole;
+  overlay.z_order = 1;
 
   // Use nearest neighbor to avoid interpolation at the edges of the content
   // rect
-  overlay->nearest_neighbor_filter = true;
+  overlay.nearest_neighbor_filter = true;
 
   CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
                                std::move(overlay));
@@ -2051,11 +2062,11 @@ TEST_P(DCompPresenterPixelTest, BackgroundColorSurfaceReuse) {
   IDCompositionSurface* background_color_surface = nullptr;
 
   for (const SkColor4f& color : colors) {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->quad_rect = gfx::Rect(window_size);
-    params->background_color = color;
-    params->z_order = 1;
-    presenter_->ScheduleDCLayer(std::move(params));
+    DCLayerOverlayParams params;
+    params.quad_rect = gfx::Rect(window_size);
+    params.background_color = color;
+    params.z_order = 1;
+    ScheduleOverlay(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
@@ -2201,8 +2212,7 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
   const gfx::Size& current_window_size() const { return window_size_; }
 
   void AddOverlaysForOpacityTest(
-      base::RepeatingCallback<
-          std::unique_ptr<DCLayerOverlayParams>(const gfx::Rect&, float)>
+      base::RepeatingCallback<DCLayerOverlayParams(const gfx::Rect&, float)>
           get_overlay_for_opacity) {
     const int kOverlayCount = 10;
     for (int i = 0; i < kOverlayCount; i++) {
@@ -2213,9 +2223,9 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
           static_cast<float>(i) / static_cast<float>(kOverlayCount);
 
       auto overlay = get_overlay_for_opacity.Run(quad_rect, opacity);
-      overlay->z_order = i + 1;
+      overlay.z_order = i + 1;
 
-      presenter_->ScheduleDCLayer(std::move(overlay));
+      ScheduleOverlay(std::move(overlay));
     }
   }
 
@@ -2248,12 +2258,12 @@ TEST_P(DCompPresenterSkiaGoldTest, TransformTranslate) {
 
   auto overlay = CreateParamsFromImage(
       CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite));
-  overlay->quad_rect = gfx::Rect(50, 50);
-  overlay->z_order = 1;
+  overlay.quad_rect = gfx::Rect(50, 50);
+  overlay.z_order = 1;
 
-  overlay->transform.Translate(25, 25);
+  overlay.transform.Translate(25, 25);
 
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2266,14 +2276,14 @@ TEST_P(DCompPresenterSkiaGoldTest, TransformScale) {
 
   auto overlay = CreateParamsFromImage(
       CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite));
-  overlay->quad_rect = gfx::Rect(50, 50);
-  overlay->z_order = 1;
+  overlay.quad_rect = gfx::Rect(50, 50);
+  overlay.z_order = 1;
 
-  overlay->transform.Translate(50, 50);
-  overlay->transform.Scale(1.2);
-  overlay->transform.Translate(-25, -25);
+  overlay.transform.Translate(50, 50);
+  overlay.transform.Scale(1.2);
+  overlay.transform.Translate(-25, -25);
 
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2286,15 +2296,15 @@ TEST_P(DCompPresenterSkiaGoldTest, TransformRotation) {
 
   auto overlay = CreateParamsFromImage(
       CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite));
-  overlay->quad_rect = gfx::Rect(50, 50);
-  overlay->z_order = 1;
+  overlay.quad_rect = gfx::Rect(50, 50);
+  overlay.z_order = 1;
 
   // Center and partially rotate the overlay
-  overlay->transform.Translate(50, 50);
-  overlay->transform.Rotate(15);
-  overlay->transform.Translate(-25, -25);
+  overlay.transform.Translate(50, 50);
+  overlay.transform.Rotate(15);
+  overlay.transform.Translate(-25, -25);
 
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2305,21 +2315,21 @@ TEST_P(DCompPresenterSkiaGoldTest, Transform3D) {
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
+  DCLayerOverlayParams overlay;
 
-  overlay->quad_rect = gfx::Rect(120, 75);
+  overlay.quad_rect = gfx::Rect(120, 75);
 
-  overlay->background_color = SkColors::kGreen;
+  overlay.background_color = SkColors::kGreen;
 
-  overlay->z_order = 1;
+  overlay.z_order = 1;
 
-  overlay->transform.Translate(50, 50);
-  overlay->transform.ApplyPerspectiveDepth(100);
-  overlay->transform.RotateAboutYAxis(45);
-  overlay->transform.RotateAboutXAxis(30);
-  overlay->transform.Translate(-25, -25);
+  overlay.transform.Translate(50, 50);
+  overlay.transform.ApplyPerspectiveDepth(100);
+  overlay.transform.RotateAboutYAxis(45);
+  overlay.transform.RotateAboutXAxis(30);
+  overlay.transform.Translate(-25, -25);
 
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2333,12 +2343,12 @@ TEST_P(DCompPresenterSkiaGoldTest, TransformShear) {
 
   auto overlay = CreateParamsFromImage(
       CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite));
-  overlay->quad_rect = gfx::Rect(50, 50);
-  overlay->z_order = 1;
-  overlay->transform.Translate(50, 50);
-  overlay->transform.Skew(15, 30);
-  overlay->transform.Translate(-25, -25);
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  overlay.quad_rect = gfx::Rect(50, 50);
+  overlay.z_order = 1;
+  overlay.transform.Translate(50, 50);
+  overlay.transform.Skew(15, 30);
+  overlay.transform.Translate(-25, -25);
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2361,11 +2371,11 @@ TEST_P(DCompPresenterSkiaGoldTest, SolidColorSimpleOpaque) {
 
   for (size_t i = 0; i < colors.size(); i++) {
     auto& [color, bounds] = colors[i];
-    auto overlay = std::make_unique<DCLayerOverlayParams>();
-    overlay->quad_rect = bounds;
-    overlay->background_color = std::optional<SkColor4f>(color);
-    overlay->z_order = i + 1;
-    presenter_->ScheduleDCLayer(std::move(overlay));
+    DCLayerOverlayParams overlay;
+    overlay.quad_rect = bounds;
+    overlay.background_color = std::optional<SkColor4f>(color);
+    overlay.z_order = i + 1;
+    ScheduleOverlay(std::move(overlay));
   }
 
   PresentAndCheckScreenshot();
@@ -2381,8 +2391,8 @@ TEST_P(DCompPresenterSkiaGoldTest, OpacityFromOverlay) {
       base::BindRepeating([](const gfx::Rect& quad_rect, float opacity) {
         auto overlay = CreateParamsFromImage(
             CreateDCompSurface(quad_rect.size(), SkColors::kWhite));
-        overlay->quad_rect = quad_rect;
-        overlay->opacity = opacity;
+        overlay.quad_rect = quad_rect;
+        overlay.opacity = opacity;
         return overlay;
       }));
 
@@ -2402,7 +2412,7 @@ TEST_P(DCompPresenterSkiaGoldTest, OpacityFromImage) {
 
         auto overlay = CreateParamsFromImage(
             CreateDCompSurface(quad_rect.size(), overlay_color));
-        overlay->quad_rect = quad_rect;
+        overlay.quad_rect = quad_rect;
         return overlay;
       }));
 
@@ -2420,9 +2430,9 @@ TEST_P(DCompPresenterSkiaGoldTest, OpacityFromSolidColor) {
         SkColor4f overlay_color = SkColors::kWhite;
         overlay_color.fA = opacity;
 
-        auto overlay = std::make_unique<DCLayerOverlayParams>();
-        overlay->quad_rect = quad_rect;
-        overlay->background_color = std::optional<SkColor4f>(overlay_color);
+        DCLayerOverlayParams overlay;
+        overlay.quad_rect = quad_rect;
+        overlay.background_color = std::optional<SkColor4f>(overlay_color);
         return overlay;
       }));
 
@@ -2457,9 +2467,9 @@ TEST_P(DCompPresenterSkiaGoldTest, SurfaceSerialForcesCommit) {
 
     auto overlay = CreateParamsFromImage(
         DCLayerOverlayImage(current_window_size(), surface, surface_serial));
-    overlay->quad_rect = gfx::Rect(current_window_size());
-    overlay->z_order = 0;
-    presenter_->ScheduleDCLayer(std::move(overlay));
+    overlay.quad_rect = gfx::Rect(current_window_size());
+    overlay.z_order = 0;
+    ScheduleOverlay(std::move(overlay));
 
     PresentAndCheckScreenshot(base::NumberToString(i));
   }
@@ -2473,12 +2483,12 @@ TEST_P(DCompPresenterSkiaGoldTest, RoundedCornerSimple) {
 
   auto overlay = CreateParamsFromImage(
       CreateDCompSurface(current_window_size(), SkColors::kWhite));
-  overlay->quad_rect = gfx::Rect(current_window_size());
-  overlay->quad_rect.Inset(kPaddingFromEdgeForAntiAliasedOutput);
-  overlay->z_order = 1;
-  overlay->rounded_corner_bounds =
-      gfx::RRectF(gfx::RectF(overlay->quad_rect), 25.f);
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  overlay.quad_rect = gfx::Rect(current_window_size());
+  overlay.quad_rect.Inset(kPaddingFromEdgeForAntiAliasedOutput);
+  overlay.z_order = 1;
+  overlay.rounded_corner_bounds =
+      gfx::RRectF(gfx::RectF(overlay.quad_rect), 25.f);
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2491,11 +2501,11 @@ TEST_P(DCompPresenterSkiaGoldTest, RoundedCornerNonUniformRadii) {
 
   auto overlay = CreateParamsFromImage(
       CreateDCompSurface(current_window_size(), SkColors::kWhite));
-  overlay->quad_rect = gfx::Rect(current_window_size());
-  overlay->quad_rect.Inset(kPaddingFromEdgeForAntiAliasedOutput);
-  overlay->z_order = 1;
+  overlay.quad_rect = gfx::Rect(current_window_size());
+  overlay.quad_rect.Inset(kPaddingFromEdgeForAntiAliasedOutput);
+  overlay.z_order = 1;
 
-  gfx::RRectF bounds = gfx::RRectF(gfx::RectF(overlay->quad_rect));
+  gfx::RRectF bounds = gfx::RRectF(gfx::RectF(overlay.quad_rect));
   bounds.SetCornerRadii(gfx::RRectF::Corner::kUpperLeft, gfx::Vector2dF(5, 40));
   bounds.SetCornerRadii(gfx::RRectF::Corner::kUpperRight,
                         gfx::Vector2dF(15, 30));
@@ -2503,8 +2513,8 @@ TEST_P(DCompPresenterSkiaGoldTest, RoundedCornerNonUniformRadii) {
                         gfx::Vector2dF(25, 20));
   bounds.SetCornerRadii(gfx::RRectF::Corner::kLowerLeft,
                         gfx::Vector2dF(35, 10));
-  overlay->rounded_corner_bounds = bounds;
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  overlay.rounded_corner_bounds = bounds;
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2536,12 +2546,12 @@ TEST_P(DCompPresenterSkiaGoldTest,
 
   int overlay_z_order = 1;
   for (auto& quad : quads) {
-    auto overlay = std::make_unique<DCLayerOverlayParams>();
-    overlay->quad_rect = quad;
-    overlay->background_color = std::optional<SkColor4f>(SkColors::kWhite);
-    overlay->z_order = overlay_z_order;
-    overlay->rounded_corner_bounds = bounds;
-    presenter_->ScheduleDCLayer(std::move(overlay));
+    DCLayerOverlayParams overlay;
+    overlay.quad_rect = quad;
+    overlay.background_color = std::optional<SkColor4f>(SkColors::kWhite);
+    overlay.z_order = overlay_z_order;
+    overlay.rounded_corner_bounds = bounds;
+    ScheduleOverlay(std::move(overlay));
 
     overlay_z_order++;
   }
@@ -2558,12 +2568,12 @@ TEST_P(DCompPresenterSkiaGoldTest, SoftBordersFromNonIntegralTranslation) {
 
   auto overlay = CreateParamsFromImage(
       CreateDCompSurface(gfx::Size(20, 20), SkColors::kWhite));
-  overlay->quad_rect = gfx::Rect(overlay->overlay_image->size());
-  overlay->transform.Translate(kPaddingFromEdgeForAntiAliasedOutput,
-                               kPaddingFromEdgeForAntiAliasedOutput);
-  overlay->transform.Translate(0.5, 0);
-  overlay->z_order = 1;
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  overlay.quad_rect = gfx::Rect(overlay.overlay_image->size());
+  overlay.transform.Translate(kPaddingFromEdgeForAntiAliasedOutput,
+                              kPaddingFromEdgeForAntiAliasedOutput);
+  overlay.transform.Translate(0.5, 0);
+  overlay.z_order = 1;
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2577,15 +2587,15 @@ TEST_P(DCompPresenterSkiaGoldTest, SoftBordersFromNonIntegralScaling) {
 
   auto overlay = CreateParamsFromImage(
       CreateDCompSurface(gfx::Size(20, 20), SkColors::kWhite));
-  overlay->quad_rect = gfx::Rect(overlay->overlay_image->size());
-  overlay->transform.Translate(kPaddingFromEdgeForAntiAliasedOutput,
-                               kPaddingFromEdgeForAntiAliasedOutput);
-  overlay->transform.Scale(
-      (static_cast<float>(overlay->quad_rect.width()) + 0.5) /
-          static_cast<float>(overlay->quad_rect.width()),
+  overlay.quad_rect = gfx::Rect(overlay.overlay_image->size());
+  overlay.transform.Translate(kPaddingFromEdgeForAntiAliasedOutput,
+                              kPaddingFromEdgeForAntiAliasedOutput);
+  overlay.transform.Scale(
+      (static_cast<float>(overlay.quad_rect.width()) + 0.5) /
+          static_cast<float>(overlay.quad_rect.width()),
       1);
-  overlay->z_order = 1;
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  overlay.z_order = 1;
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2600,21 +2610,21 @@ TEST_P(DCompPresenterSkiaGoldTest,
 
   auto overlay = CreateParamsFromImage(
       CreateDCompSurface(gfx::Size(21, 20), SkColors::kWhite));
-  overlay->quad_rect = gfx::Rect(overlay->overlay_image->size());
+  overlay.quad_rect = gfx::Rect(overlay.overlay_image->size());
 
   // DComp seems to not actually use soft borders unless there's a non-zero
   // radius.
   const double kForceDCompRoundedCornerSoftBorder =
       std::numeric_limits<float>::epsilon();
 
-  overlay->rounded_corner_bounds = gfx::RRectF(
+  overlay.rounded_corner_bounds = gfx::RRectF(
       gfx::RectF(0, 0, 20.5, 20), kForceDCompRoundedCornerSoftBorder);
-  overlay->rounded_corner_bounds.Offset(kPaddingFromEdgeForAntiAliasedOutput,
-                                        kPaddingFromEdgeForAntiAliasedOutput);
-  overlay->transform.Translate(kPaddingFromEdgeForAntiAliasedOutput,
-                               kPaddingFromEdgeForAntiAliasedOutput);
-  overlay->z_order = 1;
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  overlay.rounded_corner_bounds.Offset(kPaddingFromEdgeForAntiAliasedOutput,
+                                       kPaddingFromEdgeForAntiAliasedOutput);
+  overlay.transform.Translate(kPaddingFromEdgeForAntiAliasedOutput,
+                              kPaddingFromEdgeForAntiAliasedOutput);
+  overlay.z_order = 1;
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2636,10 +2646,10 @@ TEST_P(DCompPresenterSkiaGoldTest, OverlaysAreSortedByZOrder) {
     gfx::Rect quad_rect = gfx::Rect(15 + z_order * 5, 15 + z_order * 5, 30, 30);
     auto overlay =
         CreateParamsFromImage(CreateDCompSurface(quad_rect.size(), color));
-    overlay->quad_rect = quad_rect;
-    overlay->z_order = z_order;
+    overlay.quad_rect = quad_rect;
+    overlay.z_order = z_order;
 
-    presenter_->ScheduleDCLayer(std::move(overlay));
+    ScheduleOverlay(std::move(overlay));
   }
 
   // Insert a translucent root plane so that we can easily see underlays
@@ -2653,9 +2663,9 @@ TEST_P(DCompPresenterSkiaGoldTest, OverlaysAreSortedByZOrder) {
     // our output opaque.
     auto overlay = CreateParamsFromImage(
         CreateDCompSurface(current_window_size(), SkColors::kBlack));
-    overlay->quad_rect = gfx::Rect(current_window_size());
-    overlay->z_order = INT_MIN;
-    presenter_->ScheduleDCLayer(std::move(overlay));
+    overlay.quad_rect = gfx::Rect(current_window_size());
+    overlay.z_order = INT_MIN;
+    ScheduleOverlay(std::move(overlay));
   }
 
   PresentAndCheckScreenshot();
@@ -2675,11 +2685,11 @@ TEST_P(DCompPresenterSkiaGoldTest, ImageWithBackgroundColor) {
           {gfx::Rect(15, 15, 20, 20),
            SkColor4f::FromColor(SkColorSetA(SK_ColorBLUE, 0x80))},
       }));
-  overlay->quad_rect = gfx::Rect(100, 50);
-  overlay->background_color = SkColors::kGreen;
-  overlay->z_order = 1;
+  overlay.quad_rect = gfx::Rect(100, 50);
+  overlay.background_color = SkColors::kGreen;
+  overlay.z_order = 1;
 
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2696,18 +2706,17 @@ TEST_P(DCompPresenterSkiaGoldTest, NonIntegralContentRectHalfCoverage) {
   image_inner_rect.Inset(1);
   auto overlay = CreateParamsFromImage(CreateDCompSurface(
       image_size, SkColors::kGreen, {{image_inner_rect, SkColors::kBlue}}));
-  overlay->content_rect.Inset(0.5);
-  overlay->quad_rect = gfx::Rect(
+  overlay.content_rect.Inset(0.5);
+  overlay.quad_rect = gfx::Rect(
       gfx::Point(20, 20),
-      gfx::Size(overlay->content_rect.width(), overlay->content_rect.height()));
-  overlay->z_order = 1;
-  presenter_->ScheduleDCLayer(std::move(overlay));
+      gfx::Size(overlay.content_rect.width(), overlay.content_rect.height()));
+  overlay.z_order = 1;
+  ScheduleOverlay(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
 
-void RunSeamsWithComplexTransformTest(
-    DCompPresenter* presenter,
+std::vector<DCLayerOverlayParams> GetOverlaysForSeamsWithComplexTransformTest(
     base::RepeatingCallback<void(int x, int y, DCLayerOverlayParams&)>
         update_overlay) {
   gfx::Transform non_integral_transform;
@@ -2715,23 +2724,25 @@ void RunSeamsWithComplexTransformTest(
   non_integral_transform.Skew(3, 5);
   non_integral_transform.Translate(10.25, 5.15);
 
+  std::vector<DCLayerOverlayParams> overlays;
+
   const gfx::Size tile_size = gfx::Size(25, 25);
   for (int y = 0; y < 4; y++) {
     for (int x = 0; x < 4; x++) {
-      auto overlay = std::make_unique<DCLayerOverlayParams>();
-      overlay->quad_rect =
+      DCLayerOverlayParams& overlay = overlays.emplace_back();
+      overlay.quad_rect =
           gfx::Rect(x * tile_size.width(), y * tile_size.height(),
                     tile_size.width(), tile_size.height());
-      overlay->content_rect = gfx::RectF(tile_size);
-      overlay->overlay_image = CreateDCompSurface(tile_size, SkColors::kWhite);
-      overlay->transform = non_integral_transform;
-      overlay->z_order = x + y * 4 + 1;
+      overlay.content_rect = gfx::RectF(tile_size);
+      overlay.overlay_image = CreateDCompSurface(tile_size, SkColors::kWhite);
+      overlay.transform = non_integral_transform;
+      overlay.z_order = x + y * 4 + 1;
 
-      update_overlay.Run(x, y, *overlay.get());
-
-      presenter->ScheduleDCLayer(std::move(overlay));
+      update_overlay.Run(x, y, overlay);
     }
   }
+
+  return overlays;
 }
 
 // Check that DCLayerTree does not introduce seams from edge AA on adjacent
@@ -2739,12 +2750,11 @@ void RunSeamsWithComplexTransformTest(
 TEST_P(DCompPresenterSkiaGoldTest, EdgeAANoSeamsOnSameLayerComplexTransform) {
   InitializeTest(gfx::Size(100, 100));
 
-  RunSeamsWithComplexTransformTest(
-      presenter_.get(),
+  ScheduleOverlays(GetOverlaysForSeamsWithComplexTransformTest(
       base::BindRepeating([](int x, int y, DCLayerOverlayParams& overlay) {
         // All on the same layer.
         overlay.aggregated_layer_id = 1;
-      }));
+      })));
 
   PresentAndCheckScreenshot();
 }
@@ -2756,12 +2766,11 @@ TEST_P(DCompPresenterSkiaGoldTest, EdgeAANoSeamsOnSameLayerComplexTransform) {
 TEST_P(DCompPresenterSkiaGoldTest, EdgeAASeamsOnNotSameLayerComplexTransform) {
   InitializeTest(gfx::Size(100, 100));
 
-  RunSeamsWithComplexTransformTest(
-      presenter_.get(),
+  ScheduleOverlays(GetOverlaysForSeamsWithComplexTransformTest(
       base::BindRepeating([](int x, int y, DCLayerOverlayParams& overlay) {
         // Reuse layer IDs but have no two adjacent overlays have the same ID.
         overlay.aggregated_layer_id = (x + y * 4) % 2 + 1;
-      }));
+      })));
 
   PresentAndCheckScreenshot();
 }
@@ -2858,9 +2867,9 @@ TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, TrailSyncedToSwapChainPresent) {
   // Make root overlay.
   auto dc_layer_params =
       CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
-  dc_layer_params->quad_rect = gfx::Rect(monitor_size);
-  dc_layer_params->z_order = 0;
-  presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+  dc_layer_params.quad_rect = gfx::Rect(monitor_size);
+  dc_layer_params.z_order = 0;
+  ScheduleOverlay(std::move(dc_layer_params));
 
   ASSERT_HRESULT_SUCCEEDED(ClearRenderTargetViewAndPresent(
       SkColors::kGreen, swap_chain.Get(), rtv.Get()));
@@ -2873,8 +2882,8 @@ TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, TrailSyncedToSwapChainPresent) {
       SkColors::kBlue, swap_chain.Get(), rtv.Get()));
   dc_layer_params =
       CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
-  dc_layer_params->quad_rect = gfx::Rect(monitor_size);
-  presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+  dc_layer_params.quad_rect = gfx::Rect(monitor_size);
+  ScheduleOverlay(std::move(dc_layer_params));
   PresentAndCheckScreenshot("cleared-swapchain");
 }
 
@@ -2907,9 +2916,9 @@ TEST_P(DCompPresenterDelegatedInkSkiaGoldTest, RootSurfaceIsDCompSurface) {
   // frame.
   auto overlay =
       CreateParamsFromImage(CreateDCompSurface(window_size, SkColors::kWhite));
-  overlay->quad_rect = gfx::Rect(200, 200);
-  overlay->z_order = 0;
-  presenter_->ScheduleDCLayer(std::move(overlay));
+  overlay.quad_rect = gfx::Rect(200, 200);
+  overlay.z_order = 0;
+  ScheduleOverlay(std::move(overlay));
   PresentAndCheckScreenshot("no-ink-trail");
 }
 
@@ -3090,9 +3099,9 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
 
   auto params =
       CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-  params->quad_rect = gfx::Rect(window_size);
-  params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-  presenter_->ScheduleDCLayer(std::move(params));
+  params.quad_rect = gfx::Rect(window_size);
+  params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+  ScheduleOverlay(std::move(params));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
@@ -3196,13 +3205,13 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
+    ScheduleOverlay(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -3246,13 +3255,13 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
+    ScheduleOverlay(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
 
@@ -3304,13 +3313,13 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
+    ScheduleOverlay(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
 
@@ -3384,13 +3393,13 @@ TEST_P(DCompPresenterLetterboxingTest,
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
+    ScheduleOverlay(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -3473,13 +3482,13 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
+    ScheduleOverlay(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -3507,13 +3516,13 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
+    ScheduleOverlay(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -3546,13 +3555,13 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
+    ScheduleOverlay(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -3597,13 +3606,13 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
+    ScheduleOverlay(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -3647,13 +3656,13 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
+    ScheduleOverlay(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
 
@@ -3705,13 +3714,13 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
+    ScheduleOverlay(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
 
@@ -3785,13 +3794,13 @@ TEST_P(DCompPresenterLetterboxingTest,
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->video_params.possible_video_fullscreen_letterboxing = true;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
+    ScheduleOverlay(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -3873,12 +3882,12 @@ TEST_F(DCompPresenterFullscreenRoundingTest,
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    ScheduleOverlay(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
@@ -3953,12 +3962,12 @@ TEST_F(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
   {
     auto dc_layer_params =
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
-    dc_layer_params->quad_rect = quad_rect;
-    dc_layer_params->transform = quad_to_root_transform;
-    dc_layer_params->clip_rect = clip_rect;
-    dc_layer_params->video_params.color_space = gfx::ColorSpace::CreateREC709();
-    dc_layer_params->z_order = 1;
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+    dc_layer_params.quad_rect = quad_rect;
+    dc_layer_params.transform = quad_to_root_transform;
+    dc_layer_params.clip_rect = clip_rect;
+    dc_layer_params.video_params.color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params.z_order = 1;
+    ScheduleOverlay(std::move(dc_layer_params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }

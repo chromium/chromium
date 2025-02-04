@@ -55,8 +55,11 @@ namespace {
 // Step 11 of the algorithm at
 // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html requires
 // that a timeout less than 4ms is increased to 4ms when the nesting level is
-// greater than 5.
-constexpr int kMaxTimerNestingLevel = 5;
+// greater than 5. Since the counters in this file start at 1 (rather than the
+// 0 in the spec), we should use the value 6 here.
+// (The value is still 4 until StandardizedTimerClamping has shipped.)
+constexpr int kMaxTimerNestingLevel = 4;
+constexpr int kSpecCompliantMaxTimerNestingLevel = 6;
 constexpr base::TimeDelta kMinimumInterval = base::Milliseconds(4);
 
 base::TimeDelta GetMaxHighResolutionInterval() {
@@ -284,20 +287,23 @@ DOMTimer::DOMTimer(ExecutionContext& context,
   bool precise = (timeout < GetMaxHighResolutionInterval()) ||
                  scheduler::IsAlignWakeUpsDisabledForProcess();
 
+  const int max_timer_nesting_level =
+      RuntimeEnabledFeatures::StandardizedTimerClampingEnabled()
+          ? kSpecCompliantMaxTimerNestingLevel
+          : kMaxTimerNestingLevel;
+
   // Step 11:
-  // Note: The implementation uses >= instead of >, contrary to what the spec
-  // requires crbug.com/1108877.
-  if (nesting_level_ >= kMaxTimerNestingLevel && timeout < kMinimumInterval) {
+  if (nesting_level_ > max_timer_nesting_level && timeout < kMinimumInterval) {
     timeout = kMinimumInterval;
   }
 
   // Select TaskType based on nesting level.
   TaskType task_type;
-  if (nesting_level_ >= kMaxTimerNestingLevel) {
+  if (nesting_level_ > max_timer_nesting_level) {
     task_type = TaskType::kJavascriptTimerDelayedHighNesting;
   } else if (timeout.is_zero()) {
     task_type = TaskType::kJavascriptTimerImmediate;
-    DCHECK_LT(nesting_level_, kMaxTimerNestingLevel);
+    DCHECK_LE(nesting_level_, max_timer_nesting_level);
   } else {
     task_type = TaskType::kJavascriptTimerDelayedLowNesting;
   }
@@ -373,31 +379,32 @@ void DOMTimer::Fired() {
   probe::AsyncTask async_task(context, &async_task_context_,
                               is_interval ? "fired" : nullptr);
 
+  const int max_timer_nesting_level =
+      RuntimeEnabledFeatures::StandardizedTimerClampingEnabled()
+          ? kSpecCompliantMaxTimerNestingLevel
+          : kMaxTimerNestingLevel;
+
   // Simple case for non-one-shot timers.
   if (IsActive()) {
     DCHECK(is_interval);
 
     // Steps 12 and 13:
-    // Note: The implementation increments the nesting level before using it to
-    // adjust timeout, contrary to what the spec requires crbug.com/1108877.
     IncrementNestingLevel();
 
     // Step 11:
-    // Make adjustments when the nesting level becomes >= |kMaxNestingLevel|.
-    // Note: The implementation uses >= instead of >, contrary to what the spec
-    // requires crbug.com/1108877.
-    if (nesting_level_ == kMaxTimerNestingLevel &&
+    // Make adjustments when the nesting level becomes > |kMaxNestingLevel|.
+    if (nesting_level_ == max_timer_nesting_level + 1 &&
         RepeatInterval() < kMinimumInterval) {
       AugmentRepeatInterval(kMinimumInterval - RepeatInterval());
     }
-    if (nesting_level_ == kMaxTimerNestingLevel) {
+    if (nesting_level_ == max_timer_nesting_level + 1) {
       // Move to the TaskType that corresponds to nesting level >=
       // |kMaxNestingLevel|.
       MoveToNewTaskRunner(
           context->GetTaskRunner(TaskType::kJavascriptTimerDelayedHighNesting));
     }
 
-    DCHECK(nesting_level_ < kMaxTimerNestingLevel ||
+    DCHECK(nesting_level_ <= max_timer_nesting_level ||
            RepeatInterval() >= kMinimumInterval);
 
     // No access to member variables after this point, it can delete the timer.

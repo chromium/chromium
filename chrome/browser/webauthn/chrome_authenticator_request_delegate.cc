@@ -123,6 +123,9 @@
 #include "ui/aura/window.h"
 #endif
 
+using TransportAvailabilityInfo =
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo;
+
 namespace {
 
 ChromeAuthenticatorRequestDelegate::TestObserver* g_observer = nullptr;
@@ -532,6 +535,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
 
 void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
     base::OnceClosure cancel_callback,
+    base::OnceClosure immediate_not_found_callback,
     base::RepeatingClosure start_over_callback,
     AccountPreselectedCallback account_preselected_callback,
     device::FidoRequestHandlerBase::RequestCallback request_callback,
@@ -539,10 +543,11 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
     base::RepeatingCallback<
         void(device::FidoRequestHandlerBase::BlePermissionCallback)>
         request_ble_permission_callback) {
-  request_callback_ = request_callback;
   cancel_callback_ = std::move(cancel_callback);
+  immediate_not_found_callback_ = std::move(immediate_not_found_callback);
   start_over_callback_ = std::move(start_over_callback);
   account_preselected_callback_ = std::move(account_preselected_callback);
+  request_callback_ = request_callback;
 
   dialog_controller_->SetRequestCallback(request_callback);
   dialog_controller_->SetAccountPreselectedCallback(
@@ -815,7 +820,7 @@ void ChromeAuthenticatorRequestDelegate::ProvideChallengeUrl(
 }
 
 void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
-    device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
+    TransportAvailabilityInfo data) {
   if (g_observer) {
     g_observer->OnPreTransportAvailabilityEnumerated(this);
   }
@@ -835,7 +840,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     return;
   }
 
-  ShowUI(std::move(data));
+  MaybeShowUI(std::move(data));
 }
 
 bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
@@ -984,13 +989,51 @@ Profile* ChromeAuthenticatorRequestDelegate::profile() const {
   return Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext());
 }
 
-void ChromeAuthenticatorRequestDelegate::ShowUI(
-    device::FidoRequestHandlerBase::TransportAvailabilityInfo tai) {
+bool ChromeAuthenticatorRequestDelegate::MaybeHandleImmediateMediation(
+    const TransportAvailabilityInfo& data) {
+  if (data.request_type != device::FidoRequestType::kGetAssertion ||
+      dialog_controller_->ui_presentation() !=
+          UIPresentation::kModalImmediate) {
+    return false;
+  }
+
+  // Always return not found immediate in incognito.
+  if (profile()->IsOffTheRecord()) {
+    return true;
+  }
+
+  // Do not consider `kPhone` credentials as they're not locally available.
+  const auto kLocalTypes =
+      std::unordered_set{device::AuthenticatorType::kEnclave,
+                         device::AuthenticatorType::kICloudKeychain,
+                         device::AuthenticatorType::kWinNative,
+                         device::AuthenticatorType::kChromeOS,
+                         device::AuthenticatorType::kTouchID};
+  int immediate_credential_count = std::ranges::count_if(
+      data.recognized_credentials,
+      [&kLocalTypes](const device::AuthenticatorType& type) {
+        return kLocalTypes.contains(type);
+      },
+      &device::DiscoverableCredentialMetadata::source);
+  if (immediate_credential_count == 0) {
+    return true;
+  }
+
+  return false;
+}
+
+void ChromeAuthenticatorRequestDelegate::MaybeShowUI(
+    TransportAvailabilityInfo tai) {
   if (can_use_synced_phone_passkeys_ ||
       (enclave_controller_ && enclave_controller_->is_active())) {
     GetPhoneContactableGpmPasskeysForRpId(&tai.recognized_credentials);
   }
   FilterRecognizedCredentials(&tai);
+
+  if (MaybeHandleImmediateMediation(tai)) {
+    std::move(immediate_not_found_callback_).Run();
+    return;
+  }
 
   if (g_observer) {
     g_observer->OnTransportAvailabilityEnumerated(this, &tai);
@@ -1025,7 +1068,7 @@ void ChromeAuthenticatorRequestDelegate::OnReadyForUI() {
       std::move(pending_transport_availability_info_);
   pending_transport_availability_info_.reset();
 
-  ShowUI(std::move(*pending_transport_availability_info));
+  MaybeShowUI(std::move(*pending_transport_availability_info));
 }
 
 bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
@@ -1098,7 +1141,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
 }
 
 void ChromeAuthenticatorRequestDelegate::FilterRecognizedCredentials(
-    device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai) {
+    TransportAvailabilityInfo* tai) {
   if (dialog_model()->relying_party_id == kGoogleRpId &&
       tai->has_empty_allow_list &&
       std::ranges::any_of(tai->recognized_credentials,

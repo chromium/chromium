@@ -157,6 +157,8 @@ static_library("safe_browsing") {
       "services_delegate.h",
       "tailored_security/chrome_tailored_security_service.cc",
       "tailored_security/chrome_tailored_security_service.h",
+      "tailored_security/message_retry_handler.cc",
+      "tailored_security/message_retry_handler.h",
       "tailored_security/tailored_security_service_factory.cc",
       "tailored_security/tailored_security_service_factory.h",
       "tailored_security/tailored_security_url_observer.cc",

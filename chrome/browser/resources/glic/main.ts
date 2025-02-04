@@ -11,11 +11,9 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
 import {GlicAppController} from './glic_app_controller.js';
 
-const browserProxy = BrowserProxyImpl.getInstance();
-const appController = new GlicAppController(browserProxy);
+const appController = new GlicAppController();
 
 window.addEventListener('load', () => {
   // Allow WebUI close buttons to close the window.

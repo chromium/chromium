@@ -37,7 +37,6 @@ if (include_js2gtest_tests) {
     sources = [
       "account_manager/account_manager_browsertest.js",
       "ash_common/i18n_process_test.js",
-      "ash_common/post_message_api/post_message_api_browsertest.js",
       "assertions.js",
       "async_gen.js",
       "borealis_installer/borealis_installer_browsertest.js",
@@ -202,7 +201,7 @@ build_webui_tests("build") {
     "network/network_config_vpn_test.ts",
     "network/network_config_wifi_test.ts",
     "network/network_icon_test.js",
-    "network/network_ip_config_test.js",
+    "network/network_ip_config_test.ts",
     "network/network_list_item_test.js",
     "network/network_list_test.js",
     "network/network_nameservers_test.ts",

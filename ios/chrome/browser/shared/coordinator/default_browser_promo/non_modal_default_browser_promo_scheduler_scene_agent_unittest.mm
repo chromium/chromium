@@ -173,7 +173,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 
   // Then advance the timer by the remaining post-load delay. This should
   // trigger the promo.
-  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste];
   task_env_.FastForwardBy(base::Seconds(2));
 
   [promo_commands_handler_ verify];
@@ -208,7 +210,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 
   // Then advance the timer by the remaining post-load delay. This should
   // trigger the promo.
-  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonExternalLink];
   task_env_.FastForwardBy(base::Seconds(2));
 
   [promo_commands_handler_ verify];
@@ -237,7 +241,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   test_web_state_->SetLoading(false);
 
   // Advance the timer by the post-share delay. This should trigger the promo.
-  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonShare];
   task_env_.FastForwardBy(base::Seconds(1));
 
   [promo_commands_handler_ verify];
@@ -267,7 +273,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   test_web_state_->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
-  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste];
   task_env_.FastForwardBy(base::Seconds(3));
 
   [promo_commands_handler_ verify];
@@ -306,7 +314,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   test_web_state_->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
-  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste];
   task_env_.FastForwardBy(base::Seconds(3));
 
   [promo_commands_handler_ verify];
@@ -368,7 +378,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   test_web_state_->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
-  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste];
   task_env_.FastForwardBy(base::Seconds(3));
 
   [promo_commands_handler_ verify];
@@ -505,7 +517,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   test_web_state_->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
-  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste];
   task_env_.FastForwardBy(base::Seconds(3));
 
   [promo_commands_handler_ verify];
@@ -566,7 +580,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   test_web_state_->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
-  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste];
   task_env_.FastForwardBy(base::Seconds(3));
 
   [promo_commands_handler_ verify];
@@ -663,7 +679,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   test_web_state_->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
-  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste];
   task_env_.FastForwardBy(base::Seconds(3));
   [promo_commands_handler_ verify];
 
@@ -706,7 +724,9 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   test_web_state_->SetLoading(false);
 
   // Advance the timer by the post-load delay. This should trigger the promo.
-  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  [[promo_commands_handler_ expect]
+      showDefaultBrowserNonModalPromoWithReason:
+          NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste];
   task_env_.FastForwardBy(base::Seconds(3));
   [promo_commands_handler_ verify];
 

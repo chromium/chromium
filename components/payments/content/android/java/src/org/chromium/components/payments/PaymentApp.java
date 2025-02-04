@@ -28,14 +28,6 @@ public abstract class PaymentApp extends EditableOption {
     /** Arbitrarily chosen maximum length of a payment app name. */
     private static final int APP_NAME_ELIDE_LENGTH = 64;
 
-    /**
-     * Whether complete and valid autofill data for merchant's request is available, e.g., if
-     * merchant specifies `requestPayerEmail: true`, then this variable is true only if the autofill
-     * data contains a valid email address. May be used in canMakePayment() for some types of
-     * app, such as AutofillPaymentInstrument.
-     */
-    protected boolean mHaveRequestedAutofillData;
-
     /** The interface for the requester of payment details from the app. */
     public interface InstrumentDetailsCallback {
         /**
@@ -148,14 +140,6 @@ public abstract class PaymentApp extends EditableOption {
     /** @return Whether the app can collect and return payer's phone. */
     public boolean handlesPayerPhone() {
         return false;
-    }
-
-    /**
-     * @param haveRequestedAutofillData Whether complete and valid autofill data for merchant's
-     *                                  request is available.
-     */
-    public void setHaveRequestedAutofillData(boolean haveRequestedAutofillData) {
-        mHaveRequestedAutofillData = haveRequestedAutofillData;
     }
 
     /**

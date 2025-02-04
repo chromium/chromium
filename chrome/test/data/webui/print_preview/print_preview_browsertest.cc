@@ -64,12 +64,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsAvailability) {
   RunTest("print_preview/model_settings_availability_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsPolicy) {
-  RunTest("print_preview/model_settings_policy_test.js", "mocha.run()");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, OtherOptionsSettings) {
   RunTest("print_preview/other_options_settings_test.js", "mocha.run()");
 }

@@ -26,7 +26,6 @@ component("webrtc") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//media",
     "//media:shared_memory_support",
     "//third_party/webrtc_overrides:webrtc_component",

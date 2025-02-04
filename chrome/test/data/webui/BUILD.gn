@@ -111,6 +111,7 @@ source_set("browser_tests") {
       "chromeos/ash_common/ash_common_browsertest.cc",
       "chromeos/ash_common/ash_common_resources_browsertest.cc",
       "chromeos/ash_common/cr_elements/ash_common_cr_elements_browsertest.cc",
+      "chromeos/ash_common/post_message_api/post_message_api_browsertest.cc",
       "chromeos/ash_common/sea_pen/sea_pen_browsertest.cc",
       "chromeos/ash_common/webui_resource_browsertest.cc",
       "chromeos/diagnostics/diagnostics_browsertest.cc",
@@ -600,6 +601,7 @@ generate_grd("build_grd") {
       "chromeos:build_web_ui_test_mojo_lite_grdp",
       "chromeos/ash_common:build_grdp",
       "chromeos/ash_common/cr_elements:build_grdp",
+      "chromeos/ash_common/post_message_api:build_grdp",
       "chromeos/ash_common/sea_pen:build_grdp",
       "chromeos/boca_ui:build_grdp",
       "chromeos/borealis_installer:build_grdp",
@@ -636,6 +638,7 @@ generate_grd("build_grd") {
     grdp_files += [
       "$target_gen_dir/chromeos/ash_common/resources.grdp",
       "$target_gen_dir/chromeos/ash_common/cr_elements/resources.grdp",
+      "$target_gen_dir/chromeos/ash_common/post_message_api/resources.grdp",
       "$target_gen_dir/chromeos/ash_common/sea_pen/resources.grdp",
       "$target_gen_dir/chromeos/boca_ui/resources.grdp",
       "$target_gen_dir/chromeos/borealis_installer/resources.grdp",

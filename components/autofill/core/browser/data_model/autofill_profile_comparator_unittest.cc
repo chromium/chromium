@@ -89,11 +89,13 @@ class AutofillProfileComparatorTest : public testing::Test {
     return name;
   }
 
-  AutofillProfile CreateProfileWithName(const char* first,
-                                        const char* middle,
-                                        const char* last,
-                                        bool finalize = true) {
-    AutofillProfile profile(kLegacyHierarchyCountryCode);
+  AutofillProfile CreateProfileWithName(
+      const char* first,
+      const char* middle,
+      const char* last,
+      bool finalize = true,
+      const AddressCountryCode& country_code = kLegacyHierarchyCountryCode) {
+    AutofillProfile profile(country_code);
     test::SetProfileInfo(&profile, first, middle, last, "", "", "", "", "", "",
                          "", "", "");
     if (finalize) {
@@ -102,9 +104,11 @@ class AutofillProfileComparatorTest : public testing::Test {
     return profile;
   }
 
-  AutofillProfile CreateProfileWithName(const NameInfo& name,
-                                        bool finalize = true) {
-    AutofillProfile profile(kLegacyHierarchyCountryCode);
+  AutofillProfile CreateProfileWithName(
+      const NameInfo& name,
+      bool finalize = true,
+      const AddressCountryCode& country_code = kLegacyHierarchyCountryCode) {
+    AutofillProfile profile(country_code);
     profile.SetRawInfoWithVerificationStatus(
         NAME_FULL, name.GetRawInfo(NAME_FULL),
         name.GetVerificationStatus(NAME_FULL));
@@ -140,10 +144,11 @@ class AutofillProfileComparatorTest : public testing::Test {
     return profile;
   }
 
-  AutofillProfile CreateProfileWithCompanyName(const char* company_name) {
+  AutofillProfile CreateProfileWithCompanyName(const char* company_name,
+                                               const char* country_code = "") {
     AutofillProfile profile(kLegacyHierarchyCountryCode);
     test::SetProfileInfo(&profile, "", "", "", "", company_name, "", "", "", "",
-                         "", "", "");
+                         "", country_code, "");
     return profile;
   }
 
@@ -454,6 +459,20 @@ TEST_F(AutofillProfileComparatorTest, NormalizeForComparison) {
                                AutofillProfileComparator::DISCARD_WHITESPACE));
 }
 
+TEST_F(AutofillProfileComparatorTest,
+       NormalizeForComparisonWithGermanTransliteration) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillEnableGermanTransliteration};
+  EXPECT_EQ(u"haensel str",
+            AutofillProfileComparator::NormalizeForComparison(
+                u"Hänsel Str.", AutofillProfileComparator::RETAIN_WHITESPACE,
+                AddressCountryCode("DE")));
+  EXPECT_EQ(u"hansel str",
+            AutofillProfileComparator::NormalizeForComparison(
+                u"Hänsel Str.", AutofillProfileComparator::RETAIN_WHITESPACE,
+                AddressCountryCode("US")));
+}
+
 TEST_F(AutofillProfileComparatorTest, GetNamePartVariants) {
   std::set<std::u16string> expected_variants = {
       u"timothe noel", u"timothe n", u"timothe", u"t noel", u"t n", u"t",
@@ -548,6 +567,26 @@ TEST_F(AutofillProfileComparatorTest, HaveMergeableNames) {
   EXPECT_FALSE(comparator_.HaveMergeableNames(different, p3));
   EXPECT_FALSE(comparator_.HaveMergeableNames(different, p4));
   EXPECT_FALSE(comparator_.HaveMergeableNames(different, initials));
+}
+
+TEST_F(AutofillProfileComparatorTest,
+       HaveMergeableNamesWithGermanTransliteration) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableGermanTransliteration};
+
+  AutofillProfile p1_de = CreateProfileWithName(
+      CreateNameInfo(u"Hänsel", u"", u"Köhn", u"", u"", u""), true,
+      AddressCountryCode("DE"));
+  AutofillProfile p2_de = CreateProfileWithName("Haensel", "", "Koehn", true,
+                                                AddressCountryCode("AT"));
+  AutofillProfile p1_us = CreateProfileWithName(
+      CreateNameInfo(u"Hänsel", u"", u"Köhn", u"", u"", u""), true,
+      AddressCountryCode("US"));
+  AutofillProfile p2_us = CreateProfileWithName("Haensel", "", "Koehn", true,
+                                                AddressCountryCode("US"));
+
+  EXPECT_TRUE(comparator_.HaveMergeableNames(p1_de, p2_de));
+  EXPECT_FALSE(comparator_.HaveMergeableNames(p1_us, p2_us));
 }
 
 TEST_F(AutofillProfileComparatorTest, HaveMergeableAlternativeNames) {
@@ -1315,19 +1354,10 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithRewriteDE) {
   AutofillProfile p1 = CreateProfileWithAddress("Erika-Mann-Straße 33", "APP 3",
                                                 "München", "", "80636", "DE");
 
-  p1.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"Erika-Mann-Straße");
-  p1.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"33");
-  p1.SetRawInfo(ADDRESS_HOME_SUBPREMISE, u"APP 3");
-
   AutofillProfile p2 = CreateProfileWithAddress("Erika-Mann-Str. 33", "",
                                                 "Munchen", "", "80636", "DE");
-  p2.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"Erika-Mann-Str");
-  p2.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"33");
 
-  p2.usage_history().set_use_date(p1.usage_history().use_date() +
-                                  base::Minutes(1));
-
-  Address expected(kLegacyHierarchyCountryCode);
+  Address expected(AddressCountryCode("DE"));
   // The longer string wins.
   expected.SetRawInfo(ADDRESS_HOME_LINE1, u"Erika-Mann-Straße 33");
   // Extra information.
@@ -1336,10 +1366,22 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithRewriteDE) {
   expected.SetRawInfo(ADDRESS_HOME_CITY, u"Munchen");
   expected.SetRawInfo(ADDRESS_HOME_STATE, u"");
   expected.SetRawInfo(ADDRESS_HOME_ZIP, u"80636");
-  expected.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
 
   MergeAddressesAndExpect(p1, p2, expected);
   MergeAddressesAndExpect(p2, p1, expected);
+}
+
+TEST_F(AutofillProfileComparatorTest, MergeAddressesWithGermanTransliteration) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableGermanTransliteration};
+
+  AutofillProfile p1 = CreateProfileWithAddress("Hänsel-Str 33", "", "München",
+                                                "", "80636", "DE");
+  AutofillProfile p2 = CreateProfileWithAddress("Haensel-Str 33", "", "Munchen",
+                                                "", "80636", "DE");
+
+  MergeAddressesAndExpect(p1, p2, p2.GetAddress());
+  MergeAddressesAndExpect(p2, p1, p2.GetAddress());
 }
 
 TEST_F(AutofillProfileComparatorTest,

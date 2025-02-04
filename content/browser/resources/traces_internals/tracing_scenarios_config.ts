@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
@@ -11,6 +12,7 @@ import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_to
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 // </if>
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 
 import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
 import {getCss} from './tracing_scenarios_config.css.js';
@@ -170,6 +172,41 @@ export class TracingScenariosConfigElement extends CrLitElement {
       return;
     }
     await this.initScenariosConfig_();
+  }
+
+  protected async onAddConfig_(e: Event&
+                               {target: HTMLInputElement}): Promise<void> {
+    const files = e.target.files;
+    if (!files) {
+      this.toastMessage_ = `Failed to open config file.`;
+      this.$.toast.show();
+      return;
+    }
+
+    for (const file of files) {
+      const result = await this.processConfigFile_(file);
+      if (!result.success) {
+        this.toastMessage_ = `Failed to read config file ${file.name}.`;
+        this.$.toast.show();
+      }
+    }
+
+    await this.initScenariosConfig_();
+  }
+
+  private async processConfigFile_(file: File): Promise<{success: boolean}> {
+    const isTextFile = (file.type === 'text/plain');
+    const handler = this.traceReportProxy_.handler;
+
+    if (isTextFile) {
+      const text = (await file.text()).replace('\n', '');
+      return handler.setScenariosConfigFromString(text);
+    } else {
+      const bytes = await file.arrayBuffer();
+      const buffer: BigBuffer = {bytes: Array.from(new Uint8Array(bytes))} as
+          any;
+      return handler.setScenariosConfigFromBuffer(buffer);
+    }
   }
 
   protected async onCancelClick_(): Promise<void> {

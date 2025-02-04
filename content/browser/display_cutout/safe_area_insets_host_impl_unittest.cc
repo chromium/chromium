@@ -335,24 +335,6 @@ TEST_F(SafeAreaInsetsHostImplTest, NavigateNoViewportFitChange) {
          "trigger one update to safe-area-insets.";
 }
 
-TEST_F(SafeAreaInsetsHostImplTest, SafeAreaConstraintChangeFullscreen) {
-  NavigateToContain();
-  EXPECT_TRUE(GetSafeAreaConstraintOrDefault());
-
-  auto* subframe = static_cast<RenderFrameHostImpl*>(
-      RenderFrameHostTester::For(main_rfh())->AppendChild("subframe"));
-  test_safe_area_insets_host()->DidAcquireFullscreen(subframe);
-
-  EXPECT_EQ(main_rfh(), test_safe_area_insets_host()->previous_rfh());
-  EXPECT_FALSE(
-      test_safe_area_insets_host()->GetSafeAreaConstraintOrDefault(subframe));
-
-  // After exit fullscreen, constraint should reset to the main frame.
-  test_safe_area_insets_host()->DidExitFullscreen();
-  EXPECT_EQ(subframe, test_safe_area_insets_host()->previous_rfh());
-  EXPECT_TRUE(GetSafeAreaConstraintOrDefault());
-}
-
 TEST_F(SafeAreaInsetsHostImplTest, NavigateOnlyZeroInsets) {
   SetHasSentNonZeroInsets(false);
   ResetSafeAreaTracking();

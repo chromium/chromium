@@ -7,11 +7,15 @@
 
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_test_environment.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -97,6 +101,15 @@ class InteractiveGlicTestT : public T {
 
   ~InteractiveGlicTestT() override = default;
 
+  void SetUpInProcessBrowserTestFixture() override {
+    T::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &InteractiveGlicTestT<T>::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
 
@@ -120,6 +133,22 @@ class InteractiveGlicTestT : public T {
     // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
     PrefService* prefs = InProcessBrowserTest::browser()->profile()->GetPrefs();
     prefs->SetBoolean(prefs::kGlicCompletedFre, true);
+    Browser* browser = InProcessBrowserTest::browser();
+    identity_test_environment_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser->profile());
+
+    // Signing in is a prerequisite for Glic.
+    identity_test_environment_adaptor_->identity_test_env()
+        ->MakePrimaryAccountAvailable("test@example.com",
+                                      signin::ConsentLevel::kSync);
+    glic_test_environment_ =
+        std::make_unique<glic::GlicTestEnvironment>(browser->profile());
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
   // Ensures that the WebContents for some combination of glic host and contents
@@ -259,6 +288,11 @@ class InteractiveGlicTestT : public T {
   using Test = InProcessBrowserTest;
 
   base::test::ScopedFeatureList features_;
+
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_environment_adaptor_;
+  base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<glic::GlicTestEnvironment> glic_test_environment_;
 };
 
 // For most tests, you can alias or inherit from this instead of deriving your

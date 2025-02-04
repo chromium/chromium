@@ -656,10 +656,7 @@ TEST_P(BlockPainterTest, ScrolledHitTestChunkProperties) {
       scroller->FirstFragment().PaintProperties()->ScrollTranslation();
   scroll_hit_test_data->scroll_hit_test_rect = gfx::Rect(0, 0, 100, 100);
   auto* scrolled_hit_test_data = MakeGarbageCollected<HitTestData>();
-  scrolled_hit_test_data->touch_action_rects = {
-      {RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-           ? gfx::Rect(0, 0, 200, 100)
-           : gfx::Rect(0, 0, 200, 50)}};
+  scrolled_hit_test_data->touch_action_rects = {{gfx::Rect(0, 0, 200, 100)}};
 
   const auto& paint_chunks = ContentPaintChunks();
   EXPECT_THAT(
@@ -676,15 +673,9 @@ TEST_P(BlockPainterTest, ScrolledHitTestChunkProperties) {
               scroll_hit_test_data, gfx::Rect(0, 0, 100, 100)),
           IsPaintChunk(
               1, 1,
-              PaintChunk::Id(scroller->Id(),
-                             RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-                                 ? kScrollingBackgroundChunkType
-                                 : kClippedContentsBackgroundChunkType),
+              PaintChunk::Id(scroller->Id(), kScrollingBackgroundChunkType),
               scroller->FirstFragment().ContentsProperties(),
-              scrolled_hit_test_data,
-              RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
-                  ? gfx::Rect(0, 0, 200, 100)
-                  : gfx::Rect(0, 0, 200, 50))));
+              scrolled_hit_test_data, gfx::Rect(0, 0, 200, 100))));
 
   const auto& scroller_paint_chunk = paint_chunks[1];
   // The hit test rect for the scroller itself should not be scrolled.

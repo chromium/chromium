@@ -646,4 +646,10 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
   }
 }
 
+bool PseudoElement::IsInertRoot() const {
+  // ::picker-icon and its descendants should not be included in the
+  // accessibility tree.
+  return pseudo_id_ == kPseudoIdPickerIcon;
+}
+
 }  // namespace blink

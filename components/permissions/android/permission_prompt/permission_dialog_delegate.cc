@@ -190,11 +190,25 @@ void PermissionDialogDelegate::Deny(JNIEnv* env,
   permission_prompt_->Deny();
 }
 
-void PermissionDialogDelegate::HandleSystemPermission(
+void PermissionDialogDelegate::Resumed(JNIEnv* env,
+                                       const JavaParamRef<jobject>& obj) {
+  CHECK(permission_prompt_);
+  permission_prompt_->Resumed();
+}
+
+void PermissionDialogDelegate::SystemSettingsShown(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   CHECK(permission_prompt_);
-  permission_prompt_->HandleSystemPermission();
+  permission_prompt_->SystemSettingsShown();
+}
+
+void PermissionDialogDelegate::SystemPermissionResolved(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    bool accepted) {
+  CHECK(permission_prompt_);
+  permission_prompt_->SystemPermissionResolved(accepted);
 }
 
 void PermissionDialogDelegate::Dismissed(JNIEnv* env,

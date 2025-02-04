@@ -6,6 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -43,7 +44,8 @@ int MinimumLocalPixelDistanceToExpand(float expansion_ratio) {
 int LocalPixelDistanceToExpand(
     const TransformPaintPropertyNode& root_transform,
     const TransformPaintPropertyNode& local_transform,
-    float expansion_ratio) {
+    float expansion_ratio,
+    const gfx::Rect& input_cull_rect) {
   const int pixel_distance_to_expand =
       features::kCullRectPixelDistanceToExpand.Get();
   const bool small_scrollers_use_min_cull_rect =
@@ -52,10 +54,16 @@ int LocalPixelDistanceToExpand(
   const int min_expansion = MinimumLocalPixelDistanceToExpand(expansion_ratio);
   if (small_scrollers_use_min_cull_rect &&
       !local_transform.RequiresCompositingForRootScroller() &&
-      local_transform.ScrollNode() &&
-      local_transform.ScrollNode()->ContainerRect().size().Area64() <=
-          kSmallScrollerArea * expansion_ratio * expansion_ratio) {
-    return min_expansion;
+      local_transform.ScrollNode()) {
+    gfx::Rect culled_container_rect =
+        local_transform.ScrollNode()->ContainerRect();
+    if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
+      culled_container_rect.Intersect(input_cull_rect);
+    }
+    if (culled_container_rect.size().Area64() <=
+        kSmallScrollerArea * expansion_ratio * expansion_ratio) {
+      return min_expansion;
+    }
   }
 
   int local_pixel_distance_to_expand =
@@ -135,25 +143,44 @@ std::pair<bool, bool> CullRect::ApplyScrollTranslation(
   const auto* scroll = scroll_translation.ScrollNode();
   DCHECK(scroll);
 
+  gfx::Rect input_cull_rect = rect_;
   gfx::Rect container_rect = scroll->ContainerRect();
-  rect_.Intersect(container_rect);
-  if (rect_.IsEmpty()) {
-    return {false, false};
+  bool can_expand = expansion_ratio != 0 && CanExpandForScroll(*scroll);
+  if (can_expand &&
+      RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
+    if (!rect_.Intersects(container_rect)) {
+      rect_ = gfx::Rect();
+      DVLOG(3) << "No intersection with container rect";
+      return {false, false};
+    }
+    // Always start from the container rect, i.e. ignore ancestor clips.
+    // This makes sure the scrolling contents cull rect always cover the
+    // container rect, which will ensure the edge-touching logic of
+    // ChangedEnough works, and simplify paint checkerboarding reporting for
+    // raster-inducing scrolls in cc.
+    rect_ = container_rect;
+    DVLOG(3) << "Use container rect: " << rect_.ToString();
+  } else {
+    rect_.Intersect(container_rect);
+    if (rect_.IsEmpty()) {
+      DVLOG(3) << "No intersection with container rect";
+      return {false, false};
+    }
+    DVLOG(3) << "Clipped by container rect: " << rect_.ToString();
   }
+  DVLOG(3) << "Clipped by container rect: " << rect_.ToString();
 
   ApplyTransform(scroll_translation);
+  DVLOG(3) << "Scrolled: " << rect_.ToString();
 
-  if (expansion_ratio == 0) {
-    return {false, false};
-  }
-  if (!CanExpandForScroll(*scroll)) {
+  if (!can_expand) {
     return {false, false};
   }
 
   gfx::Rect contents_rect = scroll->ContentsRect();
   // Expand the cull rect for scrolling contents for composited scrolling.
   int outset_x = LocalPixelDistanceToExpand(root_transform, scroll_translation,
-                                            expansion_ratio);
+                                            expansion_ratio, input_cull_rect);
   int outset_y = outset_x;
   int scroll_range_x = contents_rect.width() - container_rect.width();
   int scroll_range_y = contents_rect.height() - container_rect.height();
@@ -189,12 +216,18 @@ std::pair<bool, bool> CullRect::ApplyScrollTranslation(
   // below, but it can happen that the original rect is sized and positioned
   // such that the expanded rect won't be adequately clipped by this
   // intersection. This can happen if we are clipped by an ancestor.
+  // Note: The clipped-by-ancestor situation doesn't affect
+  // ScrollCullRectFromContainerRect. Clean up the comment, maybe also the code
+  // when cleaning up the flag.
   int min_expansion = MinimumLocalPixelDistanceToExpand(expansion_ratio);
   outset_x = std::min(std::max(outset_x, min_expansion), scroll_range_x);
   outset_y = std::min(std::max(outset_y, min_expansion), scroll_range_y);
   rect_.Outset(gfx::Outsets::VH(outset_y, outset_x));
+  DVLOG(3) << "Expanded(" << outset_x << "," << outset_y
+           << "): " << rect_.ToString();
 
   rect_.Intersect(contents_rect);
+  DVLOG(3) << "Clipped by contents_rect: " << rect_.ToString();
   return {outset_x > 0, outset_y > 0};
 }
 
@@ -205,12 +238,15 @@ bool CullRect::ApplyPaintPropertiesWithoutExpansion(
       GeometryMapper::LocalToAncestorClipRect(destination, source);
   if (clip_rect.Rect().IsEmpty()) {
     rect_ = gfx::Rect();
+    DVLOG(3) << "Empty clip";
     return false;
   }
   if (!clip_rect.IsInfinite()) {
     rect_.Intersect(gfx::ToEnclosingRect(clip_rect.Rect()));
-    if (rect_.IsEmpty())
+    if (rect_.IsEmpty()) {
+      DVLOG(3) << "Empty after clip";
       return false;
+    }
   }
   if (!IsInfinite()) {
     GeometryMapper::SourceToDestinationRect(source.Transform(),
@@ -218,6 +254,7 @@ bool CullRect::ApplyPaintPropertiesWithoutExpansion(
   }
   // Return true even if the transformed rect is empty (e.g. by rotateX(90deg))
   // because later transforms may make the content visible again.
+  DVLOG(3) << "ApplyPaintPropertiesWithoutExpansion: " << rect_.ToString();
   return true;
 }
 
@@ -299,6 +336,7 @@ bool CullRect::ApplyPaintProperties(
     // the last scroll translation. We will skip the ChangedEnough logic if the
     // current cull rect doesn't fully cover the scroll container rect.
     scroll_cull_rect_affected_by_ancestor_clips =
+        !RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled() &&
         !rect_.Contains(scroll_translation->ScrollNode()->ContainerRect());
     expanded = ApplyScrollTranslation(root.Transform(), *scroll_translation,
                                       expansion_ratio);
@@ -356,18 +394,20 @@ bool CullRect::ApplyPaintProperties(
     // of nested composited transforms, the heuristic is skipped for rects that
     // are already very large.
     int pixel_distance_to_expand = LocalPixelDistanceToExpand(
-        root.Transform(), destination.Transform(), expansion_ratio);
+        root.Transform(), destination.Transform(), expansion_ratio, rect_);
     if (rect_.width() < pixel_distance_to_expand) {
       rect_.Outset(gfx::Outsets::VH(0, pixel_distance_to_expand));
       if (expansion_bounds)
         expansion_bounds->Outset(gfx::Outsets::VH(0, pixel_distance_to_expand));
       expanded.first = true;
+      DVLOG(3) << "Expanded horizontally: " << rect_.ToString();
     }
     if (rect_.height() < pixel_distance_to_expand) {
       rect_.Outset(gfx::Outsets::VH(pixel_distance_to_expand, 0));
       if (expansion_bounds)
         expansion_bounds->Outset(gfx::Outsets::VH(pixel_distance_to_expand, 0));
       expanded.second = true;
+      DVLOG(3) << "Expanded vertically: " << rect_.ToString();
     }
   }
 
@@ -377,6 +417,7 @@ bool CullRect::ApplyPaintProperties(
       !ChangedEnough(expanded, *old_cull_rect, expansion_bounds,
                      expansion_ratio)) {
     rect_ = old_cull_rect->Rect();
+    DVLOG(3) << "!ChangedEnough, use old cull rect: " << rect_.ToString();
   }
 
   return expanded.first || expanded.second;

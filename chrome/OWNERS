@@ -7,9 +7,6 @@
 
 set noparent
 
-# Reviewers in JST (GMT+9)
-erikchen@chromium.org
-
 # Reviewers in GMT+0
 victorvianna@google.com
 
@@ -28,6 +25,7 @@ yfriedman@chromium.org
 
 # Reviewers in PST (GMT-8)
 dtrainor@chromium.org
+erikchen@chromium.org
 nyquist@chromium.org
 tedchoc@chromium.org
 thestig@chromium.org
@@ -45,8 +43,6 @@ neis@chromium.org
 # structural changes, please get a review from a reviewer in this file.
 per-file *.gni=*
 per-file BUILD.gn=file://build/OWNERS
-# For lacros-qa-qualified-tracking-roller related changes:
-per-file LACROS_QA_QUALIFIED_VERSION=lacros-tracking-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file MAJOR_BRANCH_DATE=chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com
 per-file VERSION=chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com
 per-file VERSION=govind@chromium.org

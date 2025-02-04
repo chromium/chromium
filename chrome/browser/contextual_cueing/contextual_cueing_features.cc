@@ -28,9 +28,27 @@ const base::FeatureParam<int> kNudgeCapCount(&kContextualCueing,
                                              "NudgeCapCount",
                                              3);
 
+const base::FeatureParam<base::TimeDelta> kNudgeCapTimePerDomain(
+    &kContextualCueing,
+    "NudgeCapTimePerDomain",
+    base::Hours(24));
+
+const base::FeatureParam<int> kNudgeCapCountPerDomain(&kContextualCueing,
+                                                      "NudgeCapCountPerDomain",
+                                                      1);
+
 const base::FeatureParam<int> kMinPageCountBetweenNudges(
     &kContextualCueing,
     "MinPageCountBetweenNudges",
     3);
+
+const base::FeatureParam<int> kVisitedDomainsLimit(&kContextualCueing,
+                                                   "VisitedDomainsLimit",
+                                                   20);
+
+const base::FeatureParam<base::TimeDelta> kPdfPageCountCaptureDelay(
+    &kContextualCueing,
+    "PdfPageCountCaptureDelay",
+    base::Seconds(4));
 
 }  // namespace contextual_cueing

@@ -5,7 +5,6 @@
 #include "media/capture/video/video_capture_buffer_pool_util.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
 #include "services/video_effects/public/cpp/buildflags.h"
@@ -24,7 +23,7 @@ int DeviceVideoCaptureMaxBufferPoolSize() {
   // Also, this must be greater than the frame delay of VideoToolbox encoder
   // for AVC High Profile.
   max_buffer_count = 15;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS with MIPI cameras running on HAL v3, there can be four
   // concurrent streams of camera pipeline depth ~6. We allow at most 36 buffers
   // here to take into account the delay caused by the consumer (e.g. display or

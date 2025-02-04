@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
     friend class EncryptorTestBase;
     friend struct mojo::StructTraits<os_crypt_async::mojom::KeyDataView,
                                      os_crypt_async::Encryptor::Key>;
-    FRIEND_TEST_ALL_PREFIXES(EncryptorTestBase, MultipleKeys);
+    FRIEND_TEST_ALL_PREFIXES(EncryptorTestWithOSCrypt, MultipleKeys);
     FRIEND_TEST_ALL_PREFIXES(EncryptorTraitsTest, TraitsRoundTrip);
 
     Key(base::span<const uint8_t> key,
@@ -104,14 +104,25 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
   // Flags that can be set by the Encryptor during a Decrypt call. Pass to a
   // Decrypt operation to obtain these flags.
   struct DecryptFlags {
-    // Set by the Encryptor to indicate to the caller that the data that has
-    // just been returned from the Decrypt operation should be re-encrypted with
-    // a call to Encrypt, as the key has been rotated or a new key is available
-    // that provides a different security level.
+    // Set by the Encryptor upon success to indicate to the caller that the data
+    // that has just been returned from the Decrypt operation should be
+    // re-encrypted with a call to Encrypt, as the key has been rotated or a new
+    // key is available that provides a different security level.
     bool should_reencrypt = false;
+
+    // Set by the Encryptor upon failure to indicate to the caller that the
+    // decryption failed because the key was temporarily unavailable. The
+    // failure could be because the key provider temporarily was unable to
+    // provide a key, but might be able to provide the key at a later time, e.g.
+    // the keychain is temporarily unlocked, or encryption services are
+    // temporarily unavailable for another reason. If a failure in decryption
+    // occurs and this flag is not set, it can be assumed that the data is not
+    // recoverable e.g. the encrypted data is corrupt or the key that encrypted
+    // the data has been permanently lost.
+    bool temporarily_unavailable = false;
   };
 
-  using KeyRing = std::map</*tag=*/std::string, Key>;
+  using KeyRing = std::map</*tag=*/std::string, std::optional<Key>>;
 
   // Mojo uses this public constructor for serialization.
   explicit Encryptor(mojo::DefaultConstruct::Tag);
@@ -192,13 +203,21 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
   // encryption operations will be delegated to OSCrypt.
   Encryptor();
 
+  // Returns whether `provider_for_encryption_` is set, and it contains an entry
+  // in the `keys_` keyring holding a valid key. This means encryption with
+  // OSCrypt Async is available.
+  bool DefaultEncryptionProviderAvailable() const;
+
   // A KeyRing consists of a set of provider names and Key values. Encrypted
   // data is always tagged with the provider name and this is used to look up
-  // the correct key to use for decryption.
+  // the correct key to use for decryption. This can be empty, meaning
+  // encryption will fall back to OSCrypt Sync.
   KeyRing keys_;
 
   // The provider with this tag is used when encrypting any new data, the Key to
-  // use for the encryption is looked up from the entry in the KeyRing.
+  // use for the encryption is looked up from the entry in the KeyRing. This can
+  // be empty string, which means that providers are registered for decryption
+  // only, but encryption will fall back to OSCrypt Sync.
   std::string provider_for_encryption_;
 
   // Provider for OSCrypt Sync compatible encryption. This could be the same as

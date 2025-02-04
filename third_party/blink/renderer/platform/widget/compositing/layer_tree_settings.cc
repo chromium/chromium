@@ -595,8 +595,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.disable_frame_rate_limit =
       cmd.HasSwitch(::switches::kDisableFrameRateLimit);
 
-  settings.enable_hit_test_opaqueness =
-      RuntimeEnabledFeatures::HitTestOpaquenessEnabled();
+  settings.enable_hit_test_opaqueness = true;
 
   settings.enable_variable_refresh_rate =
       ::features::IsVariableRefreshRateAlwaysOn();

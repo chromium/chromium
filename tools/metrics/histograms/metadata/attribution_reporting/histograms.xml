@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AndroidOperationResult2.{Operation}"
-    enum="ConversionAndroidOperationResult" expires_after="2025-06-01">
+    enum="ConversionAndroidOperationResult" expires_after="2025-08-03">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -772,7 +772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.LegacyEventReportWindow" enum="Boolean"
-    expires_after="2025-05-30">
+    expires_after="2025-08-03">
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1202,7 +1202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.SourceRegistrationTimeConfig"
-    enum="SourceRegistrationTimeConfig" expires_after="2025-05-30">
+    enum="SourceRegistrationTimeConfig" expires_after="2025-08-03">
   <owner>csharrison@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1581,23 +1581,6 @@ chromium-metrics-reviews@google.com.
     Records the number of retries before a report is successfully sent or
     records 'Failed' if report delivery fails after reaching the max number of
     retries (2).
-  </summary>
-  <token key="ReportType">
-    <variant name="AggregatableReport"/>
-    <variant name="EventLevelReport"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Conversions.{ReportType}.ReportRetriesTillSuccessOrFailure_ThirdRetryEnabled"
-    enum="ConversionReportSendRetryCountThirdRetryEnabled"
-    expires_after="2025-02-09">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the number of retries before a report is successfully sent or
-    records 'Failed' if report delivery fails after reaching the max number of
-    retries (3).
   </summary>
   <token key="ReportType">
     <variant name="AggregatableReport"/>

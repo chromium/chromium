@@ -1378,6 +1378,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // See https://crbug.com/1350676.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2InNewTab);
 
+// Firing pagehide events for intended prerender cancellation. See
+// crbug.com/353628449 for more details.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPageHideEventForPrerender2);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPreviewsResourceLoadingHintsSpecificResourceTypes);
 

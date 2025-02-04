@@ -43,6 +43,11 @@ class DeletionDialogController {
     LeaveGroup,
   };
 
+  enum class DeletionDialogTiming {
+    Synchronous,
+    Asynchronous,
+  };
+
   // Encapsulates metadata required to determine which strings should be
   // displayed in the deletion dialog.
   struct DialogMetadata {
@@ -65,7 +70,7 @@ class DeletionDialogController {
   struct DialogState {
     DialogState(DialogType type_,
                 ui::DialogModel* dialog_model_,
-                base::OnceClosure callback_,
+                base::OnceCallback<void(DeletionDialogTiming)> callback_,
                 std::optional<base::OnceClosure> keep_groups_);
     ~DialogState();
 
@@ -77,7 +82,7 @@ class DeletionDialogController {
     raw_ptr<ui::DialogModel> dialog_model;
 
     // Callback that runs when the OK button is pressed.
-    base::OnceClosure callback;
+    base::OnceCallback<void(DeletionDialogTiming)> callback;
 
     // Callback to handle the 'keep' case of CloseTabAndKeepOrLeaveGroup.
     std::optional<base::OnceClosure> keep_groups;
@@ -107,7 +112,7 @@ class DeletionDialogController {
   // strings for the dialog.
   bool MaybeShowDialog(
       const DialogMetadata& dialog_metadata,
-      base::OnceCallback<void()> callback,
+      base::OnceCallback<void(DeletionDialogTiming)> callback,
       std::optional<base::OnceCallback<void()>> keep_groups = std::nullopt);
 
   void SetPrefsPreventShowingDialogForTesting(bool should_prevent_dialog);

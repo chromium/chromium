@@ -46,22 +46,39 @@ void SessionManager::SetSessionState(SessionState state) {
 
 void SessionManager::CreateSession(const AccountId& user_account_id,
                                    const std::string& user_id_hash,
-                                   bool is_child) {
+                                   user_manager::UserType user_type,
+                                   bool has_active_session) {
+  // For secondary user log-in in common cases, we switch the active
+  // session after user Profile is created, so data needed for UI update,
+  // such as wallpaper, can be ready on activation.
+  // We do not switch if this is for recovering multi-sign-in user sessions
+  // because in the case we do not switch every user on starting, but
+  // only for the last active user after all sessions are created.
+  if (!has_active_session && !sessions_.empty()) {
+    pending_active_account_id_ = user_account_id;
+  }
   CreateSessionInternal(user_account_id, user_id_hash,
-                        false /* browser_restart */, is_child);
+                        false /* browser_restart */,
+                        // TODO(crbug.com/278643115): Respect given `user_type`
+                        // instead of estimating from surrounding info.
+                        user_type == user_manager::UserType::kChild);
 }
 
 void SessionManager::CreateSessionForRestart(const AccountId& user_account_id,
                                              const std::string& user_id_hash) {
-  auto* user_manager = user_manager::UserManager::Get();
-  if (!user_manager)
-    return;
-  const user_manager::User* user = user_manager->FindUser(user_account_id);
+  CHECK(user_manager_);
+  const user_manager::User* user = user_manager_->FindUser(user_account_id);
   // Tests do not always create users.
   const bool is_child =
       user && user->GetType() == user_manager::UserType::kChild;
   CreateSessionInternal(user_account_id, user_id_hash,
                         true /* browser_restart */, is_child);
+}
+
+void SessionManager::OnUserManagerCreated(
+    user_manager::UserManager* user_manager) {
+  user_manager_ = user_manager;
+  user_manager_observation_.Observe(user_manager_);
 }
 
 bool SessionManager::IsSessionStarted() const {
@@ -129,11 +146,9 @@ void SessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
                                         const std::string& user_id_hash,
                                         bool browser_restart,
                                         bool is_child) {
-  auto* user_manager = user_manager::UserManager::Get();
-  if (!user_manager)
-    return;
-  user_manager->UserLoggedIn(user_account_id, user_id_hash, browser_restart,
-                             is_child);
+  CHECK(user_manager_);
+  user_manager_->UserLoggedIn(user_account_id, user_id_hash, browser_restart,
+                              is_child);
 }
 
 void SessionManager::HandleUserSessionStartUpTaskCompleted() {
@@ -142,6 +157,23 @@ void SessionManager::HandleUserSessionStartUpTaskCompleted() {
   user_session_start_up_task_completed_ = true;
   for (auto& observer : observers_) {
     observer.OnUserSessionStartUpTaskCompleted();
+  }
+}
+
+// Note: there're *two* types of timing that are considered "profile created".
+// 1) ProfileManager has responsibility to create a Profile
+// then it invokes ProfileManagerObserver::OnProfileAdded().
+// UserManager::OnUserProfileCreated() is called at the timing.
+// 2) After finishing Profile creation, there are several more tasks to
+// run for ash-chrome's Profile initialization. After all the tasks
+// UserSessionManager (indirectly) calls NotifyUserProfileLoaded(). This
+// practically happens after 1).
+// The gap of the timing looks source of the confusion. We probably want to
+// revisit here to unify the timing of "profile creation completion".
+void SessionManager::OnUserProfileCreated(const user_manager::User& user) {
+  if (pending_active_account_id_.is_valid()) {
+    user_manager_->SwitchActiveUser(
+        std::exchange(pending_active_account_id_, EmptyAccountId()));
   }
 }
 

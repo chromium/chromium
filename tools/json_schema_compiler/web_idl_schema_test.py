@@ -112,7 +112,7 @@ class WebIdlSchemaTest(unittest.TestCase):
     # Test basic types.
     self.assertEqual(
         None,
-        getFunctionReturn(schema, 'returnsVoid'),
+        getFunctionReturn(schema, 'returnsUndefined'),
     )
     self.assertEqual(
         {
@@ -352,6 +352,19 @@ class WebIdlSchemaTest(unittest.TestCase):
         'test/web_idl/documentation_comment_top_of_file.idl',
     )
 
+  # Tests that usage of the 'void' type will result in a schema compiler error.
+  # 'void' has been deprecated and 'undefined' should be used instead.
+  def testVoidUsageTriggersError(self):
+    expected_error_regex = (
+        'Error processing node PrimitiveType\(void\): Usage of "void" in IDL is'
+        ' deprecated, use "Undefined" instead.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/void_unsupported.idl',
+    )
+
   # Tests that an API interface that uses the nodoc extended attribute has the
   # related nodoc attribute set to true after processing.
   def testNoDocOnNamespace(self):
@@ -382,6 +395,34 @@ class WebIdlSchemaTest(unittest.TestCase):
         'Comment on a schema that has extended attributes on a previous line.',
         schema['description'],
     )
+
+  # Tests that an API interface with the platforms extended attribute has these
+  # values in a platforms attribute after processing.
+  def testAllPlatformsOnNamespace(self):
+    platforms_schema = web_idl_schema.Load(
+        'test/web_idl/all_platforms_on_namespace.idl')
+    self.assertEqual(1, len(platforms_schema))
+    self.assertEqual('allPlatformsAPI', platforms_schema[0]['namespace'])
+    expected = ['chromeos', 'fuchsia', 'linux', 'mac', 'win']
+    self.assertEqual(expected, platforms_schema[0]['platforms'])
+
+  # Tests that an API interface with just chromeos listed in the platforms
+  # extended attribute just has that after processing.
+  def testChromeOSPlatformsOnNamespace(self):
+    platforms_schema = web_idl_schema.Load(
+        'test/web_idl/chromeos_platforms_on_namespace.idl')
+    self.assertEqual(1, len(platforms_schema))
+    self.assertEqual('chromeOSPlatformsAPI', platforms_schema[0]['namespace'])
+    expected = ['chromeos']
+    self.assertEqual(expected, platforms_schema[0]['platforms'])
+
+  # Tests that the platforms attribute is None if not specified on in the
+  # extended attributes of a namespace.
+  def testNonSpecifiedPlatformsOnNamespace(self):
+    basic_schema = self.idl_basics
+    expected = None
+    self.assertEqual(expected, basic_schema['platforms'])
+
 
 if __name__ == '__main__':
   unittest.main()

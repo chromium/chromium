@@ -21,6 +21,7 @@
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
+#include "content/services/auction_worklet/private_model_training_bindings.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
@@ -1067,6 +1068,158 @@ TEST_F(ContextRecyclerPrivateModelTrainingEnabledTest,
   EXPECT_FALSE(context_recycler.report_bindings()
                    ->modeling_signals_config()
                    .has_value());
+}
+
+// Exercise PrivateModelTrainingBindings, and make sure they work properly.
+TEST_F(ContextRecyclerPrivateModelTrainingEnabledTest,
+       PrivateModelTrainingBindings) {
+  const char kScript[] = R"(
+    function sendEncryptedToOnce(payload) {
+      sendEncryptedTo(payload);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddPrivateModelTrainingBindings();
+  }
+
+  // Test that the value we pass is equal to what we set within the binding.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<uint8_t> payload = {1, 2, 3};
+
+    v8::Local<v8::ArrayBuffer> buffer =
+        v8::ArrayBuffer::New(helper_->isolate(), payload.size());
+    uint8_t* dest = static_cast<uint8_t*>(buffer->GetBackingStore()->Data());
+
+    std::copy(payload.begin(), payload.end(), dest);
+
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "sendEncryptedToOnce", error_msgs, buffer);
+    EXPECT_THAT(error_msgs, ElementsAre());
+    ASSERT_TRUE(context_recycler.private_model_training_bindings()
+                    ->payload()
+                    .has_value());
+
+    base::span<const uint8_t> payload_span = base::as_byte_span(payload);
+
+    EXPECT_EQ(context_recycler.private_model_training_bindings()
+                  ->payload()
+                  .value()
+                  .byte_span(),
+              payload_span);
+  }
+  ASSERT_FALSE(context_recycler.private_model_training_bindings()
+                   ->payload()
+                   .has_value());
+}
+
+TEST_F(ContextRecyclerPrivateModelTrainingEnabledTest,
+       PrivateModelTrainingBindingsErrors) {
+  const char kScript[] = R"(
+    function sendEncryptedToOnce(payload) {
+      sendEncryptedTo(payload);
+    }
+
+    function sendEncryptedToTwice(payload) {
+      sendEncryptedTo(payload);
+      sendEncryptedTo(payload);
+    }
+
+    // Passes a string instead of an ArrayBuffer.
+    function invalidPayload() {
+      sendEncryptedTo("not an ArrayBuffer");
+    }
+
+    // Passes a sharedArraybuffer instead of an ArrayBuffer.
+    function sharedBufferPayload() {
+      sendEncryptedTo(new SharedArrayBuffer(1024));
+    }
+
+    // Passes a resizable instead of an ArrayBuffer.
+    function resizableArrayBuffer() {
+    const buffer = new ArrayBuffer(8, { maxByteLength: 16 });
+      sendEncryptedTo(buffer);
+    }
+
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddPrivateModelTrainingBindings();
+  }
+  EXPECT_FALSE(context_recycler.private_model_training_bindings()
+                   ->payload()
+                   .has_value());
+
+  // Calling sendEncryptedTo() twice should result in an error.
+  {
+    ContextRecyclerScope scope(context_recycler);
+
+    std::vector<uint8_t> payload = {1, 2, 3};
+
+    v8::Local<v8::ArrayBuffer> buffer =
+        v8::ArrayBuffer::New(helper_->isolate(), payload.size());
+
+    uint8_t* dest = static_cast<uint8_t*>(buffer->GetBackingStore()->Data());
+
+    std::copy(payload.begin(), payload.end(), dest);
+
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "sendEncryptedToTwice", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), buffer));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:8 Uncaught TypeError: "
+                    "sendEncryptedTo() may be called at most once."));
+    EXPECT_FALSE(context_recycler.private_model_training_bindings()
+                     ->payload()
+                     .has_value());
+  }
+  EXPECT_FALSE(context_recycler.private_model_training_bindings()
+                   ->payload()
+                   .has_value());
+
+  // if payload is not an ArrayBuffer, it should result in an error.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "invalidPayload", error_msgs);
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:13 Uncaught TypeError: "
+                    "sendEncryptedTo() may only take a ArrayBuffer."));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "sharedBufferPayload", error_msgs);
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:18 Uncaught TypeError: "
+                    "sendEncryptedTo() may only take a ArrayBuffer."));
+  }
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "resizableArrayBuffer", error_msgs);
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre(
+            "https://example.test/script.js:24 Uncaught TypeError: "
+            "sendEncryptedTo() may not be resizable by user JavaScript."));
+  }
 }
 
 class ContextRecyclerPrivateModelTrainingDisabledTest

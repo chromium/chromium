@@ -7,6 +7,8 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestGlicBrowserProxy extends TestBrowserProxy implements
     GlicBrowserProxy {
+  private glicShortcutResponse_: string = '';
+
   constructor() {
     super([
       'setGlicOsLauncherEnabled',
@@ -16,17 +18,27 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
     ]);
   }
 
+  override reset() {
+    super.reset();
+    this.glicShortcutResponse_ = '';
+  }
+
   setGlicOsLauncherEnabled(enabled: boolean) {
     this.methodCalled('setGlicOsLauncherEnabled', enabled);
   }
 
+  setGlicShortcutResponse(response: string) {
+    this.glicShortcutResponse_ = response;
+  }
+
   getGlicShortcut() {
     this.methodCalled('getGlicShortcut');
-    return Promise.resolve('Ctrl+A');
+    return Promise.resolve(this.glicShortcutResponse_);
   }
 
   setGlicShortcut(shortcut: string) {
     this.methodCalled('setGlicShortcut', shortcut);
+    return Promise.resolve();
   }
 
   setShortcutSuspensionState(shouldSuspend: boolean) {

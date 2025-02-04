@@ -204,6 +204,10 @@ HttpCache::Transaction::Transaction(RequestPriority priority, HttpCache* cache)
 
 HttpCache::Transaction::~Transaction() {
   TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("net"), perfetto::Track(trace_id_));
+  if (no_vary_search_cache_erase_handle_) {
+    net_log_.EndEvent(
+        NetLogEventType::HTTP_CACHE_USING_NO_VARY_SEARCH_CACHE_URL);
+  }
   RecordHistograms();
 
   // We may have to issue another IO, but we should never invoke the callback_
@@ -2661,7 +2665,11 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
 
   request_ = initial_request_;
   mutable_request_.reset();
-  no_vary_search_cache_erase_handle_.reset();
+  if (no_vary_search_cache_erase_handle_) {
+    net_log_.EndEvent(
+        NetLogEventType::HTTP_CACHE_USING_NO_VARY_SEARCH_CACHE_URL);
+    no_vary_search_cache_erase_handle_.reset();
+  }
 
   effective_load_flags_ = request_->load_flags;
   method_ = request_->method;
@@ -4239,6 +4247,12 @@ HttpCache::Transaction::LookupRequestInNoVarySearchCache() {
     return NoVarySearchUseResult::kURLUnchanged;
   }
   NoVarySearchCache::LookupResult result = std::move(maybe_result).value();
+  net_log_.BeginEvent(
+      NetLogEventType::HTTP_CACHE_USING_NO_VARY_SEARCH_CACHE_URL, [&] {
+        return base::Value::Dict()
+            .Set("request_url", request_->url.spec())
+            .Set("cached_url", result.original_url.spec());
+      });
   EnsureMutableRequest();
   mutable_request_->url = std::move(result.original_url);
   no_vary_search_cache_erase_handle_ = std::move(result.erase_handle);
@@ -4259,6 +4273,11 @@ int HttpCache::Transaction::RestartWithoutNoVarySearchCache(
     RestartCacheEntryAction entry_action,
     NoVarySearchUseResult restart_reason) {
   no_vary_search_use_result_ = restart_reason;
+  net_log_.EndEvent(
+      NetLogEventType::HTTP_CACHE_USING_NO_VARY_SEARCH_CACHE_URL, [&] {
+        return base::Value::Dict().Set(
+            "restart_reason", NoVarySearchUseResultToString(restart_reason));
+      });
   if (entry_action == RestartCacheEntryAction::kErase) {
     cache_->no_vary_search_cache_->Erase(
         std::move(no_vary_search_cache_erase_handle_.value()));
@@ -4270,6 +4289,36 @@ int HttpCache::Transaction::RestartWithoutNoVarySearchCache(
   // state machine to try again without using the NoVarySearchCache.
   TransitionToState(STATE_HEADERS_PHASE_CANNOT_PROCEED);
   return OK;
+}
+
+// static
+std::string_view HttpCache::Transaction::NoVarySearchUseResultToString(
+    NoVarySearchUseResult result) {
+  using enum NoVarySearchUseResult;
+  switch (result) {
+    case kNotApplied:
+      return "NotApplied";
+    case kNoMatch:
+      return "NoMatch";
+    case kURLUnchanged:
+      return "URLUnchanged";
+    case kUsed:
+      return "Used";
+    case kNotSuitable:
+      return "NotSuitable";
+    case kNotOpenable:
+      return "NotOpenable";
+    case kReadOnlyNeedsValidation:
+      return "ReadOnlyNeedsValidation";
+    case kIncompleteBody:
+      return "IncompleteBody";
+    case kCouldntConditionalize:
+      return "CouldntConditionalize";
+    case kValidated:
+      return "Validated";
+    case kUpdated:
+      return "Updated";
+  }
 }
 
 void HttpCache::Transaction::EnsureMutableRequest() {

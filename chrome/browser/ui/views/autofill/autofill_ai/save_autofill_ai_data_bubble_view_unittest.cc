@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -32,16 +33,15 @@ class MockSaveAutofillAiDataController : public SaveAutofillAiDataController {
   MOCK_METHOD(
       void,
       OfferSave,
-      (std::vector<optimization_guide::proto::UserAnnotationsEntry>,
+      (autofill::EntityInstance,
        user_annotations::PromptAcceptanceCallback PromptAcceptanceCallback,
        LearnMoreClickedCallback,
        UserFeedbackCallback),
       (override));
-  MOCK_METHOD(
-      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&,
-      GetAutofillAiData,
-      (),
-      (const override));
+  MOCK_METHOD(base::optional_ref<const autofill::EntityInstance>,
+              GetAutofillAiData,
+              (),
+              (const override));
   MOCK_METHOD(void, OnSaveButtonClicked, (), (override));
   MOCK_METHOD(void, OnThumbsUpClicked, (), (override));
   MOCK_METHOD(void, OnThumbsDownClicked, (), (override));
@@ -107,8 +107,8 @@ void SaveAutofillAiDataBubbleViewTest::CreateViewAndShow() {
   anchor_widget_->Show();
 
   ON_CALL(mock_controller(), GetAutofillAiData())
-      .WillByDefault(testing::ReturnRefOfCopy(
-          std::vector<optimization_guide::proto::UserAnnotationsEntry>()));
+      .WillByDefault(
+          testing::Return(autofill::test::GetPassportEntityInstance()));
 
   auto view_unique = std::make_unique<SaveAutofillAiDataBubbleView>(
       anchor_widget_->GetContentsView(), web_contents_.get(),

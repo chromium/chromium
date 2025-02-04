@@ -58,6 +58,9 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="kGlobalAllocationLimit"/>
   <int value="24" label="kMeasureMemory"/>
   <int value="25" label="kBackgroundAllocationFailure"/>
+  <int value="26" label="kFinalizeConcurrentMinorMS"/>
+  <int value="27" label="kCppHeapAllocationFailure"/>
+  <int value="28" label="kFrozen"/>
 </enum>
 
 <enum name="LiftoffBailoutReason">

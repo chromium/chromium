@@ -156,7 +156,9 @@ void SavedTabGroupUtils::UngroupSavedGroup(const Browser* browser,
         DeletionDialogController::DialogType::UngroupSingle,
         /*closing_group_count=*/1, closing_multiple_tabs);
     browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
-        dialog_metadata, std::move(ungroup_callback));
+        dialog_metadata,
+        base::IgnoreArgs<DeletionDialogController::DeletionDialogTiming>(
+            std::move(ungroup_callback)));
   } else {
     std::move(ungroup_callback).Run();
   }
@@ -217,7 +219,8 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
     const bool is_group_shared = group.value().collaboration_id().has_value();
     browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
         is_group_shared ? shared_dialog_metadata : saved_dialog_metadata,
-        std::move(close_callback));
+        base::IgnoreArgs<DeletionDialogController::DeletionDialogTiming>(
+            std::move(close_callback)));
   } else {
     std::move(close_callback).Run();
   }
@@ -242,7 +245,7 @@ void SavedTabGroupUtils::LeaveSharedGroup(const Browser* browser,
     return;
   }
 
-  auto leave_callback = base::BindOnce(
+  base::OnceCallback<void()> leave_callback = base::BindOnce(
       [](const Browser* browser, const base::Uuid& saved_group_guid) {
         TabGroupSyncService* tab_group_service =
             SavedTabGroupUtils::GetServiceForProfile(browser->profile());
@@ -283,7 +286,9 @@ void SavedTabGroupUtils::LeaveSharedGroup(const Browser* browser,
       /*closing_multiple_tabs=*/saved_group->saved_tabs().size() > 1);
   dialog_metadata.title_of_closing_group = saved_group->title();
   browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
-      dialog_metadata, std::move(leave_callback));
+      dialog_metadata,
+      base::IgnoreArgs<DeletionDialogController::DeletionDialogTiming>(
+          std::move(leave_callback)));
 }
 
 // static
@@ -291,7 +296,8 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
     const Browser* browser,
     GroupDeletionReason reason,
     const std::vector<TabGroupId>& group_ids,
-    base::OnceCallback<void()> callback) {
+    base::OnceCallback<void(DeletionDialogController::DeletionDialogTiming)>
+        callback) {
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
 
@@ -300,7 +306,8 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
   // Confirmation is only needed if SavedTabGroups are being deleted. If the
   // service doesnt exist there are no saved tab groups.
   if (!tab_group_service || !IsTabGroupsSaveV2Enabled()) {
-    std::move(callback).Run();
+    std::move(callback).Run(
+        DeletionDialogController::DeletionDialogTiming::Synchronous);
     return;
   }
 
@@ -308,7 +315,8 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
   // running the callback.
   auto* dialog_controller = browser->tab_group_deletion_dialog_controller();
   if (!dialog_controller || !dialog_controller->CanShowDialog()) {
-    std::move(callback).Run();
+    std::move(callback).Run(
+        DeletionDialogController::DeletionDialogTiming::Synchronous);
     return;
   }
 
@@ -328,7 +336,8 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
   }
 
   if (closing_group_count == 0) {
-    std::move(callback).Run();
+    std::move(callback).Run(
+        DeletionDialogController::DeletionDialogTiming::Synchronous);
     return;
   }
 

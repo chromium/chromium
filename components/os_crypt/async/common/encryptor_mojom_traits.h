@@ -26,7 +26,8 @@ struct StructTraits<os_crypt_async::mojom::EncryptorDataView,
 
   static const std::string& provider_for_encryption(
       const os_crypt_async::Encryptor& in);
-  static const std::map<std::string, os_crypt_async::Encryptor::Key>&
+  static const std::map<std::string,
+                        std::optional<os_crypt_async::Encryptor::Key>>&
   key_entries(const os_crypt_async::Encryptor& in);
 };
 

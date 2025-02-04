@@ -65,7 +65,7 @@ export class HeaderElement extends CrLitElement {
 
   protected showingMenu_: boolean = false;
   protected showingInput_: boolean = false;
-  protected pageName_: string;
+  protected pageName_: string = '';
   protected maxNameLength_: number = loadTimeData.getInteger('maxNameLength');
 
   override render() {

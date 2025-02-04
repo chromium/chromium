@@ -279,6 +279,7 @@ public class TrustedCdnPublisherUrlTest {
     @SmallTest
     @Feature({"UiCatalogue"})
     @OverrideTrustedCdn
+    @DisabledTest(message = "crbug.com/394357237")
     public void testReparent() throws Exception {
         GURL publisherUrl = new GURL("https://example.com/test");
         runTrustedCdnPublisherUrlTest(

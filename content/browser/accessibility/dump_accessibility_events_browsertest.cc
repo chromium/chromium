@@ -278,9 +278,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-controls-changed.html"));
 }
 
-// TODO(nektar): Re-enable this test after kValueChanged is removed from Blink.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsAriaComboBoxUneditable) {
+                       AccessibilityEventsAriaComboBoxUneditable) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-uneditable.html"));
 }
 
@@ -427,15 +426,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // TODO(crbug.com/40844027): Flaky on win
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsAriaComboBoxNext \
-  DISABLED_AccessibilityEventsAriaComboBoxNext
-#else
-#define MAYBE_AccessibilityEventsAriaComboBoxNext \
-  AccessibilityEventsAriaComboBoxNext
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAriaComboBoxNext) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+                       AccessibilityEventsAriaComboBoxNext) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-next.html"));
 }
 
@@ -805,22 +797,14 @@ IN_PROC_BROWSER_TEST_P(
       FILE_PATH_LITERAL("live-region-change-on-freshly-unignored-node.html"));
 }
 
-// TODO(crbug.com/40844027): Flaky on win
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsMenuListCollapse \
-  DISABLED_AccessibilityEventsMenuListCollapse
-#else
-#define MAYBE_AccessibilityEventsMenuListCollapse \
-  AccessibilityEventsMenuListCollapse
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsMenuListCollapse) {
+                       AccessibilityEventsMenuListCollapse) {
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       // TODO(crbug.com/40924143): Re-enable this test
-                       DISABLED_AccessibilityEventsMenuListCollapseNext) {
+// TODO(crbug.com/40924143): Re-enable this test
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+                       AccessibilityEventsMenuListCollapseNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse-next.html"));
 }
 
@@ -889,15 +873,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("multiple-aria-properties-changed.html"));
 }
 
-// Flaky on Windows: https://crbug.com/1078490.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsNameChange \
-  DISABLED_AccessibilityEventsNameChange
-#else
-#define MAYBE_AccessibilityEventsNameChange AccessibilityEventsNameChange
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsNameChange) {
+                       AccessibilityEventsNameChange) {
   RunEventTest(FILE_PATH_LITERAL("name-change.html"));
 }
 
@@ -1182,13 +1159,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("select-selected-add-remove.html"));
 }
 
-// Test is flaky on Linux. See crbug.com/990847 for more details.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DeleteSubtree DISABLED_DeleteSubtree
-#else
-#define MAYBE_DeleteSubtree DeleteSubtree
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, MAYBE_DeleteSubtree) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, DeleteSubtree) {
   RunEventTest(FILE_PATH_LITERAL("delete-subtree.html"));
 }
 

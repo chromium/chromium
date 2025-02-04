@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(3, tsm->count());
   tsm->AddToNewGroup({0});
   browser_view->tabstrip()->CloseTab(browser_view->tabstrip()->tab_at(0),
-                                     CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+                                     CloseTabSource::kFromMouse);
 
   tab_groups::DeletionDialogController* deletion_dialog_controller =
       browser_view->browser()->tab_group_deletion_dialog_controller();
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(3, tsm->count());
   tsm->AddToNewGroup({0});
   browser_view->tabstrip()->CloseTab(browser_view->tabstrip()->tab_at(0),
-                                     CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+                                     CloseTabSource::kFromMouse);
 
   EXPECT_FALSE(deletion_dialog_controller->IsShowingDialog());
   EXPECT_EQ(2, tsm->count());

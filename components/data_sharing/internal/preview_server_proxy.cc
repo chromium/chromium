@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
@@ -71,7 +72,6 @@ constexpr char kTabKey[] = "tab";
 constexpr char kTabGroupKey[] = "tabGroup";
 constexpr char kUrlKey[] = "url";
 constexpr char kTitleKey[] = "title";
-constexpr char kFaviconUrlKey[] = "faviconUrl";
 constexpr char kSharedTabGroupGuidKey[] = "sharedTabGroupGuid";
 constexpr char kUniquePositionKey[] = "uniquePosition";
 constexpr char kCustomCompressedV1Key[] = "customCompressedV1";
@@ -166,13 +166,10 @@ std::optional<sync_pb::SharedTab> ParseSharedTab(
   shared_tab->set_url(*url);
   shared_tab->set_title(*title);
   shared_tab->set_shared_tab_group_guid(*shared_tab_group_guid);
-  auto* favicon_url = dict.FindString(kFaviconUrlKey);
-  if (favicon_url) {
-    shared_tab->set_favicon_url(*favicon_url);
-  }
   if (custom_compressed) {
-    shared_tab->mutable_unique_position()->set_custom_compressed_v1(
-        custom_compressed.value());
+    std::string decoded;
+    base::Base64Decode(custom_compressed.value(), &decoded);
+    shared_tab->mutable_unique_position()->set_custom_compressed_v1(decoded);
   }
   return shared_tab;
 }

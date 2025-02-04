@@ -10,31 +10,6 @@ import("//printing/buildflags/buildflags.gni")
 assert(is_chromeos)
 assert(use_ozone)
 
-static_library("browser_util") {
-  sources = [
-    "browser_util.cc",
-    "browser_util.h",
-    "crosapi_id.h",
-  ]
-
-  deps = [
-    "//ash/constants",
-    "//base",
-    "//chrome/browser:browser_process",
-    "//chrome/common",
-    "//chromeos/ash/components/channel",
-    "//chromeos/crosapi/cpp",
-    "//chromeos/crosapi/cpp:crosapi_constants",
-    "//chromeos/crosapi/mojom",
-    "//components/account_id",
-    "//components/exo",
-    "//components/prefs",
-    "//components/user_manager",
-    "//components/version_info",
-    "//google_apis",
-  ]
-}
-
 static_library("crosapi") {
   sources = [
     "arc_ash.cc",
@@ -59,6 +34,7 @@ static_library("crosapi") {
     "content_protection_ash.h",
     "crosapi_ash.cc",
     "crosapi_ash.h",
+    "crosapi_id.h",
     "crosapi_manager.cc",
     "crosapi_manager.h",
     "crosapi_util.cc",
@@ -432,7 +408,6 @@ static_library("crosapi") {
   ]
 
   public_deps = [
-    ":browser_util",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash/parent_access",
     "//chromeos/ash/components/dbus/session_manager:login_manager_proto",
@@ -528,7 +503,6 @@ source_set("unit_tests") {
 
   sources = [
     "audio_service_ash_unittest.cc",
-    "browser_util_unittest.cc",
     "cec_private_ash_unittest.cc",
     "cert_provisioning_ash_unittest.cc",
     "chaps_service_ash_unittest.cc",

@@ -146,9 +146,7 @@ public class AutofillUiUtils {
          * @return {@link CardIconSpecs} instance containing the specs for the card icon.
          */
         public static CardIconSpecs create(Context context, @ImageSize int cardIconSize) {
-            if (cardIconSize == ImageSize.LARGE
-                    && ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            if (cardIconSize == ImageSize.LARGE) {
                 return new CardIconSpecs(
                         context,
                         R.dimen.large_card_icon_width,
@@ -647,9 +645,7 @@ public class AutofillUiUtils {
             return defaultIcon;
         }
 
-        if (cardArtUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+        if (cardArtUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)) {
             return AppCompatResources.getDrawable(context, R.drawable.capitalone_metadata_card);
         }
 

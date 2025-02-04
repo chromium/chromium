@@ -73,7 +73,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/app_restore/full_restore_utils.h"
 #endif
 

@@ -15,6 +15,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -129,6 +130,6 @@ TEST_F(BookmarkActivityTest, PerformActivity_BookmarkAddCommand) {
 
   [activity performActivity];
 
-  [mocked_handler_ verify];
-  [activity_partial_mock verify];
+  EXPECT_OCMOCK_VERIFY(mocked_handler_);
+  EXPECT_OCMOCK_VERIFY(activity_partial_mock);
 }

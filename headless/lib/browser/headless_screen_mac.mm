@@ -59,4 +59,28 @@ HeadlessScreenMac::HeadlessScreenMac(const gfx::Size& window_size,
 
 HeadlessScreenMac::~HeadlessScreenMac() = default;
 
+display::Display HeadlessScreenMac::GetDisplayNearestWindow(
+    gfx::NativeWindow window) const {
+  // There are no NSWindows in headless, so this method should not be called at
+  // all, however content::RenderWidgetHostViewMac ctor calls it with nil
+  // keyWindow, so return our best guess.
+  return GetPrimaryDisplay();
+}
+
+display::Display HeadlessScreenMac::GetDisplayNearestView(
+    gfx::NativeView view) const {
+  // On Mac native window (i.e. NSWindow) does not exist in headless, so we have
+  // to rely on native view (i.e. NSView) for nearest display determination.
+  if (view && view.GetNativeNSView()) {
+    NSView* ns_view = view.GetNativeNSView();
+    while (NSView* parent = [ns_view superview]) {
+      ns_view = parent;
+    }
+
+    const gfx::Rect bounds = gfx::ScreenRectFromNSRect([ns_view frame]);
+    return GetDisplayFromBounds(bounds);
+  }
+  return GetPrimaryDisplay();
+}
+
 }  // namespace headless

@@ -34,6 +34,7 @@ class ViewTargeterDelegate;
 class BrowserView;
 class ContentSettingImageView;
 class PageActionIconController;
+class PinnedToolbarActionsContainer;
 class WebAppNavigationButtonContainer;
 class WebAppToolbarButtonContainer;
 
@@ -76,6 +77,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
 
   // ToolbarButtonProvider:
   ExtensionsToolbarContainer* GetExtensionsToolbarContainer() override;
+  PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer() override;
   gfx::Size GetToolbarButtonSize() const override;
   views::View* GetDefaultExtensionDialogAnchorView() override;
   PageActionIconView* GetPageActionIconView(PageActionIconType type) override;
@@ -92,7 +94,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
   IntentChipButton* GetIntentChipButton() override;
-  DownloadToolbarButtonView* GetDownloadButton() override;
+  ToolbarButton* GetDownloadButton() override;
 
   // views::ViewTargeterDelegate
   bool DoesIntersectRect(const View* target,

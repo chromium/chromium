@@ -20,6 +20,11 @@
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "testing/libfuzzer/research/domatolpm/domatolpm.h"
 
+struct Environment {
+  Environment() {}
+  const bool kDumpNativeInput = getenv("LPM_DUMP_NATIVE_INPUT");
+};
+
 // This fuzzer uses DomatoLPM to generate JS based on an existing Domato
 // rule.
 class NotificationServiceInProcessFuzzer
@@ -28,22 +33,14 @@ class NotificationServiceInProcessFuzzer
  public:
   using FuzzCase =
       domatolpm::generated::notification_service_fuzzer_grammar::fuzzcase;
-  NotificationServiceInProcessFuzzer();
+  NotificationServiceInProcessFuzzer() = default;
 
   base::CommandLine::StringVector GetChromiumCommandLineArguments() override;
   void SetUpOnMainThread() override;
   int Fuzz(const FuzzCase& fuzz_case) override;
-
- private:
-  net::EmbeddedTestServer https_test_server_;
 };
 
 REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(NotificationServiceInProcessFuzzer)
-
-NotificationServiceInProcessFuzzer::NotificationServiceInProcessFuzzer()
-    : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-  https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-}
 
 base::CommandLine::StringVector
 NotificationServiceInProcessFuzzer::GetChromiumCommandLineArguments() {
@@ -52,15 +49,15 @@ NotificationServiceInProcessFuzzer::GetChromiumCommandLineArguments() {
 
 void NotificationServiceInProcessFuzzer::SetUpOnMainThread() {
   InProcessFuzzer::SetUpOnMainThread();
-  CHECK(https_test_server_.Start());
+  CHECK(embedded_https_test_server().Start());
   base::FilePath exe_path;
   CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
-  https_test_server_.ServeFilesFromDirectory(exe_path);
+  embedded_https_test_server().ServeFilesFromDirectory(exe_path);
 
   // This html page includes the necessary scripts for the mojo js bindings.
   // Navigate to this page and execute the fuzzer generated JS in this context.
   CHECK(ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL(
+      browser(), embedded_https_test_server().GetURL(
                      "/notification_service_in_process_fuzzer.html")));
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -73,6 +70,7 @@ void NotificationServiceInProcessFuzzer::SetUpOnMainThread() {
 }
 
 int NotificationServiceInProcessFuzzer::Fuzz(const FuzzCase& fuzz_case) {
+  static Environment env;
   domatolpm::Context ctx;
   CHECK(domatolpm::notification_service_fuzzer_grammar::handle_fuzzer(
       &ctx, fuzz_case));
@@ -80,6 +78,9 @@ int NotificationServiceInProcessFuzzer::Fuzz(const FuzzCase& fuzz_case) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
+  if (env.kDumpNativeInput) {
+    LOG(INFO) << "native_input: " << js_str;
+  }
   CHECK(content::ExecJs(rfh, js_str));
   return 0;
 }

@@ -13,4 +13,10 @@ BASE_DECLARE_FEATURE(kNonModalPromoMigration);
 // Returns true if the non-modal promo migration is enabled.
 bool IsNonModalPromoMigrationEnabled();
 
+// Feature to enable different text for the non-modal DB promo.
+BASE_DECLARE_FEATURE(kTailoredNonModalDBPromo);
+
+// Returns whether `kTailoredNonModalDBPromo` is enabled.
+bool IsTailoredNonModalDBPromoEnabled();
+
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_FEATURES_H_

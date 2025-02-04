@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_icon_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -47,8 +48,8 @@ constexpr int kHeaderPadding = 20;
 
 constexpr int kBubbleWidth = 320;
 
-std::unique_ptr<views::View> BuildPredictedValueRow(const std::string key,
-                                                    const std::string value) {
+std::unique_ptr<views::View> BuildEntityAttributeRow(std::string_view key,
+                                                     std::string_view value) {
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
@@ -221,10 +222,10 @@ SaveAutofillAiDataBubbleView::SaveAutofillAiDataBubbleView(
                        .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
                        .Build());
 
-  for (const optimization_guide::proto::UserAnnotationsEntry&
-           prediction_improvement : controller_->GetAutofillAiData()) {
-    improved_predicted_values_container->AddChildView(BuildPredictedValueRow(
-        prediction_improvement.key(), prediction_improvement.value()));
+  for (const autofill::AttributeInstance& attribute :
+       controller_->GetAutofillAiData()->attributes()) {
+    improved_predicted_values_container->AddChildView(BuildEntityAttributeRow(
+        attribute.type().name_as_string(), attribute.value()));
   }
 
   SetFootnoteView(CreateFooterView(

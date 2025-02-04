@@ -1027,12 +1027,6 @@ public class DataSharingTabManager {
         DataSharingUiConfig.DataSharingCallback dataSharingCallback =
                 new DataSharingUiConfig.DataSharingCallback() {
                     @Override
-                    public void onLearnMoreAboutSharedTabGroupsClicked(Context context, GURL url) {
-                        mDataSharingTabGroupsDelegate.openLearnMoreSharedTabGroupsPage(
-                                context, url);
-                    }
-
-                    @Override
                     public void onClickOpenChromeCustomTab(Context context, GURL url) {
                         mDataSharingTabGroupsDelegate.openUrlInChromeCustomTab(context, url);
                     }

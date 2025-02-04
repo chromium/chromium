@@ -24,9 +24,9 @@ using ::message_center::Notification;
 
 namespace {
 constexpr char kEmailId[] = "test@example.com";
-constexpr char kGaiaId[] = "12345";
+constexpr GaiaId::Literal kGaiaId("12345");
 constexpr char kKioskEmailId[] = "test-kiosk@example.com";
-constexpr char kKioskGaiaId[] = "6789";
+constexpr GaiaId::Literal kKioskGaiaId("6789");
 constexpr base::Time::Exploded kRebootTime2022Feb2At1520 = {.year = 2022,
                                                             .month = 2,
                                                             .day_of_week = 4,
@@ -116,8 +116,7 @@ class RebootNotificationControllerTest : public testing::Test {
 };
 
 TEST_F(RebootNotificationControllerTest, UserSessionShowsNotification) {
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(kEmailId, GaiaId(kGaiaId));
+  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
   CreateFakeUser(account_id);
   base::Time reboot_time;
   ASSERT_TRUE(
@@ -147,8 +146,7 @@ TEST_F(RebootNotificationControllerTest, UserSessionShowsNotification) {
 }
 
 TEST_F(RebootNotificationControllerTest, UserSessionNotificationChanged) {
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(kEmailId, GaiaId(kGaiaId));
+  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
   CreateFakeUser(account_id);
   base::Time reboot_time1, reboot_time2;
   ASSERT_TRUE(
@@ -184,8 +182,7 @@ TEST_F(RebootNotificationControllerTest, UserSessionNotificationChanged) {
 }
 
 TEST_F(RebootNotificationControllerTest, ManagedGuestSessionShowsNotification) {
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(kEmailId, GaiaId(kGaiaId));
+  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
   CreateFakeMgsUser(account_id);
   base::Time reboot_time;
   ASSERT_TRUE(
@@ -216,7 +213,7 @@ TEST_F(RebootNotificationControllerTest, ManagedGuestSessionShowsNotification) {
 
 TEST_F(RebootNotificationControllerTest, KioskSessionDoesNotShowNotification) {
   AccountId account_id =
-      AccountId::FromUserEmailGaiaId(kKioskEmailId, GaiaId(kKioskGaiaId));
+      AccountId::FromUserEmailGaiaId(kKioskEmailId, kKioskGaiaId);
   CreateFakeKioskUser(account_id);
   base::Time reboot_time;
   ASSERT_TRUE(
@@ -239,8 +236,7 @@ TEST_F(RebootNotificationControllerTest, KioskSessionDoesNotShowNotification) {
 }
 
 TEST_F(RebootNotificationControllerTest, CloseNotification) {
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(kEmailId, GaiaId(kGaiaId));
+  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
   CreateFakeUser(account_id);
   base::Time reboot_time;
   ASSERT_TRUE(
@@ -260,8 +256,7 @@ TEST_F(RebootNotificationControllerTest, CloseNotification) {
 }
 
 TEST_F(RebootNotificationControllerTest, HandleNotificationClick) {
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId(kEmailId, GaiaId(kGaiaId));
+  AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
   CreateFakeUser(account_id);
   base::Time reboot_time;
   ASSERT_TRUE(

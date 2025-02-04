@@ -36,9 +36,10 @@ class DOMTimerTest : public RenderingTest {
   DOMTimerTest()
       : RenderingTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   // Expected time between each iterator for setInterval(..., 1) or nested
-  // setTimeout(..., 1) are 1, 1, 1, 1, 4, 4, ... as a minimum clamp of 4ms
-  // is applied from the 5th iteration onwards.
+  // setTimeout(..., 1) are 1, 1, 1, 1, 1, 1, 4, 4, ... as a minimum clamp
+  // of 4ms is applied from the 7th iteration onwards.
   const Vector<Matcher<double>> kExpectedTimings = {
+      DoubleNear(1., kThreshold), DoubleNear(1., kThreshold),
       DoubleNear(1., kThreshold), DoubleNear(1., kThreshold),
       DoubleNear(1., kThreshold), DoubleNear(1., kThreshold),
       DoubleNear(4., kThreshold), DoubleNear(4., kThreshold),
@@ -153,13 +154,13 @@ const char* const kSetTimeoutNestedScriptText =
     "  var elapsed = current - last;"
     "  last = current;"
     "  times.push(elapsed);"
-    "  if (times.length < 6) {"
+    "  if (times.length < 8) {"
     "    setTimeout(nestSetTimeouts, 1);"
     "  }"
     "}"
     "setTimeout(nestSetTimeouts, 1);";
 
-TEST_F(DOMTimerTest, setTimeout_ClampsAfter4Nestings) {
+TEST_F(DOMTimerTest, setTimeout_ClampsAfter6Nestings) {
   v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   ExecuteScriptAndWaitUntilIdle(kSetTimeoutNestedScriptText);
@@ -177,12 +178,12 @@ const char* const kSetIntervalScriptText =
     "  var elapsed = current - last;"
     "  last = current;"
     "  times.push(elapsed);"
-    "  if (times.length > 5) {"
+    "  if (times.length > 7) {"
     "    clearInterval(id);"
     "  }"
     "}, 1);";
 
-TEST_F(DOMTimerTest, setInterval_ClampsAfter4Iterations) {
+TEST_F(DOMTimerTest, setInterval_ClampsAfter6Iterations) {
   v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
 
   ExecuteScriptAndWaitUntilIdle(kSetIntervalScriptText);

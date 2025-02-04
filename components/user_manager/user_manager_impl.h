@@ -103,9 +103,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
     // Overrides the home directory path for the `primary_user`.
     virtual void OverrideDirHome(const User& primary_user) = 0;
 
-    // Returns whether user session restore is in progress.
-    virtual bool IsUserSessionRestoreInProgress() = 0;
-
     // Returns UserType for the DeviceLocalAccount of the given `email`.
     virtual std::optional<UserType> GetDeviceLocalAccountUserType(
         std::string_view email) = 0;
@@ -348,9 +345,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   virtual void ResetOwnerId();
   void SetOwnerId(const AccountId& owner_account_id) override;
 
-  // If there's pending user switch, processes it.
-  void ProcessPendingUserSwitchId();
-
   // TODO(b/278643115): Move to private, once we migrate fake implementation
   // closer enough to the production behavior.
   void RegularUserLoggedInAsEphemeral(const AccountId& account_id,
@@ -396,6 +390,21 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   // Loads |users_| from Local State if the list has not been loaded yet.
   // Subsequent calls have no effect. Must be called on the UI thread.
   void EnsureUsersLoaded();
+
+  // If there's the user of `account_id` already (i.e. persisted), the user
+  // will be returned with `created` = false. If the user is kRegular or kChild,
+  // and given `user_type` is either one, the type will be updated properly.
+  // `is_ephemeral` param will be ignored in this case.
+  // If there's no such user, a new user of the given `user_type` will be
+  // created and returned with `created` = true. On creation, if the user
+  // type is kRegular or kChild, is_ephemeral is respected.
+  struct EnsuredUser {
+    raw_ptr<User> user;
+    bool created;
+  };
+  EnsuredUser EnsureUser(const AccountId& account_id,
+                         UserType user_type,
+                         bool is_ephemeral);
 
   // Returns a list of users who have logged into this device previously.
   // Same as GetUsers but used if you need to modify User from that list.
@@ -500,10 +509,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   // Time at which this object was created.
   base::TimeTicks manager_creation_time_ = base::TimeTicks::Now();
-
-  // ID of the user just added to the session that needs to be activated
-  // as soon as user's profile is loaded.
-  AccountId pending_user_switch_ = EmptyAccountId();
 
   // ID of the user that was active in the previous session.
   // Preference value is stored here before first user signs in

@@ -685,10 +685,7 @@ bool ExtensionUpdater::GetPingDataForExtension(const ExtensionId& id,
       CalculatePingDaysForExtension(extension_prefs_->LastPingDay(id));
   ping_data->is_enabled = service_->IsExtensionEnabled(id);
   if (!ping_data->is_enabled) {
-    // TODO(crbug.com/372186532): Update DownloadPingData to use
-    // DisableReasonSet instead of a bitflag.
-    ping_data->disable_reasons =
-        IntegerSetToBitflag(extension_prefs_->GetDisableReasons(id));
+    ping_data->disable_reasons = extension_prefs_->GetDisableReasons(id);
   }
   ping_data->active_days =
       CalculateActivePingDays(extension_prefs_->LastActivePingDay(id),

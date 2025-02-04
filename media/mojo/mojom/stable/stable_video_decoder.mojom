@@ -10,7 +10,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// This API is a stable version of VideoDecoder. This is used both by LaCrOS and
+// This API is a stable version of VideoDecoder. This is used
 // by out-of-process video decoding to allow the GPU process to forward video
 // decoding requests to a video decoder process.
 // In order to avoid depending on unstable definitions or on components which
@@ -176,13 +176,13 @@ interface StableVideoDecoder {
   Reset@4() => ();
 };
 
-// Only Chrome-for-Linux and ash-chrome should host the implementation of a
+// Only Chrome-for-Linux and ChromeOS should host the implementation of a
 // StableVideoDecoderFactory.
-[EnableIf=is_chromeos_ash|is_linux]
+[EnableIf=is_chromeos|is_linux]
 const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox =
     sandbox.mojom.Sandbox.kHardwareVideoDecoding;
 
-[EnableIfNot=is_chromeos_ash|is_linux]
+[EnableIfNot=is_chromeos|is_linux]
 const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox =
     sandbox.mojom.Sandbox.kNoSandbox;
 
@@ -198,7 +198,7 @@ interface StableVideoDecoderTracker {};
 
 // A StableVideoDecoderFactory allows the browser process to bind a
 // StableVideoDecoder on behalf of some client which can be, e.g., the
-// lacros-chrome browser process or a renderer process in ash-chrome.
+// renderer process in ChromeOS.
 // Next min method ID: 1
 // Next min version: 2
 [Uuid="d6047fd9-fffb-4e37-ad9b-383a1c9e1d2d"]
@@ -215,11 +215,11 @@ interface StableVideoDecoderFactory {
 };
 
 // A StableVideoDecoderFactoryProcess is intended to be hosted in a utility
-// process in either ash-chrome or Chrome-for-linux. The client is expected to
-// be the browser process of ash-chrome or Chrome-for-linux. The intended usage
+// process in either ChromeOS or Chrome-for-linux. The client is expected to
+// be the browser process of ChromeOS or Chrome-for-linux. The intended usage
 // is as follows:
 //
-// 1) The browser process of ash-chrome or Chrome-for-linux receives a request
+// 1) The browser process of ChromeOS or Chrome-for-linux receives a request
 //    to bind a pending_receiver<StableVideoDecoderFactory>.
 //
 // 2) That browser process starts a utility process to bind a
@@ -227,7 +227,7 @@ interface StableVideoDecoderFactory {
 //    connection to call InitializeStableVideoDecoderFactory() with the
 //    pending_receiver<StableVideoDecoderFactory> from (1).
 [ServiceSandbox=kStableVideoDecoderFactoryServiceSandbox,
-    EnableIf=is_chromeos_ash|is_linux]
+    EnableIf=is_chromeos|is_linux]
 interface StableVideoDecoderFactoryProcess {
   // Initializes a StableVideoDecoderFactory using |gpu_feature_info| to
   // restrict the supported video decode configurations.

@@ -379,15 +379,6 @@ void BookmarkDataTypeProcessor::ModelReadyToSync(
       case syncer::WipeModelUponSyncDisabledBehavior::kNever:
         // Nothing to do.
         break;
-      case syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
-        // Since the model isn't initially tracking metadata, move away from
-        // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync
-        // is turned on later and back to off. This should be practically
-        // unreachable because usually ClearMetadataIfStopped() would be invoked
-        // earlier, but let's be extra safe and avoid relying on this behavior.
-        wipe_model_upon_sync_disabled_behavior_ =
-            syncer::WipeModelUponSyncDisabledBehavior::kNever;
-        break;
       case syncer::WipeModelUponSyncDisabledBehavior::kAlways:
         // Remove any previous data that may exist, if its lifetime is strongly
         // coupled with the tracker's (sync metadata's).
@@ -847,13 +838,6 @@ void BookmarkDataTypeProcessor::TriggerWipeModelUponSyncDisabledBehavior() {
     case syncer::WipeModelUponSyncDisabledBehavior::kNever:
       // Nothing to do.
       break;
-    case syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
-      // Do it this time, but switch to kNever so it doesn't trigger next
-      // time.
-      syncer::SyncRecordModelClearedOnceHistogram(syncer::BOOKMARKS);
-      wipe_model_upon_sync_disabled_behavior_ =
-          syncer::WipeModelUponSyncDisabledBehavior::kNever;
-      [[fallthrough]];
     case syncer::WipeModelUponSyncDisabledBehavior::kAlways:
       bookmark_model_->RemoveAllSyncableNodes();
       break;

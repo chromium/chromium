@@ -412,7 +412,7 @@ std::u16string DecryptU16StringFromColumn(
 
 std::unique_ptr<CreditCard> CreditCardFromStatement(
     sql::Statement& card_statement,
-    std::optional<std::reference_wrapper<sql::Statement>> cvc_statement,
+    base::optional_ref<sql::Statement> cvc_statement,
     const os_crypt_async::Encryptor& encryptor) {
   auto credit_card = std::make_unique<CreditCard>();
 
@@ -439,9 +439,9 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
   // Only set cvc if we retrieve cvc from local_stored_cvc table.
   if (cvc_statement) {
     credit_card->set_cvc(
-        DecryptU16StringFromColumn(cvc_statement.value(), 0, encryptor));
+        DecryptU16StringFromColumn(*cvc_statement, 0, encryptor));
     credit_card->set_cvc_modification_date(
-        base::Time::FromTimeT(cvc_statement->get().ColumnInt64(1)));
+        base::Time::FromTimeT(cvc_statement->ColumnInt64(1)));
   }
   return credit_card;
 }
@@ -867,11 +867,7 @@ std::unique_ptr<CreditCard> PaymentsAutofillTable::GetCreditCard(
 
   bool has_cvc = cvc_statement.Step();
   return CreditCardFromStatement(
-      card_statement,
-      has_cvc
-          ? std::optional<std::reference_wrapper<sql::Statement>>{cvc_statement}
-          : std::nullopt,
-      *encryptor());
+      card_statement, has_cvc ? &cvc_statement : nullptr, *encryptor());
 }
 
 bool PaymentsAutofillTable::GetCreditCards(

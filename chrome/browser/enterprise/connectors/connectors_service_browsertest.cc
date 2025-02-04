@@ -101,7 +101,7 @@ constexpr char kDomain1[] = "domain1.com";
 constexpr char kTestUrl[] = "https://foo.com";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kTestGaiaId[] = "123";
+constexpr GaiaId::Literal kTestGaiaId("123");
 constexpr char kTestEmail[] = "test@test";
 #endif
 
@@ -237,7 +237,7 @@ class ConnectorsServiceProfileBrowserTest
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager));
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId(kTestGaiaId));
+        AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId);
     fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, management_status() == ManagementStatus::AFFILIATED,
         user_manager::UserType::kRegular,

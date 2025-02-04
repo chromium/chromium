@@ -1441,20 +1441,27 @@ void CaptureModeSession::AddSmartActionsButton() {
 }
 
 void CaptureModeSession::OnScannerActionsFetched(
-    std::vector<ScannerActionViewModel> scanner_actions) {
+    ScannerSession::FetchActionsResponse actions_response) {
   // TODO(crbug.com/374381937): We should also account for other types of
   // processing, e.g. OCR. The glow should be paused whenever all processing
   // has finished.
   CHECK(capture_region_overlay_controller_);
   capture_region_overlay_controller_->PauseGlowAnimation();
 
+  CHECK(action_container_widget_);
+  if (!actions_response.has_value()) {
+    action_container_view_->ShowErrorView(actions_response.error());
+    UpdateActionContainerWidget();
+    return;
+  }
+
   // This is inefficient, as we repeatedly sort, insert and recalculate the
   // bounds for buttons one-by-one.
   // TODO: b/369470078 - Fix this inefficiency by adding multiple action buttons
   // simultaneously.
-  int size = static_cast<int>(scanner_actions.size());
+  int size = static_cast<int>(actions_response->size());
   for (int i = 0; i < size; ++i) {
-    ScannerActionViewModel& action = scanner_actions[i];
+    ScannerActionViewModel& action = actions_response.value()[i];
     std::u16string text = action.GetText();
     const gfx::VectorIcon& icon = action.GetIcon();
     base::RepeatingClosure pressed_callback =

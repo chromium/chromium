@@ -721,7 +721,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.TabActivation" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-08-03">
   <owner>robliao@chromium.org</owner>
   <owner>johntlee@chromium.org</owner>
   <summary>

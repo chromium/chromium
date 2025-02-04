@@ -153,7 +153,7 @@ bool EnterpriseSearchAggregatorProvider::UpdateResults(
     const std::string& json_data) {
   std::optional<base::Value> response =
       base::JSONReader::Read(json_data, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!response) {
+  if (!response || !response->is_dict()) {
     return false;
   }
 
@@ -169,6 +169,8 @@ bool EnterpriseSearchAggregatorProvider::UpdateResults(
 
 void EnterpriseSearchAggregatorProvider::
     ParseEnterpriseSearchAggregatorSearchResults(const base::Value& root_val) {
+  CHECK(root_val.is_dict());
+
   auto adjusted_input = input_;
   const TemplateURL* template_url =
       AutocompleteInput::GetSubstitutingTemplateURLForInput(

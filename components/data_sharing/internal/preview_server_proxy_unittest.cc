@@ -99,7 +99,10 @@ const std::string kTabGroupResponse = R"(
             "tab":{
               "sharedTabGroupGuid":"33333",
               "title":"foo",
-              "url":"https://www.foo.com/"
+              "url":"https://www.foo.com/",
+              "uniquePosition":{
+                "customCompressedV1":"////3y9yTGFOaG80WEZacWlyNFZQUWkvWGlZME84cz0="
+              }
             },
             "updateTimeWindowsEpochMicros":"200"
           }

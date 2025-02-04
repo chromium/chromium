@@ -25,6 +25,11 @@ class HeadlessScreenMac : public HeadlessScreen {
 
   ~HeadlessScreenMac() override;
 
+  // display::Screen overrides:
+  display::Display GetDisplayNearestWindow(
+      gfx::NativeWindow window) const override;
+  display::Display GetDisplayNearestView(gfx::NativeView view) const override;
+
  private:
   class ClassSwizzler;
 

@@ -605,8 +605,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   TestingProfile* CreateSecondaryProfile(
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs = nullptr) {
     constexpr char kSecondaryProfileName[] = "secondary_profile";
-    constexpr char kFakeGaia2[] = "fakegaia2";
-    LogIn(kSecondaryProfileName, GaiaId(kFakeGaia2));
+    const GaiaId kFakeGaia2("fakegaia2");
+    LogIn(kSecondaryProfileName, kFakeGaia2);
     return profile_manager()->CreateTestingProfile(
         kSecondaryProfileName, std::move(prefs), /*user_name=*/std::u16string(),
         /*avatar_id=*/0, GetTestingFactories());

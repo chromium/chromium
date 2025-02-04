@@ -116,7 +116,7 @@ TEST_F(PostRestoreSignInProviderTest, standardPromoAlertDefaultAction) {
   SetupMockHandler();
   OCMExpect([mock_handler_ showSignin:[OCMArg any]]);
   [provider_ standardPromoAlertDefaultAction];
-  [mock_handler_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_handler_);
 }
 
 // Test the title text.

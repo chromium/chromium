@@ -7,10 +7,14 @@ package org.chromium.components.metrics;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Passes UMA logs from native to a java uploader. */
 @JNINamespace("metrics")
+@NullMarked
 public class AndroidMetricsLogUploader {
-    private static volatile AndroidMetricsLogConsumer sConsumer;
+    private static volatile @Nullable AndroidMetricsLogConsumer sConsumer;
 
     /**
      * Configures the consumer of logs data submitted via uploadLog, should be called once during

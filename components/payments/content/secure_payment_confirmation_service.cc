@@ -50,6 +50,52 @@ SecurePaymentConfirmationService::~SecurePaymentConfirmationService() {
   Reset();
 }
 
+void SecurePaymentConfirmationService::IsSecurePaymentConfirmationAvailable(
+    IsSecurePaymentConfirmationAvailableCallback callback) {
+  if (!base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // TODO(crbug.com/40258712): This method should next check that the 'payment'
+  // permission policy is set. However, SecurePaymentConfirmationService is only
+  // installed by the factory if the policy is set, so it is not possible for
+  // that check to ever be false here. Instead, the renderer-side implementation
+  // of isSecurePaymentConfirmationAvailable checks for the permission policy
+  // before trying to call to the browser (or else it would hit a mojo error).
+  //
+  // This all technically works, but it would probably be cleaner to refactor
+  // SecurePaymentConfirmationService to always be available and to properly
+  // handle calls if the 'payment' policy is not present.
+
+  // The remaining checks in this method are for the underlying platform
+  // authenticator. If the kSecurePaymentConfirmationDebug method is enabled we
+  // may not have a real authenticator, so early-exit here. This is never
+  // expected to be hit in production, as it is a debug flag only.
+  if (base::FeatureList::IsEnabled(
+          ::features::kSecurePaymentConfirmationDebug)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  if (!authenticator_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kSecurePaymentConfirmationUseCredentialStoreAPIs) &&
+      !authenticator_->IsGetMatchingCredentialIdsSupported()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // At this point the only remaining check is that the user verifying
+  // authenticator is available, so we can pass our callback directly.
+  authenticator_->IsUserVerifyingPlatformAuthenticatorAvailable(
+      std::move(callback));
+}
+
 void SecurePaymentConfirmationService::StorePaymentCredential(
     const std::vector<uint8_t>& credential_id,
     const std::string& rp_id,

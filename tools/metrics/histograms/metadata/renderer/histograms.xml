@@ -60,6 +60,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.ContentProduction.CommitToUnhideDelay" units="ms"
+    expires_after="2025-10-31">
+  <owner>mustaq@chromium.org</owner>
+  <owner>blink-interactions-team@google.com</owner>
+  <summary>
+    Records the timespan between the widget host getting a navigation commit and
+    the renderer host becoming visible (unhidden) for the first time. Records a
+    zero if navigation commit is not tracked.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.ContentProduction.DelayFromUnhide" units="ms"
     expires_after="2025-10-31">
   <owner>mustaq@chromium.org</owner>
@@ -67,7 +78,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the timespan between the renderer host becoming visible (unhidden)
     for the first time and the host receiving the first metadata signal
-    indicating content push from the renderer.
+    indicating content push from the renderer. Records a zero if the first
+    metadata signal arrives before.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.ContentProduction.LifespanFromCommit" units="ms"
+    expires_after="2025-10-31">
+  <owner>mustaq@chromium.org</owner>
+  <owner>blink-interactions-team@google.com</owner>
+  <summary>
+    Records the timespan between the widget host getting a navigation commit and
+    it getting destroyed. Records a zero if navigation commit is not tracked.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.ContentProduction.LifespanFromUnhide" units="ms"
+    expires_after="2025-10-31">
+  <owner>mustaq@chromium.org</owner>
+  <owner>blink-interactions-team@google.com</owner>
+  <summary>
+    Records the timespan between the renderer host becoming visible (unhidden)
+    for the first time and the widget host getting destroyed.
   </summary>
 </histogram>
 

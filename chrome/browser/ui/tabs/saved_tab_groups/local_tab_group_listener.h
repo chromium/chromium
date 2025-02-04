@@ -75,9 +75,6 @@ class LocalTabGroupListener {
   [[nodiscard]] Liveness MaybeRemoveWebContentsFromLocal(
       content::WebContents* web_contents);
 
-  // The saved group was deleted, so close the local group.
-  void GroupRemovedFromSync();
-
   // Updates the local group to match the current state of the saved group.
   // Returns whether the local group still exists after this update.
   [[nodiscard]] Liveness UpdateFromSync();

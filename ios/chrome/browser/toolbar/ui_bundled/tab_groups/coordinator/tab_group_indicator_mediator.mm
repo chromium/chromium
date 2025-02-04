@@ -336,24 +336,24 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 }
 
 - (void)dataSharingServiceDidAddGroup:(const data_sharing::GroupData&)groupData
-                               atTime:(const base::Time&)eventTime {
+                               atTime:(base::Time)eventTime {
   [self handleDataSharingUpdateForGroupId:groupData.group_token.group_id];
 }
 
 - (void)dataSharingServiceDidRemoveGroup:(const data_sharing::GroupId&)groupId
-                                  atTime:(const base::Time&)eventTime {
+                                  atTime:(base::Time)eventTime {
   [self handleDataSharingUpdateForGroupId:groupId];
 }
 
 - (void)dataSharingServiceDidAddMember:(const GaiaId&)memberId
                                toGroup:(const data_sharing::GroupId&)groupId
-                                atTime:(const base::Time&)eventTime {
+                                atTime:(base::Time)eventTime {
   [self handleDataSharingUpdateForGroupId:groupId];
 }
 
 - (void)dataSharingServiceDidRemoveMember:(const GaiaId&)memberId
                                   toGroup:(const data_sharing::GroupId&)groupId
-                                   atTime:(const base::Time&)eventTime {
+                                   atTime:(base::Time)eventTime {
   [self handleDataSharingUpdateForGroupId:groupId];
 }
 

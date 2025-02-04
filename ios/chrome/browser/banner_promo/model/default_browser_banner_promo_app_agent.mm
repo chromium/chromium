@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 
 #import "base/ios/crb_protocol_observers.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/google/core/common/google_util.h"
@@ -99,10 +100,20 @@ struct SceneStateData {
 }
 
 - (void)promoTapped {
+  base::UmaHistogramCounts100("IOS.DefaultBrowserBannerPromo.Tapped",
+                              _sessionDisplayCount);
+  base::UmaHistogramEnumeration(
+      "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
+      IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kUserTappedPromo);
   [self endPromoSession];
 }
 
 - (void)promoCloseButtonTapped {
+  base::UmaHistogramCounts100("IOS.DefaultBrowserBannerPromo.Dismissed",
+                              _sessionDisplayCount);
+  base::UmaHistogramEnumeration(
+      "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
+      IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kUserClosed);
   [self endPromoSession];
 }
 
@@ -194,7 +205,7 @@ struct SceneStateData {
   }
 }
 
-// Ends any inprogress promo session and makes sure the promo UI is hidden.
+// Ends any in-progress promo session and makes sure the promo UI is hidden.
 - (void)endPromoSession {
   _sessionDisplayCount = 0;
   [self ensurePromoHidden];
@@ -230,33 +241,26 @@ struct SceneStateData {
     return;
   }
 
-  if (self.promoCurrentlyShown) {
-    // Check if session is over.
-    if (IsChromeLikelyDefaultBrowser() ||
-        [self promoIsSuppressedOnCurrentURLs] ||
-        _sessionDisplayCount >=
-            kDefaultBrowserBannerPromoImpressionLimit.Get()) {
-      [self endPromoSession];
-      return;
-    }
+  // Check if an in-progress session should end.
+  if ([self maybeEndInProgressPromoSession]) {
+    return;
+  }
+
+  // There could be an in-progress promo session (display count > 0) even while
+  // the promo is not currently shown when `UICurrentlySupportsPromo` is toggled
+  // on.
+  if (_sessionDisplayCount > 0) {
     _sessionDisplayCount += 1;
+    [self ensurePromoShown];
+    base::UmaHistogramCounts100("IOS.DefaultBrowserBannerPromo.Shown",
+                                _sessionDisplayCount);
   } else {
-    // Check if promo can show.
+    // Check if session should begin.
     if (IsChromeLikelyDefaultBrowser() ||
         [self promoIsSuppressedOnCurrentURLs]) {
-      [self endPromoSession];
       return;
     }
 
-    // If there's already an in progress session, just show the promo. This
-    // could happen when `UICurrentlySupportsPromo` is toggled.
-    if (_sessionDisplayCount > 0) {
-      _sessionDisplayCount += 1;
-      [self ensurePromoShown];
-      return;
-    }
-
-    // Check if session should begin.
     feature_engagement::Tracker* engagementTracker =
         feature_engagement::TrackerFactory::GetForProfile(
             _mainProfileState.profile);
@@ -265,8 +269,57 @@ struct SceneStateData {
             feature_engagement::kIPHiOSDefaultBrowserBannerPromoFeature)) {
       _sessionDisplayCount = 1;
       [self ensurePromoShown];
+      base::UmaHistogramCounts100("IOS.DefaultBrowserBannerPromo.Shown",
+                                  _sessionDisplayCount);
     }
   }
+}
+
+// Checks if there is an in-progress promo session and if it should be ended
+// based on current stats. Returns `YES` if a session was ended, and `NO` if
+// there was no in-progress session or it did not end.
+- (BOOL)maybeEndInProgressPromoSession {
+  if (_sessionDisplayCount == 0) {
+    return NO;
+  }
+
+  // Figure out which metric to log. User interactions (close button, regular
+  // tap) are handled elsewhere.
+  if (IsChromeLikelyDefaultBrowser()) {
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
+        IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kChromeNowDefault);
+  } else if ([self promoIsSuppressedOnCurrentURLs]) {
+    for (const auto& [webStateID, url] : _lastNavigatedURLs) {
+      if (IsUrlNtp(url)) {
+        base::UmaHistogramEnumeration(
+            "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
+            IOSDefaultBrowserBannerPromoPromoSessionEndedReason::
+                kNavigationToNTP);
+        break;
+      } else if (google_util::IsGoogleSearchUrl(url)) {
+        base::UmaHistogramEnumeration(
+            "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
+            IOSDefaultBrowserBannerPromoPromoSessionEndedReason::
+                kNavigationToSRP);
+        break;
+      }
+    }
+  } else if (self.promoCurrentlyShown &&
+             _sessionDisplayCount >=
+                 kDefaultBrowserBannerPromoImpressionLimit.Get()) {
+    // Session only ends due to meeting impression limit if the promo is
+    // currently shown.
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
+        IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kImpressionsMet);
+  } else {
+    // Otherwise, session should not end.
+    return NO;
+  }
+
+  [self endPromoSession];
+  return YES;
 }
 
 #pragma mark - AppStateObserver

@@ -50,6 +50,11 @@ export interface Setting {
   // restrictions will be applied to all the printers available for a user.
   // The property is set to false otherwise.
   setByGlobalPolicy: boolean;
+  // This property is set to true when this setting has a single value allowed
+  // by a per-printer job options policy. These restrictions are
+  // destination-specific and are applied only to the current printer.
+  // The property is set to false otherwise.
+  setByDestinationPolicy: boolean;
   setFromUi: boolean;
   key: string;
   updatesPreview: boolean;
@@ -307,6 +312,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: false,
@@ -317,6 +323,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: false,
@@ -327,6 +334,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'isCollateEnabled',
       updatesPreview: false,
@@ -337,6 +345,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'isLandscapeEnabled',
       updatesPreview: true,
@@ -347,6 +356,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'isColorEnabled',
       updatesPreview: true,
@@ -364,6 +374,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'mediaSize',
       updatesPreview: true,
@@ -374,6 +385,7 @@ function createSettings(): Settings {
       valid: true,
       available: false,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'borderless',
       updatesPreview: true,
@@ -384,6 +396,7 @@ function createSettings(): Settings {
       valid: true,
       available: false,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'mediaType',
       updatesPreview: false,
@@ -394,6 +407,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'marginsType',
       updatesPreview: true,
@@ -404,6 +418,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'customMargins',
       updatesPreview: true,
@@ -414,6 +429,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'dpi',
       updatesPreview: false,
@@ -424,6 +440,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'scaling',
       updatesPreview: true,
@@ -434,6 +451,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'scalingType',
       updatesPreview: true,
@@ -444,6 +462,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'scalingTypePdf',
       updatesPreview: true,
@@ -454,6 +473,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'isDuplexEnabled',
       updatesPreview: false,
@@ -464,6 +484,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'isDuplexShortEdge',
       updatesPreview: false,
@@ -474,6 +495,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'isCssBackgroundEnabled',
       updatesPreview: true,
@@ -484,6 +506,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: true,
@@ -494,6 +517,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'isHeaderFooterEnabled',
       updatesPreview: true,
@@ -504,6 +528,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: true,
@@ -514,6 +539,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'vendorOptions',
       updatesPreview: false,
@@ -524,6 +550,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: true,
@@ -536,6 +563,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: false,
@@ -548,6 +576,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: '',
       updatesPreview: true,
@@ -558,6 +587,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'recentDestinations',
       updatesPreview: false,
@@ -569,6 +599,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'isPinEnabled',
       updatesPreview: false,
@@ -579,6 +610,7 @@ function createSettings(): Settings {
       valid: true,
       available: true,
       setByGlobalPolicy: false,
+      setByDestinationPolicy: false,
       setFromUi: false,
       key: 'pinValue',
       updatesPreview: false,
@@ -1680,16 +1712,15 @@ export class PrintPreviewModelElement extends PolymerElement {
     }
   }
 
-  /**
-   * Applies per-printer job options to a given printer.
-   *
-   * The default values override all the other option values sources (including
-   * values specified by the user).
-   */
-  // TODO(crbug.com/374066702): Decide if we want to fork this function and
-  // related classes to be ChromeOS specific.
   // <if expr="is_chromeos">
-  private applyDestinationManagedJobOptions() {
+  /**
+   * Applies default per-printer job options to a given printer.
+   *
+   * These values override default values from all other sources (e.g. printer
+   * defaults, OU/group-wide policy defaults) except for the values selected by
+   * user.
+   */
+  private applyDestinationManagedJobOptionsDefaults() {
     const managedPrintOptions = this.destination.managedPrintOptions;
     if (!managedPrintOptions) {
       return;
@@ -1813,7 +1844,8 @@ export class PrintPreviewModelElement extends PolymerElement {
     // <if expr="is_chromeos">
     if (loadTimeData.getBoolean(
             'isUseManagedPrintJobOptionsInPrintPreviewEnabled')) {
-      this.applyDestinationManagedJobOptions();
+      this.applyDestinationManagedJobOptionsDefaults();
+      // TODO(crbug.com/391793346): Update `setByDestinationPolicy` values here.
     }
     // </if>
 

@@ -23,7 +23,7 @@ TEST(GlicMetrics, Basic) {
   TestingProfile profile;
   // This code does not initialize the controller to show UI, so not all metrics
   // will be emitted.
-  GlicWindowController controller(&profile);
+  GlicWindowController controller(&profile, /*service=*/nullptr);
   GlicMetrics metrics(&controller);
   metrics.OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics.OnResponseStarted();

@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
@@ -184,6 +185,9 @@ PageInfoMerchantTrustContentView::CreateHatsButton() {
       views::CreateThemedSolidBackground(ui::kColorSysNeutralContainer));
   hats_button->SetProperty(views::kElementIdentifierKey, kHatsButtonId);
   hats_button->SetVisible(false);
+  hats_button->SetBorder(
+      views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
+          INSETS_PAGE_INFO_FOOTER_BUTTON)));
   return hats_button;
 }
 

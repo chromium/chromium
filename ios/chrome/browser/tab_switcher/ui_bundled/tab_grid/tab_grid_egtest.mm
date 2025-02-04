@@ -1455,7 +1455,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging a selection of tab grid items between windows.
-- (void)testDragAndDropSelectionBetweenWindows {
+// TODO(crbug.com/382632079): Fix flakyness.
+- (void)FLAKY_testDragAndDropSelectionBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }

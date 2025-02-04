@@ -99,6 +99,9 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   ~EventBasedStatusReportingServiceTest() override = default;
 
   void SetUp() override {
+    // UserManager is created in ArcAppTest.
+    session_manager_.OnUserManagerCreated(user_manager::UserManager::Get());
+
     chromeos::PowerManagerClient::InitializeFake();
     SystemClockClient::InitializeFake();
 
@@ -108,7 +111,9 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
 
     session_manager_.CreateSession(
         account_id(),
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id()), true);
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id()),
+        user_manager::UserType::kChild,
+        /*has_active_session=*/false);
     session_manager_.SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 

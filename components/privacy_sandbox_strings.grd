@@ -668,6 +668,42 @@
     <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_SETTINGS_BLOCK_BULLET_THREE" desc="" translateable="false">
       Site features that rely on third-party cookies may not work
     </message>
+
+    <!-- Privacy Guide - Settings P1 -->
+    <!-- TODO(b:370008370): Make strings translateable when content is finalized -->
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_WHEN_ON_BULLET_ONE" desc="" translateable="false">
+      Sites can use third-party cookies to offer features like keeping you signed in across sites and showing you more personalized content and ads
+    </message>
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_WHEN_ON_BULLET_TWO" desc="" translateable="false">
+      Sites should work as expected
+    </message>
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_THINGS_TO_CONSIDER_BULLET_ONE" desc="" translateable="false">
+      Sites can use third-party cookies to see your browsing activity across different sites
+    </message>
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_ALLOW_THINGS_TO_CONSIDER_BULLET_TWO" desc="" translateable="false">
+      When you're in Incognito mode, Chrome blocks sites from using third-party cookies
+    </message>
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_WHEN_ON_BULLET_ONE" desc="" translateable="false">
+      Sites can't use third-party cookies to see your browsing activity across sites
+    </message>
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_WHEN_ON_BULLET_TWO" desc="" translateable="false">
+      Features on some sites may not work
+    </message>
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_THINGS_TO_CONSIDER_BULLET_ONE" desc="" translateable="false">
+      If a site doesn't work as expected, you can try temporarily allowing third-party cookies for a specific site you visit
+    </message>
+    <message name="IDS_PRIVACY_GUIDE_COOKIE_SETTINGS_BLOCK_THINGS_TO_CONSIDER_BULLET_TWO" desc="" translateable="false">
+      You can create exceptions in Settings for certain sites that you want to allow third-party cookies
+    </message>
+    <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_ALLOW_SUBHEADER" desc="" translateable="false">
+      Allow third-party cookies
+    </message>
+    <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_BLOCK_SUBHEADER" desc="" translateable="false">
+      Block third-party cookies
+    </message>
+    <message name="IDS_SETTINGS_PRIVACY_GUIDE_BLOCK_TPC_ALLOW_EXPAND_A11Y_LABEL" desc="" translateable="false">
+      More about allowing third-party cookies
+    </message>
     </messages>
   </release>
 </grit>

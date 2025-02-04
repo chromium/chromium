@@ -58,6 +58,35 @@ enum class IOSDefaultBrowserVideoPromoAction {
   kMaxValue = kTertiaryActionTapped,
 };
 
+// Enum actions for the IOS.DefaultBrowserBannerPromo.PromoSessionEnded UMA
+// metrics.
+// LINT.IfChange(IOSDefaultBrowserBannerPromoPromoSessionEndedReason)
+enum class IOSDefaultBrowserBannerPromoPromoSessionEndedReason {
+  kImpressionsMet = 0,
+  kUserClosed = 1,
+  kUserTappedPromo = 2,
+  kNavigationToSRP = 3,
+  kNavigationToNTP = 4,
+  kChromeNowDefault = 5,
+  kMaxValue = kChromeNowDefault,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSDefaultBrowserBannerPromoPromoSessionEndedReason)
+
+// The reason why a non modal promo was triggered.
+enum class NonModalDefaultBrowserPromoReason {
+  // Indicates that no specific promo reason is applicable.
+  PromoReasonNone = 0,
+
+  // The promo reason used when a user pastes a URL in the omnibox.
+  PromoReasonOmniboxPaste = 1,
+
+  // The promo reason used when a user opens Chrome from a first-party app.
+  PromoReasonExternalLink = 2,
+
+  // The promo reason used when a user shares Chrome via the share feature.
+  PromoReasonShare = 3,
+};
+
 // Visible for testing
 
 // Key in storage containing an NSDate corresponding to the last time

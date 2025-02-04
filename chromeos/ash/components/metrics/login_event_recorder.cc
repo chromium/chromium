@@ -240,16 +240,17 @@ LoginEventRecorder::Stats LoginEventRecorder::Stats::DeserializeFromString(
   if (source.empty())
     return Stats();
 
-  std::optional<base::Value> maybe_value = base::JSONReader::Read(source);
-  if (!maybe_value || !maybe_value->is_dict()) {
+  std::optional<base::Value::Dict> maybe_value =
+      base::JSONReader::ReadDict(source);
+  if (!maybe_value) {
     LOG(ERROR) << "LoginEventRecorder::Stats::DeserializeFromString(): not a "
                   "dictionary: '"
                << source << "'";
     return Stats();
   }
 
-  auto* uptime = maybe_value->GetDict().FindString(kUptime);
-  auto* disk = maybe_value->GetDict().FindString(kDisk);
+  auto* uptime = maybe_value->FindString(kUptime);
+  auto* disk = maybe_value->FindString(kDisk);
   if (!uptime || !disk) {
     LOG(ERROR)
         << "LoginEventRecorder::Stats::DeserializeFromString(): format error: '"

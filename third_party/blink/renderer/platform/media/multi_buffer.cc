@@ -7,12 +7,14 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -115,8 +117,10 @@ bool MultiBuffer::GlobalLRU::Pruneable() const {
 
 void MultiBuffer::GlobalLRU::SchedulePrune() {
   if (Pruneable() && !background_pruning_pending_) {
-    task_runner_->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&MultiBuffer::GlobalLRU::PruneTask, this),
+    PostDelayedCrossThreadTask(
+        *task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&MultiBuffer::GlobalLRU::PruneTask,
+                            WTF::RetainedRef(this)),
         base::Seconds(kBlockPruneInterval));
     background_pruning_pending_ = true;
   }

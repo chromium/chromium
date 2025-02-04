@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_set_cache_behavior
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_new_context[tab]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_new_context[window]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

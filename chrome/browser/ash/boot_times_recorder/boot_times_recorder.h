@@ -81,7 +81,7 @@ class BootTimesRecorder : public content::RenderWidgetHostObserver {
   void set_restart_requested() { restart_requested_ = true; }
 
   // This is called on Chrome process startup to write saved logout stats.
-  void OnChromeProcessStart();
+  void OnChromeProcessStart(PrefService& local_state);
 
   // This saves logout-started metric to Local State.
   void OnLogoutStarted(PrefService* state);
@@ -96,10 +96,6 @@ class BootTimesRecorder : public content::RenderWidgetHostObserver {
   // Adds optional URL to the marker.
   void AddLoginTimeMarkerWithURL(const char* marker_name,
                                  const std::string& url);
-
-  // Clear saved logout-started metric in Local State.
-  // This method is called when logout-state was writen to file.
-  static void ClearLogoutStartedLastPreference();
 
   // Used to hold the stats at mai().
   LoginEventRecorder::Stats chrome_main_stats_;

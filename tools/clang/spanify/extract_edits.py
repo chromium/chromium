@@ -13,6 +13,12 @@ The edits have the following format:
     s{node_1}                          # Source node of the graph that triggers
                                        # a rewrite (i.e. buffer usage)
     ...
+    t{node_4}                          # Sink node. A rewrite from a source
+                                       # requires the ultimate end nodes to be
+                                       # sink. They represent nodes we know can
+                                       # be rewrite because the buffer's size
+                                       # is known.
+    ...
     f{lhs_key}@{rhs_key}@{replacement} # Span frontier replacement applied if
                                        # lhs_key is not rewritten but rhs_key
                                        # is.
@@ -21,9 +27,8 @@ Where lhs_node, rhs_node, and node_n represent a node's text representation
 generated using the spanification tool's Node::ToString() function.
 
 A node has the following format:
-size_info_available\,is_dependent,(\,replacement)+
+is_dependent,(\,replacement)+
 
-size_info_available: 0 or 1
 is_dependent: 0 or 1
 
 extract_edits.py takes input that is concatenated from multiple tool
@@ -79,8 +84,7 @@ class Node:
     # Mapping in between the node's key and the node.
     key_to_node = dict()
 
-    def __init__(self, size_info_available, is_dependent,
-                 *replacements) -> None:
+    def __init__(self, is_dependent, *replacements) -> None:
         self.replacements = replacements
         for replacement in replacements:
             assert_valid_replacement(replacement)
@@ -96,9 +100,14 @@ class Node:
         # This is set from DFS(...)
         self.visited = False
 
-        # See SizeInfoAvailable(...) for more details.
-        self.size_info_available = size_info_available
-        self.size_info_step = False
+        # The size info is available for a node if all the paths through the
+        # graph are leading to a sink. This is initially set to None, and then
+        # set by ComputeSizeInfoAvailable(...).
+        self.size_info_available = None
+        # Track whether this node is currently on the stack of the
+        # `ComputeSizeInfoAvailable` recursive function. This is used to detect
+        # cycles in the graph.
+        self.size_info_visiting = False
 
         # Identify the connected component this node belongs to. This is set in
         # the main function.
@@ -127,12 +136,11 @@ class Node:
     def get_or_create(cls: type, txt: str):
         x = txt.split('\\,')
 
-        # Expect exactly 6 elements that correspond to the following node
+        # Expect at least 2 elements that correspond to the following node
         # attributes:
-        # - size_info_available
         # - is_dependent
         # - replacements+
-        assert len(x) >= 3, txt
+        assert len(x) >= 2, txt
 
         # Value are escaped to avoid conflicts with the separator. Unescape
         # them.
@@ -191,50 +199,45 @@ def DFS(node: Node):
         DFS(neighbour)
 
 
-def SizeInfoAvailable(node: Node):
+def ComputeSizeInfoAvailable(node: Node):
     """
     Determines whether size information is available for a source node and its
     neighbors_directed. Updates the node's size_info_available attribute.
 
     Args:
         node: The current node's being processed.
-
-    Returns:
-        None if a cycle is detected,
-        '1' if size information is available for the node and its neighbors,
-        '0' otherwise,
     """
 
-    # If we reached a node that contains size info, just return that.
-    if node.size_info_available == '1':
-        return '1'
+    # Memoization: node.size_info_available has already been computed. Return.
+    if node.size_info_available:
+        return
 
-    # Cycle detection: If the node is currently being visited, there's a cycle.
-    # We can't determine the size info for this node.
-    if node.size_info_step == 'visiting':
-        return None
+    # If there are no dependencies, the size info is definitely not available
+    # for this node.
+    if not node.neighbors_directed:
+        node.size_info_available = False
+        return
 
-    # Memoization: If the node has already been visited, return the result
-    # immediately.
-    if node.size_info_step == 'visited':
-        return node.size_info_available
+    # Cycle: If the node is currently being visited, it means it depends on
+    # itself, and there's a cycle. We can't determine the size info for this
+    # node with the current implementation.
+    if node.size_info_visiting:
+        return
 
-    node.size_info_step = 'visiting'
-    size_info_available = '0'
-    # Check neighbors. If any neighbor doesn't have size info or there's a
-    # cycle, the current node also doesn't.
+    # The size info is available for a node if all the paths through the graph
+    # are leading to a sink. Locally, it means all the dependencies have their
+    # size info available.
+    node.size_info_visiting = True
     for neighbour in node.neighbors_directed:
-        # Break as soon as we encounter a neighbor for which size info is not
-        # available.
-        if SizeInfoAvailable(neighbour) == '0':
-            size_info_available = '0'
-            break
-        size_info_available = '1'
+        ComputeSizeInfoAvailable(neighbour)
+    node.size_info_visiting = False
 
-    node.size_info_available = size_info_available
-    node.size_info_step = 'visited'
-    return size_info_available
-
+    # This node can be rewritten if all of its dependencies can.
+    # Dependencies with `size_info_available == None` are nodes that are part
+    # of an isolated cycle. Isolated cycle are rewritten.
+    node.size_info_available = not any(
+        neighbour.size_info_available == False
+        for neighbour in node.neighbors_directed)
 
 # Assert a replacement follows the expected format:
 # - r:::<file path>:::<offset>:::<length>:::<replacement text>
@@ -261,6 +264,11 @@ def main():
     # A set of source nodes that trigger the rewrite.
     sources = set()
 
+    # A set of sink nodes. A rewrite from a source requires all the end nodes
+    # to be sink. They represent nodes where the rewrite could be applied,
+    # because the size info is available.
+    sinks = set()
+
     # Change to apply at the edge in between rewritten and non-rewritten nodes.
     frontiers = set()
 
@@ -272,8 +280,17 @@ def main():
         # - 'e': Edge in between two nodes.
         # - 's': Source node of the graph triggering the rewrite.
         # - 'f': Span frontier change.
-        assert line[0] in ['e', 's', 'f'], "Unknown line type: " +\
+        # - 'i': Sink node. A rewrite from a source requires the ultimate end
+        #        nodes to be sink. They represent nodes we know can be rewrite
+        #        because the buffer's size is known.
+        assert line[0] in ['e', 's', 'i', 'f'], "Unknown line type: " +\
                line[0] + " in line: " + line
+
+        # Sink node:
+        if line[0] == 'i':
+            assert_valid_replacement(line[1:])
+            sinks.add(line[1:])
+            continue
 
         # Source node:
         if line[0] == 's':
@@ -303,6 +320,16 @@ def main():
 
         assert False, "Unreachable code"
 
+    # Mark the sink nodes as rewritable.
+    for sink in sinks:
+        sink_node = Node.from_key(sink)
+        if sink_node is None:
+            # TODO: Create the sink when it's not found, or add an assertion if
+            # this case doesn't happen.
+            print(f"Sink node not found: {sink}", file=sys.stderr)
+            continue
+        sink_node.size_info_available = True
+
     # Mark the source nodes:
     source_nodes = []
     for source in sources:
@@ -319,7 +346,7 @@ def main():
         source_nodes.append(source_node)
 
         # Determine whether size information is available from this source.
-        SizeInfoAvailable(source_node)
+        ComputeSizeInfoAvailable(source_node)
 
     # Identify all the connected components in the undirected graph. This is
     # exploring the graph in depth-first search and assigning the same component
@@ -340,14 +367,10 @@ def main():
     # Collect the changes to apply. Starting from sources nodes whose size info
     # could be determined.
     for node in source_nodes:
-        # Some sources might not have their size info available. We can't
-        # rewrite those.
-        if node.size_info_available != '1':
-            continue
-
         # Collect the changes to apply. We start from sources nodes whose size
         # info is available and explore the graph in depth-first search.
-        DFS(node)
+        if node.size_info_available:
+            DFS(node)
 
     # Iterate over the dependent nodes and then check if their only neighbor was
     # visited. Visited nodes here are nodes who's type was rewritten to span.

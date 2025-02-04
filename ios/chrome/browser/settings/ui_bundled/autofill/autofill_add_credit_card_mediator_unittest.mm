@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_mediator_delegate.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using autofill::CreditCard;
 using testing::AllOf;
@@ -68,7 +69,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
               SizeIs(0));
 
-  [add_credit_card_mediator_delegate_mock_ verify];
+  EXPECT_OCMOCK_VERIFY(add_credit_card_mediator_delegate_mock_);
 }
 
 // Test saving a credit card with invalid expiration month.
@@ -92,7 +93,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
               SizeIs(0));
 
-  [add_credit_card_mediator_delegate_mock_ verify];
+  EXPECT_OCMOCK_VERIFY(add_credit_card_mediator_delegate_mock_);
 }
 
 // Test saving a credit card with invalid expiration year.
@@ -118,7 +119,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingCreditCardWithInvalidYear) {
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
               SizeIs(0));
 
-  [add_credit_card_mediator_delegate_mock_ verify];
+  EXPECT_OCMOCK_VERIFY(add_credit_card_mediator_delegate_mock_);
 }
 
 // Test saving a credit card with invalid nickname.
@@ -142,7 +143,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
   EXPECT_THAT(personal_data_manager_.payments_data_manager().GetCreditCards(),
               SizeIs(0));
 
-  [add_credit_card_mediator_delegate_mock_ verify];
+  EXPECT_OCMOCK_VERIFY(add_credit_card_mediator_delegate_mock_);
 }
 
 // Test saving a valid credit card.
@@ -170,7 +171,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
       user_action_tester.GetActionCount("MobileAddCreditCard.CreditCardAdded"),
       1);
 
-  [add_credit_card_mediator_delegate_mock_ verify];
+  EXPECT_OCMOCK_VERIFY(add_credit_card_mediator_delegate_mock_);
 }
 
 // Test saving duplicated local credit card with the same card number.
@@ -225,7 +226,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
   EXPECT_EQ(credit_card->nickname(),
             base::SysNSStringToUTF16(updated_card_nickname));
 
-  [add_credit_card_mediator_delegate_mock_ verify];
+  EXPECT_OCMOCK_VERIFY(add_credit_card_mediator_delegate_mock_);
 }
 
 // Test saving duplicated credit card with the same card number as an existing
@@ -292,7 +293,7 @@ TEST_F(AutofillAddCreditCardMediatorTest,
           Property(&CreditCard::nickname,
                    Eq(base::SysNSStringToUTF16(updated_card_nickname))))));
 
-  [add_credit_card_mediator_delegate_mock_ verify];
+  EXPECT_OCMOCK_VERIFY(add_credit_card_mediator_delegate_mock_);
 }
 
 // Test that the metrics for saving a credit card are recorded.

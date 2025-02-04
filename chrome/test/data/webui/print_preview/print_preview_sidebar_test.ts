@@ -22,9 +22,6 @@ suite('PrintPreviewSidebarTest', function() {
     // Stub out the native layer.
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
-    setNativeLayerCrosInstance();
-    // </if>
     nativeLayer.setLocalDestinationCapabilities(getCddTemplate('FooDevice'));
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -37,7 +34,7 @@ suite('PrintPreviewSidebarTest', function() {
     sidebar.pageCount = 1;
     fakeDataBind(model, sidebar, 'settings');
     document.body.appendChild(sidebar);
-    sidebar.init(false, 'FooDevice', null, false, true);
+    sidebar.init(false, 'FooDevice', null, false);
 
     return nativeLayer.whenCalled('getPrinterCapabilities');
   });

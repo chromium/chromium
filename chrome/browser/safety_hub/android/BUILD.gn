@@ -24,6 +24,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissionReviewBridge.java",
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissions.java",
     "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubAccountPasswordsDataSource.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubAccountPasswordsModuleMediator.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubBaseFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubBrowserStateModuleMediator.java",
@@ -118,6 +119,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.safety_hub"
   sources = [
     "junit/src/org/chromium/chrome/browser/safety_hub/MagicStackBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubAccountPasswordsDataSourceTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubAccountPasswordsModuleMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubBrowserStateModuleMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchServiceTest.java",

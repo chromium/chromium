@@ -780,7 +780,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.ActivityTypeStorage.TypeReceived"
-    enum="PrivacySandboxStorageActivityType" expires_after="2025-06-01">
+    enum="PrivacySandboxStorageActivityType" expires_after="2025-08-03">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1119,6 +1119,43 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     was successfully sent and, if not, the type of failure. These are typically
     debug reports.
   </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.AggregationService.{DelayType}.FinalRequestStatus"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-01">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the final status of each {DelayType}, i.e. whether it succeeded
+    eventually, including after retries (if any). In case of failure, records
+    the type of failure in the final attempt.
+  </summary>
+  <token key="DelayType">
+    <variant name="ScheduledWithFullDelay"
+        summary="report request that was scheduled with a full delay"/>
+    <variant name="ScheduledWithReducedDelay"
+        summary="report request that was scheduled with a reduced delay"/>
+    <variant name="Unscheduled" summary="unscheduled report request"/>
+  </token>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.AggregationService.{DelayType}.NumRetriesBeforeSuccess"
+    units="retries" expires_after="2025-07-01">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Among {DelayType} and that succeeded (eventually), records the number of
+    retries needed, i.e. how many send attempts failed. For example, 2 if the
+    attempts were: fail, fail, success.
+  </summary>
+  <token key="DelayType">
+    <variant name="ScheduledWithFullDelay"
+        summary="report requests that were scheduled with a full delay"/>
+    <variant name="ScheduledWithReducedDelay"
+        summary="report requests that were scheduled with a reduced delay"/>
+  </token>
 </histogram>
 
 <histogram

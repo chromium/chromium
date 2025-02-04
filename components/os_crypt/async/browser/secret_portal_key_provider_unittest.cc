@@ -203,10 +203,10 @@ TEST_F(SecretPortalKeyProviderTest, GetKey) {
       [](bool& callback_called, std::string& key_tag,
          std::optional<Encryptor::Key>& key,
          const std::string& returned_key_tag,
-         std::optional<Encryptor::Key> returned_key) {
+         base::expected<Encryptor::Key, KeyProvider::KeyError> returned_key) {
         callback_called = true;
         key_tag = returned_key_tag;
-        key = std::move(returned_key);
+        key = std::move(returned_key.value());
       },
       std::ref(callback_called), std::ref(key_tag), std::ref(key)));
   base::RunLoop run_loop;

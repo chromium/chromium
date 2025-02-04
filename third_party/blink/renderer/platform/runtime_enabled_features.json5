@@ -1801,11 +1801,6 @@
       name: "FastClearNeedsRepaint",
       status: "stable",
     },
-    {
-      name: "FastNonCompositedScrollHitTest",
-      depends_on: ["HitTestOpaqueness", "RasterInducingScroll"],
-      status: "stable",
-    },
     // Kill switch.
     {
       name: "FastPathSingleSelectorExactMatch",
@@ -2304,17 +2299,6 @@
       name: "HighlightsFromPoint",
     },
     {
-      name: "HitTestOpaqueness",
-      status: "stable",
-    },
-    // This is a kill switch for a fix that disables painting of line box hit
-    // test data with HitTestOpaqueness.
-    {
-      name: "HitTestOpaquenessOmitLineBox",
-      depends_on: ["HitTestOpaqueness"],
-      status: "stable",
-    },
-    {
       name: "HrefTranslate",
       depends_on: ["TranslateService"],
       origin_trial_feature_name: "HrefTranslate",
@@ -2346,6 +2330,13 @@
     {
       name: "HTMLHRWidthAllowZero",
       status: "stable"
+    },
+    // Return a natural width/height of zero from
+    // HTMLImageElement.naturalWidth/Height for SVG images that don't have a
+    // natural width/height set.
+    {
+      name: "HTMLImageElementActualNaturalSize",
+      status: "test",
     },
     // Adds support for the experimental `interesttarget`
     // attributes, as specified in the open-ui "Interest Invokers" explainer.
@@ -3611,10 +3602,6 @@
       status: "stable",
     },
     {
-      name: "ResolveVarStylesOnCopy",
-      status: "stable",
-    },
-    {
       name: "ResourceTimingContentEncoding",
       status: "experimental",
     },
@@ -3779,6 +3766,11 @@
       name: "ScrollbarWidth",
       status: "stable",
     },
+    // Killswitch in M134.
+    {
+      name: "ScrollCullRectFromContainerRect",
+      status: "stable",
+    },
     {
       name: "ScrollEndEvents",
       status: "stable",
@@ -3864,14 +3856,6 @@
       // See https://w3c.github.io/selection-api/
       name: "SelectionAcrossShadowDOM",
       status: "experimental",
-    },
-    {
-      // selection.isCollapsed should return false if anchor and focus nodes
-      // are different, including in shadow tree.
-      // https://crbug.com/40400558
-      // This feature was shipped in M131, so this flag can be removed in M133.
-      name: "SelectionIsCollapsedShadowDOMSupport",
-      status: "stable",
     },
     {
       // Update HandleMousePressEvent to continue handling event, even after a
@@ -4126,6 +4110,11 @@
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
       origin_trial_allows_third_party: true,
+    },
+    {
+      name: "StandardizedTimerClamping",
+      status: "experimental",
+      public: true,
     },
     {
       name: "StaticAnimationOptimization",
@@ -4768,6 +4757,11 @@
       base_feature: "none",
       public: true,
     },
+    // Prototyping https://github.com/w3c/webauthn/issues/2228
+    {
+      name: "WebAuthenticationImmediateGet",
+      status: "experimental",
+    },
     // Methods for deserializing WebAuthn requests from JSON/serializing
     // responses into JSON.
     // https://w3c.github.io/webauthn/#dom-publickeycredential-tojson
@@ -4938,7 +4932,7 @@
     {
       name: "WebIdentityDigitalCredentials",
       origin_trial_feature_name: "WebIdentityDigitalCredentials",
-      origin_trial_os: ["android", "win", "mac"],
+      origin_trial_os: ["android", "win", "mac", "linux", "chromeos"],
       origin_trial_allows_third_party: true,
       implied_by: ["WebIdentityDigitalCredentialsCreation"],
       public: true,

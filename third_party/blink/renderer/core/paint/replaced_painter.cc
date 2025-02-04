@@ -125,10 +125,9 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
 
   if (ShouldPaintBoxDecorationBackground(local_paint_info)) {
     bool should_paint_background = false;
-    if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-        // TODO(crbug.com/1477914): Without this condition, scaled canvas
-        // would become pixelated on Linux.
-        !layout_replaced_.IsCanvas()) {
+    // TODO(crbug.com/40280438): Without this condition, scaled canvas would
+    // become pixelated on Linux.
+    if (!layout_replaced_.IsCanvas()) {
       should_paint_background = true;
     } else if (layout_replaced_.HasBoxDecorationBackground()) {
       should_paint_background = true;

@@ -264,11 +264,20 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
   2. Tap Default Browser App
   3. Select Chrome
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_DESCRIPTION" desc="Description for the non-modal default browser promotion banner">
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION" desc="Description for the non-modal default browser promotion banner when Chrome is opened from a first-party app.">
+        Open links from Gmail, Maps, Youtube and other apps in Chrome
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_DESCRIPTION" desc="Description for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation.">
         Open Chrome anytime you tap on links in other apps
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_TITLE" desc="Title for the non-modal default browser promotion banner">
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE" desc="Title for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation.">
         Set Chrome as default?
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_SHARE_DESCRIPTION" desc="Description for the non-modal default browser promotion banner when sharing a URL via the 'Share Chrome' action or the share icon in the Omnibox.">
+        Set Chrome as your default browser to easily share and open links
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_SHARE_TITLE" desc="Title for the non-modal default browser promotion banner when sharing a URL via the 'Share Chrome' action or the share icon in the Omnibox.">
+        Make Chrome your own
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_ALL_TABS_DESCRIPTION" desc="Description of the 'All your tabs' default browser promotion modal. [iOS only]">
         Set Chrome as default to sync your tabs, passwords, and payment info on all your devices
@@ -1153,6 +1162,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       </message>
       <message name="IDS_IOS_YOUTUBE_INCOGNITO_SHEET_TITLE" desc="Title of the Youtube Incognito Sheet informing the user that the URL will be opened in Chrome Incognito">
         You're in Chrome Incognito
+      </message>
+      <message name="IDS_IOS_YOUTUBE_INCOGNITO_SNACKBAR_MESSAGE" desc="The message displayed in the left corner of the snackbar">
+          Opened in Chrome Incognito
       </message>
       <message name="IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL" desc="Text shown when a user with no available target devices attempts to use send-tab-to-self.">
         To send this tab to another device, sign in to Chrome there.

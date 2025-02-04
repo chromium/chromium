@@ -103,6 +103,64 @@ std::unique_ptr<media::AudioSystem> CreateStubAudioSystem() {
   return stub_audio_system;
 }
 
+// Wrapper class for the SystemLiveCaption service that allows the test
+// to produce a weak_ptr to the SystemLiveCaptionService.  This is used
+// in BabelOrcaTests in the SodaInstallWaiter so that we can avoid
+// a dangling pointer as the service will be freed before the waiter.
+class SystemLiveCaptionServiceWeakPtrWrapper : public SystemLiveCaptionService {
+ public:
+  explicit SystemLiveCaptionServiceWeakPtrWrapper(
+      Profile* profile,
+      SystemLiveCaptionService::AudioSource source)
+      : SystemLiveCaptionService(profile, source) {}
+
+  base::WeakPtr<SystemLiveCaptionService> GetWeakPtrForService() {
+    return service_weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<SystemLiveCaptionService> service_weak_ptr_factory_{
+      this};
+};
+
+// Since Babel Orca no longer uses the ClientBrowserInterface to wait for SODA
+// installation we will use this class in order to emulate the behavior of the
+// BabelOrca SpeechRecognitionEventHandler which invokes
+//`SpeechRecognitionAvailabilityChanged` when SODA is ready.
+class BabelOrcaSodaInstallWaiter : public speech::SodaInstaller::Observer {
+ public:
+  BabelOrcaSodaInstallWaiter(
+      base::WeakPtr<SystemLiveCaptionService> service_under_test,
+      speech::LanguageCode language_code)
+      : service_under_test_(service_under_test),
+        language_code_(language_code) {}
+  ~BabelOrcaSodaInstallWaiter() override = default;
+  BabelOrcaSodaInstallWaiter(BabelOrcaSodaInstallWaiter&) = delete;
+  BabelOrcaSodaInstallWaiter operator=(BabelOrcaSodaInstallWaiter&) = delete;
+
+  void OnSodaInstalled(speech::LanguageCode language_code) override {
+    if (language_code_ == language_code) {
+      service_under_test_->SpeechRecognitionAvailabilityChanged(true);
+    }
+  }
+
+  void OnSodaInstallError(
+      speech::LanguageCode language_code,
+      speech::SodaInstaller::ErrorCode error_code) override {
+    if (language_code_ == language_code) {
+      service_under_test_->SpeechRecognitionAvailabilityChanged(false);
+    }
+  }
+
+  void OnSodaProgress(speech::LanguageCode language_code,
+                      int progress) override {}
+
+ private:
+  // The live caption service will always outlive this class.
+  base::WeakPtr<SystemLiveCaptionService> service_under_test_;
+  speech::LanguageCode language_code_;
+};
+
 // Runs the system live caption service backed by a fake audio system and SODA
 // installation.
 class SystemLiveCaptionServiceTestBase
@@ -152,9 +210,10 @@ class SystemLiveCaptionServiceTestBase
 
     // Init the user microphone system live caption service, as it
     // is no longer owned by a keyed service factory.
-    user_microphone_service_ = std::make_unique<SystemLiveCaptionService>(
-        primary_profile_,
-        SystemLiveCaptionService::AudioSource::kUserMicrophone);
+    user_microphone_service_ =
+        std::make_unique<SystemLiveCaptionServiceWeakPtrWrapper>(
+            primary_profile_,
+            SystemLiveCaptionService::AudioSource::kUserMicrophone);
     // Pass in an inert audio system backend.
     SystemLiveCaptionServiceFactory::GetInstance()
         ->GetForProfile(primary_profile_)
@@ -250,7 +309,12 @@ class SystemLiveCaptionServiceTestBase
 
   // Since removing the UserMicrophoneCaptionServiceFactory we now need
   // to own the service that handles user microphone input.
-  std::unique_ptr<SystemLiveCaptionService> user_microphone_service_;
+  std::unique_ptr<SystemLiveCaptionServiceWeakPtrWrapper>
+      user_microphone_service_;
+
+  // Used to emulate Babel Orca logic that notifies the service
+  // when speech_recognition is available.
+  std::unique_ptr<BabelOrcaSodaInstallWaiter> soda_install_waiter_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -319,9 +383,19 @@ class SystemLiveCaptionServiceTest
                                                  enabled);
         break;
       case SystemLiveCaptionService::AudioSource::kUserMicrophone:
-        SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(
-            primary_profile_)
-            ->ChangeBabelOrcaSpeechRecognitionAvailability(enabled);
+        // Bypass the client browser interface for the BabelOrca tests. we
+        // park the waiter in the parent class so that it will still be
+        // alive when the install events are emulated. We only need to wait
+        // if we're enabling live capiton, we can disable it immediately.
+        if (enabled) {
+          soda_install_waiter_ = std::make_unique<BabelOrcaSodaInstallWaiter>(
+              user_microphone_service_->GetWeakPtrForService(),
+              speech::GetLanguageCode(GetLanguageCode()));
+          speech::SodaInstaller::GetInstance()->AddObserver(
+              soda_install_waiter_.get());
+        } else {
+          GetServiceUnderTest()->SpeechRecognitionAvailabilityChanged(false);
+        }
         ::captions::LiveCaptionControllerFactory::GetInstance()
             ->GetForProfile(primary_profile_)
             ->ToggleLiveCaptionForBabelOrca(enabled);
@@ -590,9 +664,15 @@ IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest, UsesCorrectLanguage) {
 // When a language changes in the middle of a session the service must switch
 // out the speech recognition client for a new one with the selected language.
 // This tests that while there are non chrome outputs running that the session
-// restarts automatically.
+// restarts automatically. Note that language handling is handled differently
+// by babel orca so this test coverage is skipped in that case. Existing test
+// coverage can be found in chromeos/ash/components/boca/babelorca
 IN_PROC_BROWSER_TEST_P(SystemLiveCaptionServiceTest,
                        SwitchesLanguageCorrectly) {
+  if (GetParam() == SystemLiveCaptionService::AudioSource::kUserMicrophone) {
+    return;
+  }
+
   StartLiveCaptioning();
   ASSERT_TRUE(current_audio_fetcher_);
 

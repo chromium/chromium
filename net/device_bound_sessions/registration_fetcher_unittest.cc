@@ -857,14 +857,14 @@ TEST_F(RegistrationTest, FollowHttpsRedirect) {
 TEST_F(RegistrationTest, DontFollowHttpRedirect) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   bool followed = false;
-  test_server::EmbeddedTestServer http_server_;
-  ASSERT_TRUE(http_server_.Start());
-  const GURL target = http_server_.GetURL(kRedirectPath);
+  test_server::EmbeddedTestServer http_server;
+  http_server.RegisterRequestHandler(
+      base::BindRepeating(&CheckRedirect, &followed));
+  ASSERT_TRUE(http_server.Start());
+  const GURL target = http_server.GetURL(kRedirectPath);
 
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnRedirect, target.spec()));
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&CheckRedirect, &followed));
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;

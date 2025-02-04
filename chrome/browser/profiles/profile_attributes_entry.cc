@@ -621,22 +621,23 @@ void ProfileAttributesEntry::SetIsGlicEligible(bool value) {
   SetBool(kIsGlicEligible, value);
 }
 
-base::flat_set<std::string> ProfileAttributesEntry::GetGaiaIds() const {
+base::flat_set<GaiaId> ProfileAttributesEntry::GetGaiaIds() const {
   const base::Value* accounts = GetValue(kAllAccountsKey);
-  if (!accounts || !accounts->is_dict())
-    return base::flat_set<std::string>();
+  if (!accounts || !accounts->is_dict()) {
+    return base::flat_set<GaiaId>();
+  }
 
-  return base::MakeFlatSet<std::string>(
-      accounts->GetDict(), {}, [](const auto& it) { return it.first; });
+  return base::MakeFlatSet<GaiaId>(
+      accounts->GetDict(), {}, [](const auto& it) { return GaiaId(it.first); });
 }
 
 void ProfileAttributesEntry::SetGaiaIds(
-    const base::flat_set<std::string>& gaia_ids) {
+    const base::flat_set<GaiaId>& gaia_ids) {
   base::Value::Dict accounts;
   for (const auto& gaia_id : gaia_ids) {
     // The dictionary is empty for now, but can hold account-specific info in
     // the future.
-    accounts.Set(gaia_id, base::Value::Dict());
+    accounts.Set(gaia_id.ToString(), base::Value::Dict());
   }
   SetValue(kAllAccountsKey, base::Value(std::move(accounts)));
 }

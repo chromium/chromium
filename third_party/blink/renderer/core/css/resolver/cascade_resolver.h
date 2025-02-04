@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_RESOLVER_H_
 
 #include "base/containers/adapters.h"
+#include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -33,7 +34,9 @@ class CORE_EXPORT CascadeResolver {
   STACK_ALLOCATED();
 
  public:
-  using CycleElem = absl::variant<const CSSProperty*, AtomicString>;
+  using Attribute = base::StrongAlias<class AttributeTag, AtomicString>;
+  using LocalVariable = base::StrongAlias<class LocalVariableTag, AtomicString>;
+  using CycleElem = absl::variant<const CSSProperty*, Attribute, LocalVariable>;
   // TODO(crbug.com/985047): Probably use a HashMap for this.
   using CycleStack = Vector<CycleElem, 8>;
 
@@ -41,7 +44,8 @@ class CORE_EXPORT CascadeResolver {
   // In other words, once a property is locked, locking it again would form
   // a cycle, and is therefore an error.
   bool IsLocked(const CSSProperty&) const;
-  bool IsLocked(const AtomicString& attribute) const;
+  bool IsLocked(const Attribute&) const;
+  bool IsLocked(const LocalVariable&) const;
 
   // Returns the property we're currently applying.
   const CSSProperty* CurrentProperty() const {
@@ -90,7 +94,8 @@ class CORE_EXPORT CascadeResolver {
 
    public:
     AutoLock(const CSSProperty&, CascadeResolver&);
-    AutoLock(const AtomicString& attribute, CascadeResolver&);
+    AutoLock(const Attribute&, CascadeResolver&);
+    AutoLock(const LocalVariable&, CascadeResolver&);
     ~AutoLock();
 
    private:
@@ -114,7 +119,8 @@ class CORE_EXPORT CascadeResolver {
   // The marked range of the stack shrinks during ~AutoLock, such that we won't
   // be InCycle whenever we move outside that of that range.
   bool DetectCycle(const CSSProperty&);
-  bool DetectCycle(const AtomicString& attribute);
+  bool DetectCycle(const Attribute&);
+  bool DetectCycle(const LocalVariable&);
   bool DetectCycle(wtf_size_t index);
   // Returns true whenever the CascadeResolver is in a cycle state.
   // This DOES NOT detect cycles; the caller must call DetectCycle first.
@@ -123,7 +129,8 @@ class CORE_EXPORT CascadeResolver {
   // CSSPropertyName), or kNotFound if the property (name) is not present in
   // stack_.
   wtf_size_t Find(const CSSProperty&) const;
-  wtf_size_t Find(const AtomicString& attribute) const;
+  wtf_size_t Find(const Attribute&) const;
+  wtf_size_t Find(const LocalVariable&) const;
 
   CycleStack stack_;
   // If we're in a cycle, cycle_start_ is the index of the stack_ item that

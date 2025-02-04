@@ -95,9 +95,10 @@ class TabStripController {
   // Prepares to close a tab. If closing the tab might require (for example) a
   // user prompt, triggers that prompt passing in the callback ownership to it.
   // Otherwise it runs the callback.
-  virtual void OnCloseTab(int index,
-                          CloseTabSource source,
-                          base::OnceCallback<void()> callback) = 0;
+  virtual void OnCloseTab(
+      int index,
+      CloseTabSource source,
+      base::OnceCallback<void(CloseTabSource)> callback) = 0;
 
   // Closes the tab at the specified index in the model.
   virtual void CloseTab(int index) = 0;

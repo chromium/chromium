@@ -16,13 +16,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
-#include "build/robolectric_buildflags.h"
 
-#if BUILDFLAG(IS_ROBOLECTRIC)
-#include "base/base_robolectric_jni/LibraryLoader_jni.h"  // nogncheck
-#else
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/library_loader_jni/LibraryLoader_jni.h"
-#endif
 
 #if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
 #include "base/android/orderfile/orderfile_instrumentation.h"

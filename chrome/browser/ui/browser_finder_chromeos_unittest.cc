@@ -24,7 +24,7 @@ namespace {
 
 constexpr char kTestAccount1[] = "user1@test.com";
 constexpr char kTestAccount2[] = "user2@test.com";
-constexpr char kFakeGaia2[] = "fakegaia2";
+constexpr GaiaId::Literal kFakeGaia2("fakegaia2");
 
 }  // namespace
 
@@ -49,7 +49,7 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     // Create secondary user/profile.
-    LogIn(kTestAccount2, GaiaId(kFakeGaia2));
+    LogIn(kTestAccount2, kFakeGaia2);
     second_profile_ = CreateProfile(kTestAccount2);
   }
 

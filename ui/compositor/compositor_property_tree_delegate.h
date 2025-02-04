@@ -13,7 +13,11 @@
 #include "cc/trees/property_tree_delegate.h"
 #include "cc/trees/property_tree_layer_tree_delegate.h"
 #include "ui/compositor/compositor_export.h"
-#include "ui/gfx/geometry/vector2d_f.h"
+
+namespace gfx {
+class Vector2dF;
+class Transform;
+}  // namespace gfx
 
 namespace cc {
 class LayerTreeHost;
@@ -72,6 +76,9 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
   void OnElementOpacityMutated(cc::ElementId element_id,
                                cc::ElementListType list_type,
                                float opacity) override;
+  void OnElementTransformMutated(cc::ElementId element_id,
+                                 cc::ElementListType list_type,
+                                 const gfx::Transform& transform) override;
 
  private:
   raw_ptr<Observer> observer_ = nullptr;

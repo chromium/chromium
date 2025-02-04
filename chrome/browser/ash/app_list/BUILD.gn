@@ -157,7 +157,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/reorder",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/arc",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",

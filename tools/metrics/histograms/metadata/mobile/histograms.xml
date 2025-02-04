@@ -1146,19 +1146,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileOmnibox.PopupOpenDuration" units="ms"
-    expires_after="2022-02-02">
-  <owner>stkhapugin@chromium.org</owner>
-  <owner>mpearson@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <summary>
-    Recorded when the omnibox popup is closed. Indicates the duration it was
-    open.
-  </summary>
-</histogram>
-
 <histogram name="MobileOmnibox.PressedClipboardSuggestionAge" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-11-01">
+  <owner>gangwu@chromium.org</owner>
+  <owner>ender@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>

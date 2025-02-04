@@ -77,7 +77,8 @@ external/wpt/css/CSS2/borders/border-applies-to-012.xht
 external/wpt/css/CSS2/borders/border-color-applies-to-006.xht
 external/wpt/css/CSS2/borders/border-color-applies-to-012.xht
 external/wpt/css/CSS2/borders/border-width-applies-to-012.xht
-external/wpt/css/CSS2/floats-clear/*
+external/wpt/css/CSS2/floats-clear/floats-142.xht
+external/wpt/css/CSS2/floats-clear/floats-143.xht
 external/wpt/css/CSS2/floats/float-nowrap-*
 external/wpt/css/CSS2/linebox/empty-inline-003.xht
 external/wpt/css/CSS2/linebox/inline-formatting-context-003.xht

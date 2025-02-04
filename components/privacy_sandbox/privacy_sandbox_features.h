@@ -236,7 +236,7 @@ extern const base::FeatureParam<bool>
     kPrivacySandboxActivityTypeStorageSkipPreFirstTab;
 
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxPrivacyGuideAdTopics);
+BASE_DECLARE_FEATURE(kPrivacySandboxAdTopicsContentParity);
 
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxMigratePrefsToNoticeConsentDataModel);

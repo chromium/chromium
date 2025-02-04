@@ -152,11 +152,7 @@ void WebGpuDevice::OnRequestDevice(wgpu::RequestDeviceStatus status,
     return;
   }
 
-#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
   device.SetLoggingCallback(&LoggingCallback);
-#else
-  device.SetLoggingCallback(&LoggingCallback, nullptr);
-#endif
 
 #if MEDIAPIPE_USE_WEBGPU
   mediapipe::WebGpuDeviceRegistration::GetInstance().RegisterWebGpuDevice(
@@ -180,7 +176,6 @@ void WebGpuDevice::OnDeviceLost(const wgpu::Device& device,
 }
 
 // static
-#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
 void WebGpuDevice::LoggingCallback(wgpu::LoggingType type,
                                    wgpu::StringView message) {
   std::string_view message_str{message.data, message.length};
@@ -200,28 +195,6 @@ void WebGpuDevice::LoggingCallback(wgpu::LoggingType type,
       break;
   }
 }
-#else
-void WebGpuDevice::LoggingCallback(WGPULoggingType type,
-                                   WGPUStringView message,
-                                   void* userdata) {
-  std::string_view message_str{message.data, message.length};
-  switch (type) {
-    case WGPULoggingType_Verbose:
-    case WGPULoggingType_Info:
-      DVLOG(1) << message_str;
-      break;
-    case WGPULoggingType_Warning:
-      LOG(WARNING) << message_str;
-      break;
-    case WGPULoggingType_Error:
-      LOG(ERROR) << message_str;
-      break;
-    default:
-      DVLOG(1) << message_str;
-      break;
-  }
-}
-#endif
 
 void WebGpuDevice::EnsureFlush() {
   if (context_provider_->WebGPUInterface()->EnsureAwaitingFlush()) {

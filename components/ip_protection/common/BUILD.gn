@@ -544,29 +544,6 @@ source_set("url_matcher_with_bypass_unittest") {
   ]
 }
 
-source_set("ip_protection_crypter") {
-  sources = [
-    "ip_protection_crypter.cc",
-    "ip_protection_crypter.h",
-  ]
-  public_deps =
-      [ "//third_party/private-join-and-compute/src:ec_commutative_cipher" ]
-  deps = [ "//base" ]
-}
-
-source_set("ip_protection_crypter_unittest") {
-  testonly = true
-  sources = [ "ip_protection_crypter_unittest.cc" ]
-  deps = [
-    ":ip_protection_crypter",
-    "//base",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
-  ]
-}
-
 source_set("ip_protection_issuer_token_direct_fetcher") {
   sources = [
     "ip_protection_issuer_token_direct_fetcher.cc",
@@ -579,7 +556,7 @@ source_set("ip_protection_issuer_token_direct_fetcher") {
     "//services/network/public/mojom",
   ]
   deps = [
-    ":ip_protection_crypter",
+    ":ip_protection_issuer_token_crypter",
     "//components/ip_protection:get_issuer_token_proto",
     "//net",
     "//third_party/abseil-cpp:absl",
@@ -590,7 +567,7 @@ source_set("ip_protection_issuer_token_direct_fetcher_unittest") {
   testonly = true
   sources = [ "ip_protection_issuer_token_direct_fetcher_unittest.cc" ]
   deps = [
-    ":ip_protection_crypter",
+    ":ip_protection_issuer_token_crypter",
     ":ip_protection_issuer_token_direct_fetcher",
     "//base",
     "//base/test:test_support",
@@ -601,6 +578,7 @@ source_set("ip_protection_issuer_token_direct_fetcher_unittest") {
     "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
   ]
 }
 
@@ -612,5 +590,33 @@ source_set("ip_protection_issuer_token_fetcher") {
   public_deps = [
     ":ip_protection_data_types",
     "//base",
+  ]
+}
+
+source_set("ip_protection_issuer_token_crypter") {
+  sources = [
+    "ip_protection_issuer_token_crypter.cc",
+    "ip_protection_issuer_token_crypter.h",
+  ]
+  public_deps = [
+    ":ip_protection_data_types",
+    "//third_party/abseil-cpp:absl",
+  ]
+  deps = [
+    "//base",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+  ]
+}
+
+source_set("ip_protection_issuer_token_crypter_unittest") {
+  testonly = true
+  sources = [ "ip_protection_issuer_token_crypter_unittest.cc" ]
+  deps = [
+    ":ip_protection_issuer_token_crypter",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
   ]
 }

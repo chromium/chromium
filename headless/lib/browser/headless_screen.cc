@@ -10,7 +10,6 @@
 #include "ui/display/display_finder.h"
 #include "ui/display/display_list.h"
 #include "ui/display/util/display_util.h"
-#include "ui/gfx/geometry/rect.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -47,23 +46,16 @@ gfx::NativeWindow HeadlessScreen::GetLocalProcessWindowAtPoint(
 
 display::Display HeadlessScreen::GetDisplayNearestWindow(
     gfx::NativeWindow window) const {
-  // Mac always passes null gfx::NativeWindow, see https://crbug.com/380313546,
-  // so this method currently only returns primary display on Macs.
+  // On Windows and Linux native window is abstracted by aura::Window so we can
+  // use its bounds to find the nearest display.
 #if defined(USE_AURA)
   if (window) {
     const gfx::Rect bounds = window->GetBoundsInScreen();
-    const display::Display* nearest_display =
-        display::FindDisplayWithBiggestIntersection(display_list().displays(),
-                                                    bounds);
-    if (!nearest_display) {
-      nearest_display = display::FindDisplayNearestPoint(
-          display_list().displays(), bounds.CenterPoint());
-    }
-    if (nearest_display) {
-      return *nearest_display;
-    }
+    return GetDisplayFromBounds(bounds);
   }
-#endif
+#else
+  NOTIMPLEMENTED_LOG_ONCE();
+#endif  // #if defined(USE_AURA)
   return GetPrimaryDisplay();
 }
 
@@ -175,6 +167,21 @@ display::Display HeadlessScreen::GetDisplayById(int64_t display_id) {
   auto it = display_list().FindDisplayById(display_id);
   if (it != display_list().displays().end()) {
     return *it;
+  }
+
+  return GetPrimaryDisplay();
+}
+
+display::Display HeadlessScreen::GetDisplayFromBounds(
+    const gfx::Rect& bounds) const {
+  if (auto* display = display::FindDisplayWithBiggestIntersection(
+          display_list().displays(), bounds)) {
+    return *display;
+  }
+
+  if (auto* display = display::FindDisplayNearestPoint(
+          display_list().displays(), bounds.CenterPoint())) {
+    return *display;
   }
 
   return GetPrimaryDisplay();

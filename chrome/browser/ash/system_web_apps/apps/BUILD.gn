@@ -135,7 +135,6 @@ static_library("apps") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service:constants",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",

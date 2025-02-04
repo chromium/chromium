@@ -13,7 +13,11 @@
 #include "cc/paint/element_id.h"
 #include "cc/trees/mutator_host_client.h"
 #include "cc/trees/property_tree_delegate.h"
-#include "ui/gfx/geometry/vector2d_f.h"
+
+namespace gfx {
+class Vector2dF;
+class Transform;
+}  // namespace gfx
 
 namespace cc {
 
@@ -52,6 +56,9 @@ class CC_EXPORT PropertyTreeLayerListDelegate : public PropertyTreeDelegate {
   void OnElementOpacityMutated(ElementId element_id,
                                ElementListType list_type,
                                float opacity) override;
+  void OnElementTransformMutated(ElementId element_id,
+                                 ElementListType list_type,
+                                 const gfx::Transform& transform) override;
 
  private:
   raw_ptr<LayerTreeHost> host_ = nullptr;

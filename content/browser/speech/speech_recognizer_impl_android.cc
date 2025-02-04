@@ -58,7 +58,19 @@ void SpeechRecognizerImplAndroid::StartRecognition(
 
 void SpeechRecognizerImplAndroid::UpdateRecognitionContext(
     const media::SpeechRecognitionRecognitionContext& recognition_context) {
-  // TODO(crbug.com/383911744): Show a not-supported error to the client.
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SpeechRecognizerImplAndroid::UpdateRecognitionContext,
+                       this, recognition_context));
+    return;
+  }
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  listener()->OnRecognitionError(
+      session_id(), media::mojom::SpeechRecognitionError(
+                        media::mojom::SpeechRecognitionErrorCode::
+                            kRecognitionContextNotSupported,
+                        media::mojom::SpeechAudioErrorDetails::kNone));
 }
 
 void SpeechRecognizerImplAndroid::StartRecognitionOnUIThread(

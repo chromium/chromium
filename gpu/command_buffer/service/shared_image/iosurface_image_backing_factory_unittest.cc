@@ -343,8 +343,8 @@ class IOSurfaceImageBackingFactoryDawnTest
     return std::make_pair(std::move(src_rep), std::move(src_scoped_access));
   }
 
-  static constexpr WGPUInstanceDescriptor instance_desc_ = {
-      .features =
+  static constexpr wgpu::InstanceDescriptor instance_desc_ = {
+      .capabilities =
           {
               .timedWaitAnyEnable = true,
           },

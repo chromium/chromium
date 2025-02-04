@@ -222,6 +222,12 @@ void CSSParserContext::Count(WebFeature feature) const {
   }
 }
 
+void CSSParserContext::Count(WebDXFeature feature) const {
+  if (IsUseCounterRecordingEnabled()) {
+    document_->CountWebDXFeature(feature);
+  }
+}
+
 void CSSParserContext::CountDeprecation(WebFeature feature) const {
   if (IsUseCounterRecordingEnabled() && document_) {
     Deprecation::CountDeprecation(document_->GetExecutionContext(), feature);

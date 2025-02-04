@@ -27,6 +27,7 @@
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/common/env_vars.h"
+#include "chrome/installer/util/install_util.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 
@@ -198,9 +199,14 @@ WindowsSystemTracingClientImpl::Host::CreateSession() {
   Microsoft::WRL::ComPtr<ISystemTraceSession> trace_session;
   HRESULT hresult = ::CoCreateInstance(
       clsid_, /*pUnkOuter=*/nullptr, CLSCTX_LOCAL_SERVER, iid_, &trace_session);
+
   RecordLaunchResult(LaunchStage::kCoCreateInstance, hresult);
   if (FAILED(hresult)) {
-    ReportFirstStartFailure(clsid_, hresult);
+    // Creation is expected to fail with REGDB_E_CLASSNOTREG for per-user
+    // installs.
+    if (hresult != REGDB_E_CLASSNOTREG || !InstallUtil::IsPerUserInstall()) {
+      ReportFirstStartFailure(clsid_, hresult);
+    }
     return base::unexpected(hresult);
   }
 

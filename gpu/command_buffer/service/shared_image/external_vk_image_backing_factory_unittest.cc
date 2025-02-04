@@ -99,8 +99,8 @@ class ExternalVkImageBackingFactoryDawnTest
   }
 
  protected:
-  static constexpr WGPUInstanceDescriptor dawn_instance_desc_ = {
-      .features =
+  static constexpr wgpu::InstanceDescriptor dawn_instance_desc_ = {
+      .capabilities =
           {
               .timedWaitAnyEnable = true,
           },

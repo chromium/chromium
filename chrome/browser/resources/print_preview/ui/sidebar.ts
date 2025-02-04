@@ -162,23 +162,16 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
    * @param serializedDestinationSelectionRulesStr String with rules
    *     for selecting the default destination.
    * @param pdfPrinterDisabled Whether the PDF printer is disabled.
-   * @param isDriveMounted Whether Google Drive is mounted. Only used
-        on Chrome OS.
    */
   init(
       appKioskMode: boolean, defaultPrinter: string,
       serializedDestinationSelectionRulesStr: string|null,
-      pdfPrinterDisabled: boolean, isDriveMounted: boolean) {
+      pdfPrinterDisabled: boolean) {
     this.isInAppKioskMode_ = appKioskMode;
     pdfPrinterDisabled = this.isInAppKioskMode_ || pdfPrinterDisabled;
 
-    // 'Save to Google Drive' is almost the same as PDF printing. The only
-    // difference is the default location shown in the file picker when user
-    // clicks 'Save'. Therefore, we should disable the 'Save to Google Drive'
-    // destination if the user should be blocked from using PDF printing.
-    const saveToDriveDisabled = pdfPrinterDisabled || !isDriveMounted;
     this.$.destinationSettings.init(
-        defaultPrinter, pdfPrinterDisabled, saveToDriveDisabled,
+        defaultPrinter, pdfPrinterDisabled,
         serializedDestinationSelectionRulesStr);
   }
 

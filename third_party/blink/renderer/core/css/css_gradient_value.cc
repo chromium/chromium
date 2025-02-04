@@ -70,6 +70,13 @@ bool ColorIsDerivedFromElement(const CSSIdentifierValue& value) {
   }
 }
 
+bool ColorCSSValueIsCacheable(const CSSValue& value) {
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    return !ColorIsDerivedFromElement(*identifier_value);
+  }
+  return IsA<CSSColor>(value);
+}
+
 bool AppendPosition(StringBuilder& result,
                     const CSSValue* x,
                     const CSSValue* y,
@@ -108,8 +115,7 @@ bool AppendPosition(StringBuilder& result,
 
 bool CSSGradientColorStop::IsCacheable() const {
   if (!IsHint()) {
-    auto* identifier_value = DynamicTo<CSSIdentifierValue>(color_.Get());
-    if (identifier_value && ColorIsDerivedFromElement(*identifier_value)) {
+    if (!ColorCSSValueIsCacheable(*color_)) {
       return false;
     }
   }

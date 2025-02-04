@@ -11,10 +11,10 @@
 #include <sstream>
 
 #include "base/command_line.h"
-#include "base/cpu_reduction_experiment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
@@ -54,10 +54,6 @@ BASE_FEATURE(kPresentationDelayForInteractiveFrames,
 // Record the delay from the system CVDisplayLink or CADisplaylink source to
 // CrGpuMain OnVSyncPresentation().
 void RecordVSyncCallbackDelay(base::TimeDelta delay) {
-  if (!base::ShouldLogHistogramForCpuReductionExperiment()) {
-    return;
-  }
-
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "GPU.Presentation.VSyncCallbackDelay", delay,
       /*min=*/base::Microseconds(10),
@@ -342,7 +338,8 @@ void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
     frame_interval_ = params.display_interval;
   }
 
-  if (params.callback_times_valid) {
+  if (params.callback_times_valid &&
+      base::ShouldRecordSubsampledMetric(0.001)) {
     RecordVSyncCallbackDelay(base::TimeTicks::Now() - params.callback_timebase);
   }
 

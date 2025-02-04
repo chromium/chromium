@@ -194,6 +194,7 @@ test("cast_unittests") {
     "encoding/audio_encoder_unittest.cc",
     "encoding/encoding_support_unittest.cc",
     "encoding/external_video_encoder_unittest.cc",
+    "encoding/media_video_encoder_wrapper_unittest.cc",
     "encoding/video_encoder_unittest.cc",
     "encoding/vpx_quantizer_parser_unittest.cc",
     "logging/log_event_dispatcher_unittest.cc",

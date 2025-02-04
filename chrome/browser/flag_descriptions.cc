@@ -183,14 +183,6 @@ const char kBiometricAuthIdentityCheckDescription[] =
     "biometric checks.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-const char kBirchWeatherName[] = "Birch weather";
-const char kBirchWeatherDescription[] =
-    "Shows the weather suggestion chip in the birch suggestions UI. Note that "
-    "the chip only shows certain times of day, so it may not immediately "
-    "appear after enabling this feature.";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 const char kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsName[] =
     "Blink Scheduler Discrete Input Matches Responsiveness Metrics";
 const char
@@ -620,11 +612,6 @@ const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[] =
     "all credit card form types and address form events will log to all "
     "address form types.";
 
-const char kAutofillEnableNewCardArtAndNetworkImagesName[] =
-    "Enable showing new card art and network images";
-const char kAutofillEnableNewCardArtAndNetworkImagesDescription[] =
-    "When enabled, new and larger card art and network icons will be shown.";
-
 const char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
@@ -944,10 +931,16 @@ const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[] =
 #endif
 
 const char kClientSideDetectionBrandAndIntentForScamDetectionName[] =
-    "Client Side Detection Brand and  Intent for Scam Detection";
+    "Client Side Detection Brand and Intent for Scam Detection";
 const char kClientSideDetectionBrandAndIntentForScamDetectionDescription[] =
     "Enables on device LLM output on pages to inquire for brand and intent of "
     "the page.";
+
+const char kClientSideDetectionShowScamVerdictWarningName[] =
+    "Client Side Detection Show Scam Verdict Warning";
+const char kClientSideDetectionShowScamVerdictWarningDescription[] =
+    "Show warnings based on the scam verdict field in Client Side Detection "
+    "response.";
 
 const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[] =
     "Clear window name in top-level cross-site cross-browsing-context-group "
@@ -991,9 +984,6 @@ const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterName[] =
 const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterDescription[] =
     "Enables filtering of visited URL aggregates based on history URL "
     "visibility scores.";
-
-const char kDiscountConsentV2Name[] = "Discount Consent V2";
-const char kDiscountConsentV2Description[] = "Enables Discount Consent V2";
 
 const char kDoubleBufferCompositingName[] = "Double buffered compositing";
 const char kDoubleBufferCompositingDescription[] =
@@ -1973,11 +1963,6 @@ const char kFedCmSelectiveDisclosureDescription[] =
 const char kFedCmShowFilteredAccountsName[] = "FedCmShowFilteredAccounts";
 const char kFedCmShowFilteredAccountsDescription[] =
     "Allows the FedCM API to show filtered accounts greyed out.";
-
-const char kFedCmWithStorageAccessAPIName[] = "FedCmWithStorageAccessAPI";
-const char kFedCmWithStorageAccessAPIDescription[] =
-    "Allows Storage Access API to auto-resolve if the user has allowed a FedCM "
-    "connection.";
 
 const char kFedCmWithoutWellKnownEnforcementName[] =
     "FedCmWithoutWellKnownEnforcement";
@@ -3158,12 +3143,6 @@ const char kPrivateStateTokensDevUIName[] = "Private State Tokens Dev UI";
 const char kPrivateStateTokensDevUIDescription[] =
     "Enables the chrome://privacy-sandbox-internals/private-state-tokens page."
     "Relies on privacy-sandbox-internals also being enabled";
-
-const char kPrivacySandboxPrivacyGuideAdTopicsName[] =
-    "Privacy Sandbox Privacy Guide Ad Topics";
-const char kPrivacySandboxPrivacyGuideAdTopicsDescription[] =
-    "Enables the Ad Topics card in the Privacy Guide to be displayed, subject "
-    "to regional availability.";
 
 const char kPrivacySandboxPrivacyPolicyName[] =
     "Privacy Sandbox Privacy Policy";
@@ -6645,12 +6624,6 @@ const char kExperimentalAccessibilitySwitchAccessTextName[] =
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =
     "Enable experimental or in-progress Switch Access features for improved "
     "text input";
-
-const char kExposeOutOfProcessVideoDecodingToLacrosName[] =
-    "Expose out-of-process video decoding (OOP-VD) to LaCrOS.";
-const char kExposeOutOfProcessVideoDecodingToLacrosDescription[] =
-    "Accept media.stable.mojom.StableVideoDecoderFactory connection requests "
-    "from LaCrOS and host said factories in utility processes.";
 
 const char kFastDrmMasterDropName[] =
     "Drop DRM master tokens without disabling all the displays.";

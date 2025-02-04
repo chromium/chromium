@@ -2398,7 +2398,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
         getLegacyTabStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
         getStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
-
         maybeRegisterHomeModules();
     }
 
@@ -2683,6 +2682,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
     private TabDelegateFactory getTabDelegateFactory() {
         if (mTabDelegateFactory == null) {
+            assert getStartupMetricsTracker() != null;
             mTabDelegateFactory =
                     new TabbedModeTabDelegateFactory(
                             this,
@@ -2709,7 +2709,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                             getTabContentManagerSupplier(),
                             getToolbarManager().getTabStripHeightSupplier(),
                             mModuleRegistrySupplier,
-                            mEdgeToEdgeControllerSupplier);
+                            mEdgeToEdgeControllerSupplier,
+                            getStartupMetricsTracker());
         }
         return mTabDelegateFactory;
     }

@@ -20,9 +20,13 @@ enum EndDragReason {
 };
 
 // Source of the call to CloseTab().
-enum CloseTabSource {
-  CLOSE_TAB_FROM_MOUSE,
-  CLOSE_TAB_FROM_TOUCH,
+enum class CloseTabSource {
+  // Tab was closed by a mouse event on the tab or its close button
+  kFromMouse,
+  // Tab was closed by a touch event on the tab or its close button
+  kFromTouch,
+  // Tab is closed by some means other than direct tab interaction
+  kFromNonUIEvent,
 };
 
 // Source of the call to ToggleTabGroup(). The source of the call can trigger

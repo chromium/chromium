@@ -127,8 +127,12 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             mActiveSubStrategy.startReorderMode(
                     stripTabs, groupTitles, mViewBeingDragged, new PointF(endX, 0f));
         } else if (reorderType == ReorderType.DRAG_WITHIN_STRIP) {
-            mActiveSubStrategy.updateReorderPosition(
-                    stripViews, groupTitles, stripTabs, endX, deltaX, reorderType);
+            if (mActiveSubStrategy.mInProgress) {
+                // We evidently can get DRAG_WITHIN_STRIP events without first getting a
+                // DRAG_ONTO_STRIP event. e.g. Through auto-scroll handling.
+                mActiveSubStrategy.updateReorderPosition(
+                        stripViews, groupTitles, stripTabs, endX, deltaX, reorderType);
+            }
         } else if (reorderType == ReorderType.DRAG_OUT_OF_STRIP) {
             mActiveSubStrategy.stopReorderMode(groupTitles, stripTabs);
         }
@@ -147,6 +151,10 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     @Override
     public StripLayoutView getInteractingView() {
         return mViewBeingDragged;
+    }
+
+    boolean isReorderingTab() {
+        return mActiveSubStrategy == mTabSubStrategy;
     }
 
     private void removeViewOutOfStrip(StripLayoutTab draggedTab) {
@@ -352,7 +360,14 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
 
         @Override
         boolean startViewDragAction(PointF startPoint) {
-            return mTabDragSource.startGroupDragAction();
+            StripLayoutGroupTitle draggedGroupTitle = (StripLayoutGroupTitle) mViewBeingDragged;
+
+            return mTabDragSource.startGroupDragAction(
+                    mContainerView,
+                    draggedGroupTitle.getTabGroupId(),
+                    startPoint,
+                    draggedGroupTitle.getDrawX(),
+                    draggedGroupTitle.getWidth());
         }
     }
 

@@ -11,7 +11,8 @@ using Handle = int;
 // Expected rewrite:
 // void f(const base::span<Handle>& handles, size_t num_handles) {
 void f(Handle* handles, size_t num_handles) {
-  // TODO(358306232) operator bool() is not supported by base::span.
+  // TODO(358306232): Currently rewritten to !handles.size()
+  // Should be rewritten to: handles.empty()
   if (!handles || !num_handles) {
     return;
   }

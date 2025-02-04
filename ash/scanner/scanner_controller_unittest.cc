@@ -36,6 +36,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_split.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -71,6 +72,7 @@ using ::base::test::EqualsProto;
 using ::base::test::InvokeFuture;
 using ::base::test::IsJson;
 using ::base::test::RunOnceCallback;
+using ::base::test::ValueIs;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
@@ -267,7 +269,7 @@ TEST_F(ScannerControllerTest,
 }
 
 TEST_F(ScannerControllerTest, FetchesActionsDuringActiveSession) {
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_TRUE(scanner_controller->StartNewSession());
@@ -281,18 +283,18 @@ TEST_F(ScannerControllerTest, FetchesActionsDuringActiveSession) {
   scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
                                            actions_future.GetCallback());
 
-  EXPECT_THAT(actions_future.Take(), SizeIs(1));
+  EXPECT_THAT(actions_future.Take(), ValueIs(SizeIs(1)));
 }
 
 TEST_F(ScannerControllerTest, NoActionsFetchedWhenNoActiveSession) {
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
 
   scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
                                            actions_future.GetCallback());
 
-  EXPECT_THAT(actions_future.Take(), IsEmpty());
+  EXPECT_THAT(actions_future.Take(), ValueIs(IsEmpty()));
 }
 
 TEST_F(ScannerControllerTest, ResetsScannerSessionWhenActiveUserChanges) {
@@ -309,7 +311,7 @@ TEST_F(ScannerControllerTest, ResetsScannerSessionWhenActiveUserChanges) {
 }
 
 TEST_F(ScannerControllerTest, ShowsNotificationWhileExecutingAction) {
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_TRUE(scanner_controller->StartNewSession());
@@ -330,9 +332,9 @@ TEST_F(ScannerControllerTest, ShowsNotificationWhileExecutingAction) {
   // Fetch an action and execute it.
   scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
                                            actions_future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = actions_future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
-  scanner_controller->ExecuteAction(actions[0]);
+  ScannerSession::FetchActionsResponse actions = actions_future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
+  scanner_controller->ExecuteAction(actions.value()[0]);
 
   // Notification should be shown while action is executing.
   EXPECT_THAT(message_center::MessageCenter::Get()->GetVisibleNotifications(),
@@ -349,7 +351,7 @@ TEST_F(ScannerControllerTest, ShowsNotificationWhileExecutingAction) {
 }
 
 TEST_F(ScannerControllerTest, ShowsToastAfterActionSuccess) {
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_TRUE(scanner_controller->StartNewSession());
@@ -373,15 +375,15 @@ TEST_F(ScannerControllerTest, ShowsToastAfterActionSuccess) {
   // Fetch an action and execute it.
   scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
                                            actions_future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = actions_future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
-  scanner_controller->ExecuteAction(actions[0]);
+  ScannerSession::FetchActionsResponse actions = actions_future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
+  scanner_controller->ExecuteAction(actions.value()[0]);
 
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionSuccessToastId));
 }
 
 TEST_F(ScannerControllerTest, ShowsToastAfterActionFailure) {
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_TRUE(scanner_controller->StartNewSession());
@@ -402,15 +404,15 @@ TEST_F(ScannerControllerTest, ShowsToastAfterActionFailure) {
   // Fetch an action and try to execute it.
   scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
                                            actions_future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = actions_future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
-  scanner_controller->ExecuteAction(actions[0]);
+  ScannerSession::FetchActionsResponse actions = actions_future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
+  scanner_controller->ExecuteAction(actions.value()[0]);
 
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionFailureToastId));
 }
 
 TEST_F(ScannerControllerTest, ActionSuccessToastButtonOpensFeedbackDialog) {
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_TRUE(scanner_controller->StartNewSession());
@@ -434,9 +436,9 @@ TEST_F(ScannerControllerTest, ActionSuccessToastButtonOpensFeedbackDialog) {
   // Fetch an action and execute it.
   scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
                                            actions_future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = actions_future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
-  scanner_controller->ExecuteAction(actions[0]);
+  ScannerSession::FetchActionsResponse actions = actions_future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
+  scanner_controller->ExecuteAction(actions.value()[0]);
 
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionSuccessToastId));
   ToastOverlay* toast_overlay =
@@ -464,7 +466,7 @@ TEST_F(ScannerControllerTest, ActionSuccessToastButtonOpensFeedbackDialog) {
 TEST_F(ScannerControllerTest, ActionSuccessToastDoesNotHaveButtonIfDisabled) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kScannerFeedbackEnabled, false);
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> actions_future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_TRUE(scanner_controller->StartNewSession());
@@ -488,9 +490,9 @@ TEST_F(ScannerControllerTest, ActionSuccessToastDoesNotHaveButtonIfDisabled) {
   // Fetch an action and execute it.
   scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
                                            actions_future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = actions_future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
-  scanner_controller->ExecuteAction(actions[0]);
+  ScannerSession::FetchActionsResponse actions = actions_future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
+  scanner_controller->ExecuteAction(actions.value()[0]);
 
   EXPECT_TRUE(ToastManager::Get()->IsToastShown(kScannerActionSuccessToastId));
   ToastOverlay* overlay =
@@ -651,14 +653,15 @@ TEST_F(ScannerControllerTest, RunningActionFailsIfActionDetailsFails) {
           nullptr, manta::MantaStatus{
                        .status_code = manta::MantaStatusCode::kInvalidInput}));
 
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session->FetchActionsForImage(nullptr, future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
+  ScannerSession::FetchActionsResponse actions = future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
+
   base::test::TestFuture<bool> action_finished_future;
   scanner_controller->SetOnActionFinishedForTesting(
       action_finished_future.GetCallback());
-  scanner_controller->ExecuteAction(actions[0]);
+  scanner_controller->ExecuteAction(actions.value()[0]);
 
   EXPECT_FALSE(action_finished_future.Get());
 }
@@ -686,14 +689,14 @@ TEST_F(ScannerControllerTest,
           std::move(output_with_multiple_objects),
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
 
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session->FetchActionsForImage(nullptr, future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
+  ScannerSession::FetchActionsResponse actions = future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
   base::test::TestFuture<bool> action_finished_future;
   scanner_controller->SetOnActionFinishedForTesting(
       action_finished_future.GetCallback());
-  scanner_controller->ExecuteAction(actions[0]);
+  scanner_controller->ExecuteAction(actions.value()[0]);
 
   EXPECT_FALSE(action_finished_future.Get());
 }
@@ -722,14 +725,14 @@ TEST_F(ScannerControllerTest,
           std::move(output_with_multiple_actions),
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
 
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session->FetchActionsForImage(nullptr, future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
+  ScannerSession::FetchActionsResponse actions = future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
   base::test::TestFuture<bool> action_finished_future;
   scanner_controller->SetOnActionFinishedForTesting(
       action_finished_future.GetCallback());
-  scanner_controller->ExecuteAction(actions[0]);
+  scanner_controller->ExecuteAction(actions.value()[0]);
 
   EXPECT_FALSE(action_finished_future.Get());
 }
@@ -757,14 +760,14 @@ TEST_F(ScannerControllerTest,
           std::move(output_with_different_action),
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
 
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session->FetchActionsForImage(nullptr, future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
+  ScannerSession::FetchActionsResponse actions = future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
   base::test::TestFuture<bool> action_finished_future;
   scanner_controller->SetOnActionFinishedForTesting(
       action_finished_future.GetCallback());
-  scanner_controller->ExecuteAction(actions[0]);
+  scanner_controller->ExecuteAction(actions.value()[0]);
 
   EXPECT_FALSE(action_finished_future.Get());
 }
@@ -798,14 +801,14 @@ TEST_F(ScannerControllerTest,
           nullptr, manta::MantaStatus{
                        .status_code = manta::MantaStatusCode::kInvalidInput}));
 
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session->FetchActionsForImage(jpeg_bytes, future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
+  ScannerSession::FetchActionsResponse actions = future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
   base::test::TestFuture<bool> action_finished_future;
   scanner_controller->SetOnActionFinishedForTesting(
       action_finished_future.GetCallback());
-  scanner_controller->ExecuteAction(actions[0]);
+  scanner_controller->ExecuteAction(actions.value()[0]);
   ASSERT_TRUE(action_finished_future.IsReady());
 }
 
@@ -831,14 +834,14 @@ TEST_F(ScannerControllerTest,
           nullptr, manta::MantaStatus{
                        .status_code = manta::MantaStatusCode::kInvalidInput}));
 
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session->FetchActionsForImage(nullptr, future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
+  ScannerSession::FetchActionsResponse actions = future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
   base::test::TestFuture<bool> action_finished_future;
   scanner_controller->SetOnActionFinishedForTesting(
       action_finished_future.GetCallback());
-  scanner_controller->ExecuteAction(actions[0]);
+  scanner_controller->ExecuteAction(actions.value()[0]);
   ASSERT_TRUE(action_finished_future.IsReady());
 }
 
@@ -878,14 +881,14 @@ TEST_F(ScannerControllerTest, RunningNewEventActionOpensUrl) {
           std::move(populated_output),
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
 
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session->FetchActionsForImage(nullptr, future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
+  ScannerSession::FetchActionsResponse actions = future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
   base::test::TestFuture<bool> action_finished_future;
   scanner_controller->SetOnActionFinishedForTesting(
       action_finished_future.GetCallback());
-  scanner_controller->ExecuteAction(actions[0]);
+  scanner_controller->ExecuteAction(actions.value()[0]);
 
   EXPECT_TRUE(action_finished_future.Get());
 }
@@ -943,14 +946,14 @@ TEST(ScannerControllerNoFixtureTest, RunningNewContactActionOpensUrl) {
   EXPECT_CALL(request_callback, Run).WillOnce(Return(std::move(response)));
   delegate.SetRequestCallback(request_callback.Get());
 
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session->FetchActionsForImage(nullptr, future.GetCallback());
-  std::vector<ScannerActionViewModel> actions = future.Take();
-  ASSERT_THAT(actions, SizeIs(1));
+  ScannerSession::FetchActionsResponse actions = future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
   base::test::TestFuture<bool> action_finished_future;
   scanner_controller.SetOnActionFinishedForTesting(
       action_finished_future.GetCallback());
-  scanner_controller.ExecuteAction(actions[0]);
+  scanner_controller.ExecuteAction(actions.value()[0]);
 
   EXPECT_TRUE(action_finished_future.Get());
 

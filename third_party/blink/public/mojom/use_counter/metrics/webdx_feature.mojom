@@ -335,6 +335,7 @@ enum WebDXFeature {
   kLayoutInstability = 277,
   kProfiler = 278,
   kAsyncIterableStreams = 279,
+  kContainerScrollStateQueries = 280,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

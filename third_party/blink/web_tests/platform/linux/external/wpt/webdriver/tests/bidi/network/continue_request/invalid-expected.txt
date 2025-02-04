@@ -1,0 +1,235 @@
+This is a wdspec test.
+[FAIL] test_params_body_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_invalid_type[foo]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_invalid_value[value0]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_invalid_value[value1]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_invalid_value[value2]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_type_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_type_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_type_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_type_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_type_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_type_invalid_value[]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_type_invalid_value[foo]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_value_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_value_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_value_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_value_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_body_value_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_invalid_type[foo]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_invalid_type[foo]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_name_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_name_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_name_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_name_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_name_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_type[foo]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_value[value0]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_value[value1]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_invalid_value[value2]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_value[]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_type_invalid_value[foo]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_value_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_value_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_value_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_value_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_cookies_cookie_value_value_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_invalid_type[foo]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_invalid_type[foo]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_name_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_name_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_name_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_name_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_name_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_name_invalid_value[]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_name_invalid_value[\\x00]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_name_invalid_value["]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_name_invalid_value[{]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_name_invalid_value[\\x80]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_invalid_type[foo]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_invalid_value[value0]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_invalid_value[value1]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_invalid_value[value2]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_type_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_type_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_type_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_type_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_type_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_type_invalid_value[]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_type_invalid_value[foo]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_value_invalid_type[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_value_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_value_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_value_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_value_invalid_type[value4]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_value_invalid_value[ a]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_value_invalid_value[a ]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_value_invalid_value[\\ta]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_value_invalid_value[a\\t]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_value_invalid_value[a\\nb]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_headers_header_value_value_invalid_value[a\\x00b]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_method_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_method_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_method_invalid_type[value2]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_method_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_method_invalid_value[]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_method_invalid_value[\\x00]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_method_invalid_value["]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_method_invalid_value[{]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_method_invalid_value[\\x80]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_request_no_such_request
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_url_invalid_type[False]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_url_invalid_type[42]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_url_invalid_type[value2]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_url_invalid_type[value3]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_url_invalid_value[:invalid-http]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_url_invalid_value[:invalid-https]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_url_invalid_value[#invalid-http]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_url_invalid_value[#invalid-https]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

@@ -81,7 +81,7 @@ class BrowserTabStripController : public TabStripController,
   void AddSelectionFromAnchorTo(int model_index) override;
   void OnCloseTab(int model_index,
                   CloseTabSource source,
-                  base::OnceCallback<void()> callback) override;
+                  base::OnceCallback<void(CloseTabSource)> callback) override;
   void CloseTab(int model_index) override;
   void ToggleTabAudioMute(int model_index) override;
   void AddTabToGroup(int model_index,

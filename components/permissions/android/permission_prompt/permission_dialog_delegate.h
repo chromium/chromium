@@ -88,7 +88,11 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   void Dismissed(JNIEnv* env,
                  const JavaParamRef<jobject>& obj,
                  int dismissalType);
-  void HandleSystemPermission(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  void Resumed(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  void SystemSettingsShown(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  void SystemPermissionResolved(JNIEnv* env,
+                                const JavaParamRef<jobject>& obj,
+                                bool accepted);
 
   // Reset the java JNI object object. Called from Java once the permission
   // dialog has been responded to.

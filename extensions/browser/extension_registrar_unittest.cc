@@ -24,7 +24,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/common/pref_names.h"  // nogncheck
 #include "components/account_id/account_id.h"  // nogncheck
 #include "components/prefs/pref_registry_simple.h"
@@ -250,7 +249,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     SCOPED_TRACE("DisableEnabledExtension");
     EXPECT_CALL(delegate_, PostDeactivateExtension(extension_));
     registrar_->DisableExtension(extension_->id(),
-                                 disable_reason::DISABLE_USER_ACTION);
+                                 {disable_reason::DISABLE_USER_ACTION});
     ExpectInSet(ExtensionRegistry::DISABLED);
     EXPECT_FALSE(IsExtensionReady());
 
@@ -261,7 +260,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     SCOPED_TRACE("DisableTerminatedExtension");
     // PostDeactivateExtension should not be called.
     registrar_->DisableExtension(extension_->id(),
-                                 disable_reason::DISABLE_USER_ACTION);
+                                 {disable_reason::DISABLE_USER_ACTION});
     ExpectInSet(ExtensionRegistry::DISABLED);
     EXPECT_FALSE(IsExtensionReady());
   }
@@ -417,7 +416,7 @@ TEST_F(ExtensionRegistrarTest, AddForceEnabled) {
 
   // Extension cannot be disabled.
   registrar()->DisableExtension(extension()->id(),
-                                disable_reason::DISABLE_USER_ACTION);
+                                {disable_reason::DISABLE_USER_ACTION});
   ExpectInSet(ExtensionRegistry::ENABLED);
 }
 
@@ -439,7 +438,7 @@ TEST_F(ExtensionRegistrarTest, AddBlocklisted) {
   registrar()->EnableExtension(extension()->id());
   ExpectInSet(ExtensionRegistry::BLOCKLISTED);
   registrar()->DisableExtension(extension()->id(),
-                                disable_reason::DISABLE_USER_ACTION);
+                                {disable_reason::DISABLE_USER_ACTION});
   ExpectInSet(ExtensionRegistry::BLOCKLISTED);
   registrar()->ReloadExtension(extension()->id(), LoadErrorBehavior::kQuiet);
   ExpectInSet(ExtensionRegistry::BLOCKLISTED);
@@ -459,7 +458,7 @@ TEST_F(ExtensionRegistrarTest, AddBlocked) {
   registrar()->EnableExtension(extension()->id());
   ExpectInSet(ExtensionRegistry::BLOCKED);
   registrar()->DisableExtension(extension()->id(),
-                                disable_reason::DISABLE_USER_ACTION);
+                                {disable_reason::DISABLE_USER_ACTION});
   ExpectInSet(ExtensionRegistry::BLOCKED);
 
   RemoveBlockedExtension();

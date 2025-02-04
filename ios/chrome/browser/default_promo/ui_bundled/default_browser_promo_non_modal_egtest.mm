@@ -33,8 +33,8 @@ constexpr base::TimeDelta kShowPromoWebpageLoadWaitTime = base::Seconds(5);
 
 // Returns a matcher for the non modal promo title.
 id<GREYMatcher> NonModalTitleMatcher() {
-  NSString* a11yLabelText =
-      l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_NON_MODAL_TITLE);
+  NSString* a11yLabelText = l10n_util::GetNSString(
+      IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE);
   return grey_accessibilityLabel(a11yLabelText);
 }
 

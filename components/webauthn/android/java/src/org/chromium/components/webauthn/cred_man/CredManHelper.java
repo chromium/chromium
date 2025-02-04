@@ -28,6 +28,7 @@ import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
+import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
@@ -361,7 +362,7 @@ public class CredManHelper {
                             // Services shouldn't find any credentials either, but it
                             // will show a bottomsheet to that effect.
                             assert mConditionalUiState == ConditionalUiState.NONE;
-                            assert !options.isConditional;
+                            assert options.mediation != Mediation.CONDITIONAL;
 
                             mMetricsHelper.reportGetCredentialMetrics(
                                     CredManGetRequestEnum.NO_CREDENTIAL_FOUND, mConditionalUiState);
@@ -382,7 +383,7 @@ public class CredManHelper {
                                     CredManGetRequestEnum.FAILURE, mConditionalUiState);
                         }
                         mConditionalUiState =
-                                options.isConditional
+                                options.mediation == Mediation.CONDITIONAL
                                         ? ConditionalUiState.WAITING_FOR_SELECTION
                                         : ConditionalUiState.NONE;
                     }
@@ -426,7 +427,7 @@ public class CredManHelper {
                             mMetricsHelper.reportGetCredentialMetrics(
                                     CredManGetRequestEnum.FAILURE, mConditionalUiState);
                             mConditionalUiState =
-                                    options.isConditional
+                                    options.mediation == Mediation.CONDITIONAL
                                             ? ConditionalUiState.WAITING_FOR_SELECTION
                                             : ConditionalUiState.NONE;
                             notifyBrowserOnCredManClosed(false);
@@ -444,7 +445,7 @@ public class CredManHelper {
                             mMetricsHelper.reportGetCredentialMetrics(
                                     CredManGetRequestEnum.FAILURE, mConditionalUiState);
                             mConditionalUiState =
-                                    options.isConditional
+                                    options.mediation == Mediation.CONDITIONAL
                                             ? ConditionalUiState.WAITING_FOR_SELECTION
                                             : ConditionalUiState.NONE;
                             notifyBrowserOnCredManClosed(false);
@@ -456,7 +457,7 @@ public class CredManHelper {
                         }
                         response.extensions.echoAppidExtension = options.extensions.appid != null;
                         mConditionalUiState =
-                                options.isConditional
+                                options.mediation == Mediation.CONDITIONAL
                                         ? ConditionalUiState.WAITING_FOR_SELECTION
                                         : ConditionalUiState.NONE;
                         notifyBrowserOnCredManClosed(true);
@@ -476,7 +477,7 @@ public class CredManHelper {
             return AuthenticatorStatus.NOT_ALLOWED_ERROR;
         }
         mConditionalUiState =
-                options.isConditional
+                options.mediation == Mediation.CONDITIONAL
                         ? ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST
                         : ConditionalUiState.NONE;
         final GetCredentialRequest getCredentialRequest =
@@ -485,13 +486,13 @@ public class CredManHelper {
                         originString,
                         clientDataHash,
                         mRequestPasswords,
-                        shouldPreferImmediatelyAvailable(options),
+                        shouldPreferImmediatelyAvailable(options.mediation),
                         ignoreGpm);
         if (getCredentialRequest == null) {
             mMetricsHelper.reportGetCredentialMetrics(
                     CredManGetRequestEnum.COULD_NOT_SEND_REQUEST, mConditionalUiState);
             mConditionalUiState =
-                    options.isConditional
+                    options.mediation == Mediation.CONDITIONAL
                             ? ConditionalUiState.WAITING_FOR_SELECTION
                             : ConditionalUiState.NONE;
             return AuthenticatorStatus.NOT_ALLOWED_ERROR;
@@ -532,12 +533,12 @@ public class CredManHelper {
         mRequestPasswords = requestPasswords;
     }
 
-    boolean shouldPreferImmediatelyAvailable(PublicKeyCredentialRequestOptions options) {
+    boolean shouldPreferImmediatelyAvailable(@Mediation.EnumType int mediation) {
         // Chrome renders its own UI when there are no credentials when using CredMan. However, this
         // is not true for WebView or Chrome 3rd party PWM mode - there are no other UIs. Thus
         // they never ask CredMan to skip its UI.
         if (is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.CHROME)) {
-            return !options.isConditional;
+            return mediation != Mediation.CONDITIONAL;
         }
         return false;
     }

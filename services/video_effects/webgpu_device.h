@@ -74,13 +74,7 @@ class WebGpuDevice final {
                     wgpu::DeviceLostReason reason,
                     std::string_view message);
 
-#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
   static void LoggingCallback(wgpu::LoggingType type, wgpu::StringView message);
-#else
-  static void LoggingCallback(WGPULoggingType type,
-                              WGPUStringView message,
-                              void* userdata);
-#endif
 
   void EnsureFlush();
 

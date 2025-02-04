@@ -83,6 +83,17 @@ export function getHtml(this: TracingScenariosConfigElement) {
     This configuration is designed for local trace collection, enabling you to
     capture detailed information about application execution on your machine.
   </h3>
+  <h2>Scenarios Config</h2>
+  <h3>
+    You can select a proto (.pb) or base64 encoded (.txt) file that contains
+    scenarios config. For details, see
+    <a href="http://go/how-do-i-chrometto#how-do-i-test-background-tracing-setup-locally.">
+      how-do-i-chrometto
+    </a>
+  </h3>
+  <input type="file" class="action-button" name="Choose File"
+      @change="${this.onAddConfig_}">
+  </input>
   ${this.isLoading_ ? html`<div class="spinner"></div>` : html`
   ${getFieldConfigHtml.bind(this)()}
   <h2>Local Scenarios</h2>

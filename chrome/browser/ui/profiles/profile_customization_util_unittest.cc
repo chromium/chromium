@@ -44,7 +44,7 @@ class ProfileNameResolverTest : public testing::Test {
  protected:
   const std::string kTestGivenName = "Jane";
   const std::string kTestEmail = "jane@bar.baz";
-  const std::string kTestGaiaId = "123456";
+  const GaiaId kTestGaiaId = GaiaId("123456");
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
@@ -108,7 +108,7 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoUnvailable) {
 
   // The account is not known from the identity manager.
   CoreAccountInfo core_account_info;
-  core_account_info.gaia = GaiaId(kTestGaiaId);
+  core_account_info.gaia = kTestGaiaId;
   core_account_info.account_id =
       CoreAccountId::FromGaiaId(core_account_info.gaia);
   core_account_info.email = kTestEmail;
@@ -134,7 +134,7 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoMissing) {
 
   // The account is not known from the identity manager.
   CoreAccountInfo core_account_info;
-  core_account_info.gaia = GaiaId(kTestGaiaId);
+  core_account_info.gaia = kTestGaiaId;
   core_account_info.account_id =
       CoreAccountId::FromGaiaId(core_account_info.gaia);
   core_account_info.email = kTestEmail;

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/suggestion_service_ash.h"

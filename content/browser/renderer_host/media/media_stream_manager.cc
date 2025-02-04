@@ -2239,18 +2239,21 @@ void MediaStreamManager::StartEnumeration(DeviceRequest* request,
       base::StringPrintf("StartEnumeration({requester_id=%d}, {label=%s})",
                          request->requester_id, label.c_str()));
 
-  // Start monitoring the devices when doing the first enumeration.
-  media_devices_manager_->StartMonitoring();
-
-  // Start enumeration for devices of all requested device types.
   bool request_audio_input =
       request->audio_type() != MediaStreamType::NO_SERVICE;
+  bool request_video_input =
+      request->video_type() != MediaStreamType::NO_SERVICE;
+
+  // Start monitoring the requested devices when doing the first enumeration.
+  media_devices_manager_->StartMonitoring(
+      MediaDevicesManager::DeviceMonitoringMode(request_audio_input),
+      MediaDevicesManager::DeviceMonitoringMode(request_video_input));
+
+  // Start enumeration for devices of all requested device types.
   if (request_audio_input) {
     request->SetState(request->audio_type(), MEDIA_REQUEST_STATE_REQUESTED);
   }
 
-  bool request_video_input =
-      request->video_type() != MediaStreamType::NO_SERVICE;
   if (request_video_input) {
     request->SetState(request->video_type(), MEDIA_REQUEST_STATE_REQUESTED);
   }

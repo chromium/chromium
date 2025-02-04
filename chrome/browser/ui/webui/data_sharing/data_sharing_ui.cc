@@ -171,6 +171,17 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       "metricsReportingEnabled",
       ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
 
+  source->AddString("dataSharingUrl",
+                    data_sharing::features::kDataSharingURL.Get());
+  source->AddString(
+      "learnMoreSharedTabGroupPageUrl",
+      data_sharing::features::kLearnMoreSharedTabGroupPageURL.Get());
+  source->AddString(
+      "learnAboutBlockedAccountsUrl",
+      data_sharing::features::kLearnAboutBlockedAccountsURL.Get());
+  source->AddString("activityLogsUrl",
+                    data_sharing::features::kActivityLogsURL.Get());
+
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(profile,
                               std::make_unique<FaviconSource>(

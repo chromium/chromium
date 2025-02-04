@@ -15,7 +15,7 @@
 
 #pragma mark - Constants
 
-const char kDeprecateFeedHeaderParameterFeedLabel[] = "feed-label";
+const char kDeprecateFeedHeaderParameterRemoveLabel[] = "remove-feed-label";
 const char kDeprecateFeedHeaderParameterTopPadding[] = "top-padding";
 const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[] =
     "enlarge-logo-n-fakebox";
@@ -106,9 +106,11 @@ bool IsiPadFeedGhostCardsEnabled() {
   return base::FeatureList::IsEnabled(kEnableiPadFeedGhostCards);
 }
 
-bool ShouldAddDiscoverLabel() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDeprecateFeedHeader, kDeprecateFeedHeaderParameterFeedLabel, false);
+bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine) {
+  return is_google_default_search_engine &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             kDeprecateFeedHeader, kDeprecateFeedHeaderParameterRemoveLabel,
+             false);
 }
 
 bool ShouldAddTopPaddingToNTP() {

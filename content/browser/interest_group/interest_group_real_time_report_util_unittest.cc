@@ -48,7 +48,7 @@ TEST_F(InterestGroupRealTimeReportUtilTest, RapporFlippingProbability) {
     // would be all 0s, and the sum of histogram after calling Rappor will be
     // the number of flipped bits.
     std::vector<uint8_t> histogram =
-        Rappor(/*maybe_bucket=*/std::nullopt, /*epsilon=*/1.0,
+        Rappor(/*maybe_bucket=*/std::nullopt, /*flip_probability=*/0.378,
                /*num_buckets=*/kNumBuckets);
     for (size_t j = 0; j < static_cast<size_t>(kNumBuckets); j++) {
       total_flipped += histogram[j];
@@ -68,13 +68,21 @@ TEST_F(InterestGroupRealTimeReportUtilTest, RapporFlippingIsNonDeterministic) {
   base::flat_set<std::vector<uint8_t>> seen;
   while (seen.size() < 4) {
     std::vector<uint8_t> histogram =
-        Rappor(bucket, /*epsilon=*/1.0, kNumBuckets);
+        Rappor(bucket, /*flip_probability=*/0.378, kNumBuckets);
     ASSERT_THAT(histogram, testing::AnyOf(testing::ElementsAreArray({0, 0}),
                                           testing::ElementsAreArray({0, 1}),
                                           testing::ElementsAreArray({1, 0}),
                                           testing::ElementsAreArray({1, 1})));
     seen.insert(histogram);
   }
+}
+
+TEST_F(InterestGroupRealTimeReportUtilTest, CalculateFlipProbability) {
+  double flip_probability = CalculateFlipProbability(/*epsilon=*/1.0);
+  ASSERT_GT(flip_probability, 0.3775);
+  ASSERT_LT(flip_probability, 0.3776);
+
+  EXPECT_DOUBLE_EQ(0.5, CalculateFlipProbability(/*epsilon=*/0.0));
 }
 
 TEST_F(InterestGroupRealTimeReportUtilTest, SampleContributionsNoContribution) {
@@ -204,8 +212,11 @@ TEST_F(InterestGroupRealTimeReportUtilTest,
   // calling CalculateRealTimeReportingHistograms().
   contributions_map[origin_b] = std::move(contributions);
 
+  double flip_probability = CalculateFlipProbability(
+      blink::features::kFledgeRealTimeReportingEpsilon.Get());
   std::map<url::Origin, std::vector<uint8_t>> histograms_map =
-      CalculateRealTimeReportingHistograms(std::move(contributions_map));
+      CalculateRealTimeReportingHistograms(std::move(contributions_map),
+                                           flip_probability);
   int total_buckets =
       1024 + auction_worklet::RealTimeReportingPlatformError::kNumValues;
   for (const url::Origin& origin : {origin_a, origin_b}) {

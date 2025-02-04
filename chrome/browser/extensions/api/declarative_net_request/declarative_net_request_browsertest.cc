@@ -1837,7 +1837,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   {
     SCOPED_TRACE("Testing DisableExtension");
-    DisableExtension(extension_id, disable_reason::DISABLE_USER_ACTION);
+    DisableExtension(extension_id, {disable_reason::DISABLE_USER_ACTION});
     WaitForExtensionsWithRulesetsCount(0);
     test_extension_enabled(false);
   }
@@ -2620,7 +2620,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RendererCacheCleared) {
 
   // Disable the extension.
   DisableExtension(last_loaded_extension_id(),
-                   disable_reason::DISABLE_USER_ACTION);
+                   {disable_reason::DISABLE_USER_ACTION});
   WaitForExtensionsWithRulesetsCount(0);
 
   // Disabling the extension should cause the request to succeed again. The

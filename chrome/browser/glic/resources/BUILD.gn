@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/glic/resources/glic_resources.gni")
 import("//tools/grit/grit_rule.gni")
 
 grit("browser_resources") {
-  if (is_chrome_branded) {
+  if (is_chrome_branded && enable_glic_internal_resources) {
     source = "internal/browser_resources.grd"
   } else {
     source = "browser_resources.grd"

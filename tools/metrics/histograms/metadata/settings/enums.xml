@@ -121,6 +121,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Set Up List"/>
   <int value="4" label="External Action"/>
   <int value="5" label="Tips Notification"/>
+  <int value="6" label="Banner Promo"/>
 </enum>
 
 <enum name="LockScreenProgress">

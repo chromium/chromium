@@ -18209,9 +18209,7 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
 TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
        WinnerAndGhostWinnerReportingIds) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({blink::features::kFledgeAuctionDealSupport,
-                                 features::kEnableBandADealSupport},
-                                {});
+  feature_list.InitAndEnableFeature(blink::features::kFledgeAuctionDealSupport);
   ProvideKeys();
   NavigateAndCommit(kUrlA);
   std::string ad1_sbas_id = "ad1_sbas_id";
@@ -18778,9 +18776,7 @@ function reportResult(auctionConfig, browserSignals) {}
 TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
        RunMultiSellerBAndAAuctionReportingIds) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({blink::features::kFledgeAuctionDealSupport,
-                                 features::kEnableBandADealSupport},
-                                {});
+  feature_list.InitAndEnableFeature(blink::features::kFledgeAuctionDealSupport);
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,

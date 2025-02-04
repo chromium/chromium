@@ -1588,6 +1588,58 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
   EXPECT_EQ(console_observer.messages().size(), 1u);
 }
 
+// Tests that in a fenced frame the frame's isolation info correctly identifies
+// its requests as main frame, but not outer most main frame.
+IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
+                       FencedFrameIsolationInfoRequests) {
+  ASSERT_TRUE(https_server()->Start());
+
+  net::IsolationInfo outer_most_frame_isolation_info;
+  DidFinishNavigationObserver primary_frame_observer(
+      web_contents(),
+      base::BindLambdaForTesting([&](NavigationHandle* navigation_handle) {
+        if (navigation_handle->GetNavigatingFrameType() !=
+            FrameType::kPrimaryMainFrame) {
+          return;
+        }
+        NavigationRequest* request = NavigationRequest::From(navigation_handle);
+        outer_most_frame_isolation_info = request->GetIsolationInfo();
+      }));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("c.test", "/title1.html")));
+  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+
+  net::IsolationInfo fenced_frame_isolation_info;
+  DidFinishNavigationObserver fenced_frame_observer(
+      web_contents(),
+      base::BindLambdaForTesting([&](NavigationHandle* navigation_handle) {
+        if (navigation_handle->GetNavigatingFrameType() !=
+            FrameType::kFencedFrameRoot) {
+          return;
+        }
+        NavigationRequest* request = NavigationRequest::From(navigation_handle);
+        fenced_frame_isolation_info = request->GetIsolationInfo();
+      }));
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+  RenderFrameHostImplWrapper fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
+                                                   fenced_frame_url));
+
+  ASSERT_FALSE(outer_most_frame_isolation_info.IsEmpty());
+  ASSERT_FALSE(fenced_frame_isolation_info.IsEmpty());
+
+  // Both frames' navigation should be considered a main frame request.
+  EXPECT_TRUE(outer_most_frame_isolation_info.IsMainFrameRequest());
+  EXPECT_TRUE(fenced_frame_isolation_info.IsMainFrameRequest());
+
+  // But only the outer most main frame's navigation should be considered an
+  // outer most main frame request.
+  EXPECT_TRUE(outer_most_frame_isolation_info.IsOutermostMainFrameRequest());
+  EXPECT_FALSE(fenced_frame_isolation_info.IsOutermostMainFrameRequest());
+}
+
 class FencedFrameWithSiteIsolationDisabledBrowserTest
     : public FencedFrameMPArchBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {

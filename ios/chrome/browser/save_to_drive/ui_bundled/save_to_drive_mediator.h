@@ -11,7 +11,6 @@
 
 @protocol AccountPickerCommands;
 @protocol AccountPickerConsumer;
-@protocol ApplicationCommands;
 class ChromeAccountManagerService;
 @protocol FileDestinationPickerConsumer;
 @protocol ManageStorageAlertCommands;
@@ -39,7 +38,6 @@ class DownloadTask;
                   saveToDriveHandler:(id<SaveToDriveCommands>)saveToDriveHandler
            manageStorageAlertHandler:
                (id<ManageStorageAlertCommands>)manageStorageAlertHandler
-                  applicationHandler:(id<ApplicationCommands>)applicationHandler
                 accountPickerHandler:
                     (id<AccountPickerCommands>)accountPickerHandler
                          prefService:(PrefService*)prefService
@@ -51,8 +49,8 @@ class DownloadTask;
 
 - (void)disconnect;
 
-// Opens the "Manage Storage" page in a new tab for the given identity.
-- (void)showManageStorageForIdentity:(id<SystemIdentity>)identity;
+// Called when "Manage Storage" will be opened.
+- (void)willShowManageStorage;
 
 // Called when the user taps "Save" in the account picker view. If the selected
 // file destination is Drive then `identity` will be used to upload the file to

@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
@@ -61,7 +62,8 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
                                  const LoadOptions& options);
 
   void DisableExtension(const ExtensionId& extension_id);
-  void DisableExtension(const ExtensionId& extension_id, int disable_reasons);
+  void DisableExtension(const ExtensionId& extension_id,
+                        const DisableReasonSet& disable_reasons);
 
   // Returns the WebContents of the currently active tab.
   // Note that when the test first launches, this will be the same as the

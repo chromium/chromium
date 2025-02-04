@@ -237,6 +237,10 @@ function abortSignalAnyMemoryTests(signalInterface, controllerInterface) {
     gController = new controllerInterface();
     gController2 = new controllerInterface();
 
+    // Schedule but don't wait for GC before creating the timer so that the GC
+    // happens first.
+    const gcComplete = runAsyncGC();
+
     (function() {
       // These signals should be GCed after this function runs, before the
       // timeout aborts `testSignal`.
@@ -265,8 +269,8 @@ function abortSignalAnyMemoryTests(signalInterface, controllerInterface) {
       testSignal = null;
     })();
 
-    // Running GC async in high priority tasks should complete before the timeout.
-    await runAsyncGC({priority: 'user-blocking'});
+    await gcComplete;
+
     assert_false(fired, 'GC should complete before the timeout fires');
     assert_equals(wr1.deref(), undefined, 'signal1 should be GCed');
     assert_equals(wr2.deref(), undefined, 'signal2 should be GCed');

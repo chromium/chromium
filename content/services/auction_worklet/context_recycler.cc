@@ -12,6 +12,7 @@
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
+#include "content/services/auction_worklet/private_model_training_bindings.h"
 #include "content/services/auction_worklet/real_time_reporting_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/register_ad_macro_bindings.h"
@@ -83,6 +84,13 @@ void ContextRecycler::AddReportBindings(
   report_bindings_ = std::make_unique<ReportBindings>(
       v8_helper_, v8_logger_.get(), queue_report_aggregate_win_allowed);
   AddBindings(report_bindings_.get());
+}
+
+void ContextRecycler::AddPrivateModelTrainingBindings() {
+  DCHECK(!private_model_training_bindings_);
+  private_model_training_bindings_ =
+      std::make_unique<PrivateModelTrainingBindings>(v8_helper_);
+  AddBindings(private_model_training_bindings_.get());
 }
 
 void ContextRecycler::AddSetBidBindings() {

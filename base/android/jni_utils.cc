@@ -9,13 +9,9 @@
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
-#include "build/robolectric_buildflags.h"
 
-#if BUILDFLAG(IS_ROBOLECTRIC)
-#include "base/base_robolectric_jni/JNIUtils_jni.h"  // nogncheck
-#else
-#include "base/base_jni/JNIUtils_jni.h"
-#endif
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_minimal_jni/JNIUtils_jni.h"
 
 namespace base {
 namespace android {

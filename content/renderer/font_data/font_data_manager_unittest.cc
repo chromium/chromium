@@ -100,7 +100,29 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
     std::move(callback).Run(std::move(result));
   }
 
+  void MatchFamilyNameCharacter(
+      const std::string& family_name,
+      font_data_service::mojom::TypefaceStylePtr style,
+      const std::vector<std::string>& bcp47s,
+      int32_t character,
+      MatchFamilyNameCharacterCallback callback) override {
+    ++match_family_character_call_count_;
+    last_match_family_character_call_bcp47s_ = bcp47s;
+    last_match_family_character_call_character_ = character;
+    MatchFamilyName(family_name, std::move(style), std::move(callback));
+  }
+
   size_t match_family_call_count() const { return match_family_call_count_; }
+  size_t match_family_character_call_count() const {
+    return match_family_character_call_count_;
+  }
+  const std::vector<std::string>& last_match_family_character_call_bcp47s()
+      const {
+    return last_match_family_character_call_bcp47s_;
+  }
+  int32_t last_match_family_character_call_character() const {
+    return last_match_family_character_call_character_;
+  }
   void set_use_memory_fallback(bool fallback) {
     use_memory_fallback_ = fallback;
   }
@@ -108,6 +130,9 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
  private:
   mojo::ReceiverSet<font_data_service::mojom::FontDataService> receivers_;
   size_t match_family_call_count_ = 0;
+  size_t match_family_character_call_count_ = 0;
+  std::vector<std::string> last_match_family_character_call_bcp47s_;
+  int32_t last_match_family_character_call_character_;
   base::MappedReadOnlyRegion memory_map_region_;
   bool use_memory_fallback_ = false;
 };
@@ -247,13 +272,36 @@ TEST_F(FontDataManagerUnitTest, MakeFromData) {
   EXPECT_STREQ(result_family_name.c_str(), family_name.data());
 }
 
+TEST_F(FontDataManagerUnitTest, MatchFamilyStyleCharacter) {
+  SkFontStyle style(400, 5, SkFontStyle::kUpright_Slant);
+  SkUnichar uni_char = 0x0041;  // 'A'
+  base::cstring_view family_name = "Segoe UI";
+  sk_sp<SkTypeface> expected_typeface =
+      skia::MakeTypefaceFromName(family_name.data(), style);
+
+  // Test the initial typeface matches family name and font style.
+  const char kChineseBcp47[] = "zh";
+  const char* kBcp47Array[] = {kChineseBcp47};
+  sk_sp<SkTypeface> result = skia_font_manager_->matchFamilyStyleCharacter(
+      family_name.data(), style, kBcp47Array, 1, uni_char);
+  EXPECT_EQ(result->fontStyle(), expected_typeface->fontStyle());
+  SkString result_family_name;
+  result->getFamilyName(&result_family_name);
+  EXPECT_STREQ(result_family_name.c_str(), family_name.data());
+  EXPECT_EQ(test_font_data_service_app_.match_family_call_count(), 1u);
+
+  std::vector<std::string> kExpectedBcp47s{"zh"};
+  EXPECT_EQ(
+      test_font_data_service_app_.last_match_family_character_call_character(),
+      uni_char);
+  EXPECT_EQ(
+      test_font_data_service_app_.last_match_family_character_call_bcp47s(),
+      kExpectedBcp47s);
+}
+
 using FontDataManagerDeathTest = FontDataManagerUnitTest;
 
 // Methods are unused in FontDataManager.
-TEST_F(FontDataManagerDeathTest, CountFamilies) {
-  EXPECT_DEATH_IF_SUPPORTED(skia_font_manager_->countFamilies(), "");
-}
-
 TEST_F(FontDataManagerDeathTest, GetFamilyName) {
   SkString family_name;
   EXPECT_DEATH_IF_SUPPORTED(skia_font_manager_->getFamilyName(0, &family_name),
@@ -266,14 +314,6 @@ TEST_F(FontDataManagerDeathTest, CreateStyleSet) {
 
 TEST_F(FontDataManagerDeathTest, MatchFamily) {
   EXPECT_DEATH_IF_SUPPORTED(skia_font_manager_->matchFamily("Segoe UI"), "");
-}
-
-TEST_F(FontDataManagerDeathTest, MatchFamilyStyleCharacter) {
-  SkFontStyle style(400, 5, SkFontStyle::kUpright_Slant);
-  SkUnichar uni_char = 0x0041;  // 'A'
-  EXPECT_DEATH_IF_SUPPORTED(skia_font_manager_->matchFamilyStyleCharacter(
-                                "Segoe UI", style, nullptr, 0, uni_char),
-                            "");
 }
 
 }  // namespace

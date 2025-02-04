@@ -80,8 +80,11 @@ TEST_F(IOSWebContentHandlerImplTest, HideParentAccessBottomsheetNotOnScreen) {
 }
 
 TEST_F(IOSWebContentHandlerImplTest, HideParentAccessBottomsheet) {
-  OCMExpect([mock_parent_access_commands_handler_
+  OCMExpect([[mock_parent_access_commands_handler_ ignoringNonObjectArgs]
       showParentAccessBottomSheetForWebState:&web_state_
+                                   targetURL:GURL()
+                     filteringBehaviorReason:
+                         supervised_user::FilteringBehaviorReason::DEFAULT
                                   completion:[OCMArg any]]);
   OCMExpect([mock_parent_access_commands_handler_ hideParentAccessBottomSheet]);
 

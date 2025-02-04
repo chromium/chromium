@@ -9,6 +9,8 @@
 
 #import "ios/web/public/web_state.h"
 
+class GURL;
+
 @protocol ParentAccessConsumer;
 @protocol ParentAccessMediatorDelegate;
 
@@ -23,6 +25,7 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState
+                 parentAccessURL:(const GURL&)parentAccessURL
     NS_DESIGNATED_INITIALIZER;
 
 // Disconnects the mediator.

@@ -85,7 +85,7 @@ class AwFileSystemAccessPermissionContext
   // Checks whether the file or directory at `path` corresponds to a directory
   // WebView considers sensitive (i.e. system files). Calls `callback` with
   // whether the path is on the blocklist.
-  void CheckPathAgainstBlocklist(const base::FilePath& path,
+  void CheckPathAgainstBlocklist(const content::PathInfo& path_info,
                                  base::OnceCallback<void(bool)> callback);
   void DidCheckPathAgainstBlocklist(
       const base::FilePath& path,

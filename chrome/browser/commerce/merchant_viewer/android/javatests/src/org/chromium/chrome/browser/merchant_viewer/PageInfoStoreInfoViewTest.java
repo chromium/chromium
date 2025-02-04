@@ -35,6 +35,7 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -134,6 +135,7 @@ public class PageInfoStoreInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/394345850")
     public void testStoreInfoRowVisibleWithData_Highlight() throws IOException {
         mockShoppingServiceResponse(mFakeMerchantTrustSignals);
         openPageInfoFromStoreIcon(true, false); // fromStoreIcon, dialogCheck

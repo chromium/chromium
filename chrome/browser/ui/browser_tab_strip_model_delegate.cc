@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
@@ -349,7 +350,9 @@ void BrowserTabStripModelDelegate::OnGroupsDestruction(
   } else {
     tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
         browser_, tab_groups::GroupDeletionReason::ClosedLastTab, group_ids,
-        std::move(close_callback));
+        base::IgnoreArgs<
+            tab_groups::DeletionDialogController::DeletionDialogTiming>(
+            std::move(close_callback)));
   }
 }
 
@@ -358,7 +361,9 @@ void BrowserTabStripModelDelegate::OnRemovingAllTabsFromGroups(
     base::OnceCallback<void()> callback) {
   tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
       browser_, tab_groups::GroupDeletionReason::UngroupedLastTab, group_ids,
-      std::move(callback));
+      base::IgnoreArgs<
+          tab_groups::DeletionDialogController::DeletionDialogTiming>(
+          std::move(callback)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

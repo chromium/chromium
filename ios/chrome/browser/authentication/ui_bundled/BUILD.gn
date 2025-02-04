@@ -266,7 +266,10 @@ source_set("eg_test_support+eg2") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "separate_profiles_egtest.mm" ]
+  sources = [
+    "separate_profiles_egtest.mm",
+    "separate_profiles_migration_egtest.mm",
+  ]
   deps = [
     ":eg_test_support+eg2",
     "//base/test:test_support",

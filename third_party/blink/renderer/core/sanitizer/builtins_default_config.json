@@ -1,7 +1,6 @@
 {
-  "comments": true,
-  "dataAttributes": true,
-  "otherMarkup": false,
+  "comments": false,
+  "dataAttributes": false,
   "elements": [
     "a",
     "abbr",

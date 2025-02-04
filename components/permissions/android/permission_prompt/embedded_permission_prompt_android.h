@@ -42,7 +42,9 @@ class EmbeddedPermissionPromptAndroid : public PermissionPromptAndroid {
   void AcceptThisTime() override;
   void Acknowledge() override;
   void Deny() override;
-  void HandleSystemPermission() override;
+  void Resumed() override;
+  void SystemSettingsShown() override;
+  void SystemPermissionResolved(bool accepted) override;
   bool ShouldCurrentRequestUseQuietUI() override;
   std::optional<PermissionUiSelector::QuietUiReason> ReasonForUsingQuietUi()
       const override;
@@ -58,6 +60,8 @@ class EmbeddedPermissionPromptAndroid : public PermissionPromptAndroid {
       JNIEnv* env,
       bool is_one_time) const override;
   bool ShouldUseRequestingOriginFavicon() const override;
+  std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
+      const override;
   const std::vector<
       raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
   Requests() const override;

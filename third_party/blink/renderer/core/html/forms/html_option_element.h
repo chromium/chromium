@@ -139,11 +139,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
 
-  enum class IncludeAltText {
-    kIncludeAltText,
-    kDontIncludeAltText,
-  };
-  String CollectOptionInnerText(IncludeAltText include_alt_text) const;
+  String CollectOptionInnerText() const;
 
   void UpdateLabel();
 

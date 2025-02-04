@@ -348,7 +348,6 @@ component("shared_memory_support") {
   }
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//media:media_buildflags",
     "//ui/gfx/geometry",
   ]

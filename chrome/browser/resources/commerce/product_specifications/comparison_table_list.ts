@@ -75,7 +75,7 @@ export class ComparisonTableListElement extends CrLitElement {
 
   tables: ComparisonTableDetails[] = [];
   protected deletionToastDurationMs_: number = 5000;
-  protected deletionToastMessage_: string;
+  protected deletionToastMessage_: string = '';
   protected isEditing_: boolean = false;
   protected numSelected_: number = 0;
   protected tablesPendingDeletion_: Set<Uuid> = new Set();

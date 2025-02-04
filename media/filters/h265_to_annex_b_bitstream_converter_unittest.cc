@@ -100,6 +100,27 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, FailureHeaderBufferOverflow) {
       corrupted_header, sizeof(corrupted_header), &hevc_config_));
 }
 
+TEST_F(H265ToAnnexBBitstreamConverterTest, FailureZeroSizedNAL) {
+  H265ToAnnexBBitstreamConverter converter;
+
+  std::vector<uint8_t> input(std::begin(kPacketDataOkWithFieldLen4),
+                             std::end(kPacketDataOkWithFieldLen4));
+  std::vector<uint8_t> output(input.size());
+
+  EXPECT_TRUE(converter.ParseConfiguration(kHeaderDataOkWithFieldLen4,
+                                           sizeof(kHeaderDataOkWithFieldLen4),
+                                           &hevc_config_));
+
+  uint32_t out_size = converter.CalculateNeededOutputBufferSize(
+      input.data(), input.size(), &hevc_config_);
+
+  // First bytes encode NAL size, we want it to be zero.
+  input[0] = input[1] = input[2] = input[3] = 0;
+  EXPECT_FALSE(converter.ConvertNalUnitStreamToByteStream(
+      input.data(), input.size(), &hevc_config_, output.data(), &out_size));
+  EXPECT_EQ(out_size, 0U);
+}
+
 TEST_F(H265ToAnnexBBitstreamConverterTest, FailureNalUnitBreakage) {
   // Initialize converter.
   base::HeapArray<uint8_t> output;

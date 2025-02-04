@@ -232,8 +232,8 @@ class ProfileAttributesEntry {
 
   // Gets/Sets the gaia IDs of the accounts signed into the profile (accounts
   // known by the `IdentityManager`).
-  base::flat_set<std::string> GetGaiaIds() const;
-  void SetGaiaIds(const base::flat_set<std::string>& gaia_ids);
+  base::flat_set<GaiaId> GetGaiaIds() const;
+  void SetGaiaIds(const base::flat_set<GaiaId>& gaia_ids);
 
   // |is_using_default| should be set to false for non default profile names.
   void SetLocalProfileName(const std::u16string& name, bool is_default_name);

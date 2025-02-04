@@ -4,12 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_features.h"
 
-#include "base/feature_list.h"
-
 namespace content {
-
-BASE_FEATURE(kAttributionReportDeliveryThirdRetryAttempt,
-             "AttributionReportDeliveryThirdRetryAttempt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
+// TODO(crbug.com/384870263): Add feature flag to gate report delivery on
+// navigation.
 }  // namespace content

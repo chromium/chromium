@@ -37,10 +37,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 using content::DevToolsAgentHost;
 using extensions::mojom::ManifestLocation;
 
@@ -262,10 +258,11 @@ void ExtensionRegistrar::EnableExtension(const ExtensionId& extension_id) {
   ActivateExtension(extension, false);
 }
 
-void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
-                                          int disable_reasons) {
+void ExtensionRegistrar::DisableExtension(
+    const ExtensionId& extension_id,
+    const DisableReasonSet& disable_reasons) {
   auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
-  DisableExtension(passkey, extension_id, BitflagToIntegerSet(disable_reasons));
+  DisableExtension(passkey, extension_id, disable_reasons);
 }
 
 void ExtensionRegistrar::DisableExtension(
@@ -343,12 +340,12 @@ void ExtensionRegistrar::DisableExtension(
 
 void ExtensionRegistrar::DisableExtensionWithSource(
     const Extension* source_extension,
-    const std::string& extension_id,
-    disable_reason::DisableReason disable_reasons) {
+    const ExtensionId& extension_id,
+    disable_reason::DisableReason disable_reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(disable_reasons == disable_reason::DISABLE_USER_ACTION ||
-         disable_reasons == disable_reason::DISABLE_BLOCKED_BY_POLICY);
-  if (disable_reasons == disable_reason::DISABLE_BLOCKED_BY_POLICY) {
+  DCHECK(disable_reason == disable_reason::DISABLE_USER_ACTION ||
+         disable_reason == disable_reason::DISABLE_BLOCKED_BY_POLICY);
+  if (disable_reason == disable_reason::DISABLE_BLOCKED_BY_POLICY) {
     DCHECK(Manifest::IsPolicyLocation(source_extension->location()) ||
            Manifest::IsComponentLocation(source_extension->location()));
   }
@@ -357,7 +354,7 @@ void ExtensionRegistrar::DisableExtensionWithSource(
       registry_->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
   CHECK(extension_system_->management_policy()->ExtensionMayModifySettings(
       source_extension, extension, nullptr));
-  DisableExtension(extension_id, disable_reasons);
+  DisableExtension(extension_id, {disable_reason});
 }
 
 void ExtensionRegistrar::EnabledReloadableExtensions() {
@@ -493,7 +490,7 @@ void ExtensionRegistrar::ReloadExtension(
       orphaned_dev_tools_[extension_id] = std::move(agent_hosts);
     }
     path = enabled_extension->path();
-    DisableExtension(extension_id, disable_reason::DISABLE_RELOAD);
+    DisableExtension(extension_id, {disable_reason::DISABLE_RELOAD});
     DCHECK(registry_->disabled_extensions().Contains(extension_id));
     reloading_extensions_.insert(extension_id);
   } else if (!disabled_extension) {
@@ -749,7 +746,7 @@ void ExtensionRegistrar::OnGreylistStateAdded(const std::string& extension_id,
   // to disable the extension again.
   blocklist_prefs::UpdateCurrentGreylistStatesAsAcknowledged(extension_id,
                                                              extension_prefs_);
-  DisableExtension(extension_id, disable_reason::DISABLE_GREYLIST);
+  DisableExtension(extension_id, {disable_reason::DISABLE_GREYLIST});
 }
 
 void ExtensionRegistrar::BlocklistExtensionForTest(

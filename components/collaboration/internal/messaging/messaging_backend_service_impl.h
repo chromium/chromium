@@ -6,6 +6,7 @@
 #define COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_MESSAGING_BACKEND_SERVICE_IMPL_H_
 
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"

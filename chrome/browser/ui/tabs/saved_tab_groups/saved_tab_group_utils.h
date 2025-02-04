@@ -86,7 +86,8 @@ class SavedTabGroupUtils {
       const Browser* browser,
       GroupDeletionReason reason,
       const std::vector<TabGroupId>& group_ids,
-      base::OnceCallback<void()> callback);
+      base::OnceCallback<void(DeletionDialogController::DeletionDialogTiming)>
+          callback);
 
   // Converts a webcontents into a SavedTabGroupTab.
   static SavedTabGroupTab CreateSavedTabGroupTabFromWebContents(

@@ -204,10 +204,6 @@ class UserSessionManager
   // UserSessionManager finished restoring user sessions.
   bool UserSessionsRestored() const;
 
-  // Returns true iff browser has been restarted after crash and
-  // user sessions restoration is in progress.
-  bool UserSessionsRestoreInProgress() const;
-
   // Called when user profile is loaded. Send the notification before creating
   // the browser so additional objects that need the profile (e.g. the launcher)
   // can be created first.
@@ -371,7 +367,8 @@ class UserSessionManager
   void StopChildStatusObserving(Profile* profile);
 
   void CreateUserSession(const UserContext& user_context,
-                         bool has_auth_cookies);
+                         bool has_auth_cookies,
+                         bool has_active_session);
   void PreStartSession(StartSessionType start_session_type);
 
   // Store any useful UserContext data early on when profile has not been
@@ -542,9 +539,6 @@ class UserSessionManager
   // True if user sessions has been restored after crash.
   // On a normal boot then login into user sessions this will be false.
   bool user_sessions_restored_;
-
-  // True if user sessions restoration after crash is in progress.
-  bool user_sessions_restore_in_progress_;
 
   // User sessions that have to be restored after browser crash.
   // [user_id] > [user_id_hash]

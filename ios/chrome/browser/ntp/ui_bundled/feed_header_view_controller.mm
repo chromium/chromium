@@ -37,6 +37,9 @@ const CGFloat kHiddenFeedLabelFontSize = 16;
 const CGFloat kHiddenFeedLabelWidth = 250;
 // Insets for header menu button.
 const CGFloat kHeaderManagementButtonInset = 2;
+// The height of the header container without the Following feed or the
+// "Discover" label. The content is unaffected.
+const CGFloat kDiscoverFeedHeaderHeightWithoutFollowingOrLabel = 4;
 // The height of the header container without the Following feed. The content is
 // unaffected.
 const CGFloat kDiscoverFeedHeaderHeightWithoutFollowing = 40;
@@ -165,9 +168,14 @@ NSInteger kFeedSymbolPointSize = 17;
 #pragma mark - Public
 
 - (CGFloat)feedHeaderHeight {
-  return [self.feedControlDelegate isFollowingFeedAvailable]
-             ? kDiscoverFeedHeaderHeightWithFollowing
-             : kDiscoverFeedHeaderHeightWithoutFollowing;
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
+    return kDiscoverFeedHeaderHeightWithFollowing;
+  }
+  if (ShouldRemoveDiscoverLabel(
+          [self.NTPDelegate isGoogleDefaultSearchEngine])) {
+    return kDiscoverFeedHeaderHeightWithoutFollowingOrLabel;
+  }
+  return kDiscoverFeedHeaderHeightWithoutFollowing;
 }
 
 - (CGFloat)customSearchEngineViewHeight {
@@ -181,16 +189,21 @@ NSInteger kFeedSymbolPointSize = 17;
   if (!self.viewLoaded) {
     return;
   }
-  if (![self.feedControlDelegate isFollowingFeedAvailable]) {
-    [self.titleLabel setText:[self feedHeaderTitleText]];
-    [self.titleLabel setNeedsDisplay];
-    return;
-  }
-
-  if ([self.NTPDelegate isGoogleDefaultSearchEngine]) {
-    [self removeCustomSearchEngineView];
+  BOOL isGoogleDefaultSearchEngine =
+      [self.NTPDelegate isGoogleDefaultSearchEngine];
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
+    if (isGoogleDefaultSearchEngine) {
+      [self removeCustomSearchEngineView];
+    } else {
+      [self addCustomSearchEngineView];
+    }
   } else {
-    [self addCustomSearchEngineView];
+    [self.titleLabel removeFromSuperview];
+    self.titleLabel = nil;
+    if (!ShouldRemoveDiscoverLabel(isGoogleDefaultSearchEngine)) {
+      self.titleLabel = [self createTitleLabel];
+      [self.container addSubview:self.titleLabel];
+    }
   }
   [self applyHeaderConstraints];
 }
@@ -270,7 +283,8 @@ NSInteger kFeedSymbolPointSize = 17;
     if (![self.NTPDelegate isGoogleDefaultSearchEngine]) {
       [self addCustomSearchEngineView];
     }
-  } else {
+  } else if (!ShouldRemoveDiscoverLabel(
+                 [self.NTPDelegate isGoogleDefaultSearchEngine])) {
     self.titleLabel = [self createTitleLabel];
     [self.container addSubview:self.titleLabel];
   }
@@ -564,7 +578,8 @@ NSInteger kFeedSymbolPointSize = 17;
       ]];
     }
 
-  } else {
+  } else if (!ShouldRemoveDiscoverLabel(
+                 [self.NTPDelegate isGoogleDefaultSearchEngine])) {
     [self.feedHeaderConstraints addObjectsFromArray:@[
       // Anchors title label.
       [self.titleLabel.leadingAnchor

@@ -180,6 +180,7 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
     case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kCollaborationTabGroup:
+    case signin_metrics::AccessPoint::kGlicLaunchButton:
       return;
   }
 

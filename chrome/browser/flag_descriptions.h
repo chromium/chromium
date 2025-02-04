@@ -137,9 +137,6 @@ extern const char kBookmarksTreeViewDescription[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-extern const char kBirchWeatherName[];
-extern const char kBirchWeatherDescription[];
-
 extern const char kCampaignsComponentUpdaterTestTagName[];
 extern const char kCampaignsComponentUpdaterTestTagDescription[];
 extern const char kCampaignsOverrideName[];
@@ -168,6 +165,9 @@ extern const char kClickToCallDescription[];
 extern const char kClientSideDetectionBrandAndIntentForScamDetectionName[];
 extern const char
     kClientSideDetectionBrandAndIntentForScamDetectionDescription[];
+
+extern const char kClientSideDetectionShowScamVerdictWarningName[];
+extern const char kClientSideDetectionShowScamVerdictWarningDescription[];
 
 extern const char kClipboardMaximumAgeName[];
 extern const char kClipboardMaximumAgeDescription[];
@@ -383,9 +383,6 @@ extern const char kAutofillEnableCardProductNameDescription[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 
-extern const char kAutofillEnableNewCardArtAndNetworkImagesName[];
-extern const char kAutofillEnableNewCardArtAndNetworkImagesDescription[];
-
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
@@ -571,9 +568,6 @@ extern const char
 
 extern const char kDisableProcessReuse[];
 extern const char kDisableProcessReuseDescription[];
-
-extern const char kDiscountConsentV2Name[];
-extern const char kDiscountConsentV2Description[];
 
 extern const char kDoubleBufferCompositingName[];
 extern const char kDoubleBufferCompositingDescription[];
@@ -1117,9 +1111,6 @@ extern const char kFedCmShowFilteredAccountsDescription[];
 
 extern const char kFedCmUseOtherAccountName[];
 extern const char kFedCmUseOtherAccountDescription[];
-
-extern const char kFedCmWithStorageAccessAPIName[];
-extern const char kFedCmWithStorageAccessAPIDescription[];
 
 extern const char kFedCmWithoutWellKnownEnforcementName[];
 extern const char kFedCmWithoutWellKnownEnforcementDescription[];
@@ -1817,9 +1808,6 @@ extern const char kPrivacySandboxEqualizedPromptButtonsDescription[];
 
 extern const char kPrivacySandboxInternalsName[];
 extern const char kPrivacySandboxInternalsDescription[];
-
-extern const char kPrivacySandboxPrivacyGuideAdTopicsName[];
-extern const char kPrivacySandboxPrivacyGuideAdTopicsDescription[];
 
 extern const char kPrivacySandboxPrivacyPolicyName[];
 extern const char kPrivacySandboxPrivacyPolicyDescription[];
@@ -3884,9 +3872,6 @@ extern const char kAccessibilityManifestV3EnhancedNetworkTtsDescription[];
 
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
-
-extern const char kExposeOutOfProcessVideoDecodingToLacrosName[];
-extern const char kExposeOutOfProcessVideoDecodingToLacrosDescription[];
 
 extern const char kFastDrmMasterDropName[];
 extern const char kFastDrmMasterDropDescription[];

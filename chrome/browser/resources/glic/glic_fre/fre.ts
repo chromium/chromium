@@ -6,9 +6,11 @@ import '/strings.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {BrowserProxyImpl} from '../browser_proxy.js';
+import {FrePageHandlerRemote, PageHandlerFactory} from '../glic.mojom-webui.js';
 
-const browserProxy = BrowserProxyImpl.getInstance();
+const freHandler = new FrePageHandlerRemote();
+PageHandlerFactory.getRemote().createFrePageHandler(
+    (freHandler as FrePageHandlerRemote).$.bindNewPipeAndPassReceiver());
 
 const webview =
     document.getElementById('fre-guest-frame') as chrome.webviewTag.WebView;
@@ -28,34 +30,23 @@ function onLoadCommit(e: any) {
   // glic/intro...#continue, “No thanks” button navigates to
   // glic/intro...#noThanks
   if (urlHash === '#continue') {
-    browserProxy.freHandler.acceptFre();
+    freHandler.acceptFre();
   } else if (urlHash === '#noThanks') {
-    browserProxy.freHandler.dismissFre();
+    freHandler.dismissFre();
   }
 }
 
 function onNewWindow(e: any) {
   e.preventDefault();
-  browserProxy.freHandler.validateAndOpenLinkInNewTab({
+  freHandler.validateAndOpenLinkInNewTab({
     url: e.targetUrl,
   });
   e.stopPropagation();
 }
 
-function getWebviewSrc() {
-  // If a valid hotkey configuration is used, append the string as a query
-  // parameter to the given FRE URL.
-  const glicHotkeyString = loadTimeData.getString('glicHotkeyString');
-  const hotkeyQueryParamString =
-      glicHotkeyString ? '&hotkey=' + glicHotkeyString : '';
-  // TODO(cuianthony): For now, borrow the configuration of the glic guest URL,
-  // to be replaced with the correct configuration set up for the FRE.
-  return loadTimeData.getString('glicFreURL') + hotkeyQueryParamString;
-}
-
 // Blocking on cookie syncing here introduces latency, we should consider ways
 // to avoid it.
-browserProxy.freHandler.syncWebviewCookies().then(() => {
+freHandler.syncWebviewCookies().then(() => {
   // Load the web client only after cookie sync is complete.
-  webview.src = getWebviewSrc();
+  webview.src = loadTimeData.getString('glicFreURL');
 });

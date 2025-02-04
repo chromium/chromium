@@ -109,13 +109,6 @@ BASE_FEATURE(kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement,
              "AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, user's will see network card art images and network icons which
-// are larger, having a white border, and don't have the standard grey overlay
-// applied to them.
-BASE_FEATURE(kAutofillEnableNewCardArtAndNetworkImages,
-             "AutofillEnableNewCardArtAndNetworkImages",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, server card retrieval will begin with a risk-based check
 // instead of jumping straight to CVC or biometric auth.
 BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,

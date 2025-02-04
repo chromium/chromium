@@ -135,7 +135,7 @@ SavedTabGroup SpecificsToSharedTabGroup(
     const syncer::CollaborationMetadata& collaboration_metadata,
     base::Time creation_time) {
   CHECK(specifics.has_tab_group());
-  CHECK(!collaboration_metadata.collaboration_id().empty());
+  CHECK(!collaboration_metadata.collaboration_id()->empty());
 
   const tab_groups::TabGroupColorId color =
       SyncColorToTabGroupColor(specifics.tab_group().color());
@@ -230,7 +230,7 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
     sync_pb::SharedTabGroupDataSpecifics specifics,
     syncer::CollaborationMetadata collaboration_metadata,
     base::Time creation_time) {
-  CHECK(!collaboration_metadata.collaboration_id().empty());
+  CHECK(!collaboration_metadata.collaboration_id()->empty());
 
   if (specifics.has_tab()) {
     // Similar to saved tab groups, if the tab URL is not valid for sharing,
@@ -240,7 +240,6 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
       sync_pb::SharedTab* tab = specifics.mutable_tab();
       tab->set_url(kChromeSavedTabGroupUnsupportedURL);
       tab->clear_title();
-      tab->clear_favicon_url();
     }
   }
   std::unique_ptr<syncer::EntityData> entity_data =
@@ -261,7 +260,7 @@ void AddEntryToBatch(syncer::MutableDataBatch* batch,
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateEntityData(std::move(specifics),
                        syncer::CollaborationMetadata::ForLocalChange(
-                           changed_by, collaboration_id.value()),
+                           changed_by, collaboration_id),
                        creation_time);
 
   // Copy because our key is the name of `entity_data`.
@@ -372,7 +371,7 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
     const std::string& storage_key = specifics.guid();
     syncer::CollaborationMetadata collaboration_metadata =
         ExtractCollaborationMetadata(sync_metadata, storage_key);
-    if (collaboration_metadata.collaboration_id().empty()) {
+    if (collaboration_metadata.collaboration_id()->empty()) {
       stats::RecordSharedTabGroupDataLoadFromDiskResult(
           stats::SharedTabGroupDataLoadFromDiskResult::kMissingCollaborationId);
       continue;
@@ -414,7 +413,7 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
     const std::string& storage_key = specifics.guid();
     syncer::CollaborationMetadata collaboration_metadata =
         ExtractCollaborationMetadata(sync_metadata, storage_key);
-    if (collaboration_metadata.collaboration_id().empty()) {
+    if (collaboration_metadata.collaboration_id()->empty()) {
       stats::RecordSharedTabGroupDataLoadFromDiskResult(
           stats::SharedTabGroupDataLoadFromDiskResult::kMissingCollaborationId);
       continue;
@@ -764,7 +763,7 @@ std::string SharedTabGroupDataSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
   CHECK(entity_data.collaboration_metadata.has_value());
   return entity_data.specifics.shared_tab_group_data().guid() + "|" +
-         entity_data.collaboration_metadata->collaboration_id();
+         entity_data.collaboration_metadata->collaboration_id().value();
 }
 
 std::string SharedTabGroupDataSyncBridge::GetStorageKey(
@@ -864,7 +863,7 @@ bool SharedTabGroupDataSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!entity_data.collaboration_metadata.has_value() ||
-      entity_data.collaboration_metadata->collaboration_id().empty()) {
+      entity_data.collaboration_metadata->collaboration_id()->empty()) {
     DVLOG(2) << "Remote Shared Tab Group is missing collaboration ID";
     return false;
   }
@@ -904,7 +903,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupAddedLocally(
   SendToSync(group_specifics,
              syncer::CollaborationMetadata::ForLocalChange(
                  group->shared_attribution().updated_by,
-                 group->collaboration_id()->value()),
+                 group->collaboration_id().value()),
              group->creation_time_windows_epoch_micros(),
              ongoing_write_batch_->GetMetadataChangeList());
   for (size_t i = 0; i < group->saved_tabs().size(); ++i) {
@@ -925,7 +924,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupAddedLocally(
     SendToSync(tab_specifics,
                syncer::CollaborationMetadata::ForLocalChange(
                    tab.shared_attribution().updated_by,
-                   group->collaboration_id()->value()),
+                   group->collaboration_id().value()),
                tab.creation_time_windows_epoch_micros(),
                ongoing_write_batch_->GetMetadataChangeList());
   }
@@ -967,7 +966,7 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupUpdatedLocally(
     SendToSync(specifics,
                syncer::CollaborationMetadata::ForLocalChange(
                    group->shared_attribution().updated_by,
-                   group->collaboration_id()->value()),
+                   group->collaboration_id().value()),
                group->creation_time_windows_epoch_micros(),
                ongoing_write_batch_->GetMetadataChangeList());
   }
@@ -1122,7 +1121,7 @@ SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
 
   // TODO(crbug.com/381540386): move this check before the merge.
   if (existing_group->collaboration_id() !=
-      CollaborationId(collaboration_metadata.collaboration_id())) {
+      collaboration_metadata.collaboration_id()) {
     // Shared tab groups should never change collaboration IDs.
     return syncer::ModelError(
         FROM_HERE, "Unexpected collaboration ID for a remote group.");
@@ -1290,7 +1289,7 @@ void SharedTabGroupDataSyncBridge::ProcessTabLocalChange(
   SendToSync(specifics,
              syncer::CollaborationMetadata::ForLocalChange(
                  tab.shared_attribution().updated_by,
-                 group.collaboration_id()->value()),
+                 group.collaboration_id().value()),
              tab.creation_time_windows_epoch_micros(),
              write_batch.GetMetadataChangeList());
 }

@@ -190,8 +190,12 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       assertWithMatcher:grey_notNil()];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
-  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
-      assertWithMatcher:grey_nil()];
+
+  // Verify the "manage sync" view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests that unified account settings row is showing, and the Sync row is not

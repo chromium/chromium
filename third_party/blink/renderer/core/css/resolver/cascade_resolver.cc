@@ -16,8 +16,12 @@ bool CascadeResolver::IsLocked(const CSSProperty& property) const {
   return Find(property) != kNotFound;
 }
 
-bool CascadeResolver::IsLocked(const AtomicString& attribute) const {
+bool CascadeResolver::IsLocked(const Attribute& attribute) const {
   return Find(attribute) != kNotFound;
+}
+
+bool CascadeResolver::IsLocked(const LocalVariable& local_variable) const {
+  return Find(local_variable) != kNotFound;
 }
 
 bool CascadeResolver::AllowSubstitution(CSSVariableData* data) const {
@@ -35,8 +39,12 @@ bool CascadeResolver::DetectCycle(const CSSProperty& property) {
   return DetectCycle(Find(property));
 }
 
-bool CascadeResolver::DetectCycle(const AtomicString& attribute) {
+bool CascadeResolver::DetectCycle(const Attribute& attribute) {
   return DetectCycle(Find(attribute));
+}
+
+bool CascadeResolver::DetectCycle(const LocalVariable& local_variable) {
+  return DetectCycle(Find(local_variable));
 }
 
 bool CascadeResolver::DetectCycle(wtf_size_t index) {
@@ -66,16 +74,29 @@ wtf_size_t CascadeResolver::Find(const CSSProperty& property) const {
   return kNotFound;
 }
 
-wtf_size_t CascadeResolver::Find(const AtomicString& attribute) const {
+namespace {
+
+template <typename T>
+wtf_size_t FindInternal(const CascadeResolver::CycleStack& stack,
+                        const T& item) {
   wtf_size_t index = 0;
-  for (CycleElem elem : stack_) {
-    if (absl::holds_alternative<AtomicString>(elem) &&
-        absl::get<AtomicString>(elem) == attribute) {
+  for (CascadeResolver::CycleElem elem : stack) {
+    if (absl::holds_alternative<T>(elem) && absl::get<T>(elem) == item) {
       return index;
     }
     ++index;
   }
   return kNotFound;
+}
+
+}  // namespace
+
+wtf_size_t CascadeResolver::Find(const Attribute& attribute) const {
+  return FindInternal(stack_, attribute);
+}
+
+wtf_size_t CascadeResolver::Find(const LocalVariable& local_variable) const {
+  return FindInternal(stack_, local_variable);
 }
 
 CascadeResolver::AutoLock::AutoLock(const CSSProperty& property,
@@ -85,11 +106,18 @@ CascadeResolver::AutoLock::AutoLock(const CSSProperty& property,
   resolver_.stack_.push_back(&property);
 }
 
-CascadeResolver::AutoLock::AutoLock(const AtomicString& attribute,
+CascadeResolver::AutoLock::AutoLock(const Attribute& attribute,
                                     CascadeResolver& resolver)
     : resolver_(resolver) {
   DCHECK(!resolver.IsLocked(attribute));
   resolver_.stack_.push_back(attribute);
+}
+
+CascadeResolver::AutoLock::AutoLock(const LocalVariable& local_variable,
+                                    CascadeResolver& resolver)
+    : resolver_(resolver) {
+  DCHECK(!resolver.IsLocked(local_variable));
+  resolver_.stack_.push_back(local_variable);
 }
 
 CascadeResolver::AutoLock::~AutoLock() {

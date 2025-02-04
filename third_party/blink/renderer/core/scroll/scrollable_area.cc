@@ -666,7 +666,7 @@ void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
   ScrollOffset old_offset = GetScrollOffset();
   ScrollOffset truncated_offset =
       ShouldUseIntegerScrollOffset()
-          ? ScrollOffset(gfx::ToFlooredVector2d(offset))
+          ? ScrollOffset(gfx::ToRoundedVector2d(offset))
           : offset;
 
   // Tell the derived class to scroll its contents.
@@ -1398,7 +1398,7 @@ float ScrollableArea::ScaleFromDIP() const {
 bool ScrollableArea::ScrollOffsetIsNoop(const ScrollOffset& offset) const {
   return GetScrollOffset() ==
          (ShouldUseIntegerScrollOffset()
-              ? ScrollOffset(gfx::ToFlooredVector2d(offset))
+              ? ScrollOffset(gfx::ToRoundedVector2d(offset))
               : offset);
 }
 
@@ -1436,7 +1436,7 @@ ScrollOffset ScrollableArea::GetWebExposedScrollOffset() const {
 
   // Ensure that, if fractional scroll offsets are not enabled, the scroll
   // offset is an floored value.
-  CHECK_EQ(gfx::ToFlooredVector2d(scroll_offset), scroll_offset);
+  CHECK_EQ(gfx::ToRoundedVector2d(scroll_offset), scroll_offset);
   return scroll_offset;
 }
 

@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
@@ -18,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -26,7 +24,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -143,32 +140,26 @@ std::string SyncConsentScreen::GetResultString(Result result) {
 
 // static
 void SyncConsentScreen::MaybeLaunchSyncConsentSettings(Profile* profile) {
+  // TODO(alemate): In a very special case when chrome is exiting at the very
+  // moment we show Settings, it might crash here because profile could be
+  // already destroyed. This needs to be fixed.
   if (profile->GetPrefs()->GetBoolean(
           ::prefs::kShowSyncSettingsOnSessionStart)) {
-    // TODO (alemate): In a very special case when chrome is exiting at the very
-    // moment we show Settings, it might crash here because profile could be
-    // already destroyed. This needs to be fixed.
-    if (crosapi::browser_util::IsLacrosEnabled()) {
-      profile->GetPrefs()->ClearPref(::prefs::kShowArcSettingsOnSessionStart);
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kSyncSetupSubpagePath);
-    } else {
-      // SyncSetupSubPage here is shown in the browser instead of the OS
-      // Settings. We delay showing chrome sync settings by
-      // kSyncConsentSettingsShowDelay to make the settings tab shows on top of
-      // the restored tabs and windows.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](Profile* profile) {
-                profile->GetPrefs()->ClearPref(
-                    ::prefs::kShowSyncSettingsOnSessionStart);
-                chrome::ShowSettingsSubPageForProfile(
-                    profile, chrome::kSyncSetupSubPage);
-              },
-              base::Unretained(profile)),
-          kSyncConsentSettingsShowDelay);
-    }
+    // SyncSetupSubPage here is shown in the browser instead of the OS
+    // Settings. We delay showing chrome sync settings by
+    // kSyncConsentSettingsShowDelay to make the settings tab shows on top of
+    // the restored tabs and windows.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](Profile* profile) {
+              profile->GetPrefs()->ClearPref(
+                  ::prefs::kShowSyncSettingsOnSessionStart);
+              chrome::ShowSettingsSubPageForProfile(profile,
+                                                    chrome::kSyncSetupSubPage);
+            },
+            base::Unretained(profile)),
+        kSyncConsentSettingsShowDelay);
   }
 }
 
@@ -243,14 +234,14 @@ void SyncConsentScreen::ShowImpl() {
     start_time_ = base::TimeTicks::Now();
   } else {
     PrepareScreenBasedOnCapability();
-    view_->ShowLoadedStep(IsOsSyncLacros());
+    view_->ShowLoadedStep();
   }
 
   // Show the entire screen.
   // If SyncScreenBehavior is show, this should show the sync consent screen.
   // If SyncScreenBehavior is unknown, this should show the loading throbber.
   if (view_) {
-    view_->Show(crosapi::browser_util::IsLacrosEnabled());
+    view_->Show();
   }
 
   if (context()->extra_factors_token) {
@@ -363,7 +354,7 @@ void SyncConsentScreen::UpdateScreen(const WizardContext& context) {
     PrepareScreenBasedOnCapability();
 
     if (view_) {
-      view_->ShowLoadedStep(IsOsSyncLacros());
+      view_->ShowLoadedStep();
     }
     GetSyncService(profile_)->RemoveObserver(this);
     timeout_waiter_.Stop();
@@ -429,19 +420,11 @@ void SyncConsentScreen::PrepareScreenBasedOnCapability() {
                             is_minor_mode);
   // Turn on "sync everything" toggle for non-minor users; turn off all data
   // types for minor users for the ash sync.
-  if (!IsOsSyncLacros()) {
-    SetSyncEverythingEnabled(!is_minor_mode);
-  }
+  SetSyncEverythingEnabled(!is_minor_mode);
 
   if (view_) {
     view_->SetIsMinorMode(is_minor_mode);
   }
-}
-
-// Check if OSSyncRevamp and Lacros are enabled.
-bool SyncConsentScreen::IsOsSyncLacros() {
-  return crosapi::browser_util::IsLacrosEnabled() &&
-         features::IsOsSyncConsentRevampEnabled();
 }
 
 void SyncConsentScreen::SetSyncEverythingEnabled(bool enabled) {

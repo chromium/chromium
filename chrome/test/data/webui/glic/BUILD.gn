@@ -35,6 +35,7 @@ ts_library("build_ts") {
 preprocess_if_expr("move_html") {
   in_files = [
     "test.html",
+    "test_client/fre.html",
     "test_client/index.html",
   ]
   out_folder = out_dir

@@ -863,6 +863,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
   req_state_->request_delegate->RegisterActionCallbacks(
       base::BindOnce(&AuthenticatorCommonImpl::OnCancelFromUI,
                      weak_factory_.GetWeakPtr()) /* cancel_callback */,
+      base::DoNothing() /* immediate_not_found_callback */,
       base::BindRepeating(
           &AuthenticatorCommonImpl::StartMakeCredentialRequest,
           weak_factory_.GetWeakPtr(),
@@ -927,6 +928,11 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
   req_state_->request_delegate->RegisterActionCallbacks(
       base::BindOnce(&AuthenticatorCommonImpl::OnCancelFromUI,
                      weak_factory_.GetWeakPtr()) /* cancel_callback */,
+      base::BindOnce(
+          &AuthenticatorCommonImpl::CancelWithStatus,
+          weak_factory_.GetWeakPtr(),
+          blink::mojom::AuthenticatorStatus::
+              IMMEDIATE_NOT_FOUND) /* immediate_not_found_callback */,
       base::BindRepeating(
           &AuthenticatorCommonImpl::StartGetAssertionRequest,
           weak_factory_.GetWeakPtr(),
@@ -1332,10 +1338,10 @@ void AuthenticatorCommonImpl::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     blink::mojom::PaymentOptionsPtr payment_options,
     GetAssertionCallback callback) {
-  if (options->is_conditional) {
+  if (options->mediation == blink::mojom::Mediation::CONDITIONAL) {
     base::RecordAction(
         base::UserMetricsAction("WebAuthn.GetAssertion.Conditional.Start"));
-  } else {
+  } else if (options->mediation == blink::mojom::Mediation::MODAL) {
     base::RecordAction(base::UserMetricsAction("WebAuthn.GetAssertion.Start"));
   }
   callback = base::BindOnce(
@@ -1354,20 +1360,30 @@ void AuthenticatorCommonImpl::GetAssertion(
   req_state_->response_callback = std::move(callback);
   if (!payment_options.is_null()) {
     req_state_->mode = AuthenticationRequestMode::kPayment;
-  } else if (options->is_conditional) {
+  } else if (options->mediation == blink::mojom::Mediation::CONDITIONAL) {
     req_state_->mode = AuthenticationRequestMode::kConditional;
   } else {
     req_state_->mode = AuthenticationRequestMode::kModalWebAuthn;
   }
   req_state_->hints.insert(options->hints.begin(), options->hints.end());
 
-  if (!options->is_conditional) {
+  if (options->mediation != blink::mojom::Mediation::CONDITIONAL) {
     BeginRequestTimeout(options->timeout);
   }
 
   if (options->challenge.has_value() == options->challenge_url.has_value()) {
     mojo::ReportBadMessage(
         "Exactly one of challenge and challenge_url must be provided");
+    req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
+    CompleteGetAssertionRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
+
+  if (options->mediation == blink::mojom::Mediation::IMMEDIATE &&
+      !options->allow_credentials.empty()) {
+    mojo::ReportBadMessage(
+        "Immediate mediation cannot be used with an allow credential list");
     req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
     CompleteGetAssertionRequest(
         blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
@@ -1494,7 +1510,7 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   WebAuthenticationRequestProxy* proxy =
       GetWebAuthnRequestProxyIfActive(caller_origin);
   if (proxy) {
-    if (options->is_conditional ||
+    if (options->mediation == blink::mojom::Mediation::CONDITIONAL ||
         (options->extensions->remote_desktop_client_override)) {
       // Don't allow proxying of an already proxied or conditional request.
       req_state_->request_outcome = GetAssertionOutcome::kOtherFailure;
@@ -1539,8 +1555,10 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   auto ui_presentation = UIPresentation::kModal;
   if (disable_ui_) {
     ui_presentation = UIPresentation::kDisabled;
-  } else if (options->is_conditional) {
+  } else if (options->mediation == blink::mojom::Mediation::CONDITIONAL) {
     ui_presentation = UIPresentation::kAutofill;
+  } else if (options->mediation == blink::mojom::Mediation::IMMEDIATE) {
+    ui_presentation = UIPresentation::kModalImmediate;
   }
   req_state_->request_delegate->SetUIPresentation(ui_presentation);
 
@@ -1572,14 +1590,14 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
                        std::move(client_data_json_params)));
   }
 
-  if (options->is_conditional) {
+  if (options->mediation == blink::mojom::Mediation::CONDITIONAL) {
     req_state_->request_delegate->SetAmbientCredentialTypes(
         options->requested_credential_type_flags);
   }
 
   req_state_->request_delegate->SetCredentialIdFilter(
       options->allow_credentials);
-  if (options->is_conditional) {
+  if (options->mediation == blink::mojom::Mediation::CONDITIONAL) {
     // Conditional mediation requests can only be fulfilled by discoverable
     // credentials. The provided allowCredentials list is stripped and will be
     // used to filter returned passkeys

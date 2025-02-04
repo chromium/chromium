@@ -31,6 +31,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -221,10 +222,23 @@ public class TabDragSource implements View.OnDragListener {
         return res;
     }
 
-    /** Starts the group drag action by initiating the process by calling View.startDragAndDrop. */
-    public boolean startGroupDragAction() {
-        // TODO(crbug.com/384969886): Implement. Should largely mirror #startTabDragAction, but
-        //  with different global state.
+    /**
+     * Starts the group drag action by initiating the process by calling View.startDragAndDrop.
+     *
+     * @param dragSourceView View used to create the drag shadow.
+     * @param tabGroupId The dragged group's ID.
+     * @param startPoint Position of the drag start point in view coordinates.
+     * @param positionX The horizontal position of the dragged group title in view coordinates.
+     * @param widthDp Width of the group title in dp.
+     * @return {@code True} if the drag action was initiated successfully.
+     */
+    public boolean startGroupDragAction(
+            @NonNull View dragSourceView,
+            Token tabGroupId,
+            @NonNull PointF startPoint,
+            float positionX,
+            float widthDp) {
+        // TODO(crbug.com/384969886): Implement.
         return false;
     }
 

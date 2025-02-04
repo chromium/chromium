@@ -471,30 +471,17 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest,
 class CastMirroringServiceHostBrowserTestTabSwitcher
     : public CastMirroringServiceHostBrowserTest {
  public:
-  CastMirroringServiceHostBrowserTestTabSwitcher() {
-    feature_list_.InitWithFeatures({features::kAccessCodeCastTabSwitchingUI},
-                                   {});
-  }
-
+  CastMirroringServiceHostBrowserTestTabSwitcher() = default;
   CastMirroringServiceHostBrowserTestTabSwitcher(
       const CastMirroringServiceHostBrowserTestTabSwitcher&) = delete;
   CastMirroringServiceHostBrowserTestTabSwitcher& operator=(
       const CastMirroringServiceHostBrowserTestTabSwitcher&) = delete;
 
   ~CastMirroringServiceHostBrowserTestTabSwitcher() override = default;
-
-  void VerifyEnabledFeatures() {
-    ASSERT_TRUE(
-        base::FeatureList::IsEnabled(features::kAccessCodeCastTabSwitchingUI));
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTestTabSwitcher,
                        SwitchTabSource) {
-  VerifyEnabledFeatures();
   EnableAccessCodeCast();
   StartTabMirroring();
   GetVideoCaptureHost();

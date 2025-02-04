@@ -17,6 +17,7 @@ void ReplyWithEmptyList(CallbackType callback) {
 PasswordStoreEmptyBackend::PasswordStoreEmptyBackend() {}
 
 PasswordStoreEmptyBackend::~PasswordStoreEmptyBackend() {}
+
 void PasswordStoreEmptyBackend::InitBackend(
     AffiliatedMatchHelper* affiliated_match_helper,
     RemoteChangesReceived remote_form_changes_received,

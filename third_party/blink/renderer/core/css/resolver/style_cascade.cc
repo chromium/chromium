@@ -1166,7 +1166,9 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
   DCHECK(!resolver.IsLocked(property));
   CascadeResolver::AutoLock lock(property, resolver);
 
+  CascadePriority priority = map_.At(property.GetCSSPropertyName());
   DCHECK_NE(property.PropertyID(), CSSPropertyID::kVariable);
+  DCHECK_NE(priority.GetOrigin(), CascadeOrigin::kNone);
 
   MarkHasVariableReference(property);
 
@@ -1366,7 +1368,8 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
                RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
       CSSParserTokenStream::BlockGuard guard(stream);
       state_.StyleBuilder().SetHasAttrFunction();
-      success &= ResolveAttrInto(stream, resolver, context, out);
+      success &=
+          ResolveAttrInto(stream, resolver, context, function_context, out);
     } else if (token.FunctionId() ==
                CSSValueID::kInternalAutoBase) {
       CSSParserTokenStream::BlockGuard guard(stream);
@@ -1744,8 +1747,8 @@ void StyleCascade::ApplyLocalVariables(CascadeResolver& resolver,
       // Already applied. This can happen because a call to ResolveLocalVariable
       // may trigger application of other local variables via var().
     }
-    const CSSValue* resolved =
-        ResolveLocalVariable(*value, resolver, context, function_context);
+    const CSSValue* resolved = ResolveLocalVariable(
+        AtomicString(name), *value, resolver, context, function_context);
     // Note: The following call may insert an explicit nullptr;
     // this is intentional.
     function_context.locals.insert(name, resolved);
@@ -1769,17 +1772,24 @@ void StyleCascade::LookupAndApplyLocalVariable(
     return;
   }
 
-  const CSSValue* resolved = ResolveLocalVariable(
-      *unresolved_it->value, resolver, context, function_context);
+  const CSSValue* resolved =
+      ResolveLocalVariable(AtomicString(name), *unresolved_it->value, resolver,
+                           context, function_context);
   // Note: we may insert an explicit nullptr here; this is intentional.
   function_context.locals.insert(name, resolved);
 }
 
 const CSSValue* StyleCascade::ResolveLocalVariable(
+    const AtomicString& name,
     const CSSValue& unresolved,
     CascadeResolver& resolver,
     const CSSParserContext& context,
     FunctionContext& function_context) {
+  using LocalVariable = CascadeResolver::LocalVariable;
+  if (resolver.DetectCycle(LocalVariable(name))) {
+    return nullptr;
+  }
+  CascadeResolver::AutoLock lock(LocalVariable(name), resolver);
   CSSVariableData* data =
       To<CSSUnparsedDeclarationValue>(unresolved).VariableDataValue();
   if (data->NeedsVariableResolution()) {
@@ -1839,12 +1849,14 @@ bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
 bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    CascadeResolver& resolver,
                                    const CSSParserContext& context,
+                                   FunctionContext* function_context,
                                    TokenSequence& out) {
   AtomicString local_name = ConsumeVariableName(stream);
-  if (resolver.DetectCycle(local_name)) {
+  using Attribute = CascadeResolver::Attribute;
+  if (resolver.DetectCycle(Attribute(local_name))) {
     return false;
   }
-  CascadeResolver::AutoLock lock(local_name, resolver);
+  CascadeResolver::AutoLock lock(Attribute(local_name), resolver);
   std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
   if (!attr_type.has_value()) {
     attr_type = CSSAttrType::GetDefaultValue();
@@ -1861,10 +1873,9 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
   if (!attribute_value.IsNull() && !attr_type->IsString()) {
     TokenSequence substituted_attribute_token_sequence;
     CSSParserTokenStream attribute_value_stream(attribute_value);
-    if (!ResolveTokensInto(attribute_value_stream, resolver, context,
-                           /* function_context */ nullptr,
-                           /* stop_type */ kEOFToken,
-                           substituted_attribute_token_sequence)) {
+    if (!ResolveTokensInto(
+            attribute_value_stream, resolver, context, function_context,
+            /* stop_type */ kEOFToken, substituted_attribute_token_sequence)) {
       return false;
     }
     substituted_attribute_value =
@@ -1880,8 +1891,7 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     stream.ConsumeWhitespace();
 
     TokenSequence fallback;
-    if (!ResolveTokensInto(stream, resolver, context,
-                           /* function_context */ nullptr,
+    if (!ResolveTokensInto(stream, resolver, context, function_context,
                            /* stop_type */ kEOFToken, fallback)) {
       return false;
     }

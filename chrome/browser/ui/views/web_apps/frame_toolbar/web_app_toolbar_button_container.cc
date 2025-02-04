@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/system_app_accessible_name.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
@@ -182,7 +183,11 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
                                static_cast<int>(HTCLIENT));
   }
 
-  if (download::IsDownloadBubbleEnabled()) {
+  pinned_toolbar_actions_container_ = AddChildView(
+      std::make_unique<PinnedToolbarActionsContainer>(browser_view_));
+
+  if (download::IsDownloadBubbleEnabled() &&
+      !base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
     download_button_ = AddChildView(
         std::make_unique<DownloadToolbarButtonView>(browser_view_));
     views::SetHitTestComponent(download_button_, static_cast<int>(HTCLIENT));
@@ -262,6 +267,14 @@ views::FlexRule WebAppToolbarButtonContainer::GetFlexRule() const {
             toolbar_button_provider->GetToolbarButtonSize().height());
       },
       base::Unretained(toolbar_button_provider_), layout->GetDefaultFlexRule());
+}
+
+ToolbarButton* WebAppToolbarButtonContainer::GetDownloadButton() {
+  if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
+    return pinned_toolbar_actions_container_->GetButtonFor(
+        kActionShowDownloads);
+  }
+  return download_button_.get();
 }
 
 void WebAppToolbarButtonContainer::DisableAnimationForTesting(bool disable) {

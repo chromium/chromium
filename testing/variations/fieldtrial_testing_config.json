@@ -8641,7 +8641,8 @@
                     "params": {
                         "disable_bottom_controls_stacker_y_offset": "false",
                         "e2e_field_trial_oem_list": "oppo,xiaomi",
-                        "e2e_field_trial_oem_min_versions": "34,34"
+                        "e2e_field_trial_oem_min_versions": "34,34",
+                        "scrollable_when_stacking": "true"
                     },
                     "enable_features": [
                         "BottomBrowserControlsRefactor",
@@ -8788,6 +8789,7 @@
     "EnableCertManagementUIV2": [
         {
             "platforms": [
+                "chromeos",
                 "linux"
             ],
             "experiments": [
@@ -8803,6 +8805,7 @@
     "EnableCertManagementUIV2Write": [
         {
             "platforms": [
+                "chromeos",
                 "linux",
                 "mac",
                 "windows"
@@ -11312,6 +11315,21 @@
             ]
         }
     ],
+    "HideTabletToolbarDownloadButtonAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HideTabletToolbarDownloadButton"
+                    ]
+                }
+            ]
+        }
+    ],
     "HistoryEmbeddingsV2Images": [
         {
             "platforms": [
@@ -11418,6 +11436,7 @@
                 {
                     "name": "WithReadAndDiscardBody_20240328",
                     "params": {
+                        "http_disk_cache_prewarming_main_resource": "false",
                         "http_disk_cache_prewarming_use_read_and_discard_body_option": "true"
                     },
                     "enable_features": [
@@ -14061,21 +14080,6 @@
             ]
         }
     ],
-    "MediaFoundationVP9Encoding": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MediaFoundationVP9Encoding"
-                    ]
-                }
-            ]
-        }
-    ],
     "MediaHardwareSecureDecryption": [
         {
             "platforms": [
@@ -14231,6 +14235,49 @@
                     ],
                     "disable_features": [
                         "ReleaseResourceDecodedDataOnMemoryPressure"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MerchantTrust": [
+        {
+            "platforms": [
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250130",
+                    "params": {
+                        "en_site_id": "pnM2xW83W0ugnJ3q1cK0WyyikxbT",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "MerchantTrust",
+                        "MerchantTrustEvaluationExperimentSurvey",
+                        "MerchantTrustLearnSurvey"
+                    ],
+                    "disable_features": [
+                        "MerchantTrustEvaluationControlSurvey"
+                    ]
+                },
+                {
+                    "name": "EnabledWithControlSurvey_20250130",
+                    "params": {
+                        "en_site_id": "YdFFpSNzs0ugnJ3q1cK0TuMcibft",
+                        "probability": "1.0"
+                    },
+                    "enable_features": [
+                        "MerchantTrustEvaluationControlSurvey"
+                    ],
+                    "disable_features": [
+                        "MerchantTrust",
+                        "MerchantTrustEvaluationExperimentSurvey",
+                        "MerchantTrustLearnSurvey"
                     ]
                 }
             ]
@@ -18140,7 +18187,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PrivacySandboxPrivacyGuideAdTopics"
+                        "PrivacySandboxAdTopicsContentParity"
                     ]
                 }
             ]
@@ -18417,25 +18464,6 @@
                     "enable_features": [
                         "EnableBandAPrivateAggregation",
                         "EnableBandASampleDebugReports"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ProtectedAudienceBAndASelectedReportingId": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableBandADealSupport"
                     ]
                 }
             ]
@@ -24179,6 +24207,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UploadOfficeToCloud"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UseAccountListFromIdentityManager": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAccountListFromIdentityManager"
                     ]
                 }
             ]

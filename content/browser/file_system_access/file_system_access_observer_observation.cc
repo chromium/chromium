@@ -93,7 +93,9 @@ blink::mojom::FileSystemAccessEntryPtr CreateEntryForUrl(
     case FileSystemAccessPermissionContext::HandleType::kFile:
       return blink::mojom::FileSystemAccessEntry::New(
           blink::mojom::FileSystemAccessHandle::NewFile(
-              manager.CreateFileHandle(binding_context, url, handle_state)),
+              manager.CreateFileHandle(
+                  binding_context, url,
+                  url.virtual_path().BaseName().AsUTF8Unsafe(), handle_state)),
           url.virtual_path().BaseName().AsUTF8Unsafe());
     case FileSystemAccessPermissionContext::HandleType::kDirectory:
       return blink::mojom::FileSystemAccessEntry::New(

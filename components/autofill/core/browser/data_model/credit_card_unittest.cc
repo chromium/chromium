@@ -1081,82 +1081,53 @@ TEST(CreditCardTest, CompareCardInfoRetrievalEnrollmentState) {
 TEST(CreditCardTest, IconResourceId) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillEnableVerveCardSupport};
-  bool new_network_images = base::FeatureList::IsEnabled(
-      features::kAutofillEnableNewCardArtAndNetworkImages);
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_AMEX : IDR_AUTOFILL_CC_AMEX,
-      CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress));
-  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_DINERS
-                               : IDR_AUTOFILL_CC_DINERS,
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX,
+            CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS,
             CreditCard::IconResourceId(Suggestion::Icon::kCardDiners));
-  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_DISCOVER
-                               : IDR_AUTOFILL_CC_DISCOVER,
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DISCOVER,
             CreditCard::IconResourceId(Suggestion::Icon::kCardDiscover));
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_ELO : IDR_AUTOFILL_CC_ELO,
-      CreditCard::IconResourceId(Suggestion::Icon::kCardElo));
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_JCB : IDR_AUTOFILL_CC_JCB,
-      CreditCard::IconResourceId(Suggestion::Icon::kCardJCB));
-  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_MASTERCARD
-                               : IDR_AUTOFILL_CC_MASTERCARD,
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_ELO,
+            CreditCard::IconResourceId(Suggestion::Icon::kCardElo));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_JCB,
+            CreditCard::IconResourceId(Suggestion::Icon::kCardJCB));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MASTERCARD,
             CreditCard::IconResourceId(Suggestion::Icon::kCardMasterCard));
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_MIR : IDR_AUTOFILL_CC_MIR,
-      CreditCard::IconResourceId(Suggestion::Icon::kCardMir));
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_TROY : IDR_AUTOFILL_CC_TROY,
-      CreditCard::IconResourceId(Suggestion::Icon::kCardTroy));
-  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_UNIONPAY
-                               : IDR_AUTOFILL_CC_UNIONPAY,
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MIR,
+            CreditCard::IconResourceId(Suggestion::Icon::kCardMir));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_TROY,
+            CreditCard::IconResourceId(Suggestion::Icon::kCardTroy));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_UNIONPAY,
             CreditCard::IconResourceId(Suggestion::Icon::kCardUnionPay));
-  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_VERVE
-                               : IDR_AUTOFILL_CC_VERVE,
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VERVE,
             CreditCard::IconResourceId(Suggestion::Icon::kCardVerve));
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_VISA : IDR_AUTOFILL_CC_VISA,
-      CreditCard::IconResourceId(Suggestion::Icon::kCardVisa));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VISA,
+            CreditCard::IconResourceId(Suggestion::Icon::kCardVisa));
 }
 
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceIdFromString) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillEnableVerveCardSupport};
-  bool new_network_images = base::FeatureList::IsEnabled(
-      features::kAutofillEnableNewCardArtAndNetworkImages);
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_AMEX : IDR_AUTOFILL_CC_AMEX,
-      CreditCard::IconResourceId(kAmericanExpressCard));
-  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_DINERS
-                               : IDR_AUTOFILL_CC_DINERS,
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX,
+            CreditCard::IconResourceId(kAmericanExpressCard));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS,
             CreditCard::IconResourceId(kDinersCard));
-  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_DISCOVER
-                               : IDR_AUTOFILL_CC_DISCOVER,
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DISCOVER,
             CreditCard::IconResourceId(kDiscoverCard));
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_ELO : IDR_AUTOFILL_CC_ELO,
-      CreditCard::IconResourceId(kEloCard));
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_JCB : IDR_AUTOFILL_CC_JCB,
-      CreditCard::IconResourceId(kJCBCard));
-  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_MASTERCARD
-                               : IDR_AUTOFILL_CC_MASTERCARD,
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_ELO, CreditCard::IconResourceId(kEloCard));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_JCB, CreditCard::IconResourceId(kJCBCard));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MASTERCARD,
             CreditCard::IconResourceId(kMasterCard));
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_MIR : IDR_AUTOFILL_CC_MIR,
-      CreditCard::IconResourceId(kMirCard));
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_TROY : IDR_AUTOFILL_CC_TROY,
-      CreditCard::IconResourceId(kTroyCard));
-  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_UNIONPAY
-                               : IDR_AUTOFILL_CC_UNIONPAY,
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MIR, CreditCard::IconResourceId(kMirCard));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_TROY,
+            CreditCard::IconResourceId(kTroyCard));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_UNIONPAY,
             CreditCard::IconResourceId(kUnionPay));
-  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_VERVE
-                               : IDR_AUTOFILL_CC_VERVE,
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VERVE,
             CreditCard::IconResourceId(kVerveCard));
-  EXPECT_EQ(
-      new_network_images ? IDR_AUTOFILL_METADATA_CC_VISA : IDR_AUTOFILL_CC_VISA,
-      CreditCard::IconResourceId(kVisaCard));
+  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VISA,
+            CreditCard::IconResourceId(kVisaCard));
 }
 
 TEST(CreditCardTest, UpdateFromImportedCard_UpdatedWithNameAndExpirationDate) {

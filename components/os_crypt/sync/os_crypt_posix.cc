@@ -71,6 +71,10 @@ bool OSCrypt::DecryptString16(const std::string& ciphertext,
 // (FreeBSD, others).
 bool OSCrypt::EncryptString(const std::string& plaintext,
                             std::string* ciphertext) {
+  if (!IsEncryptionAvailable()) {
+    return false;
+  }
+
   if (plaintext.empty()) {
     *ciphertext = std::string();
     return true;
@@ -85,6 +89,10 @@ bool OSCrypt::EncryptString(const std::string& plaintext,
 
 bool OSCrypt::DecryptString(const std::string& ciphertext,
                             std::string* plaintext) {
+  if (!IsEncryptionAvailable()) {
+    return false;
+  }
+
   if (ciphertext.empty()) {
     *plaintext = std::string();
     return true;

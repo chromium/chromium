@@ -4,7 +4,7 @@
 
 import 'chrome://print/print_preview.js';
 
-import type {MediaSizeCapability, PrintPreviewMediaSizeSettingsElement} from 'chrome://print/print_preview.js';
+import type {MediaSizeCapability, PrintPreviewMediaSizeSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -14,13 +14,15 @@ import {getCddTemplate} from './print_preview_test_utils.js';
 suite('MediaSizeSettingsTest', function() {
   let mediaSizeSection: PrintPreviewMediaSizeSettingsElement;
 
+  let model: PrintPreviewModelElement;
+
   const mediaSizeCapability: MediaSizeCapability =
       getCddTemplate('FooPrinter').capabilities!.printer!.media_size!;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({isBorderlessPrintingEnabled: true});
-    const model = document.createElement('print-preview-model');
+    model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
     mediaSizeSection =
@@ -98,5 +100,14 @@ suite('MediaSizeSettingsTest', function() {
     assertDeepEquals(
         letterOption, mediaSizeSection.getSettingValue('mediaSize'));
     assertDeepEquals(letterOption, JSON.parse(settingsSelect.selectedValue));
+  });
+
+  test('disabled by destination policy', function() {
+    const settingsSelect = mediaSizeSection.shadowRoot!.querySelector(
+        'print-preview-settings-select')!;
+    assertFalse(settingsSelect.disabled);
+
+    model.set('settings.mediaSize.setByDestinationPolicy', true);
+    assertTrue(settingsSelect.disabled);
   });
 });

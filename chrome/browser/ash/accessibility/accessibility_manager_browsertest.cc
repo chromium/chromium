@@ -1819,7 +1819,8 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   void CreateSession(const AccountId& account_id) {
     auto* session_manager = session_manager::SessionManager::Get();
     session_manager->CreateSession(account_id, account_id.GetUserEmail(),
-                                   false);
+                                   user_manager::UserType::kRegular,
+                                   /*has_active_session=*/false);
   }
 
   void StartUserSession(const AccountId& account_id) {

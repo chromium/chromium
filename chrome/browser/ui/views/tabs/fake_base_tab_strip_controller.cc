@@ -245,8 +245,8 @@ void FakeBaseTabStripController::AddSelectionFromAnchorTo(int index) {}
 void FakeBaseTabStripController::OnCloseTab(
     int index,
     CloseTabSource source,
-    base::OnceCallback<void()> callback) {
-  std::move(callback).Run();
+    base::OnceCallback<void(CloseTabSource)> callback) {
+  std::move(callback).Run(source);
 }
 
 void FakeBaseTabStripController::ToggleTabAudioMute(int index) {}

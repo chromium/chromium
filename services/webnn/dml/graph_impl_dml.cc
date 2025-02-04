@@ -4344,12 +4344,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
   const std::string& label = lstm.label;
-  // TODO(crbug.com/329702350): Support the ifgo layout.
-  if (lstm.layout == mojom::LstmWeightLayout::kIfgo) {
-    return CreateUnexpectedError(
-        mojom::Error::Code::kNotSupportedError,
-        "The lstm weight layout (ifgo) is not supported.", label);
-  }
 
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, lstm.input_operand_id);
@@ -4358,8 +4352,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_lstm_operator_desc
   input = AppendIdentityToConstantOperand(graph_builder, input);
   TensorDesc input_tensor_desc = input->GetTensorDesc();
+  const DML_TENSOR_DATA_TYPE input_dml_data_type =
+      input_tensor_desc.GetDataType();
   const OperandDataType input_data_type =
-      DmlDataTypeToOperand(input_tensor_desc.GetDataType());
+      DmlDataTypeToOperand(input_dml_data_type);
 
   mojom::Operation::Tag op_tag;
   std::optional<uint64_t> initial_hidden_state_operand_id;
@@ -4412,6 +4408,106 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   recurrent_weight_tensor_desc.EnsureMinimumRank(
       /*rank=*/4, TensorDesc::Alignment::kTrailing);
 
+  const uint32_t direction_count =
+      direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
+
+  const NodeOutput* weight_iofg = weight;
+  const NodeOutput* recurrent_weight_iofg = recurrent_weight;
+  if (lstm.layout == mojom::LstmWeightLayout::kIfgo) {
+    // Rearrange the layout of weights from ifgo to iofg by splitting ifgo to
+    // i,f,g,o and concatenating them to iofg.
+
+    const uint32_t input_size = input_tensor_desc.GetDimensions().at(3);
+    std::vector<uint32_t> split_weight_output_dims = {
+        1, direction_count, lstm.hidden_size, input_size};
+    TensorDesc split_weight_output_tensor_desc(
+        input_dml_data_type, std::move(split_weight_output_dims));
+    std::array<DML_TENSOR_DESC, 4> split_weight_tensor_descs_dml;
+    split_weight_tensor_descs_dml.fill(
+        split_weight_output_tensor_desc.GetDMLTensorDesc());
+
+    DML_SPLIT_OPERATOR_DESC split_desc{
+        .InputTensor = &weight_tensor_desc.GetDMLTensorDesc(),
+        .OutputCount = 4,
+        .OutputTensors = split_weight_tensor_descs_dml.data(),
+        .Axis = 2};
+
+    std::array<const NodeOutput*, 1> split_weight_inputs = {weight};
+    const GraphNode* split_weight_node = graph_builder.CreateOperatorNode(
+        DML_OPERATOR_SPLIT, &split_desc, split_weight_inputs,
+        label + "_split_weight_ifgo");
+    const NodeOutput* split_weight_output_i = graph_builder.CreateNodeOutput(
+        split_weight_node, split_weight_output_tensor_desc, /*output_index=*/0);
+    const NodeOutput* split_weight_output_f = graph_builder.CreateNodeOutput(
+        split_weight_node, split_weight_output_tensor_desc, /*output_index=*/1);
+    const NodeOutput* split_weight_output_g = graph_builder.CreateNodeOutput(
+        split_weight_node, split_weight_output_tensor_desc, /*output_index=*/2);
+    const NodeOutput* split_weight_output_o = graph_builder.CreateNodeOutput(
+        split_weight_node, split_weight_output_tensor_desc, /*output_index=*/3);
+
+    DML_JOIN_OPERATOR_DESC concat_desc{
+        .InputCount = 4,
+        .InputTensors = split_weight_tensor_descs_dml.data(),
+        .OutputTensor = &weight_tensor_desc.GetDMLTensorDesc(),
+        .Axis = 2};
+
+    std::array<const NodeOutput*, 4> concat_weight_inputs = {
+        split_weight_output_i, split_weight_output_o, split_weight_output_f,
+        split_weight_output_g};
+    const GraphNode* concat_weight_node = graph_builder.CreateOperatorNode(
+        DML_OPERATOR_JOIN, &concat_desc, concat_weight_inputs,
+        label + "_concat_weight_iofg");
+    weight_iofg =
+        graph_builder.CreateNodeOutput(concat_weight_node, weight_tensor_desc);
+
+    std::vector<uint32_t> split_recurrent_weight_output_dims = {
+        1, direction_count, lstm.hidden_size, lstm.hidden_size};
+    TensorDesc split_recurrent_weight_output_tensor_desc(
+        input_dml_data_type, std::move(split_recurrent_weight_output_dims));
+    std::array<DML_TENSOR_DESC, 4> split_recurrent_weight_tensor_descs_dml;
+    split_recurrent_weight_tensor_descs_dml.fill(
+        split_recurrent_weight_output_tensor_desc.GetDMLTensorDesc());
+
+    split_desc.InputTensor = &recurrent_weight_tensor_desc.GetDMLTensorDesc();
+    split_desc.OutputTensors = split_recurrent_weight_tensor_descs_dml.data();
+
+    std::array<const NodeOutput*, 1> split_recurrent_weight_inputs = {
+        recurrent_weight};
+    const GraphNode* split_recurrent_weight_node =
+        graph_builder.CreateOperatorNode(
+            DML_OPERATOR_SPLIT, &split_desc, split_recurrent_weight_inputs,
+            label + "_split_recurrent_weight_ifgo");
+    const NodeOutput* split_recurrent_weight_output_i =
+        graph_builder.CreateNodeOutput(
+            split_recurrent_weight_node,
+            split_recurrent_weight_output_tensor_desc, /*output_index=*/0);
+    const NodeOutput* split_recurrent_weight_output_f =
+        graph_builder.CreateNodeOutput(
+            split_recurrent_weight_node,
+            split_recurrent_weight_output_tensor_desc, /*output_index=*/1);
+    const NodeOutput* split_recurrent_weight_output_g =
+        graph_builder.CreateNodeOutput(
+            split_recurrent_weight_node,
+            split_recurrent_weight_output_tensor_desc, /*output_index=*/2);
+    const NodeOutput* split_recurrent_weight_output_o =
+        graph_builder.CreateNodeOutput(
+            split_recurrent_weight_node,
+            split_recurrent_weight_output_tensor_desc, /*output_index=*/3);
+
+    concat_desc.InputTensors = split_recurrent_weight_tensor_descs_dml.data();
+    concat_desc.OutputTensor = &recurrent_weight_tensor_desc.GetDMLTensorDesc();
+
+    std::array<const NodeOutput*, 4> concat_recurrent_weight_inputs = {
+        split_recurrent_weight_output_i, split_recurrent_weight_output_o,
+        split_recurrent_weight_output_f, split_recurrent_weight_output_g};
+    const GraphNode* concat_recurrent_weight_node =
+        graph_builder.CreateOperatorNode(
+            DML_OPERATOR_JOIN, &concat_desc, concat_recurrent_weight_inputs,
+            label + "_concat_recurrent_weight_iofg");
+    recurrent_weight_iofg = graph_builder.CreateNodeOutput(
+        concat_recurrent_weight_node, recurrent_weight_tensor_desc);
+  }
+
   IdToOperandMap& id_to_operand_map = graph_info->id_to_operand_map;
 
   const std::vector<uint64_t>& output_ids = lstm.output_operand_ids;
@@ -4421,11 +4517,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   const uint64_t output_hidden_state_id = output_ids[0];
   const OperandPtr& output_hidden_state_operand =
       id_to_operand_map.at(output_hidden_state_id);
-  const OperandDataType output_data_type =
-      output_hidden_state_operand->descriptor.data_type();
   TensorDesc output_hidden_state_tensor_desc(
-      GetTensorDataType(output_data_type),
-      output_hidden_state_operand->descriptor.shape());
+      input_dml_data_type, output_hidden_state_operand->descriptor.shape());
   // The output hidden state tensor is 2-D for lstmCell and 3-D for lstm,
   // while DirectML expects a 4-D tensor.
   output_hidden_state_tensor_desc.EnsureMinimumRank(
@@ -4448,8 +4541,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
         CreateOutputTensorDesc(id_to_operand_map, output_sequence_id.value());
   }
 
-  std::vector<const NodeOutput*> inputs{input, weight, recurrent_weight};
-
   const NodeOutput* bias = GetOptionalNodeOutputForOperand(
       id_to_node_output_map, lstm.bias_operand_id);
   const NodeOutput* recurrent_bias = GetOptionalNodeOutputForOperand(
@@ -4461,8 +4552,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   if ((bias && !recurrent_bias) || (!bias && recurrent_bias)) {
     uint64_t bias_operand_id = BuildConstantOperandForFloatValue(
         context_properties, graph_info, constant_operands, next_operand_id,
-        output_data_type,
-        /*rank=*/1, /*default bias=*/0);
+        input_data_type, /*rank=*/1, /*default bias=*/0);
     CreateConstantNode(adapter, bias_operand_id, constant_operands,
                        graph_builder, id_to_node_output_map,
                        constant_id_to_input_index_map);
@@ -4479,11 +4569,12 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   // Bias operands should be both present or not present.
   CHECK((bias && recurrent_bias) || (!bias && !recurrent_bias));
 
+  std::vector<const NodeOutput*> inputs{input, weight_iofg,
+                                        recurrent_weight_iofg};
+
   // Concatenate the bias operands if they are both present.
   std::optional<TensorDesc> concatenated_bias_tensor_desc;
   if (bias && recurrent_bias) {
-    const uint32_t direction_count =
-        direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
     auto checked_four_times_hidden_size =
         base::MakeCheckedNum(lstm.hidden_size) * 4;
     // Four times hidden size should have already been validated.
@@ -4517,8 +4608,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
     std::vector<uint32_t> concatenated_dimensions = {
         1, 1, direction_count, checked_eight_times_hidden_size.ValueOrDie()};
     concatenated_bias_tensor_desc =
-        TensorDesc(GetTensorDataType(output_data_type),
-                   std::move(concatenated_dimensions));
+        TensorDesc(input_dml_data_type, std::move(concatenated_dimensions));
 
     DML_JOIN_OPERATOR_DESC concat_operator_desc{
         .InputCount = static_cast<uint32_t>(bias_dml_tensor_descs.size()),
@@ -4528,11 +4618,78 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
 
     std::array<const NodeOutput*, 2> biases = {bias, recurrent_bias};
     const GraphNode* concat_node = graph_builder.CreateOperatorNode(
-        DML_OPERATOR_JOIN, &concat_operator_desc, biases, label);
+        DML_OPERATOR_JOIN, &concat_operator_desc, biases,
+        label + "_concat_bias_and_recurrent");
 
     const NodeOutput* concatenated_bias = graph_builder.CreateNodeOutput(
         concat_node, concatenated_bias_tensor_desc.value(), 0);
-    inputs.push_back(concatenated_bias);
+
+    const NodeOutput* concatenated_bias_iofg = concatenated_bias;
+    if (lstm.layout == mojom::LstmWeightLayout::kIfgo) {
+      // Rearrange the layout of biases from ifgo to iofg by splitting ifgo to
+      // i,f,g,o and concatenating them to iofg.
+
+      std::vector<uint32_t> split_bias_output_dims = {1, 1, direction_count,
+                                                      lstm.hidden_size};
+      TensorDesc split_bias_output_tensor_desc(
+          input_dml_data_type, std::move(split_bias_output_dims));
+      std::array<DML_TENSOR_DESC, 8> split_bias_tensor_descs_dml;
+      split_bias_tensor_descs_dml.fill(
+          split_bias_output_tensor_desc.GetDMLTensorDesc());
+
+      DML_SPLIT_OPERATOR_DESC split_desc{
+          .InputTensor = &concatenated_bias_tensor_desc->GetDMLTensorDesc(),
+          .OutputCount = 8,
+          .OutputTensors = split_bias_tensor_descs_dml.data(),
+          .Axis = 3};
+
+      std::array<const NodeOutput*, 1> split_bias_inputs = {concatenated_bias};
+      const GraphNode* split_bias_node = graph_builder.CreateOperatorNode(
+          DML_OPERATOR_SPLIT, &split_desc, split_bias_inputs,
+          label + "_split_bias_ifgo");
+      const NodeOutput* split_bias_output_i = graph_builder.CreateNodeOutput(
+          split_bias_node, split_bias_output_tensor_desc, /*output_index=*/0);
+      const NodeOutput* split_bias_output_f = graph_builder.CreateNodeOutput(
+          split_bias_node, split_bias_output_tensor_desc, /*output_index=*/1);
+      const NodeOutput* split_bias_output_g = graph_builder.CreateNodeOutput(
+          split_bias_node, split_bias_output_tensor_desc, /*output_index=*/2);
+      const NodeOutput* split_bias_output_o = graph_builder.CreateNodeOutput(
+          split_bias_node, split_bias_output_tensor_desc, /*output_index=*/3);
+      const NodeOutput* split_recurrent_bias_output_i =
+          graph_builder.CreateNodeOutput(split_bias_node,
+                                         split_bias_output_tensor_desc,
+                                         /*output_index=*/4);
+      const NodeOutput* split_recurrent_bias_output_f =
+          graph_builder.CreateNodeOutput(split_bias_node,
+                                         split_bias_output_tensor_desc,
+                                         /*output_index=*/5);
+      const NodeOutput* split_recurrent_bias_output_g =
+          graph_builder.CreateNodeOutput(split_bias_node,
+                                         split_bias_output_tensor_desc,
+                                         /*output_index=*/6);
+      const NodeOutput* split_recurrent_bias_output_o =
+          graph_builder.CreateNodeOutput(split_bias_node,
+                                         split_bias_output_tensor_desc,
+                                         /*output_index=*/7);
+
+      DML_JOIN_OPERATOR_DESC concat_bias_desc{
+          .InputCount = 8,
+          .InputTensors = split_bias_tensor_descs_dml.data(),
+          .OutputTensor = &concatenated_bias_tensor_desc->GetDMLTensorDesc(),
+          .Axis = 3};
+
+      std::array<const NodeOutput*, 8> concat_bias_inputs = {
+          split_bias_output_i,           split_bias_output_o,
+          split_bias_output_f,           split_bias_output_g,
+          split_recurrent_bias_output_i, split_recurrent_bias_output_o,
+          split_recurrent_bias_output_f, split_recurrent_bias_output_g};
+      const GraphNode* concat_bias_iofg_node = graph_builder.CreateOperatorNode(
+          DML_OPERATOR_JOIN, &concat_bias_desc, concat_bias_inputs,
+          label + "_concat_bias_iofg");
+      concatenated_bias_iofg = graph_builder.CreateNodeOutput(
+          concat_bias_iofg_node, concatenated_bias_tensor_desc.value());
+    }
+    inputs.push_back(concatenated_bias_iofg);
   } else {
     // Use a nullptr to indicate there is no input edge for BiasTensor.
     inputs.push_back(nullptr);

@@ -88,7 +88,10 @@ constexpr base::TimeDelta kAutoClosePartialViewDelay = base::Seconds(5);
 
 PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer(
     BrowserView* browser_view) {
-  return browser_view->toolbar()->pinned_toolbar_actions_container();
+  auto* toolbar_button_provider = browser_view->toolbar_button_provider();
+  return toolbar_button_provider
+             ? toolbar_button_provider->GetPinnedToolbarActionsContainer()
+             : nullptr;
 }
 
 ToolbarButton* GetDownloadsButton(BrowserView* browser_view) {
@@ -916,6 +919,7 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
   bubble_delegate->SetTitle(
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL));
   bubble_delegate->SetShowTitle(false);
+  bubble_delegate->set_internal_name(kBubbleName);
   bubble_delegate->SetShowCloseButton(false);
   bubble_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   bubble_delegate->SetDefaultButton(
@@ -1012,6 +1016,10 @@ void DownloadToolbarUIController::OnPartialViewClosed() {
 
 void DownloadToolbarUIController::ShowIphPromo() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (auto* button = GetDownloadsButton(browser_view_)) {
+    button->SetProperty(views::kElementIdentifierKey,
+                        kToolbarDownloadButtonElementId);
+  }
   Profile* profile = browser_view_->GetProfile();
   // Don't show IPH Promo if safe browsing level is set by policy.
   if (safe_browsing::SafeBrowsingPolicyHandler::

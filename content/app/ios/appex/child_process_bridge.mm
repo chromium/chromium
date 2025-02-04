@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "content/app/ios/appex/child_process_bridge.h"
+
 #include <pthread.h>
 #include <xpc/xpc.h>
 
@@ -14,23 +16,28 @@
 #include "base/apple/mach_port_rendezvous.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/system/sys_info.h"
+#include "content/app/ios/appex/child_process_sandbox.h"
 
 // Leaked variables for now.
 static size_t g_argc = 0;
 static const char** g_argv = nullptr;
 static pthread_t g_main_thread;
+static id<ChildProcessExtension> g_swift_process;
 
 #define IOS_INIT_EXPORT __attribute__((visibility("default")))
 
 // The embedder must implement this.
 extern "C" int ChildProcessMain(int argc, const char** argv);
 
-extern "C" IOS_INIT_EXPORT void ChildProcessInit() {
+extern "C" IOS_INIT_EXPORT void ChildProcessInit(
+    id<ChildProcessExtension> process) {
   // Up two levels: chrome.app/Extensions/chrome_content_process.appex
   NSBundle* bundle = [NSBundle bundleWithURL:[[[NSBundle mainBundle].bundleURL
                                                URLByDeletingLastPathComponent]
                                               URLByDeletingLastPathComponent]];
   base::apple::SetOverrideFrameworkBundle(bundle);
+  g_swift_process = process;
 }
 
 void* RunMain(void* data) {
@@ -63,3 +70,12 @@ extern "C" IOS_INIT_EXPORT void ChildProcessHandleNewConnection(
   });
   xpc_connection_activate(connection);
 }
+
+namespace content {
+
+void ChildProcessEnterSandbox() {
+  base::SysInfo::IsLowEndDevice();
+  [g_swift_process applySandbox];
+}
+
+}  // namespace content

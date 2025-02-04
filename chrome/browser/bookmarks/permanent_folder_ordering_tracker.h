@@ -68,7 +68,9 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
   // Note that if node is already being tracked by this, there are two possible
   // target indices (index) that result in a no-op. This is similar to what
   // `BookmarkModel::Move()` does
-  void MoveToIndex(const bookmarks::BookmarkNode* node, size_t index);
+  // Returns the new index or `std::nullopt` if `MoveToIndex` is no-op.
+  std::optional<size_t> MoveToIndex(const bookmarks::BookmarkNode* node,
+                                    size_t index);
 
   // Copies nodes in `elements` to be new child nodes of the permanent
   // folder tracked by this starting at `index`.

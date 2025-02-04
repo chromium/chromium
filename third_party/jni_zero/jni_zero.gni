@@ -447,6 +447,16 @@ template("generate_jni_impl") {
           ":$_jni_zero_action_target_name",
           "//third_party/jni_zero:gendeps_java",
         ]
+        if (defined(invoker.public_deps)) {
+          public_deps = []
+          foreach(_dep, invoker.public_deps) {
+            public_deps += [ "${_dep}_java" ]
+          }
+        }
+      }
+    } else {
+      java_group("${_final_target_name}_java") {
+        # Allows target to appear as a public_dep of another generate_jni().
       }
     }
 

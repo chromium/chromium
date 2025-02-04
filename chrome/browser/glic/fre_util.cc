@@ -12,17 +12,29 @@
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "net/base/url_util.h"
 #include "ui/base/accelerators/command.h"
 #include "url/gurl.h"
 
 namespace glic {
 
 GURL GetFreURL() {
+  // Use the corresponding command line argument as the URL, if available.
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  bool hasGlicFreURL = command_line->HasSwitch(::switches::kGlicFreURL);
-  return GURL(hasGlicFreURL
-                  ? command_line->GetSwitchValueASCII(::switches::kGlicFreURL)
-                  : features::kGlicFreURL.Get());
+  bool has_glic_fre_url = command_line->HasSwitch(::switches::kGlicFreURL);
+  GURL base_url =
+      GURL(has_glic_fre_url
+               ? command_line->GetSwitchValueASCII(::switches::kGlicFreURL)
+               : features::kGlicFreURL.Get());
+
+  // Add the hotkey configuration to the URL as a query parameter.
+  std::string hotkey_param_value = GetHotkeyString();
+  if (hotkey_param_value.empty()) {
+    return base_url;
+  } else {
+    return net::AppendOrReplaceQueryParameter(base_url, "hotkey",
+                                              hotkey_param_value);
+  }
 }
 
 std::string GetHotkeyString() {

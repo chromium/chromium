@@ -17,7 +17,11 @@ struct ProfileQuery: EntityQuery {
   }
 
   func defaultResult() async -> ProfileDetail? {
-    try? await suggestedEntities().first
+    if let firstAccount = try? await suggestedEntities().first {
+      return firstAccount
+    } else {
+      return ProfileDetail(id: "No account", gaia: "Default")
+    }
   }
 }
 

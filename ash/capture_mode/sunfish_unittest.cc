@@ -2539,6 +2539,35 @@ TEST_F(ScannerTest, FetchActionsImmediately) {
   EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
 }
 
+// Tests that the action container shows an error if an error occurs while
+// trying to fetch Scanner actions.
+TEST_F(ScannerTest, ShowsErrorWhenScannerResponseContainsError) {
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(fetch_actions_future)));
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+
+  fetch_actions_future.Take().Run(
+      nullptr,
+      manta::MantaStatus{.status_code = manta::MantaStatusCode::kInvalidInput});
+
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  const ActionButtonContainerView::ErrorView* error_view =
+      session_test_api.GetActionContainerErrorView();
+  ASSERT_TRUE(error_view);
+  EXPECT_TRUE(error_view->GetVisible());
+}
+
 // Tests that action buttons for a stale Scanner request are not added to a new
 // and different region the same session.
 TEST_F(ScannerTest, DoesNotCreateActionButtonsForNewerDifferentRegion) {

@@ -57,7 +57,8 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
     window->RecordWindowProxyAccessMetrics(
         WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
         WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter,
-        mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter);
+        mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter,
+        WebFeature::kWindowProxyNamedGetter);
     UseCounter::Count(CurrentExecutionContext(isolate),
                       WebFeature::kNamedAccessOnWindow_ChildBrowsingContext);
 

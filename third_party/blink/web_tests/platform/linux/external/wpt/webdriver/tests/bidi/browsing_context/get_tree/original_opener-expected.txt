@@ -1,0 +1,19 @@
+This is a wdspec test.
+[FAIL] test_window_open[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_window_open[]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_window_open[popup]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_window_open[noopener]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_window_open[noreferrer]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_different_origins[same_origin]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_different_origins[cross_origin]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_with_closed_original_context
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

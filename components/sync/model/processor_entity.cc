@@ -181,7 +181,7 @@ void ProcessorEntity::RecordAcceptedRemoteUpdate(
       TimeToProtoTime(update.entity.modification_time));
   if (update.entity.collaboration_metadata.has_value()) {
     metadata_.mutable_collaboration()->set_collaboration_id(
-        update.entity.collaboration_metadata->collaboration_id());
+        update.entity.collaboration_metadata->collaboration_id().value());
     if (!update.entity.collaboration_metadata->created_by().empty()) {
       metadata_.mutable_collaboration()
           ->mutable_creation_attribution()
@@ -245,7 +245,7 @@ void ProcessorEntity::RecordLocalUpdate(
   if (!metadata_.has_collaboration() &&
       data->collaboration_metadata.has_value()) {
     metadata_.mutable_collaboration()->set_collaboration_id(
-        data->collaboration_metadata->collaboration_id());
+        data->collaboration_metadata->collaboration_id().value());
     metadata_.mutable_collaboration()
         ->mutable_creation_attribution()
         ->set_obfuscated_gaia_id(
@@ -259,7 +259,7 @@ void ProcessorEntity::RecordLocalUpdate(
 
     // Collaboration ID must never change.
     CHECK_EQ(metadata_.collaboration().collaboration_id(),
-             data->collaboration_metadata->collaboration_id());
+             data->collaboration_metadata->collaboration_id().value());
   }
 
   metadata_.set_modification_time(TimeToProtoTime(modification_time));

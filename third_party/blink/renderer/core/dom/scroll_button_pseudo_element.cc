@@ -24,7 +24,7 @@ namespace blink {
 
 namespace {
 
-gfx::PointF CalculateSnappedScrollPosition(
+ScrollOffset CalculateSnappedScrollPosition(
     const ScrollableArea* scrollable_area,
     gfx::Vector2dF scaled_delta) {
   gfx::PointF current_position = scrollable_area->ScrollPosition();
@@ -42,7 +42,7 @@ gfx::PointF CalculateSnappedScrollPosition(
   current_position.SetToMax(gfx::PointF());
   current_position.SetToMin(scrollable_area->ScrollOffsetToPosition(
       scrollable_area->MaximumScrollOffset()));
-  return current_position;
+  return gfx::ToRoundedVector2d(current_position.OffsetFromOrigin());
 }
 
 }  // namespace
@@ -119,11 +119,16 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
   }
   Element* originating_element = UltimateOriginatingElement();
   CHECK(originating_element);
-  auto* scroller = DynamicTo<LayoutBox>(originating_element->GetLayoutObject());
+  LayoutBox* scroller = DynamicTo<LayoutBox>(originating_element->GetLayoutObject());
   if (!scroller || !scroller->IsScrollContainer()) {
     return true;
   }
   ScrollableArea* scrollable_area = scroller->GetScrollableArea();
+  // Scrolls are rounded to the nearest offset pixel in
+  // ScrollableArea::SetScrollOffset. We apply the same offsets in the
+  // calculations here to ensure that the snap limit agrees between them.
+  ScrollOffset current_position = gfx::ToRoundedVector2d(
+      scrollable_area->ScrollPosition().OffsetFromOrigin());
   LogicalToPhysical<bool> mapping(
       scroller->StyleRef().GetWritingDirection(),
       GetPseudoId() == kPseudoIdScrollButtonInlineStart,
@@ -133,7 +138,7 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
 
   bool enabled = enabled_;
   if (mapping.Top()) {
-    enabled_ = scrollable_area->ScrollPosition().y() >
+    enabled_ = current_position.y() >
                CalculateSnappedScrollPosition(
                    scrollable_area,
                    gfx::Vector2dF(0, -scrollable_area->ScrollStep(
@@ -141,7 +146,7 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
                                          kVerticalScrollbar)))
                    .y();
   } else if (mapping.Bottom()) {
-    enabled_ = scrollable_area->ScrollPosition().y() <
+    enabled_ = current_position.y() <
                CalculateSnappedScrollPosition(
                    scrollable_area,
                    gfx::Vector2dF(0, scrollable_area->ScrollStep(
@@ -149,7 +154,7 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
                                          kVerticalScrollbar)))
                    .y();
   } else if (mapping.Left()) {
-    enabled_ = scrollable_area->ScrollPosition().x() >
+    enabled_ = current_position.x() >
                CalculateSnappedScrollPosition(
                    scrollable_area,
                    gfx::Vector2dF(-scrollable_area->ScrollStep(
@@ -158,7 +163,7 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
                                   0))
                    .x();
   } else if (mapping.Right()) {
-    enabled_ = scrollable_area->ScrollPosition().x() <
+    enabled_ = current_position.x() <
                CalculateSnappedScrollPosition(
                    scrollable_area,
                    gfx::Vector2dF(scrollable_area->ScrollStep(

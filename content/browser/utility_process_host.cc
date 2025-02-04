@@ -59,6 +59,10 @@
 #include "components/os_crypt/sync/os_crypt_switches.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_switches.h"
+#endif
+
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 #include "content/browser/v8_snapshot_files.h"
 #endif
@@ -316,7 +320,6 @@ bool UtilityProcessHost::StartProcess() {
         network::switches::kAdditionalTrustTokenKeyCommitments,
         network::switches::kForceEffectiveConnectionType,
         network::switches::kHostResolverRules,
-        network::switches::kIgnoreBadMessageForTesting,
         network::switches::kIgnoreCertificateErrorsSPKIList,
         network::switches::kTestThirdPartyCookiePhaseout,
         network::switches::kDisableSharedDictionaryStorageCleanupForTesting,
@@ -380,6 +383,9 @@ bool UtilityProcessHost::StartProcess() {
         switches::kFakeBackgroundBlurTogglePeriod,
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
         switches::kHardwareVideoDecodeFrameRate,
+#endif
+#if BUILDFLAG(IS_OZONE)
+        switches::kRenderNodeOverride,
 #endif
     };
     cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames);

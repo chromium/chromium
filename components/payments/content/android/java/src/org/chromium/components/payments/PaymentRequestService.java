@@ -1044,10 +1044,7 @@ public class PaymentRequestService
     // Implements PaymentAppFactoryDelegate:
     @Override
     public void onPaymentAppCreated(PaymentApp paymentApp) {
-        if (mBrowserPaymentRequest == null) return;
-        if (!mBrowserPaymentRequest.onPaymentAppCreated(paymentApp)) return;
         mHasEnrolledInstrument |= paymentApp.hasEnrolledInstrument();
-
         mPendingApps.add(paymentApp);
     }
 

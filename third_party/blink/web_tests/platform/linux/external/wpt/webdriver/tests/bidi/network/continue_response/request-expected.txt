@@ -1,0 +1,11 @@
+This is a wdspec test.
+[FAIL] test_continue_auth_required[fetch]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_continue_auth_required[navigate]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_continue_response_started[fetch]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_continue_response_started[navigate]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

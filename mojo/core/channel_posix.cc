@@ -17,7 +17,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/cpu_reduction_experiment.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -76,11 +75,9 @@ class MessageView {
   MessageView& operator=(const MessageView&) = delete;
 
   ~MessageView() {
-    if (message_) {
-      if (base::ShouldLogHistogramForCpuReductionExperiment()) {
-        UMA_HISTOGRAM_TIMES("Mojo.Channel.WriteMessageLatency",
-                            base::TimeTicks::Now() - start_time_);
-      }
+    if (message_ && base::ShouldRecordSubsampledMetric(0.001)) {
+      UMA_HISTOGRAM_TIMES("Mojo.Channel.WriteMessageLatency",
+                          base::TimeTicks::Now() - start_time_);
     }
   }
 
@@ -166,8 +163,9 @@ void ChannelPosix::Write(MessagePtr message) {
     if (reject_writes_)
       return;
     if (outgoing_messages_.empty()) {
-      if (!WriteNoLock(MessageView(std::move(message), 0)))
+      if (!WriteNoLock(MessageView(std::move(message), 0))) {
         reject_writes_ = write_error = true;
+      }
     } else {
       outgoing_messages_.emplace_back(std::move(message), 0);
     }

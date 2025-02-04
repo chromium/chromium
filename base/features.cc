@@ -4,7 +4,6 @@
 
 #include "base/features.h"
 
-#include "base/cpu_reduction_experiment.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/threading/platform_thread.h"
 #include "build/buildflag.h"
@@ -125,7 +124,6 @@ BASE_FEATURE(kPostGetMyMemoryStateToBackground,
 
 void Init(EmitThreadControllerProfilerMetadata
               emit_thread_controller_profiler_metadata) {
-  InitializeCpuReductionExperiment();
   sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
   sequence_manager::internal::ThreadController::InitializeFeatures(
       emit_thread_controller_profiler_metadata);

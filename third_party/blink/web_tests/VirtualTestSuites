@@ -1096,7 +1096,7 @@
       "http/tests/storage/partitioned-storage"
     ],
     "args": ["--disable-features=ThirdPartyStoragePartitioning"],
-    "expires": "Feb 4, 2025",
+    "expires": "Feb 4, 2026",
     "owners": ["arichiv@chromium.org", "bingler@chromium.org"]
   },
 
@@ -1441,7 +1441,7 @@
       "external/wpt/fledge/tentative/server-response.https.window.js"
     ],
     "args": [
-      "--enable-features=FledgeConsiderKAnonymity,FledgeEnforceKAnonymity,EnableBandAKAnonEnforcement,EnableBandADealSupport,EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}",
+      "--enable-features=FledgeConsiderKAnonymity,FledgeEnforceKAnonymity,EnableBandAKAnonEnforcement,EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}",
       "--disable-features=CookieDeprecationFacilitatedTesting"
     ],
     "expires": "Mar 14, 2025"
@@ -1660,14 +1660,14 @@
 
   {
     "prefix": "enable-system-cursor-size-for-svg",
-    "owners": ["sahir.vellani@microsoft.com"],
+    "owners": ["gerchiko@microsoft.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/events/mouse-cursor-image-set-svg.html"],
     "args": [
       "--enable-features=SystemCursorSizeSupported",
       "--disable-headless-mode"
     ],
-    "expires": "Dec 1, 2024"
+    "expires": "Dec 1, 2025"
   },
 
   {
@@ -4699,15 +4699,6 @@
     "args": ["--enable-features=SRIMessageSignatureEnforcement"],
     "owners": ["mkwst@chromium.org"],
     "expires": "May 1, 2025"
-  },
-  {
-    "prefix": "error-iserror-enabled",
-    "platforms": ["Linux"],
-    "bases": ["external/wpt/webidl/ecmascript-binding/es-exceptions/DOMException-is-error.any.js"],
-    "exclusive_tests": "ALL",
-    "args": ["--js-flags=--js-error-iserror"],
-    "owners": ["syg@chromium.org"],
-    "expires": "Feb 1, 2025"
   },
   {
     "prefix": "webrtc-h265",

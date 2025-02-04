@@ -18,6 +18,7 @@
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/rsa_private_key.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/proto/chrome_extension_policy.pb.h"
@@ -43,7 +44,7 @@ class PolicyBuilder {
   // Constants used as dummy data for filling the PolicyData protobuf.
   static const char kFakeDeviceId[];
   static const char kFakeDomain[];
-  static const char kFakeGaiaId[];
+  static const GaiaId::Literal kFakeGaiaId;
   static const char kFakeMachineName[];
   static const char kFakePolicyType[];
   static const int kFakePublicKeyVersion;

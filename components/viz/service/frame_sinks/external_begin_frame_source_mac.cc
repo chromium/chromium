@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/cpu_reduction_experiment.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
 
 namespace viz {
@@ -56,10 +56,6 @@ void RecordDisplayLinkCreateStatus(DisplayLinkResult result) {
 // Record the delay from the system CVDisplayLink or CADisplaylink source to
 // VizCompositorThread OnDisplayLinkCallback().
 void RecordVSyncCallbackDelay(base::TimeDelta delay) {
-  if (!base::ShouldLogHistogramForCpuReductionExperiment()) {
-    return;
-  }
-
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Viz.BeginFrameSource.VSyncCallbackDelay", delay,
       /*min=*/base::Microseconds(10),
@@ -279,7 +275,9 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
                "callback_timebase_to_display",
                callback_timebase_to_display.InMicroseconds(), "callback_delay",
                callback_delay.InMicroseconds());
-  RecordVSyncCallbackDelay(callback_delay);
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
+    RecordVSyncCallbackDelay(callback_delay);
+  }
 
   bool display_link_frame_interval_changed =
       !AlmostEqual(nominal_refresh_period_, interval);

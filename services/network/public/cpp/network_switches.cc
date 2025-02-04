@@ -123,7 +123,4 @@ const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
 const char kDisableSharedDictionaryStorageCleanupForTesting[] =
     "disable-shared-dictionary-storage-cleanup-for-testing";
 
-// The switch to ignore bad mojo message reports. Only for testing.
-const char kIgnoreBadMessageForTesting[] = "ignore-bad-message-for-testing";
-
 }  // namespace network::switches

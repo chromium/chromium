@@ -87,6 +87,8 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       return gfx::Insets::TLBR(10, 5, 5, 5);
     case INSETS_TASK_MANAGER:
       return gfx::Insets::TLBR(4, 20, 20, 20);
+    case INSETS_PAGE_INFO_FOOTER_BUTTON:
+      return gfx::Insets::VH(12, 20);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }

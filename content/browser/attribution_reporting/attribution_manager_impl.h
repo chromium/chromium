@@ -291,11 +291,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // duplicated here to avoid an async call to retrieve them.
   bool debug_mode_ = false;
 
-  // Caches the
-  // `FeatureList::IsEnabled(kAttributionReportDeliveryThirdRetryAttempt` check
-  // as to reduce large map lookups.
-  bool third_retry_enabled_ = false;
-
   std::optional<base::Time> last_navigation_time_;
 
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
@@ -309,8 +304,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 //
 // Exposed here for testing.
 CONTENT_EXPORT
-std::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts,
-                                                    bool third_retry_enabled);
+std::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts);
 
 }  // namespace content
 

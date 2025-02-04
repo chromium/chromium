@@ -285,6 +285,88 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Permissions.AIv1.AvailableAtInquiryTime" enum="BooleanSuccess"
+    expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the on-device genAI model is available when needed for
+    permission request evaluation.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv1.DownloadSuccess" enum="BooleanSuccess"
+    expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the on-device genAI model was downlaoded successfully or
+    not.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv1.ExecutionDuration" units="ms"
+    expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the duration it took to execute the on-device model. This happens if
+    the on-device genAI model was downloaded successfully and the session is
+    available.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv1.ExecutionSuccess" enum="BooleanSuccess"
+    expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the genAI on-device model execution is successful or not.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv1.FetchTime" units="ms"
+    expires_after="2025-11-25">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the duration it took to fetch the genAI on-device model after
+    subscription. This is only logged if the update is successful.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv1.ResponseParseSuccess" enum="BooleanSuccess"
+    expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the on-device genAI model execution result's response
+    parsing is successful or not. This is only logged when the model execution
+    is successful.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv1.SessionCreationSuccess" enum="BooleanSuccess"
+    expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether a session was created successfully for the on-device genAI
+    model.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv1.SessionCreationTime" units="ms"
+    expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the duration it took to create an on-device genAI model session.
+    This happens when the on-device model was downloaded successfully and is
+    available.
+  </summary>
+</histogram>
+
 <histogram
     name="Permissions.AndroidSystemLevel.{SystemPermissionType}.Prompt.Shown"
     enum="Boolean" expires_after="2025-10-31">
@@ -562,88 +644,6 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="AllPermissionTypes"/>
 </histogram>
 
-<histogram name="Permissions.GenAiOnDeviceModelAvailableAtInquiryTime"
-    enum="BooleanSuccess" expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records whether the on-device genAI model is available when needed for
-    permission request evaluation.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.GenAiOnDeviceModelDownloadSuccess"
-    enum="BooleanSuccess" expires_after="2025-11-25">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records whether the on-device genAI model was downlaoded successfully or
-    not.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.GenAiOnDeviceModelExecutionDuration" units="ms"
-    expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the duration it took to execute the on-device model. This happens if
-    the on-device genAI model was downloaded successfully and the session is
-    available.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.GenAiOnDeviceModelExecutionSuccess"
-    enum="BooleanSuccess" expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records whether the genAI on-device model execution is successful or not.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.GenAiOnDeviceModelFetchTime" units="ms"
-    expires_after="2025-11-25">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the duration it took to fetch the genAI on-device model after
-    subscription. This is only logged if the update is successful.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.GenAiOnDeviceModelResponseParseSuccess"
-    enum="BooleanSuccess" expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records whether the on-device genAI model execution result's response
-    parsing is successful or not. This is only logged when the model execution
-    is successful.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.GenAiOnDeviceModelSessionCreationSuccess"
-    enum="BooleanSuccess" expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records whether a session was created successfully for the on-device genAI
-    model.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.GenAiOnDeviceModelSessionCreationTime" units="ms"
-    expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the duration it took to create an on-device genAI model session.
-    This happens when the on-device model was downloaded successfully and is
-    available.
-  </summary>
-</histogram>
-
 <histogram name="Permissions.GetLastCommittedOriginAsURL.IsFileURL"
     enum="Boolean" expires_after="2025-10-30">
   <owner>elklm@chromium.org</owner>
@@ -750,7 +750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.PageInfo.Changed.{PermissionType}.{ReloadInfoBar}"
-    enum="PermissionChangeAction" expires_after="2025-04-28">
+    enum="PermissionChangeAction" expires_after="2025-08-03">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>

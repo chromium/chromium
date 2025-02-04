@@ -43,6 +43,7 @@ suite('BatchUploadViewTest', function() {
       dataItems: [],
       // Keep empty not to request string of unavailable id.
       sectionTitle: '',
+      isTheme: false,
     };
     passwordSection.dataItems.push(password1);
     passwordSection.dataItems.push(password2);
@@ -58,6 +59,7 @@ suite('BatchUploadViewTest', function() {
       dataItems: [],
       // Keep empty not to request string of unavailable id.
       sectionTitle: '',
+      isTheme: false,
     };
     addressSection.dataItems.push(address);
 

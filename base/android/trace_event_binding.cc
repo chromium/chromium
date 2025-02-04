@@ -13,19 +13,15 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
-#include "build/robolectric_buildflags.h"
-
-#if BUILDFLAG(IS_ROBOLECTRIC)
-#include "base/base_robolectric_jni/TraceEvent_jni.h"  // nogncheck
-#else
-#include "base/tasks_jni/TraceEvent_jni.h"
-#endif
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "base/trace_event/trace_event_impl.h"  // no-presubmit-check
 #include "third_party/perfetto/include/perfetto/tracing/track.h"  // no-presubmit-check nogncheck
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/tasks_minimal_jni/TraceEvent_jni.h"
 
 namespace base {
 namespace android {

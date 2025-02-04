@@ -232,7 +232,14 @@ void SecretPortalKeyProvider::Finalize(InitStatus init_status,
     return;
   }
 
-  std::move(key_callback_).Run(tag, std::move(key));
+  if (key.has_value()) {
+    std::move(key_callback_).Run(tag, std::move(*key));
+  } else {
+    // TODO(crbug.com/389016528): Indicate whether this is a temporary or
+    // permanent failure depending on the `init_status`.
+    std::move(key_callback_)
+        .Run(tag, base::unexpected(KeyError::kTemporarilyUnavailable));
+  }
 
   read_watcher_.reset();
   read_fd_.reset();

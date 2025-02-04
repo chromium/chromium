@@ -114,6 +114,10 @@ void HttpStreamPool::Job::Start() {
   CHECK(group_);
 
   if (!group_->CanStartJob(this)) {
+    job_net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_PAUSED);
+    group_->net_log().AddEventReferencingSource(
+        NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_PAUSED,
+        job_net_log_.source());
     return;
   }
 
@@ -122,6 +126,16 @@ void HttpStreamPool::Job::Start() {
 
 void HttpStreamPool::Job::Resume() {
   resume_time_ = base::TimeTicks::Now();
+  job_net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_PAUSED);
+  group_->net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_RESUMED, [&] {
+        base::Value::Dict dict;
+        base::TimeDelta elapsed = resume_time_ - create_time_;
+        dict.Set("elapsed_ms", elapsed.InMillisecondsF());
+        job_net_log_.source().AddToEventParameters(dict);
+        return dict;
+      });
+
   StartInternal();
 }
 

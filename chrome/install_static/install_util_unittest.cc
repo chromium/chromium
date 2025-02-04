@@ -846,27 +846,6 @@ TEST_P(InstallStaticUtilTest, GetSandboxSidPrefix) {
   EXPECT_STREQ(GetSandboxSidPrefix(), kSandBoxSids[std::get<0>(GetParam())]);
 }
 
-TEST_P(InstallStaticUtilTest, RegistersTracingService) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  static constexpr bool kRegistersTracingService[] = {
-      false,  // Google Chrome.
-      false,  // Google Chrome Beta.
-      true,   // Google Chrome Dev.
-      false,  // Google Chrome SxS (Canary).
-  };
-#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
-  static constexpr bool kRegistersTracingService[] = {
-      false,  // Google Chrome for Testing
-  };
-#else
-  static constexpr bool kRegistersTracingService[] = {
-      false,  // Chromium.
-  };
-#endif
-  EXPECT_EQ(InstallDetails::Get().mode().registers_tracing_service,
-            kRegistersTracingService[std::get<0>(GetParam())]);
-}
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Stable supports user and system levels.
 INSTANTIATE_TEST_SUITE_P(Stable,

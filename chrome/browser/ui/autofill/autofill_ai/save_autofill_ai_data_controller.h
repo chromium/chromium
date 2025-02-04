@@ -5,17 +5,15 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_SAVE_AUTOFILL_AI_DATA_CONTROLLER_H_
 
-#include <vector>
-
 #include "base/memory/weak_ptr.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "content/public/browser/web_contents.h"
 
-namespace optimization_guide::proto {
-class UserAnnotationsEntry;
+namespace autofill {
+class EntityInstance;
 }
-
 namespace autofill_ai {
 
 // Interface that exposes controller functionality to the save Autofill AI data
@@ -52,8 +50,7 @@ class SaveAutofillAiDataController {
 
   // Shows a save Autofill AI data bubble which the user can accept or decline.
   virtual void OfferSave(
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>
-          prediction_improvements,
+      autofill::EntityInstance entity,
       user_annotations::PromptAcceptanceCallback prompt_acceptance_callback,
       LearnMoreClickedCallback learn_more_clicked_callback,
       UserFeedbackCallback user_feedback_callback) = 0;
@@ -71,8 +68,8 @@ class SaveAutofillAiDataController {
   virtual void OnLearnMoreClicked() = 0;
 
   // Returns the Autofill AI data to be displayed in the UI.
-  virtual const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
-  GetAutofillAiData() const = 0;
+  virtual base::optional_ref<const autofill::EntityInstance> GetAutofillAiData()
+      const = 0;
 
   // Called when the Autofill AI data bubble is closed.
   virtual void OnBubbleClosed(AutofillAiBubbleClosedReason closed_reason) = 0;

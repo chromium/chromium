@@ -15,17 +15,17 @@
 - (void)dataSharingServiceInitialized;
 - (void)dataSharingServiceDidChangeGroup:
             (const data_sharing::GroupData&)groupData
-                                  atTime:(const base::Time&)eventTime;
+                                  atTime:(base::Time)eventTime;
 - (void)dataSharingServiceDidAddGroup:(const data_sharing::GroupData&)groupData
-                               atTime:(const base::Time&)eventTime;
+                               atTime:(base::Time)eventTime;
 - (void)dataSharingServiceDidRemoveGroup:(const data_sharing::GroupId&)groupId
-                                  atTime:(const base::Time&)eventTime;
+                                  atTime:(base::Time)eventTime;
 - (void)dataSharingServiceDidAddMember:(const GaiaId&)memberId
                                toGroup:(const data_sharing::GroupId&)groupId
-                                atTime:(const base::Time&)eventTime;
+                                atTime:(base::Time)eventTime;
 - (void)dataSharingServiceDidRemoveMember:(const GaiaId&)memberId
                                   toGroup:(const data_sharing::GroupId&)groupId
-                                   atTime:(const base::Time&)eventTime;
+                                   atTime:(base::Time)eventTime;
 @end
 
 // Bridge class to forward events from the DataSharingService to Objective-C

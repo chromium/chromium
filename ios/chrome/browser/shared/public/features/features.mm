@@ -1280,3 +1280,11 @@ bool IsFullscreenTransitionOffsetSet() {
 BASE_FEATURE(kFullscreenTransition,
              "FullscreenTransition",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRefactorToolbarUI,
+             "RefactorToolbarUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsRefactorToolbarUI() {
+  return base::FeatureList::IsEnabled(kRefactorToolbarUI);
+}

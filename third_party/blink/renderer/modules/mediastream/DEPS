@@ -19,6 +19,8 @@ include_rules = [
     "+cc/layers/video_frame_provider.h",
     "+cc/layers/video_layer.h",
     "+cc/paint/skia_paint_canvas.h",
+    "+gpu/command_buffer/client/client_shared_image.h",
+    "+gpu/command_buffer/client/test_shared_image_interface.h",
     "+media/media_buildflags.h",
     "+media/filters/video_renderer_algorithm.h",
     "+media/renderers/paint_canvas_video_renderer.h",

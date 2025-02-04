@@ -376,7 +376,7 @@ void SignData(const std::string& data,
 
 // Constants used as dummy data for filling the PolicyData protobuf.
 // LINT.IfChange
-const char PolicyBuilder::kFakeGaiaId[] = "0000111111";
+const GaiaId::Literal PolicyBuilder::kFakeGaiaId("0000111111");
 const char PolicyBuilder::kFakeUsername[] = "username@example.com";
 // LINT.ThenChange(/chrome/test/base/fake_gaia_mixin.cc)
 
@@ -394,7 +394,7 @@ PolicyBuilder::PolicyBuilder() {
   CreatePolicyData();
   policy_data_->set_policy_type(kFakePolicyType);
   policy_data_->set_timestamp(kFakeTimestamp);
-  policy_data_->set_gaia_id(kFakeGaiaId);
+  policy_data_->set_gaia_id(kFakeGaiaId.ToString());
   policy_data_->set_request_token(kFakeToken);
   policy_data_->set_machine_name(kFakeMachineName);
   policy_data_->set_public_key_version(kFakePublicKeyVersion);
@@ -643,7 +643,7 @@ std::vector<std::string> PolicyBuilder::GetUserAffiliationIds() {
 
 // static
 AccountId PolicyBuilder::GetFakeAccountIdForTesting() {
-  return AccountId::FromUserEmailGaiaId(kFakeUsername, GaiaId(kFakeGaiaId));
+  return AccountId::FromUserEmailGaiaId(kFakeUsername, kFakeGaiaId);
 }
 
 void PolicyBuilder::SetSignatureType(

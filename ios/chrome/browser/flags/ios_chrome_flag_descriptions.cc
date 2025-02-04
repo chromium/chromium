@@ -1041,6 +1041,10 @@ const char kNotificationSettingsMenuItemDescription[] =
     "Displays the menu item for the notification controls inside the chrome "
     "settings UI.";
 
+const char kRefactorToolbarUIName[] = "Refactor toolbar UI";
+const char kRefactorToolbarUIDescription[] =
+    "When enabled, the toolbar ui does not use broadcaster but observers.";
+
 const char kRemoveExcessNTPsExperimentName[] = "Remove extra New Tab Pages";
 const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "

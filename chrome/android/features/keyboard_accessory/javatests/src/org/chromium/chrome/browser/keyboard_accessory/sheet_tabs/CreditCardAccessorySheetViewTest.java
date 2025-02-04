@@ -43,10 +43,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -198,10 +196,7 @@ public class CreditCardAccessorySheetViewTest {
         // Verify that the icon is correctly set.
         ImageView iconImageView = (ImageView) mView.get().getChildAt(0).findViewById(R.id.icon);
         Drawable expectedIcon =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
-                        ? mActivityTestRule.getActivity().getDrawable(R.drawable.visa_metadata_card)
-                        : mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
+                mActivityTestRule.getActivity().getDrawable(R.drawable.visa_metadata_card);
         assertTrue(getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable())));
         // Chips are clickable:
         ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.cc_number)::performClick);
@@ -213,7 +208,6 @@ public class CreditCardAccessorySheetViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES})
     public void testAddingUserInfoWithIconUrl_iconCachedInPersonalDataManager()
             throws ExecutionException {
         GURL iconUrl = mock(GURL.class);
@@ -303,10 +297,7 @@ public class CreditCardAccessorySheetViewTest {
         // Verify that the icon is set to the drawable corresponding to `visaCC`.
         ImageView iconImageView = (ImageView) mView.get().getChildAt(0).findViewById(R.id.icon);
         Drawable expectedIcon =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
-                        ? mActivityTestRule.getActivity().getDrawable(R.drawable.visa_metadata_card)
-                        : mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
+                mActivityTestRule.getActivity().getDrawable(R.drawable.visa_metadata_card);
         assertTrue(getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable())));
     }
 

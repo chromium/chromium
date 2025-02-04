@@ -8,11 +8,11 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "glic_window_controller.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace content {
@@ -27,6 +27,8 @@ class Widget;
 class BrowserWindowInterface;
 
 namespace glic {
+class GlicWindowController;
+
 // Responsible for managing which tab is considered "focused" and for accessing
 // its WebContents. This is an implementation detail of GlicKeyedService and
 // others should rely on the interface that GlicKeyedService exposes for

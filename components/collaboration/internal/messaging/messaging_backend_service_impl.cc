@@ -1152,21 +1152,25 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
   std::optional<GaiaId> gaia_id = GetGaiaIdFromMessage(message);
   std::optional<data_sharing::GroupMember> group_member =
       GetGroupMemberFromGaiaId(collaboration_group_id, gaia_id);
-  if (gaia_id) {
-    std::optional<std::string> user_name_for_display =
-        GetDisplayNameForUserInGroup(collaboration_group_id, *gaia_id,
-                                     std::nullopt, message);
-    if (user_name_for_display) {
-      bool is_self = IsMemberCurrentUser(identity_manager_, *gaia_id);
-      std::u16string user_to_show =
-          is_self ? l10n_util::GetStringUTF16(
-                        IDS_DATA_SHARING_RECENT_ACTIVITY_USER_SELF)
-                  : base::UTF8ToUTF16(*user_name_for_display);
-
-      item.title_text = l10n_util::GetStringFUTF16(
-          GetTitleStringRes(item.collaboration_event), user_to_show);
-    }
+  if (!group_member) {
+    return std::nullopt;
   }
+
+  std::optional<std::string> user_name_for_display =
+      GetDisplayNameForUserInGroup(collaboration_group_id, *gaia_id,
+                                   std::nullopt, message);
+  if (!user_name_for_display) {
+    return std::nullopt;
+  }
+
+  bool is_self = IsMemberCurrentUser(identity_manager_, *gaia_id);
+  std::u16string user_to_show =
+      is_self ? l10n_util::GetStringUTF16(
+                    IDS_DATA_SHARING_RECENT_ACTIVITY_USER_SELF)
+              : base::UTF8ToUTF16(*user_name_for_display);
+
+  item.title_text = l10n_util::GetStringFUTF16(
+      GetTitleStringRes(item.collaboration_event), user_to_show);
 
   // By default, we use an empty description. This is special cased below.
   item.description_text = u"";
@@ -1197,10 +1201,8 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
       // We are guaranteed to have a value for `last_known_url`.
       GURL url = GURL(*item.activity_metadata.tab_metadata->last_known_url);
       item.activity_metadata.triggering_user = group_member;
-      if (gaia_id) {
-        item.activity_metadata.triggering_user_is_self =
-            IsMemberCurrentUser(identity_manager_, *gaia_id);
-      }
+      item.activity_metadata.triggering_user_is_self =
+          IsMemberCurrentUser(identity_manager_, *gaia_id);
 
       item.description_text =
           url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
@@ -1210,10 +1212,8 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
     }
     case MessageCategory::kTabGroup: {
       item.activity_metadata.triggering_user = group_member;
-      if (gaia_id) {
-        item.activity_metadata.triggering_user_is_self =
-            IsMemberCurrentUser(identity_manager_, *gaia_id);
-      }
+      item.activity_metadata.triggering_user_is_self =
+          IsMemberCurrentUser(identity_manager_, *gaia_id);
       item.activity_metadata.tab_group_metadata =
           CreateTabGroupMessageMetadataFromMessageOrTabGroup(message,
                                                              std::nullopt);
@@ -1230,11 +1230,9 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
     }
     case MessageCategory::kCollaboration:
       item.activity_metadata.affected_user = group_member;
-      if (group_member) {
-        item.description_text = base::UTF8ToUTF16(group_member->email);
-        item.activity_metadata.affected_user_is_self =
-            IsMemberCurrentUser(identity_manager_, *gaia_id);
-      }
+      item.description_text = base::UTF8ToUTF16(group_member->email);
+      item.activity_metadata.affected_user_is_self =
+          IsMemberCurrentUser(identity_manager_, *gaia_id);
       break;
     default:
       break;

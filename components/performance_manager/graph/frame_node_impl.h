@@ -172,7 +172,6 @@ class FrameNodeImpl
   // Invoked to set the frame priority, and the reason behind it.
   void SetPriorityAndReason(const PriorityAndReason& priority_and_reason);
 
-  base::WeakPtr<FrameNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<FrameNodeImpl> GetWeakPtr();
 
   void SeverPageRelationshipsAndMaybeReparentForTesting() {
@@ -444,7 +443,6 @@ class FrameNodeImpl
   // true, frame visibility updates are ignored.
   bool has_viewport_intersection_updates_ = false;
 
-  base::WeakPtr<FrameNodeImpl> weak_this_;
   base::WeakPtrFactory<FrameNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };

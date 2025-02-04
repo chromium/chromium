@@ -46,6 +46,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -53,7 +54,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
@@ -102,9 +102,21 @@ namespace {
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
-bool RemoveLacrosUserDataDir() {
-  const base::FilePath lacros_data_dir = browser_util::GetUserDataDir();
+base::FilePath GetUserDataDir() {
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    // NOTE: On device this function is privacy/security sensitive. The
+    // directory must be inside the encrypted user partition.
+    return base::FilePath(crosapi::kLacrosUserDataPath);
+  }
+  // For developers on Linux desktop, put the directory under the developer's
+  // specified --user-data-dir.
+  base::FilePath base_path;
+  base::PathService::Get(chrome::DIR_USER_DATA, &base_path);
+  return base_path.Append("lacros");
+}
 
+bool RemoveLacrosUserDataDir() {
+  const base::FilePath lacros_data_dir = GetUserDataDir();
   return base::PathExists(lacros_data_dir) &&
          base::DeletePathRecursively(lacros_data_dir);
 }

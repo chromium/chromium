@@ -198,8 +198,8 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS =
             "AutofillEnableCardBenefitsForAmericanExpress";
     public static final String AUTOFILL_ENABLE_CARD_PRODUCT_NAME = "AutofillEnableCardProductName";
-    public static final String AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES =
-            "AutofillEnableNewCardArtAndNetworkImages";
+    public static final String AUTOFILL_ENABLE_LOCAL_IBAN = "AutofillEnableLocalIban";
+    public static final String AUTOFILL_ENABLE_SERVER_IBAN = "AutofillEnableServerIban";
     public static final String AUTOFILL_ENABLE_CVC_STORAGE = "AutofillEnableCvcStorageAndFilling";
     public static final String AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD =
             "AutofillEnablePaymentSettingsCardPromoAndScanCard";
@@ -445,8 +445,8 @@ public abstract class ChromeFeatureList {
     public static final String PRIVACY_SANDBOX_SENTIMENT_SURVEY = "PrivacySandboxSentimentSurvey";
     public static final String PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY =
             "PrivacySandboxCctAdsNoticeSurvey";
-    public static final String PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS =
-            "PrivacySandboxPrivacyGuideAdTopics";
+    public static final String PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY =
+            "PrivacySandboxAdTopicsContentParity";
     public static final String PRIVACY_SANDBOX_PRIVACY_POLICY = "PrivacySandboxPrivacyPolicy";
     public static final String PUSH_MESSAGING_DISALLOW_SENDER_IDS =
             "PushMessagingDisallowSenderIDs";
@@ -711,7 +711,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sFullscreenInsetsApiMigrationOnAutomotive =
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE, true);
     public static final CachedFlag sHideTabletToolbarDownloadButton =
-            newCachedFlag(HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON, false);
+            newCachedFlag(
+                    HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sHistoryPaneAndroid = newCachedFlag(HISTORY_PANE_ANDROID, false);
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);

@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
+#include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/bindings/remote.h"

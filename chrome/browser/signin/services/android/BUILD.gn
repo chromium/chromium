@@ -51,7 +51,10 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/values/dimens.xml" ]
+  sources = [
+    "java/res/drawable/ic_error_badge_14dp.xml",
+    "java/res/values/dimens.xml",
+  ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/signin/public/android:java_resources",

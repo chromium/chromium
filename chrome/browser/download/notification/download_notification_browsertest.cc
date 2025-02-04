@@ -83,17 +83,19 @@ namespace {
 // Structure to describe an account info.
 struct TestAccountInfo {
   const char* const email;
-  const char* const gaia_id;
+  const GaiaId::Literal gaia_id;
   const char* const hash;
   const char* const display_name;
 };
 
 // Accounts for multi profile test.
 static const TestAccountInfo kTestAccounts[] = {
-    {"__dummy__@invalid.domain", "10000", "hashdummy", "Dummy Account"},
-    {"alice@invalid.domain", "10001", "hashalice", "Alice"},
-    {"bob@invalid.domain", "10002", "hashbobbo", "Bob"},
-    {"charlie@invalid.domain", "10003", "hashcharl", "Charlie"},
+    {"__dummy__@invalid.domain", GaiaId::Literal("10000"), "hashdummy",
+     "Dummy Account"},
+    {"alice@invalid.domain", GaiaId::Literal("10001"), "hashalice", "Alice"},
+    {"bob@invalid.domain", GaiaId::Literal("10002"), "hashbobbo", "Bob"},
+    {"charlie@invalid.domain", GaiaId::Literal("10003"), "hashcharl",
+     "Charlie"},
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1084,10 +1086,11 @@ class MultiProfileDownloadNotificationTest
   void AddUser(const TestAccountInfo& info) {
     session_manager::SessionManager::Get()->CreateSession(
         AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.gaia_id)),
-        info.hash, false);
+        info.hash, user_manager::UserType::kRegular,
+        /*has_active_session=*/false);
 
     user_manager::UserManager::Get()->SaveUserDisplayName(
-        AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.gaia_id)),
+        AccountId::FromUserEmailGaiaId(info.email, info.gaia_id),
         base::UTF8ToUTF16(info.display_name));
     Profile& profile = profiles::testing::CreateProfileSync(
         g_browser_process->profile_manager(),

@@ -37,6 +37,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/response_delegate_impl.h"
@@ -1250,6 +1251,7 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
     bool is_3pc_allowed,
     const network::ResourceRequest& request,
     base::OnceCallback<void(std::string)> callback) {
+  base::TimeTicks start = base::TimeTicks::Now();
   DCHECK(cookie_manager_.is_bound() && cookie_access_policy_ != nullptr);
 
   auto isolation_info = GetIsolationInfo(request);
@@ -1271,7 +1273,7 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
       net::CookiePartitionKeyCollection::FromOptional(
           GetPartitionKey(isolation_info, request)),
       base::BindOnce(
-          [](PrivacySetting privacy_setting,
+          [](PrivacySetting privacy_setting, base::TimeTicks start,
              base::OnceCallback<void(std::string)> callback,
              const net::CookieAccessResultList& results,
              const net::CookieAccessResultList& excluded_cookies) {
@@ -1291,14 +1293,19 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
               cookie_line = net::CanonicalCookie::BuildCookieLine(cookies);
             }
             std::move(callback).Run(cookie_line);
+            UMA_HISTOGRAM_TIMES(
+                "Android.WebView.ShouldInterceptRequest.GetCookieHeader."
+                "PostMojo.TimeToRun",
+                base::TimeTicks::Now() - start);
           },
-          std::move(privacy_setting), std::move(callback)));
+          std::move(privacy_setting), start, std::move(callback)));
 }
 
 void AwProxyingURLLoaderFactory::SetCookieHeader(
     const network::ResourceRequest& request,
     std::string_view cookie_string,
     const std::optional<base::Time>& server_time) {
+  base::TimeTicks start = base::TimeTicks::Now();
   DCHECK(cookie_manager_.is_bound());
   auto isolation_info = GetIsolationInfo(request);
 
@@ -1310,12 +1317,16 @@ void AwProxyingURLLoaderFactory::SetCookieHeader(
       &returned_status);
 
   // TODO(crbug.com/384986095): Provide real cookie values
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewInterceptedCookieHeaderReadWrite)) {
+  if (cookie && base::FeatureList::IsEnabled(
+                    features::kWebViewInterceptedCookieHeaderReadWrite)) {
     cookie_manager_->SetCanonicalCookie(*cookie, request.url,
                                         net::CookieOptions::MakeAllInclusive(),
                                         base::DoNothing());
   }
+
+  UMA_HISTOGRAM_TIMES(
+      "Android.WebView.ShouldInterceptRequest.SetCookieHeader.TimeToRun",
+      base::TimeTicks::Now() - start);
 }
 
 net::IsolationInfo AwProxyingURLLoaderFactory::GetIsolationInfo(

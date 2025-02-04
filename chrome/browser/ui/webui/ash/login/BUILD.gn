@@ -247,7 +247,6 @@ static_library("login") {
     "//chrome/browser:resources",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/arc/optin",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/login",

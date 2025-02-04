@@ -9,102 +9,42 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.IntDef;
-
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
-import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.safety_hub.SafetyHubAccountPasswordsDataSource.ModuleType;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
-import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /**
  * Mediator for the Safety Hub password module. Populates the {@link SafetyHubExpandablePreference}
- * with the user's passwords state, including compromised, weak and reused. It also listens to
- * changes of passwords and their state, and updates the preference to reflect these.
+ * with the user's passwords state, including compromised, weak and reused. It gets notified of
+ * changes of passwords and their state by {@link SafetyHubAccountPasswordsDataSource}, and updates
+ * the preference to reflect these.
  */
 public class SafetyHubAccountPasswordsModuleMediator
-        implements SafetyHubModuleMediator,
-                SafetyHubFetchService.Observer,
-                PasswordStoreBridge.PasswordStoreObserver,
-                SigninManager.SignInStateObserver {
-    /**
-     * This should match the default value for {@link
-     * org.chromium.chrome.browser.preferences.Pref.BREACHED_CREDENTIALS_COUNT}.
-     */
-    private static final int INVALID_BREACHED_CREDENTIALS_COUNT = -1;
-
-    // Represents the type of password module.
-    @IntDef({
-        ModuleType.SIGNED_OUT,
-        ModuleType.UNAVAILABLE_PASSWORDS,
-        ModuleType.NO_SAVED_PASSWORDS,
-        ModuleType.HAS_COMPROMISED_PASSWORDS,
-        ModuleType.NO_COMPROMISED_PASSWORDS,
-        ModuleType.HAS_WEAK_PASSWORDS,
-        ModuleType.HAS_REUSED_PASSWORDS,
-        ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface ModuleType {
-        int SIGNED_OUT = 0;
-        int UNAVAILABLE_PASSWORDS = 1;
-        int NO_SAVED_PASSWORDS = 2;
-        int HAS_COMPROMISED_PASSWORDS = 3;
-        int NO_COMPROMISED_PASSWORDS = 4;
-        int HAS_WEAK_PASSWORDS = 5;
-        int HAS_REUSED_PASSWORDS = 6;
-        int UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS = 7;
-    };
-
-    private final Profile mProfile;
-    private final PrefService mPrefService;
-    private final SafetyHubFetchService mSafetyHubFetchService;
-    private final SigninManager mSigninManager;
+        implements SafetyHubModuleMediator, SafetyHubAccountPasswordsDataSource.Observer {
     private final SafetyHubExpandablePreference mPreference;
     private final SafetyHubModuleDelegate mModuleDelegate;
     private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
 
-    private PasswordStoreBridge mPasswordStoreBridge;
+    private SafetyHubAccountPasswordsDataSource mAccountPasswordsDataSource;
     private PropertyModel mModel;
-    private int mCompromisedPasswordsCount;
-    private int mWeakPasswordsCount;
-    private int mReusedPasswordsCount;
-    private boolean mIsSignedIn;
-    private @ModuleType int mType;
+    private @ModuleType int mModuleType;
 
     SafetyHubAccountPasswordsModuleMediator(
             SafetyHubExpandablePreference preference,
+            SafetyHubAccountPasswordsDataSource accountPasswordsDataSource,
             SafetyHubModuleMediatorDelegate mediatorDelegate,
-            SafetyHubModuleDelegate moduleDelegate,
-            PrefService prefService,
-            SafetyHubFetchService safetyHubFetchService,
-            SigninManager signinManager,
-            Profile profile) {
+            SafetyHubModuleDelegate moduleDelegate) {
         mPreference = preference;
-        mPrefService = prefService;
-        mSafetyHubFetchService = safetyHubFetchService;
+        mAccountPasswordsDataSource = accountPasswordsDataSource;
         mMediatorDelegate = mediatorDelegate;
         mModuleDelegate = moduleDelegate;
-        mProfile = profile;
-        mSigninManager = signinManager;
     }
 
     @Override
     public void setUpModule() {
-        if (isSignedIn()) {
-            mPasswordStoreBridge = new PasswordStoreBridge(mProfile);
-        }
-
         mModel =
                 new PropertyModel.Builder(SafetyHubModuleProperties.ALL_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
@@ -113,70 +53,26 @@ public class SafetyHubAccountPasswordsModuleMediator
         PropertyModelChangeProcessor.create(
                 mModel, mPreference, SafetyHubModuleViewBinder::bindProperties);
 
-        mSafetyHubFetchService.addObserver(this);
-        if (mPasswordStoreBridge != null) {
-            mPasswordStoreBridge.addObserver(this, true);
-        }
-        mSigninManager.addSignInStateObserver(this);
-        updateState();
+        mAccountPasswordsDataSource.setObserver(this);
+        mAccountPasswordsDataSource.setUp();
     }
 
     @Override
     public void destroy() {
-        mSafetyHubFetchService.removeObserver(this);
-        mSigninManager.removeSignInStateObserver(this);
-        if (mPasswordStoreBridge != null) {
-            mPasswordStoreBridge.removeObserver(this);
+        if (mAccountPasswordsDataSource != null) {
+            mAccountPasswordsDataSource.destroy();
+            mAccountPasswordsDataSource = null;
         }
-    }
-
-    @Override
-    public void updateStatusChanged() {
-        // no-op.
-    }
-
-    @Override
-    public void passwordCountsChanged() {
-        updateModule();
-        mMediatorDelegate.onUpdateNeeded();
-    }
-
-    @Override
-    public void onSavedPasswordsChanged(int count) {
-        updateModule();
-        mMediatorDelegate.onUpdateNeeded();
-    }
-
-    @Override
-    public void onSignedIn() {
-        if (mPasswordStoreBridge == null) {
-            mPasswordStoreBridge = new PasswordStoreBridge(mProfile);
-            mPasswordStoreBridge.addObserver(this, true);
-        }
-        updateModule();
-        mMediatorDelegate.onUpdateNeeded();
-    }
-
-    @Override
-    public void onEdit(PasswordStoreCredential credential) {}
-
-    @Override
-    public void onSignedOut() {
-        if (mPasswordStoreBridge != null) {
-            mPasswordStoreBridge.removeObserver(this);
-            mPasswordStoreBridge = null;
-        }
-        updateModule();
-        mMediatorDelegate.onUpdateNeeded();
     }
 
     @Override
     public void updateModule() {
-        updateState();
+        mAccountPasswordsDataSource.updateState();
+    }
 
-        // TODO(https://crbug.com/388788381): Use a factory pattern to fetch the preference fields,
-        // such as title, summary, etc.
-        switch (mType) {
+    private void updateModule(@ModuleType int moduleType) {
+        mModuleType = moduleType;
+        switch (mModuleType) {
             case ModuleType.SIGNED_OUT:
                 updatePreferenceForSignedOut();
                 break;
@@ -220,7 +116,7 @@ public class SafetyHubAccountPasswordsModuleMediator
 
     @Override
     public @ModuleState int getModuleState() {
-        switch (mType) {
+        switch (mModuleType) {
             case ModuleType.NO_SAVED_PASSWORDS:
             case ModuleType.HAS_WEAK_PASSWORDS:
             case ModuleType.HAS_REUSED_PASSWORDS:
@@ -245,98 +141,17 @@ public class SafetyHubAccountPasswordsModuleMediator
 
     @Override
     public boolean isManaged() {
-        assert mPrefService != null
-                : "A null PrefService was detected in" + " SafetyHubAccountPasswordsModuleMediator";
-        return mPrefService.isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE)
-                && !passwordSavingEnabled();
+        return mAccountPasswordsDataSource.isManaged();
     }
 
     public void triggerNewCredentialFetch() {
-        mSafetyHubFetchService.fetchCredentialsCount(success -> {});
+        mAccountPasswordsDataSource.triggerNewCredentialFetch();
     }
 
-    public int getCompromisedPasswordsCount() {
-        assert mPrefService != null
-                : "A null PrefService was detected in" + " SafetyHubAccountPasswordsModuleMediator";
-        return mPrefService.getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
-    }
-
-    public int getWeakPasswordsCount() {
-        assert mPrefService != null
-                : "A null PrefService was detected in" + " SafetyHubAccountPasswordsModuleMediator";
-        return mPrefService.getInteger(Pref.WEAK_CREDENTIALS_COUNT);
-    }
-
-    public int getReusedPasswordsCount() {
-        assert mPrefService != null
-                : "A null PrefService was detected in" + " SafetyHubAccountPasswordsModuleMediator";
-        return mPrefService.getInteger(Pref.REUSED_CREDENTIALS_COUNT);
-    }
-
-    public int getTotalPasswordsCount() {
-        assert mModuleDelegate != null
-                : "A null ModuleDelegate was detected in"
-                        + " SafetyHubAccountPasswordsModuleMediator";
-        return mModuleDelegate.getAccountPasswordsCount(mPasswordStoreBridge);
-    }
-
-    private boolean passwordSavingEnabled() {
-        assert mPrefService != null
-                : "A null PrefService was detected in" + " SafetyHubAccountPasswordsModuleMediator";
-        return mPrefService.getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE);
-    }
-
-    private boolean isSignedIn() {
-        assert mProfile != null
-                : "A null Profile was detected in" + " SafetyHubAccountPasswordsModuleMediator";
-        return SafetyHubUtils.isSignedIn(mProfile);
-    }
-
-    private void updateState() {
-        mCompromisedPasswordsCount = getCompromisedPasswordsCount();
-        mWeakPasswordsCount = getWeakPasswordsCount();
-        mReusedPasswordsCount = getReusedPasswordsCount();
-        mIsSignedIn = isSignedIn();
-        mType = getModuleType();
-    }
-
-    // Returns the password module type according to the `model` properties.
-    private @ModuleType int getModuleType() {
-        boolean isWeakAndReusedFeatureEnabled =
-                ChromeFeatureList.sSafetyHubWeakAndReusedPasswords.isEnabled();
-
-        if (!mIsSignedIn) {
-            assert mCompromisedPasswordsCount == INVALID_BREACHED_CREDENTIALS_COUNT;
-            return ModuleType.SIGNED_OUT;
-        }
-        if (mCompromisedPasswordsCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
-            if (isWeakAndReusedFeatureEnabled
-                    && mWeakPasswordsCount == 0
-                    && mReusedPasswordsCount == 0) {
-                return ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS;
-            }
-
-            return ModuleType.UNAVAILABLE_PASSWORDS;
-        }
-        if (getTotalPasswordsCount() == 0) {
-            return ModuleType.NO_SAVED_PASSWORDS;
-        }
-        if (mCompromisedPasswordsCount > 0) {
-            return ModuleType.HAS_COMPROMISED_PASSWORDS;
-        }
-        if (isWeakAndReusedFeatureEnabled) {
-            // Reused passwords take priority over the weak passwords count.
-            if (mReusedPasswordsCount > 0) {
-                return ModuleType.HAS_REUSED_PASSWORDS;
-            }
-            if (mWeakPasswordsCount > 0) {
-                return ModuleType.HAS_WEAK_PASSWORDS;
-            }
-        }
-
-        // If both reused passwords and weak passwords counts are invalid, ignore them in favour
-        // of showing the compromised passwords count.
-        return ModuleType.NO_COMPROMISED_PASSWORDS;
+    @Override
+    public void stateChanged(@ModuleType int moduleType) {
+        updateModule(moduleType);
+        mMediatorDelegate.onUpdateNeeded();
     }
 
     // Updates `preference` for the password module of type {@link ModuleType.SIGNED_OUT}.
@@ -386,14 +201,14 @@ public class SafetyHubAccountPasswordsModuleMediator
                 context.getResources()
                         .getQuantityString(
                                 R.plurals.safety_check_passwords_compromised_exist,
-                                mCompromisedPasswordsCount,
-                                mCompromisedPasswordsCount));
+                                mAccountPasswordsDataSource.getCompromisedPasswordCount(),
+                                mAccountPasswordsDataSource.getCompromisedPasswordCount()));
         mPreference.setSummary(
                 context.getResources()
                         .getQuantityString(
                                 R.plurals.safety_hub_compromised_passwords_summary,
-                                mCompromisedPasswordsCount,
-                                mCompromisedPasswordsCount));
+                                mAccountPasswordsDataSource.getCompromisedPasswordCount(),
+                                mAccountPasswordsDataSource.getCompromisedPasswordCount()));
         mPreference.setPrimaryButtonText(
                 context.getString(R.string.safety_hub_passwords_navigation_button));
         mPreference.setPrimaryButtonClickListener(getButtonListener());
@@ -405,7 +220,7 @@ public class SafetyHubAccountPasswordsModuleMediator
     // ModuleType.NO_COMPROMISED_PASSWORDS}.
     private void updatePreferenceForNoCompromisedPasswords() {
         Context context = mPreference.getContext();
-        String account = SafetyHubUtils.getAccountEmail(mProfile);
+        String account = mAccountPasswordsDataSource.getAccountEmail();
 
         mPreference.setTitle(context.getString(R.string.safety_hub_no_compromised_passwords_title));
 
@@ -430,8 +245,8 @@ public class SafetyHubAccountPasswordsModuleMediator
                 context.getResources()
                         .getQuantityString(
                                 R.plurals.safety_hub_weak_passwords_summary,
-                                mWeakPasswordsCount,
-                                mWeakPasswordsCount));
+                                mAccountPasswordsDataSource.getWeakPasswordCount(),
+                                mAccountPasswordsDataSource.getWeakPasswordCount()));
         mPreference.setPrimaryButtonText(
                 context.getString(R.string.safety_hub_passwords_navigation_button));
         mPreference.setPrimaryButtonClickListener(getButtonListener());
@@ -447,8 +262,8 @@ public class SafetyHubAccountPasswordsModuleMediator
                 context.getResources()
                         .getQuantityString(
                                 R.plurals.safety_hub_reused_passwords_summary,
-                                mReusedPasswordsCount,
-                                mReusedPasswordsCount));
+                                mAccountPasswordsDataSource.getReusedPasswordCount(),
+                                mAccountPasswordsDataSource.getReusedPasswordCount()));
         mPreference.setPrimaryButtonText(
                 context.getString(R.string.safety_hub_passwords_navigation_button));
         mPreference.setPrimaryButtonClickListener(getButtonListener());
@@ -492,7 +307,7 @@ public class SafetyHubAccountPasswordsModuleMediator
     }
 
     private View.OnClickListener getButtonListener() {
-        if (mIsSignedIn) {
+        if (mAccountPasswordsDataSource.isSignedIn()) {
             return v -> {
                 mModuleDelegate.showPasswordCheckUi(mPreference.getContext());
                 recordDashboardInteractions(DashboardInteractions.OPEN_PASSWORD_MANAGER);

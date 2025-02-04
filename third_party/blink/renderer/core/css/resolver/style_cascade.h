@@ -457,6 +457,7 @@ class CORE_EXPORT StyleCascade {
   bool ResolveAttrInto(CSSParserTokenStream&,
                        CascadeResolver&,
                        const CSSParserContext&,
+                       FunctionContext*,
                        TokenSequence&);
   bool ResolveAutoBaseInto(CSSParserTokenStream&,
                            CascadeResolver&,
@@ -529,7 +530,8 @@ class CORE_EXPORT StyleCascade {
                                    CascadeResolver&,
                                    const CSSParserContext&,
                                    FunctionContext&);
-  const CSSValue* ResolveLocalVariable(const CSSValue&,
+  const CSSValue* ResolveLocalVariable(const AtomicString& name,
+                                       const CSSValue&,
                                        CascadeResolver&,
                                        const CSSParserContext&,
                                        FunctionContext&);

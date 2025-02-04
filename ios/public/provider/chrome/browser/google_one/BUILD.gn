@@ -5,4 +5,5 @@
 source_set("google_one_api") {
   sources = [ "google_one_api.h" ]
   deps = [ "//base" ]
+  public_deps = [ "//ios/chrome/browser/google_one/shared" ]
 }

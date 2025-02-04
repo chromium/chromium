@@ -3212,26 +3212,20 @@ bool PDFiumEngine::ContinuePaint(size_t progressive_index,
   }
 
   const gfx::Rect& dirty = paint.rect();
-  const gfx::Rect pdfium_rect = GetPDFiumRect(paint.page_index(), dirty);
-
   const bool has_alpha = !!FPDFPage_HasTransparency(page);
-  uint32_t fill_color;
-  if (base::FeatureList::IsEnabled(features::kPdfPaintManagerDrawsBackground)) {
-    // When `has_alpha` is true, use a transparent bitmap to render correctly.
-    // If the bitmap was painted white, then certain blend operations would
-    // blend into the white color and draw incorrectly. Instead, PaintManager
-    // will draw the white page under this bitmap.
-    fill_color = has_alpha ? 0x00000000 : 0xFFFFFFFF;
-  } else {
-    // In the old code, which is here as a fallback, `fill_color` is always
-    // white, as PaintManager does not draw the page's background.
-    fill_color = 0xFFFFFFFF;
-  }
   ScopedFPDFBitmap new_bitmap = CreateBitmap(dirty, has_alpha, image_data);
   FPDF_BITMAP new_bitmap_ptr = new_bitmap.get();
   paint.SetBitmapAndImageData(std::move(new_bitmap), image_data);
+
+  const gfx::Rect pdfium_rect = GetPDFiumRect(paint.page_index(), dirty);
+  // When `has_alpha` is true, use a transparent bitmap to render correctly.
+  // If the bitmap was painted white, then certain blend operations would
+  // blend into the white color and draw incorrectly. Instead, PaintManager
+  // will draw the white page under this bitmap.
+  const uint32_t fill_color = has_alpha ? 0x00000000 : 0xFFFFFFFF;
   FPDFBitmap_FillRect(new_bitmap_ptr, pdfium_rect.x(), pdfium_rect.y(),
                       pdfium_rect.width(), pdfium_rect.height(), fill_color);
+
   return FPDF_RenderPageBitmap_Start(
              new_bitmap_ptr, page, pdfium_rect.x(), pdfium_rect.y(),
              pdfium_rect.width(), pdfium_rect.height(),

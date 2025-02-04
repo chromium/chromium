@@ -5674,7 +5674,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5098" label="WebAuthentication_AttestationFormats"/>
   <int value="5099" label="CssDisplayPropertyMultipleValues"/>
   <int value="5100" label="DocumentPolicyExpectNoLinkedResources"/>
-  <int value="5101" label="SelectionIsCollapsedBehaviorChange"/>
+  <int value="5101" label="OBSOLETE_SelectionIsCollapsedBehaviorChange"/>
   <int value="5102" label="TopicsAPIAll"/>
   <int value="5103" label="PaymentRequestDeprecatedPaymentMethod"/>
   <int value="5104"
@@ -5876,6 +5876,27 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5278" label="SchedulerPostTaskAbortBeforeRunning"/>
   <int value="5279" label="SchedulerPostTaskAsyncAbort"/>
   <int value="5280" label="SchedulerPostTaskSelfAbort"/>
+  <int value="5281" label="V8Window_Window_AttributeGetter"/>
+  <int value="5282" label="V8Window_Self_AttributeGetter"/>
+  <int value="5283" label="V8Window_Self_AttributeSetter"/>
+  <int value="5284" label="V8Window_Location_AttributeGetter"/>
+  <int value="5285" label="V8Window_Location_AttributeSetter"/>
+  <int value="5286" label="V8Window_Frames_AttributeGetter"/>
+  <int value="5287" label="V8Window_Frames_AttributeSetter"/>
+  <int value="5288" label="V8Window_Length_AttributeGetter"/>
+  <int value="5289" label="V8Window_Length_AttributeSetter"/>
+  <int value="5290" label="V8Window_Top_AttributeGetter"/>
+  <int value="5291" label="V8Window_Opener_AttributeGetter"/>
+  <int value="5292" label="V8Window_Opener_AttributeSetter"/>
+  <int value="5293" label="V8Window_Parent_AttributeGetter"/>
+  <int value="5294" label="V8Window_Parent_AttributeSetter"/>
+  <int value="5295" label="V8Window_Blur_Method"/>
+  <int value="5296" label="V8Window_Close_Method"/>
+  <int value="5297" label="V8Window_Focus_Method"/>
+  <int value="5298" label="V8Window_PostMessage_Method"/>
+  <int value="5299" label="HTMLImageElementNaturalSizeDiffersForSvgImage"/>
+  <int value="5300" label="WindowProxyIndexedGetter"/>
+  <int value="5301" label="WindowProxyNamedGetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -7390,6 +7411,7 @@ Called by update_use_counter_css.py.-->
   <int value="827" label="interest-target-delay"/>
   <int value="828" label="animation-trigger"/>
   <int value="829" label="column-rule-break"/>
+  <int value="830" label="row-rule-break"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
@@ -7765,6 +7787,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="277" label="LayoutInstability"/>
   <int value="278" label="Profiler"/>
   <int value="279" label="AsyncIterableStreams"/>
+  <int value="280" label="ContainerScrollStateQueries"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

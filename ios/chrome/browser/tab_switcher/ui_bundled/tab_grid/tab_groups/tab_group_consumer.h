@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/share_kit/model/sharing_state.h"
+
 // Consumer to allow the tab group model to send information to the tab group
 // UI.
 @protocol TabGroupConsumer
@@ -17,8 +19,11 @@
 // Sets the group color.
 - (void)setGroupColor:(UIColor*)color;
 
-// Sets the group shared state. YES when this group is shared with other users.
-- (void)setGroupShared:(BOOL)shared;
+// Sets whether the group can be shared or not.
+- (void)setShareAvailable:(BOOL)shareAvailable;
+
+// Sets the sharing state of a group.
+- (void)setSharingState:(tab_groups::SharingState)state;
 
 // Sets the face pile view controller to display the share button or the face
 // pile.

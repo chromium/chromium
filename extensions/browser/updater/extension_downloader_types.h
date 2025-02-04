@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_UPDATER_EXTENSION_DOWNLOADER_TYPES_H_
 #define EXTENSIONS_BROWSER_UPDATER_EXTENSION_DOWNLOADER_TYPES_H_
 
+#include "extensions/browser/disable_reason.h"
+
 namespace extensions {
 
 struct DownloadPingData {
@@ -19,17 +21,19 @@ struct DownloadPingData {
 
   // A bitmask of disable_reason::DisableReason's, which may contain one or
   // more reasons why an extension is disabled.
-  int disable_reasons = 0;
+  DisableReasonSet disable_reasons;
 
-  constexpr DownloadPingData() = default;
-  constexpr DownloadPingData(int rollcall,
-                             int active,
-                             bool enabled,
-                             int reasons)
-      : rollcall_days(rollcall),
-        active_days(active),
-        is_enabled(enabled),
-        disable_reasons(reasons) {}
+  DownloadPingData();
+  DownloadPingData(int rollcall,
+                   int active,
+                   bool enabled,
+                   const DisableReasonSet& disable_reasons);
+
+  // Disallow copy and assign.
+  DownloadPingData(const DownloadPingData& other) = delete;
+  DownloadPingData& operator=(const DownloadPingData& other) = delete;
+
+  ~DownloadPingData();
 };
 
 // The priority of the download request.

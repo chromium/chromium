@@ -21,7 +21,7 @@ namespace {
 constexpr char kFakeProfileId[] = "fake-profile-id";
 constexpr char kFakeChallengeResponse[] = "fake_challenge_response";
 constexpr char kFakeCustomerId[] = "fake_obfuscated_customer_id";
-constexpr char kFakeGaiaId[] = "fake_obfuscated_gaia_id";
+constexpr GaiaId::Literal kFakeGaiaId("fake_obfuscated_gaia_id");
 
 std::unique_ptr<KeyedService> CreateProfileIDService(
     content::BrowserContext* context) {
@@ -58,7 +58,7 @@ class ProfileAttesterTest
       policy_data->set_obfuscated_customer_id(kFakeCustomerId);
     }
     if (has_gaia_id()) {
-      policy_data->set_gaia_id(kFakeGaiaId);
+      policy_data->set_gaia_id(kFakeGaiaId.ToString());
     }
 
     mock_profile_cloud_policy_store_.set_policy_data_for_testing(
@@ -88,7 +88,8 @@ TEST_P(ProfileAttesterTest, DecorateKeyInfo_Success) {
   EXPECT_EQ(key_info_.profile_id(), kFakeProfileId);
   EXPECT_EQ(key_info_.user_customer_id(),
             has_customer_id() ? kFakeCustomerId : "");
-  EXPECT_EQ(key_info_.obfuscated_gaia_id(), has_gaia_id() ? kFakeGaiaId : "");
+  EXPECT_EQ(key_info_.obfuscated_gaia_id(),
+            has_gaia_id() ? kFakeGaiaId.ToString() : "");
 }
 
 // Tests that no policy data is added when the user cloud policy store is

@@ -52,8 +52,9 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
   }
 
   ToolbarButton* toolbar_button(Browser* browser) {
-    auto* container = toolbar_container(browser);
-    return container ? container->GetButtonFor(kActionShowDownloads) : nullptr;
+    return BrowserView::GetBrowserViewForBrowser(browser)
+        ->toolbar_button_provider()
+        ->GetDownloadButton();
   }
 
  protected:

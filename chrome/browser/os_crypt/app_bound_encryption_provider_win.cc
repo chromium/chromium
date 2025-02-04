@@ -138,7 +138,9 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
 
   if (support_level_ == os_crypt::SupportLevel::kNotSystemLevel) {
     // No service. No App-Bound APIs are available, so fail now.
-    std::move(callback).Run(kAppBoundDataPrefix, std::nullopt);
+    std::move(callback).Run(
+        kAppBoundDataPrefix,
+        base::unexpected(KeyError::kPermanentlyUnavailable));
     return;
   }
 
@@ -157,7 +159,9 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
   // existing data (if App-Bound validation still passes) but not encrypt of any
   // new data.
   if (support_level_ != os_crypt::SupportLevel::kSupported) {
-    std::move(callback).Run(kAppBoundDataPrefix, std::nullopt);
+    std::move(callback).Run(
+        kAppBoundDataPrefix,
+        base::unexpected(KeyError::kPermanentlyUnavailable));
     return;
   }
 
@@ -234,8 +238,11 @@ void AppBoundEncryptionProviderWin::HandleEncryptedKey(
     const OptionalReadOnlyKeyData& encrypted_key) {
   if (!encrypted_key) {
     ::SecureZeroMemory(decrypted_key.data(), decrypted_key.size());
-    // Failure here causes the provider not to be registered.
-    std::move(callback).Run(kAppBoundDataPrefix, std::nullopt);
+    // Failure here means encryption failed, which is considered a permanent
+    // error.
+    std::move(callback).Run(
+        kAppBoundDataPrefix,
+        base::unexpected(KeyError::kPermanentlyUnavailable));
     return;
   }
 
@@ -249,8 +256,12 @@ void AppBoundEncryptionProviderWin::StoreAndReplyWithKey(
     std::optional<std::tuple<ReadWriteKeyData, const OptionalReadOnlyKeyData&>>
         key_pair) {
   if (!key_pair) {
-    // Failure here causes the provider not to be registered.
-    std::move(callback).Run(kAppBoundDataPrefix, std::nullopt);
+    // Failure here indicates a temporary decryption failure.
+    // TODO(crbug.com/382059244): Consider resetting the key here, like DPAPI
+    // does.
+    std::move(callback).Run(
+        kAppBoundDataPrefix,
+        base::unexpected(KeyError::kTemporarilyUnavailable));
     return;
   }
   auto& [decrypted_key, maybe_encrypted_key] = *key_pair;

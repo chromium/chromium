@@ -36,12 +36,12 @@ export class PrintPreviewDpiSettingsElement extends
     return {
       capability: Object,
 
-      disabled: Boolean,
-
       capabilityWithLabels_: {
         type: Object,
         computed: 'computeCapabilityWithLabels_(capability)',
       },
+
+      disabled: Boolean,
     };
   }
 
@@ -110,6 +110,10 @@ export class PrintPreviewDpiSettingsElement extends
           this.capabilityWithLabels_.option[0];
       this.setSetting('dpi', defaultOption, /*noSticky=*/ true);
     }
+  }
+
+  private isSelectionBoxDisabled_(): boolean {
+    return this.disabled || this.getSetting('dpi').setByDestinationPolicy;
   }
 }
 

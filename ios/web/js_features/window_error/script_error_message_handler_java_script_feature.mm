@@ -91,48 +91,32 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
     details.url = script_message.request_url().value();
   }
 
-  bool has_scriptname = details.filename && details.filename.length > 0;
-  UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.ErrorHasFilename", has_scriptname);
-
   if (base::FeatureList::IsEnabled(features::kLogJavaScriptErrors) &&
-      !has_scriptname) {
-    if (log_message) {
+      log_message && stack) {
+    script_error_stack_util::FrameComponents top_stack_frame =
+        script_error_stack_util::TopFrameComponentsFromStack(*stack);
+
+    if (top_stack_frame.function_name.length() > 0) {
       SCOPED_CRASH_KEY_STRING256("Javascript", "error", *log_message);
 
-      static auto* const stack_crash_key = base::debug::AllocateCrashKeyString(
-          "Javascript-stack", base::debug::CrashKeySize::Size1024);
-
-      script_error_stack_util::FrameComponents top_stack_frame;
-
-      if (stack) {
-        std::string stack_crash_key_value =
-            script_error_stack_util::FilterForUsefulStackFrames(*stack);
-        if (stack_crash_key_value.length() > kStackMaxSize) {
-          stack_crash_key_value = script_error_stack_util::TruncateMiddle(
-              stack_crash_key_value, kStackMaxSize);
-        }
-        base::debug::SetCrashKeyString(stack_crash_key, stack_crash_key_value);
-
-        top_stack_frame =
-            script_error_stack_util::TopFrameComponentsFromStack(*stack);
+      std::string stack_crash_key_value =
+          script_error_stack_util::FilterForUsefulStackFrames(*stack);
+      if (stack_crash_key_value.length() > kStackMaxSize) {
+        stack_crash_key_value = script_error_stack_util::TruncateMiddle(
+            stack_crash_key_value, kStackMaxSize);
       }
+      SCOPED_CRASH_KEY_STRING1024("Javascript", "stack", stack_crash_key_value);
 
-      if (top_stack_frame.function_name.length() > 0) {
-        int reported_line = top_stack_frame.line;
-        // If the script appears to be minimized, use the column number instead
-        // of the line as all minimized scripts are only 1 line long.
-        if (top_stack_frame.line == 1 &&
-            top_stack_frame.function_name.length() == 1) {
-          reported_line = top_stack_frame.column;
-        }
-        base::debug::DumpWithoutCrashing(base::Location::Current(
-            top_stack_frame.function_name.c_str(),
-            top_stack_frame.file_name.c_str(), reported_line));
-      } else {
-        base::debug::DumpWithoutCrashing();
+      int reported_line = top_stack_frame.line;
+      // If the script appears to be minimized, use the column number instead
+      // of the line as all minimized scripts are only 1 line long.
+      if (top_stack_frame.line == 1 &&
+          top_stack_frame.function_name.length() == 1) {
+        reported_line = top_stack_frame.column;
       }
-
-      base::debug::ClearCrashKeyString(stack_crash_key);
+      base::debug::DumpWithoutCrashing(base::Location::Current(
+          top_stack_frame.function_name.c_str(),
+          top_stack_frame.file_name.c_str(), reported_line));
     }
   }
 

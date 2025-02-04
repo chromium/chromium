@@ -14,7 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/video_frame.h"
@@ -198,7 +198,7 @@ class MockVaapiWrapper : public VaapiWrapper {
                    const gfx::Size& va_surface_dst_size,
                    std::optional<gfx::Rect> src_rect = std::nullopt,
                    std::optional<gfx::Rect> dest_rect = std::nullopt
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                    ,
                    VAProtectedSessionID va_protected_session_id = VA_INVALID_ID
 #endif

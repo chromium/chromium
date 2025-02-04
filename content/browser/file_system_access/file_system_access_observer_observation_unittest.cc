@@ -352,17 +352,20 @@ class FileSystemAccessObserverObservationTest
   }
 
   std::unique_ptr<FileSystemAccessFileHandleImpl> CreateFileHandle(
-      const storage::FileSystemURL& file_url) {
-    return CreateFileHandle(kTestOrigin, file_url);
+      const storage::FileSystemURL& file_url,
+      const base::FilePath& display_name) {
+    return CreateFileHandle(kTestOrigin, file_url, display_name);
   }
 
   std::unique_ptr<FileSystemAccessFileHandleImpl> CreateFileHandle(
       const std::string& origin,
-      const storage::FileSystemURL& file_url) {
+      const storage::FileSystemURL& file_url,
+      const base::FilePath& display_name) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     return std::make_unique<FileSystemAccessFileHandleImpl>(
         manager_.get(), GetBindingContext(origin), file_url,
+        display_name.AsUTF8Unsafe(),
         FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
                                                        allow_grant_));
   }
@@ -454,7 +457,7 @@ TEST_F(FileSystemAccessObserverObservationTest,
   base::FilePath file_path = CreateFile();
   storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
-      CreateFileHandle(file_url);
+      CreateFileHandle(file_url, file_path.BaseName());
 
   FakeChangeSource source = CreateFileChangeSource(file_url);
 
@@ -485,14 +488,14 @@ TEST_F(FileSystemAccessObserverObservationTest,
   base::FilePath file_path1 = CreateFile();
   storage::FileSystemURL file_url1 = CreateFileSystemURL(file_path1);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle1 =
-      CreateFileHandle(file_url1);
+      CreateFileHandle(file_url1, file_path1.BaseName());
 
   FakeChangeSource source1 = CreateFileChangeSource(file_url1);
 
   base::FilePath file_path2 = CreateFile();
   storage::FileSystemURL file_url2 = CreateFileSystemURL(file_path2);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle2 =
-      CreateFileHandle(file_url2);
+      CreateFileHandle(file_url2, file_path2.BaseName());
 
   FakeChangeSource source2 = CreateFileChangeSource(file_url2);
 
@@ -530,7 +533,7 @@ TEST_F(FileSystemAccessObserverObservationTest,
   base::FilePath file_path = CreateFile();
   storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
-      CreateFileHandle(file_url);
+      CreateFileHandle(file_url, file_path.BaseName());
 
   FakeChangeSource source = CreateFileChangeSource(file_url);
 
@@ -567,7 +570,7 @@ TEST_F(FileSystemAccessObserverObservationTest,
   }
   storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
-      CreateFileHandle(file_url);
+      CreateFileHandle(file_url, file_path.BaseName());
 
   FakeChangeSource source = CreateFileChangeSource(file_url);
 
@@ -774,7 +777,7 @@ TEST_F(FileSystemAccessObserverObservationTest, ReceivedEventsInBFCache) {
   base::FilePath file_path = CreateFile();
   storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
-      CreateFileHandle(file_url);
+      CreateFileHandle(file_url, file_path.BaseName());
 
   FakeChangeSource source = CreateFileChangeSource(file_url);
 
@@ -812,7 +815,7 @@ TEST_F(FileSystemAccessObserverObservationTest, ReceivedErrorsInBFCache) {
   base::FilePath file_path = CreateFile();
   storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
-      CreateFileHandle(file_url);
+      CreateFileHandle(file_url, file_path.BaseName());
 
   FakeChangeSource source = CreateFileChangeSource(file_url);
 

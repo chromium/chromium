@@ -980,6 +980,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     void DidSwap();
     void DidRequestFrameSink();
 
+    base::TimeTicks CommitNavigationTime();
+
    private:
     void TryToRecordMetrics();
 

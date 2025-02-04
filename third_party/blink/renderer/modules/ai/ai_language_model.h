@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_clone_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -42,11 +43,11 @@ class AILanguageModel final : public EventTarget,
 
   // ai_language_model.idl implementation.
   ScriptPromise<IDLString> prompt(ScriptState* script_state,
-                                  const WTF::String& input,
+                                  const V8AILanguageModelPromptInput* input,
                                   const AILanguageModelPromptOptions* options,
                                   ExceptionState& exception_state);
   ReadableStream* promptStreaming(ScriptState* script_state,
-                                  const WTF::String& input,
+                                  const V8AILanguageModelPromptInput* input,
                                   const AILanguageModelPromptOptions* options,
                                   ExceptionState& exception_state);
   ScriptPromise<IDLUnsignedLongLong> countPromptTokens(

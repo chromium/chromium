@@ -23,7 +23,9 @@
   <div slot="controls" class="checkbox">
     <cr-checkbox id="duplex" aria-labelledby="label"
         disabled$="[[getDisabled_(
-            settings.duplex.setByGlobalPolicy, disabled)]]"
+          disabled,
+          settings.duplex.setByGlobalPolicy,
+          settings.duplex.setByDestinationPolicy)]]"
         on-change="onCheckboxChange_">
       $i18n{printOnBothSidesLabel}
     </cr-checkbox>
@@ -38,7 +40,9 @@
           style="background-image: [[getBackgroundImages_(
             settings.duplexShortEdge.value, dark)]];"
           disabled$="[[getDisabled_(
-            settings.duplexShortEdge.setByGlobalPolicy, disabled)]]"
+              disabled,
+              settings.duplexShortEdge.setByGlobalPolicy,
+              settings.duplexShortEdge.setByDestinationPolicy)]]"
           value="[[selectedValue]]" on-change="onSelectChange">
         <option value="[[duplexValueEnum_.LONG_EDGE]]">
           $i18n{optionLongEdge}

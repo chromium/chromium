@@ -26442,8 +26442,9 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledAndUserAgentOverrideDisabledTest,
 class RealTimeReportingEnabledTest : public InterestGroupBrowserTest {
  public:
   RealTimeReportingEnabledTest() {
-    feature_list_.InitAndEnableFeature(
-        {blink::features::kFledgeRealTimeReporting});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kFledgeRealTimeReporting},
+        /*disabled_features=*/{features::kFledgeEnableUnNoisedRealTimeReport});
   }
 
  private:
@@ -26853,6 +26854,130 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
 })",
                                     kDefaultMaxGroupLifetimeMs)))
       << all_result.error;
+}
+
+class FledgeUnNoisedRealTimeReportEnabledTest
+    : public InterestGroupBrowserTest {
+ public:
+  FledgeUnNoisedRealTimeReportEnabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kFledgeRealTimeReporting,
+                              features::kFledgeEnableUnNoisedRealTimeReport},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FledgeUnNoisedRealTimeReportEnabledTest,
+                       ReportVersion2) {
+  const char kHostA[] = "a.test";
+  const char kHostB[] = "b.test";
+
+  // Setting a small reporting interval to run the test faster.
+  manager_->set_reporting_interval_for_testing(base::Milliseconds(1));
+  manager_->set_max_report_queue_length_for_testing(50);
+  manager_->set_max_active_report_requests_for_testing(50);
+
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url =
+      embedded_https_test_server().GetURL(kHostA, "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      embedded_https_test_server().GetURL(kHostA, "/echo?render_cars");
+  url::Origin test_origin_b =
+      url::Origin::Create(embedded_https_test_server().GetURL(kHostB, "/echo"));
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          embedded_https_test_server().GetURL(
+              kHostA,
+              "/interest_group/bidding_logic_with_real_time_reporting.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+
+  // Only opt in buyer, otherwise seller will send a real time report as well.
+  const char kConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$3],
+    perBuyerRealTimeReportingConfig: {
+      $3: {type: 'default-local-reporting'}
+    }
+  })";
+
+  std::string auction_config = JsReplace(
+      kConfigTemplate, test_origin_b,
+      embedded_https_test_server().GetURL(
+          kHostB, "/interest_group/decision_logic_with_real_time_reporting.js"),
+      test_origin);
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  const GURL expected_report_url = embedded_https_test_server().GetURL(
+      "a.test", "/.well-known/interest-group/real-time-report");
+
+  WaitForUrl(expected_report_url);
+  std::optional<network::ResourceRequest> request =
+      url_loader_monitor.WaitForUrl(expected_report_url);
+  ASSERT_TRUE(request);
+  EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request->method);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request->credentials_mode);
+  EXPECT_EQ(network::mojom::RedirectMode::kError, request->redirect_mode);
+  EXPECT_EQ(test_origin, request->request_initiator);
+
+  EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kContentType),
+              testing::Optional(std::string("application/cbor")));
+
+  ASSERT_TRUE(request->trusted_params);
+  const net::IsolationInfo& isolation_info =
+      request->trusted_params->isolation_info;
+  EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
+            isolation_info.request_type());
+  EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
+  EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+
+  // Check the request body, which is the real time report in cbor.
+  std::string body = network::GetUploadData(*request);
+  cbor::Reader::Config config;
+  config.allow_floating_point = true;
+  const auto maybe_map = cbor::Reader::Read(base::as_byte_span(body), config);
+  ASSERT_TRUE(maybe_map && maybe_map->is_map());
+  const auto& map = maybe_map->GetMap();
+
+  const auto version_it = map.find(cbor::Value("version"));
+  ASSERT_TRUE(version_it != map.end() && version_it->second.is_integer());
+  EXPECT_EQ(2, version_it->second.GetInteger());
+  const auto flip_probability_it = map.find(cbor::Value("flipProbability"));
+  ASSERT_TRUE(flip_probability_it != map.end() &&
+              flip_probability_it->second.is_double());
+  EXPECT_GT(flip_probability_it->second.GetDouble(), 0.377);
+  EXPECT_LT(flip_probability_it->second.GetDouble(), 0.378);
+
+  for (const std::string& field : {"histogram", "platformHistogram"}) {
+    const auto histogram_it = map.find(cbor::Value(field));
+    ASSERT_TRUE(histogram_it != map.end() && histogram_it->second.is_map());
+    const auto& histogram_map = histogram_it->second.GetMap();
+    const auto buckets_it = histogram_map.find(cbor::Value("buckets"));
+    ASSERT_TRUE(buckets_it != histogram_map.end() &&
+                buckets_it->second.is_bytestring());
+    std::vector<uint8_t> buckets = buckets_it->second.GetBytestring();
+    size_t expected_buckets_size = field == "histogram" ? 128u : 1u;
+    CHECK_EQ(expected_buckets_size, buckets.size());
+    const auto length_it = histogram_map.find(cbor::Value("length"));
+    ASSERT_TRUE(length_it != histogram_map.end() &&
+                length_it->second.is_integer());
+    int expected_length = field == "histogram" ? 1024 : 4;
+    EXPECT_EQ(expected_length, length_it->second.GetInteger());
+  }
 }
 
 class RealTimeReportingDisabledTest : public InterestGroupBrowserTest {

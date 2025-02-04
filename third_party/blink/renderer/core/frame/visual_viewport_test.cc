@@ -1169,7 +1169,7 @@ TEST_P(VisualViewportTest, ScrollIntoViewFractionalOffset) {
     EXPECT_EQ(ScrollOffset(0, 900.75),
               layout_viewport_scrollable_area->GetScrollOffset());
   } else {
-    EXPECT_EQ(ScrollOffset(0, 900),
+    EXPECT_EQ(ScrollOffset(0, 901),
               layout_viewport_scrollable_area->GetScrollOffset());
   }
   EXPECT_EQ(ScrollOffset(250.25f, 100.25f), visual_viewport.GetScrollOffset());
@@ -1198,7 +1198,7 @@ TEST_P(VisualViewportTest, ScrollIntoViewFractionalOffset) {
     EXPECT_EQ(ScrollOffset(0, 900.75),
               layout_viewport_scrollable_area->GetScrollOffset());
   } else {
-    EXPECT_EQ(ScrollOffset(0, 900),
+    EXPECT_EQ(ScrollOffset(0, 901),
               layout_viewport_scrollable_area->GetScrollOffset());
   }
   EXPECT_EQ(ScrollOffset(250.875f, 100.875f),
@@ -1229,7 +1229,7 @@ TEST_P(VisualViewportTest, ScrollIntoViewFractionalOffset) {
     EXPECT_EQ(ScrollOffset(0, 900.5),
               layout_viewport_scrollable_area->GetScrollOffset());
   } else {
-    EXPECT_EQ(ScrollOffset(0, 900),
+    EXPECT_EQ(ScrollOffset(0, 901),
               layout_viewport_scrollable_area->GetScrollOffset());
   }
   EXPECT_EQ(ScrollOffset(250.5f, 100.5f), visual_viewport.GetScrollOffset());

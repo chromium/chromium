@@ -15,12 +15,6 @@ namespace {
 
 constexpr FontFeatureRange kChws{{{'c', 'h', 'w', 's'}, 1}};
 
-FontFeatures CreateInitial() {
-  FontFeatures features;
-  features.Append(kChws);
-  return features;
-}
-
 }  // namespace
 
 //
@@ -40,12 +34,6 @@ static_assert(offsetof(FontFeatureRange, value) ==
 static_assert(offsetof(FontFeatureRange, start) ==
               offsetof(hb_feature_t, start));
 static_assert(offsetof(FontFeatureRange, end) == offsetof(hb_feature_t, end));
-
-const FontFeatures& FontFeatures::Initial() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(FontFeatures, initial_features,
-                                  (CreateInitial()));
-  return initial_features;
-}
 
 bool FontFeatures::IsInitial() const {
   return size() == 1 && (*this)[0] == kChws;

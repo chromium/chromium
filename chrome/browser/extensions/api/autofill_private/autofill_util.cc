@@ -10,9 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -103,56 +105,32 @@ autofill_private::AddressEntry ProfileToAddressEntry(
 }
 
 std::string CardNetworkToIconResourceIdString(const std::string& network) {
-  bool metadata_icon = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableNewCardArtAndNetworkImages);
+  static constexpr auto kNetworkToResourceIdStringMap =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>(
+          {{autofill::kDiscoverCard,
+            "chrome://theme/IDR_AUTOFILL_METADATA_CC_DISCOVER"},
+           {autofill::kMasterCard,
+            "chrome://theme/IDR_AUTOFILL_METADATA_CC_MASTERCARD"},
+           {autofill::kVisaCard,
+            "chrome://theme/IDR_AUTOFILL_METADATA_CC_VISA"},
+           {autofill::kAmericanExpressCard,
+            "chrome://theme/IDR_AUTOFILL_METADATA_CC_AMEX"},
+           {autofill::kDinersCard,
+            "chrome://theme/IDR_AUTOFILL_METADATA_CC_DINERS"},
+           {autofill::kJCBCard, "chrome://theme/IDR_AUTOFILL_METADATA_CC_JCB"},
+           {autofill::kEloCard, "chrome://theme/IDR_AUTOFILL_METADATA_CC_ELO"},
+           {autofill::kMirCard, "chrome://theme/IDR_AUTOFILL_METADATA_CC_MIR"},
+           {autofill::kTroyCard,
+            "chrome://theme/IDR_AUTOFILL_METADATA_CC_TROY"},
+           {autofill::kUnionPay,
+            "chrome://theme/IDR_AUTOFILL_METADATA_CC_UNIONPAY"},
+           {autofill::kVerveCard,
+            "chrome://theme/IDR_AUTOFILL_METADATA_CC_VERVE"}});
 
-  if (network == autofill::kAmericanExpressCard) {
-    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_AMEX"
-                         : "chrome://theme/IDR_AUTOFILL_CC_AMEX";
-  }
-  if (network == autofill::kDinersCard) {
-    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_DINERS"
-                         : "chrome://theme/IDR_AUTOFILL_CC_DINERS";
-  }
-  if (network == autofill::kDiscoverCard) {
-    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_DISCOVER"
-                         : "chrome://theme/IDR_AUTOFILL_CC_DISCOVER";
-  }
-  if (network == autofill::kEloCard) {
-    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_ELO"
-                         : "chrome://theme/IDR_AUTOFILL_CC_ELO";
-  }
-  if (network == autofill::kJCBCard) {
-    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_JCB"
-                         : "chrome://theme/IDR_AUTOFILL_CC_JCB";
-  }
-  if (network == autofill::kMasterCard) {
-    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_MASTERCARD"
-                         : "chrome://theme/IDR_AUTOFILL_CC_MASTERCARD";
-  }
-  if (network == autofill::kMirCard) {
-    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_MIR"
-                         : "chrome://theme/IDR_AUTOFILL_CC_MIR";
-  }
-  if (network == autofill::kTroyCard) {
-    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_TROY"
-                         : "chrome://theme/IDR_AUTOFILL_CC_TROY";
-  }
-  if (network == autofill::kUnionPay) {
-    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_UNIONPAY"
-                         : "chrome://theme/IDR_AUTOFILL_CC_UNIONPAY";
-  }
-  if (network == autofill::kVerveCard) {
-    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_VERVE"
-                         : "chrome://theme/IDR_AUTOFILL_CC_VERVE";
-  }
-  if (network == autofill::kVisaCard) {
-    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_VISA"
-                         : "chrome://theme/IDR_AUTOFILL_CC_VISA";
-  }
-
-  return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_GENERIC"
-                       : "chrome://theme/IDR_AUTOFILL_CC_GENERIC";
+  auto it = kNetworkToResourceIdStringMap.find(network);
+  return it != kNetworkToResourceIdStringMap.end()
+             ? std::string(it->second)
+             : "chrome://theme/IDR_AUTOFILL_METADATA_CC_GENERIC";
 }
 
 autofill_private::IbanEntry IbanToIbanEntry(const autofill::Iban& iban) {

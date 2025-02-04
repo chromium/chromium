@@ -976,19 +976,17 @@ void EnqueueLaunchParams(content::WebContents* contents,
 
 void FocusAppContainer(Browser* browser, int tab_index) {
   CHECK(browser);
-  // ActivateTabAt() does not work for PWA windows, so activation is mimicked by
-  // bringing the app window to the foreground by focussing it.
-  if (WebAppBrowserController::IsWebApp(browser)) {
-    content::WebContents* const app_contents =
-        browser->tab_strip_model()->GetWebContentsAt(tab_index);
-    CHECK(app_contents);
-    app_contents->Focus();
-    browser->GetBrowserView().Activate();
-  } else {
-    // This will CHECK-fail if tab_index does not correspond to a valid tab
-    // inside `browser`.
+  content::WebContents* const web_contents =
+      browser->tab_strip_model()->GetWebContentsAt(tab_index);
+  CHECK(web_contents);
+  web_contents->Focus();
+  // ActivateTabAt() does not work for PWA windows.
+  if (!WebAppBrowserController::IsWebApp(browser)) {
+    // Note: This will CHECK-fail if tab_index is invalid.
     browser->tab_strip_model()->ActivateTabAt(tab_index);
   }
+  // This call will un-minimize the window.
+  browser->GetBrowserView().Activate();
 }
 
 }  // namespace web_app

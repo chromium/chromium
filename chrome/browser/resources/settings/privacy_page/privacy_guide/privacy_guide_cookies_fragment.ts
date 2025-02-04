@@ -17,6 +17,7 @@ import '../../privacy_page/collapse_radio_button.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {CookieControlsMode} from '../../site_settings/constants.js';
@@ -56,6 +57,12 @@ export class PrivacyGuideCookiesFragmentElement extends
       thirdPartyCookieBlockingSettingEnum_: {
         type: Object,
         value: ThirdPartyCookieBlockingSetting,
+      },
+
+      isAlwaysBlock3pcsIncognitoEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isAlwaysBlock3pcsIncognitoEnabled'),
       },
     };
   }

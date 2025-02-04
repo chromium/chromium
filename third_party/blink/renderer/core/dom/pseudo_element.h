@@ -101,6 +101,8 @@ class CORE_EXPORT PseudoElement : public Element {
 
   static bool IsLayoutSiblingOfOriginatingElement(PseudoId pseudo_id);
 
+  bool IsInertRoot() const override;
+
  protected:
   void SetIsGeneratedName(bool generated) { is_generated_name_ = generated; }
 

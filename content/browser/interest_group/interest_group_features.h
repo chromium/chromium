@@ -14,7 +14,6 @@ namespace features {
 // Please keep features in alphabetical order.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDetectInconsistentPageImpl);
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandADealSupport);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandAKAnonEnforcement);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandAPrivateAggregation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableBandASampleDebugReports);
@@ -25,6 +24,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeBiddingAndAuctionNonceSupport);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableUserAgentOverrides);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableWALForInterestGroupStorage);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders);
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableUnNoisedRealTimeReport);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeStartAnticipatoryProcesses);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(

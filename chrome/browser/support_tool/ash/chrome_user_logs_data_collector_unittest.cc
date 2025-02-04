@@ -49,7 +49,7 @@ struct FakeUserLog {
 };
 
 const char kFakeUserEmail[] = "fakeusername@example.com";
-const char kFakeGaiaId[] = "gaia-id";
+const GaiaId::Literal kFakeGaiaId("gaia-id");
 
 const FakeUserLog kFakeUserLogs[] = {
     {/*path=*/base::FilePath("log/chrome"), /*log_name=*/"chrome",
@@ -74,7 +74,7 @@ class ChromeUserLogsDataCollectorTest : public ::testing::Test {
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
     AccountId fake_user_account =
-        AccountId::FromUserEmailGaiaId(kFakeUserEmail, GaiaId(kFakeGaiaId));
+        AccountId::FromUserEmailGaiaId(kFakeUserEmail, kFakeGaiaId);
     fake_user_hash_ =
         user_manager::FakeUserManager::GetFakeUsernameHash(fake_user_account);
     // Add the fake user to `fake_user_manager` and make it primary user by

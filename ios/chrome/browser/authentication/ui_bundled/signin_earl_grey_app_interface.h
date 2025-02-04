@@ -52,13 +52,16 @@ enum class UserSelectableType;
 // Returns YES if the identity was added to the fake identity service.
 + (BOOL)isIdentityAdded:(FakeSystemIdentity*)fakeIdentity;
 
-// Returns the gaia ID of the signed-in account.
-// If there is no signed-in account returns an empty string.
+// Returns the gaia ID of the primary account.
+// If there is no primary account returns an empty string.
 + (NSString*)primaryAccountGaiaID;
 
 // Returns the email of the primary account base on `consentLevel`.
 // If there is no signed-in account returns an empty string.
 + (NSString*)primaryAccountEmailWithConsent:(signin::ConsentLevel)consentLevel;
+
+// Returns the gaia IDs of all accounts in the current profile.
++ (NSSet<NSString*>*)accountsInProfileGaiaIDs;
 
 // Checks that no identity is signed in.
 + (BOOL)isSignedOut;

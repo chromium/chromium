@@ -15,7 +15,6 @@ import org.jni_zero.JniType;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -156,11 +155,7 @@ public class AutofillImageFetcher {
         mImagesCache.put(
                 urlToCache.getSpec(),
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                        bitmap,
-                        cardIconSpecs,
-                        ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)));
+                        bitmap, cardIconSpecs, true));
     }
 
     private void treatAndCachePixAccountImage(Bitmap bitmap, GURL urlToCache) {

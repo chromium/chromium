@@ -103,7 +103,7 @@ void STGTabsMenuModel::Build(
       latest_command_id,
       group_pinned ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
                    : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP,
-      ui::ImageModel::FromVectorIcon(group_pinned ? kKeepFilledIcon : kKeepIcon,
+      ui::ImageModel::FromVectorIcon(group_pinned ? kKeepOffIcon : kKeepIcon,
                                      ui::kColorMenuIcon, kUIUpdateIconSize));
   SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                          kToggleGroupPinStateMenuItem);

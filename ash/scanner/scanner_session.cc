@@ -14,6 +14,7 @@
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_metrics.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
@@ -26,6 +27,7 @@
 #include "components/manta/proto/scanner.pb.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
 namespace ash {
@@ -195,8 +197,8 @@ void ScannerSession::OnActionsReturned(
                                 base::TimeTicks::Now() - request_start_time);
 
   if (output == nullptr) {
-    // TODO(b/363100868): Handle error case
-    std::move(callback).Run({});
+    std::move(callback).Run(base::unexpected(
+        l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC)));
     return;
   }
 

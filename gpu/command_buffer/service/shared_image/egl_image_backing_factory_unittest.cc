@@ -498,8 +498,8 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
-  WGPUInstanceDescriptor instance_desc = {
-      .features =
+  wgpu::InstanceDescriptor instance_desc = {
+      .capabilities =
           {
               .timedWaitAnyEnable = true,
           },

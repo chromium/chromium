@@ -2663,7 +2663,7 @@ const CSSValue* ContainerType::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeContainerType(stream);
+  return css_parsing_utils::ConsumeContainerType(stream, context);
 }
 
 const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
@@ -5243,6 +5243,14 @@ const CSSValue* ColumnRuleBreak::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return CSSIdentifierValue::Create(style.ColumnRuleBreak());
+}
+
+const CSSValue* RowRuleBreak::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.RowRuleBreak());
 }
 
 const blink::Color InternalVisitedColumnRuleColor::ColorIncludingFallback(

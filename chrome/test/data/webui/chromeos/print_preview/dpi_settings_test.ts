@@ -4,15 +4,17 @@
 
 import 'chrome://print/print_preview.js';
 
-import type {LabelledDpiCapability, PrintPreviewDpiSettingsElement} from 'chrome://print/print_preview.js';
+import type {LabelledDpiCapability, PrintPreviewDpiSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 
 suite('DpiSettingsTest', function() {
   let dpiSection: PrintPreviewDpiSettingsElement;
+
+  let model: PrintPreviewModelElement;
 
   const dpi = getCddTemplate('FooPrinter')!.capabilities!.printer!.dpi;
   assert(dpi);
@@ -27,7 +29,7 @@ suite('DpiSettingsTest', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const model = document.createElement('print-preview-model');
+    model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
     dpiSection = document.createElement('print-preview-dpi-settings');
@@ -83,5 +85,14 @@ suite('DpiSettingsTest', function() {
     assertDeepEquals(highQualityWithLabel, dpiSection.getSettingValue('dpi'));
     assertDeepEquals(
         highQualityWithLabel, JSON.parse(settingsSelect.selectedValue));
+  });
+
+  test('disabled by destination policy', function() {
+    const settingsSelect =
+        dpiSection.shadowRoot!.querySelector('print-preview-settings-select')!;
+    assertFalse(settingsSelect.disabled);
+
+    model.set('settings.dpi.setByDestinationPolicy', true);
+    assertTrue(settingsSelect.disabled);
   });
 });

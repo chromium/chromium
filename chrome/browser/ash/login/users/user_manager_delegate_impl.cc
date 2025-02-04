@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -54,10 +53,6 @@ void UserManagerDelegateImpl::OverrideDirHome(
   base::PathService::OverrideAndCreateIfNeeded(base::DIR_HOME, homedir,
                                                /*is_absolute=*/true,
                                                /*create=*/false);
-}
-
-bool UserManagerDelegateImpl::IsUserSessionRestoreInProgress() {
-  return UserSessionManager::GetInstance()->UserSessionsRestoreInProgress();
 }
 
 std::optional<user_manager::UserType>

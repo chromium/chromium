@@ -466,7 +466,7 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
                           !browser_->profile()->IsOffTheRecord());
 
   // Update the icon based on whether the extension is pinned.
-  const gfx::VectorIcon& icon = is_pinned ? kKeepFilledIcon : kKeepIcon;
+  const gfx::VectorIcon& icon = is_pinned ? kKeepOffIcon : kKeepIcon;
   const ui::ColorId icon_color_id =
       is_pinned ? kColorExtensionMenuPinButtonIcon : kColorExtensionMenuIcon;
   const ui::ColorId disabled_icon_color_id =

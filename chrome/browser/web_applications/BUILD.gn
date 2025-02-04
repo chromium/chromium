@@ -605,7 +605,6 @@ source_set("web_applications") {
       "//ash/public/cpp",
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/ash/app_mode/isolated_web_app:policy_util",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/drive",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/chromeos/upload_office_to_cloud",
@@ -766,7 +765,6 @@ source_set("web_applications_test_support") {
   if (is_chromeos) {
     deps += [
       "//ash/constants",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/system_web_apps",
       "//chromeos/ash/experiences/system_web_apps/types",
     ]
@@ -1010,7 +1008,6 @@ source_set("web_applications_unit_tests") {
       "//ash/constants",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc:test_support",
-      "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/policy:system_features_disable_list",
       "//chrome/common/chromeos/extensions",

@@ -953,10 +953,13 @@ void LocalDOMWindow::DispatchPersistedPageshowEvent(
 
 void LocalDOMWindow::DispatchPagehideEvent(
     PageTransitionEventPersistence persistence) {
-  if (document_->IsPrerendering()) {
-    // Do not dispatch the event while prerendering.
-    return;
+  if (!base::FeatureList::IsEnabled(features::kPageHideEventForPrerender2)) {
+    if (document_->IsPrerendering()) {
+      // Do not dispatch the event while prerendering.
+      return;
+    }
   }
+
   if (document_->UnloadStarted()) {
     // We've already dispatched pagehide (since it's the first thing we do when
     // starting unload) and shouldn't dispatch it again. We might get here on

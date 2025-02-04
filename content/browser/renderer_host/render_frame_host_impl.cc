@@ -6446,16 +6446,17 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompleted(
   if (!initiator)
     return;
 
+  if (on_process_before_unload_completed_for_testing_) [[unlikely]] {
+    std::move(on_process_before_unload_completed_for_testing_).Run();
+  }
+
   // Continue processing the ACK in the frame that triggered beforeunload in
   // this frame.  This could be either this frame itself or an ancestor frame.
   initiator->ProcessBeforeUnloadCompletedFromFrame(
       proceed, treat_as_final_completion_callback, this,
       /*is_frame_being_destroyed=*/false, renderer_before_unload_start_time,
       renderer_before_unload_end_time, for_legacy);
-
-  if (on_process_before_unload_completed_for_testing_) [[unlikely]] {
-    std::move(on_process_before_unload_completed_for_testing_).Run();
-  }
+  // DO NOT add code after this. `this` can be deleted at this point.
 }
 
 void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
@@ -7136,7 +7137,9 @@ bool RenderFrameHostImpl::HasStickyUserActivationForHistoryIntervention()
   return false;
 }
 
-void RenderFrameHostImpl::ClosePage(ClosePageSource source) {
+void RenderFrameHostImpl::ClosePage(
+    ClosePageSource source,
+    base::RepeatingClosure completion_callback) {
   // This path is taken when tab/window close is initiated by either the
   // browser process or via a window.close() call through a proxy. In both
   // cases, we need to tell the main frame's renderer process to run unload
@@ -7160,22 +7163,23 @@ void RenderFrameHostImpl::ClosePage(ClosePageSource source) {
   if (IsRenderFrameLive() && !IsPageReadyToBeClosed()) {
     close_timeout_ = std::make_unique<input::TimeoutMonitor>(
         base::BindRepeating(&RenderFrameHostImpl::ClosePageTimeout,
-                            weak_ptr_factory_.GetWeakPtr(), source),
+                            weak_ptr_factory_.GetWeakPtr(), source,
+                            completion_callback),
         GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
     close_timeout_->Start(kUnloadTimeout);
-
-    GetAssociatedLocalMainFrame()->ClosePage(
-        base::BindOnce(&RenderFrameHostImpl::ClosePageIgnoringUnloadEvents,
-                       weak_ptr_factory_.GetWeakPtr(), source));
+    GetAssociatedLocalMainFrame()->ClosePage(base::BindOnce(
+        &RenderFrameHostImpl::ClosePageIgnoringUnloadEvents,
+        weak_ptr_factory_.GetWeakPtr(), source, completion_callback));
   } else {
     // This RenderFrameHost doesn't have a live renderer (or has already run
     // unload handlers), so just skip the close event and close the page.
-    ClosePageIgnoringUnloadEvents(source);
+    ClosePageIgnoringUnloadEvents(source, completion_callback);
   }
 }
 
 void RenderFrameHostImpl::ClosePageIgnoringUnloadEvents(
-    ClosePageSource source) {
+    ClosePageSource source,
+    base::RepeatingClosure completion_callback) {
   if (close_timeout_) {
     close_timeout_->Stop();
     close_timeout_.reset();
@@ -7200,11 +7204,25 @@ void RenderFrameHostImpl::ClosePageIgnoringUnloadEvents(
   }
 
   page_close_state_ = PageCloseState::kReadyToBeClosed;
+
+  // If this is triggered by an intended prerender cancellation, it should not
+  // close the WebContents. For the same tab case, closing WebContents will
+  // close the initiator. As for the new tab case, WebContents will be destroyed
+  // with `PrerenderNewTabHandle`, so no need to close it explicitly.
+  if (lifecycle_state_ == LifecycleStateImpl::kPrerendering &&
+      source == ClosePageSource::kPrerenderDiscard) {
+    completion_callback.Run();
+    return;
+  }
+
   delegate_->Close(this);
 }
 
 bool RenderFrameHostImpl::IsPageReadyToBeClosed() {
-  DCHECK(IsInPrimaryMainFrame());
+  if (lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
+    DCHECK(IsInPrimaryMainFrame());
+  }
+
   // If there is a JavaScript dialog up, don't bother sending the renderer the
   // close event because it is known unresponsive, waiting for the reply from
   // the dialog.
@@ -7212,13 +7230,14 @@ bool RenderFrameHostImpl::IsPageReadyToBeClosed() {
          delegate_->IsJavaScriptDialogShowing() || BeforeUnloadTimedOut();
 }
 
-void RenderFrameHostImpl::ClosePageTimeout(ClosePageSource source) {
+void RenderFrameHostImpl::ClosePageTimeout(
+    ClosePageSource source,
+    base::RepeatingClosure completion_callback) {
   if (source == ClosePageSource::kRenderer &&
       delegate_->ShouldIgnoreUnresponsiveRenderer()) {
     return;
   }
-
-  ClosePageIgnoringUnloadEvents(source);
+  ClosePageIgnoringUnloadEvents(source, completion_callback);
 }
 
 void RenderFrameHostImpl::ShowCreatedWindow(

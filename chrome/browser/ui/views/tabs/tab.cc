@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -578,7 +579,7 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
   // releases happen off the element).
   if (event.IsOnlyMiddleMouseButton()) {
     if (HitTestPoint(event.location())) {
-      controller_->CloseTab(this, CLOSE_TAB_FROM_MOUSE);
+      controller_->CloseTab(this, CloseTabSource::kFromMouse);
     } else if (closing_) {
       // We're animating closed and a middle mouse button was pushed on us but
       // we don't contain the mouse anymore. We assume the user is clicking
@@ -588,7 +589,7 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
       ConvertPointToTarget(this, parent(), &location_in_parent);
       Tab* closest_tab = controller_->GetTabAt(location_in_parent);
       if (closest_tab) {
-        controller_->CloseTab(closest_tab, CLOSE_TAB_FROM_MOUSE);
+        controller_->CloseTab(closest_tab, CloseTabSource::kFromMouse);
       }
     }
   } else if (event.IsOnlyLeftMouseButton() && !event.IsShiftDown() &&
@@ -1228,8 +1229,8 @@ void Tab::CloseButtonPressed(const ui::Event& event) {
 
   const bool from_mouse = event.type() == ui::EventType::kMouseReleased &&
                           !(event.flags() & ui::EF_FROM_TOUCH);
-  controller_->CloseTab(
-      this, from_mouse ? CLOSE_TAB_FROM_MOUSE : CLOSE_TAB_FROM_TOUCH);
+  controller_->CloseTab(this, from_mouse ? CloseTabSource::kFromMouse
+                                         : CloseTabSource::kFromTouch);
 }
 
 BEGIN_METADATA(Tab)

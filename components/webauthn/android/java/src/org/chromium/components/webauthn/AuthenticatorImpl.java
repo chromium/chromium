@@ -22,6 +22,7 @@ import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
+import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
@@ -197,11 +198,15 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             callback.call(AuthenticatorStatus.PENDING_REQUEST, null, null);
             return;
         }
+        if (options.mediation == Mediation.IMMEDIATE) {
+            callback.call(AuthenticatorStatus.NOT_IMPLEMENTED, null, null);
+            return;
+        }
 
         mGetAssertionCallback = callback;
         mIsOperationPending = true;
         mIsPaymentRequest = mPayment != null;
-        mIsConditionalRequest = options.isConditional;
+        mIsConditionalRequest = options.mediation == Mediation.CONDITIONAL;
 
         if (!GmsCoreUtils.isWebauthnSupported()
                 || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())) {

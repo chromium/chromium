@@ -125,12 +125,13 @@ std::string ConvertProtoToText(const std::string& proto_binary) {
 
 ui::AXTree CreateSampleTree() {
   // AXTree title=Test Tree
-  // id=1 rootWebArea child_ids=2,4,6 (4, 8)-(15, 16)
+  // id=1 rootWebArea clips_children child_ids=2,4,6 (4, 8)-(15, 16)
   // non_atomic_text_field_root=true
-  // ++id=2 paragraph child_ids=3 (0, 0)-(0, 0) is_line_breaking_object=true
-  // ++++id=3 staticText EDITABLE name=StaticText00 (0, 0)-(0, 0)
-  // ++id=4 paragraph child_ids=5 (0, 0)-(0, 0) is_line_breaking_object=true
-  // ++++id=5 staticText name=StaticText10 (0, 0)-(0, 0)
+  // ++id=2 paragraph child_ids=3 (1, 1)-(5, 5) is_line_breaking_object=true
+  // ++++id=3 staticText EDITABLE name=StaticText00 (20, 20)-(5, 5)
+  // ++id=4 paragraph clips_children child_ids=5 (1, 6)-(5, 5)
+  // ++is_line_breaking_object=true
+  // ++++id=5 staticText name=StaticText10 offset_container_id=4 (6, 6)-(5, 5)
   // ++id=6 paragraph child_ids=7 (0, 0)-(0, 0) is_line_breaking_object=true
   // ++++id=7 link LINKED child_ids=8,9 (0, 0)-(0, 0)
   // ++++++id=8 staticText name=StaticText200 (0, 0)-(0, 0)
@@ -160,24 +161,34 @@ ui::AXTree CreateSampleTree() {
   root.AddBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot,
                         true);
   root.relative_bounds.bounds = gfx::RectF(4, 8, 15, 16);
+  // Setting ClipsChildren ensures that the tree does not grow its size to
+  // contain all children.
+  root.AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren, true);
   root.child_ids = {paragraph_0.id, paragraph_1.id, paragraph_2.id};
 
   paragraph_0.role = ax::mojom::Role::kParagraph;
   paragraph_0.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
                                true);
+  paragraph_0.relative_bounds.bounds = gfx::RectF(1, 1, 5, 5);
   paragraph_0.child_ids = {static_text_0_0.id};
 
   static_text_0_0.role = ax::mojom::Role::kStaticText;
   static_text_0_0.AddState(ax::mojom::State::kEditable);
   static_text_0_0.SetName("StaticText00");
+  // Since `offset_container_id` is not set, the position is relative to root.
+  static_text_0_0.relative_bounds.bounds = gfx::RectF(20, 20, 5, 5);
 
   paragraph_1.role = ax::mojom::Role::kParagraph;
   paragraph_1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
                                true);
+  paragraph_1.AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren, true);
+  paragraph_1.relative_bounds.bounds = gfx::RectF(1, 6, 5, 5);
   paragraph_1.child_ids = {static_text_1_0.id};
 
   static_text_1_0.role = ax::mojom::Role::kStaticText;
   static_text_1_0.SetName("StaticText10");
+  static_text_1_0.relative_bounds.bounds = gfx::RectF(6, 6, 5, 5);
+  static_text_1_0.relative_bounds.offset_container_id = paragraph_1.id;
 
   paragraph_2.role = ax::mojom::Role::kParagraph;
   paragraph_2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,

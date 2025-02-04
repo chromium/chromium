@@ -15,7 +15,7 @@ desc: |-
   If you must use the policy, please file a bug on crbug.com explaining your
   use case and CC {janiceliu, awillia}@chromium.org. The policy is scheduled to
   be offered through <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
-  version 138, after which the old implementation will be removed.
+  version 140, after which the old implementation will be removed.
 
   NOTE: Only newly-started renderer processes will reflect changes to this
   policy while the browser is running.
@@ -27,11 +27,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-
-future_on:
- - chrome.*
- - chrome_os
- - android
 
 items:
 - caption: Partition Blob URLs during fetching and navigation.
@@ -46,6 +41,11 @@ owners:
 
 schema:
   type: boolean
+
+supported_on:
+- chrome.*:135-
+- chrome_os:135-
+- android:135-
 
 tags: []
 

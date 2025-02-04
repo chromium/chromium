@@ -11,6 +11,7 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -92,7 +93,10 @@ std::unique_ptr<KeyedService> BuildMockDownloadCoreService(
 class DownloadToolbarButtonViewTest : public TestWithBrowserView {
  public:
   DownloadToolbarButtonViewTest()
-      : manager_(std::make_unique<NiceMock<content::MockDownloadManager>>()) {}
+      : manager_(std::make_unique<NiceMock<content::MockDownloadManager>>()) {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kPinnableDownloadsButton);
+  }
 
   DownloadToolbarButtonViewTest(const DownloadToolbarButtonViewTest&) = delete;
   DownloadToolbarButtonViewTest& operator=(
@@ -147,7 +151,8 @@ class DownloadToolbarButtonViewTest : public TestWithBrowserView {
   }
 
   DownloadToolbarButtonView* toolbar_button() {
-    return browser_view()->toolbar_button_provider()->GetDownloadButton();
+    return static_cast<DownloadToolbarButtonView*>(
+        browser_view()->toolbar_button_provider()->GetDownloadButton());
   }
 
  protected:
@@ -155,6 +160,7 @@ class DownloadToolbarButtonViewTest : public TestWithBrowserView {
   std::unique_ptr<NiceMock<content::MockDownloadManager>> manager_;
   std::vector<std::unique_ptr<NiceMock<download::MockDownloadItem>>>
       download_items_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DownloadToolbarButtonViewTest, ShowHide) {

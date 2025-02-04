@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -313,34 +314,57 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
     } else if (on_task_blocklist->current_page_restriction_level() ==
                LockedNavigationOptions::
                    SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION) {
-      // Similar conditions as the above, but we first check if it's the same
-      // domain first before checking the one level deep case since we allow
-      // same domain navigations as well.
-
-      // We pick the initiator origin if available in case we want to check if
-      // the current url we are attempting to check matches the domain of the
-      // initial url for the tab. For example if we have the initiator origin as
-      // google.com and the last committed url is en.google.com, we want to
-      // check the domain with google.com instead.
-      const GURL& source_url =
-          navigation_handle()->GetInitiatorOrigin()
-              ? navigation_handle()->GetInitiatorOrigin()->GetURL()
-              : window_tracker->browser()
-                    ->tab_strip_model()
-                    ->GetActiveWebContents()
-                    ->GetLastCommittedURL();
+      // We need to account for several scenarios here, because a navigation
+      // needs to be allowed if it is within the same domain as the original URL
+      // in the parent tab, but conditionally allowed to go one level deep (1LD)
+      // if it has not already (in the same parent tab or a child tab). Domain
+      // checks happen against the original URL of the parent tab, but 1LD
+      // checks need to cover three possibilities:
+      // 1. Navigation on the same parent tab.
+      // 2. Navigation on a new child tab (spawned through ctrl+click for
+      // instance).
+      // 3. Navigation on a pre-existing child tab that may or may not have
+      // already met the 1LD requirement.
+      GURL source_url = window_tracker->browser()
+                            ->tab_strip_model()
+                            ->GetActiveWebContents()
+                            ->GetLastCommittedURL();
+      const SessionID original_tab_id = sessions::SessionTabHelper::IdForTab(
+          on_task_blocklist->previous_tab());
+      if (on_task_blocklist->one_level_deep_original_url().contains(
+              original_tab_id)) {
+        source_url =
+            on_task_blocklist->one_level_deep_original_url()[original_tab_id];
+      }
       if (source_url.is_valid()) {
         if (url.DomainIs(source_url.host())) {
+          // Same domain navigation.
           on_task_blocklist->MaybeSetURLRestrictionLevel(
               navigation_handle()->GetWebContents(), url,
               LockedNavigationOptions::
                   SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION);
-        } else {
-          if (!MaybeProceedForOneLevelDeep(
-                  navigation_handle()->GetWebContents(), url)) {
-            MaybeShowBlockedURLToast();
-            return content::NavigationThrottle::CANCEL;
-          }
+        } else if (on_task_blocklist->IsParentTab(
+                       navigation_handle()->GetWebContents()) &&
+                   !MaybeProceedForOneLevelDeep(
+                       navigation_handle()->GetWebContents(), url)) {
+          // Cannot go 1LD on the same parent tab.
+          MaybeShowBlockedURLToast();
+          return content::NavigationThrottle::CANCEL;
+        } else if (const SessionID nav_tab_id =
+                       sessions::SessionTabHelper::IdForTab(
+                           navigation_handle()->GetWebContents());
+                   on_task_blocklist->child_tab_to_nav_filters().contains(
+                       nav_tab_id) &&
+                   on_task_blocklist->child_tab_to_nav_filters()[nav_tab_id] ==
+                       LockedNavigationOptions::BLOCK_NAVIGATION) {
+          // Cannot go 1LD on a pre-existing child tab.
+          MaybeShowBlockedURLToast();
+          return content::NavigationThrottle::CANCEL;
+        } else if (!MaybeProceedForOneLevelDeep(
+                       on_task_blocklist->previous_tab(), url)) {
+          // Disallowed 1LD navigation on a new child tab.
+          MaybeShowBlockedURLToast();
+          return content::NavigationThrottle::CANCEL;
         }
       }
     } else {

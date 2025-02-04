@@ -86,7 +86,6 @@ class WorkerNodeImpl
   NodeSetView<WorkerNodeImpl*> client_workers() const;
   NodeSetView<WorkerNodeImpl*> child_workers() const;
 
-  base::WeakPtr<WorkerNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<WorkerNodeImpl> GetWeakPtr();
 
  private:
@@ -157,7 +156,6 @@ class WorkerNodeImpl
           PriorityAndReason(base::TaskPriority::LOWEST,
                             kDefaultPriorityReason)};
 
-  base::WeakPtr<WorkerNodeImpl> weak_this_;
   base::WeakPtrFactory<WorkerNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };

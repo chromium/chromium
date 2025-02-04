@@ -103,6 +103,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.Cold.NewTabPage.TimeToFirstDraw" units="ms"
+    expires_after="2025-07-15">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    The time from the start of the activity on a cold start until the first draw
+    pass on the root view containing the search provider logo (if available),
+    search box, most visited tiles, articles, etc. This usually indicates when
+    the fixed UI elements are shown to the user, but the articles might not be
+    filled in yet.
+
+    Metric is recorded once per application lifetime during a cold start only if
+    the NTP is shown first when the FeedSurfaceProvider's view calls onDraw.
+
+    Utilizes ColdStartTracker to determine if a start was cold based on process
+    creation reason. Therefore, it is recommended to limit analysis of the data
+    to Android P+ because on prior versions the cold start detection is
+    time-based and therefore less robust.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Startup.Android.Cold.TimeToFirstContentfulPaint"
     units="ms" expires_after="2025-07-13">
   <owner>pasko@chromium.org</owner>
@@ -773,7 +794,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.ConsecutiveLoadsWithoutLaunch" units="count"
-    expires_after="2025-05-30">
+    expires_after="2025-08-03">
   <owner>olivierrobin@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -1194,7 +1215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Temperature" enum="StartupTemperature"
-    expires_after="2025-06-01">
+    expires_after="2025-08-03">
 <!-- expires-after: Diagnosis metric for changes in StartupTemperature suffix.
      Shouldn't truly expire but kColdStartHardFaultCountThreshold should be
      surveyed yearly. -->

@@ -63,15 +63,16 @@ inline constexpr char kPayloadPath[] = "payload";
 
 std::optional<base::Value::Dict> ParseCampaignsFile(
     const std::string& campaigns_data) {
-  std::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
-  if (!value || !value->is_dict()) {
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(campaigns_data);
+  if (!value) {
     CAMPAIGNS_LOG(ERROR) << "Failed to parse campaigns file.";
     CAMPAIGNS_LOG(VLOG) << "Malformed campaigns file: " << campaigns_data;
     RecordCampaignsManagerError(CampaignsManagerError::kCampaignsParsingFail);
     return std::nullopt;
   }
 
-  return std::move(value->GetDict());
+  return value;
 }
 
 std::optional<base::Value::Dict> ReadCampaignsFile(

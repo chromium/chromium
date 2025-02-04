@@ -699,18 +699,14 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
                     weak_ptr_factory_.GetWeakPtr()),
       settings_to_use, IsolatedSVGDocumentHost::ProcessingMode::kAnimated);
 
-  if (!RootElement())
+  const SVGSVGElement* root_element = RootElement();
+  if (!root_element) {
     return kSizeUnavailable;
-
-  // Set the concrete object size before a container size is available.
-  // TODO(fs): Make this just set/copy width and height directly. See
-  // crbug.com/789511.
-  NaturalSizingInfo sizing_info;
-  if (GetIntrinsicSizingInfo(nullptr, sizing_info)) {
-    intrinsic_size_ = PhysicalSize::FromSizeFFloor(blink::ConcreteObjectSize(
-        sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
-                                LayoutReplaced::kDefaultHeight)));
   }
+
+  intrinsic_size_ = PhysicalSize::FromSizeFFloor(
+      gfx::SizeF(root_element->IntrinsicWidth().value_or(0),
+                 root_element->IntrinsicHeight().value_or(0)));
 
   ++data_change_count_;
   data_change_elapsed_time_ += elapsed_timer.Elapsed();

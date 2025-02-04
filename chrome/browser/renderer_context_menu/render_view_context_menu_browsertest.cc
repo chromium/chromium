@@ -977,14 +977,14 @@ class ContextMenuForLockedFullscreenBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
-                       ItemsAreDisabledWhenNotLockedForOnTask) {
+                       ItemsAreDisabledWhenPinnedAndNotLockedForOnTask) {
   browser()->SetLockedForOnTask(false);
   const GURL kTestUrl("http://www.google.com/");
   const std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeNone(/*unfiltered_url=*/kTestUrl,
                                      /*url=*/kTestUrl);
 
-  // Verify commands are enabled before entering locked fullscreen.
+  // Verify commands are enabled initially.
   static constexpr int kCommandsToTest[] = {
       // Navigation commands.
       IDC_BACK, IDC_FORWARD, IDC_RELOAD,
@@ -1009,14 +1009,13 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
-                       CriticalItemsAreEnabledWhenLockedForOnTask) {
-  browser()->SetLockedForOnTask(true);
+                       CriticalItemsAreEnabledWhenPinnedAndLockedForOnTask) {
   const GURL kTestUrl("http://www.google.com/");
   const std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeNone(/*unfiltered_url=*/kTestUrl,
                                      /*url=*/kTestUrl);
 
-  // Verify commands are enabled before entering locked fullscreen.
+  // Verify commands are enabled initially.
   static constexpr int kCommandsToTest[] = {
       // Navigation commands.
       IDC_BACK, IDC_FORWARD, IDC_RELOAD,
@@ -1029,10 +1028,13 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
         << " failed to meet enabled state expectation";
   }
 
+  // Lock instance for OnTask.
+  browser()->SetLockedForOnTask(true);
+
   // Set locked fullscreen state.
   PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
 
-  // Verify page navigation commands remain enabled in locked fullscreen.
+  // Verify page navigation commands remain enabled.
   static constexpr int kCommandsEnabledInLockedFullscreen[] = {
       IDC_BACK, IDC_FORWARD, IDC_RELOAD};
   for (int command_id : kCommandsEnabledInLockedFullscreen) {
@@ -1041,7 +1043,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
         << " failed to meet enabled state expectation in locked fullscreen";
   }
 
-  // Verify other commands are disabled in locked fullscreen.
+  // Verify other commands are disabled.
   static constexpr int kCommandsDisabledInLockedFullscreen[] = {
       IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
       IDC_CONTENT_CONTEXT_INSPECTELEMENT};
@@ -1049,6 +1051,49 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
     EXPECT_FALSE(menu->IsCommandIdEnabled(command_id))
         << "Command " << command_id
         << " failed to meet disabled state expectation in locked fullscreen";
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
+                       CriticalItemsAreEnabledWhenLockedForOnTask) {
+  const GURL kTestUrl("http://www.google.com/");
+  const std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeNone(/*unfiltered_url=*/kTestUrl,
+                                     /*url=*/kTestUrl);
+
+  // Verify commands are enabled initially.
+  static constexpr int kCommandsToTest[] = {
+      // Navigation commands.
+      IDC_BACK, IDC_FORWARD, IDC_RELOAD,
+      // Other commands (we only test a subset).
+      IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+      IDC_CONTENT_CONTEXT_INSPECTELEMENT};
+  for (int command_id : kCommandsToTest) {
+    EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
+        << "Command " << command_id
+        << " failed to meet enabled state expectation";
+  }
+
+  // Lock instance for OnTask.
+  browser()->SetLockedForOnTask(true);
+
+  // Verify page navigation commands remain enabled.
+  static constexpr int kCommandsEnabledForOnTask[] = {IDC_BACK, IDC_FORWARD,
+                                                      IDC_RELOAD};
+  for (int command_id : kCommandsEnabledForOnTask) {
+    EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
+        << "Command " << command_id
+        << " failed to meet enabled state expectation when locked for OnTask";
+  }
+
+  // Verify other commands are disabled.
+  static constexpr int kCommandsDisabledForOnTask[] = {
+      IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+      IDC_CONTENT_CONTEXT_INSPECTELEMENT};
+  for (int command_id : kCommandsDisabledForOnTask) {
+    EXPECT_FALSE(menu->IsCommandIdEnabled(command_id))
+        << "Command " << command_id
+        << " failed to meet disabled state expectation when locked for OnTask";
   }
 }
 

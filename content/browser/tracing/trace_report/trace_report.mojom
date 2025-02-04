@@ -108,6 +108,15 @@ interface PageHandler {
   // Set the tracing scenario hashes for local tracing.
   SetEnabledScenarios(array<string> new_config) => (bool success);
 
+  // Set scenario presets from a base64 encoded config.
+  SetScenariosConfigFromString(string config_string) => (bool success);
+
+  // Set scenario presets from a serialized proto config defined as
+  // `perfetto.protos.ChromeFieldTracingConfig`. This isn't using ProtoWrapper
+  // because it's not compatible with cppgen proto headers used by perfetto.
+  SetScenariosConfigFromBuffer(mojo_base.mojom.BigBuffer config_pb)
+      => (bool success);
+
   // Get the user-controlled pref to enable privacy filter on local
   // traces.
   GetPrivacyFilterEnabled() => (bool enabled);

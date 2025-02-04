@@ -12,7 +12,7 @@
 
 class AppMenuButton;
 class AvatarToolbarButton;
-class DownloadToolbarButtonView;
+class PinnedToolbarActionsContainer;
 class ExtensionsToolbarContainer;
 class IntentChipButton;
 class PageActionIconView;
@@ -39,6 +39,9 @@ class ToolbarButtonProvider {
  public:
   // Gets the ExtensionsToolbarContainer.
   virtual ExtensionsToolbarContainer* GetExtensionsToolbarContainer() = 0;
+
+  // Gets the PinnedToolbarActionsContainer.
+  virtual PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer() = 0;
 
   // Get the default size for toolbar buttons.
   virtual gfx::Size GetToolbarButtonSize() const = 0;
@@ -90,7 +93,7 @@ class ToolbarButtonProvider {
   virtual IntentChipButton* GetIntentChipButton() = 0;
 
   // Returns the download button.
-  virtual DownloadToolbarButtonView* GetDownloadButton() = 0;
+  virtual ToolbarButton* GetDownloadButton() = 0;
 
   // TODO(calamity): Move other buttons and button actions into here.
  protected:

@@ -29,7 +29,6 @@ static_library("arc") {
     "//chrome/browser/ash/arc/intent_helper",
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/print_spooler",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/profiles",

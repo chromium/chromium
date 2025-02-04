@@ -84,7 +84,7 @@ namespace {
 
 const char kEmail[] = "foo@gmail.com";
 const char kPreviousEmail[] = "notme@bar.com";
-const char kPreviousGaiaId[] = "gaia_id_for_not_me_at_bar_com";
+const GaiaId::Literal kPreviousGaiaId("gaia_id_for_not_me_at_bar_com");
 const char kEnterpriseEmail[] = "enterprise@managed.com";
 const char kEnterpriseHostedDomain[] = "managed.com";
 const char kUserAffiliationId[] = "user-affiliation-id";
@@ -1154,7 +1154,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountAbort) {
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    kPreviousEmail);
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                                   kPreviousGaiaId);
+                                   kPreviousGaiaId.ToString());
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   WaitUntilFlowCompletion();
@@ -1176,7 +1176,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountAbortAlreadyManaged) {
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    kPreviousEmail);
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                                   kPreviousGaiaId);
+                                   kPreviousGaiaId.ToString());
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
@@ -1204,7 +1204,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinue) {
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    kPreviousEmail);
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                                   kPreviousGaiaId);
+                                   kPreviousGaiaId.ToString());
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   WaitUntilFlowCompletion();
@@ -1231,7 +1231,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    kPreviousEmail);
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                                   kPreviousGaiaId);
+                                   kPreviousGaiaId.ToString());
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
@@ -1267,7 +1267,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingUsername,
                                    kPreviousEmail);
   profile()->GetPrefs()->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                                   kPreviousGaiaId);
+                                   kPreviousGaiaId.ToString());
   // Signin flow.
   ProfileWaiter profile_waiter;
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);

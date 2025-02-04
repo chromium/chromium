@@ -121,8 +121,6 @@ void PowerTrayView::UpdateStatus(bool icon_color_changed) {
   SetTooltipText(PowerStatus::Get()->GetInlinedStatusString());
   // Currently ChromeVox only reads the inner view when touching the icon.
   // As a result this node's accessible node data will not be read.
-  // TODO(crbug.com/325137417): This line should not be needed. Investigate to
-  // confirm and remove.
   image_view()->GetViewAccessibility().SetName(
       GetViewAccessibility().GetCachedName());
 }

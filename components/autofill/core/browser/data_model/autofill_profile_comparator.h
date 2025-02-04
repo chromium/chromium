@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "base/containers/flat_map.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
@@ -46,7 +47,9 @@ class AutofillProfileComparator {
   // Returns true if `text1` matches `text2`. The following normalization
   // techniques are applied to the given texts before comparing.
   //
-  // (1) Diacritics are removed, e.g. حَ to ح, ビ to ヒ, and é to e;
+  // (1) Diacritics are rewritten using country specific rules
+  //     (`country_code_1` for `text1`, `country_code_2` for `text2`)
+  //     e.g. حَ to ح, ビ to ヒ, and é to e;
   // (2) Leading and trailing whitespace and punctuation are ignored;
   // (3) Characters are converted to lowercase;
   // (4) For alternative name types, katakana is converted to hiragana.
@@ -58,10 +61,13 @@ class AutofillProfileComparator {
   // If `whitespace_spec` is RETAIN_WHITESPACE, then the postal codes "B15 3TR"
   // and "B153TR" are not considered equal, but "16 Bridge St."" and "16 Bridge
   // St" are because trailing whitespace and punctuation are ignored.
-  bool Compare(std::u16string_view text1,
-               std::u16string_view text2,
-               WhitespaceSpec whitespace_spec = DISCARD_WHITESPACE,
-               std::optional<FieldType> type = std::nullopt) const;
+  bool Compare(
+      std::u16string_view text1,
+      std::u16string_view text2,
+      WhitespaceSpec whitespace_spec = DISCARD_WHITESPACE,
+      std::optional<FieldType> type = std::nullopt,
+      AddressCountryCode country_code_1 = AddressCountryCode(""),
+      AddressCountryCode country_code_2 = AddressCountryCode("")) const;
 
   // Returns true if two AutofillProfiles `p1` and `p2` have at least one
   // settings-visible value that is different.
@@ -90,7 +96,7 @@ class AutofillProfileComparator {
                                       const std::string& app_locale);
 
   // Returns a copy of `text` with uppercase converted to lowercase and
-  // diacritics removed.
+  // diacritics are rewritten using rules for given `country_code`.
   //
   // If `whitespace_spec` is RETAIN_WHITESPACE, punctuation is converted to
   // spaces, and extraneous whitespace is trimmed and collapsed. For example,
@@ -100,7 +106,8 @@ class AutofillProfileComparator {
   // discarded. For example, +1 (234) 567-8900 becomes 12345678900.
   static std::u16string NormalizeForComparison(
       std::u16string_view text,
-      WhitespaceSpec whitespace_spec = RETAIN_WHITESPACE);
+      WhitespaceSpec whitespace_spec = RETAIN_WHITESPACE,
+      const AddressCountryCode& country_code = AddressCountryCode(""));
 
   // Returns true if `p1` and `p2` are viable merge candidates. This means that
   // their names, addresses, email addresses, company names, and phone numbers
@@ -296,8 +303,9 @@ class AutofillProfileComparator {
   //
   // Note that this method does not provide any guidance on actually merging
   // the names.
-  bool AreNamesMergeable(const std::u16string& full_name_1,
-                         const std::u16string& full_name_2) const;
+  bool AreNamesMergeable(const AutofillProfile& p1,
+                         const AutofillProfile& p2,
+                         FieldType name_type) const;
 
   // Populates `name_info` with the result of merging the `name_type` names in
   // `new_profile` and `old_profile`. Returns true if successful. Expects that

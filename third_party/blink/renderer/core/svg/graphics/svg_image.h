@@ -255,11 +255,6 @@ class CORE_EXPORT SVGImage final : public Image {
   Persistent<IsolatedSVGDocumentHost> document_host_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
 
-  // When an SVG image has no intrinsic size, the size depends on the default
-  // object size, which in turn depends on the container. One SVGImage may
-  // belong to multiple containers so the final image size can't be known in
-  // SVGImage. SVGImageForContainer carries the final image size, also called
-  // the "concrete object size". For more, see: SVGImageForContainer.h
   PhysicalSize intrinsic_size_;
   bool has_pending_timeline_rewind_;
 

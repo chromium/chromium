@@ -1003,17 +1003,17 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
 
   // Home tab should not be closable.
   view->tabstrip()->CloseTab(view->tabstrip()->tab_at(0),
-                             CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+                             CloseTabSource::kFromMouse);
   EXPECT_EQ(tab_strip_model->count(), 2);
 
   // Non home tab should be closable.
   view->tabstrip()->CloseTab(view->tabstrip()->tab_at(1),
-                             CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+                             CloseTabSource::kFromMouse);
   EXPECT_EQ(tab_strip_model->count(), 1);
 
   // The home tab is the only tab open so it can be closed.
   view->tabstrip()->CloseTab(view->tabstrip()->tab_at(0),
-                             CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+                             CloseTabSource::kFromMouse);
   EXPECT_EQ(tab_strip_model->count(), 0);
 }
 
@@ -1347,13 +1347,11 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripForOnTaskBrowserTest,
   // Verify home tab cannot be closed.
   auto* const tab_strip =
       BrowserView::GetBrowserViewForBrowser(app_browser)->tabstrip();
-  tab_strip->CloseTab(tab_strip->tab_at(0),
-                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  tab_strip->CloseTab(tab_strip->tab_at(0), CloseTabSource::kFromMouse);
   ASSERT_EQ(tab_strip_model->count(), 2);
 
   // Also verify the non-home tab cannot be closed.
-  tab_strip->CloseTab(tab_strip->tab_at(1),
-                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  tab_strip->CloseTab(tab_strip->tab_at(1), CloseTabSource::kFromMouse);
   EXPECT_EQ(tab_strip_model->count(), 2);
 }
 
@@ -1380,18 +1378,15 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripForOnTaskBrowserTest,
   // Verify home tab cannot be closed (default behavior on tabbed web apps).
   auto* const tab_strip =
       BrowserView::GetBrowserViewForBrowser(app_browser)->tabstrip();
-  tab_strip->CloseTab(tab_strip->tab_at(0),
-                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  tab_strip->CloseTab(tab_strip->tab_at(0), CloseTabSource::kFromMouse);
   ASSERT_EQ(tab_strip_model->count(), 2);
 
   // Verify the non-home tab can be closed.
-  tab_strip->CloseTab(tab_strip->tab_at(1),
-                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  tab_strip->CloseTab(tab_strip->tab_at(1), CloseTabSource::kFromMouse);
   ASSERT_EQ(tab_strip_model->count(), 1);
 
   // The home tab is the only tab open so it can be closed now.
-  tab_strip->CloseTab(tab_strip->tab_at(0),
-                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  tab_strip->CloseTab(tab_strip->tab_at(0), CloseTabSource::kFromMouse);
   EXPECT_EQ(tab_strip_model->count(), 0);
 }
 

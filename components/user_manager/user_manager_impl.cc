@@ -273,12 +273,11 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
     last_session_active_account_id_initialized_ = true;
   }
 
-  User* user = FindUserInListAndModify(account_id);
-
   if (!logged_in_users_.empty()) {
     // Handle multi sign-in case. For multi-sign in, there already should be
     // active_user_ set, and the user to be logged in should be found
     // in the persistent user list.
+    User* user = FindUserInListAndModify(account_id);
     CHECK(active_user_);
     CHECK(user);
 
@@ -288,13 +287,6 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
     SetIsCurrentUserNew(false);
     SendMultiUserSignInMetrics();
 
-    // Special case for user session restoration after browser crash.
-    // We don't switch to each user session that has been restored as once all
-    // session will be restored we'll switch to the session that has been used
-    // before the crash.
-    if (!delegate_->IsUserSessionRestoreInProgress()) {
-      pending_user_switch_ = account_id;
-    }
     NotifyUserAddedToSession(user);
 
     return;
@@ -305,16 +297,36 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
 
   // Ensure User is there.
   const UserType user_type =
-      CalculateUserType(account_id, user, browser_restart, is_child);
+      CalculateUserType(account_id, FindUserInListAndModify(account_id),
+                        browser_restart, is_child);
+  // Check whether the user should be ephemeral based on account_id.
+  // If this is for browser restarting, and new user needs to be created,
+  // that means, in precious chrome process, the user was ephemeral
+  // so disappeared (i.e. not in the persisted user list).
+  bool is_ephemeral = IsEphemeralAccountId(account_id) || browser_restart;
+  auto [user, created] = EnsureUser(account_id, user_type, is_ephemeral);
+
+  SetIsCurrentUserNew((created && (user->GetType() == UserType::kRegular ||
+                                   user->GetType() == UserType::kChild)) ||
+                      user->GetType() == UserType::kPublicAccount);
+  OnUserLoggedIn(*user, username_hash);
+  OnPrimaryUserLoggedIn(*user);
+  OnActiveUserSwitched(*user);
+
+  local_state_->CommitPendingWrite();
+  NotifyOnLogin();
+}
+
+UserManagerImpl::EnsuredUser UserManagerImpl::EnsureUser(
+    const AccountId& account_id,
+    UserType user_type,
+    bool is_ephemeral) {
+  User* user = FindUserInListAndModify(account_id);
+  bool created = user == nullptr;
   switch (user_type) {
     case UserType::kRegular:
     case UserType::kChild:
-      if (account_id != GetOwnerAccountId() && !user &&
-          (IsEphemeralAccountId(account_id) || browser_restart)) {
-        user = AddEphemeralUser(account_id, user_type);
-        SetIsCurrentUserNew(true);
-        is_current_user_ephemeral_regular_user_ = true;
-      } else if (user) {
+      if (user) {
         KnownUser known_user(local_state_.get());
         // There already is a registered User, update the type as needed.
         if (user->GetType() != user_type) {
@@ -325,10 +337,15 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
           known_user.ClearProfileRequiresPolicy(account_id);
         }
         known_user.SetIsEphemeralUser(user->GetAccountId(), false);
+        break;
+      }
+
+      if (is_ephemeral) {
+        user = AddEphemeralUser(account_id, user_type);
+        is_current_user_ephemeral_regular_user_ = true;
       } else {
         // Ensure User is created.
         user = AddGaiaUser(account_id, user_type);
-        SetIsCurrentUserNew(true);
       }
       break;
 
@@ -341,7 +358,6 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
       if (!user) {
         user = AddPublicAccountUser(account_id);
       }
-      SetIsCurrentUserNew(true);
       break;
 
     case UserType::kKioskApp:
@@ -353,14 +369,8 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
     default:
       NOTREACHED() << "Unhandled usert type " << user_type;
   }
-
   CHECK(user);
-  OnUserLoggedIn(*user, username_hash);
-  OnPrimaryUserLoggedIn(*user);
-  OnActiveUserSwitched(*user);
-
-  local_state_->CommitPendingWrite();
-  NotifyOnLogin();
+  return {user, created};
 }
 
 void UserManagerImpl::OnUserLoggedIn(User& user,
@@ -1274,12 +1284,6 @@ void UserManagerImpl::SetOwnerId(const AccountId& owner_account_id) {
   NotifyLoginStateUpdated();
 }
 
-void UserManagerImpl::ProcessPendingUserSwitchId() {
-  if (pending_user_switch_.is_valid()) {
-    SwitchActiveUser(std::exchange(pending_user_switch_, EmptyAccountId()));
-  }
-}
-
 void UserManagerImpl::EnsureUsersLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!local_state_) {
@@ -1520,7 +1524,6 @@ bool UserManagerImpl::OnUserProfileCreated(const AccountId& account_id,
 
   observer_list_.Notify(&UserManager::Observer::OnUserProfileCreated, *user);
 
-  ProcessPendingUserSwitchId();
   return true;
 }
 

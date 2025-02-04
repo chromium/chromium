@@ -12,23 +12,23 @@
 // of the description, until a blank new line or non-comment is reached.
 interface TestWebIdl {
 
-  static void returnsVoid();
+  static undefined returnsUndefined();
   static boolean returnsBoolean();
   static double returnsDouble();
   static long returnsLong();
   static DOMString returnsDOMString();
 
-  static void takesNoArguments();
-  static void takesDOMString(DOMString stringArgument);
-  static void takesOptionalBoolean(optional boolean optionalBoolean);
-  static void takesMultipleArguments(
+  static undefined takesNoArguments();
+  static undefined takesDOMString(DOMString stringArgument);
+  static undefined takesOptionalBoolean(optional boolean optionalBoolean);
+  static undefined takesMultipleArguments(
       DOMString argument1, optional double argument2);
-  static void takesOptionalInnerArgument(
+  static undefined takesOptionalInnerArgument(
       DOMString first, optional DOMString optionalInner, DOMString last);
 
   static ExampleType returnsCustomType();
-  static void takesCustomType(ExampleType customTypeArgument);
-  static void takesOptionalCustomType(
+  static undefined takesCustomType(ExampleType customTypeArgument);
+  static undefined takesOptionalCustomType(
   optional ExampleType optionalCustomTypeArgument);
 
   static Promise<DOMString> stringPromiseReturn();

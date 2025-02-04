@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -33,29 +34,9 @@
 
 namespace contextual_cueing {
 
-namespace {
-
-// Returns whether the `config` matches all the current cueing condition.
-bool DidMatchCueingConditions(
-    const optimization_guide::proto::GlicCueingConfiguration& config) {
-  for (const auto& condition : config.conditions()) {
-    switch (condition.signal()) {
-      case optimization_guide::proto::
-          CONTEXTUAL_CUEING_CLIENT_SIGNAL_UNSPECIFIED:
-      case optimization_guide::proto::
-          CONTEXTUAL_CUEING_CLIENT_SIGNAL_PDF_PAGE_COUNT:
-      case optimization_guide::proto::
-          CONTEXTUAL_CUEING_CLIENT_SIGNAL_CONTENT_LENGTH_WORD_COUNT:
-        // TODO: crbug.com/389751174 - Implement checking the client signals.
-        return false;
-    }
-  }
-  return true;
-}
-
 class ScopedNudgeDecisionRecorder {
  public:
-  ScopedNudgeDecisionRecorder(
+  explicit ScopedNudgeDecisionRecorder(
       optimization_guide::proto::OptimizationType optimization_type)
       : optimization_type_(optimization_type) {}
   ~ScopedNudgeDecisionRecorder() {
@@ -77,8 +58,6 @@ class ScopedNudgeDecisionRecorder {
   optimization_guide::proto::OptimizationType optimization_type_;
   NudgeDecision nudge_decision_ = NudgeDecision::kUnknown;
 };
-
-}  // namespace
 
 ContextualCueingHelper::ContextualCueingHelper(
     content::WebContents* web_contents,
@@ -113,61 +92,71 @@ void ContextualCueingHelper::DidFinishNavigation(
                                ui::PAGE_TRANSITION_RELOAD)) {
     return;
   }
-  contextual_cueing_service_->ReportPageLoad(navigation_handle->GetURL());
+  contextual_cueing_service_->ReportPageLoad();
   auto* glic_nudge_controller = GetGlicNudgeController();
   if (glic_nudge_controller) {
-    glic_nudge_controller->UpdateNudgeLabel(web_contents(), std::string());
+    glic_nudge_controller->UpdateNudgeLabel(web_contents(), std::string(),
+                                            base::DoNothing());
   }
 }
 
 void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  last_navigation_cue_label_.clear();
-
   auto* glic_nudge_controller = GetGlicNudgeController();
   if (!glic_nudge_controller) {
     return;
   }
 
-  ScopedNudgeDecisionRecorder recorder(
-      optimization_guide::proto::GLIC_CONTEXTUAL_CUEING);
+  std::unique_ptr<ScopedNudgeDecisionRecorder> recorder =
+      std::make_unique<ScopedNudgeDecisionRecorder>(
+          optimization_guide::proto::GLIC_CONTEXTUAL_CUEING);
   optimization_guide::OptimizationMetadata metadata;
   auto decision = optimization_guide_keyed_service_->CanApplyOptimization(
       web_contents()->GetLastCommittedURL(),
       optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, &metadata);
-  if (decision == optimization_guide::OptimizationGuideDecision::kTrue &&
-      !metadata.empty()) {
-    auto parsed = metadata.ParsedMetadata<
-        optimization_guide::proto::GlicContextualCueingMetadata>();
-    if (parsed) {
-      for (const auto& config : parsed->cueing_configurations()) {
-        if (!config.has_cue_label()) {
-          continue;
-        }
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue ||
+      metadata.empty()) {
+    recorder->set_nudge_decision(NudgeDecision::kServerDataUnavailable);
+    return;
+  }
+  auto parsed = metadata.ParsedMetadata<
+      optimization_guide::proto::GlicContextualCueingMetadata>();
+  if (!parsed) {
+    recorder->set_nudge_decision(NudgeDecision::kServerDataMalformed);
+    return;
+  }
+  ContextualCueingPageData::CreateForPage(
+      web_contents()->GetPrimaryPage(), std::move(*parsed),
+      base::BindOnce(&ContextualCueingHelper::OnCueingDecision,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(recorder)));
+}
 
-        if (DidMatchCueingConditions(config)) {
-          last_navigation_cue_label_ = config.cue_label();
-          break;
-        }
-      }
-
-      recorder.set_nudge_decision(
-          last_navigation_cue_label_.empty()
-              ? NudgeDecision::kClientConditionsUnmet
-              : contextual_cueing_service_->CanShowNudge());
-    } else {
-      recorder.set_nudge_decision(NudgeDecision::kServerDataMalformed);
-    }
-  } else {
-    recorder.set_nudge_decision(NudgeDecision::kServerDataUnavailable);
+void ContextualCueingHelper::OnCueingDecision(
+    std::unique_ptr<ScopedNudgeDecisionRecorder> decision_recorder,
+    const std::string& cue_label) {
+  CHECK_EQ(NudgeDecision::kUnknown, decision_recorder->nudge_decision());
+  if (ContextualCueingPageData::GetForPage(web_contents()->GetPrimaryPage())) {
+    ContextualCueingPageData::DeleteForPage(web_contents()->GetPrimaryPage());
   }
 
-  if (recorder.nudge_decision() != NudgeDecision::kSuccess) {
-    // Clear out the label since we didn't show it.
-    last_navigation_cue_label_.clear();
+  if (cue_label.empty()) {
+    decision_recorder->set_nudge_decision(
+        NudgeDecision::kClientConditionsUnmet);
+    return;
   }
 
-  glic_nudge_controller->UpdateNudgeLabel(web_contents(),
-                                          last_navigation_cue_label_);
+  const GURL& url = web_contents()->GetLastCommittedURL();
+  auto can_show_decision = contextual_cueing_service_->CanShowNudge(url);
+  decision_recorder->set_nudge_decision(can_show_decision);
+  if (can_show_decision != NudgeDecision::kSuccess) {
+    return;
+  }
+
+  GetGlicNudgeController()->UpdateNudgeLabel(
+      web_contents(), cue_label,
+      base::BindRepeating(
+          &ContextualCueingService::OnNudgeActivity,
+          contextual_cueing_service_->GetWeakPtr(), url,
+          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 }
 
 // static

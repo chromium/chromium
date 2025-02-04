@@ -63,6 +63,7 @@ import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
+import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PrfValues;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -1978,7 +1979,7 @@ public class Fido2CredentialRequestTest {
                         }));
 
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
@@ -2009,7 +2010,7 @@ public class Fido2CredentialRequestTest {
                             Fido2ApiTestHelper.getCredentialDetails()
                         }));
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
@@ -2040,7 +2041,7 @@ public class Fido2CredentialRequestTest {
         mMockBrowserBridge.setExpectedCredentialDetailsList(new ArrayList<>());
 
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
@@ -2061,7 +2062,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testGetAssertion_conditionalUi_cancelWhileFetchingCredentials() {
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mFido2ApiCallHelper.setInvokeCallbackImmediately(false);
 
@@ -2098,7 +2099,7 @@ public class Fido2CredentialRequestTest {
         mMockBrowserBridge.setInvokeCallbackImmediately(
                 MockBrowserBridge.CallbackInvocationType.DELAYED);
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
@@ -2127,7 +2128,7 @@ public class Fido2CredentialRequestTest {
                         }));
 
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mIntentSender.setInvokeCallbackImmediately(false);
 
@@ -2162,7 +2163,7 @@ public class Fido2CredentialRequestTest {
                         }));
 
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mIntentSender.setInvokeCallbackImmediately(false);
 
@@ -2197,7 +2198,7 @@ public class Fido2CredentialRequestTest {
                         }));
 
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
@@ -2226,7 +2227,7 @@ public class Fido2CredentialRequestTest {
                         }));
 
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
@@ -2261,7 +2262,7 @@ public class Fido2CredentialRequestTest {
                             Fido2ApiTestHelper.getCredentialDetails()
                         }));
 
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
@@ -2292,7 +2293,7 @@ public class Fido2CredentialRequestTest {
         descriptor.id = new byte[] {3, 2, 1};
         descriptor.transports = new int[] {0};
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
@@ -2406,7 +2407,7 @@ public class Fido2CredentialRequestTest {
                 MockBrowserBridge.CallbackInvocationType.IMMEDIATE_HYBRID);
 
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,

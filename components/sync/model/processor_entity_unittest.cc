@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
@@ -919,7 +920,7 @@ TEST_F(ProcessorEntityTest, ShouldCreateAndCommitNewLocalSharedItem) {
       GenerateSharedTabGroupDataEntityData(
           kHash, "guid",
           CollaborationMetadata::ForLocalChange(
-              /*changed_by=*/kCreatorUserId, "collaboration")),
+              /*changed_by=*/kCreatorUserId, CollaborationId("collaboration"))),
       /*trimmed_specifics=*/{},
       /*unique_position=*/std::nullopt);
   EXPECT_EQ("", entity->metadata().server_id());
@@ -943,14 +944,15 @@ TEST_F(ProcessorEntityTest, ShouldCreateAndCommitNewLocalSharedItem) {
   entity->InitializeCommitRequestData(&request);
   const EntityData& data = *request.entity;
   ASSERT_TRUE(data.collaboration_metadata.has_value());
-  EXPECT_EQ("collaboration", data.collaboration_metadata->collaboration_id());
+  EXPECT_EQ(CollaborationId("collaboration"),
+            data.collaboration_metadata->collaboration_id());
 
   // Verify that creator is not updated on the next local update.
   entity->RecordLocalUpdate(
       GenerateSharedTabGroupDataEntityData(
           kHash, "guid",
           CollaborationMetadata::ForLocalChange(
-              /*changed_by=*/kUpdaterUserId, "collaboration")),
+              /*changed_by=*/kUpdaterUserId, CollaborationId("collaboration"))),
       /*trimmed_specifics=*/{},
       /*unique_position=*/std::nullopt);
   EXPECT_EQ(kUpdaterUserId.ToString(), entity->metadata()
@@ -1008,12 +1010,13 @@ TEST_F(ProcessorEntityTest, ShouldCreateNewRemoteSharedItem) {
 
 TEST_F(ProcessorEntityTest, ShouldPopulateCollaborationForTombstones) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalUpdate(GenerateSharedTabGroupDataEntityData(
-                                kHash, "guid",
-                                CollaborationMetadata::ForLocalChange(
-                                    /*changed_by=*/GaiaId(), "collaboration")),
-                            /*trimmed_specifics=*/{},
-                            /*unique_position=*/std::nullopt);
+  entity->RecordLocalUpdate(
+      GenerateSharedTabGroupDataEntityData(
+          kHash, "guid",
+          CollaborationMetadata::ForLocalChange(
+              /*changed_by=*/GaiaId(), CollaborationId("collaboration"))),
+      /*trimmed_specifics=*/{},
+      /*unique_position=*/std::nullopt);
   entity->RecordLocalDeletion(DeletionOrigin::Unspecified());
 
   CommitRequestData request;
@@ -1021,7 +1024,7 @@ TEST_F(ProcessorEntityTest, ShouldPopulateCollaborationForTombstones) {
 
   ASSERT_TRUE(request.entity->collaboration_metadata.has_value());
   EXPECT_EQ(request.entity->collaboration_metadata->collaboration_id(),
-            "collaboration");
+            CollaborationId("collaboration"));
 }
 
 }  // namespace syncer

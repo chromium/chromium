@@ -1191,6 +1191,19 @@ EVENT_TYPE(HTTP_CACHE_CALLER_REQUEST_HEADERS)
 EVENT_TYPE(HTTP_CACHE_RESTART_PARTIAL_REQUEST)
 EVENT_TYPE(HTTP_CACHE_RE_SEND_PARTIAL_REQUEST)
 
+// Indicates that an entry from the NoVarySearchCache was used to rewrite the
+// URL for this request.
+// For the BEGIN phase, the following parameters are attached:
+//   {
+//     "request_url": <String of the URL we were requested to retrieve>,
+//     "cached_url": <String of the URL that we will use instead>,
+//   }
+// For the END phase, the following parameter is optionally attached:
+//   {
+//     "restart_reason": <String of one of NoVarySearchUseResult enum's values>
+//   }
+EVENT_TYPE(HTTP_CACHE_USING_NO_VARY_SEARCH_CACHE_URL)
+
 // ------------------------------------------------------------------------
 // Disk Cache / Memory Cache
 // ------------------------------------------------------------------------
@@ -1455,6 +1468,9 @@ EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_PRECONNECT_BOUND)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
 
+// Marks the start/end of a pause of an HttpStreamPool::Job.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_PAUSED)
+
 // Marks the start/end of a HttpStreamPool::Group.
 // The following parameters are attached:
 //   {
@@ -1462,6 +1478,16 @@ EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
 //      "force_quic": <True when QUIC is forced for the group>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
+
+// Emitted when an HttpStreamPool::Job is paused in an HttpStreamPool::Group.
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_PAUSED)
+
+// Emitted when an HttpStreamPool::Job is resumed in an HttpStreamPool::Group.
+// The following parameters are attached:
+//   {
+//      "elapsed_ms": <Time taken for the job to resume in milliseconds>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_RESUMED)
 
 // Emitted when an HttpStreamPool::AttemptManager is created. Used to add a
 // reference to HttpStreamPool::Group's net log.

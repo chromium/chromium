@@ -6,6 +6,7 @@
 #define REMOTING_HOST_CHROMEOS_CHROMEOS_ENTERPRISE_PARAMS_H_
 
 #include "base/time/time.h"
+#include "base/values.h"
 
 namespace remoting {
 
@@ -19,6 +20,10 @@ struct ChromeOsEnterpriseParams {
   ChromeOsEnterpriseParams& operator=(const ChromeOsEnterpriseParams& other);
 
   ~ChromeOsEnterpriseParams();
+
+  // Helpers used to serialize/deserialize enterprise params.
+  static ChromeOsEnterpriseParams FromDict(const base::Value::Dict& dict);
+  base::Value::Dict ToDict() const;
 
   // Local machine configuration.
   bool suppress_user_dialogs = false;

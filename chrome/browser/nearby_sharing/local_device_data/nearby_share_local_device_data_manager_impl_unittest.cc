@@ -35,7 +35,7 @@
 namespace {
 
 constexpr char kFakeEmail[] = "test@test";
-constexpr char kFakeGaia[] = "fakegaia";
+constexpr GaiaId::Literal kFakeGaia("fakegaia");
 constexpr char kFakeDeviceName[] = "My Cool Chromebook";
 constexpr char kFakeEmptyDeviceName[] = "";
 constexpr char kFakeFullName[] = "Barack Obama";
@@ -117,7 +117,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
     fake_user_manager_.Reset(
         std::make_unique<user_manager::FakeUserManager>(&local_state_));
     user_ = fake_user_manager_->AddGaiaUser(
-        AccountId::FromUserEmailGaiaId(kFakeEmail, GaiaId(kFakeGaia)),
+        AccountId::FromUserEmailGaiaId(kFakeEmail, kFakeGaia),
         user_manager::UserType::kRegular);
     fake_user_manager_->UserLoggedIn(
         user_->GetAccountId(),

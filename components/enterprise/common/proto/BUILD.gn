@@ -23,7 +23,7 @@ proto_library("dlp_policy_event_proto") {
   sources = [ "synced/dlp_policy_event.proto" ]
 }
 
-proto_library("extension_install_events") {
+fuzzable_proto_library("extension_install_events") {
   proto_in_dir = "//"
   sources = [ "synced/extension_install_events.proto" ]
 }
@@ -38,7 +38,34 @@ proto_library("legacy_tech_events_proto") {
   sources = [ "synced/legacy_tech_events.proto" ]
 }
 
-proto_library("policy_validation_report") {
+fuzzable_proto_library("policy_validation_report") {
   proto_in_dir = "//"
   sources = [ "synced/policy_validation_report.proto" ]
+}
+
+# Google3_protos that are not available in the Chromium repository.
+fuzzable_proto_library("google3_protos") {
+  proto_in_dir = "//"
+  sources = [ "google3_protos.proto" ]
+}
+
+fuzzable_proto_library("chrome_reporting_entity") {
+  proto_in_dir = "//"
+  sources = [ "synced_from_google3/chrome_reporting_entity.proto" ]
+  deps = [
+    ":browser_events_proto",
+    ":extension_install_events",
+    ":google3_protos",
+    ":policy_validation_report",
+    "//components/reporting/proto:record_proto",
+  ]
+}
+
+fuzzable_proto_library("upload_request_response") {
+  proto_in_dir = "//"
+  sources = [ "upload_request_response.proto" ]
+  deps = [
+    ":chrome_reporting_entity",
+    ":google3_protos",
+  ]
 }

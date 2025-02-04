@@ -73,6 +73,9 @@ struct TableBackgroundStyle {
 
 struct TableStyle {
   TableBackgroundStyle background_tokens;
+
+  // Icons will be drawn with a rounded rect background if this is set to true.
+  bool icons_have_background = false;
 };
 
 // The cell's in the first column of a table can contain:

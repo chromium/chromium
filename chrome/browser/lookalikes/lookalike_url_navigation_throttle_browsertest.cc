@@ -339,8 +339,12 @@ class LookalikeUrlNavigationThrottleBrowserTest : public InProcessBrowserTest {
       EXPECT_TRUE(interstitial->is_signed_exchange_for_testing());
     }
 
+    bool punycode_interstitial =
+        expected_event == NavigationSuggestionEvent::kFailedSpoofChecks;
     SendInterstitialCommandSync(browser,
-                                SecurityInterstitialCommand::CMD_DONT_PROCEED);
+                                SecurityInterstitialCommand::CMD_DONT_PROCEED,
+                                punycode_interstitial);
+
     EXPECT_EQ(
         expected_suggested_url,
         browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
@@ -512,6 +516,26 @@ IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
 
   CheckInterstitialUkm({kNavigatedUrl}, "MatchType",
                        LookalikeUrlMatchType::kSkeletonMatchTop500);
+  CheckInterstitialUkm({kNavigatedUrl}, "TriggeredByInitialUrl", false);
+  test_helper()->CheckSafetyTipUkmCount(0);
+}
+
+// Navigate to a domain that contains an unsafe ligature.
+IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
+                       UnsafeLigature) {
+  const GURL kNavigatedUrl = GetURL("GOOGLELOGOLIGATURE.com");
+  // Ligature checks show the punycode interstitial which doesn't have a
+  // suggested URL. Its "Don't proceed" button goes back, which is the new tab
+  // page here.
+  const GURL kSuggestedURL("chrome://newtab");
+
+  base::HistogramTester histograms;
+  TestMetricsRecordedAndInterstitialShown(
+      browser(), histograms, kNavigatedUrl, kSuggestedURL,
+      NavigationSuggestionEvent::kFailedSpoofChecks);
+
+  CheckInterstitialUkm({kNavigatedUrl}, "MatchType",
+                       LookalikeUrlMatchType::kFailedSpoofChecks);
   CheckInterstitialUkm({kNavigatedUrl}, "TriggeredByInitialUrl", false);
   test_helper()->CheckSafetyTipUkmCount(0);
 }

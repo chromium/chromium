@@ -524,7 +524,8 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
                                           const UpdateResponseData& update) {
         return !update.entity.collaboration_metadata.has_value() ||
                !active_collaborations.contains(
-                   update.entity.collaboration_metadata->collaboration_id());
+                   update.entity.collaboration_metadata->collaboration_id()
+                       .value());
       });
       std::erase_if(entries_pending_decryption_,
                     [&active_collaborations](const auto& pending_decryption) {

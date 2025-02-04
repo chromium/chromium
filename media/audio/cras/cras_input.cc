@@ -179,7 +179,6 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
     if (is_loopback_without_chrome_) {
       uint32_t client_types = 0;
       client_types |= 1 << CRAS_CLIENT_TYPE_CHROME;
-      client_types |= 1 << CRAS_CLIENT_TYPE_LACROS;
       client_types = ~client_types;
       rc = pin_device_ = libcras_client_get_floop_dev_idx_by_client_types(
           client_, client_types);

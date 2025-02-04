@@ -290,7 +290,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_suggest/item_suggest_cache.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -3572,6 +3571,14 @@ const FeatureEntry::FeatureVariation kEdgeToEdgeEverywhereVariations[] = {
      std::size(kEdgeToEdgeEverywhereDebugFeatureParams), nullptr},
 };
 
+const FeatureEntry::FeatureParam kEdgeToEdgeSafeAreaConstraintFeatureParams[] =
+    {{"scrollable_when_stacking", "true"}};
+const FeatureEntry::FeatureVariation kEdgeToEdgeSafeAreaConstraintVariations[] =
+    {
+        {"scrollable variation", kEdgeToEdgeSafeAreaConstraintFeatureParams,
+         std::size(kEdgeToEdgeSafeAreaConstraintFeatureParams), nullptr},
+};
+
 const FeatureEntry::FeatureParam kBottomBrowserControlsRefactorParams[] = {
     {"disable_bottom_controls_stacker_y_offset", "false"}};
 const FeatureEntry::FeatureVariation
@@ -4172,6 +4179,7 @@ const FeatureEntry::FeatureParam kContextualCueingEnabledNoEngagementCap[] = {
     {"BackoffTime", "0h"},
     {"BackoffMultiplierBase", "0.0"},
     {"NudgeCapTime", "0h"},
+    {"NudgeCapTimePerDomain", "0h"},
     {"MinPageCountBetweenNudges", "0"}};
 const FeatureEntry::FeatureVariation kContextualCueingEnabledOptions[] = {
     {"no engagement caps", kContextualCueingEnabledNoEngagementCap,
@@ -5639,7 +5647,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"edge-to-edge-safe-area-constraint",
      flag_descriptions::kEdgeToEdgeSafeAreaConstraintName,
      flag_descriptions::kEdgeToEdgeSafeAreaConstraintDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeSafeAreaConstraint)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kEdgeToEdgeSafeAreaConstraint,
+         kEdgeToEdgeSafeAreaConstraintVariations,
+         "EdgeToEdgeSafeAreaConstraint")},
     {"edge-to-edge-web-opt-in", flag_descriptions::kEdgeToEdgeWebOptInName,
      flag_descriptions::kEdgeToEdgeWebOptInDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeWebOptIn)},
@@ -5969,11 +5980,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilitySwitchAccessText)},
-    {"expose-out-of-process-video-decoding-to-lacros",
-     flag_descriptions::kExposeOutOfProcessVideoDecodingToLacrosName,
-     flag_descriptions::kExposeOutOfProcessVideoDecodingToLacrosDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kExposeOutOfProcessVideoDecodingToLacros)},
     {"enable-system-proxy-for-system-services",
      flag_descriptions::kSystemProxyForSystemServicesName,
      flag_descriptions::kSystemProxyForSystemServicesDescription, kOsCrOS,
@@ -8615,11 +8621,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxInternalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxInternalsDevUI)},
 
-    {"privacy-sandbox-privacy-guide-ad-topics",
-     flag_descriptions::kPrivacySandboxPrivacyGuideAdTopicsName,
-     flag_descriptions::kPrivacySandboxPrivacyGuideAdTopicsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics)},
-
     {"private-state-tokens-dev-ui",
      flag_descriptions::kPrivateStateTokensDevUIName,
      flag_descriptions::kPrivateStateTokensDevUIDescription, kOsDesktop,
@@ -8859,11 +8860,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"fedcm-use-other-account", flag_descriptions::kFedCmUseOtherAccountName,
      flag_descriptions::kFedCmUseOtherAccountDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmUseOtherAccount)},
-
-    {"fedcm-with-storage-access-api",
-     flag_descriptions::kFedCmWithStorageAccessAPIName,
-     flag_descriptions::kFedCmWithStorageAccessAPIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kFedCmWithStorageAccessAPI)},
 
     {"fedcm-without-well-known-enforcement",
      flag_descriptions::kFedCmWithoutWellKnownEnforcementName,
@@ -9774,13 +9770,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcIdleManagerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kEnableArcIdleManager)},
 #endif
-
-    {"autofill-enable-new-card-art-and-network-images",
-     flag_descriptions::kAutofillEnableNewCardArtAndNetworkImagesName,
-     flag_descriptions::kAutofillEnableNewCardArtAndNetworkImagesDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableNewCardArtAndNetworkImages)},
 
     {"power-bookmark-backend", flag_descriptions::kPowerBookmarkBackendName,
      flag_descriptions::kPowerBookmarkBackendDescription, kOsAll,
@@ -10693,9 +10682,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"ash-forest-feature", flag_descriptions::kForestFeatureName,
      flag_descriptions::kForestFeatureDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kForestFeature)},
-    {"birch-weather", flag_descriptions::kBirchWeatherName,
-     flag_descriptions::kBirchWeatherDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBirchWeather)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"enable-standard-device-bound-session-credentials",
@@ -11686,6 +11672,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(
          safe_browsing::kClientSideDetectionBrandAndIntentForScamDetection)},
+
+    {"client-side-detection-show-scam-verdict-warning",
+     flag_descriptions::kClientSideDetectionShowScamVerdictWarningName,
+     flag_descriptions::kClientSideDetectionShowScamVerdictWarningDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kClientSideDetectionShowScamVerdictWarning)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-keyboard-used-palm-suppression",

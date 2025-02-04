@@ -63,7 +63,7 @@ webui_ts_library("build_ts") {
     "network/network_config_vpn_test.js",
     "network/network_config_wifi_test.js",
     "network/network_icon_test.js",
-    "network/network_ip_config_test.js",
+    "network/network_ip_config_test.ts",
     "network/network_list_item_test.js",
     "network/network_list_test.js",
     "network/network_password_input_test.js",

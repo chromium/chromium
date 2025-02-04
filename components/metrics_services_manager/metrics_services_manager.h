@@ -154,13 +154,13 @@ class MetricsServicesManager {
   base::ThreadChecker thread_checker_;
 
   // The current metrics reporting setting.
-  bool may_upload_;
+  bool may_upload_ = false;
 
   // The current metrics recording setting.
-  bool may_record_;
+  bool may_record_ = false;
 
-  // The current metrics setting reflecting if consent was given.
-  bool consent_given_;
+  // The current metrics setting for reporting metrics.
+  bool consent_given_ = false;
 
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 

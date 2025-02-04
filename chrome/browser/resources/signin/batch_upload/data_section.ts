@@ -28,6 +28,7 @@ function createEmptyContainer(): DataContainer {
   return {
     sectionTitle: '',
     dataItems: [],
+    isTheme: false,
   };
 }
 
@@ -264,6 +265,13 @@ export class DataSectionElement extends DataSectionElementBase {
         this.i18n('lastItemSelectedScreenReader'),
       ].join('. '));
     }
+  }
+
+  // Theme section differs slightly from the regular section since it has always
+  // a single item. Therefore the Ui is simplified not to show the expand button
+  // and not giving access to items details.
+  protected isThemeSection(): boolean {
+    return this.dataContainer.isTheme;
   }
 
   protected isStrEmpty_(str: string) {

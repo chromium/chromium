@@ -194,6 +194,8 @@ void NativeScreenCapturePickerMac::Close(DesktopMediaID device_id) {
     NSNumber* source_id = @(device_id.id);
     PickerObserver* picker_observer = picker_observers_[source_id];
     if (!picker_observer) {
+      VLOG(1) << "NSCPM: Closing source_id = " << device_id.id
+              << ", picker_observer = null";
       return;
     }
     [picker_observers_ removeObjectForKey:source_id];
@@ -201,9 +203,12 @@ void NativeScreenCapturePickerMac::Close(DesktopMediaID device_id) {
     [picker removeObserver:picker_observer];
     // Don't deactivate the picker if there are any active picker observers.
     if ([picker_observers_ count] > 0) {
+      VLOG(1) << "NSCPM: Closing source_id = " << device_id.id
+              << ", picker_observers_.count = " << [picker_observers_ count];
       return;
     }
     picker.active = false;
+    VLOG(1) << "NSCPM: Closing source_id = " << device_id.id;
   } else {
     NOTREACHED();
   }
@@ -221,6 +226,10 @@ NativeScreenCapturePickerMac::CreateDevice(const DesktopMediaID& source) {
     filter = [picker_observer contentFilter];
     cached_content_filters_[source_id] = filter;
   }
+
+  VLOG(1) << "NSCPM: CreateDevice: source_id = " << source.id
+          << ", cached_content_filters_.count = " <<
+      [cached_content_filters_ count];
 
   return CreateScreenCaptureKitDeviceMac(source, filter);
 }
@@ -241,6 +250,10 @@ void NativeScreenCapturePickerMac::CleanupContentFilter(DesktopMediaID::Id id) {
   NSNumber* source_id = @(id);
   [cached_content_filters_ removeObjectForKey:source_id];
   cached_content_filters_cleanup_timers_.erase(id);
+
+  VLOG(1) << "NSCPM: CleanupContentFilter: source_id = " << id
+          << ", cached_content_filters_.count = " <<
+      [cached_content_filters_ count];
 }
 
 base::WeakPtr<NativeScreenCapturePicker>

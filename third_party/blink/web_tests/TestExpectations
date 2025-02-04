@@ -2710,6 +2710,8 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/394331189 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?7-8 [ Crash Failure ]
+crbug.com/394331189 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/popup-unsafe-none-with-same-origin.https.html [ Crash ]
 crbug.com/393523568 external/wpt/css/css-text/line-breaking/segment-break-transformation-currency-001.html [ Failure ]
 crbug.com/393420204 [ Mac15-arm64 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
 crbug.com/393420204 [ Mac15 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-closedby-crash.html [ Crash ]
@@ -5503,7 +5505,7 @@ crbug.com/1191990 http/tests/serviceworker/clients-openwindow.html [ Failure Pas
 crbug.com/1201123 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Failure Pass ]
 
 # Appears to be timing out even when marked as Slow.
-crbug.com/1205184 [ Mac12 ] external/wpt/IndexedDB/interleaved-cursors-large.html [ Pass Timeout ]
+crbug.com/1205184 [ Mac12 ] external/wpt/IndexedDB/interleaved-cursors-large.any.html [ Pass Timeout ]
 
 # Sheriff 2021-05-03
 crbug.com/1205012 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Timeout ]
@@ -7469,10 +7471,6 @@ crbug.com/1464206 http/tests/devtools/a11y-axe-core/performance/timeline-overvie
 # Gardener 2023-07-20
 crbug.com/1465723 [ Mac ] virtual/prefetch-no-vary-search/wpt_internal/speculation-rules/prefetch/no-vary-search/prefetch-single-non-eager-with-hint.https.html* [ Pass Timeout ]
 
-
-# Gardener 2023-07-21
-crbug.com/1180274 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Crash Failure Pass Timeout ]
-
 # This test is unreliable because of delayed update of history.length during cross-document navigation.
 crbug.com/1466474 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
 
@@ -8634,9 +8632,6 @@ crbug.com/348486001 [ Win11-arm64 ] virtual/prerender2-fallback-prefetch-spec-ru
 # The overlapping navigation behavior is flaky.
 crbug.com/348101805 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-nav.html [ Failure Pass ]
 
-# Disabled to unblock https://crrev.com/c/6216268
-crbug.com/343003619 http/tests/devtools/workspace-view-file-system-header.js [ Failure Pass ]
-
 # Flaky on Linux.
 crbug.com/324441376 [ Linux ] virtual/fractional-scroll-offsets/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
 crbug.com/324441376 [ Linux ] virtual/fluent-non-overlay-scrollbar/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
@@ -9144,9 +9139,6 @@ crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-013.html [ F
 # Gardener 2025-01-21
 crbug.com/391126821 [ Win11-arm64 ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]
 crbug.com/390565845 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/waiting-for-audio.html [ Crash Failure Pass Timeout ]
-
-# Temporarily disable for landing crrev.com/c/6119427
-crbug.com/365737493 http/tests/devtools/security/main-origin-assigned-despite-request-missing.js [ Failure Pass ]
 
 # Gardener 2025-02-04
 crbug.com/389946963 [ Mac13 ] external/wpt/mediacapture-fromelement/capture.html [ Failure Pass ]

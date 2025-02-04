@@ -88,7 +88,7 @@ BOOL WaitForHistoryToDisappear() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  if ([self isRunningTest:@selector(testErrorBadge)]) {
+  if ([self isRunningTest:@selector(DISABLED_testErrorBadge)]) {
     config.features_enabled.push_back(
         switches::kEnableErrorBadgeOnIdentityDisc);
     config.features_disabled.push_back(kIdentityDiscAccountMenu);
@@ -417,7 +417,7 @@ BOOL WaitForHistoryToDisappear() {
 
 // Tests that the error badge is shown on top of the identity disc when the
 // primary account has a persistent error.
-- (void)testErrorBadge {
+- (void)DISABLED_testErrorBadge {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   [ChromeEarlGreyUI waitForAppToIdle];

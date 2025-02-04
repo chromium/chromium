@@ -166,6 +166,9 @@
         }
       }
     },
+    "HKEY_LOCAL_MACHINE\\Software\\Classes\\CLSID\\$TRACING_SERVICE_CLSID": {
+      "exists": "forbidden"
+    },
     "HKEY_LOCAL_MACHINE\\Software\\Classes\\Interface\\$CHROME_ELEVATOR_IID": {
       "condition": "'$CHROME_SHORT_NAME' == 'Chrome'",
       "exists": "required"

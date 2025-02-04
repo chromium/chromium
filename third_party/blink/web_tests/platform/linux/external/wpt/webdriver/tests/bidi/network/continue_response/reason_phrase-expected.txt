@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_reason_phrase
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_reason_phrase_and_status_code
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

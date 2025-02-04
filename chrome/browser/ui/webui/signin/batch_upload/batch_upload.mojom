@@ -29,6 +29,10 @@ struct DataItem {
 struct DataContainer {
   string section_title;
   array<DataItem> data_items;
+
+  // Theme data type container has UI specificities as it should always contain
+  // a single item.
+  bool is_theme;
 };
 
 // Information related to the signed in account to be displayed in the web view.

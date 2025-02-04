@@ -15,20 +15,17 @@
 // the private-join-and-compute code. We need to undefine the macro here to
 // avoid compiler errors.
 #undef ASSIGN_OR_RETURN
-#include "components/ip_protection/common/ip_protection_crypter.h"
+#include "components/ip_protection/common/ip_protection_issuer_token_crypter.h"
 #include "components/ip_protection/get_issuer_token.pb.h"
 #include "net/base/features.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
-#include "third_party/private-join-and-compute/src/crypto/elgamal.h"
 
 namespace ip_protection {
 
 namespace {
-
-using ::private_join_and_compute::elgamal::PublicKey;
 
 // TODO(crbug.com/391358219): Add more details.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -299,9 +296,9 @@ IpProtectionIssuerTokenDirectFetcher::ValidateIssuerTokenResponse(
       response.num_tokens_with_signal() > response.tokens_size()) {
     return TryGetIssuerTokensStatus::kInvalidNumTokensWithSignal;
   }
-  if (absl::StatusOr<PublicKey> public_key =
-          DeserializePublicKey(response.public_key().y());
-      !public_key.ok()) {
+  if (auto crypter =
+          IpProtectionIssuerTokenCrypter::Create(response.public_key().y(), {});
+      !crypter.ok()) {
     return TryGetIssuerTokensStatus::kInvalidPublicKey;
   }
 

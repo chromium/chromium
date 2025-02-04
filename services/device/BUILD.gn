@@ -99,6 +99,7 @@ component("binder_overrides") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
+    "//services/device/public/mojom:usb",
   ]
   defines = [ "IS_DEVICE_SERVICE_BINDER_OVERRIDES_IMPL" ]
 }

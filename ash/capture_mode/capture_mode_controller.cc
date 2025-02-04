@@ -39,6 +39,7 @@
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_controller.h"
 #include "ash/scanner/scanner_metrics.h"
+#include "ash/scanner/scanner_session.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -2053,11 +2054,11 @@ void CaptureModeController::OnCopyTextButtonClicked(
 
 void CaptureModeController::OnScannerActionsFetched(
     base::WeakPtr<BaseCaptureModeSession> image_search_token,
-    std::vector<ScannerActionViewModel> scanner_actions) {
+    ScannerSession::FetchActionsResponse actions_response) {
   if (!image_search_token) {
     return;
   }
-  capture_mode_session_->OnScannerActionsFetched(std::move(scanner_actions));
+  capture_mode_session_->OnScannerActionsFetched(std::move(actions_response));
 }
 
 void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,

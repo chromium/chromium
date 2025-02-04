@@ -202,6 +202,9 @@ specific_include_rules = {
   "utility_sandbox_delegate_win\.cc": [
     "+content/utility/sandbox_delegate_data.mojom.h"
   ],
+  "utility_process_host\.cc": [
+    "+ui/ozone/public/ozone_switches.h",
+  ],
   "web_app_system_media_controls_manager.cc": [
     "+components/remote_cocoa/browser"
   ],

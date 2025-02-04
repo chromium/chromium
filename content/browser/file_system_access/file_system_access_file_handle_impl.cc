@@ -142,8 +142,10 @@ FileSystemAccessFileHandleImpl::FileSystemAccessFileHandleImpl(
     FileSystemAccessManagerImpl* manager,
     const BindingContext& context,
     const storage::FileSystemURL& url,
+    const std::string& display_name,
     const SharedHandleState& handle_state)
-    : FileSystemAccessHandleBase(manager, context, url, handle_state) {}
+    : FileSystemAccessHandleBase(manager, context, url, handle_state),
+      display_name_(display_name) {}
 
 FileSystemAccessFileHandleImpl::~FileSystemAccessFileHandleImpl() = default;
 
@@ -488,7 +490,8 @@ void FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob(
   std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string content_type;
 
-  base::FilePath::StringType extension = url().path().Extension();
+  base::FilePath::StringType extension =
+      base::FilePath::FromUTF8Unsafe(display_name_).Extension();
   if (!extension.empty()) {
     std::string mime_type;
     // TODO(crbug.com/41458368): Using GetMimeTypeFromExtension and

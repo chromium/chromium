@@ -4,9 +4,9 @@
 
 import 'chrome://print/print_preview.js';
 
-import type {MediaTypeCapability, PrintPreviewMediaTypeSettingsElement} from 'chrome://print/print_preview.js';
+import type {MediaTypeCapability, PrintPreviewMediaTypeSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
@@ -14,13 +14,15 @@ import {getCddTemplate} from './print_preview_test_utils.js';
 suite('MediaTypeSettingsTest', function() {
   let mediaTypeSection: PrintPreviewMediaTypeSettingsElement;
 
+  let model: PrintPreviewModelElement;
+
   const mediaTypeCapability: MediaTypeCapability =
       getCddTemplate('FooPrinter').capabilities!.printer!.media_type!;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({isBorderlessPrintingEnabled: true});
-    const model = document.createElement('print-preview-model');
+    model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
     mediaTypeSection =
@@ -70,5 +72,14 @@ suite('MediaTypeSettingsTest', function() {
     assertDeepEquals(
         plainOption, mediaTypeSection.getSettingValue('mediaType'));
     assertDeepEquals(plainOption, JSON.parse(settingsSelect.selectedValue));
+  });
+
+  test('disabled by destination policy', function() {
+    const settingsSelect = mediaTypeSection.shadowRoot!.querySelector(
+        'print-preview-settings-select')!;
+    assertFalse(settingsSelect.disabled);
+
+    model.set('settings.mediaType.setByDestinationPolicy', true);
+    assertTrue(settingsSelect.disabled);
   });
 });

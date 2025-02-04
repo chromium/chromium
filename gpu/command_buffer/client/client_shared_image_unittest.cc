@@ -104,6 +104,30 @@ TEST(ClientSharedImageTest, BackingWasExternallyUpdatedForwardsToSII) {
   EXPECT_EQ(1u, sii->num_update_shared_image_no_fence_calls());
 }
 
+// Verifies that invoking BackingWasExternallyUpdated() on a
+// ClientSharedImage after its SharedImageInterface has been lost does not cause
+// a crash.
+TEST(ClientSharedImageTest, BackingWasExternallyUpdatedAfterLossOfSII) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+
+  const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size kSize(256, 256);
+  const SharedImageUsageSet kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  SharedImageInfo si_info{kFormat,
+                          kSize,
+                          gfx::ColorSpace(),
+                          kTopLeft_GrSurfaceOrigin,
+                          kOpaque_SkAlphaType,
+                          kUsage,
+                          ""};
+
+  auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
+
+  sii.reset();
+  client_si->BackingWasExternallyUpdated(gpu::SyncToken());
+}
+
 TEST(ClientSharedImageTest, ExportAndImport) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
 

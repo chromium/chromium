@@ -46,6 +46,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
@@ -459,7 +460,7 @@ public class CredManHelperRobolectricTest {
     @Test
     @SmallTest
     public void testStartPrefetchRequest_default_success() {
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mCredManHelper.startPrefetchRequest(
                 mRequestOptions,
@@ -502,7 +503,7 @@ public class CredManHelperRobolectricTest {
     @Test
     @SmallTest
     public void testStartPrefetchRequest_unknownError_unknownError() {
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mCredManHelper.startPrefetchRequest(
                 mRequestOptions,
@@ -533,7 +534,7 @@ public class CredManHelperRobolectricTest {
     @Test
     @SmallTest
     public void testCancelConditionalGetAssertion_whileWaitingForSelection_notAllowedError() {
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mCredManHelper.startPrefetchRequest(
                 mRequestOptions,
@@ -570,7 +571,7 @@ public class CredManHelperRobolectricTest {
     public void
             testStartGetRequestAfterStartPrefetchRequest_userCancelWhileWaitingForSelection_doesNotCancelConditionalRequest() {
         ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mCredManHelper.startPrefetchRequest(
                 mRequestOptions,
@@ -623,7 +624,7 @@ public class CredManHelperRobolectricTest {
     public void
             testStartGetRequestAfterStartPrefetchRequest_userSelectsPassword_canHavePasswordResponse() {
         ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mCredManHelper.startPrefetchRequest(
                 mRequestOptions,

@@ -44,6 +44,8 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/scoped_promise_resolver.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_method_change_event.h"
@@ -96,7 +98,6 @@ const char kGooglePlayBillingMethod[] = "https://play.google.com/billing";
 const char kUnknownCurrency[] = "ZZZ";
 const char kAppStoreBillingLabelPlaceHolder[] = "AppStoreBillingPlaceHolder";
 const char kSecurePaymentConfirmationMethod[] = "secure-payment-confirmation";
-
 }  // namespace
 
 namespace mojo {
@@ -817,6 +818,12 @@ void RecordActivationlessShow(ExecutionContext* execution_context,
   }
 }
 
+void OnIsSecurePaymentConfirmationAvailableResponse(
+    std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    bool is_available) {
+  auto* resolver = scoped_resolver->Release()->DowncastTo<IDLBoolean>();
+  resolver->Resolve(is_available);
+}
 }  // namespace
 
 // static
@@ -826,8 +833,24 @@ ScriptPromise<IDLBoolean> PaymentRequest::isSecurePaymentConfirmationAvailable(
       MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
   auto promise = resolver->Promise();
 
-  // TODO(crbug.com/40258712): Implement isSecurePaymentConfirmationAvailable
-  resolver->Resolve(false);
+  if (!RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
+          ExecutionContext::From(script_state))) {
+    resolver->Resolve(false);
+    return promise;
+  }
+
+  if (!ExecutionContext::From(script_state)
+           ->IsFeatureEnabled(
+               network::mojom::PermissionsPolicyFeature::kPayment)) {
+    resolver->Resolve(false);
+    return promise;
+  }
+
+  CredentialManagerProxy::From(script_state)
+      ->SecurePaymentConfirmationService()
+      ->IsSecurePaymentConfirmationAvailable(
+          WTF::BindOnce(&OnIsSecurePaymentConfirmationAvailableResponse,
+                        std::make_unique<ScopedPromiseResolver>(resolver)));
 
   return promise;
 }

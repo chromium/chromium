@@ -1123,6 +1123,10 @@ ExtensionsToolbarContainer* ToolbarView::GetExtensionsToolbarContainer() {
   return extensions_container_;
 }
 
+PinnedToolbarActionsContainer* ToolbarView::GetPinnedToolbarActionsContainer() {
+  return pinned_toolbar_actions_container_;
+}
+
 gfx::Size ToolbarView::GetToolbarButtonSize() const {
   const int size = GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
   return gfx::Size(size, size);
@@ -1210,7 +1214,13 @@ IntentChipButton* ToolbarView::GetIntentChipButton() {
   return location_bar()->intent_chip();
 }
 
-DownloadToolbarButtonView* ToolbarView::GetDownloadButton() {
+ToolbarButton* ToolbarView::GetDownloadButton() {
+  if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
+    return pinned_toolbar_actions_container_
+               ? pinned_toolbar_actions_container_->GetButtonFor(
+                     kActionShowDownloads)
+               : nullptr;
+  }
   return download_button();
 }
 

@@ -87,6 +87,7 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               (override));
   MOCK_METHOD(SessionID, GetActiveTabID, (), (override));
   MOCK_METHOD(void, SwitchToTab, (SessionID tab_id), (override));
+  MOCK_METHOD(void, SetAllChromeTabsMuted, (bool muted), (override));
 };
 
 // Mock implementation of the `OnTaskExtensionsManager`.

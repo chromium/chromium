@@ -820,6 +820,7 @@ cc_test("cc_unittests") {
     "paint/oop_pixeltest.cc",
     "paint/paint_cache_unittest.cc",
     "paint/paint_filter_unittest.cc",
+    "paint/paint_flags_unittest.cc",
     "paint/paint_image_unittest.cc",
     "paint/paint_op_buffer_unittest.cc",
     "paint/paint_op_helper_unittest.cc",

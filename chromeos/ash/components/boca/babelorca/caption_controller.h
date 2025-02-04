@@ -10,10 +10,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "ui/native_theme/caption_style.h"
-#include "ui/native_theme/native_theme_observer.h"
+#include "components/live_caption/caption_controller_base.h"
 
-class PrefChangeRegistrar;
 class PrefService;
 
 namespace captions {
@@ -30,29 +28,8 @@ namespace ash::babelorca {
 
 class BabelOrcaCaptionBubbleSettings;
 
-class CaptionController : public ui::NativeThemeObserver {
+class CaptionController : public ::captions::CaptionControllerBase {
  public:
-  class Delegate {
-   public:
-    Delegate(const Delegate&) = delete;
-    Delegate& operator=(const Delegate&) = delete;
-
-    virtual ~Delegate() = default;
-
-    virtual std::unique_ptr<::captions::CaptionBubbleController>
-    CreateCaptionBubbleController(
-        ::captions::CaptionBubbleSettings* caption_bubble_settings,
-        const std::string& application_locale) = 0;
-
-    virtual void AddCaptionStyleObserver(ui::NativeThemeObserver* observer) = 0;
-
-    virtual void RemoveCaptionStyleObserver(
-        ui::NativeThemeObserver* observer) = 0;
-
-   protected:
-    Delegate() = default;
-  };
-
   CaptionController(
       std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context,
       PrefService* profile_prefs,
@@ -81,22 +58,12 @@ class CaptionController : public ui::NativeThemeObserver {
   std::string GetLiveTranslateTargetLanguageCode();
 
  private:
-  // ui::NativeThemeObserver:
-  void OnCaptionStyleUpdated() override;
+  // CaptionControllerBase:
+  captions::CaptionBubbleSettings* caption_bubble_settings() override;
 
   std::unique_ptr<::captions::CaptionBubbleContext> caption_bubble_context_;
-  raw_ptr<PrefService> profile_prefs_;
-  const std::string application_locale_;
   const std::unique_ptr<BabelOrcaCaptionBubbleSettings>
       caption_bubble_settings_;
-  const std::unique_ptr<Delegate> delegate_;
-
-  std::unique_ptr<::captions::CaptionBubbleController>
-      caption_bubble_controller_;
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  std::optional<ui::CaptionStyle> caption_style_;
-
-  bool is_ui_constructed_ = false;
 };
 
 }  // namespace ash::babelorca

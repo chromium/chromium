@@ -550,6 +550,16 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Let Chromium run in the background
         </message>
       </if>
+      <if expr="use_titlecase">
+        <message name="IDS_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND_SETTING" desc="In Title Case: The checkbox in the status tray context menu that controls whether chrome keeps running in the background after the last window is closed">
+          Disable Chromium Running in Background for Apps
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND_SETTING" desc="The checkbox in the status tray context menu that controls whether chrome keeps running in the background after the last window is closed">
+          Disable Chromium running in background for apps
+        </message>
+      </if>
       <message name="IDS_CANT_WRITE_USER_DIRECTORY_SUMMARY" desc="Summary of problem displayed in dialog when we can't create a directory for this user.">
 Chromium cannot read and write to its data directory:
 

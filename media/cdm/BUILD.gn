@@ -208,7 +208,6 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//crypto",
     "//media:test_support",
     "//testing/gmock",

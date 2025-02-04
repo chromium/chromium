@@ -77,6 +77,7 @@ class ExclusiveAccessBubbleViews;
 class FullscreenControlHost;
 class InfoBarContainerView;
 class LocationBarView;
+class MultiContentsView;
 class ScrimView;
 class SidePanel;
 class StatusBubbleViews;
@@ -471,7 +472,17 @@ class BrowserView : public BrowserWindow,
   // Getter for the `window.setResizable(bool)` state.
   std::optional<bool> GetCanResizeFromWebAPI() const;
 
+  // Return a pointer to the single tab (if any) that is inactive but part of
+  // a split view. Assumes there is max one split view in the tab strip, it
+  // contains exactly two tabs, and one of those tabs is currently active.
+  const tabs::TabInterface* GetInactiveSplitTab();
+
+  // Display the current active split view as a series of multiple side-by-side
+  // web contents.
   void ShowSplitView();
+
+  // Display only the current active tab's web contents, hiding any previous
+  // side-by-side display.
   void HideSplitView();
 
   // BrowserWindow:
@@ -1232,8 +1243,14 @@ class BrowserView : public BrowserWindow,
   // The InfoBarContainerView that contains InfoBars for the current tab.
   raw_ptr<InfoBarContainerView> infobar_container_ = nullptr;
 
-  // The view that contains the selected WebContents.
+  // The view that contains the active WebContents.
+  // TODO(crbug.com/393451405): Remove this direct reference when side by side
+  // is enabled, going through multi_contents_view_ for the active contents web
+  // view.
   raw_ptr<ContentsWebView> contents_web_view_ = nullptr;
+
+  // The view that contains all visible WebContents.
+  raw_ptr<MultiContentsView> multi_contents_view_ = nullptr;
 
   // The scrim view that covers the content area when a tab-modal dialog is
   // open.

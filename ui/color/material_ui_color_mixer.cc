@@ -155,6 +155,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorTableForegroundSelectedFocused] = {kColorTableForeground};
   mixer[kColorTableForegroundSelectedUnfocused] = {
       kColorTableForegroundSelectedFocused};
+  mixer[kColorTableIconBackground] = {kColorSysSurface};
   mixer[kColorTableRowHighlight] = {kColorSysStateHoverOnSubtle};
   // TODO(colehorvitz): Rename textfield color IDs to specify which
   // textfield variation they are used for ('filled' or 'stroked').

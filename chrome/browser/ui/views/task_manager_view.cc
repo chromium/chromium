@@ -643,6 +643,7 @@ void TaskManagerView::Init() {
                 .selected_unfocused =
                     kColorTaskManagerTableBackgroundSelectedUnfocused,
             },
+        .icons_have_background = true,
     };
     tab_table->SetTableStyle(table_style);
   }

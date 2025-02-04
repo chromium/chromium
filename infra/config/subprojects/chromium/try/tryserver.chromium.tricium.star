@@ -137,7 +137,7 @@ try_.builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     # TODO(gbiv): Determine why this needs a system xcode and things like `Mac
     # Builder` don't.
-    xcode = xcode.x13main,
+    xcode = xcode.xcode_default,
 )
 
 try_.builder(

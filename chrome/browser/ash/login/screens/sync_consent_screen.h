@@ -172,9 +172,6 @@ class SyncConsentScreen : public BaseScreen,
   // Returns true if profile sync has finished initialization.
   bool IsProfileSyncEngineInitialized() const;
 
-  // Check if OSSyncRevamp and Lacros are enabled.
-  bool IsOsSyncLacros();
-
   // This function does two things based on account capability: turn on "sync
   // everything" toggle for non-minor users; pass the minor mode signal to
   // the front end, which controls whether nudge techniques could be used.
