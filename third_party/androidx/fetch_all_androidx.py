@@ -11,6 +11,8 @@ More specifically, to generate build.gradle:
   - It replaces {{androidx_repository_url}} with the URL for the latest snapshot
   - For each dependency, it looks up the version in the index page's HTML and
     substitutes the version into {{androidx_dependency_version}}.
+
+Extra args after -- are passed directly to fetch_all.py.
 """
 
 import argparse
@@ -292,7 +294,7 @@ def main():
         action='store_true',
         help='If passed then we will not try rolling the '
         'latest androidx but use the currently rolled version.')
-    args = parser.parse_args()
+    args, extra_args = parser.parse_known_args()
 
     logging.basicConfig(
         level=logging.WARNING - 10 * args.verbose_count,
@@ -333,6 +335,10 @@ def main():
         _FETCH_ALL_PATH, '--android-deps-dir', _CIPD_PATH,
         '--ignore-vulnerabilities'
     ] + ['-v'] * args.verbose_count
+
+    # Filter out -- from the args to pass to fetch_all.py.
+    fetch_all_cmd += [a for a in extra_args if a != '--']
+
     # Overrides do not work with local snapshots since the repository_url is
     # different.
     if not args.local_repo:
