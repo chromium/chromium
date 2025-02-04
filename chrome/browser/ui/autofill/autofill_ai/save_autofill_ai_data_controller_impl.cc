@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller_impl.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
@@ -12,6 +13,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/autofill/core/browser/data_model/entity_instance.h"
+#include "components/autofill/core/browser/data_model/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -59,8 +62,7 @@ SaveAutofillAiDataController* SaveAutofillAiDataController::GetOrCreate(
 }
 
 void SaveAutofillAiDataControllerImpl::OfferSave(
-    std::vector<optimization_guide::proto::UserAnnotationsEntry>
-        autofill_ai_data,
+    autofill::EntityInstance autofill_ai_data,
     user_annotations::PromptAcceptanceCallback prompt_acceptance_callback,
     LearnMoreClickedCallback learn_more_clicked_callback,
     UserFeedbackCallback user_feedback_callback) {
@@ -133,7 +135,7 @@ SaveAutofillAiDataControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
+base::optional_ref<const autofill::EntityInstance>
 SaveAutofillAiDataControllerImpl::GetAutofillAiData() const {
   return autofill_ai_data_;
 }

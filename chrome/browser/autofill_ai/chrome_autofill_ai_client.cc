@@ -26,6 +26,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -45,6 +46,34 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
+namespace {
+
+using autofill::AttributeInstance;
+using autofill::AttributeType;
+using autofill::AttributeTypeName;
+
+autofill::EntityInstance GetDummyEntity() {
+  std::vector<AttributeInstance> attributes;
+  attributes.emplace_back(AttributeType(AttributeTypeName::kPassportNumber),
+                          "123", AttributeInstance::Context{});
+
+  attributes.emplace_back(AttributeType(AttributeTypeName::kPassportName),
+                          "Jon Doe", AttributeInstance::Context{});
+  attributes.emplace_back(AttributeType(AttributeTypeName::kPassportCountry),
+                          "Italy", AttributeInstance::Context{});
+  attributes.emplace_back(AttributeType(AttributeTypeName::kPassportExpiryDate),
+                          "01/2023", AttributeInstance::Context{});
+
+  attributes.emplace_back(AttributeType(AttributeTypeName::kPassportIssueDate),
+                          "04/2012", AttributeInstance::Context{});
+
+  return autofill::EntityInstance(
+      autofill::EntityType(autofill::EntityTypeName::kPassport),
+      std::move(attributes), base::Uuid::ParseLowercase("123"),
+      std::string("Jonny"), base::Time::Now());
+}
+
+}  // namespace
 ChromeAutofillAiClient::ChromeAutofillAiClient(
     content::WebContents* web_contents,
     Profile* profile)
@@ -202,9 +231,9 @@ void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* controller = autofill_ai::SaveAutofillAiDataController::GetOrCreate(
           &*web_contents_)) {
+    autofill::EntityInstance dummy_entity(GetDummyEntity());
     controller->OfferSave(
-        std::move(form_annotation_response->to_be_upserted_entries),
-        std::move(prompt_acceptance_callback),
+        dummy_entity, std::move(prompt_acceptance_callback),
         base::BindRepeating(
             &autofill_ai::AutofillAiManager::UserClickedLearnMore,
             prediction_improvements_manager_.GetWeakPtr()),
