@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "linux-cast-x64-rel",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -36,7 +36,7 @@
         {
           "bucket": "ci",
           "builder": "linux-cast-x64-rel",
-          "project": "chromium"
+          "project": "chromium-m134"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/linux-cast-x64-rel/targets"

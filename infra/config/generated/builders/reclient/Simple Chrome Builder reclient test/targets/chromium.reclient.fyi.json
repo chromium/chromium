@@ -1,7 +1,0 @@
-{
-  "Simple Chrome Builder reclient test": {
-    "additional_compile_targets": [
-      "chromiumos_preflight"
-    ]
-  }
-}

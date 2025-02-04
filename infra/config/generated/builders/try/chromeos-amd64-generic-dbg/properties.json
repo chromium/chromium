@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "chromeos-amd64-generic-dbg",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-chromiumos-archive",
@@ -43,7 +43,7 @@
         {
           "bucket": "ci",
           "builder": "chromeos-amd64-generic-dbg",
-          "project": "chromium"
+          "project": "chromium-m134"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/chromeos-amd64-generic-dbg/targets"

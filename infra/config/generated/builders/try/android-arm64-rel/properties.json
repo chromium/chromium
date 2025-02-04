@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android Release (Pixel 2)",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
@@ -45,7 +45,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-14-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -76,7 +76,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-pie-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -109,17 +109,17 @@
         {
           "bucket": "ci",
           "builder": "Android Release (Pixel 2)",
-          "project": "chromium"
+          "project": "chromium-m134"
         },
         {
           "bucket": "ci",
           "builder": "android-14-arm64-rel",
-          "project": "chromium"
+          "project": "chromium-m134"
         },
         {
           "bucket": "ci",
           "builder": "android-pie-arm64-rel",
-          "project": "chromium"
+          "project": "chromium-m134"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/android-arm64-rel/targets"

@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Chromium Presubmit",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -38,7 +38,7 @@
         {
           "bucket": "ci",
           "builder": "Dawn Chromium Presubmit",
-          "project": "chromium"
+          "project": "chromium-m134"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -74,10 +74,10 @@
   },
   "builder_group": "chromium.dawn",
   "gardener_rotations": [
-    "dawn"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "dawn"
+    "chrome_browser_release"
   ]
 }

@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Centipede Upload Linux ASan",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "builder_group": "chromium.fuzz",
@@ -36,7 +36,7 @@
         {
           "bucket": "ci",
           "builder": "Centipede Upload Linux ASan",
-          "project": "chromium"
+          "project": "chromium-m134"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -73,11 +73,11 @@
   "archive_prefix": "centipede",
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ],
   "recipe": "chromium/fuzz",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ],
   "upload_bucket": "chromium-browser-centipede",
   "upload_directory": "asan"

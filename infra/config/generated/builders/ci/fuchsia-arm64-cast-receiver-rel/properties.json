@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "fuchsia-arm64-cast-receiver-rel",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -41,7 +41,7 @@
         {
           "bucket": "ci",
           "builder": "fuchsia-arm64-cast-receiver-rel",
-          "project": "chromium"
+          "project": "chromium-m134"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -78,10 +78,10 @@
   },
   "builder_group": "chromium.fuchsia",
   "gardener_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

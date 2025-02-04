@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-official",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "builder_group": "chromium",
@@ -41,7 +41,7 @@
         {
           "bucket": "ci",
           "builder": "android-official",
-          "project": "chromium"
+          "project": "chromium-m134"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/android-official/targets"

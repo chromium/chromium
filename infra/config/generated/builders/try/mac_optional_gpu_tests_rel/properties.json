@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "try",
               "builder": "mac_optional_gpu_tests_rel",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-fyi-archive",
@@ -37,7 +37,7 @@
         {
           "bucket": "try",
           "builder": "mac_optional_gpu_tests_rel",
-          "project": "chromium"
+          "project": "chromium-m134"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/mac_optional_gpu_tests_rel/targets"

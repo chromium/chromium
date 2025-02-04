@@ -1,2 +1,0 @@
-ci/linux-gcc-rel
-try/compile-size

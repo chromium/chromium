@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-12l-x64-rel-cq",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -44,7 +44,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-15-x64-rel",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -74,7 +74,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-webview-13-x64-hostside-rel",
-              "project": "chromium"
+              "project": "chromium-m134"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -106,17 +106,17 @@
         {
           "bucket": "ci",
           "builder": "android-12l-x64-rel-cq",
-          "project": "chromium"
+          "project": "chromium-m134"
         },
         {
           "bucket": "ci",
           "builder": "android-15-x64-rel",
-          "project": "chromium"
+          "project": "chromium-m134"
         },
         {
           "bucket": "ci",
           "builder": "android-webview-13-x64-hostside-rel",
-          "project": "chromium"
+          "project": "chromium-m134"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/android-x64-rel/targets"
