@@ -1092,7 +1092,7 @@
   {
     "name": "bottom-browser-controls-refactor",
     "owners": [ "wenyufu@chromium.org", "clhager@google.com", "twellington@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "bottom-omnibox-default-setting",
@@ -2161,7 +2161,7 @@
   {
     "name": "draw-cutout-edge-to-edge",
     "owners": ["wenyufu@chromium.org", "clhager@google.com", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "draw-immediately-when-interactive",
@@ -2196,17 +2196,17 @@
   {
     "name": "dynamic-safe-area-insets",
     "owners": [ "wenyufu@chromium.org", "clhager@google.com","twellington@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "dynamic-safe-area-insets-on-scroll",
     "owners": [ "wenyufu@chromium.org", "clhager@google.com", "twellington@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "dynamic-safe-area-insets-supported-by-cc",
     "owners": [ "magchen@chromium.org", "skobes@chromium.org", "vmiura@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "dynamic-search-update-animation",
@@ -3508,7 +3508,7 @@
   {
     "name": "enable-nav-bar-matches-tab-android",
     "owners": [ "clhager@google.com", "wenyufu@chromium.org", "twellington@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "enable-network-and-issuer-icons-for-secure-payment-confirmation",
