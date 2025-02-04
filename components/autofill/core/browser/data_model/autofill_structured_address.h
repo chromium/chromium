@@ -22,8 +22,8 @@ class AddressComponentWithRewriter : public AddressComponent {
   using AddressComponent::AddressComponent;
 
  protected:
-  // Normalizes and then applies a country-specific rewriter to the `value`
-  // provided.
+  // Applies a country-specific rewriting and normalization
+  // to the provided `value`.
   std::u16string GetValueForComparison(
       const std::u16string& value,
       const AddressComponent& other) const override;
@@ -158,7 +158,6 @@ class StreetAddressNode : public AddressComponentWithRewriter {
   // Apply line-wise parsing of the street address as a fallback method.
   void ParseValueAndAssignSubcomponentsByFallbackMethod() override;
 
- protected:
   // Implements support for getting the value of the individual address lines.
   std::u16string GetValueForOtherSupportedType(
       FieldType field_type) const override;

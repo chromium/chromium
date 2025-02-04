@@ -366,8 +366,8 @@ class AddressComponent {
   // Returns the common country to be used.
   AddressCountryCode GetCommonCountry(const AddressComponent& other) const;
 
-  // If the tree this node is part of contains country code information, this
-  // function retrieves it. Otherwise it returns an empty country code.
+  // If this node is a part of a tree that contains country code information,
+  // this function retrieves it. Otherwise it returns an empty country code.
   AddressCountryCode GetCountryCode() const;
 
   // Deletes the stored structure and returns true if |IsStructureValid()|

@@ -15,6 +15,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
@@ -188,6 +190,29 @@ int32_t NormalizingIterator::GetNextChar() {
   return iter_.get();
 }
 
+// Helper function retrieving given name of `name_type` type from `profile`.
+// Function leverages `AddressComponent::GetValueForComparisonForType()` which
+// requires name from `other_profile` that the name is compared against.
+const std::u16string GetNameForComparison(const AutofillProfile& profile,
+                                          const AutofillProfile& other_profile,
+                                          FieldType name_type) {
+  switch (name_type) {
+    case ALTERNATIVE_FULL_NAME:
+      return profile.GetNameInfo()
+          .GetStructuredAlternativeName()
+          .GetValueForComparisonForType(
+              name_type,
+              other_profile.GetNameInfo().GetStructuredAlternativeName());
+    case NAME_FULL:
+      // Using GetValue() directly to prevent normalization that would remove
+      // diactrics. Normalization happens in
+      // `AutofillProfileComparator::Compare()`.
+      return profile.GetNameInfo().GetStructuredName().GetValue();
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 AutofillProfileComparator::AutofillProfileComparator(
@@ -227,23 +252,26 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifference(
   return GetProfileDifference(first_profile, second_profile, types, app_locale);
 }
 
-bool AutofillProfileComparator::Compare(std::u16string_view text1,
-                                        std::u16string_view text2,
-                                        WhitespaceSpec whitespace_spec,
-                                        std::optional<FieldType> type) const {
+bool AutofillProfileComparator::Compare(
+    std::u16string_view text1,
+    std::u16string_view text2,
+    WhitespaceSpec whitespace_spec,
+    std::optional<FieldType> type,
+    AddressCountryCode country_code_1,
+    AddressCountryCode country_code_2) const {
   if (text1.empty() && text2.empty()) {
     return true;
   }
-
   // We transliterate the entire text as it's non-trivial to go character
   // by character (eg. a "ß" is transliterated to "ss").
   std::u16string normalized_text1 =
-      RemoveDiacriticsAndConvertToLowerCase(text1);
+      RemoveDiacriticsAndConvertToLowerCase(text1, country_code_1);
   std::u16string normalized_text2 =
-      RemoveDiacriticsAndConvertToLowerCase(text2);
+      RemoveDiacriticsAndConvertToLowerCase(text2, country_code_2);
 
-  // Japanese alternative names are stored in hiragana only. We transliterate
-  // katarana to ensure correct comparison.
+  // TODO(crbug.com/359768803): Extract alternative name transliteration and
+  // remove `type` parameter. Japanese alternative names are stored in Hiragana
+  // only. We transliterate Katarana to ensure correct comparison.
   if (type.has_value() && IsAlternativeNameType(type.value()) &&
       base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
@@ -284,7 +312,8 @@ bool AutofillProfileComparator::HasOnlySkippableCharacters(
 // static
 std::u16string AutofillProfileComparator::NormalizeForComparison(
     std::u16string_view text,
-    AutofillProfileComparator::WhitespaceSpec whitespace_spec) {
+    AutofillProfileComparator::WhitespaceSpec whitespace_spec,
+    const AddressCountryCode& country_code) {
   // This algorithm is not designed to be perfect, we could get arbitrarily
   // fancy here trying to canonicalize address lines. Instead, this is designed
   // to handle common cases for all types of data (addresses and names) without
@@ -321,7 +350,7 @@ std::u16string AutofillProfileComparator::NormalizeForComparison(
     result.resize(result.size() - 1);
   }
 
-  return RemoveDiacriticsAndConvertToLowerCase(result);
+  return RemoveDiacriticsAndConvertToLowerCase(result, country_code);
 }
 
 bool AutofillProfileComparator::AreMergeable(const AutofillProfile& p1,
@@ -784,10 +813,7 @@ std::set<std::u16string> AutofillProfileComparator::GetNamePartVariants(
 bool AutofillProfileComparator::HaveMergeableNames(
     const AutofillProfile& p1,
     const AutofillProfile& p2) const {
-  // TODO(crbug.com/328968064): Use `GetValueForComparison()` instead of
-  // `GetInfo()`.
-  return AreNamesMergeable(p1.GetInfo(NAME_FULL, app_locale_),
-                           p2.GetInfo(NAME_FULL, app_locale_));
+  return AreNamesMergeable(p1, p2, NAME_FULL);
 }
 
 bool AutofillProfileComparator::HaveMergeableAlternativeNames(
@@ -798,17 +824,7 @@ bool AutofillProfileComparator::HaveMergeableAlternativeNames(
     return true;
   }
 
-  return AreNamesMergeable(
-      p1.GetNameInfo()
-          .GetStructuredAlternativeName()
-          .GetValueForComparisonForType(
-              ALTERNATIVE_FULL_NAME,
-              p2.GetNameInfo().GetStructuredAlternativeName()),
-      p2.GetNameInfo()
-          .GetStructuredAlternativeName()
-          .GetValueForComparisonForType(
-              ALTERNATIVE_FULL_NAME,
-              p1.GetNameInfo().GetStructuredAlternativeName()));
+  return AreNamesMergeable(p1, p2, ALTERNATIVE_FULL_NAME);
 }
 
 bool AutofillProfileComparator::HaveMergeableEmailAddresses(
@@ -873,23 +889,30 @@ bool AutofillProfileComparator::HaveMergeableAddresses(
   return p2.GetAddress().IsStructuredAddressMergeable(p1.GetAddress());
 }
 
-bool AutofillProfileComparator::AreNamesMergeable(
-    const std::u16string& full_name_1,
-    const std::u16string& full_name_2) const {
-  if (HasOnlySkippableCharacters(full_name_1) ||
-      HasOnlySkippableCharacters(full_name_2) ||
-      Compare(full_name_1, full_name_2)) {
+bool AutofillProfileComparator::AreNamesMergeable(const AutofillProfile& p1,
+                                                  const AutofillProfile& p2,
+                                                  FieldType name_type) const {
+  DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
+  const std::u16string name_1 = GetNameForComparison(p1, p2, name_type);
+  const std::u16string name_2 = GetNameForComparison(p2, p1, name_type);
+
+  if (HasOnlySkippableCharacters(name_1) ||
+      HasOnlySkippableCharacters(name_2) ||
+      Compare(name_1, name_2, DISCARD_WHITESPACE, name_type,
+              p1.GetAddressCountryCode(), p2.GetAddressCountryCode())) {
     return true;
   }
 
   // If the two names are just a permutation of each other, they are mergeable
   // for structured names.
-  if (AreStringTokenEquivalent(full_name_1, full_name_2)) {
+  if (AreStringTokenEquivalent(name_1, name_2)) {
     return true;
   }
 
-  std::u16string canon_full_name_1 = NormalizeForComparison(full_name_1);
-  std::u16string canon_full_name_2 = NormalizeForComparison(full_name_2);
+  std::u16string canon_full_name_1 = NormalizeForComparison(
+      name_1, RETAIN_WHITESPACE, p1.GetAddressCountryCode());
+  std::u16string canon_full_name_2 = NormalizeForComparison(
+      name_2, RETAIN_WHITESPACE, p2.GetAddressCountryCode());
 
   // Is it reasonable to merge the names from `p1` and `p2`?
   bool result = IsNameVariantOf(canon_full_name_1, canon_full_name_2) ||
@@ -904,24 +927,12 @@ void AutofillProfileComparator::MergeNamesImpl(
     AddressComponent& name_component) const {
   DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
 
-  // TODO(crbug.com/328968064): Use GetValueForComparisonForType() instead of
-  // GetInfo() for NAME_FULL too.
-  const std::u16string full_name_1 =
-      name_type == ALTERNATIVE_FULL_NAME
-          ? new_profile.GetNameInfo()
-                .GetStructuredAlternativeName()
-                .GetValueForComparisonForType(
-                    name_type,
-                    old_profile.GetNameInfo().GetStructuredAlternativeName())
-          : new_profile.GetInfo(name_type, app_locale_);
-  const std::u16string full_name_2 =
-      name_type == ALTERNATIVE_FULL_NAME
-          ? old_profile.GetNameInfo()
-                .GetStructuredAlternativeName()
-                .GetValueForComparisonForType(
-                    name_type,
-                    new_profile.GetNameInfo().GetStructuredAlternativeName())
-          : old_profile.GetInfo(name_type, app_locale_);
+  const std::u16string name_1 = NormalizeForComparison(
+      GetNameForComparison(new_profile, old_profile, name_type),
+      RETAIN_WHITESPACE, new_profile.GetAddressCountryCode());
+  const std::u16string name_2 = NormalizeForComparison(
+      GetNameForComparison(old_profile, new_profile, name_type),
+      RETAIN_WHITESPACE, old_profile.GetAddressCountryCode());
 
   // At this state it is already determined that the two names are mergeable.
   // This can mean of of the following things:
@@ -934,12 +945,12 @@ void AutofillProfileComparator::MergeNamesImpl(
   name_component.CopyFrom(*old_profile.GetNameInfo().GetRootForType(name_type));
   // If the name of the `new_profile` is empty, just keep the state of
   // `old_profile`.
-  if (HasOnlySkippableCharacters(full_name_1)) {
+  if (HasOnlySkippableCharacters(name_1)) {
     return;
   }
   // Vice versa set name to the one of `new_profile` if `old_profile` has an
   // empty name
-  if (HasOnlySkippableCharacters(full_name_2)) {
+  if (HasOnlySkippableCharacters(name_2)) {
     name_component.CopyFrom(
         *new_profile.GetNameInfo().GetRootForType(name_type));
     return;
@@ -950,11 +961,8 @@ void AutofillProfileComparator::MergeNamesImpl(
     return;
   }
   // If the name in `old_profile` is a variant of `new_profile` use the one in
-  // `new_profile`. Otherwise, either `new_profile` is a variant of
-  // `old_profile` or the two compare equal. In either case, choose
-  // `old_profile`.
-  if (IsNameVariantOf(NormalizeForComparison(full_name_1),
-                      NormalizeForComparison(full_name_2))) {
+  // `new_profile`.
+  if (IsNameVariantOf(name_1, name_2)) {
     name_component.CopyFrom(
         *new_profile.GetNameInfo().GetRootForType(name_type));
   } else {

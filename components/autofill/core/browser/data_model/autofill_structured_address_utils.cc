@@ -329,14 +329,17 @@ std::u16string NormalizeAndRewrite(const AddressCountryCode& country_code,
                                    bool keep_white_space) {
   return AddressRewriter::RewriteForCountryCode(
       country_code->empty() ? AddressCountryCode("US") : country_code,
-      NormalizeValue(text, keep_white_space));
+      NormalizeValue(text, keep_white_space, country_code));
 }
 
 std::u16string NormalizeValue(std::u16string_view value,
-                              bool keep_white_space) {
+                              bool keep_white_space,
+                              const AddressCountryCode& country_code) {
   return AutofillProfileComparator::NormalizeForComparison(
-      value, keep_white_space ? AutofillProfileComparator::RETAIN_WHITESPACE
-                              : AutofillProfileComparator::DISCARD_WHITESPACE);
+      value,
+      keep_white_space ? AutofillProfileComparator::RETAIN_WHITESPACE
+                       : AutofillProfileComparator::DISCARD_WHITESPACE,
+      country_code);
 }
 
 bool AreStringTokenEquivalent(const std::u16string& one,
