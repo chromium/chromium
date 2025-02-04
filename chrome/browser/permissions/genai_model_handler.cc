@@ -39,43 +39,38 @@ static constexpr auto kWaitableReasons =
     });
 
 void LogOnDeviceModelDownloadSuccess(bool success) {
-  base::UmaHistogramBoolean("Permissions.GenAiOnDeviceModelDownloadSuccess",
-                            success);
+  base::UmaHistogramBoolean("Permissions.AIv1.DownloadSuccess", success);
 }
 
 void LogOnDeviceModelSessionCreationSuccess(bool success,
                                             base::TimeDelta creation_time) {
-  base::UmaHistogramBoolean(
-      "Permissions.GenAiOnDeviceModelSessionCreationSuccess", success);
+  base::UmaHistogramBoolean("Permissions.AIv1.SessionCreationSuccess", success);
   if (success) {
-    base::UmaHistogramMediumTimes(
-        "Permissions.GenAiOnDeviceModelSessionCreationTime", creation_time);
+    base::UmaHistogramMediumTimes("Permissions.AIv1.SessionCreationTime",
+                                  creation_time);
   }
 }
 
 void LogOnDeviceModelExecutionSuccessAndTime(
     bool success,
     base::TimeTicks session_execution_start_time) {
-  base::UmaHistogramBoolean("Permissions.GenAiOnDeviceModelExecutionSuccess",
-                            success);
+  base::UmaHistogramBoolean("Permissions.AIv1.ExecutionSuccess", success);
   base::UmaHistogramMediumTimes(
-      "Permissions.GenAiOnDeviceModelExecutionDuration",
+      "Permissions.AIv1.ExecutionDuration",
       base::TimeTicks::Now() - session_execution_start_time);
 }
 
 void LogOnDeviceModelExecutionParse(bool success) {
-  base::UmaHistogramBoolean(
-      "Permissions.GenAiOnDeviceModelResponseParseSuccess", success);
+  base::UmaHistogramBoolean("Permissions.AIv1.ResponseParseSuccess", success);
 }
 
 void LogOnDeviceModelAvailabilityAtInquiryTime(bool success) {
-  base::UmaHistogramBoolean(
-      "Permissions.GenAiOnDeviceModelAvailableAtInquiryTime", success);
+  base::UmaHistogramBoolean("Permissions.AIv1.AvailableAtInquiryTime", success);
 }
 
 void LogOnDeviceModelFetchTime(base::TimeTicks model_download_start_time) {
   base::UmaHistogramLongTimes(
-      "Permissions.GenAiOnDeviceModelFetchTime",
+      "Permissions.AIv1.FetchTime",
       base::TimeTicks::Now() - model_download_start_time);
 }
 
