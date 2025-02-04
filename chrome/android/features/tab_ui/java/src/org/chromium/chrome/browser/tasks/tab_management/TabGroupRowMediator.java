@@ -43,7 +43,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Contains the logic to set the state of the model and react to actions. */
@@ -103,14 +102,9 @@ class TabGroupRowMediator {
         mFetchGroupState = fetchGroupState;
 
         PropertyModel.Builder builder = new PropertyModel.Builder(TabGroupRowProperties.ALL_KEYS);
-        List<SavedTabGroupTab> savedTabs = savedTabGroup.savedTabs;
-        int numberOfTabs = savedTabs.size();
-        int urlCount = Math.min(TabGroupFaviconCluster.CORNER_COUNT, numberOfTabs);
-        List<GURL> urlList = new ArrayList<>();
-        for (int i = 0; i < urlCount; i++) {
-            urlList.add(savedTabs.get(i).url);
-        }
+        int numberOfTabs = savedTabGroup.savedTabs.size();
 
+        List<GURL> urlList = TabGroupFaviconCluster.buildUrlListFromSyncGroup(savedTabGroup);
         ClusterData clusterData = new ClusterData(faviconResolver, numberOfTabs, urlList);
         builder.with(TabGroupRowProperties.CLUSTER_DATA, clusterData);
         builder.with(TabGroupRowProperties.COLOR_INDEX, savedTabGroup.color);
