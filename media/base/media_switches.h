@@ -94,9 +94,6 @@ MEDIA_EXPORT extern const char kOverrideHardwareSecureCodecsForTesting[];
 MEDIA_EXPORT extern const char kEnableLiveCaptionPrefForTesting[];
 
 #if BUILDFLAG(IS_CHROMEOS)
-MEDIA_EXPORT extern const char kLacrosEnablePlatformHevc[];
-MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[];
-MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedAv1[];
 MEDIA_EXPORT extern const char kAllowRAInDevMode[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -480,7 +477,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kExposeOutOfProcessVideoDecodingToLacros);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kBackgroundListening);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

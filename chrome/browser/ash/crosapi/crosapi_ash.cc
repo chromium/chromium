@@ -708,17 +708,6 @@ void CrosapiAsh::BindSensorHalClient(
       std::move(remote));
 }
 
-void CrosapiAsh::BindStableVideoDecoderFactory(
-    mojo::GenericPendingReceiver receiver) {
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-  auto r = receiver.As<media::stable::mojom::StableVideoDecoderFactory>();
-  if (r && base::FeatureList::IsEnabled(
-               media::kExposeOutOfProcessVideoDecodingToLacros)) {
-    content::LaunchStableVideoDecoderFactory(std::move(r));
-  }
-#endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-}
-
 void CrosapiAsh::BindStructuredMetricsService(
     mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver) {
   structured_metrics_service_ash_->BindReceiver(std::move(receiver));

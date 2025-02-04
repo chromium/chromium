@@ -4341,11 +4341,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "expose-out-of-process-video-decoding-to-lacros",
-    "owners": [ "pmolinalopez@chromium.org", "andrescj@chromium.org" ],
-    "expiry_milestone": 128
-  },
-  {
     "name": "extension-disable-unsupported-developer-mode-extensions",
     "owners": [ "richche@google.com" ],
     "expiry_milestone": 143

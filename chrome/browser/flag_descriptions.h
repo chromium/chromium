@@ -3885,9 +3885,6 @@ extern const char kAccessibilityManifestV3EnhancedNetworkTtsDescription[];
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 
-extern const char kExposeOutOfProcessVideoDecodingToLacrosName[];
-extern const char kExposeOutOfProcessVideoDecodingToLacrosDescription[];
-
 extern const char kFastDrmMasterDropName[];
 extern const char kFastDrmMasterDropDescription[];
 

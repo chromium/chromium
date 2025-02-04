@@ -6646,12 +6646,6 @@ const char kExperimentalAccessibilitySwitchAccessTextDescription[] =
     "Enable experimental or in-progress Switch Access features for improved "
     "text input";
 
-const char kExposeOutOfProcessVideoDecodingToLacrosName[] =
-    "Expose out-of-process video decoding (OOP-VD) to LaCrOS.";
-const char kExposeOutOfProcessVideoDecodingToLacrosDescription[] =
-    "Accept media.stable.mojom.StableVideoDecoderFactory connection requests "
-    "from LaCrOS and host said factories in utility processes.";
-
 const char kFastDrmMasterDropName[] =
     "Drop DRM master tokens without disabling all the displays.";
 const char kFastDrmMasterDropDescription[] =
