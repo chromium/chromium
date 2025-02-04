@@ -35,6 +35,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -45,6 +46,8 @@
 namespace glic {
 
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
+
+void* kGlicWidgetIdentifier = &kGlicWidgetIdentifier;
 
 namespace {
 // Default value for adding a buffer to the attachment zone.
@@ -148,6 +151,57 @@ class GlicWindowController::WindowEventObserver : public ui::EventObserver {
   gfx::Point initial_press_loc_;
 };
 
+// This class observes the view and widget the glic widget anchors to and
+// notifies the controller whenever their bounds change.
+class GlicWindowController::AnchorObserver : public views::ViewObserver,
+                                             public views::WidgetObserver {
+ public:
+  AnchorObserver(GlicWindowController* controller, views::View* anchor_view)
+      : controller_(controller) {
+    view_observation_.Observe(anchor_view);
+    CHECK(anchor_view->GetWidget());
+    widget_observation_.Observe(anchor_view->GetWidget());
+  }
+
+ private:
+  // views::ViewObserver:
+  void OnViewAddedToWidget(views::View* anchor_view) override {
+    // This event is fired on entering and exiting mac fullscreen. The anchor
+    // view will be moved from the browser view to an overlay widget, or the
+    // other way around.
+    widget_observation_.Observe(anchor_view->GetWidget());
+  }
+
+  void OnViewRemovedFromWidget(views::View* anchor_view) override {
+    widget_observation_.Reset();
+  }
+
+  void OnViewBoundsChanged(views::View* anchor_view) override {
+    CHECK(controller_->attached_browser());
+    controller_->MovePositionToBrowserGlicButton(
+        controller_->attached_browser(),
+        /*animate=*/false);
+  }
+
+  // views::WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* anchor_widget,
+                             const gfx::Rect& bounds) override {
+    CHECK(controller_->attached_browser());
+    controller_->MovePositionToBrowserGlicButton(
+        controller_->attached_browser(),
+        /*animate=*/false);
+  }
+  // No need to observe widget destroy because the observed view will be removed
+  // from the widget and notifies this class.
+
+  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
+      this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
+
+  raw_ptr<GlicWindowController> controller_;
+};
+
 GlicWindowController::GlicWindowController(Profile* profile)
     : profile_(profile),
       fre_controller_(std::make_unique<GlicFreController>()) {}
@@ -226,13 +280,9 @@ void GlicWindowController::OnWidgetDestroyed(views::Widget* widget) {
   }
 }
 
-// Monitoring the attached browser.
 void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
                                                  const gfx::Rect& new_bounds) {
-  if (attached_browser_ &&
-      attached_browser_->GetBrowserView().GetWidgetForAnchoring() == widget) {
-    MovePositionToBrowserGlicButton(attached_browser_, false);
-  } else if (in_move_loop_) {
+  if (!attached_browser_ && in_move_loop_) {
     // While in a move loop, look for nearby browsers to toggle the drop to
     // attach indicator.
     HandleGlicButtonIndicator();
@@ -618,15 +668,19 @@ void GlicWindowController::AttachToBrowser(Browser* browser) {
   // Close the holder window.
   holder_widget_.reset();
 
-  views::Widget* browser_widget =
-      browser->GetBrowserView().GetWidgetForAnchoring();
-  CHECK(browser_widget);
+  BrowserView* browser_view = browser->window()->AsBrowserView();
+  CHECK(browser_view);
+  // Although the glic widget is conceptually anchored to the glic button, we
+  // intentionally observe its parent view, the tab strip region, for bounds
+  // changes. This is because views bounds changed events when its *local*
+  // bounds change. When the tab strip resizes, the glic button's local bounds
+  // (relative to the tab strip) typically remain constant.
+  views::View* anchor_view = browser_view->tab_strip_region_view();
+  anchor_observer_ = std::make_unique<AnchorObserver>(this, anchor_view);
 
-  // Makes the glic widget a child view of the given widget's browser.
-  // Add observer to new parent.
-  attached_browser_widget_observation_.Reset();
-  attached_browser_widget_observation_.Observe(browser_widget);
-  glic_widget_->Reparent(browser_widget);
+  // Makes the glic widget a child view of the anchor view's widget, which is
+  // different from the browser widget in mac immersive fullscreen.
+  glic_widget_->Reparent(anchor_view->GetWidget());
   if (!IsActive()) {
     GetGlicWidget()->Activate();
   }
@@ -715,12 +769,18 @@ std::unique_ptr<views::Widget> GlicWindowController::CreateGlicWidget(
 #endif
   params.bounds = initial_bounds;
   params.sublevel = ChromeWidgetSublevel::kSublevelGlic;
+  params.name = "GlicWidget";
 
   std::unique_ptr<views::Widget> widget =
       std::make_unique<views::Widget>(std::move(params));
 
   widget->SetContentsView(
       std::make_unique<GlicView>(profile, initial_bounds.size()));
+
+  // Mac fullscreen uses this identifier to find this widget and reparent it to
+  // the overlay widget.
+  widget->SetNativeWindowProperty(views::kWidgetIdentifierKey,
+                                  kGlicWidgetIdentifier);
 
   return widget;
 }
@@ -773,7 +833,7 @@ void GlicWindowController::CloseFinish(bool reopen_detached) {
 
   state_ = State::kClosed;
   attached_browser_ = nullptr;
-  attached_browser_widget_observation_.Reset();
+  anchor_observer_.reset();
   window_resize_animation_.reset();
   window_event_observer_.reset();
   browser_close_subscription_.reset();
@@ -793,7 +853,7 @@ void GlicWindowController::CloseFinish(bool reopen_detached) {
 }
 
 void GlicWindowController::ForceClose() {
-  CloseFinish(/*reopen_attached=*/false);
+  CloseFinish(/*reopen_detached=*/false);
 }
 
 void GlicWindowController::CloseAndReopenDetached() {
@@ -961,7 +1021,7 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
 
 void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
   attached_browser_ = nullptr;
-  attached_browser_widget_observation_.Reset();
+  anchor_observer_.reset();
   browser_close_subscription_.reset();
 
 

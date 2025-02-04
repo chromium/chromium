@@ -127,9 +127,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                 PressButton(kGlicButtonElementId)),
       CheckControllerHasWidget(true),
       CheckControllerWidgetMode(GlicWindowMode::kAttached),
-      CheckResult(
-          [this] { return window_controller().GetAttachedBrowserForTesting(); },
-          new_browser, "attached to the other browser"));
+      CheckResult([this] { return window_controller().attached_browser(); },
+                  new_browser, "attached to the other browser"));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
