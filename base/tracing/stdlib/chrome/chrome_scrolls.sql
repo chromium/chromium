@@ -5,6 +5,7 @@
 INCLUDE PERFETTO MODULE chrome.event_latency;
 INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
 INCLUDE PERFETTO MODULE chrome.input;
+INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_offsets;
 INCLUDE PERFETTO MODULE chrome.scroll_jank.utils;
 
 -- Ties together input (`LatencyInfo.Flow`) and frame (`Graphics.Pipeline`)
@@ -737,6 +738,8 @@ GROUP BY scroll_id;
 CREATE PERFETTO TABLE chrome_scroll_update_info(
   -- Id of the `LatencyInfo.Flow` slices corresponding to this scroll event.
   id LONG,
+  -- Id (`LatencyInfo.ID`) of the previous input in this scroll.
+  previous_input_id LONG,
   -- Id (`display_trace_id`) of the aggregated frame which this scroll update
   -- was presented in.
   frame_display_id LONG,
@@ -758,6 +761,9 @@ CREATE PERFETTO TABLE chrome_scroll_update_info(
   is_first_scroll_update_in_frame BOOL,
   -- Input generation timestamp (from the Android system).
   generation_ts TIMESTAMP,
+  -- Duration from the generation timestamp fo the previous input to
+  -- this input's generation timestamp.
+  since_previous_generation_dur DURATION,
   -- Duration from input generation to when the browser received the input.
   generation_to_browser_main_dur DURATION,
   -- Utid for the browser main thread.
@@ -870,6 +876,9 @@ CREATE PERFETTO TABLE chrome_scroll_update_info(
 AS
 SELECT
   input.id,
+  LAG(input.id) OVER (
+    PARTITION BY input.scroll_id ORDER BY input.generation_ts)
+    AS previous_input_id,
   frame.display_trace_id AS frame_display_id,
   -- TODO(b:381062412): This is sometimes unexpectedly 0; check/fix this.
   frame.vsync_interval_ms,
@@ -882,6 +891,9 @@ SELECT
   -- No applicable utid (duration between two threads).
   -- No applicable slice id (duration between two threads).
   input.generation_ts,
+  input.generation_ts - LAG(input.generation_ts) OVER (
+    PARTITION BY input.scroll_id ORDER BY input.generation_ts)
+    AS since_previous_generation_dur,
   input.generation_to_browser_main_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   input.browser_utid,
@@ -1004,15 +1016,29 @@ IIF(info.is_first_scroll_update_in_scroll,
 CREATE PERFETTO TABLE chrome_scroll_frame_info(
   -- Id (frame's display_trace_id) for the given frame.
   id LONG,
+  -- Id (LatencyInfo.ID) of the last input before this frame.
+  last_input_before_this_frame_id LONG,
   -- Vsync interval (in milliseconds).
+  -- TODO(b/394303662): Remove in favour of `vsync_interval_dur`.
   vsync_interval_ms DOUBLE,
+  -- Vsync interval (in nanoseconds).
+  vsync_interval_dur DURATION,
   -- Whether the corresponding frame is janky. This comes directly from
   -- `perfetto.protos.EventLatency`.
   is_janky BOOL,
   -- Whether the corresponding scroll is inertial (fling).
   is_inertial BOOL,
+  -- Sum of all input deltas for all scroll updates in this frame.
+  -- These values are based on the delta of the OS input events.
+  total_input_delta_y DOUBLE,
+  -- Presented delta (change in page offset) for the given frame.
+  -- This delta is computed by Chrome (based on the input events).
+  presented_scrolled_delta_y DOUBLE,
   -- Input generation timestamp (from the Android system) for the first input.
   first_input_generation_ts TIMESTAMP,
+  -- Duration from the previous input (last input that wasn't part of this frame)
+  -- to the first input in this frame.
+  previous_last_input_to_first_input_generation_dur DURATION,
   -- Presentation timestamp for the frame.
   presentation_ts TIMESTAMP,
   -- Utid for the browser main thread.
@@ -1115,10 +1141,20 @@ CREATE PERFETTO TABLE chrome_scroll_frame_info(
 ) AS
 SELECT
   frame_display_id AS id,
+  previous_input_id AS last_input_before_this_frame_id,
   vsync_interval_ms,
+  cast_int!(vsync_interval_ms * 1e6) AS vsync_interval_dur,
   is_janky,
   is_inertial,
+  (
+    SELECT SUM(delta_y)
+    FROM chrome_scroll_input_offsets AS input
+    JOIN chrome_scroll_update_info AS update_info ON input.scroll_update_id = update_info.id
+    WHERE update_info.frame_display_id = info.frame_display_id
+  ) as total_input_delta_y,
+  delta.delta_y as presented_scrolled_delta_y,
   info.generation_ts AS first_input_generation_ts,
+  info.since_previous_generation_dur AS previous_last_input_to_first_input_generation_dur,
   info.browser_utid,
   info.generation_to_browser_main_dur AS first_input_generation_to_browser_main_dur,
   presentation_timestamp AS presentation_ts,
@@ -1178,6 +1214,7 @@ SELECT
   _chrome_scroll_frame_stage_delta!(viz_latch_to_presentation_dur)
     AS viz_latch_to_presentation_delta_dur
 FROM chrome_scroll_update_info info
+LEFT JOIN chrome_presented_scroll_offsets delta ON info.id = delta.scroll_update_id
 WHERE is_first_scroll_update_in_frame
 -- TODO(b:380286381, b:393051057): remove this when dropped frames are handled.
 AND info.frame_display_id IS NOT NULL;

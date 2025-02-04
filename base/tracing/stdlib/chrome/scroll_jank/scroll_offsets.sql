@@ -30,7 +30,6 @@
 -- scroll_update_id value, recorded as scroll_deltas.trace_id in each event.
 
 INCLUDE PERFETTO MODULE chrome.event_latency;
-INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3;
 
 -- The raw input deltas for all input events which were part of a scroll.
 CREATE PERFETTO TABLE chrome_scroll_input_deltas(
@@ -110,44 +109,6 @@ SELECT
   EXTRACT_ARG(arg_set_id, 'scroll_deltas.visual_offset_y') AS offset_y
 FROM slice
 WHERE slice.name = 'InputHandlerProxy::HandleGestureScrollUpdate_Result';
-
--- Associate the gesture scroll update OS timestamp with the delta.
-CREATE PERFETTO TABLE _scroll_deltas_with_timestamp AS
-SELECT
-  slice.id AS event_latency_slice_id,
-  slice.ts AS input_ts,
-  data.scroll_update_id,
-  data.delta_y
-FROM chrome_scroll_input_deltas data
-  JOIN slice ON slice.name = 'EventLatency'
-    AND data.scroll_update_id = EXTRACT_ARG(arg_set_id,
-        'event_latency.event_latency_id');
-
--- Associate the scroll update/delta with the correct scroll.
-CREATE PERFETTO TABLE _scroll_deltas_with_scroll_id AS
-SELECT
-  scrolls.id AS scroll_id,
-  deltas.event_latency_slice_id,
-  deltas.input_ts,
-  deltas.scroll_update_id,
-  deltas.delta_y
-FROM _scroll_deltas_with_timestamp deltas
-  LEFT JOIN chrome_scrolls scrolls
-    ON deltas.input_ts >= scrolls.ts
-      AND deltas.input_ts <= scrolls.ts + scrolls.dur;
-
--- Associate the presentation timestamp/deltas with the user deltas.
-CREATE PERFETTO TABLE _scroll_deltas_with_delays AS
-SELECT
-  deltas.scroll_id,
-  delay.total_delta,
-  deltas.scroll_update_id,
-  deltas.event_latency_slice_id,
-  delay.presentation_timestamp AS presentation_timestamp,
-  deltas.input_ts,
-  deltas.delta_y
-FROM _scroll_deltas_with_scroll_id AS deltas
-  LEFT JOIN chrome_frame_info_with_delay AS delay USING(scroll_update_id);
 
 -- The scrolling offsets for the actual (applied) scroll events. These are not
 -- necessarily inclusive of all user scroll events, rather those scroll events
