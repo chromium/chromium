@@ -15,55 +15,76 @@ import './shared_vars.css.js';
 
 import {assert} from '//resources/js/assert.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
-import type {DomRepeat} from '//resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
 import type {ShoppingServiceBrowserProxy} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Content, TableColumn} from './app.js';
 import type {BuyingOptions} from './buying_options_section.js';
 import type {ProductDescription} from './description_section.js';
 import {DragAndDropManager} from './drag_and_drop_manager.js';
 import type {SectionType} from './product_selection_menu.js';
-import type {ProductSelectorElement} from './product_selector.js';
-import {getTemplate} from './table.html.js';
+import {getCss} from './table.css.js';
+import {getHtml} from './table.html.js';
+import type {UrlListEntry} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
+
+export type ContentOrNull = string|ProductDescription|BuyingOptions|null;
+
+export interface ProductDetail {
+  title: string|null;
+  content: ContentOrNull;
+}
+
+export interface TableColumn {
+  selectedItem: UrlListEntry;
+  productDetails: ProductDetail[]|null;
+}
 
 export interface TableElement {
   $: {
     table: HTMLElement,
-    columnRepeat: DomRepeat,
   };
 }
 
-export class TableElement extends PolymerElement {
+export class TableElement extends CrLitElement {
   static get is() {
     return 'product-specifications-table';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      columns: {
-        type: Array,
-        observer: 'onColumnsChanged_',
-      },
-      draggingColumn: HTMLElement,
-      hoveredColumnIndex_: Number,
+      columns: {type: Array},
+      draggingColumn: {type: Object},
+      hoveredColumnIndex_: {type: Number},
     };
   }
 
-  columns: TableColumn[];
+  columns: TableColumn[] = [];
   draggingColumn: HTMLElement|null = null;
   private hoveredColumnIndex_: number|null = null;
 
   private dragAndDropManager_: DragAndDropManager = new DragAndDropManager();
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('columns')) {
+      this.style.setProperty('--num-columns', String(this.columns.length));
+    }
+
+    this.dragAndDropManager_.tablePropertiesUpdated();
+  }
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -82,53 +103,31 @@ export class TableElement extends PolymerElement {
   }
 
   // Called by |dragAndDropManager|.
-  moveColumnOnDrop(fromIndex: number, dropIndex: number) {
+  async moveColumnOnDrop(fromIndex: number, dropIndex: number) {
     const columns = this.columns;
     const [draggingColumn] = columns.splice(fromIndex, 1);
     assert(draggingColumn);
-    columns.splice(dropIndex, 0, draggingColumn);
-    this.notifySplices('columns', [
-      {
-        index: fromIndex,
-        removed: [draggingColumn],
-        addedCount: 0,
-        object: columns,
-        type: 'splice',
-      },
-      {
-        index: dropIndex,
-        removed: [],
-        addedCount: 1,
-        object: columns,
-        type: 'splice',
-      },
-    ]);
 
-    this.dispatchEvent(new Event('url-order-update'));
+    columns.splice(dropIndex, 0, draggingColumn);
+    this.requestUpdate();
+    await this.updateComplete;
+
+    this.fire('url-order-update');
   }
 
   closeAllProductSelectionMenus() {
     const productSelectors =
-        this.shadowRoot!.querySelectorAll<ProductSelectorElement>(
-            'product-selector');
+        this.shadowRoot!.querySelectorAll('product-selector');
     productSelectors.forEach(productSelector => productSelector.closeMenu());
   }
 
-  private onColumnsChanged_() {
-    this.style.setProperty('--num-columns', String(this.columns.length));
-  }
-
   // |this.draggingColumn| is set by |dragAndDropManager|.
-  private isDragging_(columnIndex: number): boolean {
+  protected isDragging_(columnIndex: number): boolean {
     return !!this.draggingColumn &&
-        columnIndex ===
-        (this.$.columnRepeat.modelForElement(this.draggingColumn) as unknown as
-         {
-           columnIndex: number,
-         }).columnIndex;
+        columnIndex === Number(this.draggingColumn.dataset['index']);
   }
 
-  private isFirstColumn_(columnIndex: number): boolean|undefined {
+  protected isFirstColumn_(columnIndex: number): boolean|undefined {
     if (!this.draggingColumn) {
       return columnIndex === 0;
     }
@@ -137,7 +136,7 @@ export class TableElement extends PolymerElement {
     return undefined;
   }
 
-  private getScrollSnapAlign_(): string {
+  protected getScrollSnapAlign_(): string {
     return !this.draggingColumn ? 'start' : 'none';
   }
 
@@ -146,67 +145,67 @@ export class TableElement extends PolymerElement {
   //   - 1 row for the product selector.
   //   - 1 row for the image container.
   //   - Number of product details.
-  private getRowCount_(numProductDetails: number): number {
+  protected getRowCount_(numProductDetails: number): number {
     return 2 + numProductDetails;
   }
 
-  private getUrls_() {
+  protected getUrls_() {
     return this.columns.map(column => column.selectedItem.url);
   }
 
-  private onHideOpenTabButton_() {
+  protected onHideOpenTabButton_() {
     this.hoveredColumnIndex_ = null;
   }
 
-  private onShowOpenTabButton_(e: DomRepeatEvent<TableColumn>&
-                               {model: {columnIndex: number}}) {
-    this.hoveredColumnIndex_ = e.model.columnIndex;
+  protected onShowOpenTabButton_(e: Event) {
+    const currentTarget = e.currentTarget as HTMLElement;
+    this.hoveredColumnIndex_ = Number(currentTarget.dataset['index']);
   }
 
-  private showOpenTabButton_(columnIndex: number): boolean {
+  protected showOpenTabButton_(columnIndex: number): boolean {
     return !this.draggingColumn && this.hoveredColumnIndex_ !== null &&
         this.hoveredColumnIndex_ === columnIndex;
   }
 
-  private onOpenTabButtonClick_(e: DomRepeatEvent<TableColumn>&
-                                {model: {columnIndex: number}}) {
+  protected onOpenTabButtonClick_(e: Event) {
     if (!WindowProxy.getInstance().onLine) {
       this.dispatchEvent(new Event('unavailable-action-attempted'));
       return;
     }
+    const currentTarget = e.currentTarget as HTMLElement;
+    const columnIndex = Number(currentTarget.dataset['index']);
     this.shoppingApi_.switchToOrOpenTab(
-        {url: this.columns[e.model.columnIndex].selectedItem.url});
+        {url: this.columns[columnIndex].selectedItem.url});
     chrome.metricsPrivate.recordUserAction(
         'Commerce.Compare.ReopenedProductPage');
   }
 
-  private onSelectedUrlChange_(
-      e: DomRepeatEvent<
-          TableColumn, CustomEvent<{url: string, urlSection: SectionType}>>&
-      {model: {columnIndex: number}}) {
+  protected onSelectedUrlChange_(
+      e: CustomEvent<{url: string, urlSection: SectionType}>) {
+    const currentTarget = e.currentTarget as HTMLElement;
     this.dispatchEvent(new CustomEvent('url-change', {
       bubbles: true,
       composed: true,
       detail: {
         url: e.detail.url,
         urlSection: e.detail.urlSection,
-        index: e.model.columnIndex,
+        index: Number(currentTarget.dataset['index']),
       },
     }));
   }
 
-  private onUrlRemove_(e: DomRepeatEvent<TableColumn>&
-                       {model: {columnIndex: number}}) {
+  protected onUrlRemove_(e: Event) {
+    const currentTarget = e.currentTarget as HTMLElement;
     this.dispatchEvent(new CustomEvent('url-remove', {
       bubbles: true,
       composed: true,
       detail: {
-        index: e.model.columnIndex,
+        index: Number(currentTarget.dataset['index']),
       },
     }));
   }
 
-  private showRow_(title: string, rowIndex: number): boolean {
+  protected showRow_(title: string, rowIndex: number): boolean {
     return this.rowHasNonEmptyAttributes_(title, rowIndex) ||
         this.rowHasNonEmptySummary_(title, rowIndex) ||
         this.rowHasText_(title, rowIndex) ||
@@ -258,7 +257,7 @@ export class TableElement extends PolymerElement {
         detail => detail && this.contentIsBuyingOptions_(detail.content));
   }
 
-  private filterProductDescription_(
+  protected filterProductDescription_(
       productDesc: ProductDescription, title: string,
       rowIndex: number): ProductDescription {
     // Hide product descriptions when all attributes/summaries in this row are
@@ -273,11 +272,11 @@ export class TableElement extends PolymerElement {
     };
   }
 
-  private contentIsString_(content: Content): content is string {
+  protected contentIsString_(content: ContentOrNull): content is string {
     return (content && typeof content === 'string') as boolean;
   }
 
-  private contentIsProductDescription_(content: Content):
+  protected contentIsProductDescription_(content: ContentOrNull):
       content is ProductDescription {
     if (content) {
       const description = content as ProductDescription;
@@ -287,7 +286,8 @@ export class TableElement extends PolymerElement {
     return false;
   }
 
-  private contentIsBuyingOptions_(content: Content): content is BuyingOptions {
+  protected contentIsBuyingOptions_(content: ContentOrNull):
+      content is BuyingOptions {
     if (content) {
       const buyingOptions = content as BuyingOptions;
       return (buyingOptions.price !== undefined &&
@@ -298,7 +298,7 @@ export class TableElement extends PolymerElement {
   }
 
   // This method provides a string that is intended to be used primarily in CSS.
-  private getFavicon_(url: string): string {
+  protected getFavicon_(url: string): string {
     return getFaviconForPageURL(url, false, '', 32);
   }
 }

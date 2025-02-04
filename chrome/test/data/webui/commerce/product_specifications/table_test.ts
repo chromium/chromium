@@ -12,9 +12,8 @@ import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle, installMock} from './test_support.js';
 
@@ -51,7 +50,7 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
     const columns = tableElement.shadowRoot!.querySelectorAll('.col');
@@ -83,7 +82,7 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
     const images =
@@ -112,7 +111,7 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
     const faviconMainImage = $$<HTMLElement>(tableElement, '.favicon');
@@ -206,7 +205,7 @@ suite('ProductSpecificationsTableTest', () => {
         selectedItem: {title: '', url: 'https://bar.com', imageUrl: ''},
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
     const titles =
@@ -246,7 +245,7 @@ suite('ProductSpecificationsTableTest', () => {
         selectedItem: {title: '', url: 'https://foo.com', imageUrl: ''},
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
     const text = $$(tableElement, '.detail-text');
@@ -269,7 +268,7 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Act
     const productSelector = $$(tableElement, 'product-selector');
@@ -300,7 +299,7 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
     const productSelector = $$(tableElement, 'product-selector');
     assertTrue(!!productSelector);
     const eventPromise = eventToPromise('url-remove', tableElement);
@@ -333,7 +332,7 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Act
     const openTabButton = $$<HTMLElement>(tableElement, '.open-tab-button');
@@ -360,7 +359,7 @@ suite('ProductSpecificationsTableTest', () => {
         productDetails: [],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Act
     const productImage = $$<HTMLElement>(tableElement, '.main-image');
@@ -425,7 +424,7 @@ suite('ProductSpecificationsTableTest', () => {
         ],
       },
     ];
-    await flushTasks();
+    await microtasksFinished();
     const columns = tableElement.shadowRoot!.querySelectorAll('.col');
     assertEquals(2, columns.length);
     const openTabButton1 =
@@ -435,19 +434,23 @@ suite('ProductSpecificationsTableTest', () => {
     assertTrue(!!openTabButton1);
     assertTrue(!!openTabButton2);
     tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
+    await microtasksFinished();
     assertFalse(isVisible(openTabButton1));
     assertFalse(isVisible(openTabButton2));
 
     // Act/Assert
     columns[0]!.dispatchEvent(new PointerEvent('pointerenter'));
+    await microtasksFinished();
     assertTrue(isVisible(openTabButton1));
     assertFalse(isVisible(openTabButton2));
 
     columns[1]!.dispatchEvent(new PointerEvent('pointerenter'));
+    await microtasksFinished();
     assertFalse(isVisible(openTabButton1));
     assertTrue(isVisible(openTabButton2));
 
     tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
+    await microtasksFinished();
     assertFalse(isVisible(openTabButton1));
     assertFalse(isVisible(openTabButton2));
   });
@@ -475,7 +478,7 @@ suite('ProductSpecificationsTableTest', () => {
             productDetails: [],
           },
         ];
-        await waitAfterNextRender(tableElement);
+        await microtasksFinished();
 
         // Act
         windowProxy.setResultFor('onLine', false);
@@ -529,7 +532,7 @@ suite('ProductSpecificationsTableTest', () => {
         }],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
     const descriptions =
         tableElement.shadowRoot!.querySelectorAll('description-text');
     assertEquals(0, descriptions.length);
@@ -570,7 +573,7 @@ suite('ProductSpecificationsTableTest', () => {
         }],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
     const descriptions =
         tableElement.shadowRoot!.querySelectorAll('description-section');
     descriptions.forEach(description => {
@@ -616,7 +619,7 @@ suite('ProductSpecificationsTableTest', () => {
         }],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
     const details =
         tableElement.shadowRoot!.querySelectorAll('.detail-container');
     assertEquals(2, details.length);
@@ -694,7 +697,7 @@ suite('ProductSpecificationsTableTest', () => {
           ],
         },
       ];
-      await waitAfterNextRender(tableElement);
+      await microtasksFinished();
     });
 
     test('detail title is hidden if it is `null`', async () => {
@@ -738,7 +741,7 @@ suite('ProductSpecificationsTableTest', () => {
         }],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
     const columns = tableElement.shadowRoot!.querySelectorAll('.col');
     assertEquals(2, columns.length);
     assertStyle(columns[0]!, 'grid-row', 'span 3');
@@ -766,20 +769,23 @@ suite('ProductSpecificationsTableTest', () => {
           ],
         },
       ];
-      await flushTasks();
+      await microtasksFinished();
       const column = $$<HTMLElement>(tableElement, '.col');
       assertTrue(!!column);
       const openTabButton =
           column!.querySelector<HTMLElement>('.open-tab-button');
       assertTrue(!!openTabButton);
       tableElement.$.table.dispatchEvent(new PointerEvent('pointerleave'));
+      await microtasksFinished();
       assertFalse(isVisible(openTabButton));
 
       // Act/Assert
       column!.dispatchEvent(new PointerEvent('pointerenter'));
+      await microtasksFinished();
       assertTrue(isVisible(openTabButton));
 
       tableElement.draggingColumn = column!;
+      await microtasksFinished();
       assertFalse(isVisible(openTabButton));
     });
 
@@ -807,16 +813,18 @@ suite('ProductSpecificationsTableTest', () => {
           ],
         },
       ];
-      await waitAfterNextRender(tableElement);
+      await microtasksFinished();
 
       // Assert.
       const columns =
           tableElement.shadowRoot!.querySelectorAll<HTMLElement>('.col');
+      await microtasksFinished();
       assertEquals(2, columns.length);
       assertTrue(columns[0]!.hasAttribute('is-first-column'));
       assertFalse(columns[1]!.hasAttribute('is-first-column'));
 
       tableElement.draggingColumn = columns[0]!;
+      await microtasksFinished();
       // Attribute toggling should be handled by drag and drop manager.
       assertFalse(columns[0]!.hasAttribute('is-first-column'));
       assertFalse(columns[1]!.hasAttribute('is-first-column'));
@@ -847,16 +855,18 @@ suite('ProductSpecificationsTableTest', () => {
         ],
       },
     ];
-    await waitAfterNextRender(tableElement);
+    await microtasksFinished();
 
     // Assert.
     const columns =
         tableElement.shadowRoot!.querySelectorAll<HTMLElement>('.col');
+    await microtasksFinished();
     assertEquals(2, columns.length);
     assertStyle(columns[0]!, 'scroll-snap-align', 'start');
     assertStyle(columns[1]!, 'scroll-snap-align', 'start');
 
     tableElement.draggingColumn = columns[0]!;
+    await microtasksFinished();
     assertStyle(columns[0]!, 'scroll-snap-align', 'none');
     assertStyle(columns[1]!, 'scroll-snap-align', 'none');
   });

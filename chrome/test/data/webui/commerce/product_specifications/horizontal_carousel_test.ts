@@ -5,8 +5,8 @@
 import 'chrome://compare/horizontal_carousel.js';
 import 'chrome://compare/table.js';
 
-import type {TableColumn} from 'chrome://compare/app.js';
 import type {HorizontalCarouselElement} from 'chrome://compare/horizontal_carousel.js';
+import type {TableColumn} from 'chrome://compare/table.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, eventToPromise, isVisible, whenCheck} from 'chrome://webui-test/test_util.js';

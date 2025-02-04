@@ -37,18 +37,16 @@ import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.moj
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {BuyingOptions} from './buying_options_section.js';
 import type {ComparisonTableListElement} from './comparison_table_list.js';
 import type {ComparisonTableListItemClickEvent, ComparisonTableListItemRenameEvent} from './comparison_table_list_item.js';
-import type {ProductDescription} from './description_section.js';
 import type {HeaderElement} from './header.js';
 import type {NewColumnSelectorElement} from './new_column_selector.js';
 import {SectionType} from './product_selection_menu.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
 import type {ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
-import type {TableElement} from './table.js';
-import {isValidLowercaseUuid, type UrlListEntry} from './utils.js';
+import type {ProductDetail, TableColumn, TableElement} from './table.js';
+import {isValidLowercaseUuid} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 interface AggregatedProductData {
@@ -59,18 +57,6 @@ interface AggregatedProductData {
 interface LoadingState {
   loading: boolean;
   urlCount: number;
-}
-
-export type Content = string|ProductDescription|BuyingOptions|null;
-
-interface ProductDetail {
-  title: string|null;
-  content: Content;
-}
-
-export interface TableColumn {
-  selectedItem: UrlListEntry;
-  productDetails: ProductDetail[]|null;
 }
 
 export interface ProductSpecificationsElement {

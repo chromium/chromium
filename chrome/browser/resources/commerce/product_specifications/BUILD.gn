@@ -14,9 +14,6 @@ build_webui("build") {
     "product_specifications.html",
   ]
 
-  # Files holding a Polymer element definition and have an equivalent .html file.
-  web_component_files = [ "table.ts" ]
-
   css_files = [
     "app.css",
     "buying_options_section.css",
@@ -33,6 +30,7 @@ build_webui("build") {
     "product_selection_menu.css",
     "product_selector.css",
     "shared_vars.css",
+    "table.css",
   ]
 
   mojo_files_deps =
@@ -74,6 +72,8 @@ build_webui("build") {
     "product_selector.html.ts",
     "product_selector.ts",
     "router.ts",
+    "table.html.ts",
+    "table.ts",
     "utils.ts",
     "window_proxy.ts",
   ]

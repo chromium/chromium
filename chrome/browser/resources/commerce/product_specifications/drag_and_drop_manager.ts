@@ -4,7 +4,6 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
 
 import type {TableElement} from './table.js';
 import {$$} from './utils.js';
@@ -37,43 +36,24 @@ import {$$} from './utils.js';
  * visual layout matches the underlying data structure.
  */
 
-function getColumnByComposedPath(path?: EventTarget[]): HTMLElement|null {
-  if (!path) {
-    return null;
-  }
+export const IS_FIRST_COLUMN_ATTR: string = 'is-first-column';
 
-  for (let i = 0; i < path!.length; i++) {
-    const element = path![i] as Element;
-    if (element.className === 'col') {
-      return path![i] as HTMLElement;
-    }
-  }
-  return null;
+function getColumnByComposedPath(path: EventTarget[]): HTMLElement|null {
+  return path.filter(node => node instanceof HTMLElement)
+             .find(p => (p as HTMLElement).classList.contains('col')) ||
+      null;
 }
 
 function getVisualOrderIndex(col: HTMLElement) {
   assert(col.style.order !== '');
-  return parseInt(col.style.order);
-}
-
-function syncVisualOrderWithDOM(columnElements: HTMLElement[]) {
-  columnElements.forEach((column, index) => {
-    // `is-first-column` ensures the first column has necessary styling.
-    column.toggleAttribute('is-first-column', index === 0);
-    column.style.order = `${index}`;
-  });
-}
-
-function resetVisualOrder(columnElements: HTMLElement[]) {
-  columnElements.forEach((column) => {
-    column.style.order = '';
-  });
+  return Number.parseInt(col.style.order, 10);
 }
 
 export class DragAndDropManager {
   private dragImage_: HTMLImageElement;
   private eventTracker_: EventTracker = new EventTracker();
   private tableElement_: TableElement;
+  private pendingOrder_: Map<number, number> = new Map();
 
   private get columnElements_(): HTMLElement[] {
     const table = $$<HTMLElement>(this.tableElement_, '#table');
@@ -97,6 +77,34 @@ export class DragAndDropManager {
 
   destroy(): void {
     this.eventTracker_.removeAll();
+  }
+
+  tablePropertiesUpdated(): void {
+    // The table is re-rendering and will need the "style.order" replaced as it
+    // will have been removed during the render.
+    if (this.pendingOrder_.size > 0) {
+      this.pendingOrder_.forEach((value, key) => {
+        this.columnElements_[key].style.order = `${value}`;
+        this.columnElements_[key].toggleAttribute(
+            IS_FIRST_COLUMN_ATTR, value === 0);
+      });
+    }
+  }
+
+  private syncVisualOrderWithDom() {
+    this.columnElements_.forEach((column, index) => {
+      // `is-first-column` ensures the first column has necessary styling.
+      column.toggleAttribute(IS_FIRST_COLUMN_ATTR, index === 0);
+      column.style.order = `${index}`;
+      this.pendingOrder_.set(index, index);
+    });
+  }
+
+  private resetVisualOrder() {
+    this.pendingOrder_.clear();
+    for (const column of this.columnElements_) {
+      column.style.order = '';
+    }
   }
 
   private onDragStart_(e: DragEvent) {
@@ -132,7 +140,7 @@ export class DragAndDropManager {
   private dragStart_(dragElement: HTMLElement) {
     this.tableElement_.draggingColumn = dragElement;
     // Set initial column order for later visual reordering.
-    syncVisualOrderWithDOM(this.columnElements_);
+    this.syncVisualOrderWithDom();
   }
 
   // Swaps the visual order of the dragging column with the adjacent column it
@@ -158,11 +166,23 @@ export class DragAndDropManager {
       if (e.dataTransfer) {
         e.dataTransfer.dropEffect = 'move';
       }
+
+      // The position of the element in the DOM will be different from its
+      // visual position when rendered. The DOM position is the one that needs
+      // to be tracked per-render.
+      const domFromIndex =
+          this.columnElements_.findIndex(item => item === dragElement);
+      const domToIndex =
+          this.columnElements_.findIndex(item => item === dropTarget);
+      this.pendingOrder_.set(domToIndex, fromIndex);
+      this.pendingOrder_.set(domFromIndex, toIndex);
+
       dropTarget.style.order = `${fromIndex}`;
       dragElement.style.order = `${toIndex}`;
+
       // `is-first-column` ensures the first column has necessary styling.
-      dropTarget.toggleAttribute('is-first-column', fromIndex === 0);
-      dragElement.toggleAttribute('is-first-column', toIndex === 0);
+      dropTarget.toggleAttribute(IS_FIRST_COLUMN_ATTR, fromIndex === 0);
+      dragElement.toggleAttribute(IS_FIRST_COLUMN_ATTR, toIndex === 0);
     }
   }
 
@@ -178,14 +198,11 @@ export class DragAndDropManager {
       return;
     }
 
-    const columnRepeat = $$<DomRepeat>(this.tableElement_, '#columnRepeat');
-    assert(columnRepeat);
-    const fromIndex = (columnRepeat.modelForElement(dragElement) as unknown as {
-                        columnIndex: number,
-                      }).columnIndex;
+    const fromIndex = Number(dragElement.dataset['index']);
     const toIndex = getVisualOrderIndex(dropTarget);
     if (toIndex !== fromIndex) {
       this.tableElement_.moveColumnOnDrop(fromIndex, toIndex);
+      this.pendingOrder_.clear();
     }
 
     this.dragEnd_();
@@ -200,6 +217,6 @@ export class DragAndDropManager {
     this.tableElement_.draggingColumn = null;
     // Remove each column's CSS 'order' property, to ensure the visual
     // layout matches the underlying data structure.
-    resetVisualOrder(this.columnElements_);
+    this.resetVisualOrder();
   }
 }
