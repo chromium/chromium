@@ -209,8 +209,8 @@ void LaunchPlusAddressUserPerceptionSurvey(
     AutofillPlusAddressDelegate* delegate,
     plus_addresses::hats::SurveyType survey_type) {
   std::string survey_trigger;
-  base::TimeDelta min_delay_ms;
-  base::TimeDelta max_delay_ms;
+  base::TimeDelta min_delay;
+  base::TimeDelta max_delay;
 
   const auto get_min_delay = [](const base::Feature* feature) {
     return base::Milliseconds(
@@ -230,9 +230,9 @@ void LaunchPlusAddressUserPerceptionSurvey(
         return;
       }
       survey_trigger = kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate;
-      min_delay_ms =
+      min_delay =
           get_min_delay(&features::kPlusAddressAcceptedFirstTimeCreateSurvey);
-      max_delay_ms =
+      max_delay =
           get_max_delay(&features::kPlusAddressAcceptedFirstTimeCreateSurvey);
       break;
     case plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate:
@@ -241,9 +241,9 @@ void LaunchPlusAddressUserPerceptionSurvey(
         return;
       }
       survey_trigger = kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate;
-      min_delay_ms =
+      min_delay =
           get_min_delay(&features::kPlusAddressDeclinedFirstTimeCreateSurvey);
-      max_delay_ms =
+      max_delay =
           get_max_delay(&features::kPlusAddressDeclinedFirstTimeCreateSurvey);
       break;
     case plus_addresses::hats::SurveyType::kCreatedMultiplePlusAddresses:
@@ -253,9 +253,9 @@ void LaunchPlusAddressUserPerceptionSurvey(
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses;
-      min_delay_ms = get_min_delay(
+      min_delay = get_min_delay(
           &features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey);
-      max_delay_ms = get_max_delay(
+      max_delay = get_max_delay(
           &features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey);
       break;
     case plus_addresses::hats::SurveyType::kCreatedPlusAddressViaManualFallback:
@@ -266,9 +266,9 @@ void LaunchPlusAddressUserPerceptionSurvey(
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback;
-      min_delay_ms = get_min_delay(
+      min_delay = get_min_delay(
           &features::kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey);
-      max_delay_ms = get_max_delay(
+      max_delay = get_max_delay(
           &features::kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey);
       break;
     case plus_addresses::hats::SurveyType::kDidChoosePlusAddressOverEmail:
@@ -278,9 +278,9 @@ void LaunchPlusAddressUserPerceptionSurvey(
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey;
-      min_delay_ms = get_min_delay(
+      min_delay = get_min_delay(
           &features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey);
-      max_delay_ms = get_max_delay(
+      max_delay = get_max_delay(
           &features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey);
       break;
     case plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress:
@@ -290,9 +290,9 @@ void LaunchPlusAddressUserPerceptionSurvey(
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey;
-      min_delay_ms = get_min_delay(
+      min_delay = get_min_delay(
           &features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey);
-      max_delay_ms = get_max_delay(
+      max_delay = get_max_delay(
           &features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey);
       break;
     case plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack:
@@ -302,24 +302,23 @@ void LaunchPlusAddressUserPerceptionSurvey(
       }
       survey_trigger =
           kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback;
-      min_delay_ms = get_min_delay(
+      min_delay = get_min_delay(
           &features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey);
-      max_delay_ms = get_max_delay(
+      max_delay = get_max_delay(
           &features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey);
       break;
   }
 
   // Set default delays if the delays are not configured in the finch config or
   // are configured to invalid values.
-  if (min_delay_ms >= max_delay_ms || min_delay_ms < base::Seconds(0)) {
-    min_delay_ms = kDefaultMinDelay;
-    max_delay_ms = kDefaultMaxDelay;
+  if (min_delay >= max_delay || min_delay.is_negative()) {
+    min_delay = kDefaultMinDelay;
+    max_delay = kDefaultMaxDelay;
   }
-  const base::TimeDelta delay_ms =
-      base::RandTimeDelta(min_delay_ms, max_delay_ms);
+  const base::TimeDelta delay = base::RandTimeDelta(min_delay, max_delay);
 
   hats_service->LaunchDelayedSurveyForWebContents(
-      survey_trigger, web_contents, delay_ms.InMilliseconds(),
+      survey_trigger, web_contents, delay.InMilliseconds(),
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/
       delegate->GetPlusAddressHatsData(),
