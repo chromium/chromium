@@ -11,7 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
+#include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"

@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "chrome/updater/app/server/posix/mojom/updater_service_internal.mojom.h"
+#include "chrome/updater/mojom/updater_service_internal.mojom.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/bindings/remote.h"

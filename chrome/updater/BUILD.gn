@@ -412,7 +412,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       deps += [
-        "//chrome/updater/app/server/posix/mojom",
+        "//chrome/updater/mojom",
         "//components/named_mojo_ipc_server",
       ]
     }
@@ -663,7 +663,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       deps += [
-        "//chrome/updater/app/server/posix/mojom",
+        "//chrome/updater/mojom",
         "//components/named_mojo_ipc_server",
       ]
     }
@@ -1184,7 +1184,7 @@ if (is_win || is_mac || is_linux) {
         "util/posix_util_unittest.cc",
       ]
 
-      deps += [ "//chrome/updater/app/server/posix/mojom" ]
+      deps += [ "//chrome/updater/mojom" ]
     }
   }
 
