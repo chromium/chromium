@@ -307077,6 +307077,32 @@
         {}
        ]
       ],
+      "pathlength-004a.svg": [
+       "3213116c3b4892f08b29b8704e02dd69d9cc6450",
+       [
+        null,
+        [
+         [
+          "/svg/shapes/reftests/pathlength-004-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "pathlength-004b.svg": [
+       "7241b3be9f226bb68559fd02f9780a066e052dd2",
+       [
+        null,
+        [
+         [
+          "/svg/shapes/reftests/pathlength-004-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "polygon-with-filtered-marker.html": [
        "def8adc6852efd36e91060e120c4f127be10b7bc",
        [
@@ -418515,11 +418541,7 @@
        "ddfd51eed1f2403e2c6a964cee6a307c0d3838fb",
        []
       ]
-     },
-     "svg-baseval-in-display-none-expected.txt": [
-      "5cce889b4a52da72a0163fd70982f00d108c35d7",
-      []
-     ]
+     }
     },
     "historical-expected.txt": [
      "9117938a1a631191a3c33ddf42bb6ac4b79a9cc2",
@@ -419225,6 +419247,10 @@
       ],
       "pathlength-003-ref.svg": [
        "8d6f43f9d87438d078babf47430c774b0286f6b6",
+       []
+      ],
+      "pathlength-004-ref.svg": [
+       "4b166e0cae0729babc69732c33fa7d5baaf19b20",
        []
       ],
       "reference": {
@@ -425337,36 +425363,28 @@
        "018987dc5956289530510ff5ab899cc2d365f22c",
        []
       ],
-      "DOMException-is-error.any-expected.txt": [
-       "e58701d4834b5088d77b23d2b26fc1005c726a83",
-       []
-      ],
       "DOMException-is-error.any.shadowrealm-in-dedicatedworker-expected.txt": [
-       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
+       "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
        []
       ],
       "DOMException-is-error.any.shadowrealm-in-shadowrealm-expected.txt": [
-       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
+       "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
        []
       ],
       "DOMException-is-error.any.shadowrealm-in-sharedworker-expected.txt": [
-       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
+       "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
        []
       ],
       "DOMException-is-error.any.shadowrealm-in-window-expected.txt": [
-       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
-       []
-      ],
-      "DOMException-is-error.any.worker-expected.txt": [
-       "e58701d4834b5088d77b23d2b26fc1005c726a83",
+       "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
        []
       ],
       "DOMException-is-error.https.any.shadowrealm-in-audioworklet-expected.txt": [
-       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
+       "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
        []
       ],
       "DOMException-is-error.https.any.shadowrealm-in-serviceworker-expected.txt": [
-       "65af075c4dae748bb1a5f1aceb64da5b0609af5c",
+       "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
        []
       ]
      },
@@ -436376,18 +436394,162 @@
       {}
      ]
     ],
-    "idbindex-getAll-enforcerange.html": [
-     "4e9ad6a1936babbfeee0e7f2905c973ce11faae8",
+    "idbindex-getAll-enforcerange.any.js": [
+     "b1c8fb7abe4a68cb0202cad41c18e67983fae38c",
      [
-      null,
-      {}
+      "IndexedDB/idbindex-getAll-enforcerange.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex getAll() uses [EnforceRange]"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-getAll-enforcerange.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex getAll() uses [EnforceRange]"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-getAll-enforcerange.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex getAll() uses [EnforceRange]"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-getAll-enforcerange.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex getAll() uses [EnforceRange]"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "idbindex-getAllKeys-enforcerange.html": [
-     "22c19ece4e39e57f15318dd2a708150c4e95a655",
+    "idbindex-getAllKeys-enforcerange.any.js": [
+     "6c521bd7eeec46839f827d134983877ed4dd9471",
      [
-      null,
-      {}
+      "IndexedDB/idbindex-getAllKeys-enforcerange.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex getAllKeys() uses [EnforceRange]"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-getAllKeys-enforcerange.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex getAllKeys() uses [EnforceRange]"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-getAllKeys-enforcerange.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex getAllKeys() uses [EnforceRange]"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-getAllKeys-enforcerange.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: IDBIndex getAllKeys() uses [EnforceRange]"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbindex-multientry.any.js": [
@@ -436469,11 +436631,83 @@
       }
      ]
     ],
-    "idbindex-objectStore-SameObject.html": [
-     "186d0f052fee9856e6a0b5131f74c0a00a9126eb",
+    "idbindex-objectStore-SameObject.any.js": [
+     "fba456df5c67063410578010828bac746f4b5c7c",
      [
-      null,
-      {}
+      "IndexedDB/idbindex-objectStore-SameObject.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: objectStore SameObject"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-objectStore-SameObject.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: objectStore SameObject"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-objectStore-SameObject.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: objectStore SameObject"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex-objectStore-SameObject.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: objectStore SameObject"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbindex-query-exception-order.html": [
@@ -490588,6 +490822,27 @@
     "css-gaps": {
      "tentative": {
       "parsing": {
+       "column-rule-break-computed.html": [
+        "32ce8f3f1eab8c3aabd7c664f1972c497c41fc9f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "column-rule-break-invalid.html": [
+        "e2590c3d7138182cb92f747a6bf104ba79e2696c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "column-rule-break-valid.html": [
+        "a33f2a83af89fea928fc49cea746b91206668dc7",
+        [
+         null,
+         {}
+        ]
+       ],
        "gap-decorations-color-computed.html": [
         "31b311a0ab4b07b905eb7f22fa292bbd78cabe3d",
         [
@@ -644933,7 +645188,7 @@
      ]
     ],
     "roles.html": [
-     "a50c767a86190891f03be5ec3a7205c6153b7ae5",
+     "2ab2d7d8c5c82991491a70938aeaa8ef11bf40b4",
      [
       null,
       {
@@ -712363,7 +712618,7 @@
       ]
      },
      "svg-baseval-in-display-none.html": [
-      "fa52d1b4c3f0918ee13127decf4b2e3d878bcf67",
+      "9d3693623f949c90f14303fc39ba633f6a311d98",
       [
        null,
        {}
