@@ -3193,7 +3193,7 @@
   {
     "name": "enable-holding-space-suggestions",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "enable-hostname-setting",
@@ -7615,7 +7615,7 @@
   {
     "name": "retain-omnibox-on-focus",
     "owners": [ "dmblack@google.com", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "rewriter-api-for-gemini-nano",
