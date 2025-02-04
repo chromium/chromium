@@ -20,21 +20,6 @@ typedef NS_ENUM(NSInteger, FeedSignInPromoSource) {
 // Protocol for actions relating to the feed sign-in promo.
 @protocol FeedSignInPromoDelegate
 
-// Shows a sign in promote UI for feed back of card sign-in promo.
-// TODO(crbug.com/40245722): rename it as "showHalfSheetForFeedBoCSignInPromo"
-// since it's not a promo UI but a message to let the user to continue to sign
-// in.
-// TODO(crbug.com/394148687): remove this method once ios_internal uses
-// showSignInUIFromSource.
-- (void)showSignInPromoUI;
-
-// Shows a sign in UI for feed bottom sign-in promo.
-// TODO(crbug.com/40245722): rename it as "showSyncPromoUI" since it shows a
-// sync flow.
-// TODO(crbug.com/394148687): remove this method once ios_internal uses
-// showSignInUIFromSource.
-- (void)showSignInUI;
-
 // Shows a sign in UI for this specific source.
 - (void)showSignInUIFromSource:(FeedSignInPromoSource)source;
 

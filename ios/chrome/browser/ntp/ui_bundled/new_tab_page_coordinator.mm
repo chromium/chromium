@@ -1152,14 +1152,6 @@
 
 #pragma mark - FeedSignInPromoDelegate
 
-- (void)showSignInPromoUI {
-  [self showSignInUIFromSource:FeedSignInCommandSourceCardMenu];
-}
-
-- (void)showSignInUI {
-  [self showSignInUIFromSource:FeedSignInCommandSourceBottom];
-}
-
 - (void)showSignInUIFromSource:(FeedSignInPromoSource)source {
   // This flow shouldn't be offered if sign-in is disallowed.
   // In theory, the flow should not even have been offered to the user.
