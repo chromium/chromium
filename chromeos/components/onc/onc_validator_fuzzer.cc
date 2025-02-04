@@ -34,10 +34,11 @@ struct Environment {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
 
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+  std::optional<base::Value::Dict> parsed_json = base::JSONReader::ReadDict(
       std::string_view(reinterpret_cast<const char*>(data), size));
-  if (!parsed_json || !parsed_json->is_dict())
+  if (!parsed_json) {
     return 0;
+  }
 
   for (bool error_on_unknown_field : {false, true}) {
     for (bool error_on_wrong_recommended : {false, true}) {
@@ -48,8 +49,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
               error_on_missing_field, managed_onc, /*log_warnings=*/false);
           Validator::Result validation_result;
           validator.ValidateAndRepairObject(&kNetworkConfigurationSignature,
-                                            parsed_json->GetDict(),
-                                            &validation_result);
+                                            *parsed_json, &validation_result);
         }
       }
     }
