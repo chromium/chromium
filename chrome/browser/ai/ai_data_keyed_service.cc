@@ -170,8 +170,7 @@ void OnHistorySearchCompleted(
     for (auto& scored_url_row : search_result.scored_url_rows) {
       optimization_guide::proto::HistoryVisitItem* visit_item =
           history_result->mutable_history_data()->add_visit_item();
-      visit_item->set_page_title(
-          reinterpret_cast<const char*>(scored_url_row.row.title().c_str()));
+      visit_item->set_page_title(base::UTF16ToUTF8(scored_url_row.row.title()));
       visit_item->set_page_url(scored_url_row.row.url().spec());
       visit_item->mutable_visit_time()->set_seconds(static_cast<int64_t>(
           scored_url_row.scored_url.visit_time.InSecondsFSinceUnixEpoch()));
