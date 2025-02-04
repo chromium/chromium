@@ -201,11 +201,11 @@ export class ModulesV2Element extends AppElementBase {
     this.setDisabledModulesListenerId_ =
         this.callbackRouter_.setDisabledModules.addListener(
             (all: boolean, ids: string[]) => {
-              if (!this.modulesReloadable_) {
-                this.disabledModules_ = {all, ids};
-              } else {
-                this.handleModuleEnablement_({all, ids});
+              if (this.modulesReloadable_) {
+                this.handleModuleEnablement_(this.disabledModules_.ids, ids);
               }
+
+              this.disabledModules_ = {all, ids};
             });
     this.handler_.updateDisabledModules();
 
@@ -323,30 +323,23 @@ export class ModulesV2Element extends AppElementBase {
    * |this.newlyEnabledModuleIds_| is not empty, even across multiple calls to
    * |maybeLoadModules_()|.
    *
-   * @param newDisabledModules - Object specifying which modules are disabled.
-   *    `all: If true, all modules are disabled.
-   *    `ids: List of disabled module IDs.
+   * @param prevDisabledIds - Previous list of disabled module IDs.
+   * @param newDisabledIds - Latest list of disabled module IDs.
    */
   private async handleModuleEnablement_(
-      newDisabledModules: {all: boolean, ids: string[]}): Promise<void> {
+      prevDisabledIds: string[], newDisabledIds: string[]): Promise<void> {
     const onNtpLoad = !this.modulesLoaded_;
     if (onNtpLoad || this.templateInstances_.length === 0) {
-      // Update the disabled modules list before attempting load.
-      // |loadModules_()| expects the disabled module list to be
-      // up-to-date.
-      this.disabledModules_ = newDisabledModules;
       this.loadModules_(onNtpLoad);
       return;
     }
 
-    const prevDisabledIds = this.disabledModules_.ids;
     const newlyEnabledModuleIds = computeNewlyEnabledModuleIds(
-        newDisabledModules.ids, prevDisabledIds, this.templateInstances_);
+        newDisabledIds, prevDisabledIds, this.templateInstances_);
     this.newlyEnabledModuleIds_ =
         this.newlyEnabledModuleIds_.concat(newlyEnabledModuleIds);
 
-    if (this.newlyEnabledModuleIds_.length === 0) {
-      this.disabledModules_ = newDisabledModules;
+    if (newlyEnabledModuleIds.length === 0) {
       return;
     }
 
@@ -355,7 +348,6 @@ export class ModulesV2Element extends AppElementBase {
       await this.addTemplateInstance_(this.newlyEnabledModuleIds_[0]);
       this.newlyEnabledModuleIds_.shift();
       if (this.newlyEnabledModuleIds_.length === 0) {
-        this.disabledModules_ = newDisabledModules;
         await this.reloadModules_();
       } else {
         // More modules to load; the next call to this function will continue
@@ -535,13 +527,15 @@ export class ModulesV2Element extends AppElementBase {
    */
   private async reloadModules_(): Promise<void> {
     const orderedIds = (await this.handler_.getModulesOrder()).moduleIds;
-    this.templateInstances_ = this.templateInstances_.sort((a, b) => {
-      const aIndex = orderedIds.indexOf(
-          (a as unknown as ItemTemplateInstance).item.descriptor.id);
-      const bIndex = orderedIds.indexOf(
-          (b as unknown as ItemTemplateInstance).item.descriptor.id);
-      return aIndex - bIndex;
-    });
+    if (orderedIds && orderedIds.length > 0) {
+      this.templateInstances_ = this.templateInstances_.sort((a, b) => {
+        const aId = (a as unknown as ItemTemplateInstance).item.descriptor.id;
+        const bId = (b as unknown as ItemTemplateInstance).item.descriptor.id;
+        const aHasOrder = orderedIds.includes(aId);
+        const bHasOrder = orderedIds.includes(bId);
+        return +bHasOrder - +aHasOrder;
+      });
+    }
 
     this.$.container.replaceChildren(
         ...this.templateInstances_.map(t => t.children[0] as HTMLElement));
