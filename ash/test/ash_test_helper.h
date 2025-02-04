@@ -100,9 +100,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
     // True to auto create prefs services.
     bool auto_create_prefs_services = true;
-
-    // Whether or not to destroy the screen in the destructor.
-    bool destroy_screen = true;
   };
 
   // Instantiates/destroys an AshTestHelper. This can happen in a
@@ -260,8 +257,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   bool create_global_cras_audio_handler_ = true;
   // True if a fake `QuickPairMediator` should be created.
   bool create_quick_pair_mediator_ = true;
-  // True if a screen instance should be destroyed.
-  bool destroy_screen_ = true;
 };
 
 }  // namespace ash

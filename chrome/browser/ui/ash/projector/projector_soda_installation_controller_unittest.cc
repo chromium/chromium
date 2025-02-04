@@ -88,9 +88,7 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
   void SetUp() override {
     ChromeAshTestBase::SetUp();
 
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(testing_profile_manager_->SetUp());
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
     testing_profile_ = ProfileManager::GetPrimaryUserProfile();
 
     soda_installer_ = std::make_unique<MockSodaInstaller>();
@@ -128,14 +126,6 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
     soda_installer_.reset();
 
     ChromeAshTestBase::TearDown();
-    // ProfileManager is destroyed in OnHelperWillBeDestroyed()
-    // invoked in ChromeAshTestBase::TearDown().
-    EXPECT_FALSE(testing_profile_manager_.get());
-  }
-
-  void OnHelperWillBeDestroyed() override {
-    ChromeAshTestBase::OnHelperWillBeDestroyed();
-    testing_profile_manager_.reset();
   }
 
   MockAppClient& app_client() { return *mock_app_client_; }
@@ -155,7 +145,8 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
  private:
   raw_ptr<Profile, DanglingUntriaged> testing_profile_ = nullptr;
 
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
 
   std::unique_ptr<MockSodaInstaller> soda_installer_;
   std::unique_ptr<MockProjectorClient> mock_client_;

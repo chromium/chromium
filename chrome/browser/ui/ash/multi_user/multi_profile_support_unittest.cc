@@ -134,7 +134,6 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
   // ChromeAshTestBase:
   void SetUp() override;
   void TearDown() override;
-  void OnHelperWillBeDestroyed() override;
 
  protected:
   void SwitchActiveUser(const AccountId& id) {
@@ -370,16 +369,9 @@ void MultiProfileSupportTest::TearDown() {
 
   ::MultiUserWindowManagerHelper::DeleteInstance();
   ChromeAshTestBase::TearDown();
-  // ProfileManager instance is destroyed in OnHelperWillBeDestroyed()
-  // invoked inside ChromeAshTestBase::TearDown().
-  EXPECT_FALSE(profile_manager_.get());
+  profile_manager_.reset();
   cros_settings_holder_.reset();
   ash::DeviceSettingsService::Shutdown();
-}
-
-void MultiProfileSupportTest::OnHelperWillBeDestroyed() {
-  ChromeAshTestBase::OnHelperWillBeDestroyed();
-  profile_manager_.reset();
 }
 
 std::string MultiProfileSupportTest::GetStatusImpl(bool follow_transients) {
