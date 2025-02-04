@@ -4193,13 +4193,13 @@
   },
   {
     "name": "enable-welcome-tour",
-    "owners": [ "//ash/user_education/OWNERS" ],
-    "expiry_milestone": 135
+    "owners": [ "//ash/user_education/welcome_tour/OWNERS" ],
+    "expiry_milestone": 140
   },
   {
     "name": "enable-welcome-tour-force-user-eligibility",
-    "owners": [ "//ash/user_education/OWNERS" ],
-    "expiry_milestone": 135
+    "owners": [ "//ash/user_education/welcome_tour/OWNERS" ],
+    "expiry_milestone": 140
   },
   {
     "name": "enable-wifi-qos",
