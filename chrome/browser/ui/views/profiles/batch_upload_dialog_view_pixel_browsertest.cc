@@ -52,6 +52,7 @@ syncer::LocalDataDescription GetFakeLocalData(syncer::DataType type,
         item.icon = syncer::LocalDataItemModel::FolderIcon();
         break;
       case syncer::DataType::CONTACT_INFO:
+      case syncer::DataType::THEMES:
         item.icon = syncer::LocalDataItemModel::NoIcon();
         break;
       default:
@@ -137,6 +138,14 @@ const TestParam kTestParams[] = {
     {.test_suffix = "MultipleSectionsWithNonHeroTypeAsPrimarySection",
      .section_item_count_type = {{5, syncer::DataType::CONTACT_INFO},
                                  {5, syncer::DataType::PASSWORDS}}},
+
+    // Themes data type section has a specific UI.
+    {.test_suffix = "ThemesSectionOnly",
+     .section_item_count_type = {{1, syncer::DataType::THEMES}}},
+    {.test_suffix = "MultipleSectionsWithThemes",
+     .section_item_count_type = {{5, syncer::DataType::CONTACT_INFO},
+                                 {5, syncer::DataType::PASSWORDS},
+                                 {1, syncer::DataType::THEMES}}},
 };
 
 }  // namespace

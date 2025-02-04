@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/local_data_description.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -247,6 +248,11 @@ BatchUploadHandler::ConstructMojoBatchUploadData(
     // TODO(crbug.com/372450941): Adadpt the mojo variable name.
     data_container_mojo->section_title =
         base::ToString(GetTypeSectionTitleId(local_data_description.type));
+    if (local_data_description.type == syncer::DataType::THEMES) {
+      CHECK_EQ(local_data_description.local_data_models.size(), 1u)
+          << "Themes only expects to show the currently used theme";
+      data_container_mojo->is_theme = true;
+    }
 
     InternalId current_id = InternalId(0);
     for (const auto& data_item : local_data_description.local_data_models) {
@@ -291,6 +297,8 @@ int BatchUploadHandler::GetTypeSectionTitleId(syncer::DataType type) {
       return IDS_BATCH_UPLOAD_SECTION_TITLE_BOOKMARKS;
     case syncer::DataType::CONTACT_INFO:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES;
+    case syncer::DataType::THEMES:
+      return IDS_BATCH_UPLOAD_SECTION_TITLE_THEMES;
     default:
       NOTREACHED();
   }

@@ -999,6 +999,9 @@
       other {Addresses ({SELECTED_ITEMS})}
       }
     </message>
+    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_THEMES" desc="Title of the Themes section in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items saved only to their device. The title of the dialog is ‘Save items in account’. This section title also acts as the item being selected (the section toggle dictates the state of the selection) since Themes will always have one item.">
+      Current color theme
+    </message>
     <message name="IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL" desc="Text of the button that triggers the saving of the selected items in the Batch Upload dialog. This dialog appears when the user clicks on an informational message about items only saved to their device. The title of the dialog is ‘Save items in account’. The list of items has three sections: Passwords, Bookmarks, and Addresses. When pressing the button, selected items are moved to the account storage (Saved in account) and the dialog is then closed. The tone should be motivating.">
       Save in account
     </message>

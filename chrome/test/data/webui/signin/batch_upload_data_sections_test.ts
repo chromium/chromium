@@ -33,6 +33,7 @@ suite('BatchUploadViewTest', function() {
       // Keep empty not to request string of unavailable id.
       sectionTitle: '',
       dataItems: [],
+      isTheme: false,
     };
     passwordSection.dataItems.push(password1);
     passwordSection.dataItems.push(password2);
@@ -40,10 +41,28 @@ suite('BatchUploadViewTest', function() {
     return passwordSection;
   }
 
-  setup(function() {
+  function createThemeContainer(): DataContainer {
+    // Create themes section - only has 1 item.
+    const themeItem: DataItem = {
+      id: 1,
+      iconUrl: '',
+      title: 'theme',  // Not important as never shown.
+      subtitle: '',    // Not important as never shown.
+    };
+    const themeSection: DataContainer = {
+      // Keep empty not to request string of unavailable id.
+      sectionTitle: '',
+      dataItems: [],
+      isTheme: true,
+    };
+    themeSection.dataItems.push(themeItem);
+    return themeSection;
+  }
+
+  function resetTestWithInput(dataContainer: DataContainer): void {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dataSectionElement = document.createElement('data-section');
-    dataSectionElement.dataContainer = TEST_DATA;
+    dataSectionElement.dataContainer = dataContainer;
     document.body.append(dataSectionElement);
 
     // Set the separator color explicitly because the C++ variable may not be
@@ -51,6 +70,10 @@ suite('BatchUploadViewTest', function() {
     // Setting an arbitrary color for it to behave regularly.
     document.documentElement.style.setProperty(
         '--color-batch-upload-data-separator', 'white');
+  }
+
+  setup(function() {
+    resetTestWithInput(TEST_DATA);
   });
 
   test('MainSectionComponents', function() {
@@ -266,5 +289,46 @@ suite('BatchUploadViewTest', function() {
     }
     // Output has all items.
     assertDeepEquals(new Set<number>([1, 2]), dataSectionElement.dataSelected);
+  });
+
+  test('ThemesSectionSpecificities', async function() {
+    resetTestWithInput(createThemeContainer());
+
+    assertTrue(isVisible(dataSectionElement));
+
+    assertFalse(isChildVisible(dataSectionElement, '#expandButton'));
+    assertFalse(isChildVisible(dataSectionElement, '#separator'));
+    assertTrue(isChildVisible(dataSectionElement, '#toggle'));
+    assertFalse(isChildVisible(dataSectionElement, '#collapse'));
+    // Output should contain the only element.
+    assertDeepEquals(new Set<number>([1]), dataSectionElement.dataSelected);
+
+    // Interacting with the toggle is the only way to do modifications in the
+    // Themes section as the user will not have access to the item details
+    // (checkboxes in the collapse section).
+
+    // Uncheck toggle.
+    const toggle = dataSectionElement.$.toggle;
+    assertTrue(toggle.checked);
+    toggle.click();
+    await microtasksFinished();
+    assertFalse(toggle.checked);
+    // Expand button and collapse are still hidden.
+    assertFalse(isChildVisible(dataSectionElement, '#expandButton'));
+    assertFalse(isChildVisible(dataSectionElement, '#collapse'));
+    // Output should be empty.
+    assertDeepEquals(new Set<number>(), dataSectionElement.dataSelected);
+
+    // Check toggle back.
+    toggle.click();
+    await microtasksFinished();
+    // Everything in the section should be reinitialized (same checks as the
+    // initialization).
+    assertFalse(isChildVisible(dataSectionElement, '#expandButton'));
+    assertFalse(isChildVisible(dataSectionElement, '#separator'));
+    assertTrue(isChildVisible(dataSectionElement, '#toggle'));
+    assertFalse(isChildVisible(dataSectionElement, '#collapse'));
+    // Output should contain the only element.
+    assertDeepEquals(new Set<number>([1]), dataSectionElement.dataSelected);
   });
 });
