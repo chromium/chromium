@@ -529,7 +529,8 @@ class CORE_EXPORT StyleCascade {
                                    CascadeResolver&,
                                    const CSSParserContext&,
                                    FunctionContext&);
-  const CSSValue* ResolveLocalVariable(const CSSValue&,
+  const CSSValue* ResolveLocalVariable(const AtomicString& name,
+                                       const CSSValue&,
                                        CascadeResolver&,
                                        const CSSParserContext&,
                                        FunctionContext&);

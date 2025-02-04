@@ -1744,8 +1744,8 @@ void StyleCascade::ApplyLocalVariables(CascadeResolver& resolver,
       // Already applied. This can happen because a call to ResolveLocalVariable
       // may trigger application of other local variables via var().
     }
-    const CSSValue* resolved =
-        ResolveLocalVariable(*value, resolver, context, function_context);
+    const CSSValue* resolved = ResolveLocalVariable(
+        AtomicString(name), *value, resolver, context, function_context);
     // Note: The following call may insert an explicit nullptr;
     // this is intentional.
     function_context.locals.insert(name, resolved);
@@ -1769,17 +1769,24 @@ void StyleCascade::LookupAndApplyLocalVariable(
     return;
   }
 
-  const CSSValue* resolved = ResolveLocalVariable(
-      *unresolved_it->value, resolver, context, function_context);
+  const CSSValue* resolved =
+      ResolveLocalVariable(AtomicString(name), *unresolved_it->value, resolver,
+                           context, function_context);
   // Note: we may insert an explicit nullptr here; this is intentional.
   function_context.locals.insert(name, resolved);
 }
 
 const CSSValue* StyleCascade::ResolveLocalVariable(
+    const AtomicString& name,
     const CSSValue& unresolved,
     CascadeResolver& resolver,
     const CSSParserContext& context,
     FunctionContext& function_context) {
+  using LocalVariable = CascadeResolver::LocalVariable;
+  if (resolver.DetectCycle(LocalVariable(name))) {
+    return nullptr;
+  }
+  CascadeResolver::AutoLock lock(LocalVariable(name), resolver);
   CSSVariableData* data =
       To<CSSUnparsedDeclarationValue>(unresolved).VariableDataValue();
   if (data->NeedsVariableResolution()) {
@@ -1841,10 +1848,11 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    const CSSParserContext& context,
                                    TokenSequence& out) {
   AtomicString local_name = ConsumeVariableName(stream);
-  if (resolver.DetectCycle(local_name)) {
+  using Attribute = CascadeResolver::Attribute;
+  if (resolver.DetectCycle(Attribute(local_name))) {
     return false;
   }
-  CascadeResolver::AutoLock lock(local_name, resolver);
+  CascadeResolver::AutoLock lock(Attribute(local_name), resolver);
   std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
   if (!attr_type.has_value()) {
     attr_type = CSSAttrType::GetDefaultValue();
