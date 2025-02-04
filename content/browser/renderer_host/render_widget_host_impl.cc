@@ -475,11 +475,35 @@ RenderWidgetHostImpl::~RenderWidgetHostImpl() {
     // renderer has pushed content to viz (https://crbug.com/40057499).
     base::UmaHistogramBoolean("Renderer.ContentProduction.SignalReceived",
                               first_content_metadata_received_);
-    if (first_content_metadata_received_ &&
-        first_content_metadata_time_ > first_shown_time_) {
-      base::TimeDelta delay = first_content_metadata_time_ - first_shown_time_;
+    if (first_content_metadata_received_) {
+      base::TimeDelta delay_from_unhide;
+      if (first_content_metadata_time_ > first_shown_time_) {
+        delay_from_unhide = first_content_metadata_time_ - first_shown_time_;
+      }
       base::UmaHistogramTimes("Renderer.ContentProduction.DelayFromUnhide",
-                              delay);
+                              delay_from_unhide);
+    } else {
+      base::TimeTicks now = base::TimeTicks::Now();
+
+      base::TimeDelta commit_to_unhide_delay;
+      base::TimeDelta lifespan_from_commit;
+      base::TimeDelta lifespan_from_unhide = now - first_shown_time_;
+
+      if (compositor_metric_recorder_) {
+        base::TimeTicks commit_nav_time =
+            compositor_metric_recorder_->CommitNavigationTime();
+        if (commit_nav_time != base::TimeTicks()) {
+          commit_to_unhide_delay = first_shown_time_ - commit_nav_time;
+          lifespan_from_commit = now - commit_nav_time;
+        }
+      }
+
+      base::UmaHistogramTimes("Renderer.ContentProduction.CommitToUnhideDelay",
+                              commit_to_unhide_delay);
+      base::UmaHistogramTimes("Renderer.ContentProduction.LifespanFromCommit",
+                              lifespan_from_commit);
+      base::UmaHistogramTimes("Renderer.ContentProduction.LifespanFromUnhide",
+                              lifespan_from_unhide);
     }
   }
 
@@ -3959,6 +3983,11 @@ void RenderWidgetHostImpl::CompositorMetricRecorder::DidRequestFrameSink() {
   }
   create_frame_sink_timestamp_ = base::TimeTicks::Now();
   TryToRecordMetrics();
+}
+
+base::TimeTicks
+RenderWidgetHostImpl::CompositorMetricRecorder::CommitNavigationTime() {
+  return commit_nav_timestamp_;
 }
 
 void RenderWidgetHostImpl::CompositorMetricRecorder::TryToRecordMetrics() {
