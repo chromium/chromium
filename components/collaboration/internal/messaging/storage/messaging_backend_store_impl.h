@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_database.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_store.h"
 
@@ -91,10 +92,14 @@ class MessagingBackendStoreImpl : public MessagingBackendStore {
       bool success,
       const std::map<std::string, collaboration_pb::Message>& data);
 
+  void DeleteExpiredMessages();
+
   // Store all the messages group by collaboration group.
   std::map<data_sharing::GroupId, std::unique_ptr<MessagesPerGroup>> messages_;
 
   std::unique_ptr<MessagingBackendDatabase> database_;
+
+  std::unique_ptr<base::RepeatingTimer> delete_expired_messages_timer_;
 
   // Max age of GetRecentMessages should return.
   base::TimeDelta recent_message_cutoff_duration_ = base::Days(31);

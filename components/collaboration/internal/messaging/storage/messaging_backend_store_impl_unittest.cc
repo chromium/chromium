@@ -81,7 +81,8 @@ class MessagingBackendStoreTest : public testing::Test {
     return message;
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<MessagingBackendStoreImpl> store_;
 
@@ -355,6 +356,38 @@ TEST_F(MessagingBackendStoreTest, EnsureRecentActivityIsSorted) {
   EXPECT_EQ(message4.uuid(), messages[1].uuid());
   EXPECT_EQ(message1.uuid(), messages[2].uuid());
   EXPECT_EQ(message3.uuid(), messages[3].uuid());
+}
+
+TEST_F(MessagingBackendStoreTest, EnsureExpiredMessagesAreDeleted) {
+  // Create 6 messages.
+  auto message1 = CreateMessage(collaboration_pb::TAB_ADDED);
+  auto message2 = CreateMessage(collaboration_pb::TAB_ADDED);
+  auto message3 = CreateMessage(collaboration_pb::TAB_GROUP_NAME_UPDATED);
+  auto message4 = CreateMessage(collaboration_pb::TAB_GROUP_COLOR_UPDATED);
+  auto message5 = CreateMessage(collaboration_pb::COLLABORATION_MEMBER_ADDED);
+  auto message6 = CreateMessage(collaboration_pb::COLLABORATION_MEMBER_ADDED);
+
+  // Set message 2, 4 and 6 to be expired.
+  base::Time now = base::Time::Now();
+  message2.set_event_timestamp((now - base::Days(60)).ToTimeT());
+  message4.set_event_timestamp((now - base::Days(60)).ToTimeT());
+  message6.set_event_timestamp((now - base::Days(60)).ToTimeT());
+
+  EXPECT_CALL(*unowned_database_, Update(_)).Times(6);
+
+  store_->AddMessage(message1);
+  store_->AddMessage(message2);
+  store_->AddMessage(message3);
+  store_->AddMessage(message4);
+  store_->AddMessage(message5);
+  store_->AddMessage(message6);
+
+  // Trigger the clean up timer to run and ensure message 2, 4 and 6 are
+  // deleted.
+  std::vector<std::string> uuids = {message2.uuid(), message4.uuid(),
+                                    message6.uuid()};
+  EXPECT_CALL(*unowned_database_, Delete(uuids)).Times(1);
+  task_environment_.FastForwardBy(base::Days(2));
 }
 
 }  // namespace collaboration::messaging
