@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
+#include "chrome/browser/password_manager/android/password_manager_util_bridge_interface.h"
 #include "components/browser_sync/sync_to_signin_migration.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
@@ -63,6 +64,16 @@ enum class ActivationError {
 // Set on startup before the local passwords migration starts.
 bool last_migration_attempt_failed = false;
 
+bool HasMinGmsVersionForFullUpmSupport() {
+  std::string gms_version_str =
+      base::android::BuildInfo::GetInstance()->gms_version_code();
+  int gms_version = 0;
+  // gms_version_code() must be converted to int for comparison, because it can
+  // have legacy values "3(...)" and those evaluate > "2023(...)".
+  return base::StringToInt(gms_version_str, &gms_version) &&
+         gms_version >= password_manager::GetLocalUpmMinGmsVersion();
+}
+
 bool IsPasswordSyncEnabled(PrefService* pref_service) {
   // It's not possible to ask the SyncService whether password sync is enabled,
   // the object wasn't created yet. Instead, that information is written to a
@@ -80,16 +91,6 @@ bool IsPasswordSyncEnabled(PrefService* pref_service) {
         kDontMigrateTypeDisabled:
       return false;
   }
-}
-
-bool HasMinGmsVersion() {
-  std::string gms_version_str =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
-  int gms_version = 0;
-  // gms_version_code() must be converted to int for comparison, because it can
-  // have legacy values "3(...)" and those evaluate > "2023(...)".
-  return base::StringToInt(gms_version_str, &gms_version) &&
-         gms_version >= password_manager::GetLocalUpmMinGmsVersion();
 }
 
 bool ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
@@ -191,7 +192,7 @@ void MaybeActivateSplitStoresAndLocalUpm(
   CHECK_EQ(GetSplitStoresAndLocalUpmPrefValue(pref_service), kOff);
 
   UserType user_type = GetUserType(pref_service, login_db_directory);
-  if (!HasMinGmsVersion()) {
+  if (!HasMinGmsVersionForFullUpmSupport()) {
     RecordActivationError(user_type, ActivationError::kOutdatedGmsCore);
     return;
   }
@@ -317,9 +318,10 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
   // here ignores the possibility that rollback fails due to base::ReplaceFile()
   // below, but that should be negligible.
   RecordActivationError(GetUserType(pref_service, login_db_directory),
-                        HasMinGmsVersion() ? ActivationError::kNone
-                                           : ActivationError::kOutdatedGmsCore);
-  if (HasMinGmsVersion()) {
+                        HasMinGmsVersionForFullUpmSupport()
+                            ? ActivationError::kNone
+                            : ActivationError::kOutdatedGmsCore);
+  if (HasMinGmsVersionForFullUpmSupport()) {
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
     if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn) {
       MaybeDeleteLoginDataFiles(pref_service, login_db_directory);
@@ -365,6 +367,26 @@ std::string_view GetAccessLossWarningTypeName(
 }
 
 }  // namespace
+
+bool IsPasswordManagerAvailable(
+    const PrefService* prefs,
+    std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge) {
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kLoginDbDeprecationAndroid));
+  if (!util_bridge->IsInternalBackendPresent()) {
+    return false;
+  }
+  if (!HasMinGmsVersionForFullUpmSupport()) {
+    return false;
+  }
+  bool upm_already_active =
+      static_cast<UseUpmLocalAndSeparateStoresState>(prefs->GetInteger(
+          password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores)) ==
+      password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn;
+  bool exported_umigrated_passwords = prefs->GetBoolean(
+      password_manager::prefs::kUpmUnmigratedPasswordsExported);
+  return upm_already_active || exported_umigrated_passwords;
+}
 
 UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
     PrefService* pref_service) {

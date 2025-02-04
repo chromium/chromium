@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 
+#include "chrome/browser/password_manager/android/password_manager_util_bridge_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 
@@ -72,6 +73,18 @@ enum class PasswordAccessLossWarningUserActions {
   kMaxValue = kDismissed,
 };
 
+// Checks whether the password manager can be used on Android.
+// Once the login db is deprecated, for clients not fulfilling the criteria
+// for talking to the Android backend, the password manager will no longer
+// be available.
+// The criteria are:
+// - access to the internal backend
+// - GMS Core version with full UPM support
+// - passwords were either migrated or exported
+bool IsPasswordManagerAvailable(
+    const PrefService* prefs,
+    std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge);
+
 // Used to prevent static casting issues with
 // `PasswordsUseUPMLocalAndSeparateStores` pref.
 password_manager::prefs::UseUpmLocalAndSeparateStoresState
@@ -80,6 +93,8 @@ GetSplitStoresAndLocalUpmPrefValue(PrefService* pref_service);
 // Used to decide whether using UPM as backend is possible. The check is based
 // on whether the GMSCore is installed and the internal wiring is present, and
 // whether the requirement for the minimum version is met.
+// TODO(crbug.com/391829891): This becomes obsolete after login db migration,
+// when the only accepted UPM version is the one offering full support.
 bool AreMinUpmRequirementsMet();
 
 // Used to decide whether to show the UPM password settings and password check
@@ -87,6 +102,8 @@ bool AreMinUpmRequirementsMet();
 //  - If the user is using UPM and everything works as expected.
 //  - If the user is eligible for using UPM, but the GMSCore version is too old
 //  and doesn't support UPM.
+// TODO(crbug.com/391829891): This should be removed after login db deprecation.
+// All the checks will be consolidated in a single util.
 bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
                         const PrefService* pref_service);
 
