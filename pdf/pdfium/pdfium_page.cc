@@ -1833,12 +1833,6 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
   FPDF_PAGE page = GetPage();
   const bool has_alpha = !!FPDFPage_HasTransparency(page);
   const int format = has_alpha ? FPDFBitmap_BGRA : FPDFBitmap_BGRx;
-  uint32_t fill_color;
-  if (base::FeatureList::IsEnabled(features::kPdfPaintManagerDrawsBackground)) {
-    fill_color = has_alpha ? 0x00000000 : 0xFFFFFFFF;
-  } else {
-    fill_color = 0xFFFFFFFF;
-  }
 
   Thumbnail thumbnail = CreateThumbnail(device_pixel_ratio);
   const gfx::Size& image_size = thumbnail.image_size();
@@ -1848,6 +1842,7 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
       FPDFBitmap_CreateEx(image_size.width(), image_size.height(), format,
                           thumbnail.GetImageData().data(), thumbnail.stride()));
 
+  const uint32_t fill_color = has_alpha ? 0x00000000 : 0xFFFFFFFF;
   FPDFBitmap_FillRect(fpdf_bitmap.get(), /*left=*/0, /*top=*/0,
                       image_size.width(), image_size.height(), fill_color);
 

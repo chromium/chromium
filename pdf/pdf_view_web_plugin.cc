@@ -2330,17 +2330,11 @@ void PdfViewWebPlugin::OnViewportChanged(
   const gfx::Size new_image_size =
       PaintManager::GetNewContextSize(old_image_size, plugin_rect_.size());
   if (new_image_size != old_image_size) {
-    SkAlphaType alpha_type;
-    if (base::FeatureList::IsEnabled(
-            features::kPdfPaintManagerDrawsBackground)) {
-      alpha_type = kUnpremul_SkAlphaType;
-    } else {
-      alpha_type = kPremul_SkAlphaType;
-    }
     // Ignore the result. If the allocation fails, the image data buffer will be
     // empty and the code below will handle that.
-    (void)image_data_.tryAllocPixels(SkImageInfo::MakeN32(
-        new_image_size.width(), new_image_size.height(), alpha_type));
+    (void)image_data_.tryAllocPixels(
+        SkImageInfo::MakeN32(new_image_size.width(), new_image_size.height(),
+                             kUnpremul_SkAlphaType));
     first_paint_ = true;
   }
 
