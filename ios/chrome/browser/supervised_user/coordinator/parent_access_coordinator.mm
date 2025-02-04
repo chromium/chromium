@@ -91,10 +91,13 @@
     (supervised_user::LocalApprovalResult)result {
   id<ParentAccessCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ParentAccessCommands);
-  [handler hideParentAccessBottomSheet];
   if (_callback) {
     std::move(_callback).Run(result);
   }
+
+  // Dismiss the parent access bottom sheet, which will also stop this
+  // coordinator.
+  [handler hideParentAccessBottomSheet];
 }
 
 #pragma mark - ParentAccessMediatorDelegate
