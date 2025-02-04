@@ -103,8 +103,8 @@ base::Value::Dict ProfileInternalsHandler::CreateProfileEntry(
   profile_entry.Set("keepAlives", std::move(keep_alives));
 
   base::Value::List signedAccounts;
-  for (const std::string& gaiaId : entry->GetGaiaIds()) {
-    signedAccounts.Append(gaiaId);
+  for (const GaiaId& gaiaId : entry->GetGaiaIds()) {
+    signedAccounts.Append(gaiaId.ToString());
   }
   profile_entry.Set("signedAccounts", std::move(signedAccounts));
   profile_entry.Set("isLoaded", loaded_profile != nullptr);

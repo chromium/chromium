@@ -69,9 +69,9 @@ namespace {
 const char kManager[] = "admin@example.com";
 const char16_t kManager16[] = u"admin@example.com";
 const char kNewUser[] = "new_test_user@gmail.com";
-const char kNewGaiaID[] = "11111";
+const GaiaId::Literal kNewGaiaID("11111");
 const char kManagedUser[] = "user@example.com";
-const char kManagedGaiaID[] = "33333";
+const GaiaId::Literal kManagedGaiaID("33333");
 
 }  // namespace
 
@@ -317,9 +317,9 @@ class SystemTrayClientEnterpriseAccountTest : public ash::LoginManagerTest {
   }
 
   const ash::LoginManagerMixin::TestUserInfo unmanaged_user_{
-      AccountId::FromUserEmailGaiaId(kNewUser, GaiaId(kNewGaiaID))};
+      AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
   const ash::LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
+      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_,
                                           managed_user_.account_id};
   ash::LoginManagerMixin login_mixin_{&mixin_host_,

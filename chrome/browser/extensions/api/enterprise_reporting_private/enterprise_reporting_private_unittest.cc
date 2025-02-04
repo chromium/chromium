@@ -1275,11 +1275,11 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
 
 namespace {
 
-constexpr char kFakeUserId[] = "fake user id";
+constexpr GaiaId::Literal kFakeUserId("fake user id");
 
 enterprise_reporting_private::UserContext GetFakeUserContext() {
   enterprise_reporting_private::UserContext user_context;
-  user_context.user_id = kFakeUserId;
+  user_context.user_id = kFakeUserId.ToString();
   return user_context;
 }
 
@@ -1312,7 +1312,7 @@ class UserContextGatedTest : public ExtensionApiUnittest {
                        const device_signals::SignalsAggregationRequest& request,
                        device_signals::SignalsAggregator::GetSignalsCallback
                            callback) {
-              EXPECT_EQ(user_context.user_id, GaiaId(kFakeUserId));
+              EXPECT_EQ(user_context.user_id, kFakeUserId);
               EXPECT_EQ(request.signal_names.size(), 1U);
               std::move(callback).Run(response);
             }));

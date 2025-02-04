@@ -768,8 +768,8 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
 
   // GaiaIds.
   EXPECT_TRUE(entry->GetGaiaIds().empty());
-  base::flat_set<std::string> accounts1({"a"});
-  base::flat_set<std::string> accounts2({"b", "c"});
+  base::flat_set<GaiaId> accounts1({GaiaId("a")});
+  base::flat_set<GaiaId> accounts2({GaiaId("b"), GaiaId("c")});
   entry->SetGaiaIds(accounts1);
   EXPECT_EQ(accounts1, entry->GetGaiaIds());
   entry->SetGaiaIds(accounts2);

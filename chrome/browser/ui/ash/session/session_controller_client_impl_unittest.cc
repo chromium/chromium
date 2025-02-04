@@ -49,7 +49,7 @@ using session_manager::SessionState;
 namespace {
 
 constexpr char kUser[] = "user@test.com";
-constexpr char kUserGaiaId[] = "0123456789";
+constexpr GaiaId::Literal kUserGaiaId("0123456789");
 
 std::unique_ptr<KeyedService> CreateTestPolicyCertService(
     content::BrowserContext* context) {
@@ -141,7 +141,7 @@ class SessionControllerClientImplTest : public testing::Test {
   // Adds a regular user with a profile.
   TestingProfile* InitForMultiProfile() {
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
+        AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
     const user_manager::User* user = user_manager()->AddUser(account_id);
 
     // Note that user profiles are created after user login in reality.
@@ -238,7 +238,7 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
+      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
@@ -280,7 +280,7 @@ TEST_F(SessionControllerClientImplTest,
       AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
 
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
+      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
@@ -305,7 +305,7 @@ TEST_F(SessionControllerClientImplTest,
       AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
 
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
+      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
@@ -337,8 +337,7 @@ TEST_F(SessionControllerClientImplTest,
 
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
-  AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
+  AccountId account_id(AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
   while (user_manager()->GetLoggedInUsers().size() <
          session_manager::kMaximumNumberOfUserSessions) {
@@ -359,7 +358,7 @@ TEST_F(SessionControllerClientImplTest,
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
+      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
   UserAddedToSession(
       AccountId::FromUserEmailGaiaId("bb@b.b", GaiaId("4444444444")));
@@ -375,7 +374,7 @@ TEST_F(SessionControllerClientImplTest,
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
+      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
   user_profile->GetPrefs()->SetString(
       user_manager::prefs::kMultiProfileUserBehaviorPref,
@@ -396,7 +395,7 @@ TEST_F(SessionControllerClientImplTest,
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
   const AccountId account_id(
-      AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUserGaiaId)));
+      AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
   session_termination_manager().SetDeviceLockedToSingleUser();
   user_manager()->AddUser(

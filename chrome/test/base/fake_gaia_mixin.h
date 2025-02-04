@@ -57,9 +57,9 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   // For your convenience, the e-mail addresses for users that have been set up
   // in this way are provided below.
   static const char kEnterpriseUser1[];
-  static const char kEnterpriseUser1GaiaId[];
+  static const GaiaId::Literal kEnterpriseUser1GaiaId;
   static const char kEnterpriseUser2[];
-  static const char kEnterpriseUser2GaiaId[];
+  static const GaiaId::Literal kEnterpriseUser2GaiaId;
 
   static const char kTestUserinfoToken1[];
   static const char kTestRefreshToken1[];

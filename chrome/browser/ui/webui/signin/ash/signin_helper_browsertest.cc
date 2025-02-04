@@ -45,14 +45,14 @@ class SigninHelperTest;
 
 namespace {
 
-const char kFakePrimaryGaiaId[] = "primary_account_gaia";
+const GaiaId::Literal kFakePrimaryGaiaId("primary_account_gaia");
 const char kFakePrimaryEmail[] = "primary@example.com";
-const char kFakeGaiaId[] = "fake_gaia_id";
+const GaiaId::Literal kFakeGaiaId("fake_gaia_id");
 const char kFakeEmail[] = "fake_email@gmail.com";
 const char kFakeAuthCode[] = "fake_auth_code";
 const char kFakeDeviceId[] = "fake_device_id";
 const char kFakeRefreshToken[] = "fake_refresh_token";
-const char kFakeEnterpriseGaiaId[] = "fake_enterprise_gaia_id";
+const GaiaId::Literal kFakeEnterpriseGaiaId("fake_enterprise_gaia_id");
 const char kFakeEnterpriseEmail[] = "fake_enterprise@example.com";
 const char kFakeEnterpriseDomain[] = "example.com";
 
@@ -146,8 +146,8 @@ class SigninHelperTest : public InProcessBrowserTest,
     account_manager_->AddObserver(this);
 
     // Setup the main account:
-    account_manager::AccountKey kPrimaryAccountKey{
-        kFakePrimaryGaiaId, account_manager::AccountType::kGaia};
+    account_manager::AccountKey kPrimaryAccountKey =
+        account_manager::AccountKey::FromGaiaId(kFakePrimaryGaiaId);
     account_manager()->UpsertAccount(kPrimaryAccountKey, kFakePrimaryEmail,
                                      "access_token");
     base::RunLoop().RunUntilIdle();
@@ -171,8 +171,7 @@ class SigninHelperTest : public InProcessBrowserTest,
                          account_manager_mojo_service(), close_dialog_closure,
                          /*show_signin_error=*/base::DoNothing(),
                          shared_url_loader_factory(), std::move(arc_helper),
-                         GaiaId(kFakeGaiaId), kFakeEmail, kFakeAuthCode,
-                         kFakeDeviceId);
+                         kFakeGaiaId, kFakeEmail, kFakeAuthCode, kFakeDeviceId);
   }
 
   void CreateSigninHelperWithSiginErrorClosure(
@@ -187,7 +186,7 @@ class SigninHelperTest : public InProcessBrowserTest,
         /*close_dialog_closure=*/base::DoNothing(),
         base::IgnoreArgs<const std::string&, const std::string&>(
             show_signin_error),
-        shared_url_loader_factory(), std::move(arc_helper), GaiaId(kFakeGaiaId),
+        shared_url_loader_factory(), std::move(arc_helper), kFakeGaiaId,
         kFakeEmail, kFakeAuthCode, kFakeDeviceId);
   }
 
@@ -375,10 +374,10 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
 
   base::test::RepeatingTestFuture exit_future, close_dialog_future;
   // Non Enterprise account tries to sign in.
-  CreateSigninHelper(
-      exit_future.GetCallback(), close_dialog_future.GetCallback(),
-      /*show_signin_error=*/
-      base::BindRepeating(&NotReached), GaiaId(kFakeGaiaId), kFakeEmail);
+  CreateSigninHelper(exit_future.GetCallback(),
+                     close_dialog_future.GetCallback(),
+                     /*show_signin_error=*/
+                     base::BindRepeating(&NotReached), kFakeGaiaId, kFakeEmail);
 
   // Make sure the close_dialog_closure was called.
   EXPECT_TRUE(close_dialog_future.Wait());
@@ -414,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestSecondaryGoogleAccountUsage,
   raw_ptr<TestSigninHelper> signin_helper = CreateSigninHelper(
       exit_future.GetCallback(), close_dialog_future.GetCallback(),
       /*show_signin_error=*/
-      base::BindRepeating(&NotReached), GaiaId(kFakeEnterpriseGaiaId),
+      base::BindRepeating(&NotReached), kFakeEnterpriseGaiaId,
       kFakeEnterpriseEmail);
   // Make sure the close_dialog_closure was called.
   EXPECT_TRUE(close_dialog_future.Wait());
@@ -455,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(
   raw_ptr<TestSigninHelper> signin_helper = CreateSigninHelper(
       exit_future.GetCallback(), close_dialog_future.GetCallback(),
       /*show_signin_error=*/
-      base::BindRepeating(&NotReached), GaiaId(kFakeEnterpriseGaiaId),
+      base::BindRepeating(&NotReached), kFakeEnterpriseGaiaId,
       kFakeEnterpriseEmail);
   // Make sure the close_dialog_closure was called.
   EXPECT_TRUE(close_dialog_future.Wait());
@@ -497,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(
                      /*close_dialog_closure=*/base::BindRepeating(&NotReached),
                      /*show_signin_error=*/
                      show_signin_error_future.GetCallback(),
-                     GaiaId(kFakeEnterpriseGaiaId), kFakeEnterpriseEmail);
+                     kFakeEnterpriseGaiaId, kFakeEnterpriseEmail);
   // Make sure the show_signin_blocked_error_closure_run_loop was called.
   EXPECT_TRUE(show_signin_error_future.Wait());
   // Wait until SigninHelper finishes and deletes itself.

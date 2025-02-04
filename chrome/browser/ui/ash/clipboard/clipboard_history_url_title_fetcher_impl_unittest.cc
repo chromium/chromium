@@ -85,11 +85,11 @@ class ClipboardHistoryUrlTitleFetcherTest : public BrowserWithTestWindowTest {
  protected:
   void CreateAndSwitchToSecondaryProfile() {
     constexpr char kSecondaryProfileName[] = "secondary_profile@test";
-    constexpr char kFakeGaia2[] = "fakegaia2";
-    LogIn(kSecondaryProfileName, GaiaId(kFakeGaia2));
+    const GaiaId kFakeGaia2("fakegaia2");
+    LogIn(kSecondaryProfileName, kFakeGaia2);
     CreateProfile(kSecondaryProfileName);
-    user_manager()->SwitchActiveUser(AccountId::FromUserEmailGaiaId(
-        kSecondaryProfileName, GaiaId(kFakeGaia2)));
+    user_manager()->SwitchActiveUser(
+        AccountId::FromUserEmailGaiaId(kSecondaryProfileName, kFakeGaia2));
   }
 
   ClipboardHistoryUrlTitleFetcherImpl& fetcher() { return fetcher_; }

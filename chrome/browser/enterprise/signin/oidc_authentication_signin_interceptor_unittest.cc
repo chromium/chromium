@@ -78,7 +78,7 @@ constexpr char kExampleSubjectIdentifier[] = "example_subject_id";
 constexpr char kExampleIssuerIdentifier[] = "example_issuer_id";
 constexpr char kExampleUserDisplayName[] = "Test User";
 constexpr char kExampleUserEmail[] = "user@test.com";
-constexpr char kExampleGaiaId[] = "123";
+constexpr GaiaId::Literal kExampleGaiaId("123");
 constexpr char kExampleDmToken[] = "example_dm_token";
 constexpr char kExampleClientId[] = "random_client_id";
 
@@ -191,7 +191,7 @@ class FakeUserPolicyOidcSigninService
       return;
     }
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
-    policy_data->set_gaia_id(kExampleGaiaId);
+    policy_data->set_gaia_id(kExampleGaiaId.ToString());
     if (test_profile_->GetProfileCloudPolicyManager()) {
       static_cast<MockProfileCloudPolicyStore*>(
           test_profile_->GetProfileCloudPolicyManager()->core()->store())
@@ -632,7 +632,7 @@ class OidcAuthenticationSigninInterceptorTest
         EXPECT_EQ(account_id.empty(), !is_3p_identity_synced());
         if (is_3p_identity_synced()) {
           ASSERT_TRUE(!account_id.IsEmail());
-          EXPECT_EQ(account_id.ToString(), kExampleGaiaId);
+          EXPECT_EQ(account_id, CoreAccountId::FromGaiaId(kExampleGaiaId));
         }
       }
     }

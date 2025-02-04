@@ -32,9 +32,9 @@
 namespace {
 
 constexpr char kTestUserName1[] = "test1@test.com";
-constexpr char kTestUser1GaiaId[] = "1111111111";
+constexpr GaiaId::Literal kTestUser1GaiaId("1111111111");
 constexpr char kTestUserName2[] = "test2@test.com";
-constexpr char kTestUser2GaiaId[] = "2222222222";
+constexpr GaiaId::Literal kTestUser2GaiaId("2222222222");
 
 void CreateAndStartUserSession(const AccountId& account_id) {
   using ::ash::ProfileHelper;
@@ -69,7 +69,7 @@ using ChromeNewWindowClientBrowserTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
                        DISABLED_NewWindowForActiveWindowProfileTest) {
   CreateAndStartUserSession(
-      AccountId::FromUserEmailGaiaId(kTestUserName1, GaiaId(kTestUser1GaiaId)));
+      AccountId::FromUserEmailGaiaId(kTestUserName1, kTestUser1GaiaId));
   Profile* profile1 = ProfileManager::GetActiveUserProfile();
   Browser* browser1 = CreateBrowser(profile1);
   // The newly created window should be created for the current active profile.
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest,
 
   // Login another user and make sure the current active user changes.
   CreateAndStartUserSession(
-      AccountId::FromUserEmailGaiaId(kTestUserName2, GaiaId(kTestUser2GaiaId)));
+      AccountId::FromUserEmailGaiaId(kTestUserName2, kTestUser2GaiaId));
   Profile* profile2 = ProfileManager::GetActiveUserProfile();
   EXPECT_NE(profile1, profile2);
 

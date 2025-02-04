@@ -54,7 +54,7 @@ namespace ash {
 namespace {
 
 constexpr char kTestUserName[] = "test@test.test";
-constexpr char kTestUserGaiaId[] = "123456";
+constexpr GaiaId::Literal kTestUserGaiaId("123456");
 
 constexpr char kDueDate[] = "2 Aug 2025 10:00 GMT";
 
@@ -251,7 +251,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   AccountId account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestUserName, GaiaId(kTestUserGaiaId));
+      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   std::unique_ptr<FakeGlanceablesClassroomClient>
       fake_glanceables_classroom_client_;

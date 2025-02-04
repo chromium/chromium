@@ -38,7 +38,7 @@ MATCHER_P(ListedAccountMatchesGaiaId, gaia_id, "") {
   return arg.gaia_id == GaiaId(gaia_id);
 }
 
-const char kTestGaiaId[] = "123";
+const GaiaId::Literal kTestGaiaId("123");
 
 class RemoveLocalAccountTest : public MixinBasedInProcessBrowserTest {
  protected:
@@ -75,7 +75,7 @@ class RemoveLocalAccountTest : public MixinBasedInProcessBrowserTest {
     fake_gaia_.Initialize();
 
     FakeGaia::Configuration params;
-    params.signed_out_gaia_ids.push_back(GaiaId(kTestGaiaId));
+    params.signed_out_gaia_ids.push_back(kTestGaiaId);
     fake_gaia_.UpdateConfiguration(params);
 
     embedded_test_server_.StartAcceptingConnections();
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(RemoveLocalAccountTest, ShouldNotifyObservers) {
   // Open a FakeGaia page that issues the desired HTTP response header with
   // Google-Accounts-RemoveLocalAccount.
   chrome::AddTabAt(browser(),
-                   fake_gaia_.GetFakeRemoveLocalAccountURL(GaiaId(kTestGaiaId)),
+                   fake_gaia_.GetFakeRemoveLocalAccountURL(kTestGaiaId),
                    /*index=*/0,
                    /*foreground=*/true);
 

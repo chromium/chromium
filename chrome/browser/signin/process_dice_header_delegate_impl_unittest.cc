@@ -114,8 +114,7 @@ class ProcessDiceHeaderDelegateImplTest
         show_error_called_(false),
         email_("foo@bar.com"),
         auth_error_(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {
-    std::string kGaiaId = "12345";
-    account_info_.gaia = GaiaId(kGaiaId);
+    account_info_.gaia = GaiaId("12345");
     account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
     account_info_.email = "email@gmail.com";
   }

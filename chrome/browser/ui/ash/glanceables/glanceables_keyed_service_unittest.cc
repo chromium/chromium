@@ -19,7 +19,7 @@ namespace {
 
 constexpr char kPrimaryProfileName[] = "primary_profile@example.com";
 constexpr char kSecondaryProfileName[] = "secondary_profile@example.com";
-constexpr char kFakeGaia2[] = "fakegaia2";
+constexpr GaiaId::Literal kFakeGaia2("fakegaia2");
 
 }  // namespace
 
@@ -60,7 +60,7 @@ TEST_F(GlanceablesKeyedServiceTest, RegisterClientsInAshForNonPrimaryUser) {
   EXPECT_TRUE(classroom_client_primary);
   EXPECT_TRUE(tasks_client_primary);
 
-  LogIn(kSecondaryProfileName, GaiaId(kFakeGaia2));
+  LogIn(kSecondaryProfileName, kFakeGaia2);
   auto* secondary_profile =
       profile_manager()->CreateTestingProfile(kSecondaryProfileName,
                                               /*is_main_profile=*/false);

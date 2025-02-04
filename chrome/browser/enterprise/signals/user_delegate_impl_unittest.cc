@@ -34,7 +34,7 @@ namespace {
 
 constexpr char kUserEmail[] = "someEmail@example.com";
 constexpr char kOtherUserEmail[] = "someOtherUser@example.com";
-constexpr char kOtherUserGaiaId[] = "some-other-user-gaia";
+constexpr GaiaId::Literal kOtherUserGaiaId("some-other-user-gaia");
 
 base::Value::List GetUrls() {
   base::Value::List trusted_urls;
@@ -122,21 +122,19 @@ TEST_F(UserDelegateImplTest, IsSameManagedUser_DifferentUser) {
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
       kUserEmail, signin::ConsentLevel::kSignin);
   auto other_account = identity_test_env_.MakeAccountAvailable(
-      kOtherUserEmail,
-      {.set_cookie = true, .gaia_id = GaiaId(kOtherUserGaiaId)});
+      kOtherUserEmail, {.set_cookie = true, .gaia_id = kOtherUserGaiaId});
 
   CreateDelegate();
-  EXPECT_FALSE(user_delegate_->IsSameUser(GaiaId(kOtherUserGaiaId)));
+  EXPECT_FALSE(user_delegate_->IsSameUser(kOtherUserGaiaId));
 }
 
 // Tests that IsSameUser returns false when there is no primary user.
 TEST_F(UserDelegateImplTest, IsSameUser_NoPrimaryUser) {
   auto other_account = identity_test_env_.MakeAccountAvailable(
-      kOtherUserEmail,
-      {.set_cookie = true, .gaia_id = GaiaId(kOtherUserGaiaId)});
+      kOtherUserEmail, {.set_cookie = true, .gaia_id = kOtherUserGaiaId});
 
   CreateDelegate();
-  EXPECT_FALSE(user_delegate_->IsSameUser(GaiaId(kOtherUserGaiaId)));
+  EXPECT_FALSE(user_delegate_->IsSameUser(kOtherUserGaiaId));
 }
 
 // Tests that IsSameUser returns true when given the same user, and the

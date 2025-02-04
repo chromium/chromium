@@ -410,8 +410,10 @@ TEST_F(ProfileManagerTest, LoggedInProfileDir) {
   EXPECT_EQ(expected_default.value(),
             profile_manager->GetInitialProfileDir().value());
 
-  const AccountId test_account_id(AccountId::FromUserEmailGaiaId(
-      "test-user@example.com", GaiaId("0123456789")));
+  constexpr char kTestUserName[] = "test-user@example.com";
+  constexpr GaiaId::Literal kTestUserGaiaId("0123456789");
+  const AccountId test_account_id(
+      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId));
   auto* user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager enabler(base::WrapUnique(user_manager));
 

@@ -86,7 +86,7 @@ MULTIPROCESS_TEST_MAIN(gls_main) {
     EXPECT_EQ(gls_email, std::string());
   }
   if (expected_gaia_id.empty())
-    expected_gaia_id = kDefaultGaiaId;
+    expected_gaia_id = GaiaId(kDefaultGaiaId);
 
   if (gaia_password.empty())
     gaia_password = "password";
