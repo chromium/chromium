@@ -6,10 +6,12 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -27,6 +29,14 @@ class GlicWindowResizeAnimationTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton}, {});
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    // Mark the glic FRE as accepted by default.
+    // TODO(cuianthony): Move this logic to glic_test_util.h after
+    // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
+    PrefService* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(prefs::kGlicCompletedFre, true);
   }
 
   void ExpectRectBetween(const gfx::Rect& current_rect,

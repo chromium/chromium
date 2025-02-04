@@ -11,6 +11,7 @@
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/glic/border_view.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -121,6 +122,12 @@ class GlicBorderViewUiTest : public InteractiveBrowserTest {
         ::switches::kGlicGuestURL,
         embedded_test_server()->GetURL("/glic/test.html").spec());
     command_line->AppendSwitchASCII(::switches::kCSPOverride, "");
+
+    // Mark the glic FRE as accepted by default.
+    // TODO(cuianthony): Move this logic to glic_test_util.h after
+    // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
+    PrefService* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(prefs::kGlicCompletedFre, true);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

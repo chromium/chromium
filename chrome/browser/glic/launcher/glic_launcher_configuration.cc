@@ -38,11 +38,7 @@ GlicLauncherConfiguration::~GlicLauncherConfiguration() = default;
 // static
 void GlicLauncherConfiguration::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  // TODO(crbug.com/379166397): Set the default value to false when FRE is
-  // implemented.
-  registry->RegisterBooleanPref(
-      prefs::kGlicLauncherEnabled,
-      chrome::GetChannel() == version_info::Channel::CANARY);
+  registry->RegisterBooleanPref(prefs::kGlicLauncherEnabled, false);
   registry->RegisterDictionaryPref(
       prefs::kGlicLauncherGlobalHotkey,
       base::Value::Dict()

@@ -70,6 +70,12 @@ class GlicPolicyTest : public PolicyTest {
     g_browser_process->local_state()->SetBoolean(
         glic::prefs::kGlicLauncherEnabled, true);
 
+    // Mark the glic FRE as accepted by default.
+    // TODO(cuianthony): Move this logic to glic_test_util.h after
+    // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
+    PrefService* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(prefs::kGlicCompletedFre, true);
+
     profile_1_ = browser()->profile();
 
     // "policy_for_profile_1_" is provider_, setup in PolicyTest.
