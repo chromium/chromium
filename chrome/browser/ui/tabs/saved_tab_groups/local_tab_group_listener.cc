@@ -215,21 +215,6 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
                                : Liveness::kGroupExists;
 }
 
-void LocalTabGroupListener::GroupRemovedFromSync() {
-  PauseTracking();
-
-  // Remove every currently tracked tab; this will also close the local group.
-  const std::vector<tabs::TabInterface*> tabs_in_local_group =
-      SavedTabGroupUtils::GetTabsInGroup(local_id_);
-  for (tabs::TabInterface* const tab : tabs_in_local_group) {
-    RemoveTabFromSync(tab,
-                      /*should_close_tab=*/base::FeatureList::IsEnabled(
-                          tab_groups::kTabGroupsSaveV2));
-  }
-
-  ResumeTracking();
-}
-
 LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
   PauseTracking();
 
