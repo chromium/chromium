@@ -22,6 +22,7 @@
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace optimization_guide {
 
@@ -134,6 +135,8 @@ class InputBuilder final {
                          const proto::IndexExpr& field);
   Error ResolveControlToken(const ResolutionContext& ctx,
                             proto::ControlToken token);
+  Error ResolveImageField(const ResolutionContext& ctx,
+                          proto::ImageField token);
 
   void AddToken(ml::Token token) { out_->pieces.emplace_back(token); }
 
@@ -206,6 +209,17 @@ InputBuilder::Error InputBuilder::ResolveControlToken(
   return Error::OK;
 }
 
+InputBuilder::Error InputBuilder::ResolveImageField(
+    const ResolutionContext& ctx,
+    proto::ImageField field) {
+  const SkBitmap* skbitmap = ctx.view.GetImage(field.proto_field());
+  if (!skbitmap) {
+    return Error::FAILED;
+  }
+  out_->pieces.emplace_back(*skbitmap);
+  return Error::OK;
+}
+
 InputBuilder::Error InputBuilder::ResolveStringArg(
     const ResolutionContext& ctx,
     const proto::StringArg& candidate) {
@@ -221,6 +235,8 @@ InputBuilder::Error InputBuilder::ResolveStringArg(
       return ResolveIndexExpr(ctx, candidate.index_expr());
     case proto::StringArg::kControlToken:
       return ResolveControlToken(ctx, candidate.control_token());
+    case proto::StringArg::kImageField:
+      return ResolveImageField(ctx, candidate.image_field());
     case proto::StringArg::ARG_NOT_SET:
       DVLOG(1) << "StringArg is incomplete.";
       return Error::FAILED;
@@ -312,6 +328,9 @@ std::string OnDeviceInputToString(const on_device_model::mojom::Input& input) {
     }
     if (std::holds_alternative<ml::Token>(piece)) {
       oss << PlaceholderForToken(std::get<ml::Token>(piece));
+    }
+    if (std::holds_alternative<SkBitmap>(piece)) {
+      oss << "<image>";
     }
   }
   return oss.str();

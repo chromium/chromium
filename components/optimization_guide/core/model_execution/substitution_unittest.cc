@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/optimization_guide/proto/features/example_for_testing.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
@@ -489,6 +490,34 @@ TEST_F(SubstitutionTest, PromptApiPersistence) {
             "<user>That sounds great, but oh no, it's actually going to rain! "
             "New advice??<end>"
             "<model>");
+}
+
+auto ImageSubstitutionConfig() {
+  google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
+  auto* root = subs.Add();
+  root->set_string_template("%s");
+  *root->add_substitutions()
+       ->add_candidates()
+       ->mutable_image_field()
+       ->mutable_proto_field() = ProtoField({4, 4});
+  return subs;
+}
+
+SkBitmap CreateBlackSkBitmap(int width, int height) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  // Setting the pixels to transparent-black.
+  memset(bitmap.getPixels(), 0, width * height * 4);
+  return bitmap;
+}
+
+TEST_F(SubstitutionTest, Image) {
+  MultimodalMessage request((proto::ExampleForTestingRequest()));
+  request.edit().GetMutableMessage(4).Set(4, CreateBlackSkBitmap(1, 1));
+  std::optional<SubstitutionResult> result =
+      CreateSubstitutions(request.read(), ImageSubstitutionConfig());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->ToString(), "<image>");
 }
 
 }  // namespace

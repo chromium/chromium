@@ -15,6 +15,7 @@
 #include "base/strings/to_string.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-shared.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace on_device_model {
 
@@ -32,6 +33,9 @@ std::string OnDeviceInputToString(const mojom::Input& input) {
   for (const auto& piece : input.pieces) {
     if (std::holds_alternative<std::string>(piece)) {
       oss << std::get<std::string>(piece);
+    }
+    if (std::holds_alternative<SkBitmap>(piece)) {
+      oss << "<image>";
     }
   }
   return oss.str();

@@ -26,6 +26,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
@@ -50,6 +51,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/optimization_guide/proto/features/example_for_testing.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/redaction.pb.h"
@@ -101,12 +103,12 @@ const std::string& GetCheckText(
   return log.request().text_safety_model_request().text();
 }
 
-void FailRemote(ModelBasedCapabilityKey key,
-                const google::protobuf::MessageLite& req,
-                std::optional<base::TimeDelta> timeout,
-                std::unique_ptr<proto::LogAiDataRequest> log,
-                OptimizationGuideModelExecutionResultCallback callback) {
-  EXPECT_TRUE(false) << "Unexpected use of remote fallback";
+// A remote fallback that is unsuccessful.
+void BadRequestRemote(ModelBasedCapabilityKey key,
+                      const google::protobuf::MessageLite& req,
+                      std::optional<base::TimeDelta> timeout,
+                      std::unique_ptr<proto::LogAiDataRequest> log,
+                      OptimizationGuideModelExecutionResultCallback callback) {
   std::move(callback).Run(
       OptimizationGuideModelExecutionResult(
           base::unexpected(
@@ -114,6 +116,16 @@ void FailRemote(ModelBasedCapabilityKey key,
                   net::HTTP_BAD_REQUEST)),
           nullptr),
       nullptr);
+}
+
+// A remote callback that fails the test if it is used.
+void FailRemote(ModelBasedCapabilityKey key,
+                const google::protobuf::MessageLite& req,
+                std::optional<base::TimeDelta> timeout,
+                std::unique_ptr<proto::LogAiDataRequest> log,
+                OptimizationGuideModelExecutionResultCallback callback) {
+  EXPECT_TRUE(false) << "Unexpected use of remote fallback";
+  BadRequestRemote(key, req, timeout, std::move(log), std::move(callback));
 }
 
 ExecuteRemoteFn FailOnRemoteFallback() {
@@ -318,7 +330,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   }
 
   std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession() {
-    return test_controller_->CreateSession(kFeature, base::DoNothing(),
+    return test_controller_->CreateSession(kFeature, FailOnRemoteFallback(),
                                            logger_.GetWeakPtr(), nullptr,
                                            /*config_params=*/std::nullopt);
   }
@@ -1817,7 +1829,10 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   Initialize(standard_assets_);
-  auto session = CreateSession();
+  auto session = test_controller_->CreateSession(
+      kFeature, base::BindRepeating(BadRequestRemote), logger_.GetWeakPtr(),
+      nullptr,
+      /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
   session->AddContext(UserInputRequest("foo"));
   task_environment_.RunUntilIdle();
@@ -3387,6 +3402,64 @@ TEST_F(OnDeviceModelServiceControllerTest, SendsPerformanceHint) {
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(), "Fastest inference\nInput: execute:foo\n");
+}
+
+SkBitmap CreateBlackSkBitmap(int width, int height) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  // Setting the pixels to transparent-black.
+  memset(bitmap.getPixels(), 0, width * height * 4);
+  return bitmap;
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_feature(
+      ToModelExecutionFeatureProto(ModelBasedCapabilityKey::kCompose));
+  auto& input_config = *config.mutable_input_config();
+  input_config.set_request_base_name(
+      proto::ExampleForTestingRequest().GetTypeName());
+  {
+    auto& substitution = *input_config.add_input_context_substitutions();
+    substitution.set_string_template("%s");
+    *substitution.add_substitutions()
+         ->add_candidates()
+         ->mutable_image_field()
+         ->mutable_proto_field() = ProtoField({4, 4});
+  }
+  {
+    auto& substitution = *input_config.add_execute_substitutions();
+    substitution.set_string_template("%s");
+    *substitution.add_substitutions()
+         ->add_candidates()
+         ->mutable_image_field()
+         ->mutable_proto_field() = ProtoField({5, 4});
+  }
+  {
+    auto& output_config = *config.mutable_output_config();
+    output_config.set_proto_type(proto::ComposeResponse().GetTypeName());
+    *output_config.mutable_proto_field() = OutputField();
+  }
+  FakeAdaptationAsset compose_asset({
+      .config = config,
+  });
+  Initialize(InitializeParams{
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+  MultimodalMessage request((proto::ExampleForTestingRequest()));
+  request.edit().GetMutableMessage(4).Set(4, CreateBlackSkBitmap(1, 1));
+  request.edit().GetMutableMessage(5).Set(4, CreateBlackSkBitmap(1, 1));
+  session->SetInput(std::move(request));
+  session->ExecuteModel(proto::ExampleForTestingRequest(),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(*response_.value(),
+            "Context: <image> off:0 max:22\nInput: <image>\n");
 }
 
 }  // namespace optimization_guide

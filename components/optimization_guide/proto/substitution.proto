@@ -57,6 +57,11 @@ message IndexExpr {
   bool one_based = 1;
 }
 
+message ImageField {
+  // Field containing the image.
+  ProtoField proto_field = 1;
+}
+
 message StringArg {
   oneof arg {
     string raw_string = 1;
@@ -64,6 +69,7 @@ message StringArg {
     RangeExpr range_expr = 4;
     IndexExpr index_expr = 5;
     ControlToken control_token = 6;
+    ImageField image_field = 7;
   }
 
   // TODO(b/302402959): Add support for max number of characters to apply.

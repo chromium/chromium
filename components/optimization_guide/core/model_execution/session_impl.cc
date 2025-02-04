@@ -104,9 +104,8 @@ const TokenLimits& SessionImpl::GetTokenLimits() const {
   return on_device_context_->opts().token_limits;
 }
 
-void SessionImpl::AddContext(
-    const google::protobuf::MessageLite& request_metadata) {
-  const auto result = AddContextImpl(request_metadata);
+void SessionImpl::SetInput(MultimodalMessage request) {
+  const auto result = AddContextImpl(std::move(request));
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceAddContextResult.",
@@ -114,9 +113,14 @@ void SessionImpl::AddContext(
       result);
 }
 
-SessionImpl::AddContextResult SessionImpl::AddContextImpl(
+void SessionImpl::AddContext(
     const google::protobuf::MessageLite& request_metadata) {
-  context_ = MultimodalMessage(request_metadata);
+  SetInput(MultimodalMessage(request_metadata));
+}
+
+SessionImpl::AddContextResult SessionImpl::AddContextImpl(
+    MultimodalMessage request) {
+  context_ = std::move(request);
   context_start_time_ = base::TimeTicks::Now();
 
   // Cancel any pending response.

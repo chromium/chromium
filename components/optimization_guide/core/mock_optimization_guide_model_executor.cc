@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 
 #include "base/memory/raw_ptr.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,6 +47,9 @@ OptimizationGuideModelStreamingExecutionResult MockSession::FailResult() {
 void MockSession::Delegate(OptimizationGuideModelExecutor::Session* impl) {
   ON_CALL(*this, GetTokenLimits).WillByDefault([impl]() -> const TokenLimits& {
     return impl->GetTokenLimits();
+  });
+  ON_CALL(*this, SetInput).WillByDefault([impl](MultimodalMessage input) {
+    impl->SetInput(std::move(input));
   });
   ON_CALL(*this, AddContext).WillByDefault([impl](const auto& input) {
     impl->AddContext(input);

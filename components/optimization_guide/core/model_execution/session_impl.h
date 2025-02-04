@@ -60,6 +60,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
   // optimization_guide::OptimizationGuideModelExecutor::Session:
   const TokenLimits& GetTokenLimits() const override;
   const proto::Any& GetOnDeviceFeatureMetadata() const override;
+  void SetInput(MultimodalMessage request) override;
   void AddContext(
       const google::protobuf::MessageLite& request_metadata) override;
   void Score(const std::string& text,
@@ -82,8 +83,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session {
   bool ShouldUseOnDeviceModel() const;
 
  private:
-  AddContextResult AddContextImpl(
-      const google::protobuf::MessageLite& request_metadata);
+  AddContextResult AddContextImpl(MultimodalMessage request);
 
   void DestroyOnDeviceState();
 
