@@ -126,7 +126,7 @@ size_t PermanentFolderOrderingTracker::GetChildrenCount() const {
   return count;
 }
 
-void PermanentFolderOrderingTracker::MoveToIndex(
+std::optional<size_t> PermanentFolderOrderingTracker::MoveToIndex(
     const bookmarks::BookmarkNode* node,
     size_t index) {
   CHECK(node);
@@ -138,7 +138,7 @@ void PermanentFolderOrderingTracker::MoveToIndex(
                                index == old_index_if_tracked.value() + 1)) {
     // Node is already in this position, nothing to do.
     // This logic is similar to `BookmarkModel::Move()`.
-    return;
+    return std::nullopt;
   }
 
   bool is_account_node = account_node_ && !model_->IsLocalOnlyNode(*node);
@@ -149,17 +149,19 @@ void PermanentFolderOrderingTracker::MoveToIndex(
   model_->Move(node, is_account_node ? account_node_ : local_or_syncable_node_,
                in_storage_index);
 
-  if (!ShouldTrackOrdering()) {
-    CHECK(ordering_.empty());
-    return;
-  }
-
   if (old_index_if_tracked && index > old_index_if_tracked.value()) {
     index--;
   }
 
-  if (GetIndexOf(node) == index) {
-    return;
+  if (!ShouldTrackOrdering()) {
+    CHECK(ordering_.empty());
+    CHECK_LE(index, GetChildrenCount());
+    CHECK_EQ(GetNodeAtIndex(index), node);
+    return index;
+  }
+
+  if (GetNodeAtIndex(index) == node) {
+    return index;
   }
 
   // Ensure the `index` with respect to account and local nodes is respected.
@@ -169,6 +171,7 @@ void PermanentFolderOrderingTracker::MoveToIndex(
   ordering_.insert(ordering_.cbegin() + index, node);
 
   CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());
+  return index;
 }
 
 void PermanentFolderOrderingTracker::AddNodesAsCopiesOfNodeData(

@@ -4,9 +4,11 @@
 
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 
+#include <cstddef>
 #include <optional>
 #include <variant>
 
+#include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
@@ -275,8 +277,28 @@ void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
   CHECK(!IsParentFolderManaged(new_parent));
 
   if (new_parent.as_permanent_folder()) {
-    GetPermanentFolderOrderingTracker(*new_parent.as_permanent_folder())
-        .MoveToIndex(node, index);
+    CHECK(!scoped_move_change_);
+    base::AutoReset<bool> moving_nodes(&scoped_move_change_, true);
+    const BookmarkParentFolder old_parent(
+        BookmarkParentFolder::FromFolderNode(node->parent()));
+    const size_t old_index = GetIndexOf(node);
+
+    std::optional<size_t> new_index =
+        GetPermanentFolderOrderingTracker(*new_parent.as_permanent_folder())
+            .MoveToIndex(node, index);
+
+    // Note: if moving within the same parent and `old_index` is less than
+    // `index`, `new_index` will be off by one form `index`.
+    if (!new_index.has_value()) {
+      // `MoveToIndex()` is no-op.
+      CHECK(old_parent == new_parent);
+      return;
+    }
+
+    CHECK(old_parent != new_parent || old_index != new_index.value());
+    for (auto& observer : observers_) {
+      observer.BookmarkNodeMoved(old_parent, old_index, new_parent, *new_index);
+    }
     return;
   }
 
@@ -286,6 +308,8 @@ void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
 
   // Move the bookmark if no user action is required.
   if (node_and_parent_have_same_storage) {
+    // Observer notifications triggered by `BookmarkModel` will be propagated to
+    // `this` class's observers, see `BookmarkNodeMoved()`.
     model_->Move(node, new_parent.as_non_permanent_folder(), index);
     return;
   }
@@ -407,6 +431,9 @@ void BookmarkMergedSurfaceService::OnWillMoveBookmarkNode(
     size_t old_index,
     const BookmarkNode* new_parent,
     size_t new_index) {
+  if (scoped_move_change_) {
+    return;
+  }
   CHECK(!cached_index_for_node_move_);
   CHECK(old_parent);
   const BookmarkNode* node_to_move = old_parent->children()[old_index].get();
@@ -419,6 +446,9 @@ void BookmarkMergedSurfaceService::BookmarkNodeMoved(
     size_t old_index,
     const BookmarkNode* new_parent,
     size_t new_index) {
+  if (scoped_move_change_) {
+    return;
+  }
   CHECK(cached_index_for_node_move_);
   const BookmarkNode* moved_node = new_parent->children()[new_index].get();
   CHECK_EQ(moved_node, cached_index_for_node_move_->second);

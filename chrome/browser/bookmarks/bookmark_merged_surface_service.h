@@ -255,6 +255,11 @@ class BookmarkMergedSurfaceService : public KeyedService,
   std::optional<std::pair<size_t, raw_ptr<const bookmarks::BookmarkNode>>>
       cached_index_for_node_move_;
 
+  // The service is making a move using `Move()`.
+  // Delay `BookmarkModel` notifications as the index could change as a result
+  // of custom reorder between account and local nodes.
+  bool scoped_move_change_ = false;
+
   base::ObserverList<BookmarkMergedSurfaceServiceObserver> observers_;
 
   base::ScopedObservation<bookmarks::BookmarkModel,
