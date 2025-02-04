@@ -525,7 +525,7 @@ export class PanelItem extends HTMLElement {
    * Getter for the panel text div.
    */
   get textDiv() {
-    return this.shadowRoot!.querySelector<HTMLDivElement>('.xf-panel-text');
+    return this.shadowRoot!.querySelector<HTMLElement>('.xf-panel-text');
   }
 
   /**

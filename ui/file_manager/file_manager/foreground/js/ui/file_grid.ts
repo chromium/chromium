@@ -882,7 +882,7 @@ export class FileGrid extends Grid {
    * @param mimeType Optional mime type for the image.
    */
   private static setThumbnailImage_(
-      box: HTMLDivElement, entry: Entry|FilesAppEntry, dataUrl: string,
+      box: HTMLElement, entry: Entry|FilesAppEntry, dataUrl: string,
       width: number, height: number, mimeType?: string) {
     const thumbnail = box.ownerDocument.createElement('div');
     thumbnail.classList.add('thumbnail');
@@ -910,7 +910,7 @@ export class FileGrid extends Grid {
    * Clears thumbnail image from the box.
    * @param box A div element to hold thumbnails.
    */
-  private static clearThumbnailImage_(box: HTMLDivElement) {
+  private static clearThumbnailImage_(box: HTMLElement) {
     const oldThumbnails = Array.from(box.querySelectorAll('.thumbnail'));
     for (const oldThumbnail of oldThumbnails) {
       box.removeChild(oldThumbnail);
@@ -925,7 +925,7 @@ export class FileGrid extends Grid {
    * @param mimeType Optional mime type for the file.
    */
   private setGenericThumbnail_(
-      box: HTMLDivElement, entry: Entry|FilesAppEntry, mimeType?: string) {
+      box: HTMLElement, entry: Entry|FilesAppEntry, mimeType?: string) {
     if (isEncrypted(entry, mimeType)) {
       box.setAttribute('generic-thumbnail', 'encrypted');
       box.setAttribute('aria-label', str('ENCRYPTED_ICON_TOOLTIP'));

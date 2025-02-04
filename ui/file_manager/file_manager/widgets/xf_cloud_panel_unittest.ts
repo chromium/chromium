@@ -46,19 +46,19 @@ enum PanelSelector {
 // Checks that a panel type is visible and that all the other types are hidden.
 function checkVisiblePanel(panel: XfCloudPanel, selector: PanelSelector) {
   const progressStateElement =
-      panel.shadowRoot!.querySelector<HTMLDivElement>('#progress-state')!;
+      panel.shadowRoot!.querySelector<HTMLElement>('#progress-state')!;
   const progressFinishedElement =
-      panel.shadowRoot!.querySelector<HTMLDivElement>('#progress-finished')!;
+      panel.shadowRoot!.querySelector<HTMLElement>('#progress-finished')!;
   const progressOfflineElement =
-      panel.shadowRoot!.querySelector<HTMLDivElement>('#progress-offline')!;
+      panel.shadowRoot!.querySelector<HTMLElement>('#progress-offline')!;
   const progressNotEnoughSpaceElement =
-      panel.shadowRoot!.querySelector<HTMLDivElement>(
+      panel.shadowRoot!.querySelector<HTMLElement>(
           '#progress-not-enough-space')!;
   const progressPreparingElement =
-      panel.shadowRoot!.querySelector<HTMLDivElement>('#progress-preparing')!;
+      panel.shadowRoot!.querySelector<HTMLElement>('#progress-preparing')!;
   const progressMeteredNetworkElement =
-      panel.shadowRoot!.querySelector<HTMLDivElement>(
-          '#progress-metered-network')!;
+      panel.shadowRoot!.querySelector<HTMLElement>('#progress-metered-network')!
+      ;
 
   // Some stages use flexbox to center or vertically align their items, others
   // use a normal block display.

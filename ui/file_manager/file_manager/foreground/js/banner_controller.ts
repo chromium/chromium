@@ -174,8 +174,8 @@ export class BannerController extends EventTarget {
   /**
    * The container where all the banners will be appended to.
    */
-  private container_: HTMLDivElement =
-      document.querySelector<HTMLDivElement>('#banners')!;
+  private container_: HTMLElement =
+      document.querySelector<HTMLElement>('#banners')!;
 
   /**
    * Whether banners should be loaded or not during for unit tests.
