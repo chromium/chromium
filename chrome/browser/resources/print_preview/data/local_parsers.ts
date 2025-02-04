@@ -18,10 +18,6 @@ export interface LocalDestinationInfo {
   printerDescription?: string;
   cupsEnterprisePrinter?: boolean;
   printerOptions?: ObjectMap;
-  // <if expr="is_chromeos">
-  printerStatus?: PrinterStatus;
-  managedPrintOptions?: ManagedPrintOptions;
-  // </if>
 }
 
 export interface ExtensionDestinationInfo {
@@ -73,11 +69,6 @@ function parseLocalDestination(destinationInfo: LocalDestinationInfo):
       }
     }
   }
-  // <if expr="is_chromeos">
-  if (destinationInfo.managedPrintOptions) {
-    options.managedPrintOptions = destinationInfo.managedPrintOptions;
-  }
-  // </if>
 
   return new Destination(
       destinationInfo.deviceName,
@@ -91,19 +82,10 @@ function parseLocalDestination(destinationInfo: LocalDestinationInfo):
  */
 export function parseExtensionDestination(
     destinationInfo: ExtensionDestinationInfo): Destination {
-  // <if expr="is_chromeos">
-  const provisionalType = destinationInfo.provisional ?
-      DestinationProvisionalType.NEEDS_USB_PERMISSION :
-      DestinationProvisionalType.NONE;
-  // </if>
-
   return new Destination(
       destinationInfo.id, DestinationOrigin.EXTENSION, destinationInfo.name, {
         description: destinationInfo.description || '',
         extensionId: destinationInfo.extensionId,
         extensionName: destinationInfo.extensionName || '',
-        // <if expr="is_chromeos">
-        provisionalType: provisionalType,
-        // </if>
       });
 }

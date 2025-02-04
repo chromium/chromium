@@ -304,7 +304,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       this.$.sidebar.init(
           settings.isInAppKioskMode, settings.printerName,
           settings.serializedDefaultDestinationSelectionRulesStr,
-          settings.pdfPrinterDisabled, settings.isDriveMounted || false);
+          settings.pdfPrinterDisabled);
       this.destinationsManaged_ = settings.destinationsManaged;
       this.isInKioskAutoPrintMode_ = settings.isInKioskAutoPrintMode;
 
@@ -341,7 +341,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
           this.$.model.applyStickySettings();
         }
 
-        this.$.model.applyDestinationSpecificPolicies();
+        this.$.model.applyPoliciesOnDestinationUpdate();
 
         this.startPreviewWhenReady_ = true;
 

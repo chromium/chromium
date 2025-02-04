@@ -35,17 +35,6 @@ export enum DuplexType {
   SHORT_EDGE = 'SHORT_EDGE',
 }
 
-// <if expr="is_chromeos">
-/**
- * Print quality values matching registered IPP values.
- */
-export enum QualityIppValue {
-  DRAFT = '3',
-  NORMAL = '4',
-  HIGH = '5',
-}
-// </if>
-
 interface SelectCapability {
   option?: VendorCapabilitySelectOption[];
 }
@@ -148,13 +137,6 @@ export type DpiCapability = {
   option: DpiOption[],
 }&CapabilityWithReset;
 
-// <if expr="is_chromeos">
-interface PinCapability {
-  supported?: boolean;
-}
-// </if>
-
-
 /**
  * Capabilities of a print destination represented in a CDD.
  * Pin capability is not a part of standard CDD description and is defined
@@ -170,9 +152,6 @@ export interface CddCapabilities {
   media_size?: MediaSizeCapability;
   media_type?: MediaTypeCapability;
   dpi?: DpiCapability;
-  // <if expr="is_chromeos">
-  pin?: PinCapability;
-  // </if>
 }
 
 /**

@@ -145,11 +145,6 @@ export enum DestinationStoreEventType {
   ERROR = 'DestinationStore.ERROR',
   SELECTED_DESTINATION_CAPABILITIES_READY = 'DestinationStore' +
       '.SELECTED_DESTINATION_CAPABILITIES_READY',
-  // <if expr="is_chromeos">
-  DESTINATION_EULA_READY = 'DestinationStore.DESTINATION_EULA_READY',
-  DESTINATION_PRINTER_STATUS_UPDATE =
-      'DestinationStore.DESTINATION_PRINTER_STATUS_UPDATE',
-  // </if>
 }
 
 export class DestinationStore extends EventTarget {
@@ -182,13 +177,6 @@ export class DestinationStore extends EventTarget {
    * Used to fetch local print destinations.
    */
   private nativeLayer_: NativeLayer = NativeLayerImpl.getInstance();
-
-  // <if expr="is_chromeos">
-  /**
-   * Used to fetch information about Chrome OS local print destinations.
-   */
-  private nativeLayerCros_: NativeLayerCros = NativeLayerCrosImpl.getInstance();
-  // </if>
 
   /**
    * Whether PDF printer is enabled. It's disabled, for example, in App
@@ -248,13 +236,6 @@ export class DestinationStore extends EventTarget {
         (type: PrinterType,
          printers: LocalDestinationInfo[]|ExtensionDestinationInfo[]) =>
             this.onPrintersAdded_(type, printers));
-
-    // <if expr="is_chromeos">
-    addListenerCallback(
-        'local-printers-updated',
-        (printers: LocalDestinationInfo[]) =>
-            this.onLocalPrintersUpdated_(printers));
-    // </if>
   }
 
   /**
@@ -310,12 +291,6 @@ export class DestinationStore extends EventTarget {
    */
   init(
       pdfPrinterDisabled: boolean,
-      // <if expr="is_chromeos">
-      saveToDriveDisabled: boolean,
-      // </if>
-      // <if expr="not is_chromeos">
-      _saveToDriveDisabled: boolean,
-      // </if>
       systemDefaultDestinationId: string,
       serializedDefaultDestinationSelectionRulesStr: string|null,
       recentDestinations: RecentDestination[]) {
@@ -324,14 +299,7 @@ export class DestinationStore extends EventTarget {
       const systemDefaultType = systemDefaultVirtual ?
           PrinterType.PDF_PRINTER :
           PrinterType.LOCAL_PRINTER;
-      // <if expr="not is_chromeos">
       const systemDefaultOrigin = DestinationOrigin.LOCAL;
-      // </if>
-      // <if expr="is_chromeos">
-      const systemDefaultOrigin = systemDefaultVirtual ?
-          DestinationOrigin.LOCAL :
-          DestinationOrigin.CROS;
-      // </if>
       this.systemDefaultDestinationKey_ =
           createDestinationKey(systemDefaultDestinationId, systemDefaultOrigin);
       this.typesToSearch_.add(systemDefaultType);
@@ -352,21 +320,11 @@ export class DestinationStore extends EventTarget {
 
     this.pdfPrinterEnabled_ = !pdfPrinterDisabled;
     this.createLocalPdfPrintDestination_();
-    // <if expr="is_chromeos">
-    if (!saveToDriveDisabled) {
-      this.createLocalDrivePrintDestination_();
-    }
-    // </if>
 
     // Nothing recent, no system default ==> try to get a fallback printer as
     // destinationsInserted_ may never be called.
     if (this.typesToSearch_.size === 0) {
       this.tryToSelectInitialDestination_();
-      // <if expr="is_chromeos">
-      // Start observing local printers if there is no attempt to load
-      // destinations.
-      this.observeLocalPrinters_();
-      // </if>
       return;
     }
 
@@ -495,31 +453,6 @@ export class DestinationStore extends EventTarget {
     this.tracker_.removeAll();
   }
 
-  // <if expr="is_chromeos">
-  /**
-   * Attempts to find the EULA URL of the the destination ID.
-   */
-  fetchEulaUrl(destinationId: string) {
-    this.nativeLayerCros_.getEulaUrl(destinationId).then(response => {
-      // Check that the currently selected destination ID still matches the
-      // destination ID we used to fetch the EULA URL.
-      if (this.selectedDestination_ &&
-          destinationId === this.selectedDestination_.id) {
-        this.dispatchEvent(new CustomEvent(
-            DestinationStoreEventType.DESTINATION_EULA_READY,
-            {detail: response}));
-      }
-    });
-  }
-
-  /**
-   * Reloads all local printers.
-   */
-  reloadLocalPrinters(): Promise<void> {
-    return this.nativeLayer_.getPrinters(PrinterType.LOCAL_PRINTER);
-  }
-  // </if>
-
   /**
    * @return Creates rules matching previously selected destination.
    */
@@ -574,12 +507,6 @@ export class DestinationStore extends EventTarget {
   selectDestinationByKey(key: string) {
     const success = this.tryToSelectDestinationByKey_(key);
     assert(success);
-    // <if expr="is_chromeos">
-    if (success && this.selectedDestination_ &&
-        this.selectedDestination_.type !== PrinterType.PDF_PRINTER) {
-      this.selectedDestination_.printerManuallySelected = true;
-    }
-    // </if>
   }
 
   /**
@@ -587,33 +514,16 @@ export class DestinationStore extends EventTarget {
    * @param refreshDestination Set to true to allow the currently selected
    *          destination to be re-selected.
    */
-  selectDestination(
-      destination: Destination, refreshDestination: boolean = false) {
-    // <if expr="not is_chromeos">
-    assert(!refreshDestination, 'refreshDestination for CrOS only');
+  selectDestination(destination: Destination) {
     if (destination === this.selectedDestination_) {
       return;
     }
-    // </if>
-    // <if expr="is_chromeos">
-    // Do not re-select the same destination unless explicitly requesting it to
-    // refetch the capabilities and reload the preview.
-    if (destination === this.selectedDestination_ && !refreshDestination) {
-      return;
-    }
-    // </if>
-
     if (destination === null) {
       this.selectedDestination_ = null;
       this.dispatchEvent(
           new CustomEvent(DestinationStoreEventType.DESTINATION_SELECT));
       return;
     }
-
-    // <if expr="is_chromeos">
-    assert(
-        !destination.isProvisional, 'Unable to select provisonal destinations');
-    // </if>
 
     // Update and persist selected destination.
     this.selectedDestination_ = destination;
@@ -633,51 +543,6 @@ export class DestinationStore extends EventTarget {
       this.sendSelectedDestinationUpdateEvent_();
     }
   }
-
-  // <if expr="is_chromeos">
-  /**
-   * Attempt to resolve the capabilities for a Chrome OS printer.
-   */
-  resolveCrosDestination(destination: Destination):
-      Promise<PrinterSetupResponse> {
-    assert(destination.origin === DestinationOrigin.CROS);
-    return this.nativeLayerCros_.setupPrinter(destination.id);
-  }
-
-  /**
-   * Attempts to resolve a provisional destination.
-   * @param Provisional destination that should be resolved.
-   */
-  resolveProvisionalDestination(destination: Destination):
-      Promise<Destination|null> {
-    assert(
-        destination.provisionalType ===
-            DestinationProvisionalType.NEEDS_USB_PERMISSION,
-        'Provisional type cannot be resolved.');
-    return this.nativeLayerCros_.grantExtensionPrinterAccess(destination.id)
-        .then(
-            destinationInfo => {
-              /**
-               * Removes the destination from the store and replaces it with a
-               * destination created from the resolved destination properties,
-               * if any are reported. Then returns the new destination.
-               */
-              this.removeProvisionalDestination_(destination.id);
-              const parsedDestination =
-                  parseExtensionDestination(destinationInfo);
-              this.insertIntoStore_(parsedDestination);
-              return parsedDestination;
-            },
-            () => {
-              /**
-               * The provisional destination is removed from the store and
-               * null is returned.
-               */
-              this.removeProvisionalDestination_(destination.id);
-              return null;
-            });
-  }
-  // </if>
 
   /**
    * Selects the Save as PDF fallback if it is available. If not, selects the
@@ -739,22 +604,6 @@ export class DestinationStore extends EventTarget {
   getDestinationByKey(key: string): Destination|undefined {
     return this.destinationMap_.get(key);
   }
-
-  // <if expr="is_chromeos">
-  /**
-   * Removes the provisional destination with ID |provisionalId| from
-   * |destinationMap_| and |destinations_|.
-   */
-  private removeProvisionalDestination_(provisionalId: string) {
-    this.destinations_ = this.destinations_.filter(el => {
-      if (el.id === provisionalId) {
-        this.destinationMap_.delete(el.key);
-        return false;
-      }
-      return true;
-    });
-  }
-  // </if>
 
   /**
    * Inserts {@code destination} to the data store and dispatches a
@@ -857,17 +706,6 @@ export class DestinationStore extends EventTarget {
     }
   }
 
-  // <if expr="is_chromeos">
-  /**
-   * Creates a local Drive print destination.
-   */
-  private createLocalDrivePrintDestination_() {
-    this.insertDestination_(new Destination(
-        GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS, DestinationOrigin.LOCAL,
-        loadTimeData.getString('printToGoogleDrive')));
-  }
-  // </if>
-
   /**
    * Called when destination search is complete for some type of printer.
    * @param type The type of printers that are done being retrieved.
@@ -883,10 +721,6 @@ export class DestinationStore extends EventTarget {
     } else if (this.typesToSearch_.size === 0) {
       this.tryToSelectInitialDestination_();
     }
-
-    // <if expr="is_chromeos">
-    this.observeLocalPrinters_();
-    // </if>
   }
 
   /**
@@ -928,10 +762,6 @@ export class DestinationStore extends EventTarget {
       }
       dest.capabilities = settingsInfo.capabilities;
       this.updateDestination_(dest);
-      // <if expr="is_chromeos">
-      // Start the fetch for the PPD EULA URL.
-      this.fetchEulaUrl(dest.id);
-      // </if>
     }
   }
 
@@ -967,70 +797,6 @@ export class DestinationStore extends EventTarget {
         (printer: LocalDestinationInfo|ExtensionDestinationInfo) =>
             parseDestination(type, printer)));
   }
-
-  // <if expr="is_chromeos">
-  private observeLocalPrinters_() {
-    this.nativeLayerCros_.observeLocalPrinters().then(
-        (printers: LocalDestinationInfo[]) =>
-            this.onLocalPrintersUpdated_(printers));
-  }
-
-  /**
-   * Inserts any new printers retrieved from the 'local-printers-updated' event.
-   * @param printerType The type of printer(s) added.
-   * @param printers Information about the printers that have been retrieved.
-   */
-  private onLocalPrintersUpdated_(printers: LocalDestinationInfo[]) {
-    if (!printers) {
-      return;
-    }
-
-    // The logic in insertDestinations_() ensures only new destinations are
-    // added to the store.
-    this.insertDestinations_(printers.map(
-        printer => parseDestination(PrinterType.LOCAL_PRINTER, printer)));
-
-    // Parse the printer status from the LocalDestinationInfo object.
-    for (const printer of printers) {
-      this.parsePrinterStatus(printer);
-    }
-  }
-
-  // Updates the printer status for an existing destination then fires an event
-  // for updating printer status icons and text.
-  private parsePrinterStatus(destinationInfo: LocalDestinationInfo): void {
-    const printerStatus = destinationInfo.printerStatus;
-    if (!printerStatus || !printerStatus.printerId) {
-      return;
-    }
-
-    const destinationKey = createDestinationKey(
-        destinationInfo.deviceName, DestinationOrigin.CROS);
-    const existingDestination = this.destinationMap_.get(destinationKey);
-    if (existingDestination === undefined) {
-      return;
-    }
-
-    // `nowOnline` captures the event where a previously offline printer
-    // becomes reachable. This will be used to trigger the destination to
-    // reload its preview.
-    const previousStatusReason = existingDestination.printerStatusReason;
-    const nextStatusReason = getStatusReasonFromPrinterStatus(printerStatus);
-    const nowOnline =
-        previousStatusReason === PrinterStatusReason.PRINTER_UNREACHABLE &&
-        (nextStatusReason !== PrinterStatusReason.PRINTER_UNREACHABLE &&
-         nextStatusReason !== PrinterStatusReason.UNKNOWN_REASON);
-
-    existingDestination.printerStatusReason = nextStatusReason;
-    this.dispatchEvent(new CustomEvent(
-        DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE, {
-          detail: {
-            destinationKey: destinationKey,
-            nowOnline: nowOnline,
-          },
-        }));
-  }
-  // </if>
 }
 
 /**
