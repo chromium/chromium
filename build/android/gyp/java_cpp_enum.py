@@ -431,12 +431,15 @@ package ${PACKAGE};
 
 import androidx.annotation.IntDef;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 @IntDef(${FLAG_DEF}{
 ${INT_DEF}
 })
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.SOURCE)
 public @interface ${CLASS_NAME} {
 ${ENUM_ENTRIES}
