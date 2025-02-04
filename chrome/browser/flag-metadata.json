@@ -7514,7 +7514,7 @@
   {
     "name": "reduce-accept-language",
     "owners": [ "miketaylr@chromium.org", "victortan@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "reduce-ip-address-change-notification",
