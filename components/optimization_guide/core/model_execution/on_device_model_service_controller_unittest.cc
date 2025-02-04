@@ -3373,7 +3373,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
-
 TEST_F(OnDeviceModelServiceControllerTest, LoggingModeAlwaysDisable) {
   TestModelQualityLogsUploaderService test_uploader(&pref_service_);
   Initialize(standard_assets_);
@@ -3413,6 +3412,8 @@ SkBitmap CreateBlackSkBitmap(int width, int height) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+  using NestedProto = ::optimization_guide::proto::ExampleForTestingMessage;
   proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_feature(
       ToModelExecutionFeatureProto(ModelBasedCapabilityKey::kCompose));
@@ -3425,7 +3426,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
     *substitution.add_substitutions()
          ->add_candidates()
          ->mutable_image_field()
-         ->mutable_proto_field() = ProtoField({4, 4});
+         ->mutable_proto_field() = ProtoField(
+        {RequestProto::kNested1FieldNumber, NestedProto::kMediaFieldNumber});
   }
   {
     auto& substitution = *input_config.add_execute_substitutions();
@@ -3433,7 +3435,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
     *substitution.add_substitutions()
          ->add_candidates()
          ->mutable_image_field()
-         ->mutable_proto_field() = ProtoField({5, 4});
+         ->mutable_proto_field() = ProtoField(
+        {RequestProto::kNested2FieldNumber, NestedProto::kMediaFieldNumber});
   }
   {
     auto& output_config = *config.mutable_output_config();
@@ -3452,8 +3455,12 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
   auto session = CreateSession();
   ASSERT_TRUE(session);
   MultimodalMessage request((proto::ExampleForTestingRequest()));
-  request.edit().GetMutableMessage(4).Set(4, CreateBlackSkBitmap(1, 1));
-  request.edit().GetMutableMessage(5).Set(4, CreateBlackSkBitmap(1, 1));
+  request.edit()
+      .GetMutableMessage(RequestProto::kNested1FieldNumber)
+      .Set(NestedProto::kMediaFieldNumber, CreateBlackSkBitmap(1, 1));
+  request.edit()
+      .GetMutableMessage(RequestProto::kNested2FieldNumber)
+      .Set(NestedProto::kMediaFieldNumber, CreateBlackSkBitmap(1, 1));
   session->SetInput(std::move(request));
   session->ExecuteModel(proto::ExampleForTestingRequest(),
                         response_.GetStreamingCallback());

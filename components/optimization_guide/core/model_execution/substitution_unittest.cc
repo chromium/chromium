@@ -493,13 +493,16 @@ TEST_F(SubstitutionTest, PromptApiPersistence) {
 }
 
 auto ImageSubstitutionConfig() {
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+  using NestedProto = ::optimization_guide::proto::ExampleForTestingMessage;
   google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
   auto* root = subs.Add();
   root->set_string_template("%s");
   *root->add_substitutions()
        ->add_candidates()
        ->mutable_image_field()
-       ->mutable_proto_field() = ProtoField({4, 4});
+       ->mutable_proto_field() = ProtoField(
+      {RequestProto::kNested1FieldNumber, NestedProto::kMediaFieldNumber});
   return subs;
 }
 
@@ -512,8 +515,12 @@ SkBitmap CreateBlackSkBitmap(int width, int height) {
 }
 
 TEST_F(SubstitutionTest, Image) {
-  MultimodalMessage request((proto::ExampleForTestingRequest()));
-  request.edit().GetMutableMessage(4).Set(4, CreateBlackSkBitmap(1, 1));
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+  using NestedProto = ::optimization_guide::proto::ExampleForTestingMessage;
+  MultimodalMessage request{RequestProto()};
+  request.edit()
+      .GetMutableMessage(RequestProto::kNested1FieldNumber)
+      .Set(NestedProto::kMediaFieldNumber, CreateBlackSkBitmap(1, 1));
   std::optional<SubstitutionResult> result =
       CreateSubstitutions(request.read(), ImageSubstitutionConfig());
   ASSERT_TRUE(result.has_value());
