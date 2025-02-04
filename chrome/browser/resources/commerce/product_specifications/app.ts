@@ -514,55 +514,63 @@ export class ProductSpecificationsElement extends CrLitElement {
     this.updateEmptyState_(false);
 
     const tableColumns: TableColumn[] = [];
-    if (urls.length) {
-      const {productSpecs} =
-          await this.shoppingApi_.getProductSpecificationsForUrls(
-              urls.map(url => ({url})));
-      const aggregatedDataByUrl =
-          await this.aggregateProductDataByUrl_(urls, productSpecs);
+    const {productSpecs} =
+        await this.shoppingApi_.getProductSpecificationsForUrls(
+            urls.map(url => ({url})));
+    const aggregatedDataByUrl =
+        await this.aggregateProductDataByUrl_(urls, productSpecs);
 
+    // Since it's possible we need the titles from an async source, fetch them
+    // before building the column list. Mapping the URLs with an async function
+    // runs the risk of the tasks finishing out of order and displaying the
+    // table incorrectly.
+    const titleMap: Map<string, string> = new Map();
+    await Promise.all(urls.map(async (url) => {
+      const info = aggregatedDataByUrl.get(url)?.productInfo;
+      const product = aggregatedDataByUrl.get(url)?.spec;
+      const title = product?.title || info?.title ||
+          (await this.productSpecificationsProxy_.getPageTitleFromHistory(
+               {url}))
+              .title;
+      titleMap.set(url, title);
+    }));
 
-      await Promise.all(urls.map(async (url: string) => {
-        const info = aggregatedDataByUrl.get(url)?.productInfo;
-        const product = aggregatedDataByUrl.get(url)?.spec;
-        const title = product?.title || info?.title ||
-            (await this.productSpecificationsProxy_.getPageTitleFromHistory(
-                 {url}))
-                .title;
+    urls.map((url: string, index: number) => {
+      const info = aggregatedDataByUrl.get(url)?.productInfo;
+      const product = aggregatedDataByUrl.get(url)?.spec;
 
-        tableColumns.push({
-          selectedItem: {
-            title,
-            url,
-            imageUrl: info?.imageUrl?.url || product?.imageUrl?.url || '',
-          },
-          productDetails:
-              getProductDetails(product || null, productSpecs, info || null),
-        });
-      }));
+      tableColumns[index] = {
+        selectedItem: {
+          title: titleMap.get(url) || '',
+          url: url,
+          imageUrl: info?.imageUrl?.url || product?.imageUrl?.url || '',
+        },
+        productDetails:
+            getProductDetails(product || null, productSpecs, info || null),
+      };
+    });
 
-      // Show an error message if we didn't get back any dimensions. Note that
-      // the URLs in the comparison will still be displayed as columns.
-      if (productSpecs.productDimensionMap.size === 0 && urls.length > 1) {
-        this.$.errorToast.show();
-        // If there's no product info for any of the URLs, the table is a
-        // collection of non-products.
-        if (urls.some((url) => !!aggregatedDataByUrl.get(url))) {
-          chrome.metricsPrivate.recordEnumerationValue(
-              TABLE_LOAD_HISTOGRAM_NAME,
-              CompareTableLoadStatus.FAILURE_EMPTY_TABLE_NON_PRODUCTS,
-              CompareTableLoadStatus.MAX_VALUE);
-        } else {
-          chrome.metricsPrivate.recordEnumerationValue(
-              TABLE_LOAD_HISTOGRAM_NAME,
-              CompareTableLoadStatus.FAILURE_EMPTY_TABLE_BACKEND,
-              CompareTableLoadStatus.MAX_VALUE);
-        }
+    // Show an error message if we didn't get back any dimensions. Note that
+    // the URLs in the comparison will still be displayed as columns.
+    if (productSpecs.productDimensionMap.size === 0 && urls.length > 1) {
+      this.$.errorToast.show();
+      // If there's no product info for any of the URLs, the table is a
+      // collection of non-products.
+      if (urls.some((url) => !!aggregatedDataByUrl.get(url))) {
+        chrome.metricsPrivate.recordEnumerationValue(
+            TABLE_LOAD_HISTOGRAM_NAME,
+            CompareTableLoadStatus.FAILURE_EMPTY_TABLE_NON_PRODUCTS,
+            CompareTableLoadStatus.MAX_VALUE);
       } else {
         chrome.metricsPrivate.recordEnumerationValue(
-            TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.SUCCESS,
+            TABLE_LOAD_HISTOGRAM_NAME,
+            CompareTableLoadStatus.FAILURE_EMPTY_TABLE_BACKEND,
             CompareTableLoadStatus.MAX_VALUE);
       }
+    } else {
+      chrome.metricsPrivate.recordEnumerationValue(
+          TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.SUCCESS,
+          CompareTableLoadStatus.MAX_VALUE);
     }
 
     // Enforce a minimum amount of time in the loading state to avoid it
