@@ -1222,6 +1222,12 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
   // ::first-letter subtrees. The text of ::first-letter is already available in
   // the child text node of the element that the CSS ::first letter applied to.
   if (To<PseudoElement>(node).CanGenerateContent()) {
+    // By common convention it's the <select> itself that is
+    // clickable/accessible, not the ::picker-icon, which becomes redundant in
+    // the a11y tree.
+    if (node.IsPickerIconPseudoElement()) {
+      return false;
+    }
     // ::scroll-marker gains a kTab role, so it's relevant regardless of the
     // type of content it contains since it has a layout object (checked above).
     if (node.IsScrollMarkerPseudoElement()) {

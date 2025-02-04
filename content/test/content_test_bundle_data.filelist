@@ -3371,6 +3371,9 @@ data/accessibility/html/custom-element-with-aria-owns-inside.html
 data/accessibility/html/custom-element-with-aria-owns-outside-expected-blink.txt
 data/accessibility/html/custom-element-with-aria-owns-outside.html
 data/accessibility/html/custom-element.html
+data/accessibility/html/custom-select-button-value-expected-auralinux.txt
+data/accessibility/html/custom-select-button-value-expected-blink.txt
+data/accessibility/html/custom-select-button-value.html
 data/accessibility/html/custom-select-expected-android-assist-data.txt
 data/accessibility/html/custom-select-expected-android-external.txt
 data/accessibility/html/custom-select-expected-android.txt
@@ -3383,6 +3386,9 @@ data/accessibility/html/custom-select-expected-win.txt
 data/accessibility/html/custom-select-forbidden-interactive-content-expected-auralinux.txt
 data/accessibility/html/custom-select-forbidden-interactive-content-expected-blink.txt
 data/accessibility/html/custom-select-forbidden-interactive-content.html
+data/accessibility/html/custom-select-img-alt-expected-auralinux.txt
+data/accessibility/html/custom-select-img-alt-expected-blink.txt
+data/accessibility/html/custom-select-img-alt.html
 data/accessibility/html/custom-select-label-element-expected-android-assist-data.txt
 data/accessibility/html/custom-select-label-element-expected-android-external.txt
 data/accessibility/html/custom-select-label-element-expected-android.txt

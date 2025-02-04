@@ -249,6 +249,9 @@ class CORE_EXPORT HTMLSelectElement final
   // value of the appearance property is not checked.
   HTMLButtonElement* SlottedButton() const;
 
+  // Returns true if the provided node is some select element's SlottedButton.
+  static bool IsSlottedButton(const Node*);
+
   // This method returns the UA popover element which is used for
   // appearance:base-select. If this select is rendering in a mode which doesn't
   // use the UA popover, such as appearance:auto/none or size=2/multiple, then

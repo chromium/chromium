@@ -2230,6 +2230,16 @@ IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
       FILE_PATH_LITERAL("custom-select-forbidden-interactive-content.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
+                       AccessibilityCustomSelectButtonValue) {
+  RunHtmlTest(FILE_PATH_LITERAL("custom-select-button-value.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(CustomizableSelectEnabledDumpAccessibilityTreeTest,
+                       AccessibilityCustomSelectImgAlt) {
+  RunHtmlTest(FILE_PATH_LITERAL("custom-select-img-alt.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDd) {
   RunHtmlTest(FILE_PATH_LITERAL("dd.html"));
 }

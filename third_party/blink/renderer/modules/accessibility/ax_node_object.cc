@@ -1153,6 +1153,21 @@ bool AXNodeObject::ComputeIsIgnored(
     }
     // Keep structure of <select size=1> even when collapsed.
     if (const AXObject* ax_menu_list = ParentObject()->AncestorMenuList()) {
+      // The author provided <button> is marked as inert so it falls into this
+      // case. We want it and all of its descendants to be ignored. If any of
+      // them aren't ignored, then they will make it into the mappings. The
+      // button can't be pruned from the tree because it is used to compute the
+      // value of the MenuList.
+      if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+        for (const AXObject* ancestor = this;
+             ancestor && ancestor != ax_menu_list;
+             ancestor = ancestor->ParentObject()) {
+          if (HTMLSelectElement::IsSlottedButton(ancestor->GetNode())) {
+            return true;
+          }
+        }
+      }
+
       return ax_menu_list->IsIgnored();
     }
 
@@ -2274,7 +2289,10 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (ParentObjectIfPresent() && ParentObjectIfPresent()->RoleValue() ==
                                      ax::mojom::blink::Role::kComboBoxSelect) {
-    return ax::mojom::blink::Role::kMenuListPopup;
+    if (!RuntimeEnabledFeatures::CustomizableSelectEnabled() ||
+        HTMLSelectElement::IsPopoverForAppearanceBase(GetNode())) {
+      return ax::mojom::blink::Role::kMenuListPopup;
+    }
   }
 
   if (auto* option = DynamicTo<HTMLOptionElement>(*GetNode())) {
@@ -4404,6 +4422,18 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
         return overridden_description;
     }
 
+    // If the author replaced the button by providing their own <button> on a
+    // customizable select, then use the text inside that button:
+    // https://github.com/openui/open-ui/issues/1117
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+        select_element->IsAppearanceBaseButton()) {
+      if (auto* button = select_element->SlottedButton()) {
+        if (AXObject* button_object = AXObjectCache().Get(button)) {
+          return button_object->TextFromDescendants(visited, nullptr, false);
+        }
+      }
+    }
+
     // We don't retrieve the element's value attribute on purpose. The value
     // attribute might be sanitized and might be different from what is actually
     // displayed inside the <select> element on screen.
@@ -5857,19 +5887,6 @@ void AXNodeObject::AddNodeChildren() {
   }
 }
 
-void AXNodeObject::AddMenuListChildren() {
-  auto* select = To<HTMLSelectElement>(GetNode());
-  CHECK(select);
-  CHECK(select->UsesMenuList());
-  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-  // For select elements, we don't want to include the replaced button which is
-  // redundant with the select itself or the ::picker-icon pseudo-element. All
-  // of the options and everything else that gets rendered in the popup are
-  // slotted into PopoverForAppearanceBase, regardless of whether the select is
-  // in base appearance mode.
-  AddNodeChild(select->PopoverForAppearanceBase());
-}
-
 void AXNodeObject::AddOwnedChildren() {
   AXObjectVector owned_children;
   AXObjectCache().ValidatedAriaOwnedChildren(this, owned_children);
@@ -5915,14 +5932,7 @@ void AXNodeObject::AddChildrenImpl() {
     AddValidationMessageChild();
   CHECK_ATTACHED();
 
-  auto* select = DynamicTo<HTMLSelectElement>(GetNode());
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && select &&
-      select->UsesMenuList() && !select->IsMultiple()) {
-    // When CustomizableSelect is enabled, then we need to enforce our custom AX
-    // tree structure for select elements even if the author changed the select
-    // element's role by setting the role attribute.
-    AddMenuListChildren();
-  } else if (HasValidHTMLTableStructureAndLayout()) {
+  if (HasValidHTMLTableStructureAndLayout()) {
     AddTableChildren();
   } else if (GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement()) {
     AddScrollMarkerGroupChildren();
@@ -6027,20 +6037,6 @@ void AXNodeObject::AddChildren() {
 void AXNodeObject::AddNodeChild(Node* node) {
   if (!node)
     return;
-
-  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    if (auto* slot = DynamicTo<HTMLSlotElement>(node)) {
-      if (slot->IsInUserAgentShadowRoot() &&
-          IsA<HTMLSelectElement>(slot->OwnerShadowHost()) &&
-          slot->GetIdAttribute() == shadow_element_names::kSelectButton) {
-        // This is necessary in order to prevent the select's replaced button or
-        // the slot for it from getting included in the accessibility tree. The
-        // replaced button is redundant with the select element itself for
-        // accessibility and layout purposes and is hard coded to inert.
-        return;
-      }
-    }
-  }
 
   AXObject* ax_child = AXObjectCache().Get(node);
   CHECK(!ax_child || !ax_child->IsDetached());

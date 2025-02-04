@@ -1,7 +1,19 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
-++++++UNKNOWN focusable label='Currency for purchase' actions='{DEFAULT}' value='USD United States Dollar $'
+++++++UNKNOWN focusable label='Currency for purchase' actions='{DEFAULT}' value='USD'
+++++++++UNKNOWN hidden
+++++++++++BUTTON hidden
+++++++++++++UNKNOWN hidden
+++++++++++++++IMAGE hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++STATIC_TEXT hidden
+++++++++++++UNKNOWN hidden
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN hidden focusable label='EUR Euro' actions='{DEFAULT}'
