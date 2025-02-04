@@ -33,24 +33,6 @@
         "apk": "android-cts/testcases/CtsWebViewStartupApp.apk"
       },
       {
-        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
-        "voice_service": "android.assist.service/.MainInteractionService",
-        "additional_apks": [
-          {
-            "apk": "android-cts/testcases/CtsAssistApp.apk"
-          },
-          {
-            "apk": "android-cts/testcases/CtsAssistService.apk",
-            "force_full_mode": true
-          }
-        ],
-        "includes": [
-          {
-            "match": "android.assist.cts.WebViewTest#testWebView"
-          }
-        ]
-      },
-      {
         "apk": "android-cts/testcases/CtsWidgetTestCases.apk",
         "includes": [
           {
@@ -100,24 +82,6 @@
       },
       {
         "apk": "android-cts/testcases/CtsWebViewStartupApp.apk"
-      },
-      {
-        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
-        "voice_service": "android.assist.service/.MainInteractionService",
-        "additional_apks": [
-          {
-            "apk": "android-cts/testcases/CtsAssistApp.apk"
-          },
-          {
-            "apk": "android-cts/testcases/CtsAssistService.apk",
-            "force_full_mode": true
-          }
-        ],
-        "includes": [
-          {
-            "match": "android.assist.cts.WebViewTest#testWebView"
-          }
-        ]
       },
       {
         "apk": "android-cts/testcases/CtsWidgetTestCases.apk",
@@ -198,24 +162,6 @@
         ]
       },
       {
-        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
-        "voice_service": "android.assist.service/.MainInteractionService",
-        "additional_apks": [
-          {
-            "apk": "android-cts/testcases/CtsAssistApp.apk"
-          },
-          {
-            "apk": "android-cts/testcases/CtsAssistService.apk",
-            "force_full_mode": true
-          }
-        ],
-        "includes": [
-          {
-            "match": "android.assist.cts.WebViewTest#testWebView"
-          }
-        ]
-      },
-      {
         "apk": "android-cts/testcases/CtsTextTestCases.apk",
         "includes": [
           {
@@ -286,23 +232,6 @@
         "includes": [
           {
             "match": "android.widget.cts.RemoteViewsActivityTest#testWebView"
-          }
-        ]
-      },
-      {
-        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
-        "additional_apks": [
-          {
-            "apk": "android-cts/testcases/CtsAssistApp.apk"
-          },
-          {
-            "apk": "android-cts/testcases/CtsAssistService.apk",
-            "force_full_mode": true
-          }
-        ],
-        "includes": [
-          {
-            "match": "android.assist.cts.WebViewTest#testWebView"
           }
         ]
       },
@@ -474,23 +403,6 @@
         ]
       },
       {
-        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
-        "additional_apks": [
-          {
-            "apk": "android-cts/testcases/CtsAssistApp.apk"
-          },
-          {
-            "apk": "android-cts/testcases/CtsAssistService.apk",
-            "force_full_mode": true
-          }
-        ],
-        "includes": [
-          {
-            "match": "android.assist.cts.WebViewTest#testWebView"
-          }
-        ]
-      },
-      {
         "apk": "android-cts/testcases/CtsInputMethodTestCases.apk",
         "additional_apks": [
           {
@@ -641,23 +553,6 @@
         ]
       },
       {
-        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
-        "additional_apks": [
-          {
-            "apk": "android-cts/testcases/CtsAssistApp.apk"
-          },
-          {
-            "apk": "android-cts/testcases/CtsAssistService.apk",
-            "force_full_mode": true
-          }
-        ],
-        "includes": [
-          {
-            "match": "android.assist.cts.WebViewTest#testWebView"
-          }
-        ]
-      },
-      {
         "apk": "android-cts/testcases/CtsWidgetTestCases.apk",
         "includes": [
           {
@@ -794,23 +689,6 @@
         ]
       },
       {
-        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
-        "additional_apks": [
-          {
-            "apk": "android-cts/testcases/CtsAssistApp.apk"
-          },
-          {
-            "apk": "android-cts/testcases/CtsAssistService.apk",
-            "force_full_mode": true
-          }
-        ],
-        "includes": [
-          {
-            "match": "android.assist.cts.WebViewTest#testWebView"
-          }
-        ]
-      },
-      {
         "apk": "android-cts/testcases/CtsWidgetTestCases.apk",
         "includes": [
           {
@@ -944,23 +822,6 @@
         ],
         "teardown_commands": [
           "cmd autofill set bind-instant-service-allowed false"
-        ]
-      },
-      {
-        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
-        "additional_apks": [
-          {
-            "apk": "android-cts/testcases/CtsAssistApp.apk"
-          },
-          {
-            "apk": "android-cts/testcases/CtsAssistService.apk",
-            "force_full_mode": true
-          }
-        ],
-        "includes": [
-          {
-            "match": "android.assist.cts.WebViewTest#testWebView"
-          }
         ]
       },
       {
