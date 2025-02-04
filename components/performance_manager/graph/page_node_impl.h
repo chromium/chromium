@@ -195,7 +195,6 @@ class PageNodeImpl
     SetHadUserEdits(had_user_edits);
   }
 
-  base::WeakPtr<PageNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<PageNodeImpl> GetWeakPtr();
 
   // Functions meant to be called by a FrameNodeImpl:
@@ -415,7 +414,6 @@ class PageNodeImpl
       NotifiesOnlyOnChanges<bool, &PageNodeObserver::OnHadUserEditsChanged>
           had_user_edits_ GUARDED_BY_CONTEXT(sequence_checker_){false};
 
-  base::WeakPtr<PageNodeImpl> weak_this_;
   base::WeakPtrFactory<PageNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };

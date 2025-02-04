@@ -13,7 +13,9 @@
 namespace performance_manager {
 
 class FrameNode;
+class FrameNodeImpl;
 class WorkerNode;
+class WorkerNodeImpl;
 
 namespace execution_context {
 

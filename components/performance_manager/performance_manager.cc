@@ -76,7 +76,7 @@ base::WeakPtr<PageNode> PerformanceManager::GetPrimaryPageNodeForWebContents(
       PerformanceManagerTabHelper::FromWebContents(wc);
   if (!helper)
     return nullptr;
-  return helper->primary_page_node()->GetWeakPtrOnUIThread();
+  return helper->primary_page_node()->GetWeakPtr();
 }
 
 // static
@@ -95,7 +95,7 @@ base::WeakPtr<FrameNode> PerformanceManager::GetFrameNodeForRenderFrameHost(
     DCHECK(!rfh->IsRenderFrameLive());
     return nullptr;
   }
-  return frame_node->GetWeakPtrOnUIThread();
+  return frame_node->GetWeakPtr();
 }
 
 // static
@@ -106,7 +106,7 @@ PerformanceManager::GetProcessNodeForBrowserProcess() {
     return nullptr;
   }
   ProcessNodeImpl* process_node = registry->GetBrowserProcessNode();
-  return process_node ? process_node->GetWeakPtrOnUIThread() : nullptr;
+  return process_node ? process_node->GetWeakPtr() : nullptr;
 }
 
 // static
@@ -121,7 +121,7 @@ PerformanceManager::GetProcessNodeForRenderProcessHost(
   // indirectly from RenderProcessHost::Init.)
   if (!user_data)
     return nullptr;
-  return user_data->process_node()->GetWeakPtrOnUIThread();
+  return user_data->process_node()->GetWeakPtr();
 }
 
 // static
@@ -154,7 +154,7 @@ PerformanceManager::GetProcessNodeForBrowserChildProcessHostId(
     return nullptr;
   }
   ProcessNodeImpl* process_node = registry->GetBrowserChildProcessNode(id);
-  return process_node ? process_node->GetWeakPtrOnUIThread() : nullptr;
+  return process_node ? process_node->GetWeakPtr() : nullptr;
 }
 
 // static
@@ -165,7 +165,7 @@ base::WeakPtr<WorkerNode> PerformanceManager::GetWorkerNodeForToken(
     return nullptr;
   }
   WorkerNodeImpl* worker_node = registry->FindWorkerNodeForToken(token);
-  return worker_node ? worker_node->GetWeakPtrOnUIThread() : nullptr;
+  return worker_node ? worker_node->GetWeakPtr() : nullptr;
 }
 
 // static

@@ -69,13 +69,7 @@ FrameNodeImpl::FrameNodeImpl(
           process_node->GetRenderProcessHostId().value(),
           render_frame_id)),
       is_current_(is_current) {
-  // Nodes are created on the UI thread, then accessed on the PM sequence.
-  // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
-  // on the PM sequence.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  weak_this_ = weak_factory_.GetWeakPtr();
-
   DCHECK(process_node);
   DCHECK(page_node);
   // A <fencedframe>, MPArch <webview> has no parent node.
@@ -637,11 +631,6 @@ void FrameNodeImpl::SetPriorityAndReason(
   priority_and_reason_.SetAndMaybeNotify(this, priority_and_reason);
 }
 
-base::WeakPtr<FrameNodeImpl> FrameNodeImpl::GetWeakPtrOnUIThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return weak_this_;
-}
-
 base::WeakPtr<FrameNodeImpl> FrameNodeImpl::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
@@ -777,12 +766,6 @@ void FrameNodeImpl::RemoveChildFrame(FrameNodeImpl* child_frame_node) {
 
 void FrameNodeImpl::OnInitializingProperties() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Make sure all weak pointers, even `weak_this_` that was created on the UI
-  // thread in the constructor, can only be dereferenced on the graph sequence.
-  weak_factory_.BindToCurrentSequence(
-      base::subtle::BindWeakPtrFactoryPassKey());
-
   NodeAttachedDataStorage::Create(this);
   execution_context::FrameExecutionContext::Create(this, this);
 

@@ -27,13 +27,7 @@ WorkerNodeImpl::WorkerNodeImpl(const std::string& browser_context_id,
       process_node_(process_node),
       worker_token_(worker_token),
       origin_(origin) {
-  // Nodes are created on the UI thread, then accessed on the PM sequence.
-  // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
-  // on the PM sequence.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  weak_this_ = weak_factory_.GetWeakPtr();
-
   DCHECK(process_node);
 }
 
@@ -211,11 +205,6 @@ WorkerNode::NodeSetView<WorkerNodeImpl*> WorkerNodeImpl::child_workers() const {
   return NodeSetView<WorkerNodeImpl*>(child_workers_);
 }
 
-base::WeakPtr<WorkerNodeImpl> WorkerNodeImpl::GetWeakPtrOnUIThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return weak_this_;
-}
-
 base::WeakPtr<WorkerNodeImpl> WorkerNodeImpl::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
@@ -223,12 +212,6 @@ base::WeakPtr<WorkerNodeImpl> WorkerNodeImpl::GetWeakPtr() {
 
 void WorkerNodeImpl::OnInitializingProperties() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Make sure all weak pointers, even `weak_this_` that was created on the UI
-  // thread in the constructor, can only be dereferenced on the graph sequence.
-  weak_factory_.BindToCurrentSequence(
-      base::subtle::BindWeakPtrFactoryPassKey());
-
   NodeAttachedDataStorage::Create(this);
   execution_context::WorkerExecutionContext::Create(this, this);
 }

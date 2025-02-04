@@ -66,13 +66,7 @@ ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
     : process_type_(process_type),
       child_process_host_proxy_(std::move(proxy)),
       priority_(priority) {
-  // Nodes are created on the UI thread, then accessed on the PM sequence.
-  // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
-  // on the PM sequence.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-  weak_this_ = weak_factory_.GetWeakPtr();
-
   // Child process nodes must have a valid proxy.
   switch (process_type) {
     case content::PROCESS_TYPE_BROWSER:
@@ -392,11 +386,6 @@ void ProcessNodeImpl::add_hosted_content_type(ContentType content_type) {
   hosted_content_types_.Put(content_type);
 }
 
-base::WeakPtr<ProcessNodeImpl> ProcessNodeImpl::GetWeakPtrOnUIThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return weak_this_;
-}
-
 base::WeakPtr<ProcessNodeImpl> ProcessNodeImpl::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_factory_.GetWeakPtr();
@@ -450,12 +439,6 @@ void ProcessNodeImpl::OnAllFramesInProcessFrozen() {
 
 void ProcessNodeImpl::OnInitializingProperties() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Make sure all weak pointers, even `weak_this_` that was created on the UI
-  // thread in the constructor, can only be dereferenced on the graph sequence.
-  weak_factory_.BindToCurrentSequence(
-      base::subtle::BindWeakPtrFactoryPassKey());
-
   NodeAttachedDataStorage::Create(this);
 }
 
