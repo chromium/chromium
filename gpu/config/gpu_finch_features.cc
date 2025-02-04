@@ -352,11 +352,7 @@ BASE_FEATURE(kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported,
 // --enable-skia-graphite & --disable-skia-graphite.
 BASE_FEATURE(kSkiaGraphite,
              "SkiaGraphite",
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 // Enable Skia Graphite's Pipeline precompilation feature.
