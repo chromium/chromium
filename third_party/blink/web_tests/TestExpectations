@@ -8634,9 +8634,6 @@ crbug.com/348486001 [ Win11-arm64 ] virtual/prerender2-fallback-prefetch-spec-ru
 # The overlapping navigation behavior is flaky.
 crbug.com/348101805 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-nav.html [ Failure Pass ]
 
-# Disabled to unblock https://crrev.com/c/6216268
-crbug.com/343003619 http/tests/devtools/workspace-view-file-system-header.js [ Failure Pass ]
-
 # Flaky on Linux.
 crbug.com/324441376 [ Linux ] virtual/fractional-scroll-offsets/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
 crbug.com/324441376 [ Linux ] virtual/fluent-non-overlay-scrollbar/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
