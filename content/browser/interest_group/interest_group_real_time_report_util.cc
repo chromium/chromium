@@ -29,8 +29,13 @@ constexpr char kRealTimeReportPath[] =
 
 }  // namespace
 
+double CalculateFlipProbability(double epsilon) {
+  double f = 2.0 / (1 + std::exp(epsilon / 2.0));
+  return f / 2.0;
+}
+
 std::vector<uint8_t> Rappor(std::optional<int32_t> maybe_bucket,
-                            double epsilon,
+                            double flip_probability,
                             int num_buckets) {
   std::vector<uint8_t> histogram(num_buckets, 0);
   if (maybe_bucket.has_value()) {
@@ -40,11 +45,11 @@ std::vector<uint8_t> Rappor(std::optional<int32_t> maybe_bucket,
     CHECK_LT(*maybe_bucket, num_buckets);
     histogram[*maybe_bucket] = 1;
   }
-
-  double f = 2.0 / (1 + std::exp(epsilon / 2.0));
-  for (size_t i = 0; i < static_cast<size_t>(num_buckets); i++) {
-    if (base::RandDouble() < f / 2.0) {
-      histogram[i] = 1 - histogram[i];
+  if (flip_probability > 0) {
+    for (size_t i = 0; i < static_cast<size_t>(num_buckets); i++) {
+      if (base::RandDouble() < flip_probability) {
+        histogram[i] = 1 - histogram[i];
+      }
     }
   }
   return histogram;
@@ -83,19 +88,19 @@ CalculateRealTimeReportingHistograms(
     std::map<
         url::Origin,
         std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>>
-        contributions) {
+        contributions,
+    double flip_probability) {
   std::map<url::Origin, std::vector<uint8_t>> histograms;
   for (const auto& [origin, single_origin_contributions] : contributions) {
     std::optional<int32_t> maybe_bucket =
         SampleContributions(single_origin_contributions);
-    // If an origin did not make any contributions, it will contribute an
-    // array of zeros by default, which will still require the input going
-    // through the noising mechanism to satisfy the privacy requirements.
+    // If an origin did not make any contributions, it will contribute an array
+    // of zeros by default, which will still require the input going through the
+    // noising mechanism to satisfy the privacy requirements.
     histograms.emplace(
         origin,
         Rappor(
-            maybe_bucket,
-            blink::features::kFledgeRealTimeReportingEpsilon.Get(),
+            maybe_bucket, flip_probability,
             blink::features::kFledgeRealTimeReportingNumBuckets.Get() +
                 auction_worklet::RealTimeReportingPlatformError::kNumValues));
   }

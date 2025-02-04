@@ -47,6 +47,11 @@ BASE_FEATURE(kFledgeBiddingAndAuctionNonceSupport,
              "FledgeBiddingAndAuctionNonceSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable un-noised real time reporting for certain user settings.
+BASE_FEATURE(kFledgeEnableUnNoisedRealTimeReport,
+             "FledgeAllowUnNoisedRealTimeReport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable the user agent header in auction requests to be overridden.
 BASE_FEATURE(kFledgeEnableUserAgentOverrides,
              "FledgeEnableUserAgentOverrides",

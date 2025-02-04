@@ -26,6 +26,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableUserAgentOverrides);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableWALForInterestGroupStorage);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders);
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeEnableUnNoisedRealTimeReport);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeStartAnticipatoryProcesses);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
