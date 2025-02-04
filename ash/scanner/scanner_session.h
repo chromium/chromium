@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 
@@ -31,9 +32,11 @@ class ScannerProfileScopedDelegate;
 // SunfishSession.
 class ASH_EXPORT ScannerSession {
  public:
+  using FetchActionsResponse =
+      base::expected<std::vector<ScannerActionViewModel>, std::u16string>;
   // Callback used to receive the actions returned from a FetchActions call.
   using FetchActionsCallback =
-      base::OnceCallback<void(std::vector<ScannerActionViewModel> actions)>;
+      base::OnceCallback<void(FetchActionsResponse response)>;
   using PopulateActionCallback =
       base::OnceCallback<void(manta::proto::ScannerAction action)>;
 

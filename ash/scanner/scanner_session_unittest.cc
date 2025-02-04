@@ -12,9 +12,11 @@
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_metrics.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -24,6 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -31,8 +34,10 @@
 namespace ash {
 namespace {
 
+using ::base::test::ErrorIs;
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
+using ::base::test::ValueIs;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
 
@@ -52,7 +57,7 @@ scoped_refptr<base::RefCountedMemory> MakeJpegBytes(int width = 100,
   return base::MakeRefCounted<base::RefCountedBytes>(std::move(*data));
 }
 
-TEST(ScannerSessionTest, FetchActionsForImageReturnsEmptyWhenDelegateErrors) {
+TEST(ScannerSessionTest, FetchActionsForImageReturnsErrorWhenDelegateErrors) {
   FakeScannerProfileScopedDelegate delegate;
   EXPECT_CALL(delegate, FetchActionsForImage)
       .WillOnce(RunOnceCallback<1>(
@@ -60,10 +65,12 @@ TEST(ScannerSessionTest, FetchActionsForImageReturnsEmptyWhenDelegateErrors) {
                        .status_code = manta::MantaStatusCode::kInvalidInput}));
   ScannerSession session(&delegate);
 
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session.FetchActionsForImage(nullptr, future.GetCallback());
 
-  EXPECT_THAT(future.Take(), IsEmpty());
+  EXPECT_THAT(
+      future.Take(),
+      ErrorIs(l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ERROR_GENERIC)));
 }
 
 TEST(ScannerSessionTest,
@@ -75,10 +82,10 @@ TEST(ScannerSessionTest,
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
   ScannerSession session(&delegate);
 
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session.FetchActionsForImage(nullptr, future.GetCallback());
 
-  EXPECT_THAT(future.Take(), IsEmpty());
+  EXPECT_THAT(future.Take(), ValueIs(IsEmpty()));
 }
 
 TEST(ScannerSessionTest, FetchActionsForImageRecordsNumberOfActionsMetrics) {
@@ -167,10 +174,10 @@ TEST(ScannerSessionTest,
           manta::MantaStatus{.status_code = manta::MantaStatusCode::kOk}));
   ScannerSession session(&delegate);
 
-  base::test::TestFuture<std::vector<ScannerActionViewModel>> future;
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> future;
   session.FetchActionsForImage(nullptr, future.GetCallback());
 
-  EXPECT_THAT(future.Take(), SizeIs(3));
+  EXPECT_THAT(future.Take(), ValueIs(SizeIs(3)));
 }
 
 TEST(ScannerSessionTest, ResizesImageHeightToMaxEdge) {

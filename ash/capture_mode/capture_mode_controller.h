@@ -17,6 +17,7 @@
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/scanner/scanner_session.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -51,7 +52,6 @@ class CaptureModeBehavior;
 class CaptureModeCameraController;
 class CaptureModeObserver;
 class BaseCaptureModeSession;
-class ScannerActionViewModel;
 class SearchResultsPanel;
 
 // Defines a callback type that will be invoked when an attempt to delete the
@@ -572,7 +572,7 @@ class ASH_EXPORT CaptureModeController
   // suggest available Scanner actions.
   void OnScannerActionsFetched(
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
-      std::vector<ScannerActionViewModel> scanner_actions);
+      ScannerSession::FetchActionsResponse actions_response);
 
   // Called back when an attempt to save the image file has been completed, with
   // `file_saved_path` indicating whether the attempt succeeded or failed. If

@@ -6892,6 +6892,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCANNER_ERROR_TRY_AGAIN_LINK_TEXT" desc="The text on a try again link shown next to an error message indicating that something went wrong. The link can be pressed to try the action again.">
         Try again
       </message>
+      <message name="IDS_ASH_SCANNER_ERROR_GENERIC" desc="Generic message shown when an error occurs while loading actions for a screenshot.">
+        Something went wrong.
+      </message>
 
       <!-- Snap Group -->
       <message name="IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS" desc="Click to lock the windows.">
