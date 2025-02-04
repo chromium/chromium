@@ -1035,8 +1035,13 @@ TEST_P(ScrollingContentsCullRectTest, Basics) {
   CheckCullRect("long-composited-scroller", gfx::Rect(20, 20, 400, 4400));
   CheckCullRect("narrow-non-composited-scroller", std::nullopt);
   CheckCullRect("wide-non-composited-scroller", gfx::Rect(20, 20, 4400, 400));
-  CheckCullRect("composited-under-clip", std::nullopt);
-  CheckCullRect("non-composited-under-clip", std::nullopt);
+  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
+    CheckCullRect("composited-under-clip", gfx::Rect(20, 20, 1424, 400));
+    CheckCullRect("non-composited-under-clip", gfx::Rect(20, 20, 1424, 400));
+  } else {
+    CheckCullRect("composited-under-clip", std::nullopt);
+    CheckCullRect("non-composited-under-clip", std::nullopt);
+  }
 
   GetElementById("short-composited-scroller")->scrollTo(5000, 5000);
   GetElementById("long-composited-scroller")->scrollTo(5000, 5000);
@@ -1071,8 +1076,14 @@ TEST_P(ScrollingContentsCullRectTest, Basics) {
   CheckCullRect("long-composited-scroller", gfx::Rect(20, 1020, 400, 8400));
   CheckCullRect("narrow-non-composited-scroller", std::nullopt);
   CheckCullRect("wide-non-composited-scroller", gfx::Rect(1020, 20, 8400, 400));
-  CheckCullRect("composited-under-clip", std::nullopt);
-  CheckCullRect("non-composited-under-clip", std::nullopt);
+  CheckCullRect("wide-non-composited-scroller", gfx::Rect(1020, 20, 8400, 400));
+  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
+    CheckCullRect("composited-under-clip", gfx::Rect(3996, 20, 2448, 400));
+    CheckCullRect("non-composited-under-clip", gfx::Rect(3996, 20, 2448, 400));
+  } else {
+    CheckCullRect("composited-under-clip", std::nullopt);
+    CheckCullRect("non-composited-under-clip", std::nullopt);
+  }
 }
 
 TEST_P(ScrollingContentsCullRectTest, RepaintOnlyScroll) {

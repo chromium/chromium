@@ -850,7 +850,13 @@ TEST_F(CullRectUpdaterTest, OverriddenCullRectWithoutExpansion) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(clip).Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetContentsCullRect(clip).Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetCullRect(scroller).Rect());
-  EXPECT_EQ(gfx::Rect(0, 0, 1300, 1300), GetContentsCullRect(scroller).Rect());
+  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
+    EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
+              GetContentsCullRect(scroller).Rect());
+  } else {
+    EXPECT_EQ(gfx::Rect(0, 0, 1300, 1300),
+              GetContentsCullRect(scroller).Rect());
+  }
 
   {
     const bool disable_expansion = true;
@@ -867,10 +873,21 @@ TEST_F(CullRectUpdaterTest, OverriddenCullRectWithoutExpansion) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(clip).Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetContentsCullRect(clip).Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 300, 300), GetCullRect(scroller).Rect());
-  EXPECT_EQ(gfx::Rect(0, 0, 1300, 1300), GetContentsCullRect(scroller).Rect());
+  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
+    EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
+              GetContentsCullRect(scroller).Rect());
+  } else {
+    EXPECT_EQ(gfx::Rect(0, 0, 1300, 1300),
+              GetContentsCullRect(scroller).Rect());
+  }
 }
 
 TEST_F(CullRectUpdaterTest, LimitedDynamicCullRectExpansionY) {
+  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
+    // This test doesn't provide additional test coverage.
+    GTEST_SKIP();
+  }
+
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0 }</style>
     <div id="clip" style="width: 300px; height: 300px; overflow: hidden">
@@ -890,6 +907,11 @@ TEST_F(CullRectUpdaterTest, LimitedDynamicCullRectExpansionY) {
 }
 
 TEST_F(CullRectUpdaterTest, LimitedDynamicCullRectExpansionX) {
+  if (RuntimeEnabledFeatures::ScrollCullRectFromContainerRectEnabled()) {
+    // This test doesn't provide additional test coverage.
+    GTEST_SKIP();
+  }
+
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0 }</style>
     <div id="clip" style="width: 300px; height: 300px; overflow: hidden">
