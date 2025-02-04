@@ -24,6 +24,8 @@ source_set("webnn_switches") {
 component("webnn_service") {
   sources = [
     "error.h",
+    "webnn_constant_operand.cc",
+    "webnn_constant_operand.h",
     "webnn_context_impl.cc",
     "webnn_context_impl.h",
     "webnn_context_provider_impl.cc",
@@ -32,14 +34,18 @@ component("webnn_service") {
     "webnn_graph_builder_impl.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
+    "webnn_object_impl.h",
+    "webnn_pending_constant_operand.cc",
+    "webnn_pending_constant_operand.h",
     "webnn_tensor_impl.cc",
     "webnn_tensor_impl.h",
+    "webnn_utils.cc",
+    "webnn_utils.h",
   ]
 
   deps = [
     ":buildflags",
     ":webnn_switches",
-    ":webnn_utils",
     "//base",
     "//gpu/command_buffer/service:gles2",
     "//gpu/config",
@@ -149,25 +155,6 @@ component("webnn_service") {
   defines = [ "IS_WEBNN_SERVICE_IMPL" ]
 }
 
-component("webnn_utils") {
-  sources = [
-    "webnn_constant_operand.cc",
-    "webnn_constant_operand.h",
-    "webnn_object_impl.h",
-    "webnn_pending_constant_operand.cc",
-    "webnn_pending_constant_operand.h",
-    "webnn_utils.cc",
-    "webnn_utils.h",
-  ]
-
-  deps = [
-    "//base",
-    "//services/webnn/public/mojom",
-  ]
-
-  defines = [ "IS_WEBNN_UTILS_IMPL" ]
-}
-
 source_set("tests") {
   testonly = true
 
@@ -203,7 +190,6 @@ source_set("tests") {
   deps = [
     ":buildflags",
     ":webnn_service",
-    ":webnn_utils",
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
