@@ -1,0 +1,29 @@
+This is a wdspec test.
+[FAIL] test_close_context[window]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_close_context[tab]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_navigate
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_reload_context
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_sandbox[evaluate]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_sandbox[call_function]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_subscribe_after_sandbox_creation
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_iframe[same_origin]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_iframe[cross_origin]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_iframe_destroy_parent
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_subscribe_to_one_context
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_dedicated_worker
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_shared_worker
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

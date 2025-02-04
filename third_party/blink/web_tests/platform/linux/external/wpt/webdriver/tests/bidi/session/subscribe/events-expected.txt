@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_subscribe_to_module
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_subscribe_to_one_event_and_then_to_module
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_subscribe_to_module_and_then_to_one_event_again
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

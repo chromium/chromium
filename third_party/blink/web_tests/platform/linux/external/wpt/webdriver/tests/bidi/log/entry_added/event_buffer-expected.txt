@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_console_log_cached_message_after_refresh[console_api_log]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_console_log_cached_message_after_refresh[javascript_error]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

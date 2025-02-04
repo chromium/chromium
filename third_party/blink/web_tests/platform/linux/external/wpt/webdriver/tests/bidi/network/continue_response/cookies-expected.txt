@@ -1,26 +1,29 @@
 This is a wdspec test.
 [FAIL] test_cookie_response_started
-  StopIteration
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_cookie_attributes_response_started[no domain]
-  assert 0 == 1
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_cookie_attributes_response_started[default domain]
-  assert 0 == 1
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_cookie_attributes_response_started[alt domain]
-  assert 0 == 1
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_cookie_attributes_response_started[custom path]
-  assert 0 == 1
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_cookie_attributes_response_started[http only]
-  assert 0 == 1
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_cookie_attributes_response_started[secure]
-  assert 0 == 1
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_cookie_attributes_response_started[expiry]
-  assert 0 == 1
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_cookie_attributes_response_started[max age]
-  assert 0 == 1
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_cookie_attributes_response_started[same site none]
-  assert 0 == 1
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_cookie_attributes_response_started[same site lax]
-  assert 0 == 1
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_cookie_attributes_response_started[same site strict]
-  assert 0 == 1
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_no_cookie_before_request_sent
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 Harness: the test ran to completion.
+

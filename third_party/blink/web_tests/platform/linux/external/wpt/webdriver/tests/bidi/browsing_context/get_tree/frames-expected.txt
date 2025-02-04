@@ -1,0 +1,11 @@
+This is a wdspec test.
+[FAIL] test_user_context[same_origin-default]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_user_context[same_origin-new]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_user_context[cross_origin-default]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_user_context[cross_origin-new]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

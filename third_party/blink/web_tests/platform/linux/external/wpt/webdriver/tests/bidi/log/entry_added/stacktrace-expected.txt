@@ -1,0 +1,21 @@
+This is a wdspec test.
+[FAIL] test_console_entry_sync_callstack[assert]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_console_entry_sync_callstack[debug]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_console_entry_sync_callstack[error]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_console_entry_sync_callstack[info]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_console_entry_sync_callstack[log]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_console_entry_sync_callstack[table]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_console_entry_sync_callstack[trace]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_console_entry_sync_callstack[warn]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_javascript_entry_sync_callstack
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_one_context
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_new_context[tab]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_new_context[window]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_disable_globally_after_disable_for_context
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_enable_globally_after_disable_for_context
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_setting_cache_to_contexts_after_global_update
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

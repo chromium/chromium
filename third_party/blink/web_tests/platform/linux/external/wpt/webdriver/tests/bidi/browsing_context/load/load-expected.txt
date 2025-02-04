@@ -1,0 +1,21 @@
+This is a wdspec test.
+[FAIL] test_subscribe
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_timestamp
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_iframe
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_new_context_not_emitted[tab]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_new_context_not_emitted[window]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_document_write[None]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_document_write[sandbox_1]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_early_same_document_navigation
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_page_with_base_tag
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

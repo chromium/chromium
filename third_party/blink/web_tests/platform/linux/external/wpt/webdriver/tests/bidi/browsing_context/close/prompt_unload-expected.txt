@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_prompt_unload_not_triggering_dialog[None-window]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_prompt_unload_not_triggering_dialog[None-tab]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_prompt_unload_not_triggering_dialog[False-window]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_prompt_unload_not_triggering_dialog[False-tab]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_prompt_unload_triggering_dialog[capabilities0-window]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_prompt_unload_triggering_dialog[capabilities0-tab]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

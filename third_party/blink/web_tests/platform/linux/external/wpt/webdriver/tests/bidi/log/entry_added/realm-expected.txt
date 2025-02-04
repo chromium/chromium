@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_realm[default realm]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_realm[sandbox]
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

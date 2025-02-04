@@ -1,4 +1,16 @@
 This is a wdspec test.
+[FAIL] test_params_events_value_valid_and_invalid_event_name
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_unsubscribe_from_one_event_and_then_from_module
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_contexts_value_valid_and_invalid_value
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_unsubscribe_from_closed_tab
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_unsubscribe_globally_with_individual_subscription
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_params_unsubscribe_from_one_context_with_global_subscription
+  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_params_subscriptions_invalid_type[None]
   TypeError: unsubscribe() got an unexpected keyword argument 'subscriptions'
 [FAIL] test_params_subscriptions_invalid_type[True]

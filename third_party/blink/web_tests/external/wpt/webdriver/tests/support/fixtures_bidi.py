@@ -65,18 +65,17 @@ async def execute_as_async(bidi_session):
 async def subscribe_events(bidi_session):
     subscriptions = []
 
-    async def subscribe_events(events, contexts=None):
-        result = await bidi_session.session.subscribe(events=events, contexts=contexts)
-        subscriptions.append((events, contexts))
+    async def subscribe_events(events, contexts=None, user_contexts=None):
+        result = await bidi_session.session.subscribe(events=events, contexts=contexts, user_contexts=user_contexts)
+        subscriptions.append(result["subscription"])
         return result
 
     yield subscribe_events
 
-    for events, contexts in reversed(subscriptions):
+    for subscription in reversed(subscriptions):
         try:
-            await bidi_session.session.unsubscribe(events=events,
-                                                   contexts=contexts)
-        except (InvalidArgumentException, NoSuchFrameException):
+            await bidi_session.session.unsubscribe(subscriptions=[subscription])
+        except InvalidArgumentException:
             pass
 
 
