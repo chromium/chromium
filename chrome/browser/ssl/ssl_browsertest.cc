@@ -5581,7 +5581,19 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, DISABLED_PushStateSSLState) {
 class SSLUITestNoCert : public SSLUITest,
                         public CertificateManagerModel::Observer {
  public:
-  SSLUITestNoCert() = default;
+  SSLUITestNoCert() {
+    // These tests are specifically for the ChromeOS NSS database integration.
+    // On ChromeOS, once the kEnableCertManagementUIV2Write feature is launched
+    // NSS is no longer used and the equivalent functionality is provided by
+    // ServerCertificateDatabaseService and is tested by
+    // cert_verifier_service_browsertest.cc.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        {features::kEnableCertManagementUIV2,
+         features::kEnableCertManagementUIV2Write,
+         features::kEnableCertManagementUIV2EditCerts});
+  }
   ~SSLUITestNoCert() override = default;
 
   void SetUp() override {
@@ -5591,6 +5603,9 @@ class SSLUITestNoCert : public SSLUITest,
 
   // CertificateManagerModel::Observer implementation:
   void CertificatesRefreshed() override {}
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class TestCertDatabaseObserver : public net::CertDatabase::Observer {

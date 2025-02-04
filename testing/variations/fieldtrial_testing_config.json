@@ -8789,6 +8789,7 @@
     "EnableCertManagementUIV2": [
         {
             "platforms": [
+                "chromeos",
                 "linux"
             ],
             "experiments": [
@@ -8804,6 +8805,7 @@
     "EnableCertManagementUIV2Write": [
         {
             "platforms": [
+                "chromeos",
                 "linux",
                 "mac",
                 "windows"
