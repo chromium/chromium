@@ -15,6 +15,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -478,6 +479,63 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
   tab_strip_model_2->ActivateTabAt(1);
   EXPECT_EQ(tab_strip_model_2->GetActiveWebContents()->GetLastCommittedURL(),
             GURL(kTestUrl2));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
+                       ShouldMuteTabsAudioWhenLockOnBundleUpdated) {
+  content::TestNavigationObserver navigation_observer((GURL(kTestUrl1)));
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Start OnTask session and spawn one tab outside the homepage tab.
+  OnTaskSessionManager* const on_task_session_manager =
+      GetOnTaskSessionManager();
+  on_task_session_manager->OnSessionStarted(kSessionId, ::boca::UserIdentity());
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  on_task_session_manager->OnBundleUpdated(bundle);
+  navigation_observer.Wait();
+
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Open first browser window.
+  Browser* const browser_1 = browser();
+  chrome::NewTab(browser_1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_1, GURL(kTestUrl1)));
+
+  // Open second browser window.
+  Browser* const browser_2 =
+      Browser::Create(Browser::CreateParams(profile(), true));
+  chrome::NewTab(browser_2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_2, GURL(kTestUrl2)));
+
+  // Lock the boca app and tabs in boca app browser are not muted.
+  bundle.set_locked(true);
+  on_task_session_manager->OnBundleUpdated(bundle);
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  tab_strip_model->ActivateTabAt(1);
+  EXPECT_FALSE(tab_strip_model->GetActiveWebContents()->IsAudioMuted());
+
+  // Tabs in other browsers are muted.
+  EXPECT_TRUE(
+      browser_1->tab_strip_model()->GetActiveWebContents()->IsAudioMuted());
+  EXPECT_TRUE(
+      browser_2->tab_strip_model()->GetActiveWebContents()->IsAudioMuted());
+
+  // Unlock the boca app and tabs in boca app browser are not muted.
+  bundle.set_locked(false);
+  on_task_session_manager->OnBundleUpdated(bundle);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  tab_strip_model->ActivateTabAt(1);
+  EXPECT_FALSE(tab_strip_model->GetActiveWebContents()->IsAudioMuted());
+
+  // Tabs in other browsers are muted.
+  EXPECT_TRUE(
+      browser_1->tab_strip_model()->GetActiveWebContents()->IsAudioMuted());
+  EXPECT_TRUE(
+      browser_2->tab_strip_model()->GetActiveWebContents()->IsAudioMuted());
 }
 
 }  // namespace

@@ -50,6 +50,7 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
                                           bool close_bundle_content) override;
   SessionID GetActiveTabID() override;
   void SwitchToTab(SessionID tab_id) override;
+  void SetAllChromeTabsMuted(bool muted) override;
 
   void SetWindowTrackerForTesting(LockedSessionWindowTracker* window_tracker);
 

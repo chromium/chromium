@@ -285,6 +285,26 @@ void OnTaskSystemWebAppManagerImpl::SwitchToTab(SessionID tab_id) {
   }
 }
 
+void OnTaskSystemWebAppManagerImpl::SetAllChromeTabsMuted(bool muted) {
+  Browser* const boca_browser =
+      GetBrowserWindowWithID(GetActiveSystemWebAppWindowID());
+  if (!boca_browser) {
+    return;
+  }
+  for (Browser* const browser : *BrowserList::GetInstance()) {
+    if (!browser || browser == boca_browser) {
+      continue;
+    }
+    for (int idx = 0; idx < browser->tab_strip_model()->count(); ++idx) {
+      content::WebContents* const tab =
+          browser->tab_strip_model()->GetWebContentsAt(idx);
+      if (tab) {
+        tab->SetAudioMuted(muted);
+      }
+    }
+  }
+}
+
 void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForTesting(
     LockedSessionWindowTracker* window_tracker) {
   window_tracker_for_testing_ = window_tracker;

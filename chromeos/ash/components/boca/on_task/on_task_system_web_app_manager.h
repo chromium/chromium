@@ -71,6 +71,9 @@ class OnTaskSystemWebAppManager {
   // Switch to the tab with associated with `tab_id`.
   virtual void SwitchToTab(SessionID tab_id) = 0;
 
+  // Mute/unmute all tabs in all browser instances.
+  virtual void SetAllChromeTabsMuted(bool muted) = 0;
+
  protected:
   OnTaskSystemWebAppManager() = default;
 };
