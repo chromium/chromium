@@ -189,6 +189,11 @@ WebAppFrameToolbarView::GetExtensionsToolbarContainer() {
   return right_container_->extensions_container();
 }
 
+PinnedToolbarActionsContainer*
+WebAppFrameToolbarView::GetPinnedToolbarActionsContainer() {
+  return right_container_->pinned_toolbar_actions_container();
+}
+
 gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
   const int size = GetLayoutConstant(WEB_APP_MENU_BUTTON_SIZE);
   return gfx::Size(size, size);
@@ -275,8 +280,8 @@ IntentChipButton* WebAppFrameToolbarView::GetIntentChipButton() {
   return nullptr;
 }
 
-DownloadToolbarButtonView* WebAppFrameToolbarView::GetDownloadButton() {
-  return right_container_ ? right_container_->download_button() : nullptr;
+ToolbarButton* WebAppFrameToolbarView::GetDownloadButton() {
+  return right_container_ ? right_container_->GetDownloadButton() : nullptr;
 }
 
 bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,

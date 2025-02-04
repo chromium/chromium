@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -46,6 +47,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_navigation_button_container.h"
@@ -163,6 +165,11 @@ SkColor GetFrameColor(Browser* browser) {
 
 class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
  public:
+  WebAppFrameToolbarBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPinnableDownloadsButton);
+  }
+
   WebAppFrameToolbarTestHelper* helper() {
     return &web_app_frame_toolbar_helper_;
   }
@@ -179,6 +186,7 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 };
 
@@ -331,6 +339,25 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
     EXPECT_EQ(get_ink_drop_color(), original_ink_drop_color);
   }
 #endif
+}
+
+// Test that there are no buttons in the PinnedToolbarActionsContainer by
+// default.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
+                       NoPinnedActionsByDefault) {
+  const GURL app_url("https://test.org");
+  helper()->InstallAndLaunchWebApp(browser(), app_url);
+
+  int button_count = 0;
+  for (views::View* child : helper()
+                                ->web_app_frame_toolbar()
+                                ->GetPinnedToolbarActionsContainer()
+                                ->children()) {
+    if (views::Button::AsButton(child)) {
+      button_count++;
+    }
+  }
+  EXPECT_EQ(button_count, 0);
 }
 
 // Test that a tooltip is shown when hovering over a truncated title.
@@ -1684,7 +1711,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   // the app browser or the non-app browser.
   WebAppToolbarButtonContainer* toolbar_button_container =
       helper()->web_app_frame_toolbar()->get_right_container_for_testing();
-  EXPECT_FALSE(toolbar_button_container->download_button()->GetVisible());
+  EXPECT_EQ(toolbar_button_container->GetDownloadButton(), nullptr);
   EXPECT_FALSE(non_app_browser->window()
                    ->GetDownloadBubbleUIController()
                    ->GetDownloadDisplayController()
@@ -1699,7 +1726,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
           base::FilePath().AppendASCII("a_zip_file.zip")));
 
   // The download button is visible in the app browser.
-  EXPECT_TRUE(toolbar_button_container->download_button()->GetVisible());
+  EXPECT_TRUE(toolbar_button_container->GetDownloadButton()->GetVisible());
 
   // The download button is not visible in the non-app browser.
   EXPECT_FALSE(non_app_browser->window()
@@ -1722,7 +1749,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   // the app browser or the non-app browser.
   WebAppToolbarButtonContainer* toolbar_button_container =
       helper()->web_app_frame_toolbar()->get_right_container_for_testing();
-  EXPECT_FALSE(toolbar_button_container->download_button()->GetVisible());
+  EXPECT_EQ(toolbar_button_container->GetDownloadButton(), nullptr);
   EXPECT_FALSE(non_app_browser->window()
                    ->GetDownloadBubbleUIController()
                    ->GetDownloadDisplayController()
@@ -1736,7 +1763,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                            base::FilePath().AppendASCII("a_zip_file.zip")));
 
   // The download button is not visible in the app browser.
-  EXPECT_FALSE(toolbar_button_container->download_button()->GetVisible());
+  EXPECT_EQ(toolbar_button_container->GetDownloadButton(), nullptr);
 
   // The download button is visible in the non-app browser.
   EXPECT_TRUE(non_app_browser->window()

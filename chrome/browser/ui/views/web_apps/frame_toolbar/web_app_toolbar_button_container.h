@@ -26,6 +26,7 @@
 class WebAppContentSettingsContainer;
 class BrowserView;
 class ToolbarButtonProvider;
+class PinnedToolbarActionsContainer;
 class ExtensionsToolbarContainer;
 class WebAppMenuButton;
 class WebAppOriginText;
@@ -67,6 +68,8 @@ class WebAppToolbarButtonContainer : public views::View,
 
   views::FlexRule GetFlexRule() const;
 
+  ToolbarButton* GetDownloadButton();
+
   WebAppContentSettingsContainer* content_settings_container() {
     return content_settings_container_;
   }
@@ -79,12 +82,12 @@ class WebAppToolbarButtonContainer : public views::View,
     return extensions_container_;
   }
 
-  ExtensionsToolbarCoordinator* extensions_toolbar_coordinator() {
-    return extensions_toolbar_coordinator_.get();
+  PinnedToolbarActionsContainer* pinned_toolbar_actions_container() {
+    return pinned_toolbar_actions_container_;
   }
 
-  DownloadToolbarButtonView* download_button() {
-    return download_button_.get();
+  ExtensionsToolbarCoordinator* extensions_toolbar_coordinator() {
+    return extensions_toolbar_coordinator_.get();
   }
 
   WebAppMenuButton* web_app_menu_button() { return web_app_menu_button_; }
@@ -172,9 +175,11 @@ class WebAppToolbarButtonContainer : public views::View,
       window_controls_overlay_toggle_button_ = nullptr;
   raw_ptr<WebAppContentSettingsContainer> content_settings_container_ = nullptr;
   raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  raw_ptr<PinnedToolbarActionsContainer> pinned_toolbar_actions_container_ =
+      nullptr;
   raw_ptr<WebAppMenuButton> web_app_menu_button_ = nullptr;
   raw_ptr<SystemAppAccessibleName> system_app_accessible_name_ = nullptr;
-  raw_ptr<DownloadToolbarButtonView> download_button_ = nullptr;
+  raw_ptr<ToolbarButton> download_button_ = nullptr;
   raw_ptr<AvatarToolbarButton> avatar_button_ = nullptr;
 };
 

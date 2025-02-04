@@ -3460,7 +3460,8 @@ DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
   }
   DCHECK(toolbar_button_provider_);
   if (auto* download_button = toolbar_button_provider_->GetDownloadButton()) {
-    return download_button->bubble_controller();
+    return static_cast<DownloadToolbarButtonView*>(download_button)
+        ->bubble_controller();
   }
   return nullptr;
 }
@@ -4802,11 +4803,6 @@ void BrowserView::AddedToWidget() {
 #endif
 
   toolbar_->Init();
-  if (download::IsDownloadBubbleEnabled() &&
-      features::IsToolbarPinningEnabled() &&
-      base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
-    browser_->GetFeatures().download_toolbar_ui_controller()->Init();
-  }
 
   // TODO(pbos): Investigate whether the side panels should be creatable when
   // the ToolbarView does not create a button for them. This specifically seems
@@ -4852,6 +4848,12 @@ void BrowserView::AddedToWidget() {
   // hosted app frame).
   if (!toolbar_button_provider_) {
     SetToolbarButtonProvider(toolbar_);
+  }
+
+  if (download::IsDownloadBubbleEnabled() &&
+      features::IsToolbarPinningEnabled() &&
+      base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
+    browser_->GetFeatures().download_toolbar_ui_controller()->Init();
   }
 
   frame_->OnBrowserViewInitViewsComplete();

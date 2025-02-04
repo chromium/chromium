@@ -88,7 +88,10 @@ constexpr base::TimeDelta kAutoClosePartialViewDelay = base::Seconds(5);
 
 PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer(
     BrowserView* browser_view) {
-  return browser_view->toolbar()->pinned_toolbar_actions_container();
+  auto* toolbar_button_provider = browser_view->toolbar_button_provider();
+  return toolbar_button_provider
+             ? toolbar_button_provider->GetPinnedToolbarActionsContainer()
+             : nullptr;
 }
 
 ToolbarButton* GetDownloadsButton(BrowserView* browser_view) {
