@@ -1053,4 +1053,9 @@ extern const char kMediumFullscreenTransitionOffsetParam[];
 // the fullscreen transition or the speed of the transition.
 BASE_DECLARE_FEATURE(kFullscreenTransition);
 
+// Feature flag for switching the toolbar UI to an observer-based architecture.
+BASE_DECLARE_FEATURE(kRefactorToolbarUI);
+
+bool IsRefactorToolbarUI();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

@@ -925,6 +925,10 @@ extern const char kIPHPriceNotificationsWhileBrowsingDescription[];
 extern const char kNotificationSettingsMenuItemName[];
 extern const char kNotificationSettingsMenuItemDescription[];
 
+// Title and description for the flag to refactor the toolbarUI.
+extern const char kRefactorToolbarUIName[];
+extern const char kRefactorToolbarUIDescription[];
+
 // Title and description for the flag to remove excess NTP tabs that don't have
 // navigation history.
 extern const char kRemoveExcessNTPsExperimentName[];

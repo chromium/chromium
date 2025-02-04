@@ -2370,6 +2370,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kDeprecateFeedHeader,
                                     kDeprecateFeedHeaderVariations,
                                     "IOSDeprecateFeedHeader")},
+    {"refactor-toolbar-ui", flag_descriptions::kRefactorToolbarUIName,
+     flag_descriptions::kRefactorToolbarUIDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kRefactorToolbarUI)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
