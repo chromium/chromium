@@ -21,6 +21,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.TitleBitmapFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -307,8 +308,19 @@ public class LayerTitleCache {
      */
     public void fetchFaviconWithCallback(final Tab tab, FaviconImageCallback callback) {
         if (mFaviconHelper == null) mFaviconHelper = new FaviconHelper();
-        mFaviconHelper.getLocalFaviconImageForURL(
-                tab.getProfile(), tab.getUrl(), mFaviconSize, callback);
+
+        if (tab.getTabGroupId() != null
+                && !tab.isOffTheRecord()
+                && ChromeFeatureList.sTabSwitcherForeignFaviconSupport.isEnabled()) {
+            // This mirrors the async tab favicon request implementation for tab list.
+            // See TabListFaviconProvider#getFaviconForTabAsync for more detailed notes.
+            // TODO(crbug.com/394165786): Unify with the aforementioned TabListFaviconProvider code.
+            mFaviconHelper.getForeignFaviconImageForURL(
+                    tab.getProfile(), tab.getUrl(), mFaviconSize, callback);
+        } else {
+            mFaviconHelper.getLocalFaviconImageForURL(
+                    tab.getProfile(), tab.getUrl(), mFaviconSize, callback);
+        }
     }
 
     /**
