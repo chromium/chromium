@@ -4,6 +4,9 @@
 
 #include "chrome/browser/glic/interactive_glic_test.h"
 
+#include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/polling_state_observer.h"

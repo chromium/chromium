@@ -3426,6 +3426,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/glic:browser_tests",
         "//chrome/browser/glic:glic",
+        "//chrome/browser/glic:test_support",
         "//chrome/browser/glic/launcher:browser_tests",
         "//chrome/browser/glic/launcher:launcher",
       ]

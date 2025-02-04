@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 
 #include "base/containers/flat_set.h"
+#include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/border_view.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/glic_settings_util.h"
+#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -29,40 +31,38 @@
 
 namespace glic {
 
-GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
+GlicKeyedService::GlicKeyedService(Profile* profile,
                                    signin::IdentityManager* identity_manager,
                                    GlicProfileManager* profile_manager)
-    : browser_context_(browser_context),
-      configuration_(Profile::FromBrowserContext(browser_context)),
-      window_controller_(Profile::FromBrowserContext(browser_context)),
-      focused_tab_manager_(Profile::FromBrowserContext(browser_context),
-                           window_controller_),
+    : profile_(profile),
+      configuration_(profile),
+      window_controller_(std::make_unique<GlicWindowController>(profile, this)),
+      focused_tab_manager_(profile, *window_controller_),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
-      fre_cookie_synchronizer_(browser_context,
+      fre_cookie_synchronizer_(profile,
                                identity_manager,
                                /*use_for_fre=*/true),
-      cookie_synchronizer_(browser_context, identity_manager),
+      auth_controller_(
+          std::make_unique<AuthController>(profile, identity_manager)),
       profile_manager_(profile_manager) {
-  CHECK(GlicEnabling::IsProfileEligible(
-      Profile::FromBrowserContext(browser_context)));
-  metrics_ = std::make_unique<GlicMetrics>(&window_controller_);
+  CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
+  metrics_ = std::make_unique<GlicMetrics>(window_controller_.get());
 }
 
 GlicKeyedService::~GlicKeyedService() = default;
 
 void GlicKeyedService::Shutdown() {
-  window_controller_.Shutdown();
+  window_controller_->Shutdown();
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi) {
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to
   // this method should already have been removed.
-  CHECK(GlicEnabling::IsEnabledForProfile(
-      Profile::FromBrowserContext(browser_context_)));
+  CHECK(GlicEnabling::IsEnabledForProfile(profile_));
 
   profile_manager_->SetActiveGlic(this);
-  window_controller_.Toggle(bwi);
+  window_controller_->Toggle(bwi);
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
@@ -80,6 +80,16 @@ void GlicKeyedService::PageHandlerAdded(GlicPageHandler* page_handler) {
 
 void GlicKeyedService::PageHandlerRemoved(GlicPageHandler* page_handler) {
   page_handlers_.erase(page_handler);
+}
+
+bool GlicKeyedService::IsWindowShowing() const {
+  return window_controller_->IsShowing();
+}
+
+void GlicKeyedService::NotifyWindowIntentToShow() {
+  for (auto& handler : page_handlers_) {
+    handler->NotifyWindowIntentToShow();
+  }
 }
 
 GlicPageHandler* GlicKeyedService::GetPageHandler(
@@ -118,8 +128,7 @@ void GlicKeyedService::CreateTab(
   // createTab() correctly. It should consider which window to use, and observe
   // the `open_in_background` flag. It should return actual data using the
   // callback.
-  NavigateParams params(Profile::FromBrowserContext(browser_context_), url,
-                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  NavigateParams params(profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = open_in_background
                            ? WindowOpenDisposition::NEW_BACKGROUND_TAB
                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -128,26 +137,26 @@ void GlicKeyedService::CreateTab(
 }
 
 void GlicKeyedService::OpenGlicSettingsPage() {
-  ::glic::OpenGlicSettingsPage(Profile::FromBrowserContext(browser_context_));
+  ::glic::OpenGlicSettingsPage(profile_);
 }
 
 void GlicKeyedService::ClosePanel() {
-  window_controller_.Close();
+  window_controller_->Close();
   SetContextAccessIndicator(false);
 }
 
 void GlicKeyedService::AttachPanel() {
-  window_controller_.Attach();
+  window_controller_->Attach();
 }
 
 void GlicKeyedService::DetachPanel() {
-  window_controller_.Detach();
+  window_controller_->Detach();
 }
 
 void GlicKeyedService::ResizePanel(const gfx::Size& size,
                                    base::TimeDelta duration,
                                    base::OnceClosure callback) {
-  window_controller_.Resize(size, duration, std::move(callback));
+  window_controller_->Resize(size, duration, std::move(callback));
 }
 
 void GlicKeyedService::ShowProfilePicker() {
@@ -165,7 +174,7 @@ void GlicKeyedService::ShowProfilePicker() {
 
 void GlicKeyedService::SetPanelDraggableAreas(
     const std::vector<gfx::Rect>& draggable_areas) {
-  window_controller_.SetDraggableAreas(draggable_areas);
+  window_controller_->SetDraggableAreas(draggable_areas);
 }
 
 void GlicKeyedService::SetContextAccessIndicator(bool show) {
@@ -210,7 +219,7 @@ void GlicKeyedService::GetContextFromFocusedTab(
 void GlicKeyedService::CaptureScreenshot(
     mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   screenshot_capturer_->CaptureScreenshot(
-      window_controller_.GetGlicWidget()->GetNativeWindow(),
+      window_controller_->GetGlicWidget()->GetNativeWindow(),
       std::move(callback));
 }
 
@@ -233,37 +242,34 @@ base::CallbackListSubscription GlicKeyedService::AddWebClientCreatedCallback(
 }
 
 void GlicKeyedService::TryPreload() {
-  CHECK(GlicEnabling::IsEnabledForProfile(
-      Profile::FromBrowserContext(browser_context_)));
+  CHECK(GlicEnabling::IsEnabledForProfile(profile_));
   if (!profile_manager_) {
     return;
   }
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  Profile* profile = profile_;
   if (!profile_manager_->ShouldPreloadForProfile(profile)) {
     return;
   }
 
-  window_controller_.Preload();
+  window_controller_->Preload();
 }
 
 void GlicKeyedService::ReloadWebview() {
-  window_controller_.ReloadWebview();
+  window_controller_->ReloadWebview();
 }
 
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void GlicKeyedService::SyncWebviewCookies(
-    mojom::PageHandler::SyncWebviewCookiesCallback callback) {
-  cookie_synchronizer_.CopyCookiesToWebviewStoragePartition(
+void GlicKeyedService::SyncWebviewCookiesForFre(
+    glic::mojom::FrePageHandler::SyncWebviewCookiesCallback callback) {
+  fre_cookie_synchronizer_.CopyCookiesToWebviewStoragePartition(
       std::move(callback));
 }
 
-void GlicKeyedService::SyncWebviewCookiesForFre(
-    mojom::PageHandler::SyncWebviewCookiesCallback callback) {
-  fre_cookie_synchronizer_.CopyCookiesToWebviewStoragePartition(
-      std::move(callback));
+bool GlicKeyedService::IsActiveWebContents(content::WebContents* contents) {
+  return contents && contents == window_controller().GetWebContents();
 }
 
 }  // namespace glic

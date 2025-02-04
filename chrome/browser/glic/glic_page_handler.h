@@ -26,7 +26,8 @@ class GlicWebClientHandler;
 class GlicPageHandler : public glic::mojom::PageHandler {
  public:
   GlicPageHandler(content::WebContents* webui_contents,
-                  mojo::PendingReceiver<glic::mojom::PageHandler> receiver);
+                  mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
+                  mojo::PendingRemote<glic::mojom::Page> page);
 
   GlicPageHandler(const GlicPageHandler&) = delete;
   GlicPageHandler& operator=(const GlicPageHandler&) = delete;
@@ -40,6 +41,8 @@ class GlicPageHandler : public glic::mojom::PageHandler {
   // guest view alive at one time within GlicPageHandler.
   void GuestAdded(content::WebContents* guest_contents);
 
+  void NotifyWindowIntentToShow();
+
   // Returns the guest view's WebContents that lives within this WebUI. May be
   // null.
   content::WebContents* guest_contents() { return guest_contents_.get(); }
@@ -48,8 +51,8 @@ class GlicPageHandler : public glic::mojom::PageHandler {
 
   void CreateWebClient(::mojo::PendingReceiver<glic::mojom::WebClientHandler>
                            web_client_receiver) override;
-  void SyncWebviewCookies(SyncWebviewCookiesCallback callback) override;
-  // Called whenever the webview mainframe commits.
+  void PrepareForClient(base::OnceCallback<void(bool)> callback) override;
+  // Called whenever the webview main frame commits.
   void WebviewCommitted(const GURL& origin) override;
 
   void ClosePanel() override;
@@ -60,7 +63,7 @@ class GlicPageHandler : public glic::mojom::PageHandler {
 
   void IsProfileEnabled(IsProfileEnabledCallback callback) override;
 
-  void WebUiStateChanged(mojom::WebUiState new_state) override;
+  void WebUiStateChanged(glic::mojom::WebUiState new_state) override;
 
  private:
   GlicKeyedService* GetGlicService();
@@ -72,6 +75,7 @@ class GlicPageHandler : public glic::mojom::PageHandler {
   raw_ptr<content::BrowserContext> browser_context_;
   base::WeakPtr<content::WebContents> guest_contents_;
   mojo::Receiver<glic::mojom::PageHandler> receiver_;
+  mojo::Remote<glic::mojom::Page> page_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
   base::WeakPtrFactory<GlicPageHandler> weak_ptr_factory_{this};
 };

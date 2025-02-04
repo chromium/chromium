@@ -249,11 +249,13 @@ enum class AccessPoint : int {
   // Access point triggered when a user attempts to share or join a tab group
   // without being signed in or synced.
   kCollaborationTabGroup = 73,
+  // Glic launch button on the tab strip.
+  kGlicLaunchButton = 74,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kCollaborationTabGroup,  // This must be last.
+  kMaxValue = kGlicLaunchButton,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

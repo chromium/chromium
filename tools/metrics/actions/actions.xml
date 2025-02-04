@@ -39087,6 +39087,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromGlicLaunchButton">
+  <owner>harringtond@chromium.org</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <description>
+    Recorded when a user taps the Glic button on the tab strip, and is directed
+    to sign in.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromGoogleServicesSettings">
   <owner>bsazonov@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>

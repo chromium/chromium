@@ -46,7 +46,8 @@ class GlicCookieSynchronizer
   GlicCookieSynchronizer& operator=(const GlicCookieSynchronizer&) = delete;
   virtual ~GlicCookieSynchronizer();
 
-  void CopyCookiesToWebviewStoragePartition(
+  // Virtual for overriding in tests.
+  virtual void CopyCookiesToWebviewStoragePartition(
       base::OnceCallback<void(bool)> callback);
 
  protected:

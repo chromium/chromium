@@ -6,6 +6,8 @@
 
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_test_environment.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -76,6 +78,13 @@ class GuestUtilBrowserTest : public InProcessBrowserTest {
         IdentityManagerFactory::GetForProfile(browser()->profile());
     CoreAccountInfo account_info = SetPrimaryAccount(
         identity_manager, "foo@gmail.com", signin::ConsentLevel::kSync);
+    // TODO(cuianthony): Move this logic to glic_test_util.h after
+    // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
+    PrefService* prefs = InProcessBrowserTest::browser()->profile()->GetPrefs();
+    prefs->SetBoolean(prefs::kGlicCompletedFre, true);
+
+    glic_test_environment_ =
+        std::make_unique<glic::GlicTestEnvironment>(browser()->profile());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -89,6 +98,7 @@ class GuestUtilBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   guest_view::TestGuestViewManagerFactory factory_;
+  std::unique_ptr<glic::GlicTestEnvironment> glic_test_environment_;
 };
 
 IN_PROC_BROWSER_TEST_F(GuestUtilBrowserTest, OnGuestAdded_NonGlic) {

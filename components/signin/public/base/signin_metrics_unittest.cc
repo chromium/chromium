@@ -48,6 +48,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kAvatarBubbleSignInWithSyncPromo,
     AccessPoint::kProductSpecifications,
     AccessPoint::kAddressBubble,
+    AccessPoint::kGlicLaunchButton,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
@@ -216,6 +217,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "DriveFilePickerIOS";
       case AccessPoint::kCollaborationTabGroup:
         return "ShareGroupCollaboration";
+      case AccessPoint::kGlicLaunchButton:
+        return "GlicLaunchButton";
     }
   }
 };

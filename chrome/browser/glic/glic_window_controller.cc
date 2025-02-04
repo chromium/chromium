@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_fre_dialog_view.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_resize_animation.h"
@@ -202,9 +203,11 @@ class GlicWindowController::AnchorObserver : public views::ViewObserver,
   raw_ptr<GlicWindowController> controller_;
 };
 
-GlicWindowController::GlicWindowController(Profile* profile)
+GlicWindowController::GlicWindowController(Profile* profile,
+                                           GlicKeyedService* glic_service)
     : profile_(profile),
-      fre_controller_(std::make_unique<GlicFreController>()) {}
+      fre_controller_(std::make_unique<GlicFreController>()),
+      glic_service_(glic_service) {}
 
 GlicWindowController::~GlicWindowController() = default;
 
@@ -403,9 +406,26 @@ void GlicWindowController::Show(Browser* browser) {
   if (!contents_) {
     contents_ = std::make_unique<WebUIContentsContainer>(profile_, this);
   }
+  glic_service_->NotifyWindowIntentToShow();
+  glic_service_->GetAuthController().CheckAuthBeforeShow(
+      base::BindOnce(&GlicWindowController::AuthCheckDoneBeforeShow,
+                     GetWeakPtr(), browser ? browser->AsWeakPtr() : nullptr));
+}
 
-  if (browser) {
-    OpenAttached(browser);
+void GlicWindowController::AuthCheckDoneBeforeShow(
+    base::WeakPtr<Browser> browser_for_attachment,
+    AuthController::BeforeShowResult result) {
+  switch (result) {
+    case AuthController::BeforeShowResult::kShowingReauthSigninPage:
+      state_ = State::kClosed;
+      return;
+    case AuthController::BeforeShowResult::kReady:
+    case AuthController::BeforeShowResult::kSyncFailed:
+      break;
+  }
+
+  if (browser_for_attachment) {
+    OpenAttached(browser_for_attachment.get());
   } else {
     OpenDetached();
   }

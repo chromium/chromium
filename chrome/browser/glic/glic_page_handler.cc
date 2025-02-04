@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -80,7 +81,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::BindRepeating(&GlicWebClientHandler::OnFocusedTabChanged,
                             base::Unretained(this)));
 
-    auto state = mojom::WebClientInitialState::New();
+    auto state = glic::mojom::WebClientInitialState::New();
     state->chrome_version = version_info::GetVersion();
     state->microphone_permission_enabled =
         pref_service_->GetBoolean(prefs::kGlicMicrophoneEnabled);
@@ -141,7 +142,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void GetContextFromFocusedTab(
-      mojom::GetTabContextOptionsPtr options,
+      glic::mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
     glic_service_->GetContextFromFocusedTab(*options, std::move(callback));
   }
@@ -211,7 +212,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       return;
     }
 
-    auto result = mojom::UserProfileInfo::New();
+    auto result = glic::mojom::UserProfileInfo::New();
     // TODO(crbug.com/382794680): Determine the correct size.
     gfx::Image icon = entry->GetAvatarIcon(512);
     if (!icon.IsEmpty()) {
@@ -224,10 +225,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void SyncCookies(SyncCookiesCallback callback) override {
-    glic_service_->SyncWebviewCookies(std::move(callback));
+    glic_service_->GetAuthController().ForceSyncCookies(std::move(callback));
   }
 
-  void OnUserInputSubmitted(mojom::WebClientMode mode) override {
+  void OnUserInputSubmitted(glic::mojom::WebClientMode mode) override {
     glic_service_->metrics()->OnUserInputSubmitted(mode);
   }
 
@@ -248,18 +249,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   // GlicWindowController::StateObserver implementation.
-  void PanelStateChanged(const mojom::PanelState& panel_state) override {
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override {
     web_client_->NotifyPanelStateChange(panel_state.Clone());
   }
 
   // GlicWebClientAccess implementation.
 
-  void PanelWillOpen(const mojom::PanelState& panel_state,
+  void PanelWillOpen(const glic::mojom::PanelState& panel_state,
                      PanelWillOpenCallback done) override {
     web_client_->NotifyPanelWillOpen(
         panel_state.Clone(),
         base::BindOnce(
-            [](PanelWillOpenCallback done, mojom::WebClientMode mode) {
+            [](PanelWillOpenCallback done, glic::mojom::WebClientMode mode) {
               base::UmaHistogramEnumeration("Glic.Api.NotifyPanelWillOpen",
                                             mode);
               std::move(done).Run(mode);
@@ -315,15 +316,17 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
 GlicPageHandler::GlicPageHandler(
     content::WebContents* webui_contents,
-    mojo::PendingReceiver<glic::mojom::PageHandler> receiver)
+    mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
+    mojo::PendingRemote<mojom::Page> page)
     : webui_contents_(webui_contents),
       browser_context_(webui_contents->GetBrowserContext()),
-      receiver_(this, std::move(receiver)) {
+      receiver_(this, std::move(receiver)),
+      page_(std::move(page)) {
   GetGlicService()->PageHandlerAdded(this);
 }
 
 GlicPageHandler::~GlicPageHandler() {
-  WebUiStateChanged(mojom::WebUiState::kUninitialized);
+  WebUiStateChanged(glic::mojom::WebUiState::kUninitialized);
   // `GlicWebClientHandler` holds a pointer back to us, so delete it first.
   web_client_handler_.reset();
   GetGlicService()->PageHandlerRemoved(this);
@@ -340,8 +343,10 @@ void GlicPageHandler::CreateWebClient(
       this, browser_context_, std::move(web_client_receiver));
 }
 
-void GlicPageHandler::SyncWebviewCookies(SyncWebviewCookiesCallback callback) {
-  GetGlicService()->SyncWebviewCookies(std::move(callback));
+void GlicPageHandler::PrepareForClient(
+    base::OnceCallback<void(bool)> callback) {
+  GetGlicService()->GetAuthController().CheckAuthBeforeLoad(
+      std::move(callback));
 }
 
 void GlicPageHandler::WebviewCommitted(const GURL& url) {
@@ -355,6 +360,10 @@ void GlicPageHandler::WebviewCommitted(const GURL& url) {
 
 void GlicPageHandler::GuestAdded(content::WebContents* guest_contents) {
   guest_contents_ = guest_contents->GetWeakPtr();
+}
+
+void GlicPageHandler::NotifyWindowIntentToShow() {
+  page_->IntentToShow();
 }
 
 void GlicPageHandler::ClosePanel() {
@@ -373,7 +382,7 @@ void GlicPageHandler::IsProfileEnabled(IsProfileEnabledCallback callback) {
   std::move(callback).Run(enabled);
 }
 
-void GlicPageHandler::WebUiStateChanged(mojom::WebUiState new_state) {
+void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
   GetGlicService()->window_controller().WebUiStateChanged(new_state);
 }
 
