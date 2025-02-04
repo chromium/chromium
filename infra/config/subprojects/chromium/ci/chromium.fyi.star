@@ -1170,7 +1170,7 @@ ci.builder(
         per_test_modifications = {
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 30,
+                    shards = 35,
                 ),
             ),
             # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which
@@ -2481,7 +2481,7 @@ fyi_mac_builder(
         per_test_modifications = {
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 20,  # crbug.com/1419045
+                    shards = 25,  # crbug.com/1419045
                 ),
             ),
             # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which
