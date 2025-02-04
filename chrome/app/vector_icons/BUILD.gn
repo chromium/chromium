@@ -103,7 +103,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "install_desktop_chrome_refresh.icon",
     "journeys.icon",
     "keep.icon",
-    "keep_filled.icon",
     "keep_off.icon",
     "key.icon",
     "keyboard_arrow_down.icon",
