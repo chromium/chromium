@@ -167,14 +167,6 @@ struct Node {
   // replacement.
   std::vector<std::string> replacements;
 
-  // This is true for nodes representing the following:
-  //  - nullptr => size is zero
-  //  - calls to new/new[n] => size is 1/n
-  //  - constant arrays buf[1024] => size is 1024
-  //  - calls to third_party functions that we can't rewrite (they should
-  //    provide a size for the pointer returned)
-  bool size_info_available = false;
-
   // Dependent nodes are special nodes having a single neighbor and that need to
   // be rewritten iff their only neighbor is. These nodes include (among
   // others):
@@ -195,7 +187,7 @@ struct Node {
   bool operator<(const Node& other) const { return Key() < other.Key(); }
 
   // The resulting string follows the following format:
-  // {size_info_available\,is_dependent,(\,replacement)+}
+  // {is_dependent,(\,replacement)+}
   // where the booleans are represented as 0 or 1.
   std::string ToString() const {
     std::string replacements_str;
@@ -203,8 +195,7 @@ struct Node {
       replacements_str += llvm::formatv("\\,{}", replacement);
     }
 
-    return llvm::formatv("{0:d}\\,{1:d}{2}", size_info_available, is_dependent,
-                         replacements_str);
+    return llvm::formatv("{0:d}{1}", is_dependent, replacements_str);
   }
 };
 
@@ -217,8 +208,24 @@ void EmitEdge(const Node& lhs, const Node& rhs) {
 //
 // A source node is a node that triggers the rewrite. All rewrites will start
 // from sources.
-void EmitSource(const std::string source) {
-  llvm::outs() << llvm::formatv("s{0}\n", source);
+void EmitSource(const std::string& key) {
+  llvm::outs() << llvm::formatv("s{0}\n", key);
+}
+
+// Emits a sink node.
+//
+// Those are nodes where we the size of the memory region is known
+// This is true for nodes representing the following assignments:
+//  - nullptr => size is zero
+//  - new/new[n] => size is 1/n
+//  - constant arrays buf[1024] => size is 1024
+//  - calls to third_party functions that we can't rewrite (they should provide
+//    a size for the pointer returned)
+//
+// A rewrite is applied from a source if all the reachable end nodes are
+// sinks.
+void EmitSink(const std::string& key) {
+  llvm::outs() << llvm::formatv("i{0}\n", key);
 }
 
 // Emit `replacement` if `rhs_key` is rewritten, but `lhs_key` is not.
@@ -603,11 +610,12 @@ static Node getNodeFromSizeExpr(const clang::Expr* size_expr,
   }
 
   Node n;
-  n.size_info_available = true;
   n.replacements = {
       GetReplacementDirective(replacement_range, replacement, source_manager),
       GetIncludeDirective(replacement_range, source_manager),
   };
+
+  EmitSink(n.Key());  // The size of this node is known.
   return n;
 }
 
@@ -1200,8 +1208,10 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   if (!additional_replacement.empty()) {
     n.replacements.push_back(additional_replacement);
   }
-  n.size_info_available = true;
 
+  // An unsafe access to the array is detected. The size of the array is always
+  // known, so it is both a sink and a source.
+  EmitSink(n.Key());
   EmitSource(n.Key());
   return n;
 }
@@ -1302,7 +1312,7 @@ class PotentialNodes : public MatchFinder::MatchCallback {
                 "member_data_call")) {
       auto node =
           getNodeFromMemberCallExpr(data_call, "data_member_expr", result);
-      node.size_info_available = true;
+      EmitSink(node.Key());  // The size of this node is known.
       return node;
     }
 
@@ -1328,7 +1338,7 @@ class PotentialNodes : public MatchFinder::MatchCallback {
 
     Node rhs = getRHSNodeFromMatchResult(result);
     auto* expr = result.Nodes.getNodeAs<clang::Expr>("span_frontier");
-    if (expr && !lhs.is_dependent && !rhs.size_info_available) {
+    if (expr && !lhs.is_dependent) {
       AddSpanFrontierChange(lhs.Key(), rhs.Key(), result);
     }
 
