@@ -328,8 +328,15 @@ bool TraceStartupConfig::EnableFromConfigFile() {
 bool TraceStartupConfig::EnableFromBackgroundTracing() {
   bool enabled = false;
 #if BUILDFLAG(IS_ANDROID)
-  // Tests can enable this value.
-  enabled |= base::android::GetBackgroundStartupTracingFlag();
+  // We only enable background startup tracing in the browser process. We must
+  // avoid calling JNI in the renderer process - see crbug.com/391360180.
+  // kProcessType is hardcoded ("type") as we cannot depend on content/.
+  if (base::CommandLine::ForCurrentProcess()
+          ->GetSwitchValueASCII("type")
+          .empty()) {
+    // Tests can enable this value.
+    enabled |= base::android::GetBackgroundStartupTracingFlagFromJava();
+  }
 #else
   // TODO(ssid): Implement saving setting to preference for next startup.
 #endif

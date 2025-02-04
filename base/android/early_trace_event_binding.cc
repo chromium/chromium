@@ -109,7 +109,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyAsyncEndEvent(JNIEnv* env,
                   perfetto::Track(static_cast<uint64_t>(id)));
 }
 
-bool GetBackgroundStartupTracingFlag() {
+bool GetBackgroundStartupTracingFlagFromJava() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return base::android::Java_EarlyTraceEvent_getBackgroundStartupTracingFlag(
       env);
