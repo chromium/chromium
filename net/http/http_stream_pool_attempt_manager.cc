@@ -995,6 +995,10 @@ void HttpStreamPool::AttemptManager::
 }
 
 void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
+  // The order of the following checks is important, see the following comments.
+  // TODO(crbug.com/383606724): Figure out a better design and algorithms to
+  // handle attempts and existing sessions.
+
   // For plain HTTP request, we need to wait for HTTPS RR because we could
   // trigger HTTP -> HTTPS upgrade when HTTPS RR is received during the endpoint
   // resolution.
@@ -1013,6 +1017,17 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
     return;
   }
 
+  // If `this` already created a QuicTask, call `quic_task_->MaybeAttempt()`
+  // before checking existing SPDY session to make sure that the QuicTask makes
+  // progress. Otherwise, the QuicTask would stall until next job/preconnect
+  // comes. Call `quic_task_->MaybeAttempt()` after checking existing SPDY
+  // session to avoid creating QuicTask unnecessary.
+  bool quic_attempted = false;
+  if (quic_task_) {
+    quic_task_->MaybeAttempt();
+    quic_attempted = true;
+  }
+
   if (CanUseExistingSpdySessionAfterEndpointChanges()) {
     CHECK(in_flight_attempts_.empty());
     return;
@@ -1022,8 +1037,11 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
       StreamAttemptDelayBehavior::kStartTimerOnFirstEndpointUpdate) {
     MaybeRunStreamAttemptDelayTimer();
   }
+
   MaybeNotifySSLConfigReady();
-  MaybeAttemptQuic();
+  if (!quic_attempted) {
+    MaybeAttemptQuic();
+  }
   MaybeAttemptConnection();
 }
 

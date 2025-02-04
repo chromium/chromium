@@ -4964,6 +4964,52 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicEndpointNotFoundNoDnsAlpn) {
       alternative_service, NetworkAnonymizationKey()));
 }
 
+// Tests that a QuicTask completes after finding an IP matching SPDY session.
+TEST_F(HttpStreamPoolAttemptManagerTest, NoAlpnQuicAfterMatchingSpdySession) {
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
+  const HttpStreamKey alt_stream_key =
+      StreamKeyBuilder("https://mail.example.org").Build();
+  CreateFakeSpdySession(alt_stream_key, kCommonEndPoint);
+
+  const HttpStreamKey stream_key =
+      StreamKeyBuilder("https://www.example.org").Build();
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+  endpoint_request->set_crypto_ready(true);
+
+  // The first request triggers DNS resolution.
+  StreamRequester requester1(stream_key);
+  requester1.RequestStream(pool());
+  ASSERT_FALSE(requester1.result().has_value());
+
+  AttemptManager* manager =
+      pool().GetGroupForTesting(stream_key)->GetAttemptManagerForTesting();
+
+  // The second request triggers creating QuicTask in AttemptManager.
+  StreamRequester requester2(stream_key);
+  requester2.RequestStream(pool());
+  ASSERT_FALSE(requester2.result().has_value());
+  ASSERT_TRUE(manager->quic_task_for_testing());
+
+  // Complete DNS resolution with an IP address that matches an existing SPDY
+  // session.
+  endpoint_request
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+
+  // Ensure that the QuicTask completed.
+  FastForwardUntilNoTasksRemain();
+  EXPECT_FALSE(manager->quic_task_for_testing());
+  EXPECT_THAT(manager->GetQuicTaskResultForTesting(),
+              Optional(IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN)));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicPreconnect) {
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
   endpoint_request
