@@ -1522,6 +1522,10 @@ class DownloadFencedFrameTest : public DownloadContentTest {
  public:
   DownloadFencedFrameTest() {
     fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
+
+    // Fenced frame requires a secure context to disable untrusted network.
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
   }
 
   ~DownloadFencedFrameTest() override = default;
@@ -1561,6 +1565,10 @@ class DownloadFencedFrameTest : public DownloadContentTest {
 
     EXPECT_FALSE(target_node->current_frame_host()->IsErrorDocument());
     return target_node->current_frame_host();
+  }
+
+  test::FencedFrameTestHelper* fenced_frame_helper() {
+    return fenced_frame_helper_.get();
   }
 
  private:
@@ -5331,6 +5339,66 @@ IN_PROC_BROWSER_TEST_F(DownloadFencedFrameTest, DiscardNonNavigationDownload) {
   std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
   download_manager->GetAllDownloads(&downloads);
   EXPECT_TRUE(downloads.empty());
+}
+
+// An interrupted download will be created if fenced frame has revoked its
+// untrusted network access.
+// NOTE: Normally a download cannot be initiated from a network revoked fenced
+// frame. In case there are download entry points that are not properly
+// disabled, the network status check during the creation of download should
+// catch these and create an interrupted download.
+IN_PROC_BROWSER_TEST_F(DownloadFencedFrameTest,
+                       CreateInterruptedDownloadIfNetworkRevoked) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  const GURL kInitialUrl = embedded_https_test_server().GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(a.test{fenced})");
+  const GURL kDownloadUrl =
+      embedded_https_test_server().GetURL("/download/download-test.lib");
+
+  // Create the fenced frame.
+  EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  std::vector<content::RenderFrameHost*> child_frames =
+      fenced_frame_helper()->GetChildFencedFrameHosts(
+          shell()->web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(child_frames.size(), 1u);
+  content::RenderFrameHost* fenced_frame_host = child_frames[0];
+
+  // Create a download with the fenced frame untrusted network revoked. An
+  // interrupted download should be created.
+  auto* download_manager =
+      fenced_frame_host->GetBrowserContext()->GetDownloadManager();
+  MockDownloadManagerObserver dm_observer(download_manager);
+  EXPECT_CALL(dm_observer, OnDownloadCreated(_, _)).Times(1);
+  EXPECT_CALL(dm_observer, OnDownloadDropped(_)).Times(0);
+
+  auto params = blink::mojom::DownloadURLParams::New();
+  // Set this to be a context menu save so that it is not considered as content
+  // initiated. Otherwise no download item will be created.
+  params->is_context_menu_save = true;
+  params->url = kDownloadUrl;
+
+  std::unique_ptr<DownloadTestObserverInterrupted> observer =
+      std::make_unique<DownloadTestObserverInterrupted>(
+          download_manager, 1,
+          DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+
+  content::test::RevokeFencedFrameUntrustedNetwork(fenced_frame_host);
+
+  // Download the URL.
+  static_cast<RenderFrameHostImpl*>(fenced_frame_host)
+      ->DownloadURL(std::move(params));
+
+  // Verify that an interrupted download has been created.
+  observer->WaitForFinished();
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
+  EXPECT_EQ(1u, downloads.size());
+  download::DownloadItem* download = downloads[0];
+
+  ASSERT_EQ(download->GetState(), download::DownloadItem::INTERRUPTED);
+  EXPECT_EQ(download->GetLastReason(),
+            download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED);
 }
 
 // A download triggered by clicking on a link with a |download| attribute should
