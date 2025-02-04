@@ -275,7 +275,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   const AutocompleteResult& result() const { return published_result_; }
   // Groups `published_result_` by search vs URL.
   // See also `AutocompleteResult::GroupSuggestionsBySearchVsURL()`.
-  void GroupSuggestionsBySearchVsURL(size_t begin, size_t end);
+  virtual void GroupSuggestionsBySearchVsURL(size_t begin, size_t end);
   bool done() const {
     return last_update_type_ == UpdateType::kNone ||
            last_update_type_ == UpdateType::kSyncPassOnly ||
