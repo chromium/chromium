@@ -7,12 +7,17 @@ import ExtensionFoundation
 import Foundation
 
 @main
-class NetworkProcess: NetworkingExtension {
-  required init() {
-    ChildProcessInit()
+class NetworkProcess: NSObject, ChildProcessExtension, NetworkingExtension {
+  override required init() {
+    super.init()
+    ChildProcessInit(self)
   }
 
   public func handle(xpcConnection: xpc_connection_t) {
     ChildProcessHandleNewConnection(xpcConnection)
+  }
+
+  public func applySandbox() {
+    self.applyRestrictedSandbox(revision: .revision1)
   }
 }
