@@ -1760,7 +1760,7 @@ deps = {
     Var('chromium_git') + '/angle/angle.git' + '@' +  Var('angle_revision'),
 
   'src/third_party/anonymous_tokens/src':
-    Var('chromium_git') + '/external/github.com/google/anonymous-tokens.git' + '@' + '6ea6ec78f9e4998d0a7a5677b2aec08f0ac858f8',
+    Var('chromium_git') + '/external/github.com/google/anonymous-tokens.git' + '@' + '2e328dd4eace9648adcc943cac6a1792b5dcdec5',
 
     'src/third_party/blink/renderer/core/css/perftest_data': {
       'dep_type': 'gcs',
