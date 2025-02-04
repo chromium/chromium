@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/printing/test_cups_wrapper.h"
@@ -110,6 +111,10 @@ class PrintingEventObserver : public TestEventRouter::EventObserver {
 constexpr char kExtensionId[] = "abcdefghijklmnopqrstuvwxyzabcdef";
 constexpr char kExtensionId2[] = "abcdefghijklmnopqrstuvwxyzaaaaaa";
 constexpr char kPrinterId[] = "printer";
+constexpr char kPrinterId2[] = "printer-two";
+
+constexpr size_t kExpectedMaxNumberOfJobs = 10000u;
+constexpr size_t kExpectedNumberOfEvictedJobs = 50u;
 
 constexpr char kId1[] = "id1";
 constexpr char kName[] = "name";
@@ -471,6 +476,64 @@ TEST_P(PrintingAPIHandlerParam, EventIsDispatched) {
 
   event_observer.CheckJobStatusEvent(kExtensionId, job_id,
                                      param.expected_status);
+}
+
+// Test that each submitted job can be queried to check its status.
+TEST_P(PrintingAPIHandlerParam, GetJobStatus) {
+  const auto job_id = SubmitJob();
+
+  const Param& param = GetParam();
+  int index = job_id.size() - 1;
+  auto update = crosapi::mojom::PrintJobUpdate::New();
+  update->status = param.status;
+  printing_api_handler_->OnPrintJobUpdate(
+      job_id.substr(0, index), job_id[index] - '0', std::move(update));
+
+  base::expected<api::printing::JobStatus, std::string> status =
+      printing_api_handler_->GetJobStatus(kExtensionId, job_id);
+
+  EXPECT_EQ(status.value(), param.expected_status);
+}
+
+// The same as above, but with the cache full.
+TEST_P(PrintingAPIHandlerParam, GetJobStatus_CacheFull) {
+  // Pre-initialize finished_print_jobs_. Doing so via SubmitJob() would result
+  // in slower test execution.
+  for (size_t i = 0; i < kExpectedMaxNumberOfJobs; i++) {
+    auto unique_id = printing_api_handler_->CreateUniqueId(kPrinterId2, i);
+    printing_api_handler_->finished_print_jobs_[unique_id] = {
+        kExtensionId, api::printing::JobStatus::kPrinted};
+    printing_api_handler_->finished_jobs_order_.push_back(unique_id);
+  }
+
+  const auto job_id = SubmitJob();
+
+  const Param& param = GetParam();
+  int index = job_id.size() - 1;
+  auto update = crosapi::mojom::PrintJobUpdate::New();
+  update->status = param.status;
+  printing_api_handler_->OnPrintJobUpdate(
+      job_id.substr(0, index), job_id[index] - '0', std::move(update));
+
+  base::expected<api::printing::JobStatus, std::string> status =
+      printing_api_handler_->GetJobStatus(kExtensionId, job_id);
+
+  EXPECT_EQ(status.value(), param.expected_status);
+  EXPECT_EQ(printing_api_handler_->finished_jobs_order_.size(),
+            printing_api_handler_->finished_print_jobs_.size());
+
+  if (status.value() == api::printing::JobStatus::kPending ||
+      status.value() == api::printing::JobStatus::kInProgress) {
+    // The job should be in the in progress cache as it's in progress or
+    // pending.
+    EXPECT_TRUE(printing_api_handler_->in_progress_print_jobs_.find(job_id) !=
+                printing_api_handler_->in_progress_print_jobs_.end());
+    EXPECT_EQ(printing_api_handler_->finished_print_jobs_.size(),
+              kExpectedMaxNumberOfJobs);
+  } else {
+    EXPECT_EQ(printing_api_handler_->finished_print_jobs_.size(),
+              kExpectedMaxNumberOfJobs - kExpectedNumberOfEvictedJobs);
+  }
 }
 
 // Test that calling GetPrinters() returns no printers before any are added to
@@ -912,6 +975,103 @@ TEST_F(PrintingAPIHandlerUnittest, CancelJob) {
   // Now the job is canceled.
   event_observer.CheckJobStatusEvent(kExtensionId, job_id,
                                      api::printing::JobStatus::kCanceled);
+}
+
+// Test that querying print job status with invalid job id returns an error.
+TEST_F(PrintingAPIHandlerUnittest, GetJobStatus_InvalidJobId) {
+  const auto job_id = SubmitJob();
+
+  base::expected<api::printing::JobStatus, std::string> status =
+      printing_api_handler_->GetJobStatus(kExtensionId, job_id + "_invalid");
+
+  EXPECT_FALSE(status.has_value());
+  EXPECT_EQ(status.error(), "No print job with given ID");
+}
+
+// Test that querying print job status with invalid extension id returns an
+// error.
+TEST_F(PrintingAPIHandlerUnittest, GetJobStatus_InvalidId_OtherExtension) {
+  const auto job_id = SubmitJob();
+
+  // Try to get a print job status from other extension.
+  base::expected<api::printing::JobStatus, std::string> status =
+      printing_api_handler_->GetJobStatus(kExtensionId2, job_id);
+
+  EXPECT_FALSE(status.has_value());
+  EXPECT_EQ(status.error(), "No print job with given ID");
+}
+
+// Test that old finished jobs are evicted when the cache is full.
+TEST_F(PrintingAPIHandlerUnittest, EvictOldFinishedJobs) {
+  // Pre-initialize finished_print_jobs_. Doing so via SubmitJob() would result
+  // in slower test execution.
+  for (size_t i = 0; i < kExpectedMaxNumberOfJobs - 5u; i++) {
+    auto unique_id = printing_api_handler_->CreateUniqueId(kPrinterId2, i);
+    printing_api_handler_->finished_print_jobs_[unique_id] = {
+        kExtensionId, api::printing::JobStatus::kPrinted};
+    printing_api_handler_->finished_jobs_order_.push_back(unique_id);
+  }
+
+  // Helper function to submit n jobs via SubmitJob, which will go through the
+  // code path that evicts old finished jobs.
+  auto submit_jobs = [&](size_t num_of_jobs) {
+    for (size_t i = 0; i < num_of_jobs; i++) {
+      const auto job_id = SubmitJob();
+
+      int index = job_id.size() - 1;
+      auto update = crosapi::mojom::PrintJobUpdate::New();
+      update->status = crosapi::mojom::PrintJobStatus::kDone;
+      printing_api_handler_->OnPrintJobUpdate(
+          job_id.substr(0, index), job_id[index] - '0', std::move(update));
+
+      base::expected<api::printing::JobStatus, std::string> status =
+          printing_api_handler_->GetJobStatus(kExtensionId, job_id);
+
+      EXPECT_EQ(status.value(), api::printing::JobStatus::kPrinted);
+    }
+  };
+
+  // Submit yet another 5 jobs, and store those ids. We're hitting the limit of
+  // 10000 finished jobs. Submitting other jobs will result in evicting first
+  // submitted jobs.
+  submit_jobs(5);
+
+  EXPECT_EQ(printing_api_handler_->finished_print_jobs_.size(),
+            printing_api_handler_->finished_jobs_order_.size());
+  EXPECT_EQ(printing_api_handler_->finished_print_jobs_.size(),
+            kExpectedMaxNumberOfJobs);
+
+  auto submitted_jobs_order_copy = printing_api_handler_->finished_jobs_order_;
+
+  // Submit one job. This will trigger eviction of 50 oldest jobs.
+  submit_jobs(1);
+
+  EXPECT_EQ(printing_api_handler_->finished_print_jobs_.size(),
+            printing_api_handler_->finished_jobs_order_.size());
+  EXPECT_EQ(printing_api_handler_->finished_print_jobs_.size(),
+            kExpectedMaxNumberOfJobs - kExpectedNumberOfEvictedJobs);
+
+  // Check the jobs. Only the first 50 jobs must be evicted. All the others must
+  // still be in cache.
+  int num_jobs_with_no_status = kExpectedNumberOfEvictedJobs;
+  while (!submitted_jobs_order_copy.empty()) {
+    auto cpy = submitted_jobs_order_copy.front();
+    base::expected<api::printing::JobStatus, std::string> job_status =
+        printing_api_handler_->GetJobStatus(kExtensionId,
+                                            submitted_jobs_order_copy.front());
+    submitted_jobs_order_copy.pop_front();
+
+    if (num_jobs_with_no_status-- >= 0) {
+      EXPECT_FALSE(job_status.has_value());
+      EXPECT_EQ(job_status.error(), "No print job with given ID");
+    } else {
+      EXPECT_TRUE(job_status.has_value());
+      EXPECT_EQ(job_status.value(), api::printing::JobStatus::kPrinted);
+    }
+  }
+
+  // There must be no in progress print jobs.
+  EXPECT_TRUE(printing_api_handler_->in_progress_print_jobs_.empty());
 }
 
 }  // namespace extensions

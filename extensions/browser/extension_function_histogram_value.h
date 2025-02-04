@@ -1981,6 +1981,7 @@ enum HistogramValue {
   AUTOTESTPRIVATE_OVERRIDELOBSTERRESPONSE = 1919,
   AUTOFILLPRIVATE_REMOVEADDRESS = 1920,
   AUTOFILLPRIVATE_REMOVEPAYMENTSENTITY = 1921,
+  PRINTING_GETJOBSTATUS = 1922,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
