@@ -11419,6 +11419,7 @@
                 {
                     "name": "WithReadAndDiscardBody_20240328",
                     "params": {
+                        "http_disk_cache_prewarming_main_resource": "false",
                         "http_disk_cache_prewarming_use_read_and_discard_body_option": "true"
                     },
                     "enable_features": [
