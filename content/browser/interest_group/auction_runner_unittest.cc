@@ -26352,8 +26352,6 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
 }
 
 TEST_F(AuctionRunnerTest, MatchedSelectedReportingIdInServerResponse) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kEnableBandADealSupport);
   const struct {
     std::string test_name;
     std::string winner_name;

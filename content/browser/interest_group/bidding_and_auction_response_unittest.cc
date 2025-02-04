@@ -1236,11 +1236,8 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
 
 TEST(BiddingAndAuctionResponseTest, SelectedBuyerAndSellerReportingId) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {blink::features::kFledgeAuctionDealSupport,
-       features::kEnableBandADealSupport},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeAuctionDealSupport);
 
   base::Value::Dict response = CreateValidResponseDict().Set(
       "selectedBuyerAndSellerReportingId", "selectable");
@@ -1256,28 +1253,8 @@ TEST(BiddingAndAuctionResponseTest, SelectedBuyerAndSellerReportingId) {
 
 TEST(BiddingAndAuctionResponseTest, DealsDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kEnableBandADealSupport},
-      /*disabled_features=*/{blink::features::kFledgeAuctionDealSupport});
-
-  base::Value::Dict response = CreateValidResponseDict().Set(
-      "selectedBuyerAndSellerReportingId", "selectable");
-  std::optional<BiddingAndAuctionResponse> result =
-      BiddingAndAuctionResponse::TryParse(base::Value(response.Clone()),
-                                          GroupNames(),
-                                          /*group_pagg_coordinators=*/{});
-  ASSERT_TRUE(result);
-  BiddingAndAuctionResponse output = CreateExpectedValidResponse();
-  EXPECT_THAT(*result, EqualsBiddingAndAuctionResponse(std::ref(output)));
-}
-
-TEST(BiddingAndAuctionResponseTest, BAndADealsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {blink::features::kFledgeAuctionDealSupport},
-      /*disabled_features=*/{features::kEnableBandADealSupport});
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kFledgeAuctionDealSupport);
 
   base::Value::Dict response = CreateValidResponseDict().Set(
       "selectedBuyerAndSellerReportingId", "selectable");

@@ -27,11 +27,6 @@ BASE_FEATURE(kEnableBandAPrivateAggregation,
              "EnableBandAPrivateAggregation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable deals support from B&A response.
-BASE_FEATURE(kEnableBandADealSupport,
-             "EnableBandADealSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable parsing forDebuggingOnly reports from B&A response, for down sampling.
 BASE_FEATURE(kEnableBandASampleDebugReports,
              "EnableBandASampleDebugReports",

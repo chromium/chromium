@@ -280,8 +280,7 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   }
 
   if (base::FeatureList::IsEnabled(
-          blink::features::kFledgeAuctionDealSupport) &&
-      base::FeatureList::IsEnabled(features::kEnableBandADealSupport)) {
+          blink::features::kFledgeAuctionDealSupport)) {
     std::string* maybe_selected_buyer_and_seller_reporting_id =
         input_dict->FindString("selectedBuyerAndSellerReportingId");
     if (maybe_selected_buyer_and_seller_reporting_id) {
