@@ -4664,6 +4664,24 @@ enum WebFeature {
   kSchedulerPostTaskAbortBeforeRunning = 5278,
   kSchedulerPostTaskAsyncAbort = 5279,
   kSchedulerPostTaskSelfAbort = 5280,
+  kV8Window_Window_AttributeGetter = 5281,
+  kV8Window_Self_AttributeGetter = 5282,
+  kV8Window_Self_AttributeSetter = 5283,
+  kV8Window_Location_AttributeGetter = 5284,
+  kV8Window_Location_AttributeSetter = 5285,
+  kV8Window_Frames_AttributeGetter = 5286,
+  kV8Window_Frames_AttributeSetter = 5287,
+  kV8Window_Length_AttributeGetter = 5288,
+  kV8Window_Length_AttributeSetter = 5289,
+  kV8Window_Top_AttributeGetter = 5290,
+  kV8Window_Opener_AttributeGetter = 5291,
+  kV8Window_Opener_AttributeSetter = 5292,
+  kV8Window_Parent_AttributeGetter = 5293,
+  kV8Window_Parent_AttributeSetter = 5294,
+  kV8Window_Blur_Method = 5295,
+  kV8Window_Close_Method = 5296,
+  kV8Window_Focus_Method = 5297,
+  kV8Window_PostMessage_Method = 5298
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

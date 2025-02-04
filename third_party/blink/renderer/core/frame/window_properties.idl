@@ -9,5 +9,5 @@
 [
     LegacyNoInterfaceObject
 ] interface WindowProperties : EventTarget {
-    [NotEnumerable, CrossOrigin] getter object (DOMString name);
+    [NotEnumerable, CrossOrigin, Measure] getter object (DOMString name);
 };
