@@ -92,9 +92,11 @@ void DCompPresenter::OnVSync(base::TimeTicks vsync_time,
                      weak_factory_.GetWeakPtr(), vsync_time, interval));
 }
 
-void DCompPresenter::ScheduleDCLayer(
-    std::unique_ptr<DCLayerOverlayParams> params) {
-  pending_overlays_.push_back(std::move(params));
+void DCompPresenter::ScheduleDCLayers(
+    std::vector<DCLayerOverlayParams> overlays) {
+  // We expect alternating calls to `ScheduleDCLayers` and `Present`.
+  DCHECK_EQ(0u, pending_overlays_.size());
+  pending_overlays_ = std::move(overlays);
 }
 
 void DCompPresenter::SetFrameRate(float frame_rate) {

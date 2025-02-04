@@ -27,6 +27,9 @@ struct GL_EXPORT DCLayerOverlayParams {
   DCLayerOverlayParams();
   ~DCLayerOverlayParams();
 
+  DCLayerOverlayParams(DCLayerOverlayParams&&);
+  DCLayerOverlayParams& operator=(DCLayerOverlayParams&&);
+
   // Image to display in overlay - could be hardware or software video frame,
   // swap chain, or dcomp surface. If null and |background_color| is present,
   // then this overlay will represents a solid color quad. If both this and
