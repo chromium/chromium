@@ -1,0 +1,79 @@
+Tests that we can attribute style invalidations to CSS selectors
+Recording started
+Tracing complete
+StyleRecalcInvalidationTracking
+  nodeId: 9
+  reason: Node was inserted into tree
+  subtree: false
+StyleRecalcInvalidationTracking
+  nodeId: 10
+  reason: Node was inserted into tree
+  subtree: false
+Document::updateStyle
+  elementsStyled: 7
+  pseudoElementsStyled: 2
+StyleResolver::ResolveStyle
+  nodeId: 10
+  parentNodeId: 0
+  pseudoId: 0
+StyleResolver::ResolveStyle
+  nodeId: 10
+  parentNodeId: 0
+  pseudoId: 22
+StyleResolver::ResolveStyle
+  nodeId: 10
+  parentNodeId: 0
+  pseudoId: 23
+StyleResolver::ResolveStyle
+  nodeId: 12
+  parentNodeId: 10
+  pseudoId: 0
+StyleResolver::ResolveStyle
+  nodeId: 13
+  parentNodeId: 10
+  pseudoId: 0
+StyleResolver::ResolveStyle
+  nodeId: 14
+  parentNodeId: 13
+  pseudoId: 0
+StyleResolver::ResolveStyle
+  nodeId: 15
+  parentNodeId: 14
+  pseudoId: 0
+StyleResolver::ResolveStyle
+  nodeId: 16
+  parentNodeId: 15
+  pseudoId: 0
+StyleResolver::ResolveStyle
+  nodeId: 17
+  parentNodeId: 15
+  pseudoId: 0
+StyleInvalidatorInvalidationTracking
+  nodeId: 14
+  reason: Invalidation set invalidates subtree
+  selectorCount: 1
+  selectors[0]: .changed *
+StyleRecalcInvalidationTracking
+  nodeId: 14
+  reason: Related style rule
+  subtree: true
+Document::updateStyle
+  elementsStyled: 4
+  pseudoElementsStyled: 0
+StyleResolver::ResolveStyle
+  nodeId: 14
+  parentNodeId: 13
+  pseudoId: 0
+StyleResolver::ResolveStyle
+  nodeId: 15
+  parentNodeId: 14
+  pseudoId: 0
+StyleResolver::ResolveStyle
+  nodeId: 16
+  parentNodeId: 15
+  pseudoId: 0
+StyleResolver::ResolveStyle
+  nodeId: 17
+  parentNodeId: 15
+  pseudoId: 0
+
