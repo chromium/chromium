@@ -40,7 +40,10 @@ def check_luci_context_auth():
   if not luci_auth_path:
     logging.error("'luci-auth' binary not found. Is depot_tools not on PATH?")
     return False
-  cmd = [luci_auth_path, 'info', '-scopes-context']
+  cmd = [
+      luci_auth_path, 'info', '-scopes',
+      'https://www.googleapis.com/auth/userinfo.email'
+  ]
   try:
     subprocess.run(cmd,
                    stdout=subprocess.PIPE,
@@ -51,7 +54,8 @@ def check_luci_context_auth():
     logging.error('luci-auth context auth unavailable:')
     logging.error(e.output.strip())
     logging.error(
-        "Please run 'luci-auth login -scopes-context' to authenticate, "
+        "Please run 'luci-auth login -scopes "
+        "https://www.googleapis.com/auth/userinfo.email' to authenticate, "
         'preferring your @google.com account if you have one.')
     return False
   return True
@@ -253,9 +257,6 @@ class LegacyRunner:
       rerun_props_path = pathlib.Path(tmp_dir).joinpath('rerun_props.json')
       input_props['output_properties_file'] = str(rerun_props_path)
       cmd = [
-          'luci-auth',
-          'context',
-          '--',
           'rdb',
           'stream',
           '-new',
