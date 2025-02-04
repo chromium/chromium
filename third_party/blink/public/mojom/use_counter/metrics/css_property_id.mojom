@@ -886,6 +886,7 @@ enum CSSSampleId {
     kInterestTargetDelay = 827,
     kAnimationTrigger = 828,
     kColumnRuleBreak = 829,
+    kRowRuleBreak = 830,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

@@ -1238,6 +1238,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kOptimizespeed ||
              value_id == CSSValueID::kOptimizequality;
     case CSSPropertyID::kColumnRuleBreak:
+    case CSSPropertyID::kRowRuleBreak:
       return value_id == CSSValueID::kNone ||
              value_id == CSSValueID::kSpanningItem ||
              value_id == CSSValueID::kIntersection;
@@ -1783,6 +1784,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kPositionTryOrder,
     CSSPropertyID::kReadingFlow,
     CSSPropertyID::kResize,
+    CSSPropertyID::kRowRuleBreak,
     CSSPropertyID::kScrollMarkerGroup,
     CSSPropertyID::kScrollBehavior,
     CSSPropertyID::kOverscrollBehaviorInline,
