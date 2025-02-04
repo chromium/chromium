@@ -99,6 +99,9 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   ~EventBasedStatusReportingServiceTest() override = default;
 
   void SetUp() override {
+    // UserManager is created in ArcAppTest.
+    session_manager_.OnUserManagerCreated(user_manager::UserManager::Get());
+
     chromeos::PowerManagerClient::InitializeFake();
     SystemClockClient::InitializeFake();
 

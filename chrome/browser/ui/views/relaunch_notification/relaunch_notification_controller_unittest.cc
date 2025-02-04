@@ -916,11 +916,12 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
   void SetUp() override {
     ash::AshTestHelper::InitParams init_params;
     init_params.start_session = false;
-    ash_test_helper_.SetUp(std::move(init_params));
+    ash_test_helper_ = std::make_unique<ash::AshTestHelper>();
+    ash_test_helper_->SetUp(std::move(init_params));
 
-    user_manager_ = new ash::FakeChromeUserManager();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_.get()));
+    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    auto* session_manager = session_manager::SessionManager::Get();
+    session_manager->OnUserManagerCreated(user_manager_.Get());
 
     const char test_user_email[] = "test_user@example.com";
     const AccountId test_account_id(AccountId::FromUserEmail(test_user_email));
@@ -940,6 +941,16 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
     ash::Shell::Get()->display_configurator()->SetDelegateForTesting(
         std::unique_ptr<display::NativeDisplayDelegate>(
             native_display_delegate_));
+  }
+
+  void TearDown() override {
+    native_display_delegate_ = nullptr;
+    logger_.reset();
+    ash_test_helper_->TearDown();
+    ash_test_helper_.reset();
+    // UserManager needs to be removed after ash_test_helper_, because it holds
+    // SessionManager instance, which needs to be destroyed before UserManager.
+    user_manager_.Reset();
   }
 
   void LockScreen() {
@@ -970,9 +981,9 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   RelaunchNotificationControllerPlatformImpl impl_;
-  ash::AshTestHelper ash_test_helper_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<ash::AshTestHelper> ash_test_helper_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_;
   std::unique_ptr<display::test::ActionLogger> logger_;
   raw_ptr<display::NativeDisplayDelegate> native_display_delegate_;
 };
