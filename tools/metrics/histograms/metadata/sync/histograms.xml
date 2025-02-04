@@ -665,19 +665,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.DataTypeClearedOnce" enum="SyncDataTypes"
-    expires_after="2025-04-04">
-  <owner>mastiz@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Recorded when the model (including both data and metadata) for a given data
-    type was cleared due to
-    `WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata`. In practice,
-    this happens only on iOS, when Chrome was just restored from an OS-level
-    backup. As a denominator, look at e.g. `Sync.InitialState2`.
-  </summary>
-</histogram>
-
 <histogram name="Sync.DataTypeCommitMessageHasDepletedQuota"
     enum="SyncDataTypes" expires_after="2025-08-04">
   <owner>rushans@google.com</owner>

@@ -51,22 +51,6 @@ void ReadingListSyncBridge::ModelReadyToSync(
 
   model_ = model;
 
-  if (wipe_model_upon_sync_disabled_behavior_ ==
-          syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata &&
-      !syncer::IsInitialSyncDone(
-          sync_metadata_batch->GetDataTypeState().initial_sync_state())) {
-    // Since the model isn't initially tracking metadata, move away from
-    // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync is
-    // turned on later and back to off.
-    //
-    // Note that implementing this using IsInitialSyncDone(), instead of
-    // invoking IsTrackingMetadata() later, is more reliable, because the
-    // function cannot be trusted in ApplyDisableSyncChanges(), as it can
-    // return false negatives.
-    wipe_model_upon_sync_disabled_behavior_ =
-        syncer::WipeModelUponSyncDisabledBehavior::kNever;
-  }
-
   change_processor()->ModelReadyToSync(std::move(sync_metadata_batch));
 }
 
@@ -343,16 +327,6 @@ void ReadingListSyncBridge::ApplyDisableSyncChanges(
       // |delete_metadata_change_list| represents), the actual reading list
       // entries need to be deleted. This function does both and is even
       // robust against orphan or unexpected data in storage.
-      model_->SyncDeleteAllEntriesAndSyncMetadata();
-      break;
-    case syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata:
-      CHECK_EQ(storage_type_for_uma_, syncer::StorageType::kUnspecified);
-      syncer::SyncRecordModelClearedOnceHistogram(syncer::READING_LIST);
-      wipe_model_upon_sync_disabled_behavior_ =
-          syncer::WipeModelUponSyncDisabledBehavior::kNever;
-      // `wipe_model_upon_sync_disabled_behavior_` being set to
-      // `kOnceIfTrackingMetadata` implies metadata was being tracked when it
-      // was loaded from storage, see logic in ModelReadyToSync().
       model_->SyncDeleteAllEntriesAndSyncMetadata();
       break;
   }

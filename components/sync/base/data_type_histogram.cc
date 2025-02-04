@@ -98,11 +98,6 @@ void SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
   base::UmaHistogramCounts1000(full_histogram_name, num_unsynced_entities);
 }
 
-void SyncRecordModelClearedOnceHistogram(DataType data_type) {
-  base::UmaHistogramEnumeration("Sync.DataTypeClearedOnce",
-                                DataTypeHistogramValue(data_type));
-}
-
 void RecordSyncToSigninMigrationReadingListStep(ReadingListMigrationStep step) {
   base::UmaHistogramEnumeration(
       "Sync.SyncToSigninMigration.ReadingListMigrationStep", step);

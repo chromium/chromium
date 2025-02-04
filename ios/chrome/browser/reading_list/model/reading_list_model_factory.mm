@@ -13,30 +13,13 @@
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/reading_list/core/reading_list_model_storage_impl.h"
-#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/storage_type.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
-
-namespace {
-
-// Returns what the local-or-syncable instance should do when sync is disabled,
-// that is, whether reading list entries might need to be deleted.
-syncer::WipeModelUponSyncDisabledBehavior
-GetWipeModelUponSyncDisabledBehaviorForSyncableModel() {
-  if (IsFirstSessionAfterDeviceRestore() != signin::Tribool::kTrue) {
-    return syncer::WipeModelUponSyncDisabledBehavior::kNever;
-  }
-
-  return syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata;
-}
-
-}  // namespace
 
 // static
 ReadingListModel* ReadingListModelFactory::GetForProfile(ProfileIOS* profile) {
@@ -78,7 +61,7 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
   auto reading_list_model_for_local_storage =
       std::make_unique<ReadingListModelImpl>(
           std::move(local_storage), syncer::StorageType::kUnspecified,
-          GetWipeModelUponSyncDisabledBehaviorForSyncableModel(),
+          syncer::WipeModelUponSyncDisabledBehavior::kNever,
           base::DefaultClock::GetInstance());
 
   syncer::OnceDataTypeStoreFactory store_factory_for_account_storage =

@@ -149,6 +149,10 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
                                          int index,
                                          base::Value::List* all_nodes) const;
 
+  // Controls whether bookmarks should be wiped when sync is stopped.
+  const syncer::WipeModelUponSyncDisabledBehavior
+      wipe_model_upon_sync_disabled_behavior_;
+
   // Stores the start callback in between OnSyncStarting() and
   // ModelReadyToSync().
   StartCallback start_callback_;
@@ -166,11 +170,6 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   // has been loaded.
   raw_ptr<favicon::FaviconService, AcrossTasksDanglingUntriaged>
       favicon_service_ = nullptr;
-
-  // Controls whether bookmarks should be wiped when sync is stopped.
-  syncer::WipeModelUponSyncDisabledBehavior
-      wipe_model_upon_sync_disabled_behavior_ =
-          syncer::WipeModelUponSyncDisabledBehavior::kNever;
 
   // The callback used to schedule the persistence of bookmark model as well as
   // the metadata to a file during which latest metadata should also be pulled

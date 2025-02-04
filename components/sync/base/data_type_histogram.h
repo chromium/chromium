@@ -43,11 +43,6 @@ void SyncRecordDataTypeEntitySizeHistogram(DataType data_type,
                                            size_t specifics_bytes,
                                            size_t total_bytes);
 
-// Records when the model (including both data and metadata) was cleared for a
-// given `data_type` due to
-// `WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata`.
-void SyncRecordModelClearedOnceHistogram(DataType data_type);
-
 // Records the amount of unsynced entities for the given `data_type` upon
 // DataTypeLocalChangeProcessor::ModelReadyToSync() call.
 void SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(

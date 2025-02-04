@@ -4,25 +4,11 @@
 
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 
-#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #import "components/sync_bookmarks/bookmark_sync_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/signin_util.h"
 
 namespace ios {
-
-namespace {
-
-syncer::WipeModelUponSyncDisabledBehavior
-GetWipeModelUponSyncDisabledBehavior() {
-  if (IsFirstSessionAfterDeviceRestore() != signin::Tribool::kTrue) {
-    return syncer::WipeModelUponSyncDisabledBehavior::kNever;
-  }
-  return syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata;
-}
-
-}  // namespace
 
 // static
 sync_bookmarks::BookmarkSyncService*
@@ -50,10 +36,8 @@ LocalOrSyncableBookmarkSyncServiceFactory::
 std::unique_ptr<KeyedService>
 LocalOrSyncableBookmarkSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  std::unique_ptr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service(
-      new sync_bookmarks::BookmarkSyncService(
-          GetWipeModelUponSyncDisabledBehavior()));
-  return bookmark_sync_service;
+  return std::make_unique<sync_bookmarks::BookmarkSyncService>(
+      syncer::WipeModelUponSyncDisabledBehavior::kNever);
 }
 
 }  // namespace ios

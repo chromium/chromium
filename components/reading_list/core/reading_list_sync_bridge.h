@@ -170,10 +170,9 @@ class ReadingListSyncBridge : public syncer::DataTypeSyncBridge {
   bool ongoing_apply_disable_sync_changes_ = false;
   const syncer::StorageType storage_type_for_uma_;
   const raw_ptr<base::Clock> clock_;
+  const syncer::WipeModelUponSyncDisabledBehavior
+      wipe_model_upon_sync_disabled_behavior_;
   raw_ptr<ReadingListModelImpl> model_ = nullptr;
-  syncer::WipeModelUponSyncDisabledBehavior
-      wipe_model_upon_sync_disabled_behavior_ =
-          syncer::WipeModelUponSyncDisabledBehavior::kNever;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
