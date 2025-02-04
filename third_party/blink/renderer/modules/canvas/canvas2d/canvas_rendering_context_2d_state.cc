@@ -17,7 +17,6 @@
 #include "cc/paint/path_effect.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_stretch.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_text_rendering.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -163,6 +162,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
       line_dash_offset_(0.0),
       unparsed_font_(defaultFont),
       unparsed_css_filter_(defaultFilter),
+      text_align_(kStartTextAlign),
       parsed_letter_spacing_(defaultSpacing),
       parsed_word_spacing_(defaultSpacing),
       realized_font_(false),

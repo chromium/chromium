@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/canvas/text_cluster.h"
 
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 
 namespace blink {
@@ -12,8 +13,8 @@ TextCluster::TextCluster(const String& text,
                          double y,
                          unsigned begin,
                          unsigned end,
-                         V8CanvasTextAlign align,
-                         V8CanvasTextBaseline baseline,
+                         TextAlign align,
+                         TextBaseline baseline,
                          TextMetrics& text_metrics)
     : text_(text),
       x_(x),
@@ -29,8 +30,8 @@ TextCluster* TextCluster::Create(const String& text,
                                  double y,
                                  unsigned begin,
                                  unsigned end,
-                                 V8CanvasTextAlign align,
-                                 V8CanvasTextBaseline baseline,
+                                 TextAlign align,
+                                 TextBaseline baseline,
                                  TextMetrics& text_metrics) {
   return MakeGarbageCollected<TextCluster>(text, x, y, begin, end, align,
                                            baseline, text_metrics);

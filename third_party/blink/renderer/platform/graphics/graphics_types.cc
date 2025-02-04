@@ -195,6 +195,74 @@ String LineJoinName(LineJoin join) {
   return kNames[join];
 }
 
+String TextAlignName(TextAlign align) {
+  DCHECK_GE(align, 0);
+  DCHECK_LT(align, 5);
+  constexpr std::array<const char* const, 5> kNames = {"start", "end", "left",
+                                                       "center", "right"};
+  return kNames[align];
+}
+
+bool ParseTextAlign(const String& s, TextAlign& align) {
+  if (s == "start") {
+    align = kStartTextAlign;
+    return true;
+  }
+  if (s == "end") {
+    align = kEndTextAlign;
+    return true;
+  }
+  if (s == "left") {
+    align = kLeftTextAlign;
+    return true;
+  }
+  if (s == "center") {
+    align = kCenterTextAlign;
+    return true;
+  }
+  if (s == "right") {
+    align = kRightTextAlign;
+    return true;
+  }
+  return false;
+}
+
+String TextBaselineName(TextBaseline baseline) {
+  DCHECK_GE(baseline, 0);
+  DCHECK_LT(baseline, 6);
+  constexpr std::array<const char* const, 6> kNames = {
+      "alphabetic", "top", "middle", "bottom", "ideographic", "hanging"};
+  return kNames[baseline];
+}
+
+bool ParseTextBaseline(const String& s, TextBaseline& baseline) {
+  if (s == "alphabetic") {
+    baseline = kAlphabeticTextBaseline;
+    return true;
+  }
+  if (s == "top") {
+    baseline = kTopTextBaseline;
+    return true;
+  }
+  if (s == "middle") {
+    baseline = kMiddleTextBaseline;
+    return true;
+  }
+  if (s == "bottom") {
+    baseline = kBottomTextBaseline;
+    return true;
+  }
+  if (s == "ideographic") {
+    baseline = kIdeographicTextBaseline;
+    return true;
+  }
+  if (s == "hanging") {
+    baseline = kHangingTextBaseline;
+    return true;
+  }
+  return false;
+}
+
 String ImageDataStorageFormatName(ImageDataStorageFormat format) {
   switch (format) {
     case ImageDataStorageFormat::kUint8:

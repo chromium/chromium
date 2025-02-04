@@ -127,11 +127,6 @@ template <typename T>
 class NotShared;
 class V8CanvasFontStretch;
 class V8CanvasTextRendering;
-class V8CanvasTextAlign;
-class V8CanvasTextBaseline;
-class V8CanvasDirection;
-class V8CanvasFontKerning;
-class V8CanvasFontVariantCaps;
 
 class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
  public:
@@ -442,14 +437,14 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
 
   void RestoreMatrixClipStack(cc::PaintCanvas*) const;
 
-  V8CanvasDirection direction() const;
-  void setDirection(const V8CanvasDirection);
+  String direction() const;
+  void setDirection(const String&);
 
-  V8CanvasTextAlign textAlign() const;
-  void setTextAlign(const V8CanvasTextAlign);
+  String textAlign() const;
+  void setTextAlign(const String&);
 
-  V8CanvasTextBaseline textBaseline() const;
-  void setTextBaseline(const V8CanvasTextBaseline);
+  String textBaseline() const;
+  void setTextBaseline(const String&);
 
   String letterSpacing() const;
   void setLetterSpacing(const String&);
@@ -460,14 +455,14 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   V8CanvasTextRendering textRendering() const;
   void setTextRendering(const V8CanvasTextRendering&);
 
-  V8CanvasFontKerning fontKerning() const;
-  void setFontKerning(const V8CanvasFontKerning);
+  String fontKerning() const;
+  void setFontKerning(const String&);
 
   V8CanvasFontStretch fontStretch() const;
   void setFontStretch(const V8CanvasFontStretch&);
 
-  V8CanvasFontVariantCaps fontVariantCaps() const;
-  void setFontVariantCaps(const V8CanvasFontVariantCaps&);
+  String fontVariantCaps() const;
+  void setFontVariantCaps(const String&);
 
   String font() const;
   void setFont(const String& new_font);
@@ -645,6 +640,23 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   virtual void TryRestoreContextEvent(TimerBase*) {}
 
   static const char kDefaultFont[];
+  static const char kInheritDirectionString[];
+  static const char kRtlDirectionString[];
+  static const char kLtrDirectionString[];
+  static const char kAutoKerningString[];
+  static const char kNormalKerningString[];
+  static const char kNoneKerningString[];
+  static const char kNormalVariantString[];
+  static const char kSmallCapsVariantString[];
+  static const char kAllSmallCapsVariantString[];
+  static const char kPetiteVariantString[];
+  static const char kAllPetiteVariantString[];
+  static const char kUnicaseVariantString[];
+  static const char kTitlingCapsVariantString[];
+  static const char kAutoRendering[];
+  static const char kOptimizeSpeedRendering[];
+  static const char kOptimizeLegibilityRendering[];
+  static const char kGeometricPrecisionRendering[];
   virtual void DisableAcceleration() {}
 
   // Override to prematurely disable acceleration because of a readback.
@@ -690,8 +702,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
                         double x,
                         double y,
                         CanvasRenderingContext2DState::PaintType paint_type,
-                        V8CanvasTextAlign align,
-                        V8CanvasTextBaseline baseline,
+                        TextAlign align,
+                        TextBaseline baseline,
                         unsigned run_start,
                         unsigned run_end,
                         double* max_width = nullptr,
