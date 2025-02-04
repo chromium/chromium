@@ -75,9 +75,9 @@ extern const char kFeedSettingDiscoverReferrerParameter[];
 
 // Parameters for the `kDeprecateFeedHeader` feature.
 //
-// A parameter to indicate whether a label should be added to the discover feed
-// header.
-extern const char kDeprecateFeedHeaderParameterFeedLabel[];
+// A parameter to indicate whether the label should be removed from the discover
+// feed header.
+extern const char kDeprecateFeedHeaderParameterRemoveLabel[];
 // A parameter to indicate whether the top padding above the Doodle should be
 // increased.
 extern const char kDeprecateFeedHeaderParameterTopPadding[];
@@ -105,7 +105,7 @@ bool IsSignedOutViewDemotionEnabled();
 bool IsiPadFeedGhostCardsEnabled();
 
 // YES if the NTP and feed header elements should be re-positioned as described.
-bool ShouldAddDiscoverLabel();
+bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine);
 bool ShouldAddTopPaddingToNTP();
 bool ShouldEnlargeLogoAndFakebox();
 
