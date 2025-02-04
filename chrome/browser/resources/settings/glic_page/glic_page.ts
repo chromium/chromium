@@ -15,6 +15,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 
 import type {GlicBrowserProxy} from './glic_browser_proxy.js';
 import {GlicBrowserProxyImpl} from './glic_browser_proxy.js';
@@ -71,6 +73,8 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   private registeredShortcut_: string;
   private fakePref_: chrome.settingsPrivate.PrefObject;
   private browserProxy_: GlicBrowserProxy = GlicBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -101,10 +105,15 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
 
   private onToggleChange_(event: CustomEvent<boolean>) {
     this.browserProxy_.setGlicOsLauncherEnabled(event.detail);
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Glic.OsEntrypoint.Settings.Toggle', event.detail);
   }
 
   private onShortcutUpdated_(event: CustomEvent<string>) {
     this.browserProxy_.setGlicShortcut(event.detail);
+    // Records true if the shortcut string is not undefined or the empty string.
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Glic.OsEntrypoint.Settings.Shortcut', !!event.detail);
   }
 
   private onInputCaptureChange_(event: CustomEvent<boolean>) {

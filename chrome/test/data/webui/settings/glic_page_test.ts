@@ -26,6 +26,13 @@ suite('GlicPage', function() {
     return page.shadowRoot!.querySelector<T>(`#${id}`);
   }
 
+  async function clickToggle() {
+    const launcherToggle = $<SettingsToggleButtonElement>('launcherToggle');
+    assertTrue(!!launcherToggle);
+    launcherToggle.$.control.click();
+    await flushTasks();
+  }
+
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -55,18 +62,18 @@ suite('GlicPage', function() {
     assertFalse($<SettingsToggleButtonElement>('launcherToggle')!.checked);
   });
 
-  test('LauncherToggleChange', () => {
+  test('LauncherToggleChange', async () => {
     page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
 
     const launcherToggle = $<SettingsToggleButtonElement>('launcherToggle')!;
 
-    launcherToggle.click();
+    await clickToggle();
     assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
     assertTrue(launcherToggle.checked);
     assertEquals(1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
     glicBrowserProxy.reset();
 
-    launcherToggle.click();
+    await clickToggle();
     assertFalse(page.getPref(PrefName.LAUNCHER_ENABLED).value);
     assertFalse(launcherToggle.checked);
     assertEquals(1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
@@ -76,7 +83,6 @@ suite('GlicPage', function() {
   // Test that the keyboard shortcut is collapsed/invisible when the launcher
   // is disabled and shown when the launcher is enabled.
   test('KeyboardShortcutVisibility', async () => {
-    const launcherToggle = $<SettingsToggleButtonElement>('launcherToggle')!;
     const keyboardShortcutSetting = $('keyboardShortcutSetting');
 
     // The pref starts off disabled, the keyboard shortcut row should be hidden.
@@ -84,14 +90,12 @@ suite('GlicPage', function() {
     assertFalse(isVisible(keyboardShortcutSetting));
 
     // Enable using the launcher toggle, the row should show.
-    launcherToggle.click();
-    await flushTasks();
+    await clickToggle();
     assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
     assertTrue(isVisible(keyboardShortcutSetting));
 
     // Disable using the launcher toggle, the row should hide.
-    launcherToggle.click();
-    await flushTasks();
+    await clickToggle();
     assertFalse(page.getPref(PrefName.LAUNCHER_ENABLED).value);
     assertFalse(isVisible(keyboardShortcutSetting));
 

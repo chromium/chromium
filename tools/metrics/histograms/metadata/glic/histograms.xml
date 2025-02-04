@@ -32,6 +32,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.OsEntrypoint.Settings.Shortcut" enum="BooleanEnabled"
+    expires_after="2026-01-15">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    After the user the glic launcher shortcut, logs a boolean that reflects
+    whether a shortcut is set.
+  </summary>
+</histogram>
+
+<histogram name="Glic.OsEntrypoint.Settings.Toggle" enum="BooleanEnabled"
+    expires_after="2026-01-15">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    After the user interacts with the toggle to turn on/off the OS launcher
+    entrypoint, logs a boolean that reflects whether the entrypoint is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Glic.PanelPresentationTime.{InputMode}" units="ms"
     expires_after="2026-01-15">
   <owner>dewittj@google.com</owner>
