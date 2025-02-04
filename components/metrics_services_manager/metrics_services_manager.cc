@@ -28,11 +28,8 @@ namespace metrics_services_manager {
 
 MetricsServicesManager::MetricsServicesManager(
     std::unique_ptr<MetricsServicesManagerClient> client)
-    : client_(std::move(client)),
-      may_upload_(false),
-      may_record_(false),
-      consent_given_(false) {
-  DCHECK(client_);
+    : client_(std::move(client)) {
+  CHECK(client_);
 }
 
 MetricsServicesManager::~MetricsServicesManager() = default;
@@ -235,17 +232,18 @@ void MetricsServicesManager::UpdateRunningServices() {
 
 void MetricsServicesManager::UpdateUkmService() {
   ukm::UkmService* ukm = GetUkmService();
-  if (!ukm)
+  if (!ukm) {
     return;
+  }
 
   bool listeners_active =
       metrics_service_client_->AreNotificationListenersEnabledOnAllProfiles();
-  bool sync_enabled =
+  bool ukm_allowed =
       metrics_service_client_->IsMetricsReportingForceEnabled() ||
       metrics_service_client_->IsUkmAllowedForAllProfiles();
   bool is_incognito = client_->IsOffTheRecordSessionActive();
 
-  if (consent_given_ && listeners_active && sync_enabled && !is_incognito) {
+  if (consent_given_ && listeners_active && ukm_allowed && !is_incognito) {
     ukm->EnableRecording();
     if (may_upload_)
       ukm->EnableReporting();
@@ -283,15 +281,15 @@ void MetricsServicesManager::UpdateDwaService() {
   if (!dwa) {
     return;
   }
-  // DWA is tied to all UKM consents, which is tied to sync.
+  // DWA is tied to the settings for allowing UKM.
   bool listeners_active =
       metrics_service_client_->AreNotificationListenersEnabledOnAllProfiles();
-  bool sync_enabled =
+  bool dwa_allowed =
       metrics_service_client_->IsMetricsReportingForceEnabled() ||
       metrics_service_client_->IsDwaAllowedForAllProfiles();
   bool is_incognito = client_->IsOffTheRecordSessionActive();
 
-  if (consent_given_ && listeners_active && sync_enabled && !is_incognito) {
+  if (consent_given_ && listeners_active && dwa_allowed && !is_incognito) {
     metrics::dwa::DwaRecorder::Get()->EnableRecording();
     if (may_upload_) {
       dwa->EnableReporting();
