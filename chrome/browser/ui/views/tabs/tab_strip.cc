@@ -1608,7 +1608,7 @@ void TabStrip::CloseTab(Tab* tab, CloseTabSource source) {
   if (index_to_close.has_value() && IsValidModelIndex(index_to_close.value())) {
     auto callback =
         base::BindOnce(&TabStrip::CloseTabInternal, base::Unretained(this),
-                       index_to_close.value(), source);
+                       index_to_close.value());
     controller_->OnCloseTab(index_to_close.value(), source,
                             std::move(callback));
   }

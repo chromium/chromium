@@ -56,7 +56,7 @@ class FakeBaseTabStripController : public TabStripController {
   void AddSelectionFromAnchorTo(int index) override;
   void OnCloseTab(int index,
                   CloseTabSource source,
-                  base::OnceCallback<void()> callback) override;
+                  base::OnceCallback<void(CloseTabSource)> callback) override;
   void CloseTab(int index) override;
   void ToggleTabAudioMute(int index) override;
   void MoveTab(int from_index, int to_index) override;

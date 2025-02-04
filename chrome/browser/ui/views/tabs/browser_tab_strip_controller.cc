@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -99,6 +100,24 @@ BrowserView* GetSourceBrowserViewInTabDragging() {
     }
   }
   return nullptr;
+}
+
+void DialogTimingToSource(
+    base::OnceCallback<void(CloseTabSource)> callback,
+    CloseTabSource source,
+    tab_groups::DeletionDialogController::DeletionDialogTiming timing) {
+  switch (timing) {
+    case tab_groups::DeletionDialogController::DeletionDialogTiming::
+        Synchronous: {
+      std::move(callback).Run(source);
+      return;
+    }
+    case tab_groups::DeletionDialogController::DeletionDialogTiming::
+        Asynchronous: {
+      std::move(callback).Run(CloseTabSource::kFromNonUIEvent);
+      return;
+    }
+  }
 }
 
 }  // namespace
@@ -372,7 +391,7 @@ void BrowserTabStripController::AddSelectionFromAnchorTo(int model_index) {
 void BrowserTabStripController::OnCloseTab(
     int model_index,
     CloseTabSource source,
-    base::OnceCallback<void()> callback) {
+    base::OnceCallback<void(CloseTabSource)> callback) {
   if (!web_app::IsTabClosable(model_, model_index)) {
     return;
   }
@@ -392,13 +411,14 @@ void BrowserTabStripController::OnCloseTab(
     // to prompt the user before the browser is allowed to close.
     const Browser::WarnBeforeClosingResult result =
         browser_view_->browser()->MaybeWarnBeforeClosing(base::BindOnce(
-            [](TabStrip* tab_strip, int model_index, CloseTabSource source,
+            [](TabStrip* tab_strip, int model_index,
                Browser::WarnBeforeClosingResult result) {
               if (result == Browser::WarnBeforeClosingResult::kOkToClose) {
-                tab_strip->CloseTab(tab_strip->tab_at(model_index), source);
+                tab_strip->CloseTab(tab_strip->tab_at(model_index),
+                                    CloseTabSource::kFromNonUIEvent);
               }
             },
-            base::Unretained(tabstrip_), model_index, source));
+            base::Unretained(tabstrip_), model_index));
 
     if (result != Browser::WarnBeforeClosingResult::kOkToClose) {
       return;
@@ -410,16 +430,19 @@ void BrowserTabStripController::OnCloseTab(
       model_->GetGroupsDestroyedFromRemovingIndices({model_index});
 
   if (!tab_groups::IsTabGroupsSaveV2Enabled() || groups_to_delete.empty()) {
-    std::move(callback).Run();
+    std::move(callback).Run(source);
     return;
   }
+
+  auto timing_mapped_callback =
+      base::BindOnce(&DialogTimingToSource, std::move(callback), source);
 
   // If the user is destroying the last tab in a saved or shared group via the
   // tabstrip, a dialog is shown that will decide whether to destroy the tab or
   // not. It will first ungroup the tab, then close the tab.
   tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
       browser_view_->browser(), tab_groups::GroupDeletionReason::ClosedLastTab,
-      groups_to_delete, std::move(callback));
+      groups_to_delete, std::move(timing_mapped_callback));
 }
 
 void BrowserTabStripController::CloseTab(int model_index) {

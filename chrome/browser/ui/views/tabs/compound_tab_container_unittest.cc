@@ -419,8 +419,7 @@ TEST_F(CompoundTabContainerTest, ExitsClosingModeAtStandardWidth) {
 
   // Enter tab closing mode manually; this would normally happen as the result
   // of a mouse/touch-based tab closure action.
-  tab_container_->EnterTabClosingMode(std::nullopt,
-                                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  tab_container_->EnterTabClosingMode(std::nullopt, CloseTabSource::kFromMouse);
 
   // Close the second-to-last tab; tab closing mode should remain active,
   // constraining tab widths to below full size.
@@ -455,8 +454,7 @@ TEST_F(CompoundTabContainerTest, ClosingPinnedTabsEngagesClosingMode) {
 
   // Enter tab closing mode manually; this would normally happen as the result
   // of a mouse/touch-based tab closure action.
-  tab_container_->EnterTabClosingMode(std::nullopt,
-                                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  tab_container_->EnterTabClosingMode(std::nullopt, CloseTabSource::kFromMouse);
 
   // Close the third-to-last tab, which is the last pinned tab; tab closing mode
   // should constrain tab widths to below full size.
@@ -488,8 +486,7 @@ TEST_F(CompoundTabContainerTest, ExitsClosingModeWhenClosingLastUnpinnedTab) {
 
   // Enter tab closing mode manually; this would normally happen as the result
   // of a mouse/touch-based tab closure action.
-  tab_container_->EnterTabClosingMode(std::nullopt,
-                                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  tab_container_->EnterTabClosingMode(std::nullopt, CloseTabSource::kFromMouse);
 
   // Close the second-to-last tab, which is the inactive unpinned tab; tab
   // closing mode should remain active, constraining tab widths to below full

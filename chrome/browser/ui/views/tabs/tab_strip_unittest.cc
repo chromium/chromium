@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -417,7 +418,7 @@ TEST_P(TabStripTest, TabCloseButtonVisibility) {
 
   // After closing the active tab, the tab which becomes active should
   // show its tab close button.
-  tab_strip_->CloseTab(tab2, CLOSE_TAB_FROM_TOUCH);
+  tab_strip_->CloseTab(tab2, CloseTabSource::kFromTouch);
   tab2 = nullptr;
   ASSERT_TRUE(tab3->IsActive());
   CompleteAnimationAndLayout();
@@ -456,7 +457,7 @@ TEST_P(TabStripTest, CloseButtonHiddenWhenLockedForOnTask) {
   EXPECT_FALSE(tab2->showing_close_button_);
 
   // Closing a tab should not alter tab close button visibility either.
-  tab_strip_->CloseTab(tab2, CLOSE_TAB_FROM_MOUSE);
+  tab_strip_->CloseTab(tab2, CloseTabSource::kFromMouse);
   tab2 = nullptr;
   EXPECT_FALSE(tab0->showing_close_button_);
   EXPECT_FALSE(tab1->showing_close_button_);
@@ -518,7 +519,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
     EXPECT_GE(tab_strip_->tab_at(active_index)->bounds().width(),
               TabStyle::Get()->GetMinimumActiveWidth());
     tab_strip_->CloseTab(tab_strip_->tab_at(active_index),
-                         CLOSE_TAB_FROM_MOUSE);
+                         CloseTabSource::kFromMouse);
     CompleteAnimationAndLayout();
   }
 }
@@ -547,7 +548,7 @@ TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
     const int last_inactive_width = GetInactiveTabWidth();
     tab_strip_->CloseTab(
         tab_strip_->tab_at(tab_strip_->GetActiveIndex().value()),
-        CLOSE_TAB_FROM_MOUSE);
+        CloseTabSource::kFromMouse);
     CompleteAnimationAndLayout();
     EXPECT_GE(GetInactiveTabWidth(), last_inactive_width);
   }
@@ -668,11 +669,11 @@ TEST_P(TabStripTest, EventsOnClosingTab) {
   gfx::Point tab_center = first_tab->bounds().CenterPoint();
 
   EXPECT_EQ(first_tab, tab_strip_->GetEventHandlerForPoint(tab_center));
-  tab_strip_->CloseTab(first_tab, CLOSE_TAB_FROM_MOUSE);
+  tab_strip_->CloseTab(first_tab, CloseTabSource::kFromMouse);
   EXPECT_EQ(first_tab, tab_strip_->GetEventHandlerForPoint(tab_center));
 
   // Closing |first_tab| again should forward to |second_tab| instead.
-  tab_strip_->CloseTab(first_tab, CLOSE_TAB_FROM_MOUSE);
+  tab_strip_->CloseTab(first_tab, CloseTabSource::kFromMouse);
   EXPECT_TRUE(second_tab->closing());
 }
 
