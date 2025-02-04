@@ -181,7 +181,7 @@ export class CrRippleElement extends CrLitElement {
     ripple.style.height = ripple.style.width = (2 * radius) + 'px';
 
     this.ripples_.push(ripple);
-    this.shadowRoot!.appendChild(ripple);
+    this.shadowRoot.appendChild(ripple);
 
     ripple.animate(
         {

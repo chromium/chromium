@@ -344,7 +344,7 @@ export class CrDialogElement extends CrDialogElementBase {
 
   override focus() {
     const titleContainer =
-        this.shadowRoot!.querySelector<HTMLElement>('.title-container');
+        this.shadowRoot.querySelector<HTMLElement>('.title-container');
     assert(titleContainer);
     titleContainer.focus();
   }

@@ -33,13 +33,13 @@ suite('cr-icon', function() {
   test('cr-iconset', async () => {
     icon.icon = 'cr:arrow-drop-up';
     await microtasksFinished();
-    let svgs = icon.shadowRoot!.querySelectorAll('svg');
+    let svgs = icon.shadowRoot.querySelectorAll('svg');
     assertEquals(1, svgs.length);
     assertSvgPath(svgs[0]!, 'M7 14l5-5 5 5z');
 
     icon.icon = 'cr:arrow-drop-down';
     await microtasksFinished();
-    svgs = icon.shadowRoot!.querySelectorAll('svg');
+    svgs = icon.shadowRoot.querySelectorAll('svg');
     assertEquals(1, svgs.length);
     assertSvgPath(svgs[0]!, 'M7 10l5 5 5-5z');
   });

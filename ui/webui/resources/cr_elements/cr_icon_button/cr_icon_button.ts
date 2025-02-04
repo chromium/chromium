@@ -179,7 +179,7 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
   }
 
   private async onIronIconChanged_() {
-    this.shadowRoot!.querySelectorAll('cr-icon').forEach(el => el.remove());
+    this.shadowRoot.querySelectorAll('cr-icon').forEach(el => el.remove());
     if (!this.ironIcon) {
       return;
     }

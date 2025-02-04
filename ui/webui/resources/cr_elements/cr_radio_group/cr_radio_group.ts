@@ -86,7 +86,7 @@ export class CrRadioGroupElement extends CrLitElement {
 
     this.populateBound_ = () => this.populate_();
     assert(this.populateBound_);
-    this.shadowRoot!.querySelector('slot')!.addEventListener(
+    this.shadowRoot.querySelector('slot')!.addEventListener(
         'slotchange', this.populateBound_);
 
     this.populate_();
@@ -95,7 +95,7 @@ export class CrRadioGroupElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.populateBound_);
-    this.shadowRoot!.querySelector('slot')!.removeEventListener(
+    this.shadowRoot.querySelector('slot')!.removeEventListener(
         'slotchange', this.populateBound_);
     this.buttonEventTracker_.removeAll();
   }
@@ -214,7 +214,7 @@ export class CrRadioGroupElement extends CrLitElement {
   }
 
   private populate_() {
-    const elements = this.shadowRoot!.querySelector('slot')!.assignedElements(
+    const elements = this.shadowRoot.querySelector('slot')!.assignedElements(
         {flatten: true});
     this.buttons_ = Array.from(elements).flatMap(el => {
       let result = [];

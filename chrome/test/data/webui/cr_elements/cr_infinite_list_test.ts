@@ -34,7 +34,7 @@ class TestItem extends CrLitElement {
   }
 
   override focus() {
-    const button = this.shadowRoot!.querySelector('button');
+    const button = this.shadowRoot.querySelector('button');
     assertTrue(!!button);
     button.focus();
   }
@@ -139,7 +139,7 @@ suite('InfiniteListTest', () => {
     testApp = createTestApp(useDefaultScroll);
     testApp.listItems = sampleData;
 
-    infiniteList = testApp.shadowRoot!.querySelector('cr-infinite-list')!;
+    infiniteList = testApp.shadowRoot.querySelector('cr-infinite-list')!;
     const lazyList = infiniteList.querySelector('cr-lazy-list');
     assertTrue(!!lazyList);
     innerList = lazyList;
@@ -242,7 +242,7 @@ suite('InfiniteListFocusTest', () => {
     testApp = createTestApp();
     testApp.listItems = sampleData;
 
-    infiniteList = testApp.shadowRoot!.querySelector('cr-infinite-list')!;
+    infiniteList = testApp.shadowRoot.querySelector('cr-infinite-list')!;
     const lazyList = infiniteList.querySelector('cr-lazy-list');
     assertTrue(!!lazyList);
     innerList = lazyList;
@@ -259,7 +259,7 @@ suite('InfiniteListFocusTest', () => {
     assertEquals('One', focusable.name);
 
     // Focus and click on the 3rd item in the list's button.
-    const button = renderedItems[2]!.shadowRoot!.querySelector('button');
+    const button = renderedItems[2]!.shadowRoot.querySelector('button');
     assertTrue(!!button);
     button.focus();
     button.click();

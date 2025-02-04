@@ -108,7 +108,7 @@ export class CrTabsElement extends CrLitElement {
       return;
     }
 
-    const tabs = this.shadowRoot!.querySelectorAll('.tab');
+    const tabs = this.shadowRoot.querySelectorAll('.tab');
 
     if (tabs.length <= oldSelected) {
       return;
@@ -156,7 +156,7 @@ export class CrTabsElement extends CrLitElement {
     e.stopPropagation();
     this.selected = newSelection;
     await this.updateComplete;
-    this.shadowRoot!.querySelector<HTMLElement>('.tab.selected')!.focus();
+    this.shadowRoot.querySelector<HTMLElement>('.tab.selected')!.focus();
   }
 
   private onIndicatorTransitionEnd_(event: Event) {

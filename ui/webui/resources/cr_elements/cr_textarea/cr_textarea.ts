@@ -212,7 +212,7 @@ export class CrTextareaElement extends CrLitElement {
   protected onInputFocusChange_() {
     // focused_ is used instead of :focus-within, so focus on elements within
     // the suffix slot does not trigger a change in input styles.
-    if (this.shadowRoot!.activeElement === this.$.input) {
+    if (this.shadowRoot.activeElement === this.$.input) {
       this.setAttribute('focused_', '');
     } else {
       this.removeAttribute('focused_');

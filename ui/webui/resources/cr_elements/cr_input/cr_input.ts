@@ -250,7 +250,7 @@ export class CrInputElement extends CrLitElement {
    * @return Whether the <input> element was focused.
    */
   focusInput(): boolean {
-    if (this.shadowRoot!.activeElement === this.inputElement) {
+    if (this.shadowRoot.activeElement === this.inputElement) {
       return false;
     }
     this.inputElement.focus();

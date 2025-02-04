@@ -151,12 +151,12 @@ suite('cr-scrollable-mixin overrides', function() {
 
     // Override `queryItems` from CrSelectableMixin.
     override queryItems() {
-      return Array.from(this.shadowRoot!.querySelectorAll('a'));
+      return Array.from(this.shadowRoot.querySelectorAll('a'));
     }
 
     // Override `queryMatchingItem` from CrSelectableMixin.
     override queryMatchingItem(selector: string) {
-      return this.shadowRoot!.querySelector<HTMLElement>(`a${selector}`);
+      return this.shadowRoot.querySelector<HTMLElement>(`a${selector}`);
     }
 
     override connectedCallback() {
@@ -184,7 +184,7 @@ suite('cr-scrollable-mixin overrides', function() {
     // Select the 2nd item.
     element.selected = '/b';
     await element.updateComplete;
-    let selectedItem = element.shadowRoot!.querySelector('.selected');
+    let selectedItem = element.shadowRoot.querySelector('.selected');
     assertTrue(!!selectedItem);
     assertEquals(selectedItem, element.selectedItem);
     assertEquals('b', selectedItem.textContent);
@@ -198,7 +198,7 @@ suite('cr-scrollable-mixin overrides', function() {
     // Select the 1st item.
     element.selected = '/a';
     await element.updateComplete;
-    selectedItem = element.shadowRoot!.querySelector('.selected');
+    selectedItem = element.shadowRoot.querySelector('.selected');
     assertTrue(!!selectedItem);
     assertEquals(selectedItem, element.selectedItem);
     assertEquals('a', selectedItem.textContent);
@@ -207,7 +207,7 @@ suite('cr-scrollable-mixin overrides', function() {
     element.selectNext();
     await element.updateComplete;
     assertEquals('/c', element.selected);
-    selectedItem = element.shadowRoot!.querySelector('.selected');
+    selectedItem = element.shadowRoot.querySelector('.selected');
     assertTrue(!!selectedItem);
     assertEquals(selectedItem, element.selectedItem);
     assertEquals('c', selectedItem.textContent);
