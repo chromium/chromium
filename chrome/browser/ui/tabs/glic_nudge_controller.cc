@@ -29,6 +29,12 @@ void GlicNudgeController::UpdateNudgeLabel(content::WebContents* web_contents,
   if (tab_interface->GetContents() != web_contents) {
     return;
   }
+  if (browser_window_interface_->GetUserEducationInterface() &&
+      browser_window_interface_->GetUserEducationInterface()
+          ->IsFeaturePromoActive(feature_engagement::kIPHGlicPromoFeature)) {
+    // Do nothing if feature promo is active.
+    return;
+  }
 
   nudge_activity_callback_ = callback;
   for (auto& observer : observers_) {
