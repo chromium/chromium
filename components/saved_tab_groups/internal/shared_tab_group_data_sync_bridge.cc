@@ -240,7 +240,6 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
       sync_pb::SharedTab* tab = specifics.mutable_tab();
       tab->set_url(kChromeSavedTabGroupUnsupportedURL);
       tab->clear_title();
-      tab->clear_favicon_url();
     }
   }
   std::unique_ptr<syncer::EntityData> entity_data =

@@ -1364,7 +1364,6 @@ VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroup& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::SharedTab& proto) {
   VISIT(url);
   VISIT(title);
-  VISIT(favicon_url);
   VISIT(shared_tab_group_guid);
   VISIT(unique_position);
 }
