@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Android.FindElementType.Usage.{RunningATs}"
+<histogram name="Accessibility.Android.FindElementType.Usage2.{RunningATs}"
     enum="AccessibilityPredicateType" expires_after="2025-07-27">
   <owner>mschillaci@google.com</owner>
   <owner>lucasradaelli@google.com</owner>
@@ -158,11 +158,20 @@ chromium-metrics-reviews@google.com.
     element. This occured with: {RunningATs}
   </summary>
   <token key="RunningATs">
-    <variant name="NotTalkBackAT"
-        summary="AT(s) running that are not TalkBack."/>
-    <variant name="OnlyTalkBackRunning"
-        summary="TalkBack as the only running AT."/>
-    <variant name="TalkBackRunningWithOtherAT"
+    <variant name="NoTalkBack.Basic"
+        summary="Some AT(s) running without TalkBack running, in AXMode:
+                 kAXModeBasic."/>
+    <variant name="NoTalkBack.FormControls"
+        summary="Some AT(s) running without TalkBack running, in AXMode:
+                 kAXModeFormControls."/>
+    <variant name="NoTalkBack.Unnamed"
+        summary="Some AT(s) running without TalkBack running in some unnamed
+                 AXMode combination."/>
+    <variant name="NoTalkBack.WebContentsOnly"
+        summary="Some AT(s) running without TalkBack running, in AXMode:
+                 kAXModeWebContentsOnly."/>
+    <variant name="TalkBack" summary="TalkBack as the only running AT."/>
+    <variant name="TalkBackWithOtherAT"
         summary="TalkBack running along with another AT."/>
   </token>
 </histogram>
