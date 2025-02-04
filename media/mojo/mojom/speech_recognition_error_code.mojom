@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 2
+
 module media.mojom;
 
 // Used by the browser's speech recognition engine to indicate the reason for a
@@ -18,4 +20,5 @@ enum SpeechRecognitionErrorCode {
   kBadGrammar,
   kLanguageNotSupported,
   kNoMatch,
+  [MinVersion=1] kRecognitionContextNotSupported,
 };

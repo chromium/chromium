@@ -51,6 +51,9 @@ static String ErrorCodeToString(
       return "bad-grammar";
     case media::mojom::blink::SpeechRecognitionErrorCode::kLanguageNotSupported:
       return "language-not-supported";
+    case media::mojom::blink::SpeechRecognitionErrorCode::
+        kRecognitionContextNotSupported:
+      return "recognition-context-not-supported";
     case media::mojom::blink::SpeechRecognitionErrorCode::kNoMatch:
       NOTREACHED();
   }
