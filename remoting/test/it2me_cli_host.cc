@@ -174,7 +174,6 @@ void It2MeCliHost::StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
   // Store all parameters for future connect call.
   connect_params_ = base::Value::Dict()
                         .Set(kUserName, user_email)
-                        .Set(kAuthServiceWithToken, "oauth2:" + access_token)
                         .Set(kAccessToken, access_token);
 
   remote_connected_ = false;

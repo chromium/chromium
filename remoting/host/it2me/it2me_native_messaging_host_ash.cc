@@ -70,24 +70,11 @@ void It2MeNativeMessageHostAsh::Connect(
   host_state_disconnected_callback_ =
       std::move(host_state_disconnected_callback);
 
-  // The version of Lacros is guaranteed to be at least as new as the code
-  // running in ash so we can remove this shim in M124, however we need it until
-  // then as Lacros will continue sending the oauth2 prefix for back-compat
-  // until that milestone. Basically the shim code in Lacros and Ash can be
-  // removed in the same milestone but the Lacros code needs to stay in place
-  // until the back-compat behavior is no longer required.
-  std::string access_token = params.oauth_access_token;
-  const char kOAuth2ServicePrefix[] = "oauth2:";
-  // Strip the prefix off, if it exists.
-  if (access_token.starts_with(kOAuth2ServicePrefix)) {
-    access_token = access_token.substr(strlen(kOAuth2ServicePrefix));
-  }
-
   auto message =
       base::Value::Dict()
           .Set(kMessageType, kConnectMessage)
           .Set(kUserName, params.user_name)
-          .Set(kAccessToken, access_token)
+          .Set(kAccessToken, params.oauth_access_token)
           .Set(kIsEnterpriseAdminUser, enterprise_params.has_value());
   if (enterprise_params.has_value()) {
     message.Merge(enterprise_params->ToDict());
