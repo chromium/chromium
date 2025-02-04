@@ -73,6 +73,7 @@
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
@@ -859,6 +860,15 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
 };
 
+class MockAmountExtractionManager : public payments::AmountExtractionManager {
+ public:
+  explicit MockAmountExtractionManager(TestBrowserAutofillManager* test_manager)
+      : AmountExtractionManager(
+            static_cast<BrowserAutofillManager*>(test_manager)) {}
+
+  MOCK_METHOD(void, TriggerCheckoutAmountExtraction, (), (override));
+};
+
 class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
  public:
   static std::unique_ptr<TestBrowserAutofillManager> Create(
@@ -874,6 +884,8 @@ class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
     test_api(*manager).set_credit_card_access_manager(
         std::make_unique<NiceMock<MockCreditCardAccessManager>>(
             &*manager, test_api(*manager).credit_card_form_event_logger()));
+    test_api(*manager).set_amount_extraction_manager(
+        std::make_unique<NiceMock<MockAmountExtractionManager>>(&*manager));
     return manager;
   }
 
@@ -1332,6 +1344,11 @@ class BrowserAutofillManagerTest : public testing::Test {
   MockCreditCardAccessManager& cc_access_manager() {
     return static_cast<MockCreditCardAccessManager&>(
         manager().GetCreditCardAccessManager());
+  }
+
+  MockAmountExtractionManager& amount_extraction_manager() {
+    return static_cast<MockAmountExtractionManager&>(
+        test_api(manager()).get_amount_extraction_manager_for_testing());
   }
 
   TestAutofillExternalDelegate* external_delegate() {
@@ -2740,6 +2757,105 @@ TEST_F(BrowserAutofillManagerTest,
   // Verify that suggestions are returned.
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
   EXPECT_GT(external_delegate()->suggestions().size(), 0u);
+}
+
+// Tests that `AmountExtractionManager` should trigger amount extraction if
+// credit card form is clicked.
+TEST_F(BrowserAutofillManagerTest,
+       ShouldTriggerAmountExtraction_IfCreditCardFormIsClicked) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAmountExtractionDesktop};
+  // Set up our form data.
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  // Verify that the amount extraction is triggered.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction)
+      .Times(1);
+#else
+  EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction)
+      .Times(0);
+#endif
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  // Verify that suggestions are returned as normal.
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+}
+
+// Tests that `AmountExtractionManager` should not trigger amount extraction if
+// a non-credit-card form is clicked.
+TEST_F(BrowserAutofillManagerTest,
+       ShouldNotTriggerAmountExtraction_IfNonCreditCardFormIsClicked) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAmountExtractionDesktop};
+
+  // Set up our form data.
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  // Verify that the amount extraction is not triggered.
+  EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction)
+      .Times(0);
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  // Verify that suggestions are returned as normal.
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+}
+
+// Tests that `AmountExtractionManager` should not trigger amount extraction if
+// there is no credit card suggestion.
+TEST_F(BrowserAutofillManagerTest,
+       ShouldNotTriggerAmountExtraction_IfNoSuggestion) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAmountExtractionDesktop};
+  // Set up our form data.
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  // Remove all credit cards under testing profile so that there is no
+  // suggestion is generated.
+  personal_data().test_payments_data_manager().ClearAllLocalData();
+
+  // Verify that the amount extraction is triggered.
+  EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction)
+      .Times(0);
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  // Verify that no suggestion is returned.
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+}
+
+// Tests that `AmountExtractionManager` should not trigger amount extraction if
+// Autofill is disabled.
+TEST_F(BrowserAutofillManagerTest,
+       ShouldNotTriggerAmountExtraction_IfAutofillDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAmountExtractionDesktop};
+
+  // Set up our form data.
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  // Disable Autofill.
+  client().SetAutofillProfileEnabled(false);
+  client().SetAutofillPaymentMethodsEnabled(false);
+
+  // Verify that the amount extraction is triggered.
+  EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction)
+      .Times(0);
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  // Verify at suggestions are not generated.
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
 struct LogAblationTestParams {
