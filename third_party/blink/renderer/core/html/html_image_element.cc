@@ -630,9 +630,7 @@ unsigned HTMLImageElement::width() {
       return width;
 
     // if the image is available, use its width
-    if (ImageResourceContent* image_content = GetImageLoader().GetContent()) {
-      return image_content->IntrinsicSize(kRespectImageOrientation).width();
-    }
+    return GetImageLoader().AccessNaturalSize().width();
   }
 
   return LayoutBoxWidth();
@@ -653,9 +651,7 @@ unsigned HTMLImageElement::height() {
       return height;
 
     // if the image is available, use its height
-    if (ImageResourceContent* image_content = GetImageLoader().GetContent()) {
-      return image_content->IntrinsicSize(kRespectImageOrientation).height();
-    }
+    return GetImageLoader().AccessNaturalSize().height();
   }
 
   return LayoutBoxHeight();
@@ -671,8 +667,7 @@ PhysicalSize HTMLImageElement::DensityCorrectedIntrinsicDimensions() const {
       image_content->DevicePixelRatioHeaderValue() > 0)
     pixel_density = 1 / image_content->DevicePixelRatioHeaderValue();
 
-  PhysicalSize natural_size(
-      image_content->GetImage()->Size(kRespectImageOrientation));
+  PhysicalSize natural_size(GetImageLoader().AccessNaturalSize());
   natural_size.Scale(pixel_density);
   return natural_size;
 }

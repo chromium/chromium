@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -857,6 +858,35 @@ void ImageLoader::UpdateLayoutObject() {
   if (image_content_ != cached_image_content &&
       (image_complete_ || !cached_image_content))
     image_resource->SetImageResource(image_content_.Get());
+}
+
+gfx::Size ImageLoader::AccessNaturalSize() const {
+  if (!image_content_ || !image_content_->HasImage() ||
+      image_content_->ErrorOccurred()) {
+    return gfx::Size();
+  }
+  Image& image = *image_content_->GetImage();
+  gfx::Size size = image.Size(kRespectImageOrientation);
+
+  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+    gfx::Size concrete_object_size;
+    NaturalSizingInfo sizing_info;
+    if (SVGImageForContainer::GetNaturalDimensions(*svg_image, nullptr,
+                                                   sizing_info)) {
+      concrete_object_size =
+          ToRoundedSize(PhysicalSize::FromSizeFFloor(blink::ConcreteObjectSize(
+              sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
+                                      LayoutReplaced::kDefaultHeight))));
+    }
+    if (size != concrete_object_size) {
+      element_->GetDocument().CountUse(
+          WebFeature::kHTMLImageElementNaturalSizeDiffersForSvgImage);
+    }
+    if (!RuntimeEnabledFeatures::HTMLImageElementActualNaturalSizeEnabled()) {
+      size = concrete_object_size;
+    }
+  }
+  return size;
 }
 
 ResourcePriority ImageLoader::ComputeResourcePriority() const {
