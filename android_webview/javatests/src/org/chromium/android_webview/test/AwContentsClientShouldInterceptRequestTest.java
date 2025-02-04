@@ -1424,6 +1424,15 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         "enable-features=WebViewInterceptedCookieHeader,WebViewInterceptedCookieHeaderReadWrite"
     })
     public void testInterceptedCookieHeaders_readWriteEnabled() throws Throwable {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(
+                                "Android.WebView.ShouldInterceptRequest."
+                                        + "SetCookieHeader.TimeToRun")
+                        .expectAnyRecord(
+                                "Android.WebView.ShouldInterceptRequest."
+                                        + "GetCookieHeader.PostMojo.TimeToRun")
+                        .build();
         var cookieManager = mAwContents.getBrowserContextForPublicApi().getCookieManager();
         final String destinationUrl =
                 mWebServer.setResponse("/hello.txt", "", new ArrayList<Pair<String, String>>());
@@ -1448,6 +1457,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
 
         // And then we should see our new value in the cookie manager.
         Assert.assertEquals("blah=yo; foo=bar", cookieManager.getCookie(destinationUrl));
+        histogramExpectation.assertExpected();
     }
 
     @Test
@@ -1455,6 +1465,15 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     @Feature({"AndroidWebView", "Network"})
     @CommandLineFlags.Add({"enable-features=WebViewInterceptedCookieHeader"})
     public void testInterceptedCookieHeaders_readWriteDisabled() throws Throwable {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(
+                                "Android.WebView.ShouldInterceptRequest."
+                                        + "SetCookieHeader.TimeToRun")
+                        .expectAnyRecord(
+                                "Android.WebView.ShouldInterceptRequest."
+                                        + "GetCookieHeader.PostMojo.TimeToRun")
+                        .build();
         var cookieManager = mAwContents.getBrowserContextForPublicApi().getCookieManager();
         final String destinationUrl =
                 mWebServer.setResponse("/hello.txt", "", new ArrayList<Pair<String, String>>());
@@ -1483,6 +1502,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
 
         // And then we should see our new value in the cookie manager.
         Assert.assertEquals("blah=yo", cookieManager.getCookie(destinationUrl));
+        histogramExpectation.assertExpected();
     }
 
     @Test
