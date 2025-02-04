@@ -16,6 +16,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
@@ -468,9 +469,11 @@ Extension::ManifestData* Extension::GetManifestData(
 void Extension::SetManifestData(std::string_view key,
                                 std::unique_ptr<Extension::ManifestData> data) {
   DCHECK(!finished_parsing_manifest_ && thread_checker_.CalledOnValidThread());
-  // TODO(crbug.com/376532871): remove explicit std::string constructor once
-  // std::map::operator[] supports heterogeneous overloads (in C++23).
-  manifest_data_[std::string{key}] = std::move(data);
+  // TODO(crbug.com/376532871): This helper avoids creating a temporary string
+  // to lookup `key` in `manifest_data_`, if key is already present. The helper
+  // can be removed with C++26, where std::map supports heterogenous key args
+  // on `std::map::operator[]()` and `std::map::insert_or_assign()`.
+  base::InsertOrAssign(manifest_data_, key, std::move(data));
 }
 
 void Extension::SetGUID(const ExtensionGuid& guid) {
