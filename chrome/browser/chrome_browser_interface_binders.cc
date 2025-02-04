@@ -89,6 +89,7 @@
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
+#include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/webui/chrome_urls/features.h"
 #include "content/public/browser/browser_context.h"
@@ -476,6 +477,11 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_ui.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SPELLCHECK)
+#include "chrome/browser/spellchecker/spell_check_host_chrome_impl.h"
+#include "components/spellcheck/common/spellcheck.mojom.h"
 #endif
 
 namespace chrome::internal {
@@ -866,6 +872,15 @@ void PopulateChromeFrameBinders(
         base::BindRepeating(&BindPaymentLinkHandler));
   }
 #endif
+
+#if BUILDFLAG(ENABLE_SPELLCHECK)
+  map->Add<spellcheck::mojom::SpellCheckHost>(base::BindRepeating(
+      [](content::RenderFrameHost* frame_host,
+         mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
+        SpellCheckHostChromeImpl::Create(
+            frame_host->GetProcess()->GetDeprecatedID(), std::move(receiver));
+      }));
+#endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 }
 
 void PopulateChromeWebUIFrameBinders(
