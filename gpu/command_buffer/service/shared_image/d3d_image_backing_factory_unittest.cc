@@ -826,8 +826,8 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
   }
 
   // Find a Dawn D3D12 adapter
-  WGPUInstanceDescriptor instance_desc = {
-      .features =
+  wgpu::InstanceDescriptor instance_desc = {
+      .capabilities =
           {
               .timedWaitAnyEnable = true,
           },
@@ -2313,8 +2313,8 @@ class D3DImageBackingFactoryBufferTest : public D3DImageBackingFactoryTestBase {
 // Verifies that creating a shared image backed by a D3D12 buffer works and can
 // be imported into Dawn.
 TEST_F(D3DImageBackingFactoryBufferTest, CreateSharedImageImportToDawn) {
-  WGPUInstanceDescriptor instance_desc = {
-      .features =
+  wgpu::InstanceDescriptor instance_desc = {
+      .capabilities =
           {
               .timedWaitAnyEnable = true,
           },
