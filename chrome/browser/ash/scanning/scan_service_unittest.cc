@@ -37,6 +37,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -283,16 +284,21 @@ class ScanServiceTest : public testing::Test {
  public:
   ScanServiceTest()
       : profile_manager_(CreateTestingProfileManager()),
-        profile_(profile_manager_->CreateTestingProfile(kUserEmail)),
-        scanned_files_mount_(
-            ScopedTestMountPoint::CreateAndMountDownloads(profile_)),
         session_controller_(std::make_unique<TestSessionController>()),
         user_manager_(new ash::FakeChromeUserManager),
         user_manager_owner_(base::WrapUnique(user_manager_.get())) {
-    DCHECK(scanned_files_mount_->IsValid());
     const AccountId account_id(AccountId::FromUserEmail(kUserEmail));
     user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id);
+    user_manager_->LoginUser(account_id, /*set_profile_created_flag=*/false);
+
+    profile_ = profile_manager_->CreateTestingProfile(kUserEmail);
+    AnnotatedAccountId::Set(profile_, account_id);
+    user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
+
+    scanned_files_mount_ =
+        ScopedTestMountPoint::CreateAndMountDownloads(profile_);
+    DCHECK(scanned_files_mount_->IsValid());
+
     SetupScanService(scanned_files_mount_->GetRootPath(),
                      base::FilePath("/google/drive"));
   }
@@ -408,7 +414,7 @@ class ScanServiceTest : public testing::Test {
   FakeLorgnetteScannerManager fake_lorgnette_scanner_manager_;
   FakeScanJobObserver fake_scan_job_observer_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  const raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<ScopedTestMountPoint> scanned_files_mount_;
   std::unique_ptr<TestSessionController> session_controller_;
   const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;

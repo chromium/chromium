@@ -19,7 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/browser_process.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_file_system_delegate.h"
@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/account_id/account_id.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/user_manager/user.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 
@@ -54,11 +55,6 @@ std::optional<const HoldingSpaceItem*> GetAlternativeHoldingSpaceItem(
     }
   }
   return std::nullopt;
-}
-
-// Returns the singleton profile manager for the browser process.
-ProfileManager* GetProfileManager() {
-  return g_browser_process->profile_manager();
 }
 
 // Records the time from the first availability of the holding space feature
@@ -100,20 +96,14 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
   // the first time that holding space became available, this will no-op.
   holding_space_prefs::MarkTimeOfFirstAvailability(profile_->GetPrefs());
 
-  ProfileManager* const profile_manager = GetProfileManager();
-  if (!profile_manager) {  // May be `nullptr` in tests.
-    return;
-  }
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
+  const bool is_profile_ready = user->GetProfilePrefs();
 
-  // The associated profile may not be ready yet. If it is, we can immediately
-  // proceed with profile dependent initialization.
-  if (profile_manager->IsValidProfile(profile)) {
+  if (is_profile_ready) {
     OnProfileReady();
-    return;
+  } else {
+    profile_observer_.Observe(profile);
   }
-
-  // Otherwise we need to wait for the profile to be added.
-  profile_manager_observer_.Observe(profile_manager);
 }
 
 HoldingSpaceKeyedService::~HoldingSpaceKeyedService() {
@@ -132,6 +122,13 @@ void HoldingSpaceKeyedService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // TODO(crbug.com/40150129): Move to `ash::holding_space_prefs`.
   HoldingSpacePersistenceDelegate::RegisterProfilePrefs(registry);
+}
+
+void HoldingSpaceKeyedService::OnProfileInitializationComplete(
+    Profile* profile) {
+  CHECK_EQ(profile_, profile);
+  profile_observer_.Reset();
+  OnProfileReady();
 }
 
 void HoldingSpaceKeyedService::AddPinnedFiles(
@@ -403,14 +400,6 @@ HoldingSpaceKeyedService::OpenItemWhenComplete(const HoldingSpaceItem* item) {
 
 void HoldingSpaceKeyedService::Shutdown() {
   ShutdownDelegates();
-}
-
-void HoldingSpaceKeyedService::OnProfileAdded(Profile* profile) {
-  if (profile == profile_) {
-    DCHECK(profile_manager_observer_.IsObserving());
-    profile_manager_observer_.Reset();
-    OnProfileReady();
-  }
 }
 
 void HoldingSpaceKeyedService::OnProfileReady() {

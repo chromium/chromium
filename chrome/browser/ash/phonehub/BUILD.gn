@@ -91,6 +91,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/ash/holding_space:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/multidevice:test_support",
     "//chromeos/ash/components/phonehub",
     "//chromeos/ash/components/phonehub:test_support",

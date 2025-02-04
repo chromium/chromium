@@ -60,6 +60,7 @@ static_library("holding_space") {
     "//components/keyed_service/content",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/user_manager",
     "//content/public/browser",
     "//net",
     "//storage/browser",

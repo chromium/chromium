@@ -47,6 +47,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
@@ -1995,10 +1996,15 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
     holding_space_controller_ = std::make_unique<ash::HoldingSpaceController>();
     profile_manager_ = CreateTestingProfileManager();
     constexpr char kEmail[] = "test@test";
+
     const AccountId account_id(AccountId::FromUserEmail(kEmail));
     user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id);
+    user_manager_->LoginUser(account_id, /*set_profile_created_flag=*/false);
+
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
+    ash::AnnotatedAccountId::Set(profile_, account_id);
+    user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
+
     static_cast<ash::SessionObserver*>(holding_space_controller_.get())
         ->OnActiveUserSessionChanged(account_id);
   }
