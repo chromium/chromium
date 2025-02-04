@@ -22,17 +22,25 @@ namespace blink {
 
 Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
                              ExceptionState& exception_state) {
+  return Create(sanitizer_config, /*safe*/ false, exception_state);
+}
+
+Sanitizer* Sanitizer::Create(const SanitizerConfig* sanitizer_config,
+                             bool safe,
+                             ExceptionState& exception_state) {
   Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>();
   if (!sanitizer_config) {
-    NOTREACHED();  // Default handling not yet implemented.
-  }
-  if (!sanitizer->setFrom(sanitizer_config)) {
+    sanitizer->setFrom(*(safe ? SanitizerBuiltins::GetDefaultSafe()
+                              : SanitizerBuiltins::GetDefaultUnsafe()));
+  } else {
+    bool success = sanitizer->setFrom(sanitizer_config, safe);
     // As currently implemented, all inputs will lead to successful creation
     // of a Sanitizer instance. But the current spec discussion aims to
     // introduce invalid configurations. Once we implement that, this will be
     // replaced with `exception_state.ThrowTypeError(...); return nullptr;`.
-    NOTREACHED();
+    CHECK(success);
   }
+  CHECK(sanitizer);
   return sanitizer;
 }
 
@@ -288,13 +296,12 @@ void Sanitizer::SanitizeElement(Element* element) const {
       keep = true;
     } else if (remove_per_element && remove_per_element->Contains(name)) {
       keep = false;
+    } else if (name.NamespaceURI().IsNull() &&
+               name.LocalName().StartsWith("data-")) {
+      keep = allow_data_attrs_;
     } else {
       keep = allow_attrs_.empty() &&
              (!allow_per_element || allow_per_element->empty());
-      if (!keep && allow_data_attrs_ && name.NamespaceURI().IsNull() &&
-          name.LocalName().StartsWith("data-")) {
-        keep = true;
-      }
     }
     if (!keep) {
       element->removeAttribute(name);
@@ -379,7 +386,7 @@ void Sanitizer::SanitizeUnsafe(Node* root) const {
   }
 }
 
-bool Sanitizer::setFrom(const SanitizerConfig* config) {
+bool Sanitizer::setFrom(const SanitizerConfig* config, bool safe) {
   // This method assumes a newly constructed instance.
   CHECK(allow_elements_.empty());
   CHECK(remove_elements_.empty());
@@ -414,12 +421,8 @@ bool Sanitizer::setFrom(const SanitizerConfig* config) {
       removeAttribute(attribute);
     }
   }
-  if (config->hasComments()) {
-    setComments(config->comments());
-  }
-  if (config->hasDataAttributes()) {
-    setDataAttributes(config->dataAttributes());
-  }
+  setComments(config->getCommentsOr(!safe));
+  setDataAttributes(config->getDataAttributesOr(!safe));
   return true;
 }
 

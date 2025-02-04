@@ -27,6 +27,10 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
  public:
   // Called by JS constructor, new Sanitizer(config).
   static Sanitizer* Create(const SanitizerConfig*, ExceptionState&);
+
+  // Called by Sanitizer API, to implement setHTML / setHTMLUnsafe & friends.
+  static Sanitizer* Create(const SanitizerConfig*, bool safe, ExceptionState&);
+
   Sanitizer() = default;
   ~Sanitizer() override = default;
   Sanitizer(const Sanitizer&) = delete;  // Use MakeGarbageCollected + setFrom.
@@ -87,7 +91,7 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
 
   // Helper for copy constructor and Create: Convert from IDL representation
   // to internal.
-  bool setFrom(const SanitizerConfig*);
+  bool setFrom(const SanitizerConfig*, bool safe);
   void setFrom(const Sanitizer&);
 
   // Helpers for get(): Convert from internal to IDL representation.

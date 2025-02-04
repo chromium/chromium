@@ -28,16 +28,27 @@ void SanitizerAPI::SanitizeSafeInternal(ContainerNode* element,
   }
 
   const Sanitizer* sanitizer = nullptr;
-  if (options && options->hasSanitizer()) {
-    sanitizer =
-        options->sanitizer()->IsSanitizer()
-            ? options->sanitizer()->GetAsSanitizer()
-            : Sanitizer::Create(options->sanitizer()->GetAsSanitizerConfig(),
-                                exception_state);
+  if (!options || !options->hasSanitizer()) {
+    // Default case: No dictionary, or dictionary without 'sanitizer' member.
+    sanitizer = Sanitizer::Create(nullptr, /*safe*/ true, exception_state);
+  } else {
+    if (options->sanitizer()->IsSanitizer()) {
+      // We already got a sanitizer.
+      sanitizer = options->sanitizer()->GetAsSanitizer();
+    } else if (options->sanitizer()->IsSanitizerConfig()) {
+      // We need to create a Sanitizer from a given config.
+      sanitizer =
+          Sanitizer::Create(options->sanitizer()->GetAsSanitizerConfig(),
+                            /*safe*/ true, exception_state);
+    } else {
+      // Default case: Dictionary with 'sanitizer' member but no (valid) value.
+      sanitizer = Sanitizer::Create(nullptr, /*safe*/ true, exception_state);
+    }
   }
-  if (!sanitizer) {
-    sanitizer = SanitizerBuiltins::GetDefaultSafe();
-  }
+
+  // TODO(vogelheim): Currently, no exceptions are being throws.
+  CHECK(!exception_state.HadException());
+  CHECK(sanitizer);
   sanitizer->SanitizeSafe(element);
 }
 
@@ -45,16 +56,25 @@ void SanitizerAPI::SanitizeUnsafeInternal(ContainerNode* element,
                                           SetHTMLOptions* options,
                                           ExceptionState& exception_state) {
   const Sanitizer* sanitizer = nullptr;
-  if (options && options->hasSanitizer()) {
-    sanitizer =
-        options->sanitizer()->IsSanitizer()
-            ? options->sanitizer()->GetAsSanitizer()
-            : Sanitizer::Create(options->sanitizer()->GetAsSanitizerConfig(),
-                                exception_state);
+  if (!options || !options->hasSanitizer()) {
+    // Default case: No dictionary, or dictionary without 'sanitizer' member.
+    sanitizer = Sanitizer::Create(nullptr, /*safe*/ false, exception_state);
+  } else {
+    if (options->sanitizer()->IsSanitizer()) {
+      // We already got a sanitizer.
+      sanitizer = options->sanitizer()->GetAsSanitizer();
+    } else if (options->sanitizer()->IsSanitizerConfig()) {
+      // We need to create a Sanitizer from a given config.
+      sanitizer =
+          Sanitizer::Create(options->sanitizer()->GetAsSanitizerConfig(),
+                            /*safe*/ false, exception_state);
+    } else {
+      // Default case: Dictionary with 'sanitizer' member but not (valid) value.
+      sanitizer = Sanitizer::Create(nullptr, /*safe*/ false, exception_state);
+    }
   }
-  if (!sanitizer) {
-    sanitizer = SanitizerBuiltins::GetDefaultUnsafe();
-  }
+
+  CHECK(sanitizer);
   sanitizer->SanitizeUnsafe(element);
 }
 
