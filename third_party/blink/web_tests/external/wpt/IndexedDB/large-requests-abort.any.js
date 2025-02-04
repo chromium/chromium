@@ -1,13 +1,10 @@
-<!doctype html>
-<meta charset="utf8">
-<meta name="timeout" content="long">
-<title>IndexedDB: transactions with large request results are aborted correctly</title>
-<link rel="help" href="https://w3c.github.io/IndexedDB/#abort-transaction">
-<link rel="author" href="pwnall@chromium.org" title="Victor Costan">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="resources/support-promises.js"></script>
-<script>
+// META: title=IndexedDB: transactions with large request results are aborted correctly
+// META: global=window,worker
+// META: script=resources/support-promises.js
+// META: timeout=long
+
+// Spec: https://w3c.github.io/IndexedDB/#abort-transaction
+
 'use strict';
 
 // Should be large enough to trigger large value handling in the IndexedDB
@@ -15,10 +12,10 @@
 const wrapThreshold = 128 * 1024;
 
 function populateStore(store) {
-  store.put({id: 1, key: 'k1', value: largeValue(wrapThreshold, 1) });
-  store.put({id: 2, key: 'k2', value: ['small-2'] });
-  store.put({id: 3, key: 'k3', value: largeValue(wrapThreshold, 3) });
-  store.put({id: 4, key: 'k4', value: ['small-4'] });
+  store.put({id: 1, key: 'k1', value: largeValue(wrapThreshold, 1)});
+  store.put({id: 2, key: 'k2', value: ['small-2']});
+  store.put({id: 3, key: 'k3', value: largeValue(wrapThreshold, 3)});
+  store.put({id: 4, key: 'k4', value: ['small-4']});
 }
 
 // Opens index cursors for operations that require open cursors.
@@ -34,8 +31,8 @@ function openCursors(testCase, index, operations, onerror, onsuccess) {
     let request;
     switch (opcode) {
       case 'continue':
-        request = index.openCursor(
-            IDBKeyRange.lowerBound(`k${primaryKey - 1}`));
+        request =
+            index.openCursor(IDBKeyRange.lowerBound(`k${primaryKey - 1}`));
         break;
       case 'continue-empty':
         // k4 is the last key in the data set, so calling continue() will get
@@ -70,19 +67,21 @@ function doOperation(testCase, store, index, operation, requestId, results) {
     let request;
     switch (opcode) {
       case 'add':  // Tests returning a primary key.
-        request = store.add(
-            { key: `k${primaryKey}`, value: [`small-${primaryKey}`] });
+        request =
+            store.add({key: `k${primaryKey}`, value: [`small-${primaryKey}`]});
         break;
       case 'put':  // Tests returning a primary key.
-        request = store.put(
-            { key: `k${primaryKey}`, value: [`small-${primaryKey}`] });
+        request =
+            store.put({key: `k${primaryKey}`, value: [`small-${primaryKey}`]});
         break;
       case 'put-with-id':  // Tests returning success or a primary key.
-        request = store.put(
-            { key: `k${primaryKey}`, value: [`small-${primaryKey}`],
-              id: primaryKey });
+        request = store.put({
+          key: `k${primaryKey}`,
+          value: [`small-${primaryKey}`],
+          id: primaryKey
+        });
         break;
-      case 'get':  // Tests returning a value.
+      case 'get':        // Tests returning a value.
       case 'get-empty':  // Tests returning undefined.
         request = store.get(primaryKey);
         break;
@@ -90,11 +89,11 @@ function doOperation(testCase, store, index, operation, requestId, results) {
         request = store.getAll();
         break;
       case 'error':  // Tests returning an error.
-        request = store.put(
-            { key: `k${primaryKey}`, value: [`small-${primaryKey}`] });
+        request =
+            store.put({key: `k${primaryKey}`, value: [`small-${primaryKey}`]});
         break;
-      case 'continue':  // Tests returning a key, primary key, and value.
-      case 'continue-empty':   // Tests returning null.
+      case 'continue':        // Tests returning a key, primary key, and value.
+      case 'continue-empty':  // Tests returning null.
         request = cursor;
         cursor.result.continue();
         break;
@@ -121,41 +120,45 @@ function doOperation(testCase, store, index, operation, requestId, results) {
 
 function abortTest(label, operations) {
   promise_test(testCase => {
-    return createDatabase(testCase, (database, transaction) => {
-      const store = database.createObjectStore(
-          'test-store', { autoIncrement: true, keyPath: 'id' });
-      store.createIndex('test-index', 'key', { unique: true });
-      populateStore(store);
-    }).then(database => {
-      const transaction = database.transaction(['test-store'], 'readwrite');
-      const store = transaction.objectStore('test-store');
-      const index = store.index('test-index');
-      return new Promise((resolve, reject) => {
-        openCursors(testCase, index, operations, reject, () => {
-          const results = [];
-          const promises = [];
+    return createDatabase(
+               testCase,
+               (database, transaction) => {
+                 const store = database.createObjectStore(
+                     'test-store', {autoIncrement: true, keyPath: 'id'});
+                 store.createIndex('test-index', 'key', {unique: true});
+                 populateStore(store);
+               })
+        .then(database => {
+          const transaction = database.transaction(['test-store'], 'readwrite');
+          const store = transaction.objectStore('test-store');
+          const index = store.index('test-index');
+          return new Promise((resolve, reject) => {
+            openCursors(testCase, index, operations, reject, () => {
+              const results = [];
+              const promises = [];
+              for (let i = 0; i < operations.length; ++i) {
+                const promise = doOperation(
+                    testCase, store, index, operations[i], i, results);
+                promises.push(promise);
+              };
+              transaction.abort();
+              resolve(Promise.all(promises).then(() => results));
+            });
+          });
+        })
+        .then(results => {
+          assert_equals(
+              results.length, operations.length,
+              'Promise.all should resolve after all sub-promises resolve');
           for (let i = 0; i < operations.length; ++i) {
-            const promise = doOperation(
-                testCase, store, index, operations[i], i, results);
-            promises.push(promise);
-          };
-          transaction.abort();
-          resolve(Promise.all(promises).then(() => results));
+            assert_equals(
+                results[i][0], i,
+                'error event order should match request order');
+            assert_equals(
+                results[i][1].name, 'AbortError',
+                'transaction aborting should result in AbortError on all requests');
+          }
         });
-      });
-    }).then(results => {
-      assert_equals(
-          results.length, operations.length,
-          'Promise.all should resolve after all sub-promises resolve');
-      for (let i = 0; i < operations.length; ++i) {
-        assert_equals(
-            results[i][0], i,
-            'error event order should match request order');
-        assert_equals(
-            results[i][1].name, 'AbortError',
-            'transaction aborting should result in AbortError on all requests');
-      }
-    });
   }, label);
 }
 
@@ -240,5 +243,3 @@ abortTest('large values mixed with small values', [
   ['error', 3],
   ['count', null],
 ]);
-
-</script>
