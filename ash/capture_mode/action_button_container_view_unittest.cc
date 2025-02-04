@@ -138,7 +138,7 @@ TEST_F(ActionButtonContainerViewTest, ShowsErrorView) {
 
   EXPECT_TRUE(error_view->GetVisible());
   EXPECT_EQ(error_view->GetErrorMessageForTesting(), u"Error message");
-  EXPECT_FALSE(error_view->try_again_link_for_testing()->GetVisible());
+  EXPECT_FALSE(error_view->try_again_link()->GetVisible());
 
   action_button_container.HideErrorView();
 
@@ -160,7 +160,7 @@ TEST_F(ActionButtonContainerViewTest, ShowsErrorViewWithTryAgainLink) {
   ActionButtonContainerView::ErrorView* error_view =
       action_button_container->error_view_for_testing();
   EXPECT_TRUE(error_view->GetVisible());
-  views::Link* try_again_link = error_view->try_again_link_for_testing();
+  views::Link* try_again_link = error_view->try_again_link();
   EXPECT_TRUE(try_again_link->GetVisible());
 
   // Check that clicking the try again link runs the try again callback.
@@ -188,6 +188,26 @@ TEST_F(ActionButtonContainerViewTest, ClearsContainer) {
 
   EXPECT_THAT(action_button_container.GetActionButtons(), IsEmpty());
   EXPECT_FALSE(action_button_container.error_view_for_testing()->GetVisible());
+}
+
+TEST_F(ActionButtonContainerViewTest, GetsFocusableViews) {
+  ActionButtonContainerView action_button_container;
+  ActionButtonView* copy_text_button = action_button_container.AddActionButton(
+      views::Button::PressedCallback(), u"Copy Text", &kCaptureModeImageIcon,
+      ActionButtonRank(ActionButtonType::kCopyText, 0),
+      ActionButtonViewID::kCopyTextButton);
+
+  EXPECT_THAT(action_button_container.GetFocusableViews(),
+              ElementsAre(copy_text_button));
+
+  action_button_container.ShowErrorView(
+      u"Error message", /*try_again_callback=*/base::DoNothing());
+
+  EXPECT_THAT(
+      action_button_container.GetFocusableViews(),
+      ElementsAre(
+          action_button_container.error_view_for_testing()->try_again_link(),
+          copy_text_button));
 }
 
 }  // namespace

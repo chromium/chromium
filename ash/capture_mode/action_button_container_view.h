@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
@@ -50,6 +51,8 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
     ErrorView& operator=(const ErrorView&) = delete;
     ~ErrorView() override;
 
+    views::Link* try_again_link() { return try_again_link_; }
+
     // views::BoxLayoutView:
     void SetVisible(bool visible) override;
     void AddedToWidget() override;
@@ -61,8 +64,6 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
     // Sets the callback to run when the try again link is pressed. Note that
     // the try again link is only shown if `try_again_callback` is not null.
     void SetTryAgainCallback(base::RepeatingClosure try_again_callback);
-
-    views::Link* try_again_link_for_testing() { return try_again_link_; }
 
     const std::u16string& GetErrorMessageForTesting() const;
 
@@ -92,6 +93,10 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
 
   // Returns the action buttons in this container.
   const views::View::Views& GetActionButtons() const;
+
+  // Returns all visible focusable views in this container, which may include
+  // action buttons and the try again link in the error view.
+  std::vector<views::View*> GetFocusableViews();
 
   // Removes and destroys all action buttons from this container. Also hides the
   // error view if it was visible.
