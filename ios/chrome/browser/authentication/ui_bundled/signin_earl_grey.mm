@@ -65,6 +65,10 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   return [SigninEarlGreyAppInterface primaryAccountGaiaID];
 }
 
+- (NSSet<NSString*>*)accountsInProfileGaiaIDs {
+  return [SigninEarlGreyAppInterface accountsInProfileGaiaIDs];
+}
+
 - (BOOL)isSignedOut {
   return [SigninEarlGreyAppInterface isSignedOut];
 }
