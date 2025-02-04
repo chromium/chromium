@@ -45,6 +45,7 @@
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/switches.h"
+#include "ui/ozone/public/ozone_switches.h"
 
 namespace media {
 
@@ -187,6 +188,38 @@ class GbmDeviceWrapper {
 
  private:
   GbmDeviceWrapper() {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kRenderNodeOverride)) {
+      const base::FilePath dev_path(
+          base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+              switches::kRenderNodeOverride));
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC)
+      const bool is_render_node = base::Contains(dev_path.value(), "render");
+
+      // TODO(b/313513760): don't guard base::File::FLAG_WRITE behind
+      // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC) once the hardware
+      // video decoding sandbox allows R+W access to the render nodes.
+      // base::File::FLAG_WRITE is needed on Linux for gbm_create_device().
+      const uint32_t kDrmNodeFileFlags =
+          base::File::FLAG_OPEN | base::File::FLAG_READ |
+          (is_render_node ? base::File::FLAG_WRITE : 0);
+#else
+      const uint32_t kDrmNodeFileFlags =
+          base::File::FLAG_OPEN | base::File::FLAG_READ;
+#endif
+      base::File drm_node_file(dev_path, kDrmNodeFileFlags);
+      if (drm_node_file.IsValid()) {
+        // GbmDevice expects its owner to keep |drm_node_file| open during the
+        // former's lifetime. We give it away here since GbmDeviceWrapper is a
+        // singleton that fully owns |gbm_device|.
+        gbm_device_ = ui::CreateGbmDevice(drm_node_file.GetPlatformFile());
+        if (gbm_device_) {
+          drm_node_file.TakePlatformFile();
+        }
+      }
+      return;
+    }
+
     constexpr char kRenderNodeFilePrefix[] = "/dev/dri/renderD";
     constexpr int kMinRenderNodeNum = 128;
 

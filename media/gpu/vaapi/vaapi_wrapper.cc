@@ -28,6 +28,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/cpu.h"
@@ -71,6 +72,7 @@
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
+#include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include <va/va_prot.h>
@@ -90,6 +92,42 @@ using media_gpu_vaapi::kModuleVa_drm;
 using media_gpu_vaapi::StubPathMap;
 
 namespace media {
+
+namespace {
+// Returns a DRM FD and whether this FD should be skipped.
+std::pair<base::ScopedFD, bool> LoadDrmFD(const base::FilePath& dev_path) {
+  base::File drm_file =
+      base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                               base::File::FLAG_WRITE);
+  if (!drm_file.IsValid()) {
+    return std::make_pair(base::ScopedFD{}, /*should_skip=*/false);
+  }
+  drmVersionPtr version = drmGetVersion(drm_file.GetPlatformFile());
+  if (!version) {
+    return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
+                          /*should_skip=*/true);
+  }
+  std::string version_name(
+      version->name,
+      base::checked_cast<std::string::size_type>(version->name_len));
+  drmFreeVersion(version);
+  // Skip the virtual graphics memory manager device.
+  if (base::EqualsCaseInsensitiveASCII(version_name, "vgem")) {
+    return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
+                          /*should_skip=*/true);
+  }
+  // Skip NVIDIA device because their VA-API drivers do not support
+  // Chromium and can sometimes cause crashes (see crbug.com/1492880).
+  if (base::EqualsCaseInsensitiveASCII(version_name, "nvidia-drm") &&
+      !base::FeatureList::IsEnabled(kVaapiOnNvidiaGPUs)) {
+    LOG(WARNING) << "Should skip nVidia device named: " << version_name;
+    return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
+                          /*should_skip=*/true);
+  }
+  return std::make_pair(base::ScopedFD(drm_file.TakePlatformFile()),
+                        /*should_skip=*/false);
+}
+}  // namespace
 
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
@@ -1502,39 +1540,31 @@ void VADisplayStateSingleton::PreSandboxInitialization() {
   VADisplayStateSingleton& va_display_state = GetInstance();
   base::AutoLock lock(va_display_state.lock_);
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kRenderNodeOverride)) {
+    auto [drm_fd, should_skip] =
+        LoadDrmFD(base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kRenderNodeOverride));
+    va_display_state.drm_fd_ = std::move(drm_fd);
+    LOG_IF(WARNING, should_skip)
+        << "Forcibly using value of --render-node-override";
+    return;
+  }
+
   constexpr char kRenderNodeFilePattern[] = "/dev/dri/renderD%d";
   // This loop ends on either the first card that does not exist or the first
   // render node that is not vgem.
   for (int i = 128;; i++) {
     base::FilePath dev_path(FILE_PATH_LITERAL(
         base::StringPrintf(kRenderNodeFilePattern, i).c_str()));
-    base::File drm_file =
-        base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                 base::File::FLAG_WRITE);
-    if (!drm_file.IsValid()) {
+    auto [drm_fd, should_skip] = LoadDrmFD(dev_path);
+    if (!drm_fd.is_valid()) {
       return;
     }
-    drmVersionPtr version = drmGetVersion(drm_file.GetPlatformFile());
-    if (!version) {
-      continue;
+    if (!should_skip) {
+      va_display_state.drm_fd_ = std::move(drm_fd);
+      return;
     }
-    std::string version_name(
-        version->name,
-        base::checked_cast<std::string::size_type>(version->name_len));
-    drmFreeVersion(version);
-    // Skip the virtual graphics memory manager device.
-    if (base::EqualsCaseInsensitiveASCII(version_name, "vgem")) {
-      continue;
-    }
-    // Skip NVIDIA device because their VA-API drivers do not support
-    // Chromium and can sometimes cause crashes (see crbug.com/1492880).
-    if (base::EqualsCaseInsensitiveASCII(version_name, "nvidia-drm") &&
-        !base::FeatureList::IsEnabled(kVaapiOnNvidiaGPUs)) {
-      LOG(WARNING) << "Skipping nVidia device named: " << version_name;
-      continue;
-    }
-    va_display_state.drm_fd_ = base::ScopedFD(drm_file.TakePlatformFile());
-    return;
   }
 }
 

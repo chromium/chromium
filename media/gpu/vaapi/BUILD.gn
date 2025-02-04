@@ -161,6 +161,7 @@ source_set("common") {
     "//ui/base:features",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/linux:drm",
+    "//ui/ozone",
   ]
 
   configs += [ "//build/config/linux/libva" ]
