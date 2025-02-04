@@ -6838,6 +6838,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_EDUCATION_SETTINGS_NUDGE_LABEL" desc="The label of the Screen Capture Education settings nudge (Arm 3) for using the quick settings menu.">
         Use the screen capture tool in quick settings to take screenshots
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_COPY_TEXT_BUTTON_LABEL" desc="The label on a button that can be clicked to copy text from the contents of a screenshot into the user's clipboard.">
+        Copy text
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_TEXT_COPIED_TOAST" desc="The message shown on a toast to indicate text was copied to the user's clipboard from the contents of a screenshot.">
+        Text copied to Clipboard
+      </message>
 
       <!-- Scanner -->
       <!-- TODO: crbug.com/375967525 - Finalize these strings and mark them as translateable -->

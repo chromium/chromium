@@ -369,10 +369,9 @@ void ShowVideoRecordingStoppedByHdcpNotification() {
 
 // Shows a toast informing the user that text has been copied to clipboard.
 void ShowTextCopiedToast() {
-  // TODO(crbug.com/375967525): Finalize and translate the toast string.
-  ToastManager::Get()->Show(ToastData(kCaptureModeTextCopiedToastId,
-                                      ToastCatalogName::kCaptureModeTextCopied,
-                                      u"Text copied to clipboard"));
+  ToastManager::Get()->Show(ToastData(
+      kCaptureModeTextCopiedToastId, ToastCatalogName::kCaptureModeTextCopied,
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TEXT_COPIED_TOAST)));
 }
 
 // Copies the bitmap representation of the given |image| to the clipboard.
@@ -2034,12 +2033,12 @@ void CaptureModeController::AddCopyTextAndSmartActionsButtons(
     std::string detected_text) {
   CHECK(!detected_text.empty());
 
-  // TODO(crbug.com/375967525): Finalize and translate the copy text label.
   capture_mode_util::AddActionButton(
       base::BindOnce(&CaptureModeController::OnCopyTextButtonClicked,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::UTF8ToUTF16(detected_text)),
-      u"Copy text", &vector_icons::kContentCopyIcon,
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_COPY_TEXT_BUTTON_LABEL),
+      &vector_icons::kContentCopyIcon,
       ActionButtonRank{ActionButtonType::kCopyText, /*weight=*/0},
       ActionButtonViewID::kCopyTextButton);
   capture_mode_session_->AddSmartActionsButton();
