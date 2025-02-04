@@ -7,9 +7,7 @@
 #import <memory>
 
 #import "base/timer/timer.h"
-#import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator_delegate.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_consumer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -20,6 +18,8 @@
 @end
 
 @implementation ParentAccessMediator {
+  // URL for the PACP widget.
+  GURL _parentAccessURL;
   // WebState to load the PACP widget.
   std::unique_ptr<web::WebState> _webState;
   // Observer for the WebState.
@@ -29,8 +29,10 @@
   base::OneShotTimer _initialLoadTimer;
 }
 
-- (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState {
+- (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState
+                 parentAccessURL:(const GURL&)parentAccessURL {
   if ((self = [super init])) {
+    _parentAccessURL = parentAccessURL;
     CHECK(webState);
     _webState = std::move(webState);
     _webStateObserverBridge =
@@ -45,9 +47,7 @@
 
   _webState->SetWebUsageEnabled(true);
   web::NavigationManager::WebLoadParams webParams =
-      web::NavigationManager::WebLoadParams(
-          supervised_user::GetParentAccessURLForIOS(
-              GetApplicationContext()->GetApplicationLocale()));
+      web::NavigationManager::WebLoadParams(_parentAccessURL);
   _webState->GetNavigationManager()->LoadURLWithParams(webParams);
   // TODO(crbug.com/41407753): For a newly created WebState, the session
   // will not be restored until LoadIfNecessary call. Remove when fixed.

@@ -7,7 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+class GURL;
+
 namespace supervised_user {
+enum class FilteringBehaviorReason;
 enum class LocalApprovalResult;
 }
 
@@ -21,6 +24,10 @@ class WebState;
 // Shows the parent access bottom sheet for local web approvals.
 - (void)
     showParentAccessBottomSheetForWebState:(web::WebState*)webState
+                                 targetURL:(const GURL&)targetURL
+                   filteringBehaviorReason:
+                       (supervised_user::FilteringBehaviorReason)
+                           filteringBehaviorReason
                                 completion:
                                     (void (^)(
                                         supervised_user::LocalApprovalResult))

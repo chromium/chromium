@@ -151,7 +151,7 @@ std::optional<ToggleState> GetExtensionsToggleStateForHistogram(
 // information about the blocked url and the blocking reason.
 std::string GetBlockingReasonSubtitle(
     const std::string blocked_url,
-    const supervised_user::FilteringBehaviorReason& filtering_reason) {
+    supervised_user::FilteringBehaviorReason filtering_reason) {
   int message_id = 0;
   switch (filtering_reason) {
     case FilteringBehaviorReason::DEFAULT:
@@ -171,7 +171,7 @@ std::string GetBlockingReasonSubtitle(
 // the blocked url so that PACP can consume it.
 std::string GetBase64EncodedInTransactionalDataForPayload(
     const std::string blocked_url,
-    const supervised_user::FilteringBehaviorReason& filtering_reason) {
+    supervised_user::FilteringBehaviorReason filtering_reason) {
   CHECK(!blocked_url.empty());
   kids::platform::parentaccess::proto::LocalApprovalPayload approval_url;
   approval_url.set_url_approval_context(
@@ -189,7 +189,7 @@ GURL GetParentAccessURL(
     const std::string& caller_id,
     const std::string& locale,
     std::optional<GURL> blocked_url,
-    const supervised_user::FilteringBehaviorReason& filtering_reason) {
+    supervised_user::FilteringBehaviorReason filtering_reason) {
   GURL url(kParentAccessBaseURL);
   GURL::Replacements replacements;
   std::string query = base::StrCat({"callerid=", caller_id, "&hl=", locale,
@@ -380,16 +380,18 @@ GURL UrlFormatter::FormatUrl(const GURL& url) const {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
-GURL GetParentAccessURLForIOS(const std::string& locale) {
-  return GetParentAccessURL(
-      kParentAccessIOSCallerID, locale, /*blocked_url*/ std::nullopt,
-      /*filtering_reason*/ supervised_user::FilteringBehaviorReason::DEFAULT);
+GURL GetParentAccessURLForIOS(
+    const std::string& locale,
+    const GURL& blocked_url,
+    supervised_user::FilteringBehaviorReason filtering_reason) {
+  return GetParentAccessURL(kParentAccessIOSCallerID, locale, blocked_url,
+                            filtering_reason);
 }
 
 GURL GetParentAccessURLForDesktop(
     const std::string& locale,
     const GURL& blocked_url,
-    const supervised_user::FilteringBehaviorReason& filtering_reason) {
+    supervised_user::FilteringBehaviorReason filtering_reason) {
   return GetParentAccessURL(kParentAccessDesktopCallerID, locale, blocked_url,
                             filtering_reason);
 }

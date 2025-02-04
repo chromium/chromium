@@ -10,6 +10,12 @@
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+class GURL;
+
+namespace supervised_user {
+enum class FilteringBehaviorReason;
+}
+
 // Coordinator for local website approval, allowing parents to authenticate
 // to approve website navigation requests from a supervised user.
 // This will be presented within the same browser session where the supervised
@@ -19,6 +25,9 @@
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
+                     targetURL:(const GURL&)targetURL
+       filteringBehaviorReason:
+           (supervised_user::FilteringBehaviorReason)filteringBehaviorReason
                     completion:(void (^)(supervised_user::LocalApprovalResult))
                                    completion NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

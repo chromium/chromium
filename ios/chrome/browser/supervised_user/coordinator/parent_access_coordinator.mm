@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 
 #import "base/functional/bind.h"
+#import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator_delegate.h"
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper_delegate.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/ui/parent_access_bottom_sheet_view_controller.h"
 #import "ios/web/public/web_state.h"
 
@@ -26,15 +28,22 @@
   ParentAccessApprovalResultCallback _callback;
   ParentAccessBottomSheetViewController* _viewController;
   ParentAccessMediator* _mediator;
+  GURL _targetURL;
+  supervised_user::FilteringBehaviorReason _filteringBehaviorReason;
 }
 
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
+                     targetURL:(const GURL&)targetURL
+       filteringBehaviorReason:
+           (supervised_user::FilteringBehaviorReason)filteringBehaviorReason
                     completion:(void (^)(supervised_user::LocalApprovalResult))
                                    completion {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    _targetURL = targetURL;
+    _filteringBehaviorReason = filteringBehaviorReason;
     _callback = base::BindOnce(completion);
   }
   return self;
@@ -51,8 +60,11 @@
       ParentAccessTabHelper::FromWebState(webState.get());
   tabHelper->SetDelegate(self);
 
-  _mediator =
-      [[ParentAccessMediator alloc] initWithWebState:std::move(webState)];
+  GURL parentAccessURL = supervised_user::GetParentAccessURLForIOS(
+      GetApplicationContext()->GetApplicationLocale(), _targetURL,
+      _filteringBehaviorReason);
+  _mediator = [[ParentAccessMediator alloc] initWithWebState:std::move(webState)
+                                             parentAccessURL:parentAccessURL];
   _mediator.delegate = self;
   _viewController = [[ParentAccessBottomSheetViewController alloc] init];
   // Do not use the bottom sheet default dismiss button.

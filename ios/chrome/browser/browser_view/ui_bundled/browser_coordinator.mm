@@ -31,6 +31,7 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
+#import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
@@ -3155,6 +3156,10 @@ enum class ToolbarKind {
 
 - (void)
     showParentAccessBottomSheetForWebState:(web::WebState*)webState
+                                 targetURL:(const GURL&)targetURL
+                   filteringBehaviorReason:
+                       (supervised_user::FilteringBehaviorReason)
+                           filteringBehaviorReason
                                 completion:
                                     (void (^)(
                                         supervised_user::LocalApprovalResult))
@@ -3177,6 +3182,8 @@ enum class ToolbarKind {
   self.parentAccessCoordinator = [[ParentAccessCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
+                       targetURL:targetURL
+         filteringBehaviorReason:filteringBehaviorReason
                       completion:completion];
   [self.parentAccessCoordinator start];
 }

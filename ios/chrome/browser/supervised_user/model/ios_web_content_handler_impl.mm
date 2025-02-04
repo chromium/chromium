@@ -35,6 +35,8 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
     ApprovalRequestInitiatedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(supervised_user::kLocalWebApprovals));
 
+  // TODO(crbug.com/384514294): Do not bind the settings service here as it can
+  // be accessed within `IOSWebContentHandlerImpl`.
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForProfile(
           ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
@@ -45,11 +47,12 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
           weak_factory_.GetWeakPtr(), std::ref(*settings_service), target_url,
           base::TimeTicks::Now());
 
-  // TODO(crbug.com/394051451): Pass the blocked url and blocking reason in the
-  // bottomshet. The command handler must stay alive after initialization.
+  // The command handler must stay alive after initialization.
   CHECK(commands_handler_);
   [commands_handler_
       showParentAccessBottomSheetForWebState:web_state_
+                                   targetURL:target_url
+                     filteringBehaviorReason:filtering_behavior_reason
                                   completion:base::CallbackToBlock(std::move(
                                                  completion_callback))];
   is_bottomsheet_shown_ = true;
