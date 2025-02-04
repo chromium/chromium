@@ -84,7 +84,6 @@ class SaveToDriveMediatorTest : public PlatformTest {
              initWithDownloadTask:download_task_.get()
                saveToDriveHandler:save_to_drive_commands_handler_
         manageStorageAlertHandler:manage_storage_alert_commands_handler_
-               applicationHandler:application_commands_handler_
              accountPickerHandler:account_picker_commands_handler_
                       prefService:profile_->GetPrefs()
             accountManagerService:ChromeAccountManagerServiceFactory::
