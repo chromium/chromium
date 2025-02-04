@@ -4172,6 +4172,7 @@ const FeatureEntry::FeatureParam kContextualCueingEnabledNoEngagementCap[] = {
     {"BackoffTime", "0h"},
     {"BackoffMultiplierBase", "0.0"},
     {"NudgeCapTime", "0h"},
+    {"NudgeCapTimePerDomain", "0h"},
     {"MinPageCountBetweenNudges", "0"}};
 const FeatureEntry::FeatureVariation kContextualCueingEnabledOptions[] = {
     {"no engagement caps", kContextualCueingEnabledNoEngagementCap,

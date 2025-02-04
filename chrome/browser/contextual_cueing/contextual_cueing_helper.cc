@@ -113,7 +113,7 @@ void ContextualCueingHelper::DidFinishNavigation(
                                ui::PAGE_TRANSITION_RELOAD)) {
     return;
   }
-  contextual_cueing_service_->ReportPageLoad(navigation_handle->GetURL());
+  contextual_cueing_service_->ReportPageLoad();
   auto* glic_nudge_controller = GetGlicNudgeController();
   if (glic_nudge_controller) {
     glic_nudge_controller->UpdateNudgeLabel(web_contents(), std::string(),
@@ -154,7 +154,7 @@ void ContextualCueingHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
       recorder.set_nudge_decision(
           last_navigation_cue_label_.empty()
               ? NudgeDecision::kClientConditionsUnmet
-              : contextual_cueing_service_->CanShowNudge());
+              : contextual_cueing_service_->CanShowNudge(url));
     } else {
       recorder.set_nudge_decision(NudgeDecision::kServerDataMalformed);
     }

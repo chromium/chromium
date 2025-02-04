@@ -25,10 +25,18 @@ extern const base::FeatureParam<double> kBackoffMultiplierBase;
 extern const base::FeatureParam<base::TimeDelta> kNudgeCapTime;
 extern const base::FeatureParam<int> kNudgeCapCount;
 
+// The same hard cap limits per domain. ie., x nudges per y hours per domain.
+extern const base::FeatureParam<base::TimeDelta> kNudgeCapTimePerDomain;
+extern const base::FeatureParam<int> kNudgeCapCountPerDomain;
+
 // A hard limit of page navigation counts between nudges. After one nudge is
 // shown, there must be at least `kMinPageCountBetweenNudges` page navigations
 // before the next nudge can be shown.
 extern const base::FeatureParam<int> kMinPageCountBetweenNudges;
+
+// Limit on how many recently visited domains should be kept track of. This is
+// used to implement nudge constraints per-domain per 24 hour period.
+extern const base::FeatureParam<int> kVisitedDomainsLimit;
 
 }  // namespace contextual_cueing
 
