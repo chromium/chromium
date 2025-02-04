@@ -543,6 +543,21 @@ static Node getNodeFromDerefExpr(const clang::Expr* deref_expr,
   return n;
 }
 
+static Node getNodeFromBooleanOperation(
+    const clang::Expr* boolean_op,
+    const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  clang::SourceRange source_range = {getSourceRange(result).getEnd()};
+  std::string replacement_text = ".size()";
+
+  Node n;
+  n.replacements = {
+      GetReplacementDirective(source_range, replacement_text, source_manager),
+  };
+  n.is_dependent = true;
+  return n;
+}
+
 static Node getNodeFromMemberCallExpr(const clang::CXXMemberCallExpr* get_call,
                                       const char* member_expr_id,
                                       const MatchFinder::MatchResult& result) {
@@ -1275,6 +1290,10 @@ class PotentialNodes : public MatchFinder::MatchCallback {
       return getNodeFromArrayType(result);
     }
 
+    if (auto* boolean_op = result.Nodes.getNodeAs<clang::Expr>("boolean_op")) {
+      return getNodeFromBooleanOperation(boolean_op, result);
+    }
+
     // Not supposed to get here.
     assert(false);
   }
@@ -1727,6 +1746,35 @@ class Spanifier {
              unless(raw_ptr_plugin::isInMacroLocation()))
             .bind("deref_expr"));
     match_finder_.addMatcher(deref_expression, &potential_nodes_);
+
+    auto rhs_expr_variations_ignoring_non_spelled_nodes = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource, expr(rhs_expr_variations));
+    auto raw_ptr_op_bool = cxxMemberCallExpr(
+        callee(cxxMethodDecl(hasName("operator bool"),
+                             ofClass(hasName("raw_ptr")))),
+        has(memberExpr(has(expr(ignoringParenCasts(
+            rhs_expr_variations_ignoring_non_spelled_nodes))))));
+    // Handles boolean operations that need to be adapted after a span rewrite.
+    // Currently:
+    //   if(expr) => if(expr.size())
+    // TODO(394367201): Rewrite boolean operations as follows:
+    //   if(expr) => if(!expr.empty())
+    //   if(!expr) => if(expr.empty())
+    // Notice here that the implicit cast part of the expression is traversed
+    // using the default traversal mode `clang::TK_AsIs`, while the expression
+    // variation matcher is traversed using
+    // `clang::TK_IgnoreUnlessSpelledInSource`. The traversal mode
+    // `clang::TK_IgnoreUnlessSpelledInSource`, while very useful in simplifying
+    // the matchers, wouldn't detect boolean operations on pointers hence the
+    // need for a hybrid traversal mode in this matcher.
+    auto boolean_op =
+        expr(anyOf(implicitCastExpr(
+                       hasCastKind(clang::CastKind::CK_PointerToBoolean),
+                       hasSourceExpression(expr(
+                           rhs_expr_variations_ignoring_non_spelled_nodes))),
+                   raw_ptr_op_bool))
+            .bind("boolean_op");
+    match_finder_.addMatcher(boolean_op, &potential_nodes_);
 
     // This is needed to remove the `.get()` call on raw_ptr from rewritten
     // expressions. Example: raw_ptr<T> member; auto* temp = member.get(); if
