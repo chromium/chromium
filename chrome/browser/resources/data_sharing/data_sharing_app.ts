@@ -227,14 +227,17 @@ export function createTranslationMap(): TranslationMap {
   };
 }
 
-// TODO(crbug.com/376347328): Replace with real learn more urls.
 const learnMoreUrlMap = {
   [LearnMoreUrlType.LEARN_MORE_URL_TYPE_UNSPECIFIED]: () =>
-      'about:blank',
-  [LearnMoreUrlType.PEOPLE_WITH_ACCESS_SUBTITLE]: () => 'about:blank',
-  [LearnMoreUrlType.DESCRIPTION_INVITE]: () => 'about:blank',
-  [LearnMoreUrlType.DESCRIPTION_JOIN]: () => 'about:blank',
-  [LearnMoreUrlType.BLOCK]: () => 'about:blank',
+      loadTimeData.getStringF('dataSharingUrl'),
+  [LearnMoreUrlType.PEOPLE_WITH_ACCESS_SUBTITLE]: () =>
+      loadTimeData.getStringF('learnMoreSharedTabGroupPageUrl'),
+  [LearnMoreUrlType.DESCRIPTION_INVITE]: () =>
+      loadTimeData.getStringF('learnMoreSharedTabGroupPageUrl'),
+  [LearnMoreUrlType.DESCRIPTION_JOIN]: () =>
+      loadTimeData.getStringF('learnMoreSharedTabGroupPageUrl'),
+  [LearnMoreUrlType.BLOCK]: () =>
+      loadTimeData.getStringF('learnAboutBlockedAccountsUrl'),
 };
 
 export class DataSharingApp extends CustomElement implements Logger {
@@ -406,6 +409,10 @@ export class DataSharingApp extends CustomElement implements Logger {
                     return this.getShareLink(params);
                   },
               learnMoreUrlMap,
+              activityLogCallback: () => {
+                window.open(
+                    loadTimeData.getStringF('activityLogsUrl'), '_blank');
+              },
             })
             .then((res) => {
               this.browserProxy_.closeUi(res.status);
