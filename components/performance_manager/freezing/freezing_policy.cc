@@ -156,7 +156,7 @@ void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
   // Update frozen state for all connected sets of pages (toggling the state of
   // battery saver mode can affect the frozen state of any connected set).
   base::flat_set<raw_ptr<const PageNode>> visited_pages;
-  for (auto& [id, state] : browsing_instances_) {
+  for (auto& [id, state] : browsing_instance_states_) {
     if (!base::Contains(visited_pages, *state.pages.begin())) {
       UpdateFrozenState(*state.pages.begin(), &visited_pages);
     }
@@ -246,8 +246,8 @@ base::flat_set<raw_ptr<const PageNode>> FreezingPolicy::GetConnectedPages(
     CHECK(inserted);
 
     for (auto browsing_instance_id : GetBrowsingInstances(visited_page)) {
-      auto it = browsing_instances_.find(browsing_instance_id);
-      CHECK(it != browsing_instances_.end());
+      auto it = browsing_instance_states_.find(browsing_instance_id);
+      CHECK(it != browsing_instance_states_.end());
       const BrowsingInstanceState& browsing_instance_state = it->second;
       for (auto* browsing_instance_page : browsing_instance_state.pages) {
         if (!base::Contains(connected_pages, browsing_instance_page)) {
@@ -295,8 +295,8 @@ void FreezingPolicy::UpdateFrozenState(
     all_pages_have_freeze_vote &= (page_freezing_state.num_freeze_votes > 0);
 
     for (auto browsing_instance_id : GetBrowsingInstances(visited_page)) {
-      auto it = browsing_instances_.find(browsing_instance_id);
-      CHECK(it != browsing_instances_.end());
+      auto it = browsing_instance_states_.find(browsing_instance_id);
+      CHECK(it != browsing_instance_states_.end());
       const BrowsingInstanceState& browsing_instance_state = it->second;
 
       if (browsing_instance_state
@@ -354,8 +354,8 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
       // won't be reset if the `CannotFreezeReason` is removed before the next
       // measurement).
       for (auto browsing_instance_id : GetBrowsingInstances(page_node)) {
-        auto it = browsing_instances_.find(browsing_instance_id);
-        CHECK(it != browsing_instances_.end());
+        auto it = browsing_instance_states_.find(browsing_instance_id);
+        CHECK(it != browsing_instance_states_.end());
         it->second.cannot_freeze_reasons_since_last_cpu_measurement.Put(reason);
       }
 
@@ -503,8 +503,8 @@ void FreezingPolicy::OnPageLifecycleStateChanged(const PageNode* page_node) {
   // browsing instances.
   if (page_node->GetLifecycleState() != PageNode::LifecycleState::kFrozen) {
     for (content::BrowsingInstanceId id : GetBrowsingInstances(page_node)) {
-      auto it = browsing_instances_.find(id);
-      CHECK(it != browsing_instances_.end());
+      auto it = browsing_instance_states_.find(id);
+      CHECK(it != browsing_instance_states_.end());
       it->second.per_origin_pmf_after_freezing_kb.clear();
     }
   }
@@ -605,7 +605,7 @@ void FreezingPolicy::OnFrameNodeAdded(const FrameNode* frame_node) {
   // Associate the frame's page with the frame's browsing instance, if not
   // already associated.
   auto& browsing_instance_state =
-      browsing_instances_[frame_node->GetBrowsingInstanceId()];
+      browsing_instance_states_[frame_node->GetBrowsingInstanceId()];
   auto [it, inserted] =
       browsing_instance_state.pages.insert(frame_node->GetPageNode());
   if (!inserted) {
@@ -640,8 +640,8 @@ void FreezingPolicy::OnFrameNodeRemoved(
   }
 
   // Disassociate the frame's page from the frame's browsing instance.
-  auto it = browsing_instances_.find(frame_node->GetBrowsingInstanceId());
-  CHECK(it != browsing_instances_.end());
+  auto it = browsing_instance_states_.find(frame_node->GetBrowsingInstanceId());
+  CHECK(it != browsing_instance_states_.end());
   size_t num_pages_removed = it->second.pages.erase(previous_page_node);
   CHECK_EQ(num_pages_removed, 1U);
 
@@ -655,7 +655,7 @@ void FreezingPolicy::OnFrameNodeRemoved(
   // frozen state (note: these pages may no longer be connected to the frame's
   // page). Otherwise, delete the deleted frame's browsing instance state.
   if (it->second.pages.empty()) {
-    browsing_instances_.erase(it);
+    browsing_instance_states_.erase(it);
   } else {
     UpdateFrozenState(*it->second.pages.begin());
   }
@@ -752,8 +752,9 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
   {
     CannotFreezeReasonSet cannot_freeze_reasons_other_pages;
     for (auto browsing_instance : GetBrowsingInstances(node)) {
-      auto browsing_instance_it = browsing_instances_.find(browsing_instance);
-      CHECK(browsing_instance_it != browsing_instances_.end());
+      auto browsing_instance_it =
+          browsing_instance_states_.find(browsing_instance);
+      CHECK(browsing_instance_it != browsing_instance_states_.end());
       for (const PageNode* other_page_node :
            browsing_instance_it->second.pages) {
         if (other_page_node != node) {
@@ -790,11 +791,11 @@ void FreezingPolicy::DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
   // build a set of frozen browsing instances that don't yet have their initial
   // memory measurement.
   std::set<content::BrowsingInstanceId>
-      browsing_instances_without_initial_measurement;
-  for (auto& [id, state] : browsing_instances_) {
+      browsing_instance_states_without_initial_measurement;
+  for (auto& [id, state] : browsing_instance_states_) {
     if (state.AllPagesFrozen()) {
       if (state.per_origin_pmf_after_freezing_kb.empty()) {
-        browsing_instances_without_initial_measurement.insert(id);
+        browsing_instance_states_without_initial_measurement.insert(id);
       }
     } else {
       // Should have been cleared by `OnPageLifecycleStateChanged`.
@@ -817,9 +818,9 @@ void FreezingPolicy::DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
     const auto& origin_in_browsing_instance_context =
         resource_attribution::AsContext<OriginInBrowsingInstanceContext>(
             context);
-    auto browsing_instance_it = browsing_instances_.find(
+    auto browsing_instance_it = browsing_instance_states_.find(
         origin_in_browsing_instance_context.GetBrowsingInstance());
-    if (browsing_instance_it == browsing_instances_.end()) {
+    if (browsing_instance_it == browsing_instance_states_.end()) {
       continue;
     }
     content::BrowsingInstanceId id = browsing_instance_it->first;
@@ -831,7 +832,8 @@ void FreezingPolicy::DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
 
     const uint64_t current_kb =
         result.memory_summary_result->private_footprint_kb;
-    if (base::Contains(browsing_instances_without_initial_measurement, id)) {
+    if (base::Contains(browsing_instance_states_without_initial_measurement,
+                       id)) {
       // Store the first PMF measurement after being frozen.
       state.per_origin_pmf_after_freezing_kb[origin_in_browsing_instance_context
                                                  .GetOrigin()] = current_kb;
@@ -894,9 +896,9 @@ void FreezingPolicy::UpdateFrozenStateOnCPUMeasurement(
     const auto& origin_in_browsing_instance_context =
         resource_attribution::AsContext<OriginInBrowsingInstanceContext>(
             context);
-    auto browsing_instance_it = browsing_instances_.find(
+    auto browsing_instance_it = browsing_instance_states_.find(
         origin_in_browsing_instance_context.GetBrowsingInstance());
-    if (browsing_instance_it == browsing_instances_.end()) {
+    if (browsing_instance_it == browsing_instance_states_.end()) {
       continue;
     }
 
@@ -933,7 +935,7 @@ void FreezingPolicy::UpdateFrozenStateOnCPUMeasurement(
   RecordFreezingEligibilityUKM();
 
   // Reset state for the next interval for all browsing instances.
-  for (auto& [_, state] : browsing_instances_) {
+  for (auto& [_, state] : browsing_instance_states_) {
     state.cannot_freeze_reasons_since_last_cpu_measurement =
         GetCannotFreezeReasons(state);
     state.highest_cpu_current_interval.reset();
@@ -991,8 +993,8 @@ void FreezingPolicy::RecordFreezingEligibilityUKM() {
 
     for (auto& connected_page : connected_pages) {
       for (auto browsing_instance_id : GetBrowsingInstances(connected_page)) {
-        auto it = browsing_instances_.find(browsing_instance_id);
-        CHECK(it != browsing_instances_.end());
+        auto it = browsing_instance_states_.find(browsing_instance_id);
+        CHECK(it != browsing_instance_states_.end());
         auto& state = it->second;
 
         if (state.highest_cpu_current_interval.has_value()) {

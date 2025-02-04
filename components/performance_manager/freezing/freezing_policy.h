@@ -241,7 +241,7 @@ class FreezingPolicy : public PageNodeObserver,
 
   // State of each browsing instance.
   std::map<content::BrowsingInstanceId, BrowsingInstanceState>
-      browsing_instances_;
+      browsing_instance_states_;
 
   // Whether Battery Saver is currently active.
   bool is_battery_saver_active_ = false;
