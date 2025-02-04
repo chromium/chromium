@@ -31,6 +31,7 @@ include_rules = [
   "+ios/chrome/browser/follow/model",
   "+ios/chrome/browser/follow/ui_bundled",
   "+ios/chrome/browser/fullscreen/ui_bundled",
+  "+ios/chrome/browser/google_one/coordinator",
   "+ios/chrome/browser/incognito_reauth/ui_bundled",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/intents/intents_donation_helper.h",

@@ -111,6 +111,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/geolocation/model",
+    "//ios/chrome/browser/google_one/coordinator",
     "//ios/chrome/browser/history/ui_bundled:coordinator",
     "//ios/chrome/browser/home_customization/coordinator",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:features",

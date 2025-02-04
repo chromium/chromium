@@ -101,6 +101,7 @@
 #import "ios/chrome/browser/follow/model/followed_web_site.h"
 #import "ios/chrome/browser/follow/ui_bundled/first_follow_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -190,6 +191,7 @@
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
@@ -326,6 +328,7 @@ enum class ToolbarKind {
     EditMenuBuilder,
     EnterprisePromptCoordinatorDelegate,
     FormInputAccessoryCoordinatorNavigator,
+    GoogleOneCommands,
     MiniMapCommands,
     NetExportTabHelperDelegate,
     NewTabPageCommands,
@@ -619,6 +622,7 @@ enum class ToolbarKind {
       _webUsageEnablerObserver;
   ContextualSheetCoordinator* _contextualSheetCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
+  GoogleOneCoordinator* _googleOneCoordinator;
   SafeAreaProvider* _safeAreaProvider;
   // Number of time `showActivityOverlay` was called and its callback not
   // called.
@@ -827,6 +831,9 @@ enum class ToolbarKind {
   [_countryCodePickerCoordinator stop];
   _countryCodePickerCoordinator = nil;
 
+  [_googleOneCoordinator stop];
+  _googleOneCoordinator = nil;
+
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
 
@@ -1012,6 +1019,7 @@ enum class ToolbarKind {
     @protocol(AddContactsCommands),
     @protocol(CountryCodePickerCommands),
     @protocol(WhatsNewCommands),
+    @protocol(GoogleOneCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -1584,6 +1592,9 @@ enum class ToolbarKind {
 
   [_quickDeleteCoordinator stop];
   _quickDeleteCoordinator = nil;
+
+  [_googleOneCoordinator stop];
+  _googleOneCoordinator = nil;
 
   [self hideDriveFilePicker];
   [self hideContextualSheet];
@@ -4150,6 +4161,20 @@ enum class ToolbarKind {
 - (void)showWhatsNewIPH {
   [HandlerForProtocol(_dispatcher, HelpCommands)
       presentInProductHelpWithType:InProductHelpType::kWhatsNew];
+}
+
+#pragma mark - GoogleOneCommands
+
+- (void)showGoogleOneForIdentity:(id<SystemIdentity>)identity
+                      entryPoint:(GoogleOneEntryPoint)entryPoint
+              baseViewController:(UIViewController*)baseViewController {
+  UIViewController* viewController = baseViewController ?: self.viewController;
+  _googleOneCoordinator =
+      [[GoogleOneCoordinator alloc] initWithBaseViewController:viewController
+                                                       browser:self.browser
+                                                    entryPoint:entryPoint
+                                                      identity:identity];
+  [_googleOneCoordinator start];
 }
 
 @end
