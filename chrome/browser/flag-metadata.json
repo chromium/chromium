@@ -7140,7 +7140,7 @@
     "owners": [
       "jacobstanley@google.com",
       "koilos@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "privacy-sandbox-ads-apis",
@@ -7179,7 +7179,7 @@
       "chrstne@google.com",
       "koilos@google.com"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 136
   },
   {
     "name": "private-network-access-ignore-navigation-errors",
