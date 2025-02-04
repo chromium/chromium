@@ -151,6 +151,8 @@ def _remove_extra_newlines(text: str) -> str:
 
 
 def _expand_test_code(code: str) -> str:
+    code = _remove_extra_newlines(code)
+
     code = re.sub(r' @moz-todo', '', code)
 
     code = re.sub(r'@moz-UniversalBrowserRead;', '', code)
@@ -216,6 +218,112 @@ class _TemplateType(str, enum.Enum):
     TESTHARNESS = 'testharness'
 
 
+class _LazyRenderedStr(collections.UserString):
+    """A custom str type that renders it's content with Jinja when accessed.
+
+    This is an str-like type, storing a Jinja template, but returning the
+    rendered version of that template when the string is accessed. The rendered
+    result is cached and returned on subsequent accesses.
+
+    This allows template parameters to be themselves templates. Template
+    parameters can then refer to each other and they'll be rendered in the right
+    order, in reverse order of access.
+
+    For instance:
+
+        params = {}
+        make_lazy = lambda value: _LazyRenderedStr(jinja_env, params, value)
+
+        params.update({
+            'expected_value': make_lazy('rgba({{ color | join(", ") }})'),
+            'color': [0, 255, 0, make_lazy('{{ alpha }}')],
+            'alpha': 0.5,
+        })
+
+        main_template = 'assert value == "{{ expected_value }}"'
+        result = jinja_env.from_string(main_template).render(params)
+
+    In this example, upon rendering `main_template`, Jinja will first read
+    `expected_value`, which reads `color`, which reads `alpha`. These will be
+    rendered in reverse order, with `color` resolving to `[0, 255, 0, '0.5']`,
+    `expected_value` resolving to 'rgba(0, 255, 0, 0.5)' and the final render
+    resolving to: 'assert value == "rgba(0, 255, 0, 0.5)"'
+    """
+
+    def __init__(self, jinja_env: jinja2.Environment,
+                 params: _TestParams, value: str):
+        # Don't call `super().__init__`, because we want to override `self.data`
+        # to be a property instead of a member variable.
+        # pylint: disable=super-init-not-called
+        self._jinja_env = jinja_env
+        self._params = params
+        self._value = value
+        self._rendered = None
+
+    @property
+    def data(self):
+        """Property returning the content of the `UserString`.
+
+        This `_LazyRenderedStr` will be rendered on the first access. The
+        rendered result is cached and returned directly on subsequent
+        accesses."""
+        if self._rendered is None:
+            self._rendered = (
+                self._jinja_env.from_string(self._value).render(self._params))
+        return self._rendered
+
+    @property
+    def __class__(self):
+        """Makes `UserString` return any newly created strings as `str` objects.
+
+        `UserString` functions returning a new string (e.g. `strip()`,
+        `lower()`, etc.) normally return a string of the same type as the input
+        `UserString`. It does do by using `__class__` to know the actual user
+        string type. In our case, the result of these operations will always
+        return a plain `str`, since any templating will have been rendered when
+        reading the input string via `self.data`."""
+        return str
+
+
+def _make_lazy_rendered(jinja_env: jinja2.Environment,
+                        params: _TestParams,
+                        value: Any) -> Any:
+    """Recursively converts `value` to a _LazyRenderedStr.
+
+    If `value` is a data structure, this function recurses into that structure
+    and converts leaf objects. Any `str` found containing Jinja tags are
+    converted to _LazyRenderedStr.
+    """
+    if isinstance(value, str) and ('{{' in value or '{%' in value):
+        return _LazyRenderedStr(jinja_env, params, value)
+    if isinstance(value, list):
+        return [_make_lazy_rendered(jinja_env, params, v)
+                for v in value]
+    if isinstance(value, tuple):
+        return tuple(_make_lazy_rendered(jinja_env, params, v)
+                     for v in value)
+    if isinstance(value, dict):
+        return {k: _make_lazy_rendered(jinja_env, params, v)
+                for k, v in value.items()}
+    return value
+
+
+def _ensure_rendered(value: Any) -> Any:
+    """Recursively makes sure that all _LazyRenderedStr in `value` are rendered.
+
+    If `value` is a data structure, this function recurses into that structure
+    and renders any _LazyRenderedStr found."""
+    if isinstance(value, _LazyRenderedStr):
+        return str(value)
+    if isinstance(value, list):
+        return [_ensure_rendered(v) for v in value]
+    if isinstance(value, tuple):
+        return tuple(_ensure_rendered(v) for v in value)
+    if isinstance(value, dict):
+        return {k: _ensure_rendered(v) for k, v in value.items()}
+    return value
+
+
 @dataclasses.dataclass
 class _OutputPaths:
     element: pathlib.Path
@@ -223,8 +331,9 @@ class _OutputPaths:
 
     def sub_path(self, sub_dir: str):
         """Create a new _OutputPaths that is a subpath of this _OutputPath."""
-        return _OutputPaths(element=self.element / sub_dir,
-                            offscreen=self.offscreen / sub_dir)
+        return _OutputPaths(
+            element=self.element / _ensure_rendered(sub_dir),
+            offscreen=self.offscreen / _ensure_rendered(sub_dir))
 
     def mkdir(self) -> None:
         """Creates element and offscreen directories, if they don't exist."""
@@ -255,42 +364,12 @@ def _validate_test(test: _TestParams):
             f'Valid values are: {valid_test_types}.')
 
 
-def _render_template(jinja_env: jinja2.Environment, template: jinja2.Template,
-                     params: _TestParams) -> str:
-    """Renders the specified jinja template.
-
-    The template is repetitively rendered until no more changes are observed.
-    This allows for template parameters to refer to other template parameters.
-    """
-    rendered = template.render(params)
-    previous = ''
-    while rendered != previous and ('{{' in rendered or '{%' in rendered):
-        previous = rendered
-        template = jinja_env.from_string(rendered)
-        rendered = template.render(params)
-    return rendered
-
-
-def _render(jinja_env: jinja2.Environment, template_name: str,
+def _render(jinja_env: jinja2.Environment,
+            template_name: str,
             params: _TestParams, output_file_name: str):
     template = jinja_env.get_template(template_name)
-    file_content = _render_template(jinja_env, template, params)
+    file_content = template.render(params)
     pathlib.Path(output_file_name).write_text(file_content, 'utf-8')
-
-
-def _preprocess_code(jinja_env: jinja2.Environment, code: str,
-                     params: _TestParams) -> str:
-    code = _remove_extra_newlines(code)
-
-    # Render the code on its own, as it could contain templates expanding
-    # to multiple lines. This is needed to get proper indentation of the
-    # code in the main template.
-    if '{{' in code or '{%' in code:
-        code = _render_template(jinja_env, jinja_env.from_string(code), params)
-
-    # Expand "@..." macros.
-    code = _expand_test_code(code)
-    return code
 
 
 def _write_cairo_images(pycairo_code: str, output_files: _OutputPaths,
@@ -399,16 +478,6 @@ class _Variant():
             self._params['name'] += '.' + name
         return self
 
-    def _render_param(self, jinja_env: jinja2.Environment,
-                      param_name: str) -> None:
-        """Render the specified parameter in-place in the `params` dict."""
-        value = self.params.get(param_name)
-        if value and isinstance(value, str) and ('{{' in value or
-                                                 '{%' in value):
-            self._params[param_name] = (
-                jinja_env.from_string(value).render(self.params))
-
-
     def _get_file_name(self) -> str:
         file_name = self.params['name']
 
@@ -451,8 +520,6 @@ class _Variant():
                         variant_id: int) -> None:
         """Finalize this variant by adding computed param fields."""
         self._params['id'] = variant_id
-        for param_name in ('attributes', 'desc', 'expected', 'name'):
-            self._render_param(jinja_env, param_name)
         self._params['file_name'] = self._get_file_name()
         self._params['canvas_types'] = self._get_canvas_types()
         self._params['template_type'] = self._get_template_type()
@@ -462,14 +529,16 @@ class _Variant():
 
         for canvas_type in self.params['canvas_types']:
             params = {'canvas_type': canvas_type}
-            params.update(self._params)
+            params.update(
+                {k: _make_lazy_rendered(jinja_env, params, v)
+                 for k, v in self._params.items()})
             self._canvas_type_params[canvas_type] = params
 
             for name in ('code', 'reference', 'html_reference',
                          'cairo_reference'):
                 param = params.get(name)
                 if param is not None:
-                    params[name] = _preprocess_code(jinja_env, param, params)
+                    params[name] = _expand_test_code(_ensure_rendered(param))
 
         _validate_test(self._params)
 
@@ -480,7 +549,7 @@ class _Variant():
         if not params:
             return
 
-        expected = params['expected']
+        expected = _ensure_rendered(params['expected'])
 
         if expected == 'green':
             params['expected_img'] = '/images/green-100x50.png'
@@ -601,7 +670,7 @@ class _VariantGrid:
         All the variants for all canvas types in `canvas_types` of this grid
         must agree on the same value for this parameter, or else an exception is
         thrown."""
-        values = {params.get(name)
+        values = {_ensure_rendered(params.get(name))
                   for variant in self.variants
                   for type, params in variant.canvas_type_params.items()
                   if type in canvas_types}
@@ -620,7 +689,7 @@ class _VariantGrid:
         The `name` parameter of each variant is expected to be a sequence. These
         are all accumulated in a set and returned. The values are accumulated
         across all canvas types in `canvas_types`."""
-        return frozenset(sum([list(params.get(name, []))
+        return frozenset(sum([list(_ensure_rendered(params.get(name, [])))
                               for v in self.variants
                               for type, params in v.canvas_type_params.items()
                               if type in canvas_types],
@@ -977,7 +1046,7 @@ def generate_test_files(name_to_dir_file: str) -> None:
             for variant in grid.variants:
                 _check_uniqueness(
                     used_variants,
-                    '.'.join([grid.file_name] +
+                    '.'.join([_ensure_rendered(grid.file_name)] +
                              variant.params['grid_variant_names']),
                     grid.canvas_types)
 
