@@ -46,6 +46,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
@@ -601,7 +602,7 @@ public class Fido2CredentialRequestRobolectricTest {
     @Test
     @SmallTest
     public void testConditionalGetAssertion_credManEnabledSuccessWithGpmInCredManFlag_success() {
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
@@ -629,8 +630,7 @@ public class Fido2CredentialRequestRobolectricTest {
     @Test
     @SmallTest
     public void testConditionalGetAssertion_credManEnabledSuccessWithGpmNotInCredManFlag_success() {
-        mRequestOptions.isConditional = true;
-
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
         FeatureOverrides.newBuilder()
                 .enable(DeviceFeatureList.WEBAUTHN_ANDROID_USE_PASSKEY_CACHE)
                 .enable(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)
@@ -670,7 +670,7 @@ public class Fido2CredentialRequestRobolectricTest {
     @Test
     @SmallTest
     public void testConditionalGetAssertion_webauthnModeNotChrome_notImplemented() {
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
         Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.NONE);
 
@@ -691,7 +691,7 @@ public class Fido2CredentialRequestRobolectricTest {
     @SmallTest
     public void
             testConditionalGetAssertion_credManEnabledRpCancelWhileIdleWithGpmInCredManFlag_notAllowedError() {
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
 
         mRequest.handleGetAssertionRequest(
                 mRequestOptions,
@@ -715,8 +715,7 @@ public class Fido2CredentialRequestRobolectricTest {
     @SmallTest
     public void
             testConditionalGetAssertion_credManEnabledRpCancelWhileIdleWithGpmNotInCredManFlag_notAllowedError() {
-        mRequestOptions.isConditional = true;
-
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
         FeatureOverrides.newBuilder()
                 .enable(DeviceFeatureList.WEBAUTHN_ANDROID_USE_PASSKEY_CACHE)
                 .enable(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)
@@ -788,8 +787,7 @@ public class Fido2CredentialRequestRobolectricTest {
     public void
             testConditionalGetAssertion_webauthnModeChrome3ppAndCredManDisabled_notImplemented() {
         FeatureOverrides.disable(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN);
-
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
         Mockito.when(mModeProviderMock.getWebauthnMode(any()))
                 .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
         Mockito.when(mModeProviderMock.getGlobalWebauthnMode())
@@ -835,8 +833,7 @@ public class Fido2CredentialRequestRobolectricTest {
     @SmallTest
     public void testConditionalGetAssertion_webauthnModeChrome3ppAndCredManEnabled_goesToCredMan() {
         FeatureOverrides.enable(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN);
-
-        mRequestOptions.isConditional = true;
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
         Mockito.when(mModeProviderMock.getWebauthnMode(any()))
                 .thenReturn(WebauthnMode.CHROME_3PP_ENABLED);
         Mockito.when(mModeProviderMock.getGlobalWebauthnMode())

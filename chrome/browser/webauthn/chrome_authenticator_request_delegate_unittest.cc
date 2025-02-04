@@ -645,7 +645,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
     delegate.SetRelyingPartyId(test.rp_id);
     delegate.RegisterActionCallbacks(base::DoNothing(), base::DoNothing(),
                                      base::DoNothing(), base::DoNothing(),
-                                     base::DoNothing(), base::DoNothing());
+                                     base::DoNothing(), base::DoNothing(),
+                                     base::DoNothing());
     delegate.OnTransportAvailabilityEnumerated(std::move(data));
 
     EXPECT_EQ(result.has_platform_authenticator_credential,
@@ -693,7 +694,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   delegate.SetRelyingPartyId(kGoogleRpId);
   delegate.RegisterActionCallbacks(base::DoNothing(), base::DoNothing(),
                                    base::DoNothing(), base::DoNothing(),
-                                   base::DoNothing(), base::DoNothing());
+                                   base::DoNothing(), base::DoNothing(),
+                                   base::DoNothing());
   delegate.OnTransportAvailabilityEnumerated(std::move(data));
 
   // Despite lacking the user ID prefix, credentials are not filtered from

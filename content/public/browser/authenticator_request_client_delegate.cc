@@ -55,6 +55,7 @@ void AuthenticatorRequestClientDelegate::OnTransactionSuccessful(
 
 void AuthenticatorRequestClientDelegate::RegisterActionCallbacks(
     base::OnceClosure cancel_callback,
+    base::OnceClosure immediate_not_found_callback,
     base::RepeatingClosure start_over_callback,
     AccountPreselectedCallback account_preselected_callback,
     device::FidoRequestHandlerBase::RequestCallback request_callback,

@@ -112,6 +112,7 @@ using mojom::blink::MakeCredentialAuthenticatorResponsePtr;
 using MojoPublicKeyCredentialRequestOptions =
     mojom::blink::PublicKeyCredentialRequestOptions;
 using mojom::blink::GetAssertionAuthenticatorResponsePtr;
+using mojom::blink::Mediation;
 using mojom::blink::RequestTokenStatus;
 using payments::mojom::blink::PaymentCredentialStorageStatus;
 
@@ -751,7 +752,7 @@ void OnGetAssertionComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
     FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle feature_handle,
-    bool is_conditional_ui_request,
+    Mediation mediation,
     AuthenticatorStatus status,
     GetAssertionAuthenticatorResponsePtr credential,
     WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
@@ -768,7 +769,7 @@ void OnGetAssertionComplete(
         resolver->GetExecutionContext(),
         WebFeature::kCredentialManagerGetPublicKeyCredentialSuccess);
 
-    if (is_conditional_ui_request) {
+    if (mediation == Mediation::CONDITIONAL) {
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kWebAuthnConditionalUiGetSuccess);
     }
@@ -1177,6 +1178,10 @@ DOMException* AuthenticatorStatusToDOMException(
           DOMExceptionCode::kNotReadableError,
           "An unknown error occurred while talking "
           "to the credential manager.");
+    case AuthenticatorStatus::IMMEDIATE_NOT_FOUND:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotFoundError,
+          "No immediate discoverable credentials are found.");
   }
   return nullptr;
 }
@@ -1488,17 +1493,40 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
       scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
     }
 
-    bool is_conditional_ui_request = options->mediation() == "conditional";
-
-    if (is_conditional_ui_request) {
+    Mediation mediation = Mediation::MODAL;
+    if (options->mediation() == "conditional") {
       UseCounter::Count(context, WebFeature::kWebAuthnConditionalUiGet);
       CredentialMetrics::From(script_state).RecordWebAuthnConditionalUiCall();
+      mediation = Mediation::CONDITIONAL;
+    } else if (options->mediation() == "immediate") {
+      if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled()) {
+        mediation = Mediation::IMMEDIATE;
+      } else {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError, "Not implemented"));
+        return promise;
+      }
     }
-
+    if (mediation == Mediation::IMMEDIATE) {
+      if (!options->publicKey()->allowCredentials().empty()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "An allowCredentials is not allowed with immediate mediation."));
+        return promise;
+      }
+      if (!LocalFrame::ConsumeTransientUserActivation(
+              To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame(),
+              UserActivationUpdateSource::kRenderer)) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "A user activation is required to request immediate credentials."));
+        return promise;
+      }
+    }
     auto mojo_options =
         MojoPublicKeyCredentialRequestOptions::From(*options->publicKey());
     if (mojo_options) {
-      mojo_options->is_conditional = is_conditional_ui_request;
+      mojo_options->mediation = mediation;
       if (!mojo_options->relying_party_id) {
         mojo_options->relying_party_id = context->GetSecurityOrigin()->Domain();
       }
@@ -1520,7 +1548,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
                             SchedulingPolicy::Feature::kWebAuthentication,
                             SchedulingPolicy::DisableBackForwardCache())
                   : FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle(),
-              is_conditional_ui_request));
+              mediation));
     } else {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,

@@ -4780,6 +4780,11 @@
       base_feature: "none",
       public: true,
     },
+    // Prototyping https://github.com/w3c/webauthn/issues/2228
+    {
+      name: "WebAuthenticationImmediateGet",
+      status: "experimental",
+    },
     // Methods for deserializing WebAuthn requests from JSON/serializing
     // responses into JSON.
     // https://w3c.github.io/webauthn/#dom-publickeycredential-tojson

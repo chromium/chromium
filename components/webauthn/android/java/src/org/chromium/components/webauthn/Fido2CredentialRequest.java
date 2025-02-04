@@ -36,6 +36,7 @@ import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
+import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
@@ -372,8 +373,8 @@ public class Fido2CredentialRequest
     /**
      * Process a WebAuthn get() request.
      *
-     * @param options The arguments to get(). If `isConditional` is true then `frameHost` must be
-     *     non-null.
+     * @param options The arguments to get(). If `options.mediation` is `CONDITIONAL` then
+     *     `frameHost` must be non-null.
      * @param origin The origin that made the WebAuthn call.
      * @param topOrigin The origin of the main frame.
      * @param payment Options for Secure Payment Confirmation. May only be non-null if `frameHost`
@@ -396,7 +397,7 @@ public class Fido2CredentialRequest
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         assert frameHost != null;
         assert payment == null || frameHost != null;
-        assert !options.isConditional || frameHost != null;
+        assert options.mediation != Mediation.CONDITIONAL || frameHost != null;
         assert mGetAssertionCallback == null && mErrorCallback == null;
         mGetAssertionCallback = callback;
         mErrorCallback = errorCallback;
@@ -475,7 +476,7 @@ public class Fido2CredentialRequest
         }
 
         if (!isChrome(mAuthenticationContextProvider.getWebContents())) {
-            if (options.isConditional) {
+            if (options.mediation == Mediation.CONDITIONAL) {
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
                 return;
             }
@@ -503,9 +504,8 @@ public class Fido2CredentialRequest
 
         // Payments should still go through Google Play Services.
         final byte[] finalClientDataHash = clientDataHash;
-        if (payment == null
-                && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
-            if (options.isConditional) {
+        if (payment == null && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
+            if (options.mediation == Mediation.CONDITIONAL) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_CRED_MAN);
                 mCredManHelper.startPrefetchRequest(
                         options,
@@ -556,7 +556,8 @@ public class Fido2CredentialRequest
         // Conditional requests for Chrome 3rd party PWM mode when CredMan not enabled is not
         // defined yet.
         WebContents webContents = mAuthenticationContextProvider.getWebContents();
-        if (options.isConditional && is(webContents, WebauthnMode.CHROME_3PP_ENABLED)) {
+        if (options.mediation == Mediation.CONDITIONAL
+                && is(webContents, WebauthnMode.CHROME_3PP_ENABLED)) {
             returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
@@ -564,7 +565,7 @@ public class Fido2CredentialRequest
         // Enumerate credentials from Play Services so that we can show the picker in Chrome UI.
         // Chrome 3rd party mode does not support enumeration in Chrome UI, hence use FIDO 2
         // enumeration for them.
-        if ((options.isConditional || !hasAllowCredentials)
+        if ((options.mediation == Mediation.CONDITIONAL || !hasAllowCredentials)
                 && is(webContents, WebauthnMode.CHROME)) {
             if (getBarrierMode() == Barrier.Mode.BOTH) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.BOTH);
@@ -627,7 +628,7 @@ public class Fido2CredentialRequest
         }
 
         if (hasAllowCredentials
-                && !options.isConditional
+                && options.mediation != Mediation.CONDITIONAL
                 && getBarrierMode() == Barrier.Mode.BOTH) {
             checkForMatchingCredentials(options, origin, clientDataHash);
             return;
@@ -780,7 +781,7 @@ public class Fido2CredentialRequest
 
         boolean hasAllowCredentials =
                 options.allowCredentials != null && options.allowCredentials.length != 0;
-        boolean isConditionalRequest = options.isConditional;
+        boolean isConditionalRequest = options.mediation == Mediation.CONDITIONAL;
         assert isConditionalRequest || !hasAllowCredentials;
 
         if (!credentials.isEmpty()) {
@@ -869,7 +870,7 @@ public class Fido2CredentialRequest
             PublicKeyCredentialRequestOptions options, Origin callerOrigin, byte[] clientDataHash) {
         assert options.allowCredentials != null;
         assert options.allowCredentials.length > 0;
-        assert !options.isConditional;
+        assert options.mediation != Mediation.CONDITIONAL;
         assert mPlayServicesAvailable;
         Barrier.Mode mode = getBarrierMode();
         assert mode == Barrier.Mode.ONLY_CRED_MAN || mode == Barrier.Mode.BOTH;
@@ -907,7 +908,7 @@ public class Fido2CredentialRequest
             List<WebauthnCredentialDetails> retrievedCredentials) {
         assert options.allowCredentials != null;
         assert options.allowCredentials.length > 0;
-        assert !options.isConditional;
+        assert options.mediation != Mediation.CONDITIONAL;
         assert mPlayServicesAvailable;
         Barrier.Mode mode = getBarrierMode();
         assert mode == Barrier.Mode.ONLY_CRED_MAN || mode == Barrier.Mode.BOTH;
@@ -980,7 +981,7 @@ public class Fido2CredentialRequest
         mConditionalUiState = ConditionalUiState.NONE;
         if (credentialId != null) {
             if (credentialId.length == 0) {
-                if (options.isConditional) {
+                if (options.mediation == Mediation.CONDITIONAL) {
                     // An empty credential ID means an error from native code, which can happen if
                     // the embedder does not support Conditional UI.
                     Log.e(TAG, "Empty credential ID from account selection.");
@@ -1001,7 +1002,7 @@ public class Fido2CredentialRequest
             options.allowCredentials = new PublicKeyCredentialDescriptor[] {selected_credential};
         }
 
-        if (options.isConditional) {
+        if (options.mediation == Mediation.CONDITIONAL) {
             mConditionalUiState = ConditionalUiState.REQUEST_SENT_TO_PLATFORM;
         }
 

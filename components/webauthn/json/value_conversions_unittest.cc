@@ -171,7 +171,7 @@ TEST(WebAuthenticationJSONConversionTest,
 
   // Exercise all supported fields.
   auto options = PublicKeyCredentialRequestOptions::New(
-      /*is_conditional=*/false, /*requested_credential_type_flags=*/0,
+      blink::mojom::Mediation::MODAL, /*requested_credential_type_flags=*/0,
       kChallenge, std::nullopt, kTimeout, kRpId, GetCredentialList(),
       /*hints=*/
       std::vector<blink::mojom::Hint>({

@@ -139,6 +139,7 @@ class ChromeAuthenticatorRequestDelegate
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override;
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
+      base::OnceClosure immediate_not_found_callback,
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
@@ -232,7 +233,14 @@ class ChromeAuthenticatorRequestDelegate
 
   bool webauthn_ui_enabled() const;
 
-  void ShowUI(device::FidoRequestHandlerBase::TransportAvailabilityInfo data);
+  // Returns `true` iff the handled request is an immediate `get()` request and
+  // no immediately available credentials found. This will trigger the
+  // `immediate_not_found_callback_` to notify the renderer.
+  bool MaybeHandleImmediateMediation(
+      const device::FidoRequestHandlerBase::TransportAvailabilityInfo& data);
+
+  void MaybeShowUI(
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo tai);
 
   std::optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
 
@@ -299,6 +307,7 @@ class ChromeAuthenticatorRequestDelegate
   const std::unique_ptr<AuthenticatorRequestDialogController>
       dialog_controller_;
   base::OnceClosure cancel_callback_;
+  base::OnceClosure immediate_not_found_callback_;
   base::RepeatingClosure start_over_callback_;
   AccountPreselectedCallback account_preselected_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;

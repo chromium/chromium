@@ -54,6 +54,10 @@ enum AuthenticatorStatus {
   // described in a `WebAuthnDOMExceptionDetails` structure.
   ERROR_WITH_DOM_EXCEPTION_DETAILS,
 
+  // IMMEDIATE_NOT_FOUND indicates that no immediate discoverable
+  // credentials are found for a `get()` request.
+  IMMEDIATE_NOT_FOUND,
+
   UNKNOWN_ERROR,
 };
 
@@ -362,12 +366,21 @@ struct SupplementalPubKeysRequest {
   array<string> attestation_formats;
 };
 
-// Parameters passed into calls to GetAssertion.
-struct PublicKeyCredentialRequestOptions {
-  // If true, indicates that this request should prioritize showing a UI only if
+enum Mediation {
+  MODAL,
+  // Indicates that this request should prioritize showing a UI only if
   // there are discoverable credentials available in this device's platform
   // authenticator.
-  bool is_conditional;
+  CONDITIONAL,
+  // Indicates that this request should fail with `NotFoundError` if there are
+  // no discoverable credentials available. Otherwise it should handle the
+  // request like a `MODAL` request.
+  IMMEDIATE,
+};
+
+// Parameters passed into calls to GetAssertion.
+struct PublicKeyCredentialRequestOptions {
+  Mediation mediation = Mediation.MODAL;
 
   // Aflag word corresponding to the flags in credential_type_flags.mojom,
   // representing the types of credentials that were indicated in the request.
@@ -668,9 +681,9 @@ interface Authenticator {
           WebAuthnDOMExceptionDetails? dom_exception_details);
 
   // Uses an existing credential to produce an assertion for the given
-  // |PublicKeyCredentialRequestOptions|.
-  // |GetAssertionResponse| will be set if and only if status == SUCCESS.
-  // [WebAuthnDOMExceptionDetails] will be set if and only if
+  // `PublicKeyCredentialRequestOptions`.
+  // `GetAssertionResponse` will be set if and only if status == SUCCESS.
+  // `WebAuthnDOMExceptionDetails` will be set if and only if
   // status == ERROR_WITH_DOM_EXCEPTION_DETAILS.
   GetAssertion(PublicKeyCredentialRequestOptions options)
       => (AuthenticatorStatus status,

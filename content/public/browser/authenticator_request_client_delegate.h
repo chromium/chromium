@@ -101,6 +101,8 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   enum class UIPresentation {
     // The default tab-modal dialog shown for .get() and .create() request.
     kModal,
+    // Tab modal for .get() requests with mediation = "immediate".
+    kModalImmediate,
     // Passkey autofill UI for .get() requests with `mediation = "conditional"`.
     kAutofill,
     // Passkey upgrade request, i.e. .create() requests with `mediation =
@@ -150,11 +152,13 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       device::AuthenticatorType authenticator_type);
 
   // Supplies callbacks that the embedder can invoke to initiate certain
-  // actions, namely: cancel the request, start the request over, preselect an
-  // account, dispatch request to connected authenticators, power on the
-  // bluetooth adapter, and request permission to use the bluetooth adapter.
+  // actions, namely: cancel the request, report no immediate mechanisms, start
+  // the request over, preselect an account, dispatch request to connected
+  // authenticators, power on the bluetooth adapter, and request permission to
+  // use the bluetooth adapter.
   virtual void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
+      base::OnceClosure immediate_not_found_callback,
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,

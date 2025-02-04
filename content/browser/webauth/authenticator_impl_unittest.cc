@@ -2138,6 +2138,7 @@ class TestAuthenticatorRequestDelegate
 
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
+      base::OnceClosure immediate_not_found_callback,
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
@@ -6965,6 +6966,7 @@ class BlockingAuthenticatorRequestDelegate
 
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
+      base::OnceClosure immediate_not_found_callback,
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
@@ -7151,6 +7153,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
 
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
+      base::OnceClosure immediate_not_found_callback,
       base::RepeatingClosure start_over_callback,
       AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
@@ -8405,7 +8408,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI_Incognito) {
     static_cast<TestBrowserContext*>(GetBrowserContext())
         ->set_is_off_the_record(is_off_the_record);
     PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
-    options->is_conditional = true;
+    options->mediation = blink::mojom::Mediation::CONDITIONAL;
     GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
     EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
     ASSERT_TRUE(fake_win_webauthn_api_.last_get_credentials_options());
@@ -8923,7 +8926,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {
   test_client_.delegate_config.expected_accounts = "<invalid>";
   test_client_.delegate_config.expect_conditional = true;
   PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
-  options->is_conditional = true;
+  options->mediation = blink::mojom::Mediation::CONDITIONAL;
   GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kSuccess,
@@ -9377,6 +9380,7 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
 
     void RegisterActionCallbacks(
         base::OnceClosure cancel_callback,
+        base::OnceClosure immediate_not_found_callback,
         base::RepeatingClosure start_over_callback,
         AccountPreselectedCallback account_preselected_callback,
         device::FidoRequestHandlerBase::RequestCallback request_callback,
@@ -10661,7 +10665,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionAlreadyProxied) {
 TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionConditionalUI) {
   NavigateAndCommit(GURL(kTestOrigin1));
   auto request = GetTestPublicKeyCredentialRequestOptions();
-  request->is_conditional = true;
+  request->mediation = blink::mojom::Mediation::CONDITIONAL;
   GetAssertionResult result = AuthenticatorGetAssertion(std::move(request));
 
   EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
