@@ -26,6 +26,7 @@ TEST_SCRIPTS_ROOT = os.path.join(os.path.dirname(__file__), '..', '..',
 sys.path.append(TEST_SCRIPTS_ROOT)
 
 import monitors
+import perf_trace
 import version
 from chrome_driver_wrapper import ChromeDriverWrapper
 from common import get_build_info, get_ffx_isolate_dir, get_free_local_port
@@ -87,6 +88,7 @@ def parameters_of(file: str) -> camera.Parameters:
 
 def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
                         host: str) -> None:
+    perf_trace.start()
     driver.get(f'http://{host}:{HTTP_SERVER_PORT}/video.html?file={file}')
     camera_params = parameters_of(file)
     original_video = os.path.join(server.VIDEO_DIR, file)
@@ -104,6 +106,7 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
         while not driver.execute_script('return arguments[0].ended;', video):
             time.sleep(1)
     logging.warning('Video %s finished', file)
+    perf_trace.stop(file)
 
     results = video_analyzer.from_original_video(camera_params.video_file,
                                                  original_video)
