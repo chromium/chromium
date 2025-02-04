@@ -46,11 +46,6 @@ BASE_FEATURE(kMediaFoundationAV1Encoding,
 BASE_FEATURE(kMediaFoundationH264CbpEncoding,
              "MediaFoundationH264CbpEncoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables VP9 encode acceleration for Windows.
-BASE_FEATURE(kMediaFoundationVP9Encoding,
-             "MediaFoundationVP9Encoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Convert media::SVCScalabilityMode to webrtc::ScalabilityMode and fill
@@ -404,12 +399,6 @@ RTCVideoEncoderFactory::RTCVideoEncoderFactory(
           std::move(encoder_metrics_provider_factory)),
       gpu_codec_support_waiter_(gpu_factories) {
 #if BUILDFLAG(IS_WIN)
-  if (!base::FeatureList::IsEnabled(kMediaFoundationVP9Encoding)) {
-    disabled_profiles_.emplace_back(media::VP9PROFILE_PROFILE0);
-    disabled_profiles_.emplace_back(media::VP9PROFILE_PROFILE1);
-    disabled_profiles_.emplace_back(media::VP9PROFILE_PROFILE2);
-    disabled_profiles_.emplace_back(media::VP9PROFILE_PROFILE3);
-  }
   if (!base::FeatureList::IsEnabled(kMediaFoundationAV1Encoding)) {
     disabled_profiles_.emplace_back(media::AV1PROFILE_PROFILE_MAIN);
     disabled_profiles_.emplace_back(media::AV1PROFILE_PROFILE_HIGH);

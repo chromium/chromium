@@ -14080,21 +14080,6 @@
             ]
         }
     ],
-    "MediaFoundationVP9Encoding": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MediaFoundationVP9Encoding"
-                    ]
-                }
-            ]
-        }
-    ],
     "MediaHardwareSecureDecryption": [
         {
             "platforms": [
