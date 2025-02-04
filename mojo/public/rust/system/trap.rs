@@ -197,7 +197,11 @@ impl UnsafeTrap {
 
                 // Now that all elements are initialized it is sound to
                 // assume_init.
-                unsafe { mem::MaybeUninit::slice_assume_init_mut(blocking_events) }
+                #[allow(deprecated)]
+                // TODO(crbug.com/394100139): MaybeUninit::slice_assume_init_mut is deprecated.
+                unsafe {
+                    mem::MaybeUninit::slice_assume_init_mut(blocking_events)
+                }
             });
 
         let (blocking_events_ptr, num_events_ptr) = match blocking_events.as_mut() {

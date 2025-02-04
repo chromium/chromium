@@ -176,6 +176,7 @@ fn test() {
     let goodbye = "goodbye".to_string().into_bytes();
     let mut write_buf = producer.begin().expect("error on write begin");
     expect_ge!(write_buf.len(), goodbye.len());
+    #[allow(deprecated)] // TODO(crbug.com/394100139): MaybeUninit::copy_from_slice is deprecated.
     std::mem::MaybeUninit::copy_from_slice(&mut write_buf[0..goodbye.len()], &goodbye);
     // SAFETY: we wrote `goodbye.len()` valid elements to `write_buf`,
     // so they are initialized.
