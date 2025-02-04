@@ -103,11 +103,12 @@ ActionButtonView::~ActionButtonView() = default;
 void ActionButtonView::AddedToWidget() {
   views::Button::AddedToWidget();
 
-  // Attach the shadow at the bottom of the widget layer.
+  // Since the layer of the shadow has to be added as a sibling to this view's
+  // layer, we need to wait until the view is added to the widget.
+  auto* parent = layer()->parent();
   ui::Layer* shadow_layer = shadow_->GetLayer();
-  ui::Layer* widget_layer = GetWidget()->GetLayer();
-  widget_layer->Add(shadow_layer);
-  widget_layer->StackAtBottom(shadow_layer);
+  parent->Add(shadow_layer);
+  parent->StackAtBottom(shadow_layer);
 
   // Make the shadow observe the color provider source change to update the
   // colors.
