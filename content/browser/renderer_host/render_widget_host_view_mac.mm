@@ -995,6 +995,12 @@ void RenderWidgetHostViewMac::SetWindowFrameInScreen(const gfx::Rect& rect) {
   DCHECK(GetInProcessNSView() && ![GetInProcessNSView() window])
       << "This method should only be called in headless browser!";
   OnWindowFrameInScreenChanged(rect);
+
+  // Force screen info update because with no NSWindow in headless there is no
+  // notification to trigger it automatically. This ensures correct current
+  // screen association. Note the use of the generic variant of
+  // UpdateScreenInfo() that does not consider Cocoa provided screen info.
+  RenderWidgetHostViewBase::UpdateScreenInfo();
 }
 
 //

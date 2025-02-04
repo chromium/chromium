@@ -11,6 +11,7 @@
 #include "ui/display/display.h"
 #include "ui/display/mojom/screen_orientation.mojom-shared.h"
 #include "ui/display/screen_base.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace headless {
@@ -52,6 +53,7 @@ class HeadlessScreen : public display::ScreenBase {
       display::mojom::ScreenOrientation screen_orientation);
 
   display::Display GetDisplayById(int64_t display_id);
+  display::Display GetDisplayFromBounds(const gfx::Rect& bounds) const;
 
   base::flat_map<int64_t, bool> is_natural_landscape_map_;
 };

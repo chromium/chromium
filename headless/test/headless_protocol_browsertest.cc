@@ -707,46 +707,28 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/request-fullscreen.js",
     "--screen-info={ 800x600 } --window-size=400,200")
 
-// https://crbug.com/380313546
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_WindowOpenOnSecondaryScreen DISABLED_WindowOpenOnSecondaryScreen
-#define MAYBE_RequestFullscreenOnSecondaryScreen \
-  DISABLED_RequestFullscreenOnSecondaryScreen
-#define MAYBE_ScreenRotationSecondaryScreen \
-  DISABLED_ScreenRotationSecondaryScreen
-#define MAYBE_MoveWindowBetweenScreens DISABLED_MoveWindowBetweenScreens
-#define MAYBE_CreateTargetSecondaryScreen DISABLED_CreateTargetSecondaryScreen
-#else
-#define MAYBE_WindowOpenOnSecondaryScreen WindowOpenOnSecondaryScreen
-#define MAYBE_RequestFullscreenOnSecondaryScreen \
-  RequestFullscreenOnSecondaryScreen
-#define MAYBE_ScreenRotationSecondaryScreen ScreenRotationSecondaryScreen
-#define MAYBE_MoveWindowBetweenScreens MoveWindowBetweenScreens
-#define MAYBE_CreateTargetSecondaryScreen CreateTargetSecondaryScreen
-#endif
-
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MAYBE_WindowOpenOnSecondaryScreen,
+    WindowOpenOnSecondaryScreen,
     "sanity/window-open-on-secondary-screen.js",
     "--screen-info={ label='1st screen' }{ label='2nd screen' }")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MAYBE_RequestFullscreenOnSecondaryScreen,
+    RequestFullscreenOnSecondaryScreen,
     "sanity/request-fullscreen-on-secondary-screen.js",
     "--screen-info={ label='1st screen' }{ 600x800 label='2nd screen' }")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MAYBE_ScreenRotationSecondaryScreen,
+    ScreenRotationSecondaryScreen,
     "sanity/screen-rotation-secondary-screen.js",
     "--screen-info={ label='1st screen' }{ 600x800 label='2nd screen' }")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MAYBE_MoveWindowBetweenScreens,
+    MoveWindowBetweenScreens,
     "sanity/move-window-between-screens.js",
     "--screen-info={label='#1'}{label='#2'}{0,600 label='#3'}{label='#4'}")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MAYBE_CreateTargetSecondaryScreen,
+    CreateTargetSecondaryScreen,
     "sanity/create-target-secondary-screen.js",
     "--screen-info={label='#1'}{label='#2'}")
 

@@ -27,8 +27,6 @@
     const {bounds} = (await dp.Browser.getWindowBounds({windowId})).result;
     const screen = await session.evaluateAsync(async () => {
       const cs = (await getScreenDetails()).currentScreen;
-      console.log(`Window: ${screenX},${screenY} ${outerWidth}x${
-          outerHeight}, screen: ${cs.label}`);
       return cs.label;
     });
 
