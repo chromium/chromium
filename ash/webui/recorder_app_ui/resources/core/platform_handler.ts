@@ -14,7 +14,6 @@ import {effect, ReadonlySignal, Signal} from './reactive/signal.js';
 import {LangPackInfo, LanguageCode} from './soda/language_info.js';
 import {SodaSession} from './soda/types.js';
 import {settings} from './state/settings.js';
-import {assert} from './utils/assert.js';
 
 export abstract class PlatformHandler {
   /**
@@ -74,13 +73,9 @@ export abstract class PlatformHandler {
     }
     if (selectedLanguage === null && !this.isMultipleLanguageAvailable()) {
       // Use the default language (en-us) when there's no multiple language
-      // pack available.
+      // pack available. Note that the language state may be unavailable.
       selectedLanguage = LanguageCode.EN_US;
     }
-    assert(
-        selectedLanguage === null ||
-            this.getSodaState(selectedLanguage).value.kind !== 'unavailable',
-    );
     return selectedLanguage;
   }
 
