@@ -5,16 +5,28 @@
 package org.chromium.components.browser_ui.widget;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Looper;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Function;
 
@@ -27,15 +39,20 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogResult;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.ConfirmationDialogHandler;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
+import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DismissHandler;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -45,17 +62,40 @@ public class ActionConfirmationDialogUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private ConfirmationDialogResult mConfirmationDialogResult;
+    @Mock private ConfirmationDialogHandler mConfirmationDialogHandler;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelArgumentCaptor;
 
     private Context mContext;
+    private @Nullable Runnable mDimissLaterRunnable;
 
     @Before
     public void setUp() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         activity.setTheme(R.style.Theme_AppCompat);
         mContext = activity;
+        configureDismissType(DialogDismissType.DISMISS_IMMEDIATELY);
+    }
+
+    private void configureDismissType(@DialogDismissType int dialogDismissType) {
+        if (dialogDismissType == DialogDismissType.DISMISS_IMMEDIATELY) {
+            when(mConfirmationDialogHandler.onDialogInteracted(
+                            any(DismissHandler.class), anyInt(), anyBoolean()))
+                    .thenReturn(DialogDismissType.DISMISS_IMMEDIATELY);
+        } else {
+            doAnswer(
+                            (Answer<Integer>)
+                                    invocation -> {
+                                        DismissHandler dismissHandler =
+                                                (DismissHandler) invocation.getArguments()[0];
+                                        mDimissLaterRunnable =
+                                                dismissHandler.dismissBlocking(
+                                                        (int) invocation.getArguments()[1]);
+                                        return dialogDismissType;
+                                    })
+                    .when(mConfirmationDialogHandler)
+                    .onDialogInteracted(any(DismissHandler.class), anyInt(), anyBoolean());
+        }
     }
 
     private Function<Resources, String> noSyncResolver(@StringRes int stringRes) {
@@ -76,7 +116,7 @@ public class ActionConfirmationDialogUnitTest {
                 R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
-                mConfirmationDialogResult);
+                mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
                 .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
@@ -100,7 +140,7 @@ public class ActionConfirmationDialogUnitTest {
                 R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
-                mConfirmationDialogResult);
+                mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
                 .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
@@ -121,16 +161,21 @@ public class ActionConfirmationDialogUnitTest {
                 R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
-                mConfirmationDialogResult);
+                mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
                 .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
         PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
 
         Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(propertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-        verify(mConfirmationDialogResult)
-                .onDismiss(ButtonClickResult.POSITIVE, /* stopShowing= */ false);
+        controller.onClick(propertyModel, ButtonType.POSITIVE);
+        verify(mConfirmationDialogHandler)
+                .onDialogInteracted(
+                        any(DismissHandler.class),
+                        eq(ButtonClickResult.POSITIVE),
+                        /* stopShowing= */ eq(false));
+        verify(mModalDialogManager)
+                .dismissDialog(propertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
 
     @Test
@@ -143,16 +188,21 @@ public class ActionConfirmationDialogUnitTest {
                 R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
-                mConfirmationDialogResult);
+                mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
                 .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
         PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
 
         Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(propertyModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-        verify(mConfirmationDialogResult)
-                .onDismiss(ButtonClickResult.NEGATIVE, /* stopShowing= */ false);
+        controller.onClick(propertyModel, ButtonType.NEGATIVE);
+        verify(mConfirmationDialogHandler)
+                .onDialogInteracted(
+                        any(DismissHandler.class),
+                        eq(ButtonClickResult.NEGATIVE),
+                        /* stopShowing= */ eq(false));
+        verify(mModalDialogManager)
+                .dismissDialog(propertyModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
 
     @Test
@@ -165,7 +215,7 @@ public class ActionConfirmationDialogUnitTest {
                 R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
-                mConfirmationDialogResult);
+                mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
                 .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
@@ -176,9 +226,14 @@ public class ActionConfirmationDialogUnitTest {
         stopShowingCheckBox.setChecked(true);
 
         Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(propertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-        verify(mConfirmationDialogResult)
-                .onDismiss(ButtonClickResult.POSITIVE, /* stopShowing= */ true);
+        controller.onClick(propertyModel, ButtonType.POSITIVE);
+        verify(mConfirmationDialogHandler)
+                .onDialogInteracted(
+                        any(DismissHandler.class),
+                        eq(ButtonClickResult.POSITIVE),
+                        /* stopShowing= */ eq(true));
+        verify(mModalDialogManager)
+                .dismissDialog(propertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
 
     @Test
@@ -191,7 +246,7 @@ public class ActionConfirmationDialogUnitTest {
                 R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
-                mConfirmationDialogResult);
+                mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
                 .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
@@ -202,9 +257,14 @@ public class ActionConfirmationDialogUnitTest {
         stopShowingCheckBox.setChecked(true);
 
         Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
-        controller.onDismiss(propertyModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-        verify(mConfirmationDialogResult)
-                .onDismiss(ButtonClickResult.NEGATIVE, /* stopShowing= */ true);
+        controller.onClick(propertyModel, ButtonType.NEGATIVE);
+        verify(mConfirmationDialogHandler)
+                .onDialogInteracted(
+                        any(DismissHandler.class),
+                        eq(ButtonClickResult.NEGATIVE),
+                        /* stopShowing= */ eq(true));
+        verify(mModalDialogManager)
+                .dismissDialog(propertyModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
     }
 
     @Test
@@ -217,7 +277,7 @@ public class ActionConfirmationDialogUnitTest {
                 R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ false,
-                mConfirmationDialogResult);
+                mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
                 .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
@@ -238,7 +298,7 @@ public class ActionConfirmationDialogUnitTest {
                 R.string.confirm,
                 R.string.cancel,
                 /* supportStopShowing= */ true,
-                mConfirmationDialogResult);
+                mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
                 .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
@@ -252,7 +312,144 @@ public class ActionConfirmationDialogUnitTest {
         // safer default so use that.
         Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
         controller.onDismiss(propertyModel, DialogDismissalCause.TOUCH_OUTSIDE);
-        verify(mConfirmationDialogResult)
-                .onDismiss(ButtonClickResult.NO_CLICK, /* stopShowing= */ false);
+        verify(mConfirmationDialogHandler)
+                .onDialogInteracted(
+                        any(DismissHandler.class),
+                        eq(ButtonClickResult.NO_CLICK),
+                        /* stopShowing= */ eq(false));
+        // The dismiss is already handled by the modal dialog manager. Further calls to dismiss it
+        // will not do anything.
+        verify(mModalDialogManager, never()).dismissDialog(any(), anyInt());
+    }
+
+    @Test
+    public void testAsyncDismiss_Positive() {
+        configureDismissType(DialogDismissType.DISMISS_LATER);
+
+        ActionConfirmationDialog dialog =
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
+        dialog.show(
+                noSyncResolver(R.string.title),
+                noSyncResolver(R.string.learn_more),
+                R.string.confirm,
+                R.string.cancel,
+                /* supportStopShowing= */ true,
+                mConfirmationDialogHandler);
+
+        verify(mModalDialogManager)
+                .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
+        PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
+        Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(propertyModel, ButtonType.POSITIVE);
+        verify(mConfirmationDialogHandler)
+                .onDialogInteracted(
+                        any(DismissHandler.class),
+                        eq(ButtonClickResult.POSITIVE),
+                        /* stopShowing= */ eq(false));
+        assertTrue(propertyModel.get(ModalDialogProperties.BLOCK_INPUTS));
+        assertFalse(propertyModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+        assertTrue(propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_LOADING));
+        assertFalse(propertyModel.get(ModalDialogProperties.NEGATIVE_BUTTON_LOADING));
+
+        // Signal the condition is met first.
+        mDimissLaterRunnable.run();
+        verify(mModalDialogManager, never()).dismissDialog(any(), anyInt());
+
+        // Button spinner min-time second.
+        shadowOf(Looper.getMainLooper()).runOneTask();
+        verify(mModalDialogManager)
+                .dismissDialog(propertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        controller.onDismiss(propertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+
+        // Flush the timeout task and verify it isn't run.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verifyNoMoreInteractions(mModalDialogManager);
+    }
+
+    @Test
+    public void testAsyncDismiss_Negative() {
+        configureDismissType(DialogDismissType.DISMISS_LATER);
+
+        ActionConfirmationDialog dialog =
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
+        dialog.show(
+                noSyncResolver(R.string.title),
+                noSyncResolver(R.string.learn_more),
+                R.string.confirm,
+                R.string.cancel,
+                /* supportStopShowing= */ true,
+                mConfirmationDialogHandler);
+
+        verify(mModalDialogManager)
+                .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
+        PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
+        Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(propertyModel, ButtonType.NEGATIVE);
+        verify(mConfirmationDialogHandler)
+                .onDialogInteracted(
+                        any(DismissHandler.class),
+                        eq(ButtonClickResult.NEGATIVE),
+                        /* stopShowing= */ eq(false));
+        assertTrue(propertyModel.get(ModalDialogProperties.BLOCK_INPUTS));
+        assertFalse(propertyModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+        assertFalse(propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_LOADING));
+        assertTrue(propertyModel.get(ModalDialogProperties.NEGATIVE_BUTTON_LOADING));
+
+        // Button spinner min-time first.
+        shadowOf(Looper.getMainLooper()).runOneTask();
+        verify(mModalDialogManager, never()).dismissDialog(any(), anyInt());
+
+        // Signal the condition is met second.
+        mDimissLaterRunnable.run();
+        verify(mModalDialogManager)
+                .dismissDialog(propertyModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        controller.onDismiss(propertyModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+
+        // Flush the timeout task and verify it isn't run.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verifyNoMoreInteractions(mModalDialogManager);
+    }
+
+    @Test
+    public void testAsyncDismiss_Timeout() {
+        configureDismissType(DialogDismissType.DISMISS_LATER);
+
+        ActionConfirmationDialog dialog =
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
+        dialog.show(
+                noSyncResolver(R.string.title),
+                noSyncResolver(R.string.learn_more),
+                R.string.confirm,
+                R.string.cancel,
+                /* supportStopShowing= */ true,
+                mConfirmationDialogHandler);
+
+        verify(mModalDialogManager)
+                .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
+        PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
+        Controller controller = propertyModel.get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(propertyModel, ButtonType.NEGATIVE);
+        verify(mConfirmationDialogHandler)
+                .onDialogInteracted(
+                        any(DismissHandler.class),
+                        eq(ButtonClickResult.NEGATIVE),
+                        /* stopShowing= */ eq(false));
+        assertTrue(propertyModel.get(ModalDialogProperties.BLOCK_INPUTS));
+        assertFalse(propertyModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+        assertFalse(propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_LOADING));
+        assertTrue(propertyModel.get(ModalDialogProperties.NEGATIVE_BUTTON_LOADING));
+
+        // Flush the min-button duration.
+        shadowOf(Looper.getMainLooper()).runOneTask();
+        verify(mModalDialogManager, never()).dismissDialog(any(), anyInt());
+
+        // Flush the timeout task.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mModalDialogManager)
+                .dismissDialog(propertyModel, DialogDismissalCause.CLIENT_TIMEOUT);
+
+        // A late update to the runnable should no-op.
+        mDimissLaterRunnable.run();
+        verifyNoMoreInteractions(mModalDialogManager);
     }
 }
