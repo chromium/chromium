@@ -1317,8 +1317,8 @@ void AwProxyingURLLoaderFactory::SetCookieHeader(
       &returned_status);
 
   // TODO(crbug.com/384986095): Provide real cookie values
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewInterceptedCookieHeaderReadWrite)) {
+  if (cookie && base::FeatureList::IsEnabled(
+                    features::kWebViewInterceptedCookieHeaderReadWrite)) {
     cookie_manager_->SetCanonicalCookie(*cookie, request.url,
                                         net::CookieOptions::MakeAllInclusive(),
                                         base::DoNothing());
