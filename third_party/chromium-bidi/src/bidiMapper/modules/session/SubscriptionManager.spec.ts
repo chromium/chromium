@@ -664,9 +664,13 @@ describe('SubscriptionManager', () => {
   });
 
   describe('unroll events', () => {
+    function unrollEventsToArray(args: any[]) {
+      return [...unrollEvents(args)];
+    }
+
     it('all Browsing Context events', () => {
       expect(
-        unrollEvents([ChromiumBidi.BiDiModule.BrowsingContext]),
+        unrollEventsToArray([ChromiumBidi.BiDiModule.BrowsingContext]),
       ).to.have.members([
         ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
         ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
@@ -685,13 +689,15 @@ describe('SubscriptionManager', () => {
     });
 
     it('all Log events', () => {
-      expect(unrollEvents([ChromiumBidi.BiDiModule.Log])).to.have.members([
-        ChromiumBidi.Log.EventNames.LogEntryAdded,
-      ]);
+      expect(
+        unrollEventsToArray([ChromiumBidi.BiDiModule.Log]),
+      ).to.have.members([ChromiumBidi.Log.EventNames.LogEntryAdded]);
     });
 
     it('all Network events', () => {
-      expect(unrollEvents([ChromiumBidi.BiDiModule.Network])).to.have.members([
+      expect(
+        unrollEventsToArray([ChromiumBidi.BiDiModule.Network]),
+      ).to.have.members([
         ChromiumBidi.Network.EventNames.AuthRequired,
         ChromiumBidi.Network.EventNames.BeforeRequestSent,
         ChromiumBidi.Network.EventNames.FetchError,
@@ -701,7 +707,9 @@ describe('SubscriptionManager', () => {
     });
 
     it('all Script events', () => {
-      expect(unrollEvents([ChromiumBidi.BiDiModule.Script])).to.have.members([
+      expect(
+        unrollEventsToArray([ChromiumBidi.BiDiModule.Script]),
+      ).to.have.members([
         ChromiumBidi.Script.EventNames.Message,
         ChromiumBidi.Script.EventNames.RealmCreated,
         ChromiumBidi.Script.EventNames.RealmDestroyed,
@@ -710,7 +718,7 @@ describe('SubscriptionManager', () => {
 
     it('discrete events', () => {
       expect(
-        unrollEvents([
+        unrollEventsToArray([
           ChromiumBidi.Script.EventNames.RealmCreated,
           ChromiumBidi.Log.EventNames.LogEntryAdded,
         ]),
@@ -722,7 +730,7 @@ describe('SubscriptionManager', () => {
 
     it('all and discrete events', () => {
       expect(
-        unrollEvents([
+        unrollEventsToArray([
           ChromiumBidi.BiDiModule.Log,
           ChromiumBidi.Log.EventNames.LogEntryAdded,
         ]),

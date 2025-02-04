@@ -32,13 +32,13 @@
       max-width: 1200px;
     }
 
-    .top > div > .test-card,
-    .top > div > .divider {
+    .top > div > .test-card {
       margin-left: 0;
     }
     .test-card {
       margin-left: 20px;
       max-width: 1200px;
+      border: 1px solid #a0a0a0;
     }
     .test-card-subtest {
       display: flex;
@@ -48,11 +48,6 @@
     }
     .test-name {
       word-break: break-all;
-    }
-    .divider {
-      margin-left: 20px;
-      height: 1px;
-      background: #a0a0a0;
     }
     .non-collapsible-item {
       padding-left: 27px;
@@ -165,9 +160,7 @@
       const failures = document.querySelector('.failures');
       let failureState = 'all';
       const summaryQuery = '.test-card:has(> details > .path.pass)';
-      const summaryDividerQuery = `${summaryQuery} + .divider`;
       const passingTestQuery = '.test-card.test-card-subtest.pass';
-      const passingTestDividerQuery = `${passingTestQuery} + .divider`;
       failures.addEventListener('click', () => {
         failures.innerText =
           failureState.charAt(0).toUpperCase() + failureState.slice(1);
@@ -176,12 +169,7 @@
         } else {
           failureState = 'all';
         }
-        for (const query of [
-          summaryQuery,
-          summaryDividerQuery,
-          passingTestQuery,
-          passingTestDividerQuery,
-        ]) {
+        for (const query of [summaryQuery, passingTestQuery]) {
           document
             .querySelectorAll(query)
             .forEach(

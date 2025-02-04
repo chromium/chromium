@@ -5,7 +5,7 @@
     "declaration": true,
     "esModuleInterop": true,
     "incremental": true,
-    "module": "ES2022",
+    "module": "ESNext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -23,7 +23,7 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "target": "ES2022",
+    "target": "ESNext",
     "useUnknownInCatchVariables": true
   }
 }

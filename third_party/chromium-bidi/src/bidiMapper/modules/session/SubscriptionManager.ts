@@ -41,7 +41,7 @@ export function cartesianProduct(...a: any[][]) {
 /** Expands "AllEvents" events into atomic events. */
 export function unrollEvents(
   events: ChromiumBidi.EventNames[],
-): ChromiumBidi.EventNames[] {
+): Iterable<ChromiumBidi.EventNames> {
   const allEvents = new Set<ChromiumBidi.EventNames>();
 
   function addEvents(events: ChromiumBidi.EventNames[]) {
@@ -72,7 +72,7 @@ export function unrollEvents(
     }
   }
 
-  return [...allEvents.values()];
+  return allEvents.values();
 }
 
 export interface Subscription {

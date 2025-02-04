@@ -242,7 +242,6 @@ function generateTestReport(map, parent) {
   }
 
   return `
-    <div class="divider"></div>
     <div class="test-card">
       <details>
         <summary class="path ${
@@ -270,7 +269,7 @@ function generateSubtestReport(subtest) {
   const name =
     subtest.name ?? removeWebDriverBiDiPrefix(subtest.path).split('/').at(-1);
 
-  return `<div class="divider"></div>
+  return `
       <div class="test-card test-card-subtest ${
         subtest.status === 'PASS' ? 'pass' : 'fail'
       }">
