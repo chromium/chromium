@@ -17,7 +17,7 @@ const int kInactiveTabsDisabledByUser = -1;
 
 BASE_FEATURE(kInactiveTabsIPadFeature,
              "InactiveTabsIPadFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsInactiveTabsAvailable() {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
