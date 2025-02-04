@@ -45,7 +45,13 @@ export class DescriptionCitationElement extends CrLitElement {
     };
   }
 
-  urlInfo: UrlInfo;
+  urlInfo: UrlInfo = {
+    title: '',
+    url: {url: ''},
+    faviconUrl: {url: ''},
+    thumbnailUrl: {url: ''},
+    previewText: '',
+  };
   index: number = 0;
   citationCount: number = 0;
   productName: string = '';

@@ -55,15 +55,7 @@ export class DragAndDropManager {
   private tableElement_: TableElement;
   private pendingOrder_: Map<number, number> = new Map();
 
-  private get columnElements_(): HTMLElement[] {
-    const table = $$<HTMLElement>(this.tableElement_, '#table');
-    assert(table);
-    return Array.from(
-        table.querySelectorAll<HTMLElement>('.col:not([hidden])'));
-  }
-
-  init(tableElement: TableElement): void {
-    this.tableElement_ = tableElement;
+  constructor(tableElement: TableElement) {
     // Create a transparent 1x1 pixel image that will replace the default drag
     // "ghost" image. The image is preloaded to ensure it's available when
     // dragging starts.
@@ -71,8 +63,16 @@ export class DragAndDropManager {
     this.dragImage_.src =
         'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAA' +
         'ABAAEAAAICTAEAOw==';
+    this.tableElement_ = tableElement;
     this.eventTracker_.add(
         document, 'dragstart', (e: DragEvent) => this.onDragStart_(e));
+  }
+
+  private get columnElements_(): HTMLElement[] {
+    const table = $$<HTMLElement>(this.tableElement_, '#table');
+    assert(table);
+    return Array.from(
+        table.querySelectorAll<HTMLElement>('.col:not([hidden])'));
   }
 
   destroy(): void {
@@ -84,9 +84,10 @@ export class DragAndDropManager {
     // will have been removed during the render.
     if (this.pendingOrder_.size > 0) {
       this.pendingOrder_.forEach((value, key) => {
-        this.columnElements_[key].style.order = `${value}`;
-        this.columnElements_[key].toggleAttribute(
-            IS_FIRST_COLUMN_ATTR, value === 0);
+        const col = this.columnElements_[key];
+        assert(col);
+        col.style.order = `${value}`;
+        col.toggleAttribute(IS_FIRST_COLUMN_ATTR, value === 0);
       });
     }
   }

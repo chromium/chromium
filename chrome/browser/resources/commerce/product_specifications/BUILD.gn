@@ -93,7 +93,6 @@ build_webui("build") {
                            target_gen_dir) ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/commerce:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",

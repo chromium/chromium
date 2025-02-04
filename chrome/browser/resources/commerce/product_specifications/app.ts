@@ -176,9 +176,10 @@ function getProductDetails(
 }
 
 function areStatesEqual(
-    firstState: ProductSpecificationsFeatureState,
-    secondState: ProductSpecificationsFeatureState) {
-  return firstState.isSyncingTabCompare === secondState.isSyncingTabCompare &&
+    firstState: ProductSpecificationsFeatureState|null,
+    secondState: ProductSpecificationsFeatureState|null) {
+  return firstState !== null && secondState !== null &&
+      firstState.isSyncingTabCompare === secondState.isSyncingTabCompare &&
       firstState.canLoadFullPageUi === secondState.canLoadFullPageUi &&
       firstState.canManageSets === secondState.canManageSets &&
       firstState.canFetchData === secondState.canFetchData &&
@@ -237,12 +238,12 @@ export class ProductSpecificationsElement extends CrLitElement {
   protected id_: Uuid|null = null;
   protected loadingState_: LoadingState = {loading: false, urlCount: 0};
   protected productSpecificationsFeatureState_:
-      ProductSpecificationsFeatureState;
+      ProductSpecificationsFeatureState|null = null;
   protected setName_: string|null = null;
   protected sets_: ProductSpecificationsSet[] = [];
   protected showComparisonTableList_: boolean = false;
-  private showEmptyState_: boolean;
-  protected showTableDataUnavailableContainer_: boolean;
+  private showEmptyState_: boolean = false;
+  protected showTableDataUnavailableContainer_: boolean = false;
   protected tableColumns_: TableColumn[] = [];
 
   private callbackRouter_: PageCallbackRouter;
@@ -884,7 +885,9 @@ export class ProductSpecificationsElement extends CrLitElement {
         const existingIndex = tableUrls.indexOf(setUrl.url);
         assert(existingIndex >= 0, 'Did not find column to reorder!');
 
-        newCols.push(this.tableColumns_[existingIndex]);
+        const col = this.tableColumns_[existingIndex];
+        assert(col);
+        newCols.push(col);
       }
 
       this.tableColumns_ = newCols;

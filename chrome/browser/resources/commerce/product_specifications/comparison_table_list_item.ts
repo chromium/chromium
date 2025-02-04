@@ -130,7 +130,10 @@ export class ComparisonTableListItemElement extends CrLitElement {
   protected getFaviconUrl_() {
     // Display the favicon for the first product if no product images are
     // available. If there are no URLs, display the Compare favicon.
-    return this.urls.length > 0 ? this.urls[0].url : this.tableUrl_.url;
+    if (this.urls.length > 0 && this.urls[0]) {
+      return this.urls[0].url;
+    }
+    return this.tableUrl_.url;
   }
 
   protected async updateNumItemsString_() {
@@ -146,8 +149,9 @@ export class ComparisonTableListItemElement extends CrLitElement {
     // Find the first product with an image to use as the item's image.
     let imageUrl = null;
     for (let i = 0; i < this.urls.length; i++) {
-      const {productInfo} =
-          await this.shoppingApi_.getProductInfoForUrl(this.urls[i]);
+      const url = this.urls[i];
+      assert(url);
+      const {productInfo} = await this.shoppingApi_.getProductInfoForUrl(url);
 
       if (productInfo.imageUrl.url) {
         imageUrl = productInfo.imageUrl;

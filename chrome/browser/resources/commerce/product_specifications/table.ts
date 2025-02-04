@@ -72,9 +72,18 @@ export class TableElement extends CrLitElement {
   draggingColumn: HTMLElement|null = null;
   private hoveredColumnIndex_: number|null = null;
 
-  private dragAndDropManager_: DragAndDropManager = new DragAndDropManager();
+  private dragAndDropManager_: DragAndDropManager;
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
+
+  constructor() {
+    super();
+    this.dragAndDropManager_ = new DragAndDropManager(this);
+  }
+
+  getDragAndDropManager(): DragAndDropManager {
+    return this.dragAndDropManager_;
+  }
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
@@ -88,7 +97,6 @@ export class TableElement extends CrLitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.dragAndDropManager_.init(this);
     // Prevent cursor from switching to not-allowed on Windows during drag and
     // drop.
     this.$.table.addEventListener(
@@ -175,7 +183,7 @@ export class TableElement extends CrLitElement {
     const currentTarget = e.currentTarget as HTMLElement;
     const columnIndex = Number(currentTarget.dataset['index']);
     this.shoppingApi_.switchToOrOpenTab(
-        {url: this.columns[columnIndex].selectedItem.url});
+        {url: this.columns[columnIndex]?.selectedItem.url || ''});
     chrome.metricsPrivate.recordUserAction(
         'Commerce.Compare.ReopenedProductPage');
   }

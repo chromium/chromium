@@ -4,7 +4,7 @@
 
 import 'chrome://compare/app.js';
 
-import {DragAndDropManager, IS_FIRST_COLUMN_ATTR} from 'chrome://compare/drag_and_drop_manager.js';
+import {type DragAndDropManager, IS_FIRST_COLUMN_ATTR} from 'chrome://compare/drag_and_drop_manager.js';
 import type {TableColumn, TableElement} from 'chrome://compare/table.js';
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -16,8 +16,8 @@ suite('ProductSpecificationsTableTest', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    dragAndDropManager = new DragAndDropManager();
     tableElement = document.createElement('product-specifications-table');
+    dragAndDropManager = tableElement.getDragAndDropManager();
   });
 
   teardown(() => {
@@ -48,7 +48,6 @@ suite('ProductSpecificationsTableTest', () => {
     tableElement.columns = columns;
     document.body.appendChild(tableElement);
     await microtasksFinished();
-    dragAndDropManager.init(tableElement);
   }
 
   function dispatchDragStart({origin}: {origin: HTMLElement}) {
