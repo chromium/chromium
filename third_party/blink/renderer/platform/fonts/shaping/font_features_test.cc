@@ -14,6 +14,10 @@ namespace blink {
 
 namespace {
 
+//
+// Tests that need `RenderingTest` such as `IsInitial()` are in
+// `InlineNodeTest.FontFeatures*'.
+//
 class FontFeaturesTest : public testing::Test {};
 
 static const FontOrientation orientations[] = {
@@ -34,12 +38,6 @@ class FontFeaturesByOrientationTest
 INSTANTIATE_TEST_SUITE_P(FontFeaturesTest,
                          FontFeaturesByOrientationTest,
                          testing::ValuesIn(orientations));
-
-TEST_F(FontFeaturesTest, Initial) {
-  EXPECT_TRUE(FontFeatures::Initial().IsInitial());
-
-  // More tests using `RenderingTest` are in `InlineNodeTest.FontFeatures*'.
-}
 
 // Test 'chws' or 'vchw' is on by default.
 TEST_P(FontFeaturesByOrientationTest, EastAsianContextualSpacingOnByDefault) {

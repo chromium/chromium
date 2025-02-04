@@ -57,8 +57,7 @@ struct PLATFORM_EXPORT FontFeatureRange : public FontFeatureValue {
 //
 class PLATFORM_EXPORT FontFeatures {
  public:
-  // Returns an instance for the initial style.
-  static const FontFeatures& Initial();
+  // True if `this` is for the initial style.
   bool IsInitial() const;
 
   // Initialize the list from |Font|.
