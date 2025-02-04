@@ -248,12 +248,9 @@ interface SpeechRecognitionClientBrowserInterface {
   [MinVersion=1]
   REMOVED_1@1();
 
-  // Similar to BindSpeechRecognitionBrowserObserver, however binds Browser
-  // observers that listen to events specific to BabelOrca rather than
-  // the traditional LiveCaption preference.
-  [MinVersion=7, EnableIf=is_chromeos]
-  BindBabelOrcaSpeechRecognitionBrowserObserver@2(
-      pending_remote<SpeechRecognitionBrowserObserver> observer);
+  // Was BindBabelOrcaSpeechRecognitionBrowserObserver()
+  [MinVersion=7, EnableIf=is_chromeos_ash]
+  REMOVED_2@2(pending_remote<SpeechRecognitionBrowserObserver> observer);
 };
 
 // Corresponds to ExtendedSodaConfigMsg.RecognitionMode in
