@@ -135,8 +135,7 @@ class BirchBarPixelTest : public AshTestBase,
                           public testing::WithParamInterface<TestParams> {
  public:
   BirchBarPixelTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather}, {});
+    scoped_feature_list_.InitAndEnableFeature(features::kForestFeature);
   }
 
   // AshTestBase:

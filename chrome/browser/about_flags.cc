@@ -10682,9 +10682,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"ash-forest-feature", flag_descriptions::kForestFeatureName,
      flag_descriptions::kForestFeatureDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kForestFeature)},
-    {"birch-weather", flag_descriptions::kBirchWeatherName,
-     flag_descriptions::kBirchWeatherDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBirchWeather)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"enable-standard-device-bound-session-credentials",

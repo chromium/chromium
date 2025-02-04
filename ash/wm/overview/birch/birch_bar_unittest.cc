@@ -119,9 +119,7 @@ class BirchBarTestBase : public AshTestBase {
  public:
   BirchBarTestBase() {
     feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather,
-         features::kCoralFeature},
-        {});
+        {features::kForestFeature, features::kCoralFeature}, {});
   }
 
   BirchBarTestBase(const BirchBarTestBase&) = delete;

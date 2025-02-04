@@ -143,8 +143,8 @@ class BirchModelTest : public AshTestBase {
   BirchModelTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather,
-         features::kBirchVideoConferenceSuggestions, features::kCoralFeature},
+        {features::kForestFeature, features::kBirchVideoConferenceSuggestions,
+         features::kCoralFeature},
         {});
   }
 
@@ -202,34 +202,6 @@ class BirchModelTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
   StubBirchClient stub_birch_client_;
   base::SimpleTestClock test_clock_;
-};
-
-class BirchModelWithoutWeatherTest : public AshTestBase {
- public:
-  BirchModelWithoutWeatherTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitWithFeatures({features::kForestFeature},
-                                   {features::kBirchWeather});
-  }
-  void SetUp() override {
-    AshTestBase::SetUp();
-    Shell::Get()->birch_model()->SetClientAndInit(&stub_birch_client_);
-    base::RunLoop run_loop;
-    Shell::Get()
-        ->birch_model()
-        ->GetItemRemoverForTest()
-        ->SetProtoInitCallbackForTest(run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  void TearDown() override {
-    Shell::Get()->birch_model()->SetClientAndInit(nullptr);
-    AshTestBase::TearDown();
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-  StubBirchClient stub_birch_client_;
 };
 
 // Test that requesting data and adding all fresh items to the model will run
@@ -820,57 +792,6 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   EXPECT_FALSE(model->IsDataFresh());
 }
 
-TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
-  BirchModel* model = Shell::Get()->birch_model();
-  TestModelConsumer consumer;
-  EXPECT_TRUE(model);
-
-  // Passing time and setting data before requesting a birch data fetch will
-  // not notify consumer.
-  task_environment()->FastForwardBy(base::Milliseconds(1000));
-  model->SetRecentTabItems(std::vector<BirchTabItem>());
-  model->SetLastActiveItems({});
-  model->SetMostVisitedItems({});
-  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
-  model->SetLostMediaItems({});
-  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
-  model->SetCalendarItems({});
-  model->SetAttachmentItems({});
-  model->SetReleaseNotesItems({});
-  model->SetCoralItems({});
-
-  EXPECT_TRUE(model->IsDataFresh());
-  EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
-
-  model->RequestBirchDataFetch(/*is_post_login=*/false,
-                               base::BindOnce(&TestModelConsumer::OnItemsReady,
-                                              base::Unretained(&consumer),
-                                              /*id=*/"0"));
-  EXPECT_FALSE(model->IsDataFresh());
-  EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
-
-  // Test that passing a short amount of time and setting some data does not
-  // notify that items are ready.
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  std::vector<BirchTabItem> tab_item_list;
-  tab_item_list.emplace_back(u"tab title", GURL("example.com"),
-                             base::Time::Now(), GURL("example.com/favicon_url"),
-                             "session_name",
-                             BirchTabItem::DeviceFormFactor::kDesktop);
-  model->SetRecentTabItems(tab_item_list);
-  EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
-
-  // Test that passing enough time notifies that items are ready.
-  task_environment()->FastForwardBy(base::Milliseconds(500));
-  EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
-
-  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
-  EXPECT_EQ(all_items.size(), 2u);
-  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kTab);
-  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kFile);
-  EXPECT_FALSE(model->IsDataFresh());
-}
-
 // Test that the data fetch timeout is longer when requesting directly after
 // login.
 TEST_F(BirchModelTest, PostLoginDataFetchTimeout) {
@@ -932,65 +853,6 @@ TEST_F(BirchModelTest, PostLoginDataFetchTimeout) {
   EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kFile);
   EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kTab);
   EXPECT_FALSE(model->IsDataFresh());
-}
-
-TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
-  BirchModel* model = Shell::Get()->birch_model();
-  TestModelConsumer consumer;
-  EXPECT_TRUE(model);
-
-  // Setting items in the model does not notify when no request has occurred.
-  model->SetRecentTabItems(std::vector<BirchTabItem>());
-  model->SetLastActiveItems({});
-  model->SetMostVisitedItems(std::vector<BirchMostVisitedItem>());
-  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
-  model->SetLostMediaItems(std::vector<BirchLostMediaItem>());
-  model->SetFileSuggestItems(std::vector<BirchFileItem>());
-  EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
-
-  // Make a data fetch request and set fresh tab data.
-  model->RequestBirchDataFetch(/*is_post_login=*/false,
-                               base::BindOnce(&TestModelConsumer::OnItemsReady,
-                                              base::Unretained(&consumer),
-                                              /*id=*/"0"));
-  model->SetRecentTabItems(std::vector<BirchTabItem>());
-  model->SetLastActiveItems({});
-  model->SetMostVisitedItems(std::vector<BirchMostVisitedItem>());
-  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
-  model->SetLostMediaItems(std::vector<BirchLostMediaItem>());
-  // Consumer is not notified until all data sources have responded.
-  EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
-
-  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
-  model->SetWeatherItems({});
-  model->SetCalendarItems({});
-  model->SetAttachmentItems({});
-  model->SetReleaseNotesItems({});
-
-  // Adding file items sets all data as fresh, notifying consumers.
-  EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
-
-  // Setting the file suggest items should not trigger items ready again, since
-  // no data fetch was requested.
-  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/2));
-  EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
-
-  // Request another data fetch and expect the consumer to be notified once
-  // items are set again.
-  model->RequestBirchDataFetch(/*is_post_login=*/false,
-                               base::BindOnce(&TestModelConsumer::OnItemsReady,
-                                              base::Unretained(&consumer),
-                                              /*id=*/"1"));
-  model->SetRecentTabItems(std::vector<BirchTabItem>());
-  model->SetLastActiveItems({});
-  model->SetMostVisitedItems(std::vector<BirchMostVisitedItem>());
-  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
-  model->SetLostMediaItems(std::vector<BirchLostMediaItem>());
-  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/2));
-  model->SetCalendarItems({});
-  model->SetAttachmentItems({});
-  model->SetReleaseNotesItems({});
-  EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
 }
 
 TEST_F(BirchModelTest, MultipleRequestsHaveIndependentTimeouts) {

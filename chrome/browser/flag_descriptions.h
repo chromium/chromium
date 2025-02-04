@@ -137,9 +137,6 @@ extern const char kBookmarksTreeViewDescription[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-extern const char kBirchWeatherName[];
-extern const char kBirchWeatherDescription[];
-
 extern const char kCampaignsComponentUpdaterTestTagName[];
 extern const char kCampaignsComponentUpdaterTestTagDescription[];
 extern const char kCampaignsOverrideName[];

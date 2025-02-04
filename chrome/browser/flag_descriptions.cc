@@ -183,14 +183,6 @@ const char kBiometricAuthIdentityCheckDescription[] =
     "biometric checks.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-const char kBirchWeatherName[] = "Birch weather";
-const char kBirchWeatherDescription[] =
-    "Shows the weather suggestion chip in the birch suggestions UI. Note that "
-    "the chip only shows certain times of day, so it may not immediately "
-    "appear after enabling this feature.";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 const char kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsName[] =
     "Blink Scheduler Discrete Input Matches Responsiveness Metrics";
 const char

@@ -68,10 +68,8 @@ BirchModel::BirchModel()
       release_notes_data_(prefs::kBirchUseReleaseNotes, "ReleaseNotes"),
       weather_data_(prefs::kBirchUseWeather, "Weather"),
       coral_data_(prefs::kBirchUseCoral, "Coral"),
-      icon_cache_(std::make_unique<BirchIconCache>()) {
-  if (features::IsBirchWeatherEnabled()) {
-    weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
-  }
+      icon_cache_(std::make_unique<BirchIconCache>()),
+      weather_provider_(std::make_unique<BirchWeatherProvider>(this)) {
   if (features::IsCoralFeatureEnabled()) {
     auto coral_provider = std::make_unique<BirchCoralProvider>();
     coral_provider->AddObserver(this);

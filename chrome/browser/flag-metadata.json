@@ -916,11 +916,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "birch-weather",
-    "owners": [ "jamescook@chromium.org", "chromeos-launcher@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "blink-extension",
     "owners": ["ortuno@chromium.org", "cros-apps-platform-core@google.com" ],
     "expiry_milestone": 132

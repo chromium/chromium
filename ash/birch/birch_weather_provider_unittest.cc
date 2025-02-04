@@ -39,8 +39,7 @@ BirchWeatherProvider* GetWeatherProvider() {
 class BirchWeatherProviderTest : public AshTestBase {
  public:
   BirchWeatherProviderTest() : clock_override_(&GetTestTime, nullptr, nullptr) {
-    feature_list_.InitWithFeatures(
-        {features::kForestFeature, features::kBirchWeather}, {});
+    feature_list_.InitAndEnableFeature(features::kForestFeature);
     // Ensure the time is morning (7 AM) so weather will be fetched.
     SetTestTime(base::Time::Now().LocalMidnight() + base::Hours(7));
   }
