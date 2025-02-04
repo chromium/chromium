@@ -3383,11 +3383,13 @@ enum class ToolbarKind {
 
 #pragma mark - DefaultBrowserPromoNonModalCommands
 
-- (void)showDefaultBrowserNonModalPromo {
+- (void)showDefaultBrowserNonModalPromoWithReason:
+    (NonModalDefaultBrowserPromoReason)promoReason {
   self.nonModalPromoCoordinator =
       [[DefaultBrowserPromoNonModalCoordinator alloc]
           initWithBaseViewController:self.viewController
-                             browser:self.browser];
+                             browser:self.browser
+                         promoReason:promoReason];
   [self.nonModalPromoCoordinator start];
   self.nonModalPromoCoordinator.browser = self.browser;
   self.nonModalPromoCoordinator.baseViewController = self.viewController;

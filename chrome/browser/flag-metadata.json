@@ -8624,13 +8624,25 @@
   },
   {
     "name": "tabstrip-declutter",
-    "owners": [ "emshack@chromium.org", "shibalik@chromium.org", "chrome-desktop-ui-sea@google.com" ],
+    "owners": [
+      "emshack@chromium.org",
+      "shibalik@chromium.org",
+      "chrome-desktop-ui-sea@google.com"
+    ],
     "expiry_milestone": 150
   },
   {
     "name": "tabstrip-dedupe",
     "owners": [ "emshack@chromium.org", "shibalik@chromium.org", "chrome-desktop-ui-sea@google.com" ],
     "expiry_milestone": 160
+  },
+  {
+    "name": "tailored-non-modal-db-promo",
+    "owners": [
+      "pabouchard@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 136
   },
  {
     "name": "tear-off-web-app-tab-opens-web-app-window",

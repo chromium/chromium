@@ -58,6 +58,21 @@ enum class IOSDefaultBrowserVideoPromoAction {
   kMaxValue = kTertiaryActionTapped,
 };
 
+// The reason why a non modal promo was triggered.
+enum class NonModalDefaultBrowserPromoReason {
+  // Indicates that no specific promo reason is applicable.
+  PromoReasonNone = 0,
+
+  // The promo reason used when a user pastes a URL in the omnibox.
+  PromoReasonOmniboxPaste = 1,
+
+  // The promo reason used when a user opens Chrome from a first-party app.
+  PromoReasonExternalLink = 2,
+
+  // The promo reason used when a user shares Chrome via the share feature.
+  PromoReasonShare = 3,
+};
+
 // Visible for testing
 
 // Key in storage containing an NSDate corresponding to the last time

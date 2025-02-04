@@ -264,11 +264,20 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
 2. Tap Default Browser App
 3. Select Chromium
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_DESCRIPTION" desc="Description for the non-modal default browser promotion banner">
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION" desc="Description for the non-modal default browser promotion banner when Chromium is opened from a first-party app.">
+        Open links from Gmail, Maps, Youtube and other apps in Chromium
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_DESCRIPTION" desc="Description for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation.">
         Open Chromium anytime you tap on links in other apps
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_TITLE" desc="Title for the non-modal default browser promotion banner">
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE" desc="Title for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation.">
         Set Chromium as default?
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_SHARE_DESCRIPTION" desc="Description for the non-modal default browser promotion banner when sharing a URL via the 'Share Chromium' action or the share icon in the Omnibox.">
+        Set Chromium as your default browser to easily share and open links
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_SHARE_TITLE" desc="Title for the non-modal default browser promotion banner when sharing a URL via the 'Share Chromium' action or the share icon in the Omnibox.">
+        Make Chromium your own
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_ALL_TABS_DESCRIPTION" desc="Chromium version of the description for the 'All your tabs' default browser promotion modal. [iOS only]">
         Set Chromium as default to sync your tabs, passwords, and payment info on all your devices
