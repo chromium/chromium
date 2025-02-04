@@ -2141,6 +2141,7 @@ source_set("blink_platform_unittests_sources") {
     "audio/audio_destination_test.cc",
     "audio/audio_destination_uma_reporter_test.cc",
     "audio/audio_frame_stats_accumulator_test.cc",
+    "audio/denormal_disabler_test.cc",
     "audio/push_pull_fifo_multithread_test.cc",
     "audio/push_pull_fifo_test.cc",
     "audio/vector_math_test.cc",
