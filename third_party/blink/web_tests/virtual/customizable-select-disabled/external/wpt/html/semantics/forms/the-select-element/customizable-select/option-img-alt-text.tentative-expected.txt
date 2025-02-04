@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] option.label and option.text should include alt text of <img> elements.
-  Cannot read properties of null (reading 'appendChild')
-Harness: the test ran to completion.
-
