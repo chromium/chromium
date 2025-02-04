@@ -7,6 +7,6 @@ interface TextCluster {
     readonly attribute double y;
     readonly attribute unsigned long begin;
     readonly attribute unsigned long end;
-    readonly attribute DOMString align;
-    readonly attribute DOMString baseline;
+    readonly attribute CanvasTextAlign align;
+    readonly attribute CanvasTextBaseline baseline;
 };

@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_data_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"  // IWYU pragma: keep
@@ -737,7 +739,8 @@ TEST_F(CanvasRenderingContext2DAPITest,
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
-  Context2D()->setTextAlign("center");
+  Context2D()->setTextAlign(
+      V8CanvasTextAlign(V8CanvasTextAlign::Enum::kCenter));
   EXPECT_EQ(INT64_C(-5618040280239325003),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
@@ -761,7 +764,8 @@ TEST_F(CanvasRenderingContext2DAPITest,
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
-  Context2D()->setTextBaseline("top");
+  Context2D()->setTextBaseline(
+      V8CanvasTextBaseline(V8CanvasTextBaseline::Enum::kTop));
   EXPECT_EQ(INT64_C(-6814889525293785691),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
@@ -842,8 +846,9 @@ TEST_F(CanvasRenderingContext2DAPITest,
   EXPECT_EQ(INT64_C(-7525055925911674050),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
   Context2D()->setFont("Helvetica");
-  Context2D()->setTextBaseline("bottom");
-  Context2D()->setTextAlign("right");
+  Context2D()->setTextBaseline(
+      V8CanvasTextBaseline(V8CanvasTextBaseline::Enum::kBottom));
+  Context2D()->setTextAlign(V8CanvasTextAlign(V8CanvasTextAlign::Enum::kRight));
   SetFillStyleString(Context2D(), GetScriptState(), "red");
   Context2D()->fillText("Bye", 4.0, 3.0);
   EXPECT_EQ(INT64_C(-7631959002534825456),

@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 
 #include "base/numerics/checked_math.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_baselines.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_text_cluster_options.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/text_cluster.h"
@@ -31,13 +32,14 @@ namespace blink {
 
 constexpr int kHangingAsPercentOfAscent = 80;
 
-float TextMetrics::GetFontBaseline(const TextBaseline& text_baseline,
-                                   const SimpleFontData& font_data) {
+float TextMetrics::GetFontBaseline(
+    const V8CanvasTextBaseline::Enum text_baseline,
+    const SimpleFontData& font_data) {
   FontMetrics font_metrics = font_data.GetFontMetrics();
   switch (text_baseline) {
-    case kTopTextBaseline:
+    case V8CanvasTextBaseline::Enum::kTop:
       return font_data.NormalizedTypoAscent().ToFloat();
-    case kHangingTextBaseline:
+    case V8CanvasTextBaseline::Enum::kHanging:
       if (font_metrics.HangingBaseline().has_value()) {
         return font_metrics.HangingBaseline().value();
       }
@@ -48,19 +50,19 @@ float TextMetrics::GetFontBaseline(const TextBaseline& text_baseline,
       return font_metrics.FloatAscent(kAlphabeticBaseline,
                                       FontMetrics::ApplyBaselineTable(true)) *
              kHangingAsPercentOfAscent / 100.0;
-    case kIdeographicTextBaseline:
+    case V8CanvasTextBaseline::Enum::kIdeographic:
       if (font_metrics.IdeographicBaseline().has_value()) {
         return font_metrics.IdeographicBaseline().value();
       }
       return -font_metrics.FloatDescent(kAlphabeticBaseline,
                                         FontMetrics::ApplyBaselineTable(true));
-    case kBottomTextBaseline:
+    case V8CanvasTextBaseline::Enum::kBottom:
       return -font_data.NormalizedTypoDescent().ToFloat();
-    case kMiddleTextBaseline: {
+    case V8CanvasTextBaseline::Enum::kMiddle: {
       const FontHeight metrics = font_data.NormalizedTypoAscentAndDescent();
       return (metrics.ascent.ToFloat() - metrics.descent.ToFloat()) / 2.0f;
     }
-    case kAlphabeticTextBaseline:
+    case V8CanvasTextBaseline::Enum::kAlphabetic:
       if (font_metrics.AlphabeticBaseline().has_value()) {
         return font_metrics.AlphabeticBaseline().value();
       }
@@ -82,8 +84,8 @@ TextMetrics::TextMetrics() : baselines_(Baselines::Create()) {}
 
 TextMetrics::TextMetrics(const Font& font,
                          const TextDirection& direction,
-                         const TextBaseline& baseline,
-                         const TextAlign& align,
+                         const V8CanvasTextBaseline::Enum baseline,
+                         const V8CanvasTextAlign::Enum align,
                          const String& text)
     : TextMetrics() {
   Update(font, direction, baseline, align, text);
@@ -104,8 +106,8 @@ const ShapeResult* ShapeWord(const TextRun& word_run, const Font& font) {
 
 void TextMetrics::Update(const Font& font,
                          const TextDirection& direction,
-                         const TextBaseline& baseline,
-                         const TextAlign& align,
+                         const V8CanvasTextBaseline::Enum baseline,
+                         const V8CanvasTextAlign::Enum align,
                          const String& text) {
   const SimpleFontData* font_data = font.PrimaryFont();
   if (!font_data)
@@ -171,16 +173,18 @@ void TextMetrics::Update(const Font& font,
   width_ = real_width;
 
   text_align_dx_ = 0.0f;
-  if (align == kCenterTextAlign) {
+  if (align == V8CanvasTextAlign::Enum::kCenter) {
     text_align_dx_ = real_width / 2.0f;
-    ctx_text_align_ = kCenterTextAlign;
-  } else if (align == kRightTextAlign ||
-             (align == kStartTextAlign && direction == TextDirection::kRtl) ||
-             (align == kEndTextAlign && direction != TextDirection::kRtl)) {
+    ctx_text_align_ = V8CanvasTextAlign::Enum::kCenter;
+  } else if (align == V8CanvasTextAlign::Enum::kRight ||
+             (align == V8CanvasTextAlign::Enum::kStart &&
+              direction == TextDirection::kRtl) ||
+             (align == V8CanvasTextAlign::Enum::kEnd &&
+              direction != TextDirection::kRtl)) {
     text_align_dx_ = real_width;
-    ctx_text_align_ = kRightTextAlign;
+    ctx_text_align_ = V8CanvasTextAlign::Enum::kRight;
   } else {
-    ctx_text_align_ = kLeftTextAlign;
+    ctx_text_align_ = V8CanvasTextAlign::Enum::kLeft;
   }
   ctx_text_baseline_ = baseline;
   actual_bounding_box_left_ = -glyph_bounds.x() + text_align_dx_;
@@ -382,21 +386,21 @@ DOMRectReadOnly* TextMetrics::getActualBoundingBox(
 
 namespace {
 float getTextAlignDelta(float width,
-                        const TextAlign& text_align,
+                        const V8CanvasTextAlign& text_align,
                         const TextDirection& direction) {
-  switch (text_align) {
-    case kRightTextAlign:
+  switch (text_align.AsEnum()) {
+    case V8CanvasTextAlign::Enum::kRight:
       return width;
-    case kCenterTextAlign:
+    case V8CanvasTextAlign::Enum::kCenter:
       return width / 2.0f;
-    case kLeftTextAlign:
+    case V8CanvasTextAlign::Enum::kLeft:
       return 0;
-    case kStartTextAlign:
+    case V8CanvasTextAlign::Enum::kStart:
       if (IsLtr(direction)) {
         return 0;
       }
       return width;
-    case kEndTextAlign:
+    case V8CanvasTextAlign::Enum::kEnd:
       if (IsLtr(direction)) {
         return width;
       }
@@ -405,7 +409,7 @@ float getTextAlignDelta(float width,
 }
 
 float getTextBaselineDelta(float baseline,
-                           const TextBaseline& text_baseline,
+                           const V8CanvasTextBaseline::Enum text_baseline,
                            const SimpleFontData& font_data) {
   float new_baseline = TextMetrics::GetFontBaseline(text_baseline, font_data);
   return baseline - new_baseline;
@@ -451,15 +455,13 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     return clusters_for_range;
   }
 
-  TextAlign cluster_text_align;
-  TextBaseline cluster_text_baseline;
-  if (options == nullptr || !options->hasAlign() ||
-      !ParseTextAlign(options->align(), cluster_text_align)) {
-    cluster_text_align = ctx_text_align_;
+  V8CanvasTextAlign cluster_text_align(ctx_text_align_);
+  V8CanvasTextBaseline cluster_text_baseline(ctx_text_baseline_);
+  if (options != nullptr && options->hasAlign()) {
+    cluster_text_align = options->align();
   }
-  if (options == nullptr || !options->hasBaseline() ||
-      !ParseTextBaseline(options->baseline(), cluster_text_baseline)) {
-    cluster_text_baseline = ctx_text_baseline_;
+  if (options != nullptr && options->hasBaseline()) {
+    cluster_text_baseline = options->baseline();
   }
 
   for (const auto& run_with_offset : runs_with_offset_) {
@@ -503,7 +505,7 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
       text_cluster->OffsetPosition(
           getTextAlignDelta(clusters_for_run[i].width_, cluster_text_align,
                             direction_),
-          getTextBaselineDelta(baseline_y, cluster_text_baseline,
+          getTextBaselineDelta(baseline_y, cluster_text_baseline.AsEnum(),
                                *font_.PrimaryFont()));
       text_cluster->OffsetPosition(-text_align_dx_, 0);
       minimal_clusters.push_back(text_cluster);
