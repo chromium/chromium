@@ -24,9 +24,6 @@ namespace crosapi::browser_util {
 // Returns the user directory for lacros-chrome.
 base::FilePath GetUserDataDir();
 
-// Returns true if the Lacros feature is enabled for the primary user.
-bool IsLacrosEnabled();
-
 // Gets the version of the rootfs lacros-chrome. By reading the metadata json
 // file in the correct format.
 base::Version GetRootfsLacrosVersionMayBlock(

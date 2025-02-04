@@ -245,10 +245,7 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
           chrome::kSyncEncryptionHelpURL));
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-  html_source->AddBoolean(
-      "showSyncSettingsRevamp",
-      base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
-          crosapi::browser_util::IsLacrosEnabled());
+  html_source->AddBoolean("showSyncSettingsRevamp", false);
 #endif
 
   html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);

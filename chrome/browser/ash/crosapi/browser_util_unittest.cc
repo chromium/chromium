@@ -55,15 +55,6 @@ class BrowserUtilTest : public testing::Test {
       fake_user_manager_;
 };
 
-TEST_F(BrowserUtilTest, BlockedForChildUser) {
-  AccountId account_id = AccountId::FromUserEmail("user@test.com");
-  const User* user = fake_user_manager_->AddChildUser(account_id);
-  fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                   /*browser_restart=*/false,
-                                   /*is_child=*/true);
-  EXPECT_FALSE(browser_util::IsLacrosEnabled());
-}
-
 TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlock) {
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());

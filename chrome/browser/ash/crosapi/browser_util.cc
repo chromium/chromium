@@ -46,10 +46,6 @@ base::FilePath GetUserDataDir() {
   return base_path.Append("lacros");
 }
 
-bool IsLacrosEnabled() {
-  return false;
-}
-
 base::Version GetRootfsLacrosVersionMayBlock(
     const base::FilePath& version_file_path) {
   if (!base::PathExists(version_file_path)) {
