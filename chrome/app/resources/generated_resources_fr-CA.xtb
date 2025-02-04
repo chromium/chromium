@@ -4777,7 +4777,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4348766275249686434">Recueillir les erreurs</translation>
 <translation id="4349828822184870497">Utile</translation>
 <translation id="4350230709416545141">Toujours empêcher <ph name="HOST" /> d'accéder à votre position</translation>
-<translation id="4350782034419308508">Ok Google</translation>
+<translation id="4350782034419308508">Hey Google</translation>
 <translation id="435185728237714178">Accédez à l'application « <ph name="APP_NAME" /> » pour gérer les applications installées et diffusées en continu</translation>
 <translation id="4354073718307267720">Demander une autorisation lorsqu'un site veut créer une carte 3D de votre environnement ou faire le suivi de la position de l'appareil photo</translation>
 <translation id="4354344420232759511">Les sites que vous visiterez apparaîtront ici</translation>
@@ -8334,7 +8334,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6925127338315966709">Vous ajoutez un profil géré à ce navigateur. L'administrateur peut gérer ce profil et accéder à ses données. Vos favoris, votre historique, vos mots de passe et vos autres paramètres peuvent être synchronisés avec votre compte et gérés par votre administrateur.</translation>
 <translation id="6928650056523249512">Retirer automatiquement les autorisations des sites inutilisés</translation>
 <translation id="6929126689972602640">Les contrôles parentaux ne sont pas pris en charge pour les comptes scolaires. Pour ajouter un compte scolaire afin d'accéder à Google Classroom et à d'autres sites Web permettant de faire des devoirs à la maison, connectez-vous d'abord avec le compte personnel de l'enfant. Vous pouvez ajouter le compte scolaire plus tard dans le menu de configuration.</translation>
-<translation id="6929760895658557216">Ok Google</translation>
+<translation id="6929760895658557216">Hey Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Une extension a été refusée}one{# extension a été refusée}other{# extensions ont été refusées}}</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">Niveau de pression du clic</translation>
@@ -9385,7 +9385,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7690853182226561458">Ajouter un &amp;dossier...</translation>
 <translation id="7691073721729883399">Impossible de monter le cryptohome pour l'application de kiosque.</translation>
 <translation id="7691077781194517083">Impossible de réinitialiser cette clé de sécurité. Erreur <ph name="ERROR_CODE" />.</translation>
-<translation id="7691163173018300413">« Ok Google »</translation>
+<translation id="7691163173018300413">« Hey Google »</translation>
 <translation id="7691698019618282776">Mise à niveau de Crostini</translation>
 <translation id="7693792553740402887">Utilisez un langage courant pour effectuer des recherches dans votre historique de navigation et trouver les sites que vous avez visités. Vous pouvez aussi poser des questions et obtenir des réponses en fonction de votre historique de navigation.</translation>
 <translation id="7694246789328885917">Surligneur</translation>
