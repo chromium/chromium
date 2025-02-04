@@ -1242,7 +1242,7 @@ bool Container::ParseShorthand(
 
   const CSSValue* type = CSSIdentifierValue::Create(CSSValueID::kNormal);
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
-    if (!(type = css_parsing_utils::ConsumeContainerType(stream))) {
+    if (!(type = css_parsing_utils::ConsumeContainerType(stream, context))) {
       return false;
     }
   }

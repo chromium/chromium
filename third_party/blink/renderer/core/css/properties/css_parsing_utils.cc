@@ -7941,7 +7941,8 @@ CSSValue* ConsumeContainerName(CSSParserTokenStream& stream,
   return list->length() ? list : nullptr;
 }
 
-CSSValue* ConsumeContainerType(CSSParserTokenStream& stream) {
+CSSValue* ConsumeContainerType(CSSParserTokenStream& stream,
+                               const CSSParserContext& context) {
   // container-type: normal | [ [ size | inline-size ] || scroll-state ]
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNormal>(stream)) {
     return value;
@@ -7962,6 +7963,7 @@ CSSValue* ConsumeContainerType(CSSParserTokenStream& stream) {
         RuntimeEnabledFeatures::CSSScrollStateContainerQueriesEnabled()) {
       scroll_state_value = ConsumeIdent<CSSValueID::kScrollState>(stream);
       if (scroll_state_value) {
+        context.Count(WebDXFeature::kContainerScrollStateQueries);
         continue;
       }
     }

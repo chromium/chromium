@@ -114,6 +114,7 @@ class CORE_EXPORT CSSParserContext final
   }
 
   void Count(WebFeature) const;
+  void Count(WebDXFeature) const;
   void Count(CSSParserMode, CSSPropertyID) const;
   void CountDeprecation(WebFeature) const;
   bool IsUseCounterRecordingEnabled() const { return document_ != nullptr; }

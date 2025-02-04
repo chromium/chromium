@@ -7203,4 +7203,29 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
   EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
 }
 
+TEST_F(StyleEngineTest, ScrollStateUseCounter) {
+  EXPECT_FALSE(
+      IsWebDXFeatureCounted(WebDXFeature::kContainerScrollStateQueries));
+
+  GetDocument().body()->setInnerHTML(
+      "<style> @container scroll-state(stuck) { * { color: pink } } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(
+      IsWebDXFeatureCounted(WebDXFeature::kContainerScrollStateQueries));
+
+  GetDocument().body()->setInnerHTML(
+      "<style> @container not scroll-state(stuck) { * { color: pink } } "
+      "</style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(
+      IsWebDXFeatureCounted(WebDXFeature::kContainerScrollStateQueries));
+
+  GetDocument().body()->setInnerHTML(
+      "<style> #notfound { container-type: scroll-state } </style>");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(
+      IsWebDXFeatureCounted(WebDXFeature::kContainerScrollStateQueries));
+  ClearWebDXFeatureCounter(WebDXFeature::kContainerScrollStateQueries);
+}
+
 }  // namespace blink

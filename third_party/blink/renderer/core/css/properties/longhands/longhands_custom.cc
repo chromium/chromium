@@ -2663,7 +2663,7 @@ const CSSValue* ContainerType::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeContainerType(stream);
+  return css_parsing_utils::ConsumeContainerType(stream, context);
 }
 
 const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
