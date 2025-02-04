@@ -163,6 +163,15 @@ ActionButtonView* CaptureModeSessionTestApi::GetButtonWithViewID(
              : nullptr;
 }
 
+ActionButtonContainerView::ErrorView*
+CaptureModeSessionTestApi::GetActionContainerErrorView() const {
+  raw_ptr<ActionButtonContainerView> container =
+      session_->action_container_view_;
+  return container ? views::AsViewClass<ActionButtonContainerView::ErrorView>(
+                         container->error_view_for_testing())
+                   : nullptr;
+}
+
 CaptureRegionOverlayController*
 CaptureModeSessionTestApi::GetCaptureRegionOverlayController() const {
   return session_->capture_region_overlay_controller_.get();

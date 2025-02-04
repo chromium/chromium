@@ -2058,14 +2058,7 @@ void CaptureModeController::OnScannerActionsFetched(
   if (!image_search_token) {
     return;
   }
-  if (!actions_response.has_value()) {
-    // TODO(crbug.com/378582420): Pass the whole `actions_response` to the
-    // capture mode session, which should show an error if the actions response
-    // contains an error.
-    capture_mode_session_->OnScannerActionsFetched(/*scanner_actions=*/{});
-    return;
-  }
-  capture_mode_session_->OnScannerActionsFetched(std::move(*actions_response));
+  capture_mode_session_->OnScannerActionsFetched(std::move(actions_response));
 }
 
 void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,
