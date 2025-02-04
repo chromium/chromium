@@ -842,7 +842,7 @@ public class NewTabPageLayout extends LinearLayout {
         if (!mHasShownView) {
             mHasShownView = true;
             onInitializationProgressChanged();
-            TraceEvent.instant("NewTabPageSearchAvailable)");
+            TraceEvent.instant("NewTabPageSearchAvailable");
         }
     }
 

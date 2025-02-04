@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.metrics;
 
 import android.os.SystemClock;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
@@ -19,6 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -33,6 +37,7 @@ import org.chromium.url.GURL;
  */
 public class StartupMetricsTracker {
 
+    private static final long NTP_STARTUP_METRIC_RECORDING_DELAY_MS = 2500;
     private boolean mFirstNavigationCommitted;
 
     private class TabObserver extends TabModelSelectorTabObserver {
@@ -45,10 +50,10 @@ public class StartupMetricsTracker {
 
         @Override
         public void onShown(Tab tab, @TabSelectionType int type) {
-            if (tab != null && tab.isNativePage()) {
-                // Avoid recording metrics when the NTP is shown.
-                destroy();
-            }
+            if (tab == null) return;
+
+            if (tab.isNativePage()) destroy();
+            if (!UrlUtilities.isNtpUrl(tab.getUrl())) mShouldTrackNewTabPageStartup = false;
         }
 
         @Override
@@ -126,6 +131,7 @@ public class StartupMetricsTracker {
     private TabModelSelectorTabObserver mTabObserver;
     private PageObserver mPageObserver;
     private boolean mShouldTrack = true;
+    private boolean mShouldTrackNewTabPageStartup = true;
     private @ActivityType int mHistogramSuffix;
 
     // The time it took for SafeBrowsing API to return a Safe Browsing response for the first time.
@@ -183,8 +189,39 @@ public class StartupMetricsTracker {
                 });
     }
 
+    /**
+     * Sets up an onDraw listener for the NTP root view to record the NTP cold start metric exactly
+     * once per application lifecycle. onDraw will not be called if the screen is off.
+     *
+     * @param ntpRootView Root view containing the search provider logo (if available), search box,
+     *     MV tiles etc.
+     */
+    public void registerNtpViewObserver(@NonNull View ntpRootView) {
+        if (!mShouldTrackNewTabPageStartup) return;
+
+        if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
+                || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) return;
+        FirstDrawDetector.waitForFirstDrawStrict(
+                ntpRootView,
+                () -> {
+                    long timeToFirstDrawMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
+                    // During a cold start into NTP, first draw can be triggered while Chrome is in
+                    // the background, leading to ablated draw times. This early in the startup
+                    // process, events that indicate Chrome has been backgrounded do not run until
+                    // after the first draw pass. To work around this, post a task to be run with
+                    // a delay to record the metric once we can possibly verify if Chrome was ever
+                    // sent to the background during startup.
+                    PostTask.postDelayedTask(
+                            TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                            () -> recordNtpTimeToFirstDraw(timeToFirstDrawMs),
+                            NTP_STARTUP_METRIC_RECORDING_DELAY_MS);
+                    mShouldTrackNewTabPageStartup = false;
+                });
+    }
+
     public void destroy() {
         mShouldTrack = false;
+        mShouldTrackNewTabPageStartup = false;
         if (mTabObserver != null) {
             mTabObserver.destroy();
             mTabObserver = null;
@@ -247,5 +284,13 @@ public class StartupMetricsTracker {
                     "Startup.Android.Cold.FirstSafeBrowsingApiResponseTime2.Tabbed",
                     mFirstSafeBrowsingResponseTimeMicros / 1000);
         }
+    }
+
+    private void recordNtpTimeToFirstDraw(long timeToFirstDrawMs) {
+        if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
+                || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) return;
+
+        RecordHistogram.recordMediumTimesHistogram(
+                "Startup.Android.Cold.NewTabPage.TimeToFirstDraw", timeToFirstDrawMs);
     }
 }

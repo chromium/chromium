@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
 import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
+import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -471,6 +472,7 @@ public class NewTabPage
      * @param tabStripHeightSupplier Supplier for the tab strip height.
      * @param moduleRegistrySupplier Supplier for the {@link ModuleRegistry}.
      * @param edgeToEdgeControllerSupplier Supplier for the {@link EdgeToEdgeController}.
+     * @param startupMetricsTracker Used to record NTP startup metric.
      */
     public NewTabPage(
             Activity activity,
@@ -494,7 +496,8 @@ public class NewTabPage
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             ObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            StartupMetricsTracker startupMetricsTracker) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -593,7 +596,8 @@ public class NewTabPage
                 isInNightMode,
                 shareDelegateSupplier,
                 url,
-                edgeToEdgeControllerSupplier);
+                edgeToEdgeControllerSupplier,
+                startupMetricsTracker);
 
         // It is possible that the NewTabPage is created when the Tab model hasn't been initialized.
         // For example, the user changes theme when a NTP is showing, which leads to the recreation
@@ -663,6 +667,7 @@ public class NewTabPage
      * @param shareDelegateSupplier Supplies a delegate used to open SharingHub.
      * @param url The URL used to identify NTP's launch origin
      * @param edgeToEdgeControllerSupplier The supplier to {@link EdgeToEdgeController}.
+     * @param startupMetricsTracker Used to record NTP startup metric.
      */
     protected void initializeMainView(
             Activity activity,
@@ -671,7 +676,8 @@ public class NewTabPage
             boolean isInNightMode,
             Supplier<ShareDelegate> shareDelegateSupplier,
             String url,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            StartupMetricsTracker startupMetricsTracker) {
         Profile profile = mTab.getProfile();
 
         LayoutInflater inflater = LayoutInflater.from(activity);
@@ -720,6 +726,7 @@ public class NewTabPage
                         actionDelegate,
                         mTabStripHeightSupplier,
                         edgeToEdgeControllerSupplier);
+        startupMetricsTracker.registerNtpViewObserver(mFeedSurfaceProvider.getView());
     }
 
     /** Initialize the single tab card on home surface NTP or magic stack. */
@@ -756,7 +763,7 @@ public class NewTabPage
      * @param isTablet Whether the activity is running in tablet mode.
      * @param searchProviderHasLogo Whether the default search engine has logo.
      * @return Whether the NTP is in single url bar mode, i.e. the url bar is shown in-line on the
-     *         NTP.
+     *     NTP.
      */
     public static boolean isInSingleUrlBarMode(boolean isTablet, boolean searchProviderHasLogo) {
         return !isTablet && searchProviderHasLogo;
