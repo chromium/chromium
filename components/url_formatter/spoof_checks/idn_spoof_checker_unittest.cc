@@ -49,8 +49,7 @@ struct IDNTestCase {
   const Result expected_result;
 };
 
-// These cases MUST be generated with the script
-// tools/security/idn_test_case_generator.py.
+// These cases MUST be generated with the script idn_test_case_generator.py.
 // See documentation there: you can either run it from the command line or call
 // the make_case function directly from the Python shell (which may be easier
 // for entering Unicode text).
@@ -1146,7 +1145,7 @@ const IDNTestCase kIdnCases[] = {
 
     // New test cases go ↑↑ above.
 
-    // /!\ WARNING: You MUST use tools/security/idn_test_case_generator.py to
+    // /!\ WARNING: You MUST use the script idn_test_case_generator.py to
     // generate new test cases, as specified by the comment at the top of this
     // test list. Why must you use that python script?
     // 1. It is easy to get things wrong. There were several hand-crafted
