@@ -985,9 +985,6 @@ const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterDescription[] =
     "Enables filtering of visited URL aggregates based on history URL "
     "visibility scores.";
 
-const char kDiscountConsentV2Name[] = "Discount Consent V2";
-const char kDiscountConsentV2Description[] = "Enables Discount Consent V2";
-
 const char kDoubleBufferCompositingName[] = "Double buffered compositing";
 const char kDoubleBufferCompositingDescription[] =
     "Use double buffer for compositing (instead of triple-buffering). "

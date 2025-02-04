@@ -2831,11 +2831,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-discount-consent-v2",
-    "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "enable-display-performance-mode",
     "owners": [
       "markyacoub@chromium.org",

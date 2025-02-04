@@ -569,9 +569,6 @@ extern const char
 extern const char kDisableProcessReuse[];
 extern const char kDisableProcessReuseDescription[];
 
-extern const char kDiscountConsentV2Name[];
-extern const char kDiscountConsentV2Description[];
-
 extern const char kDoubleBufferCompositingName[];
 extern const char kDoubleBufferCompositingDescription[];
 
