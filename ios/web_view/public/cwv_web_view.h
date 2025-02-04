@@ -71,7 +71,7 @@ CWV_EXPORT
 //   (not implemented for CWVWebView)
 //   |visibleURL| is the bad cert page URL. |lastCommittedURL| is the previous
 //   page URL.
-@property(nonatomic, readonly) NSURL* visibleURL;
+@property(nonatomic, readonly, nullable) NSURL* visibleURL;
 
 // A human-friendly string which represents the location of the document
 // currently being loaded. KVO compliant.
