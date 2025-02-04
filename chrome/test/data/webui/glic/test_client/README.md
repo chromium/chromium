@@ -13,3 +13,5 @@ web client.
 ```
 
 2. Run Chrome with `--glic-guest-url=http://localhost:8000/glic/test_client/index.html`
+
+3. For first run also use `--glic-fre-url=http://localhost:8000/glic/test_client/fre.html`
