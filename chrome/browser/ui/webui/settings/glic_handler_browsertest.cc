@@ -77,8 +77,10 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, UpdateShortcutSuspension) {
 
 IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, UpdateGlicShortcut) {
   const ui::Accelerator invalid_shortcut(ui::VKEY_A, ui::EF_NONE);
-  glic_handler()->HandleSetGlicShortcut(base::Value::List().Append(
-      ui::Command::AcceleratorToString(invalid_shortcut)));
+  glic_handler()->HandleSetGlicShortcut(
+      base::Value::List()
+          .Append("callback_id")
+          .Append(ui::Command::AcceleratorToString(invalid_shortcut)));
   PrefService* const pref_service = g_browser_process->local_state();
   const base::Value::Dict& hotkey_dictionary =
       pref_service->GetDict(glic::prefs::kGlicLauncherGlobalHotkey);
@@ -92,8 +94,10 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, UpdateGlicShortcut) {
           ->GetInt());
 
   const ui::Accelerator valid_shortcut(ui::VKEY_A, ui::EF_CONTROL_DOWN);
-  glic_handler()->HandleSetGlicShortcut(base::Value::List().Append(
-      ui::Command::AcceleratorToString(valid_shortcut)));
+  glic_handler()->HandleSetGlicShortcut(
+      base::Value::List()
+          .Append("callback_id")
+          .Append(ui::Command::AcceleratorToString(valid_shortcut)));
   const base::Value::Dict& updated_hotkey_dictionary =
       pref_service->GetDict(glic::prefs::kGlicLauncherGlobalHotkey);
   EXPECT_EQ(valid_shortcut.key_code(),

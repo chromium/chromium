@@ -41,6 +41,7 @@ suite('GlicPage', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     glicBrowserProxy = new TestGlicBrowserProxy();
+    glicBrowserProxy.setGlicShortcutResponse('⌃A');
     GlicBrowserProxyImpl.setInstance(glicBrowserProxy);
     page = document.createElement('settings-glic-page');
     page.prefs = settingsPrefs.prefs;
@@ -128,12 +129,15 @@ suite('GlicPage', function() {
     const field = shortcutInput.$.input;
     await microtasksFinished();
     assertEquals(1, glicBrowserProxy.getCallCount('getGlicShortcut'));
-    assertEquals('Ctrl+A', shortcutInput.shortcut);
+    assertEquals('⌃A', shortcutInput.shortcut);
 
     // Clicking on the edit button should clear out the shortcut.
+    glicBrowserProxy.setGlicShortcutResponse('');
     shortcutInput.$.edit.click();
     let arg = await glicBrowserProxy.whenCalled('setGlicShortcut');
+    await microtasksFinished();
     assertEquals('', arg);
+    assertEquals('', shortcutInput.shortcut);
     glicBrowserProxy.reset();
 
     // Verify that inputting an invalid shortcut doesn't update the shortcut.
@@ -143,9 +147,12 @@ suite('GlicPage', function() {
     glicBrowserProxy.reset();
 
     // Inputting a valid shortcut should update the shortcut.
+    glicBrowserProxy.setGlicShortcutResponse('⌃A');
     keyDownOn(field, 65, ['ctrl']);
     arg = await glicBrowserProxy.whenCalled('setGlicShortcut');
+    await microtasksFinished();
     assertEquals('Ctrl+A', arg);
+    assertEquals('⌃A', shortcutInput.shortcut);
   });
 
   // Ensure the page reacts appropriately to the enterprise policy pref being

@@ -109,8 +109,9 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
         'Glic.OsEntrypoint.Settings.Toggle', event.detail);
   }
 
-  private onShortcutUpdated_(event: CustomEvent<string>) {
-    this.browserProxy_.setGlicShortcut(event.detail);
+  private async onShortcutUpdated_(event: CustomEvent<string>) {
+    await this.browserProxy_.setGlicShortcut(event.detail);
+    this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
     // Records true if the shortcut string is not undefined or the empty string.
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Glic.OsEntrypoint.Settings.Shortcut', !!event.detail);

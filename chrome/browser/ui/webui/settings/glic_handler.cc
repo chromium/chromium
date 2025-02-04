@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -61,13 +62,15 @@ void GlicHandler::HandleGetGlicShortcut(const base::Value::List& args) {
 
   AllowJavascript();
   ResolveJavascriptCallback(
-      callback_id, ui::Command::AcceleratorToString(
-                       glic::GlicLauncherConfiguration::GetGlobalHotkey()));
+      callback_id,
+      base::UTF16ToUTF8(glic::GlicLauncherConfiguration::GetGlobalHotkey()
+                            .GetShortcutText()));
 }
 
 void GlicHandler::HandleSetGlicShortcut(const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
-  const std::string accelerator_string = args[0].GetString();
+  CHECK_EQ(2U, args.size());
+  const base::Value& callback_id = args[0];
+  const std::string accelerator_string = args[1].GetString();
   ui::Accelerator updated_hotkey =
       ui::Command::StringToAccelerator(accelerator_string);
 
@@ -83,6 +86,9 @@ void GlicHandler::HandleSetGlicShortcut(const base::Value::List& args) {
   UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       web_ui()->GetWebContents()->GetBrowserContext(),
       features::kGlicKeyboardShortcutNewBadge);
+
+  AllowJavascript();
+  ResolveJavascriptCallback(callback_id, base::Value());
 }
 
 void GlicHandler::HandleSetShortcutSuspensionState(
