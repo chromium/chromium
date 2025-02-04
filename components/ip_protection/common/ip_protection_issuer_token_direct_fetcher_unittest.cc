@@ -23,8 +23,8 @@
 // the private-join-and-compute code. We need to undefine the macro here to
 // avoid compiler errors.
 #undef ASSIGN_OR_RETURN
-#include "components/ip_protection/common/ip_protection_crypter.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_issuer_token_crypter.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -37,68 +37,31 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
-#include "third_party/private-join-and-compute/src/crypto/big_num.h"
 #include "third_party/private-join-and-compute/src/crypto/context.h"
 #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
 #include "third_party/private-join-and-compute/src/crypto/ec_point.h"
-#include "third_party/private-join-and-compute/src/crypto/elgamal.h"
 
 namespace ip_protection {
 
-using ::private_join_and_compute::BigNum;
+namespace {
+
 using ::private_join_and_compute::Context;
 using ::private_join_and_compute::ECGroup;
 using ::private_join_and_compute::ECPoint;
-using ::private_join_and_compute::elgamal::PublicKey;
 using ::testing::StartsWith;
 
 constexpr char kIssuerServerUrl[] =
     "https://prod.issuertoken.goog/v1/ipblinding/getIssuerToken";
 
-// Helpers for creating an ElGamal public key.
-absl::StatusOr<BigNum> CreateBigNum(const ECGroup& group, uint64_t n) {
-  const BigNum order = group.GetOrder();
-  const BigNum one = order >> (order.BitLength() - 1);
-  if (!one.IsOne()) {
-    return absl::InternalError("number is expected to be 1");
-  }
-  const BigNum zero = one >> 1;
-  if (!zero.IsZero()) {
-    return absl::InternalError("number is expected to be 0");
-  }
-  // Build big number from zero and one.
-  BigNum bn = zero;
-  for (size_t i = 0; i < 64; ++i) {
-    if (n & (uint64_t(1) << i)) {
-      bn += (one << i);
-    }
-  }
-  ASSIGN_OR_RETURN(uint64_t iiv, bn.ToIntValue());
-  if (iiv != n) {
-    return absl::InternalError(
-        "Number should fit uint64 and must be same as n.");
-  }
-  return bn;
-}
-
-absl::StatusOr<ECPoint> Exponent(const ECGroup& group,
-                                 const ECPoint& point,
-                                 uint64_t n) {
-  ASSIGN_OR_RETURN(BigNum bn, CreateBigNum(group, n));
-  return point.Mul(bn);
-}
-
 absl::StatusOr<std::string> GetTestPublicKeyBytes(uint64_t private_key) {
-  auto context = std::make_unique<Context>();
-  ASSIGN_OR_RETURN(ECGroup group,
-                   ECGroup::Create(NID_secp224r1, context.get()));
+  Context context;
+  ASSIGN_OR_RETURN(ECGroup group, ECGroup::Create(NID_secp224r1, &context));
   ASSIGN_OR_RETURN(ECPoint g, group.GetFixedGenerator());
-  ASSIGN_OR_RETURN(ECPoint y, Exponent(group, g, private_key));
-  PublicKey public_key = PublicKey{std::move(g), std::move(y)};
-  ASSIGN_OR_RETURN(std::string public_key_bytes,
-                   SerializePublicKey(public_key));
-  return public_key_bytes;
+  ASSIGN_OR_RETURN(ECPoint y, g.Mul(context.CreateBigNum(private_key)));
+  return y.ToBytesCompressed();
 }
+
+}  // namespace
 
 class FetcherTestBase : public testing::Test {
  protected:

@@ -11,8 +11,8 @@ source_set("unit_tests") {
     "//components/ip_protection/common:ip_protection_config_http_unittest",
     "//components/ip_protection/common:ip_protection_core_impl_mojo_unittest",
     "//components/ip_protection/common:ip_protection_core_impl_unittest",
-    "//components/ip_protection/common:ip_protection_crypter_unittest",
     "//components/ip_protection/common:ip_protection_data_types_unittest",
+    "//components/ip_protection/common:ip_protection_issuer_token_crypter_unittest",
     "//components/ip_protection/common:ip_protection_issuer_token_direct_fetcher_unittest",
     "//components/ip_protection/common:ip_protection_proxy_config_direct_fetcher_unittest",
     "//components/ip_protection/common:ip_protection_proxy_config_manager_impl_unittest",
@@ -49,15 +49,15 @@ test("components_ip_protection_unittests") {
 }
 
 test("components_ip_protection_fuzztests") {
-  sources = [ "common/ip_protection_crypter_fuzztests.cc" ]
+  sources = [ "common/ip_protection_issuer_token_crypter_fuzztests.cc" ]
   fuzztests = [
-    "IpProtectionCrypterFuzzTests.DeserializePublicKeyDoesNotCrash",
-    "IpProtectionCrypterFuzzTests.RandomizeDoesNotCrash",
+    "IpProtectionIssuerTokenCrypterFuzzTests.CreateDoesNotCrash",
+    "IpProtectionIssuerTokenCrypterFuzzTests.RandomizeDoesNotCrash",
   ]
 
   deps = [
     "//base",
-    "//components/ip_protection/common:ip_protection_crypter",
+    "//components/ip_protection/common:ip_protection_issuer_token_crypter",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
     "//third_party/fuzztest:fuzztest_gtest_main",
