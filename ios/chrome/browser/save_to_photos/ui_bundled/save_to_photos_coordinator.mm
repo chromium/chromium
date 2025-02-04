@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -79,6 +80,8 @@
       HandlerForProtocol(dispatcher, ManageStorageAlertCommands);
   id<ApplicationCommands> applicationHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);
+  id<GoogleOneCommands> googleOneHandler =
+      HandlerForProtocol(dispatcher, GoogleOneCommands);
   ProfileIOS* profile = self.browser->GetProfile();
   PhotosService* photosService = PhotosServiceFactory::GetForProfile(profile);
   PrefService* prefService = profile->GetPrefs();
@@ -92,7 +95,8 @@
           accountManagerService:accountManagerService
                 identityManager:identityManager
       manageStorageAlertHandler:manageStorageAlertHandler
-             applicationHandler:applicationHandler];
+             applicationHandler:applicationHandler
+               googleOneHandler:googleOneHandler];
   _mediator.delegate = self;
   [_mediator startWithImageURL:_imageURL
                       referrer:_referrer

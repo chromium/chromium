@@ -19,11 +19,13 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/drive/model/manage_storage_url_util.h"
+#import "ios/chrome/browser/google_one/shared/google_one_entry_point.h"
 #import "ios/chrome/browser/photos/model/photos_metrics.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator_delegate.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -95,6 +97,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   raw_ptr<signin::IdentityManager> _identityManager;
   id<ManageStorageAlertCommands> _manageStorageAlertHandler;
   id<ApplicationCommands> _applicationHandler;
+  id<GoogleOneCommands> _googleOneHandler;
   NSString* _imageName;
   NSData* _imageData;
   BOOL _userTappedSuccessSnackbarButton;
@@ -114,7 +117,8 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
             manageStorageAlertHandler:
                 (id<ManageStorageAlertCommands>)manageStorageAlertHandler
                    applicationHandler:
-                       (id<ApplicationCommands>)applicationHandler {
+                       (id<ApplicationCommands>)applicationHandler
+                     googleOneHandler:(id<GoogleOneCommands>)googleOneHandler {
   self = [super init];
   if (self) {
     CHECK(photosService);
@@ -129,6 +133,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     _identityManager = identityManager;
     _manageStorageAlertHandler = manageStorageAlertHandler;
     _applicationHandler = applicationHandler;
+    _googleOneHandler = googleOneHandler;
   }
   return self;
 }
@@ -239,13 +244,22 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 - (void)showManageStorageForIdentity:(id<SystemIdentity>)identity {
   base::RecordAction(
       base::UserMetricsAction("MobileSaveToPhotosManageStorage"));
-  // The uploading identity's user email is used to switch to the uploading
-  // account before loading the "Manage Storage" web page.
-  GURL manageStorageURL = GenerateManageDriveStorageUrl(
-      base::SysNSStringToUTF8(identity.userEmail));
-  OpenNewTabCommand* newTabCommand =
-      [OpenNewTabCommand commandWithURLFromChrome:manageStorageURL];
-  [_applicationHandler openURLInNewTab:newTabCommand];
+
+  if (base::FeatureList::IsEnabled(kIOSManageAccountStorage)) {
+    // At this point nothing should be presented.
+    [_googleOneHandler
+        showGoogleOneForIdentity:identity
+                      entryPoint:GoogleOneEntryPoint::kSaveToPhotosAlert
+              baseViewController:nil];
+  } else {
+    // The uploading identity's user email is used to switch to the uploading
+    // account before loading the "Manage Storage" web page.
+    GURL manageStorageURL = GenerateManageDriveStorageUrl(
+        base::SysNSStringToUTF8(identity.userEmail));
+    OpenNewTabCommand* newTabCommand =
+        [OpenNewTabCommand commandWithURLFromChrome:manageStorageURL];
+    [_applicationHandler openURLInNewTab:newTabCommand];
+  }
   base::UmaHistogramEnumeration(
       kSaveToPhotosActionsHistogram,
       SaveToPhotosActions::kFailureOutOfStorageDidManageStorage);

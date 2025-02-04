@@ -9,6 +9,7 @@
 
 @protocol ApplicationCommands;
 class ChromeAccountManagerService;
+@protocol GoogleOneCommands;
 class GURL;
 @protocol ManageStorageAlertCommands;
 class PhotosService;
@@ -60,7 +61,8 @@ extern NSString* const kGooglePhotosAppURLScheme;
             manageStorageAlertHandler:
                 (id<ManageStorageAlertCommands>)manageStorageAlertHandler
                    applicationHandler:
-                       (id<ApplicationCommands>)applicationHandler;
+                       (id<ApplicationCommands>)applicationHandler
+                     googleOneHandler:(id<GoogleOneCommands>)googleOneHandler;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Starts the process of saving the image.
