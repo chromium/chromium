@@ -423,8 +423,11 @@ TEST_F(DPAPIKeyProviderTest, DPAPIFailing) {
   expected_histogram_ = DPAPIKeyProvider::KeyStatus::kDPAPIDecryptFailure;
   {
     Encryptor encryptor = GetInstanceWithDPAPI();
-    const auto decrypted = encryptor.DecryptData(*ciphertext);
+    Encryptor::DecryptFlags flags;
+    const auto decrypted = encryptor.DecryptData(*ciphertext, &flags);
     ASSERT_TRUE(decrypted);
+    ASSERT_FALSE(flags.temporarily_unavailable);
+    ASSERT_FALSE(flags.should_reencrypt);
     EXPECT_EQ(*decrypted, "secret");
   }
 }

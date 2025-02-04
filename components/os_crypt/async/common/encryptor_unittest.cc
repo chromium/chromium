@@ -137,9 +137,13 @@ class EncryptorTestBase : public ::testing::Test {
   [[nodiscard]] static std::optional<base::ScopedClosureRunner>
   MaybeSimulateLockedKeyChain() {
 #if BUILDFLAG(IS_LINUX)
+    OSCrypt::ClearCacheForTesting();
     OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(
         []() -> std::unique_ptr<KeyStorageLinux> { return nullptr; }));
-    return std::nullopt;
+    return base::ScopedClosureRunner(base::BindOnce([]() {
+      OSCrypt::UseMockKeyStorageForTesting(base::NullCallback());
+      OSCrypt::ClearCacheForTesting();
+    }));
 #elif BUILDFLAG(IS_APPLE)
     OSCrypt::UseLockedMockKeychainForTesting(/*use_locked=*/true);
     return base::ScopedClosureRunner(base::BindOnce([]() {
@@ -381,8 +385,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          });
 
 // This test verifies various combinations of multiple keys in a keyring, to
-// make sure they are all handled correctly.
-TEST_F(EncryptorTestBase, MultipleKeys) {
+// make sure they are all handled correctly. This needs access to OSCrypt as
+// failed decryptions will call IsEncryptionAvailable which attempts to
+// obtain a valid key from keychain on macOS.
+TEST_F(EncryptorTestWithOSCrypt, MultipleKeys) {
   Encryptor::Key foo_key = GenerateRandomAES256TestKey();
   Encryptor::Key bar_key = GenerateRandomAES256TestKey();
 
@@ -532,6 +538,27 @@ TEST_F(EncryptorTestBase, IsEncryptionAvailable) {
   }
 }
 
+TEST_F(EncryptorTestWithOSCrypt, IsEncryptionAvailableFallbackLocked) {
+  ASSERT_TRUE(OSCrypt::IsEncryptionAvailable());
+
+  Encryptor encryptor = GetEncryptor();
+  // This will encrypt with OSCrypt as no keys are loaded into the Encryptor.
+  const auto ciphertext = encryptor.EncryptString("secret");
+
+  ASSERT_TRUE(ciphertext);
+
+  {
+    // "Lock" the keychain. Only some platforms support this.
+    auto cleanup = MaybeSimulateLockedKeyChain();
+    if (!cleanup.has_value()) {
+      GTEST_SKIP() << "Platform does not support a locked keychain.";
+    }
+    Encryptor::DecryptFlags flags;
+    const auto plaintext = encryptor.DecryptData(*ciphertext, &flags);
+    EXPECT_FALSE(plaintext);
+    EXPECT_TRUE(flags.temporarily_unavailable);
+  }
+}
 #if BUILDFLAG(IS_WIN)
 
 // This test verifies that data encrypted with OSCrypt can successfully be
@@ -776,7 +803,7 @@ TEST_F(EncryptorTraitsTest, TraitsRoundTrip) {
 
     // Reach into the encryptor and change the key length to an invalid length
     // for the kAES256GCM algorithm.
-    encryptor.keys_.at("TEST").key_.resize(8u);
+    encryptor.keys_.at("TEST")->key_.resize(8u);
     Encryptor roundtripped;
 
     // Mojo will fail gracefully to serialize this bad Encryptor.

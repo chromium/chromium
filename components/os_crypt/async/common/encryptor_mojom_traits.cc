@@ -49,10 +49,10 @@ const std::string& StructTraits<os_crypt_async::mojom::EncryptorDataView,
 }
 
 // static
-const std::map<std::string, os_crypt_async::Encryptor::Key>& StructTraits<
-    os_crypt_async::mojom::EncryptorDataView,
-    os_crypt_async::Encryptor>::key_entries(const os_crypt_async::Encryptor&
-                                                in) {
+const std::map<std::string, std::optional<os_crypt_async::Encryptor::Key>>&
+StructTraits<os_crypt_async::mojom::EncryptorDataView,
+             os_crypt_async::Encryptor>::
+    key_entries(const os_crypt_async::Encryptor& in) {
   return in.keys_;
 }
 

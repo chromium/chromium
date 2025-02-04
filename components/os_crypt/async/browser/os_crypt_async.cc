@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/async/common/encryptor.h"
 
@@ -73,9 +74,10 @@ void OSCryptAsync::CallbackHelper(InitCallback callback,
   std::move(callback).Run(encryptor_instance_->Clone(option), /*result=*/true);
 }
 
-void OSCryptAsync::HandleKey(ProviderIterator current,
-                             const std::string& tag,
-                             std::optional<Encryptor::Key> key) {
+void OSCryptAsync::HandleKey(
+    ProviderIterator current,
+    const std::string& tag,
+    base::expected<Encryptor::Key, KeyProvider::KeyError> key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!tag.empty()) << "Tag cannot be empty.";
@@ -91,7 +93,7 @@ void OSCryptAsync::HandleKey(ProviderIterator current,
     }
   }
 
-  if (key) {
+  if (key.has_value()) {
     key_ring_.emplace(tag, std::move(*key));
     if ((*current)->UseForEncryption()) {
       provider_for_encryption_ = tag;
@@ -100,8 +102,14 @@ void OSCryptAsync::HandleKey(ProviderIterator current,
       }
     }
   } else {
-    // TODO(crbug.com/40241934): Return errors back via a callback.
-    DVLOG(1) << "Provider " << tag << " failed to return a key.";
+    switch (key.error()) {
+      case KeyProvider::KeyError::kPermanentlyUnavailable:
+        DVLOG(1) << "Provider " << tag << " failed to return a key.";
+        break;
+      case KeyProvider::KeyError::kTemporarilyUnavailable:
+        key_ring_.emplace(tag, std::nullopt);
+        break;
+    }
   }
 
   if (++current == providers_.end()) {
