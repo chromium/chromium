@@ -3052,17 +3052,22 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool HasStickyUserActivationForHistoryIntervention() const;
 
   // Parameter for `ClosePage()` that indicates whether the request comes from
-  // the browser or the renderer. This is used to determine whether navigation
-  // should prevent the page from closing, since navigations should not prevent
-  // the page from closing if the browser is trying to close the page.
-  enum class ClosePageSource { kRenderer, kBrowser };
+  // the browser, the renderer or intended prerender cancellation. This is used
+  // to determine whether navigation should prevent the page from closing, since
+  // navigations should not prevent the page from closing if the browser or
+  // prerender cancellation is trying to close the page.
+  enum class ClosePageSource { kRenderer, kBrowser, kPrerenderDiscard };
 
   // Tells the renderer process to run the page's unload handler.
   // A completion callback is invoked by the renderer when the handler
   // execution completes. The `source` parameter indicates whether this request
   // comes from the browser or the renderer. If the request comes from the
   // renderer, then it may be ignored if a different document commits first.
-  void ClosePage(ClosePageSource source);
+  // The `completion_callback` parameter is fired on completion of page close
+  // only when source is kPrerenderDiscard. Otherwise, it's ignored.
+  void ClosePage(
+      ClosePageSource source,
+      base::RepeatingClosure completion_callback = base::DoNothing());
 
   // When true, indicates that the unload handlers have already executed (e.g.,
   // after receiving a ClosePage ACK) or that they should be ignored. This is
@@ -4232,15 +4237,23 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // and the ACK is received, or (2) when a timeout for running those events
   // has expired. The `source` parameter indicates whether this request comes
   // from the browser or the renderer. If the request comes from the renderer,
-  // then it may be ignored if a different document commits first.
-  void ClosePageIgnoringUnloadEvents(ClosePageSource source);
+  // then it may be ignored if a different document commits first. The
+  // `completion_callback` parameter is fired on completion of page close only
+  // when source is kPrerenderDiscard. Otherwise, it's ignored.
+  void ClosePageIgnoringUnloadEvents(
+      ClosePageSource source,
+      base::RepeatingClosure completion_callback = base::DoNothing());
 
   // Called when this frame's page has started closing via ClosePage(), and the
   // timer for running unload events has expired. The `source` parameter
   // indicates whether this request comes from the browser or the renderer. If
   // the request comes from the renderer, then it may be ignored if a different
-  // document commits first.
-  void ClosePageTimeout(ClosePageSource source);
+  // document commits first. The `completion_callback` parameter is fired on
+  // completion of page close only when source is kPrerenderDiscard. Otherwise,
+  // it's ignored.
+  void ClosePageTimeout(
+      ClosePageSource source,
+      base::RepeatingClosure completion_callback = base::DoNothing());
 
   // Perform pre-conditions checks on RenderFrameHost lifecycle state and fenced
   // frame properties that are common for `SendFencedFrameReportingBeacon()` and

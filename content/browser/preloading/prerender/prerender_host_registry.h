@@ -284,7 +284,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // Returns true if `navigation_request` can activate `host`.
   bool CanNavigationActivateHost(NavigationRequest& navigation_request,
                                  PrerenderHost& host);
-
+  void DeleteDelayedToBeDeletedHosts(FrameTreeNodeId prerender_host_id);
   void ScheduleToDeleteAbandonedHost(
       std::unique_ptr<PrerenderHost> prerender_host,
       const PrerenderCancellationReason& cancellation_reason);
@@ -380,6 +380,12 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // could let the hosts and their FrameTrees outlive WebContentsImpl (the owner
   // of the registry) and results in UAF.
   std::vector<std::unique_ptr<PrerenderHost>> to_be_deleted_hosts_;
+
+  // The list of hosts which are scheduled to be deleted when
+  // `DeleteDelayedToBeDeletedHosts` is called. This list is for avoiding
+  // the PrerenderHost being deleted prematurely before IPC calls are completed.
+  base::flat_map<FrameTreeNodeId, std::unique_ptr<PrerenderHost>>
+      delayed_to_be_deleted_hosts_;
 
   // Starts running the timers when prerendering gets hidden.
   base::OneShotTimer timeout_timer_for_embedder_;

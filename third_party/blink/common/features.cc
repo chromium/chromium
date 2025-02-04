@@ -2026,6 +2026,12 @@ BASE_FEATURE(kPrerender2InNewTab,
              "Prerender2InNewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Firing pagehide events for intended prerender cancellation. See
+// crbug.com/353628449 for more details.
+BASE_FEATURE(kPageHideEventForPrerender2,
+             "PageHideEventForPrerender2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrerender2MainFrameNavigation,
              "Prerender2MainFrameNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);

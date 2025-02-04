@@ -1756,10 +1756,33 @@ bool PrerenderHostRegistry::CanNavigationActivateHost(
   return true;
 }
 
+void PrerenderHostRegistry::DeleteDelayedToBeDeletedHosts(
+    FrameTreeNodeId prerender_host_id) {
+  delayed_to_be_deleted_hosts_.erase(prerender_host_id);
+}
+
 void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
     std::unique_ptr<PrerenderHost> prerender_host,
     const PrerenderCancellationReason& cancellation_reason) {
   prerender_host->RecordFailedFinalStatus(PassKey(), cancellation_reason);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPageHideEventForPrerender2)) {
+    // TODO(crbug.com/353628449): Support pagehide event dispatch for
+    // PrerenderFinalStatus::kWindowClosed.
+    if (cancellation_reason.final_status() ==
+        PrerenderFinalStatus::kSpeculationRuleRemoved) {
+      // Fire unload related events upon intended prerender cancellation.
+      RenderFrameHostImpl* rfhi = prerender_host->GetPrerenderedMainFrameHost();
+      FrameTreeNodeId prerender_host_id = prerender_host->frame_tree_node_id();
+      delayed_to_be_deleted_hosts_[prerender_host_id] =
+          std::move(prerender_host);
+      rfhi->ClosePage(RenderFrameHostImpl::ClosePageSource::kPrerenderDiscard,
+                      base::BindRepeating(
+                          &PrerenderHostRegistry::DeleteDelayedToBeDeletedHosts,
+                          weak_factory_.GetWeakPtr(), prerender_host_id));
+      return;
+    }
+  }
 
   // Asynchronously delete the prerender host.
   to_be_deleted_hosts_.push_back(std::move(prerender_host));
