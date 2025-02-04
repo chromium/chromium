@@ -4,12 +4,18 @@
 
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 
+#include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "mojo/public/cpp/bindings/string_data_view.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "services/network/public/mojom/cookie_manager.mojom-shared.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/schemeful_site.mojom-shared.h"
+#include "url/mojom/origin.mojom-shared.h"
 
 namespace mojo {
 
@@ -665,6 +671,71 @@ network::mojom::AncestorChainBit EnumTraits<
                     : network::mojom::AncestorChainBit::kSameSite;
 }
 
+namespace {
+
+void extractCrashValueFromPartitionKey(
+    network::mojom::CookiePartitionKeyDataView partition_key,
+    std::string& crash_value) {
+  mojo_base::mojom::UnguessableTokenDataView nonce_data_view;
+  partition_key.GetNonceDataView(&nonce_data_view);
+  if (nonce_data_view.is_null()) {
+    crash_value.append("no_nonce");
+  } else {
+    crash_value.append(base::NumberToString(nonce_data_view.high()));
+    crash_value.append(" ");
+    crash_value.append(base::NumberToString(nonce_data_view.low()));
+  }
+
+  network::mojom::SchemefulSiteDataView schemeful_site_data_view;
+  partition_key.GetSiteDataView(&schemeful_site_data_view);
+  crash_value.append(" ");
+  if (schemeful_site_data_view.is_null()) {
+    crash_value.append("no_schemeful_site");
+    return;
+  }
+
+  url::mojom::OriginDataView origin_data_view;
+  schemeful_site_data_view.GetSiteAsOriginDataView(&origin_data_view);
+  crash_value.append(" ");
+  if (origin_data_view.is_null()) {
+    crash_value.append("no_site_as_origin");
+    return;
+  }
+  crash_value.append(" ");
+  crash_value.append(base::NumberToString(origin_data_view.port()));
+
+  mojo::StringDataView host_data_view;
+  origin_data_view.GetHostDataView(&host_data_view);
+  crash_value.append(" ");
+  if (host_data_view.is_null()) {
+    crash_value.append("no_host");
+  } else {
+    crash_value.append(host_data_view.storage());
+  }
+
+  mojo::StringDataView scheme_data_view;
+  origin_data_view.GetSchemeDataView(&scheme_data_view);
+  crash_value.append(" ");
+  if (scheme_data_view.is_null()) {
+    crash_value.append("no_scheme");
+  } else {
+    crash_value.append(scheme_data_view.storage());
+  }
+
+  mojo_base::mojom::UnguessableTokenDataView nonce_if_opaque_data_view;
+  origin_data_view.GetNonceIfOpaqueDataView(&nonce_if_opaque_data_view);
+  crash_value.append(" ");
+  if (nonce_if_opaque_data_view.is_null()) {
+    crash_value.append("no_nonce_if_opaque");
+  } else {
+    crash_value.append(base::NumberToString(nonce_if_opaque_data_view.high()));
+    crash_value.append(" ");
+    crash_value.append(base::NumberToString(nonce_if_opaque_data_view.low()));
+  }
+}
+
+}  // namespace
+
 bool StructTraits<network::mojom::CookiePartitionKeyDataView,
                   net::CookiePartitionKey>::
     Read(network::mojom::CookiePartitionKeyDataView partition_key,
@@ -679,12 +750,30 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
     return true;
   }
   net::SchemefulSite site;
-  if (!partition_key.ReadSite(&site))
+  if (!partition_key.ReadSite(&site)) {
+    // TODO(crbug.com/393088777): Remove all debugging helpers once the crashes
+    // have been diagnosed.
+    std::string crash_value;
+    extractCrashValueFromPartitionKey(partition_key, crash_value);
+    SCOPED_CRASH_KEY_STRING1024("CookieFilterDeserialization", "site",
+                                crash_value);
+    base::debug::Alias(&partition_key);
+    base::debug::DumpWithoutCrashing();
     return false;
+  }
 
   std::optional<base::UnguessableToken> nonce;
-  if (!partition_key.ReadNonce(&nonce))
+  if (!partition_key.ReadNonce(&nonce)) {
+    // TODO(crbug.com/393088777): Remove all debugging helpers once the crashes
+    // have been diagnosed.
+    std::string crash_value;
+    extractCrashValueFromPartitionKey(partition_key, crash_value);
+    SCOPED_CRASH_KEY_STRING1024("CookieFilterDeserialization", "nonce",
+                                crash_value);
+    base::debug::Alias(&partition_key);
+    base::debug::DumpWithoutCrashing();
     return false;
+  }
 
   *out = net::CookiePartitionKey::FromWire(
       site,
