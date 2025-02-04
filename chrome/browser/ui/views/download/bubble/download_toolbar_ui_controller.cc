@@ -919,6 +919,7 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
   bubble_delegate->SetTitle(
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL));
   bubble_delegate->SetShowTitle(false);
+  bubble_delegate->set_internal_name(kBubbleName);
   bubble_delegate->SetShowCloseButton(false);
   bubble_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   bubble_delegate->SetDefaultButton(
@@ -1015,6 +1016,10 @@ void DownloadToolbarUIController::OnPartialViewClosed() {
 
 void DownloadToolbarUIController::ShowIphPromo() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (auto* button = GetDownloadsButton(browser_view_)) {
+    button->SetProperty(views::kElementIdentifierKey,
+                        kToolbarDownloadButtonElementId);
+  }
   Profile* profile = browser_view_->GetProfile();
   // Don't show IPH Promo if safe browsing level is set by policy.
   if (safe_browsing::SafeBrowsingPolicyHandler::
