@@ -41,27 +41,8 @@ namespace {
 // Mappings from Chrome card networks to Payment Request API basic card payment
 // spec networks and icons. Note that "generic" is not in the spec.
 // https://w3c.github.io/webpayments-methods-card/#method-id
-constexpr PaymentRequestData kPaymentRequestData[]{
-    {autofill::kAmericanExpressCard, "amex", IDR_AUTOFILL_CC_AMEX,
-     IDS_AUTOFILL_CC_AMEX},
-    {autofill::kDinersCard, "diners", IDR_AUTOFILL_CC_DINERS,
-     IDS_AUTOFILL_CC_DINERS},
-    {autofill::kDiscoverCard, "discover", IDR_AUTOFILL_CC_DISCOVER,
-     IDS_AUTOFILL_CC_DISCOVER},
-    {autofill::kEloCard, "elo", IDR_AUTOFILL_CC_ELO, IDS_AUTOFILL_CC_ELO},
-    {autofill::kJCBCard, "jcb", IDR_AUTOFILL_CC_JCB, IDS_AUTOFILL_CC_JCB},
-    {autofill::kMasterCard, "mastercard", IDR_AUTOFILL_CC_MASTERCARD,
-     IDS_AUTOFILL_CC_MASTERCARD},
-    {autofill::kMirCard, "mir", IDR_AUTOFILL_CC_MIR, IDS_AUTOFILL_CC_MIR},
-    {autofill::kTroyCard, "troy", IDR_AUTOFILL_CC_TROY, IDS_AUTOFILL_CC_TROY},
-    {autofill::kUnionPay, "unionpay", IDR_AUTOFILL_CC_UNIONPAY,
-     IDS_AUTOFILL_CC_UNION_PAY},
-    {autofill::kVerveCard, "verve", IDR_AUTOFILL_CC_VERVE,
-     IDS_AUTOFILL_CC_VERVE},
-    {autofill::kVisaCard, "visa", IDR_AUTOFILL_CC_VISA, IDS_AUTOFILL_CC_VISA},
-};
 
-constexpr PaymentRequestData kPaymentRequestDataForNewNetworkImages[]{
+constexpr PaymentRequestData kPaymentRequestData[]{
     {autofill::kAmericanExpressCard, "amex", IDR_AUTOFILL_METADATA_CC_AMEX,
      IDS_AUTOFILL_CC_AMEX},
     {autofill::kDinersCard, "diners", IDR_AUTOFILL_METADATA_CC_DINERS,
@@ -87,10 +68,6 @@ constexpr PaymentRequestData kPaymentRequestDataForNewNetworkImages[]{
 };
 
 constexpr PaymentRequestData kGenericPaymentRequestData = {
-    autofill::kGenericCard, "generic", IDR_AUTOFILL_CC_GENERIC,
-    IDS_AUTOFILL_CC_GENERIC};
-
-constexpr PaymentRequestData kGenericPaymentRequestDataForNewNetworkImages = {
     autofill::kGenericCard, "generic", IDR_AUTOFILL_METADATA_CC_GENERIC,
     IDS_AUTOFILL_CC_GENERIC};
 
@@ -498,45 +475,27 @@ std::u16string JoinNameParts(std::u16string_view given,
 
 const PaymentRequestData& GetPaymentRequestData(
     const std::string& issuer_network) {
-  bool use_new_data = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableNewCardArtAndNetworkImages);
-
-  for (const PaymentRequestData& data :
-       use_new_data ? kPaymentRequestDataForNewNetworkImages
-                    : kPaymentRequestData) {
+  for (const PaymentRequestData& data : kPaymentRequestData) {
     if (issuer_network == data.issuer_network) {
       return data;
     }
   }
-  return use_new_data ? kGenericPaymentRequestDataForNewNetworkImages
-                      : kGenericPaymentRequestData;
+  return kGenericPaymentRequestData;
 }
 
 const char* GetIssuerNetworkForBasicCardIssuerNetwork(
     const std::string& basic_card_issuer_network) {
-  bool use_new_data = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableNewCardArtAndNetworkImages);
-
-  for (const PaymentRequestData& data :
-       use_new_data ? kPaymentRequestDataForNewNetworkImages
-                    : kPaymentRequestData) {
+  for (const PaymentRequestData& data : kPaymentRequestData) {
     if (basic_card_issuer_network == data.basic_card_issuer_network) {
       return data.issuer_network;
     }
   }
-  return use_new_data
-             ? kGenericPaymentRequestDataForNewNetworkImages.issuer_network
-             : kGenericPaymentRequestData.issuer_network;
+  return kGenericPaymentRequestData.issuer_network;
 }
 
 bool IsValidBasicCardIssuerNetwork(
     const std::string& basic_card_issuer_network) {
-  bool use_new_data = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableNewCardArtAndNetworkImages);
-
-  return base::Contains(use_new_data ? kPaymentRequestDataForNewNetworkImages
-                                     : kPaymentRequestData,
-                        basic_card_issuer_network,
+  return base::Contains(kPaymentRequestData, basic_card_issuer_network,
                         &PaymentRequestData::basic_card_issuer_network);
 }
 

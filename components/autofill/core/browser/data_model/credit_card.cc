@@ -256,41 +256,31 @@ std::u16string CreditCard::NetworkForDisplay(const std::string& network) {
 
 // static
 int CreditCard::IconResourceId(Suggestion::Icon icon) {
-  bool should_show_metadata_icon = base::FeatureList::IsEnabled(
-      features::kAutofillEnableNewCardArtAndNetworkImages);
-  auto get_icon = [&](int metadata_icon, int default_icon) {
-    return should_show_metadata_icon ? metadata_icon : default_icon;
-  };
-
   switch (icon) {
     case Suggestion::Icon::kCardAmericanExpress:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_AMEX, IDR_AUTOFILL_CC_AMEX);
+      return IDR_AUTOFILL_METADATA_CC_AMEX;
     case Suggestion::Icon::kCardDiners:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_DINERS, IDR_AUTOFILL_CC_DINERS);
+      return IDR_AUTOFILL_METADATA_CC_DINERS;
     case Suggestion::Icon::kCardDiscover:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_DISCOVER,
-                      IDR_AUTOFILL_CC_DISCOVER);
+      return IDR_AUTOFILL_METADATA_CC_DISCOVER;
     case Suggestion::Icon::kCardElo:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_ELO, IDR_AUTOFILL_CC_ELO);
+      return IDR_AUTOFILL_METADATA_CC_ELO;
     case Suggestion::Icon::kCardJCB:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_JCB, IDR_AUTOFILL_CC_JCB);
+      return IDR_AUTOFILL_METADATA_CC_JCB;
     case Suggestion::Icon::kCardMasterCard:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_MASTERCARD,
-                      IDR_AUTOFILL_CC_MASTERCARD);
+      return IDR_AUTOFILL_METADATA_CC_MASTERCARD;
     case Suggestion::Icon::kCardMir:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_MIR, IDR_AUTOFILL_CC_MIR);
+      return IDR_AUTOFILL_METADATA_CC_MIR;
     case Suggestion::Icon::kCardTroy:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_TROY, IDR_AUTOFILL_CC_TROY);
+      return IDR_AUTOFILL_METADATA_CC_TROY;
     case Suggestion::Icon::kCardUnionPay:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_UNIONPAY,
-                      IDR_AUTOFILL_CC_UNIONPAY);
+      return IDR_AUTOFILL_METADATA_CC_UNIONPAY;
     case Suggestion::Icon::kCardVerve:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_VERVE, IDR_AUTOFILL_CC_VERVE);
+      return IDR_AUTOFILL_METADATA_CC_VERVE;
     case Suggestion::Icon::kCardVisa:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_VISA, IDR_AUTOFILL_CC_VISA);
+      return IDR_AUTOFILL_METADATA_CC_VISA;
     case Suggestion::Icon::kCardGeneric:
-      return get_icon(IDR_AUTOFILL_METADATA_CC_GENERIC,
-                      IDR_AUTOFILL_CC_GENERIC);
+      return IDR_AUTOFILL_METADATA_CC_GENERIC;
     case Suggestion::Icon::kAutofillAi:
 
     case Suggestion::Icon::kAccount:

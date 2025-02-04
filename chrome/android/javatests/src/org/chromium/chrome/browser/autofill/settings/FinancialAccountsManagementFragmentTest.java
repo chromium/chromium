@@ -68,8 +68,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({
     ChromeFeatureList.AUTOFILL_ENABLE_SYNCING_OF_PIX_BANK_ACCOUNTS,
-    ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS,
-    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES
+    ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS
 })
 @Batch(Batch.PER_CLASS)
 public class FinancialAccountsManagementFragmentTest {

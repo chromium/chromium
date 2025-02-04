@@ -644,11 +644,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "autofill-enable-new-card-art-and-network-images",
-    "owners": ["alexandertekle@google.com", "vishwasuppoor@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua@chromium.org", "siashah@google.com" ],
     "expiry_milestone": 116

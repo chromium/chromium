@@ -417,10 +417,7 @@ public class PersonalDataManagerTest {
                             AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                                             TEST_CARD_ART_IMAGE,
                                             cardIconSpecsLarge,
-                                            /* addRoundedCornersAndGreyBorder= */ ChromeFeatureList
-                                                    .isEnabled(
-                                                            ChromeFeatureList
-                                                                    .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES))
+                                            /* addRoundedCornersAndGreyBorder= */ true)
                                     .sameAs(
                                             AutofillTestHelper
                                                     .getPersonalDataManagerForLastUsedProfile()
@@ -431,10 +428,7 @@ public class PersonalDataManagerTest {
                             AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                                             TEST_CARD_ART_IMAGE,
                                             cardIconSpecsSmall,
-                                            /* addRoundedCornersAndGreyBorder= */ ChromeFeatureList
-                                                    .isEnabled(
-                                                            ChromeFeatureList
-                                                                    .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES))
+                                            /* addRoundedCornersAndGreyBorder= */ true)
                                     .sameAs(
                                             AutofillTestHelper
                                                     .getPersonalDataManagerForLastUsedProfile()
@@ -1116,7 +1110,6 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
     public void testGetCardIcon_customIconUrlAvailable_customIconReturned()
             throws TimeoutException {
         Context context = ContextUtils.getApplicationContext();

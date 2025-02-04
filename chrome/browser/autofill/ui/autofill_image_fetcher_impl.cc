@@ -54,11 +54,6 @@ base::WeakPtr<AutofillImageFetcher> AutofillImageFetcherImpl::GetWeakPtr() {
 }
 
 GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewCardArtAndNetworkImages)) {
-    return AutofillImageFetcher::ResolveCardArtURL(card_art_url);
-  }
-
   // TODO(crbug.com/40221039): There is only one gstatic card art image we are
   // using currently, that returns as metadata when it isn't. Remove this logic
   // when the static image is deprecated, and we send rich card art instead.
@@ -76,11 +71,6 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
     const gfx::Image& card_art_image) {
   if (card_art_image.IsEmpty()) {
     return card_art_image;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewCardArtAndNetworkImages)) {
-    return AutofillImageFetcherImpl::ApplyGreyOverlay(card_art_image);
   }
 
   if (card_art_url == kCapitalOneLargeCardArtUrl) {

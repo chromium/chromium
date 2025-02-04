@@ -386,9 +386,6 @@ extern const char kAutofillEnableCardProductNameDescription[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 
-extern const char kAutofillEnableNewCardArtAndNetworkImagesName[];
-extern const char kAutofillEnableNewCardArtAndNetworkImagesDescription[];
-
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 

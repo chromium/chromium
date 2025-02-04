@@ -9771,13 +9771,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(arc::kEnableArcIdleManager)},
 #endif
 
-    {"autofill-enable-new-card-art-and-network-images",
-     flag_descriptions::kAutofillEnableNewCardArtAndNetworkImagesName,
-     flag_descriptions::kAutofillEnableNewCardArtAndNetworkImagesDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableNewCardArtAndNetworkImages)},
-
     {"power-bookmark-backend", flag_descriptions::kPowerBookmarkBackendName,
      flag_descriptions::kPowerBookmarkBackendDescription, kOsAll,
      FEATURE_VALUE_TYPE(power_bookmarks::kPowerBookmarkBackend)},

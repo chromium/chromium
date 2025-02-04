@@ -620,11 +620,6 @@ const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[] =
     "all credit card form types and address form events will log to all "
     "address form types.";
 
-const char kAutofillEnableNewCardArtAndNetworkImagesName[] =
-    "Enable showing new card art and network images";
-const char kAutofillEnableNewCardArtAndNetworkImagesDescription[] =
-    "When enabled, new and larger card art and network icons will be shown.";
-
 const char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
