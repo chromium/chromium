@@ -451,6 +451,8 @@ class Namespace:
     functions = []
     types = []
     description = GetNodeDescription(self.namespace)
+    nodoc = False
+    platforms = None
 
     for node in self.namespace.GetListOf('Operation'):
       functions.append(Operation(node).process())
@@ -461,10 +463,12 @@ class Namespace:
     for node in self.namespace.GetParent().GetListOf('Dictionary'):
       types.append(Dictionary(node).process())
 
-    nodoc = 'nodoc' in [
-        attribute.GetName()
-        for attribute in GetExtendedAttributes(self.namespace)
-    ]
+    for extended_attribute in GetExtendedAttributes(self.namespace):
+      attribute_name = extended_attribute.GetName()
+      if attribute_name == 'nodoc':
+        nodoc = True
+      elif attribute_name == 'platforms':
+        platforms = extended_attribute.GetProperty('VALUE')
 
     return {
         'namespace': self.name,
@@ -472,6 +476,7 @@ class Namespace:
         'types': types,
         'nodoc': nodoc,
         'description': description,
+        'platforms': platforms
     }
 
 

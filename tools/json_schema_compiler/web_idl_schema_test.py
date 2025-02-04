@@ -396,5 +396,33 @@ class WebIdlSchemaTest(unittest.TestCase):
         schema['description'],
     )
 
+  # Tests that an API interface with the platforms extended attribute has these
+  # values in a platforms attribute after processing.
+  def testAllPlatformsOnNamespace(self):
+    platforms_schema = web_idl_schema.Load(
+        'test/web_idl/all_platforms_on_namespace.idl')
+    self.assertEqual(1, len(platforms_schema))
+    self.assertEqual('allPlatformsAPI', platforms_schema[0]['namespace'])
+    expected = ['chromeos', 'fuchsia', 'linux', 'mac', 'win']
+    self.assertEqual(expected, platforms_schema[0]['platforms'])
+
+  # Tests that an API interface with just chromeos listed in the platforms
+  # extended attribute just has that after processing.
+  def testChromeOSPlatformsOnNamespace(self):
+    platforms_schema = web_idl_schema.Load(
+        'test/web_idl/chromeos_platforms_on_namespace.idl')
+    self.assertEqual(1, len(platforms_schema))
+    self.assertEqual('chromeOSPlatformsAPI', platforms_schema[0]['namespace'])
+    expected = ['chromeos']
+    self.assertEqual(expected, platforms_schema[0]['platforms'])
+
+  # Tests that the platforms attribute is None if not specified on in the
+  # extended attributes of a namespace.
+  def testNonSpecifiedPlatformsOnNamespace(self):
+    basic_schema = self.idl_basics
+    expected = None
+    self.assertEqual(expected, basic_schema['platforms'])
+
+
 if __name__ == '__main__':
   unittest.main()
