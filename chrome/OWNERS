@@ -7,9 +7,6 @@
 
 set noparent
 
-# Reviewers in JST (GMT+9)
-erikchen@chromium.org
-
 # Reviewers in GMT+0
 victorvianna@google.com
 
@@ -28,6 +25,7 @@ yfriedman@chromium.org
 
 # Reviewers in PST (GMT-8)
 dtrainor@chromium.org
+erikchen@chromium.org
 nyquist@chromium.org
 tedchoc@chromium.org
 thestig@chromium.org
