@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
@@ -39,6 +40,8 @@ public class ReorderStrategyTestBase {
     protected static final PointF DRAG_START_POINT = new PointF(70f, 20f); // Arbitrary value.
     protected static final float EPSILON = 0.001f;
     protected static final int INTERACTING_VIEW_ID = 10; // Arbitrary value.
+    protected static final Token GROUP_ID =
+            new Token(/* high= */ 0L, /* low= */ 0L); // Arbitrary value.
 
     // Dependencies
     private Activity mActivity;
@@ -73,9 +76,10 @@ public class ReorderStrategyTestBase {
         when(mTabForInteractingView.getId()).thenReturn(INTERACTING_VIEW_ID);
     }
 
-    protected StripLayoutGroupTitle buildGroupTitle(Integer rootId, int x, int width) {
+    protected StripLayoutGroupTitle buildGroupTitle(
+            Integer rootId, Token groupId, int x, int width) {
         StripLayoutGroupTitle title =
-                new StripLayoutGroupTitle(mActivity, null, false, rootId, null);
+                new StripLayoutGroupTitle(mActivity, null, false, rootId, groupId);
         setDrawProperties(title, x, width);
         return title;
     }

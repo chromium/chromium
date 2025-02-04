@@ -277,7 +277,8 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
 
     private void setupStripViews() {
         mStripTab1 = buildStripTab(1, 0, TAB_WIDTH);
-        mInteractingTabGroupTitle = buildGroupTitle(INTERACTING_VIEW_ROOT_ID, TAB_WIDTH, TAB_WIDTH);
+        mInteractingTabGroupTitle =
+                buildGroupTitle(INTERACTING_VIEW_ROOT_ID, GROUP_ID, TAB_WIDTH, TAB_WIDTH);
         mInteractingTab = buildStripTab(INTERACTING_VIEW_ID, 2 * TAB_WIDTH, TAB_WIDTH);
         mStripTab2 = buildStripTab(2, 3 * TAB_WIDTH, TAB_WIDTH);
         mStripTab3 = buildStripTab(3, 4 * TAB_WIDTH, TAB_WIDTH);

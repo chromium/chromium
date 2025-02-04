@@ -77,7 +77,8 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     }
 
     private void setupForGroupDrag() {
-        mInteractingGroupTitle = buildGroupTitle(INTERACTING_VIEW_ROOT_ID, TAB_WIDTH, TAB_WIDTH);
+        mInteractingGroupTitle =
+                buildGroupTitle(INTERACTING_VIEW_ROOT_ID, GROUP_ID, TAB_WIDTH, TAB_WIDTH);
     }
 
     @Test
@@ -141,8 +142,9 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                 mStripTabs, mGroupTitles, mInteractingGroupTitle, DRAG_START_POINT);
 
         // Verify
-        // TODO(crbug.com/384969886): Update when group tearing is implemented.
-        verify(mTabDragSource).startGroupDragAction();
+        verify(mTabDragSource)
+                .startGroupDragAction(
+                        mContainerView, GROUP_ID, DRAG_START_POINT, TAB_WIDTH, TAB_WIDTH);
     }
 
     @Test
@@ -177,7 +179,17 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         setupForTabDrag();
         startReorder();
 
-        // Call
+        // Start reorder before dragging within strip.
+        mStrategy.updateReorderPosition(
+                mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
+        verify(mTabStrategy)
+                .startReorderMode(
+                        eq(mStripTabs),
+                        eq(mGroupTitles),
+                        eq(mInteractingTab),
+                        eq(new PointF(END_X, 0f)));
+
+        // Call - drag within strip.
         mStrategy.updateReorderPosition(
                 mStripViews,
                 mGroupTitles,

@@ -152,9 +152,9 @@ public class ReorderDelegate {
     }
 
     public boolean isReorderingTab() {
-        // TODO(crbug.com/380327012): Update when we support group tearing.
         return getInReorderMode()
-                && (mActiveStrategy == mSourceViewDragDropReorderStrategy
+                && ((mActiveStrategy == mSourceViewDragDropReorderStrategy
+                                && mSourceViewDragDropReorderStrategy.isReorderingTab())
                         || mActiveStrategy == mTabStrategy);
     }
 
@@ -174,7 +174,8 @@ public class ReorderDelegate {
                 && (instanceOfTab || shouldDragDropGroup)
                 && reorderType == ReorderType.START_DRAG_DROP) {
             return mSourceViewDragDropReorderStrategy;
-        } else if (instanceOfTab && reorderType == ReorderType.DRAG_ONTO_STRIP) {
+        } else if ((instanceOfTab || shouldDragDropGroup)
+                && reorderType == ReorderType.DRAG_ONTO_STRIP) {
             // Only external views can be dragged onto strip during startReorderMode.
             assert mExternalViewDragDropReorderStrategy != null;
             return mExternalViewDragDropReorderStrategy;
