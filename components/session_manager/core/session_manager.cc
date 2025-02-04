@@ -53,19 +53,15 @@ void SessionManager::CreateSession(const AccountId& user_account_id,
 
 void SessionManager::CreateSessionForRestart(const AccountId& user_account_id,
                                              const std::string& user_id_hash) {
-  CHECK(user_manager_);
-  const user_manager::User* user = user_manager_->FindUser(user_account_id);
+  auto* user_manager = user_manager::UserManager::Get();
+  if (!user_manager)
+    return;
+  const user_manager::User* user = user_manager->FindUser(user_account_id);
   // Tests do not always create users.
   const bool is_child =
       user && user->GetType() == user_manager::UserType::kChild;
   CreateSessionInternal(user_account_id, user_id_hash,
                         true /* browser_restart */, is_child);
-}
-
-void SessionManager::OnUserManagerCreated(
-    user_manager::UserManager* user_manager) {
-  user_manager_ = user_manager;
-  user_manager_observation_.Observe(user_manager_);
 }
 
 bool SessionManager::IsSessionStarted() const {
@@ -133,9 +129,11 @@ void SessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
                                         const std::string& user_id_hash,
                                         bool browser_restart,
                                         bool is_child) {
-  CHECK(user_manager_);
-  user_manager_->UserLoggedIn(user_account_id, user_id_hash, browser_restart,
-                              is_child);
+  auto* user_manager = user_manager::UserManager::Get();
+  if (!user_manager)
+    return;
+  user_manager->UserLoggedIn(user_account_id, user_id_hash, browser_restart,
+                             is_child);
 }
 
 void SessionManager::HandleUserSessionStartUpTaskCompleted() {

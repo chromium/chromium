@@ -24,7 +24,8 @@ namespace ash {
 
 class SessionLengthLimiter;
 
-class ChromeSessionManager : public session_manager::SessionManager {
+class ChromeSessionManager : public session_manager::SessionManager,
+                             public user_manager::UserManager::Observer {
  public:
   ChromeSessionManager();
 
@@ -35,6 +36,11 @@ class ChromeSessionManager : public session_manager::SessionManager {
 
   // Registers session manager preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  // Currently, UserManager is created after SessionManager.
+  // TODO(b/332481586): Move this to the constructor by fixing initialization
+  // order.
+  void OnUserManagerCreated(user_manager::UserManager* user_manager);
 
   // Initialize session manager on browser starts up. Runs different code
   // path based on command line flags and policy. Possible scenarios include:
@@ -50,7 +56,6 @@ class ChromeSessionManager : public session_manager::SessionManager {
   void Shutdown();
 
   // session_manager::SessionManager:
-  void OnUserManagerCreated(user_manager::UserManager* user_manager) override;
   void SessionStarted() override;
   void NotifyUserLoggedIn(const AccountId& user_account_id,
                           const std::string& user_id_hash,
@@ -65,9 +70,15 @@ class ChromeSessionManager : public session_manager::SessionManager {
   }
 
  private:
+  raw_ptr<user_manager::UserManager> user_manager_ = nullptr;
+
   std::unique_ptr<OobeConfiguration> oobe_configuration_;
   std::unique_ptr<UserSessionInitializer> user_session_initializer_;
   std::unique_ptr<SessionLengthLimiter> session_length_limiter_;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
 };
 
 }  // namespace ash

@@ -72,10 +72,9 @@ class SessionControllerClientImplTest : public testing::Test {
 
   void SetUp() override {
     ash::LoginState::Initialize();
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+
     // Initialize the UserManager singleton.
     user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    session_manager_->OnUserManagerCreated(user_manager_.Get());
     // Initialize AssistantBrowserDelegate singleton.
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
@@ -107,7 +106,6 @@ class SessionControllerClientImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     assistant_delegate_.reset();
-    session_manager_.reset();
     user_manager_.Reset();
 
     ash::LoginState::Shutdown();
@@ -118,14 +116,13 @@ class SessionControllerClientImplTest : public testing::Test {
     const user_manager::User* user =
         is_child ? user_manager()->AddChildUser(account_id)
                  : user_manager()->AddUser(account_id);
-    session_manager_->CreateSession(account_id, user->username_hash(),
-                                    is_child);
+    session_manager_.CreateSession(account_id, user->username_hash(), is_child);
 
     // Simulate that user profile is loaded.
     CreateTestingProfile(user);
-    session_manager_->NotifyUserProfileLoaded(account_id);
+    session_manager_.NotifyUserProfileLoaded(account_id);
 
-    session_manager_->SetSessionState(SessionState::ACTIVE);
+    session_manager_.SetSessionState(SessionState::ACTIVE);
   }
 
   // Get the active user.
@@ -161,7 +158,7 @@ class SessionControllerClientImplTest : public testing::Test {
   }
 
   session_manager::SessionManager& session_manager() {
-    return *session_manager_;
+    return session_manager_;
   }
   ash::SessionTerminationManager& session_termination_manager() {
     return session_termination_manager_;
@@ -170,11 +167,11 @@ class SessionControllerClientImplTest : public testing::Test {
  private:
   // Sorted in the production initialization order.
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+  session_manager::SessionManager session_manager_;
   ash::SessionTerminationManager session_termination_manager_;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;

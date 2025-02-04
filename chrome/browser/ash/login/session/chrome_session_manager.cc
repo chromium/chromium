@@ -374,7 +374,8 @@ void ChromeSessionManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void ChromeSessionManager::OnUserManagerCreated(
     user_manager::UserManager* user_manager) {
-  SessionManager::OnUserManagerCreated(user_manager);
+  user_manager_ = user_manager;
+  user_manager_observation_.Observe(user_manager_);
 
   // Record the stored session length for enrolled device.
   if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
@@ -412,7 +413,7 @@ void ChromeSessionManager::Initialize(
   }
 
   if (base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration) &&
-      MaybeStartArcVmDataMigration(user_manager(), profile)) {
+      MaybeStartArcVmDataMigration(user_manager_, profile)) {
     return;
   }
 
@@ -446,7 +447,7 @@ void ChromeSessionManager::Initialize(
     StartLoginOobeSession();
   } else {
     VLOG(1) << "Starting Chrome with a user session.";
-    StartUserSession(user_manager(), profile, login_account_id.GetUserEmail());
+    StartUserSession(user_manager_, profile, login_account_id.GetUserEmail());
   }
 }
 
@@ -459,7 +460,7 @@ void ChromeSessionManager::Shutdown() {
         session_length_limiter_->GetSessionDuration();
     if (!session_length.is_zero()) {
       enterprise_user_session_metrics::StoreSessionLength(
-          user_manager()->GetActiveUser()->GetType(), session_length);
+          user_manager_->GetActiveUser()->GetType(), session_length);
     }
   }
   session_length_limiter_.reset();
@@ -470,7 +471,7 @@ void ChromeSessionManager::SessionStarted() {
   SetSessionState(session_manager::SessionState::ACTIVE);
 
   // Notifies UserManager so that it can update login state.
-  user_manager()->OnSessionStarted();
+  user_manager_->OnSessionStarted();
 }
 
 void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
@@ -482,8 +483,8 @@ void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
   session_manager::SessionManager::NotifyUserLoggedIn(
       user_account_id, user_id_hash, browser_restart, is_child);
 
-  if (user_manager()->GetLoggedInUsers().size() == 1) {
-    InitFeaturesSessionType(user_manager()->GetPrimaryUser());
+  if (user_manager_->GetLoggedInUsers().size() == 1) {
+    InitFeaturesSessionType(user_manager_->GetPrimaryUser());
   }
 
   // Initialize the session length limiter and start it only if
@@ -496,12 +497,12 @@ void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
 
 void ChromeSessionManager::OnUsersSignInConstraintsChanged() {
   const user_manager::UserList& logged_in_users =
-      user_manager()->GetLoggedInUsers();
+      user_manager_->GetLoggedInUsers();
   for (user_manager::User* user : logged_in_users) {
     if (user->IsDeviceLocalAccount()) {
       continue;
     }
-    if (!user_manager()->IsUserAllowed(*user)) {
+    if (!user_manager_->IsUserAllowed(*user)) {
       SYSLOG(ERROR)
           << "The current user is not allowed, terminating the session.";
       chrome::AttemptUserExit();
