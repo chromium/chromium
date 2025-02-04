@@ -6719,7 +6719,7 @@
     // chrome://flags.  See https://crbug.com/1246928.
     "name": "ozone-platform-hint",
     "owners": [ "rjkroege@chromium.org", "thomasanderson@chromium.org", "msisov@igalia.com", "nickdiego@igalia.com", "adunaev@igalia.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "page-content-annotations",
