@@ -1544,42 +1544,43 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 1,
-      /*expected_text*/ L"plain 1\nplain 2",
+      /*expected_text*/ L"plain 1\nplain 2\n",
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 1,
       /*expected_text*/
-      L"plain 1\nplain 2\nplain heading",
+      L"plain 1\nplain 2\nplain heading\n",
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 1,
       /*expected_text*/
-      L"plain 1\nplain 2\nplain heading\nitalic 1\nitalic 2",
+      L"plain 1\nplain 2\nplain heading\nitalic 1\nitalic 2\n",
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
-      /*expected_text*/ L"plain 1\nplain 2\nplain heading",
+      /*expected_text*/ L"plain 1\nplain 2\nplain heading\n",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 1,
       /*expected_text*/
-      L"plain 1\nplain 2\nplain heading\nitalic 1\nitalic 2",
+      L"plain 1\nplain 2\nplain heading\nitalic 1\nitalic 2\n",
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 1,
       /*expected_text*/
-      L"plain 1\nplain 2\nplain heading\nitalic 1\nitalic 2\nheading",
+      L"plain 1\nplain 2\nplain heading\nitalic 1\nitalic 2\nheading\n",
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 1,
       /*expected_text*/
-      L"plain 1\nplain 2\nplain heading\nitalic 1\nitalic 2\nheading\nheading",
+      L"plain 1\nplain 2\nplain heading\nitalic 1\nitalic "
+      L"2\nheading\nheading\n",
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1596,7 +1597,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 1,
-      /*expected_text*/ L"plain 1\nplain 2",
+      /*expected_text*/ L"plain 1\nplain 2\n",
       /*expected_count*/ 1);
 }
 
@@ -1715,74 +1716,59 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 1,
-      /*expected_text*/ L"plain 1\nplain 2",
+      /*expected_text*/ L"plain 1\nplain 2\n",
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 1,
       /*expected_text*/
-      L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2",
+      L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\n",
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
-      /*expected_text*/ L"plain 1\nplain 2",
+      /*expected_text*/ L"plain 1\nplain 2\n",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 2,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
-      L"1\ncolor 2",
+      L"1\ncolor 2\n",
       /*expected_count*/ 2);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
       /*expected_text*/
-      L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2",
+      L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\n",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 2,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
-      L"1\ncolor 2\noverline 1\noverline 2",
+      L"1\ncolor 2\noverline 1\noverline 2\n",
       /*expected_count*/ 2);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
-      L"1\ncolor 2",
+      L"1\ncolor 2\n",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ 2,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
-      L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through 2",
+      L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through 2\n",
       /*expected_count*/ 2);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
-      L"1\ncolor 2\noverline 1\noverline 2",
-      /*expected_count*/ -1);
-  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
-      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
-      /*count*/ 2,
-      /*expected_text*/
-      L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
-      L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
-      L"2\nsup 1\nsup 2",
-      /*expected_count*/ 2);
-  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
-      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
-      /*count*/ -1,
-      /*expected_text*/
-      L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
-      L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through 2",
+      L"1\ncolor 2\noverline 1\noverline 2\n",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1790,15 +1776,14 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
       L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
-      L"2\nsup 1\nsup 2\nbold 1\nbold 2",
+      L"2\nsup 1\nsup 2\n",
       /*expected_count*/ 2);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
-      L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
-      L"2\nsup 1\nsup 2",
+      L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through 2\n",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1806,7 +1791,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
       L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
-      L"2\nsup 1\nsup 2\nbold 1\nbold 2\nfont-family 1\nfont-family 2",
+      L"2\nsup 1\nsup 2\nbold 1\nbold 2\n",
       /*expected_count*/ 2);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1814,7 +1799,23 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
       L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
-      L"2\nsup 1\nsup 2\nbold 1\nbold 2",
+      L"2\nsup 1\nsup 2\n",
+      /*expected_count*/ -1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
+      /*count*/ 2,
+      /*expected_text*/
+      L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
+      L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
+      L"2\nsup 1\nsup 2\nbold 1\nbold 2\nfont-family 1\nfont-family 2\n",
+      /*expected_count*/ 2);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
+      /*count*/ -1,
+      /*expected_text*/
+      L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
+      L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
+      L"2\nsup 1\nsup 2\nbold 1\nbold 2\n",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1823,7 +1824,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
       L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
       L"2\nsup 1\nsup 2\nbold 1\nbold 2\nfont-family 1\nfont-family "
-      L"2\nspelling 1\nspelling two",
+      L"2\nspelling 1\nspelling two\n",
       /*expected_count*/ 2);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1831,7 +1832,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
       L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
-      L"2\nsup 1\nsup 2\nbold 1\nbold 2\nfont-family 1\nfont-family 2",
+      L"2\nsup 1\nsup 2\nbold 1\nbold 2\nfont-family 1\nfont-family 2\n",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1849,7 +1850,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
       L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
       L"2\nsup 1\nsup 2\nbold 1\nbold 2\nfont-family 1\nfont-family "
-      L"2\nspelling 1\nspelling two",
+      L"2\nspelling 1\nspelling two\n",
       /*expected_count*/ -1);
 }
 
@@ -3563,7 +3564,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       "<div><h2>Second Heading</h2><span>\nParagraph Two</span></div>";
 
   const std::vector<const wchar_t*> format_units = {
-      L"First Heading", L"\nParagraph One", L"Second Heading",
+      L"First Heading", L"\nParagraph One\n", L"Second Heading",
       L"\nParagraph Two"};
 
   AssertMoveByUnitForMarkup(TextUnit_Format, html_markup, format_units);
@@ -3583,7 +3584,7 @@ IN_PROC_BROWSER_TEST_F(
         </html>)HTML";
 
   const std::vector<const wchar_t*> format_units = {
-      L"First Heading", L"\nParagraph One", L"Second Heading",
+      L"First Heading", L"\nParagraph One\n", L"Second Heading",
       L"\nParagraph Two"};
 
   AssertMoveByUnitForMarkup(TextUnit_Format, html_markup, format_units);
