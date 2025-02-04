@@ -18,11 +18,14 @@
 
 // TODO(crbug.com/376283433): Migrate the tests from
 // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/page_action/pwa_install_view_browsertest.cc
-void ShowPwaInstallDialog(Browser* browser,
-                          content::WebContents* web_contents) {
+void ShowPwaInstallDialog(Browser* browser) {
   CHECK(browser);
 
   base::RecordAction(base::UserMetricsAction("PWAInstallIcon"));
+
+  content::WebContents* const web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  CHECK(web_contents);
 
   // Close PWA install IPH if it is showing.
   web_app::PwaInProductHelpState iph_state =

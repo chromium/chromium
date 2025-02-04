@@ -6,8 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PWA_INSTALL_H_
 
 #include "chrome/browser/ui/browser.h"
-#include "content/public/browser/web_contents.h"
 
-void ShowPwaInstallDialog(Browser* browser, content::WebContents* web_contents);
+void ShowPwaInstallDialog(Browser* browser);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PWA_INSTALL_H_
