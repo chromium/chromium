@@ -1450,7 +1450,10 @@ void CaptureModeSession::OnScannerActionsFetched(
 
   CHECK(action_container_widget_);
   if (!actions_response.has_value()) {
-    action_container_view_->ShowErrorView(actions_response.error());
+    action_container_view_->ShowErrorView(
+        actions_response.error(),
+        base::BindRepeating(&CaptureModeSession::OnScannerTryAgainPressed,
+                            weak_ptr_factory_.GetWeakPtr()));
     UpdateActionContainerWidget();
     return;
   }
@@ -1538,6 +1541,13 @@ void CaptureModeSession::OnScannerActionButtonPressed(
   controller_->CloseSearchResultsPanel();
   // End the session. `this` is destroyed here.
   controller_->Stop();
+}
+
+void CaptureModeSession::OnScannerTryAgainPressed() {
+  CHECK(action_container_view_);
+  action_container_view_->HideErrorView();
+  UpdateActionContainerWidget();
+  controller_->PerformCapture(PerformCaptureType::kScanner);
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
