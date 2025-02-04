@@ -1148,6 +1148,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_YOUTUBE_INCOGNITO_SHEET_TITLE" desc="Title of the Youtube Incognito Sheet informing the user that the URL will be opened in Chrome Incognito">
         You're in Chromium Incognito
       </message>
+      <message name="IDS_IOS_YOUTUBE_INCOGNITO_SNACKBAR_MESSAGE" desc="The message displayed in the left corner of the snackbar">
+          Opened in Chromium Incognito
+      </message>
       <message name="IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL" desc="Text shown when a user with no available target devices attempts to use send-tab-to-self.">
         To send this tab to another device, sign in to Chromium there.
       </message>

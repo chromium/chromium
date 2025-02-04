@@ -7073,6 +7073,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_YOUTUBE_INCOGNITO_SHEET_PRIMARY_BUTTON_TITLE" desc="Title of the Youtube Incognito Sheet primary button">
         Got it
       </message>
+      <message name="IDS_IOS_YOUTUBE_INCOGNITO_SNACKBAR_BUTTON_TITLE" desc="The title of the button on the right corner of the snackbar">
+          LEARN MORE
+      </message>
       <message name="IDS_SAVE_PASSWORD_FOOTER" desc="The footer text of the infobar that offers user to save/update a password to Chrome.">
         Passwords are saved in your Google Account so you can use them on any device.
       </message>
