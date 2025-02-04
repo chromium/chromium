@@ -651,8 +651,6 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
   if (!ContextProviderWrapper()) {
     return;
   }
-  auto* sii =
-      ContextProviderWrapper()->ContextProvider().SharedImageInterface();
   std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping =
       GetClientSharedImage()->Map();
   if (!mapping) {
@@ -668,8 +666,12 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
 
   // Unmap the underlying buffer.
   mapping.reset();
-  sii->UpdateSharedImage(gpu::SyncToken(), GetClientSharedImage()->mailbox());
-  owning_thread_data().sync_token = sii->GenUnverifiedSyncToken();
+
+  // Inform the service that the SharedImage's backing memory was written to on
+  // the CPU and update this resource's sync token to ensure proper sequencing
+  // of future accesses to the SI with respect to this call on the service side.
+  owning_thread_data().sync_token =
+      GetClientSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken());
 }
 
 scoped_refptr<gpu::ClientSharedImage>
