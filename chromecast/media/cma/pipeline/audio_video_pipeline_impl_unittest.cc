@@ -252,9 +252,8 @@ class PipelineHelper {
     bool provider_delayed_pattern[] = {false, true};
     std::unique_ptr<MockFrameProvider> frame_provider(new MockFrameProvider());
     frame_provider->Configure(
-        std::vector<bool>(
-            provider_delayed_pattern,
-            provider_delayed_pattern + std::size(provider_delayed_pattern)),
+        std::vector<bool>(std::begin(provider_delayed_pattern),
+                          std::end(provider_delayed_pattern)),
         std::move(frame_generator));
     frame_provider->SetDelayFlush(true);
     return std::move(frame_provider);

@@ -464,14 +464,12 @@ int MixerOutputStreamAlsa::DetermineOutputRate(int requested_sample_rate) {
   // common sample rates as a fallback. Note that PcmHwParamsSetRateNear
   // doesn't always choose a rate that's actually near the given input sample
   // rate when the input sample rate is not supported.
-  const int* kSupportedSampleRatesEnd =
-      kSupportedSampleRates + std::size(kSupportedSampleRates);
-  auto* nearest_sample_rate =
-      std::min_element(kSupportedSampleRates, kSupportedSampleRatesEnd,
-                       [requested_sample_rate](int r1, int r2) -> bool {
-                         return abs(requested_sample_rate - r1) <
-                                abs(requested_sample_rate - r2);
-                       });
+  auto* nearest_sample_rate = std::min_element(
+      std::begin(kSupportedSampleRates), std::end(kSupportedSampleRates),
+      [requested_sample_rate](int r1, int r2) -> bool {
+        return abs(requested_sample_rate - r1) <
+               abs(requested_sample_rate - r2);
+      });
   // Resample audio with sample rates deemed to be too low (i.e.  below 32kHz)
   // because some common AV receivers don't support optical out at these
   // frequencies. See b/26385501
