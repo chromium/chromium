@@ -87,12 +87,12 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
 
     @Override
     public void onAndroidPermissionAccepted() {
-        handleSystemPermission();
+        handleSystemPermission(/*accepted*/ true);
     }
 
     @Override
     public void onAndroidPermissionCanceled() {
-        acknowledgeDelegate();
+        handleSystemPermission(/*accepted*/ false);
     }
 
     private void acknowledgeDelegate() {
@@ -103,6 +103,14 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
     private void denyDelegate() {
         onPermissionDialogResult(ContentSettingValues.BLOCK);
         mDialogDelegate.onDeny();
+    }
+
+    private void resumeDelegate() {
+        mDialogDelegate.onResume();
+    }
+
+    private void onSystemSettingsShownDelegate() {
+        mDialogDelegate.onSystemSettingsShown();
     }
 
     // We will not notify `onPermissionDialogResult` in `accept.*Delegate`. If this dialog comes
@@ -117,18 +125,22 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
         mDialogDelegate.onAcceptThisTime();
     }
 
-    private void handleSystemPermission() {
+    private void handleSystemPermission(boolean accepted) {
         // The tab may have navigated or been closed behind the Android permission prompt.
         if (mDialogDelegate == null) {
             onPermissionDialogEnded();
             return;
         }
 
-        mDialogDelegate.onHandleSystemPermission();
+        mDialogDelegate.onSystemPermissionResolved(accepted);
     }
 
     @Override
     protected final void handlePositiveButtonClicked(PropertyModel model) {
+        if (mDialogDelegate == null) {
+            return;
+        }
+
         switch (mDialogDelegate.getEmbeddedPromptVariant()) {
             case EmbeddedPromptVariant.ASK -> {
                 if (mState == State.PROMPT_POSITIVE_CLICKED) {
@@ -152,6 +164,7 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
                 if (!mDialogDelegate.getWindow().canResolveActivity(intent)) {
                     intent = getGlobalSettingsIntent();
                 }
+                onSystemSettingsShownDelegate();
                 getContext().startActivity(intent);
             }
             case EmbeddedPromptVariant.PREVIOUSLY_GRANTED -> {
@@ -171,6 +184,9 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
 
     @Override
     protected void handleNegativeButtonClicked(PropertyModel model) {
+        if (mDialogDelegate == null) {
+            return;
+        }
         switch (mDialogDelegate.getEmbeddedPromptVariant()) {
             case EmbeddedPromptVariant.ASK -> {
                 denyDelegate();
@@ -220,7 +236,9 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
 
     @Override
     public void onActivityResumed() {
-        handleSystemPermission();
+        if (mDialogDelegate != null) {
+            resumeDelegate();
+        }
     }
 
     @Override

@@ -82,6 +82,9 @@ class EmbeddedPermissionPromptFlowModel {
 
   Variant prompt_variant() const { return prompt_variant_; }
 
+  std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
+      const;
+
   const std::set<ContentSettingsType>& prompt_types() const {
     return prompt_types_;
   }
@@ -97,6 +100,19 @@ class EmbeddedPermissionPromptFlowModel {
     prompt_types_.clear();
   }
 
+  void StartFirstDisplayTime() {
+    current_variant_first_display_time_ = base::Time::Now();
+  }
+
+  void PrecalculateVariantsForMetrics();
+
+  void RecordOsMetrics(permissions::OsScreenAction action);
+
+  void RecordPermissionActionUKM(
+      permissions::ElementAnchoredBubbleAction action);
+
+  void RecordElementAnchoredBubbleVariantUMA(Variant variant);
+
  private:
   Variant prompt_variant_ = Variant::kUninitialized;
   raw_ptr<PermissionPrompt::Delegate> delegate_;
@@ -105,6 +121,14 @@ class EmbeddedPermissionPromptFlowModel {
   std::vector<raw_ptr<PermissionRequest, VectorExperimental>> requests_;
 
   raw_ptr<content::WebContents> web_contents_;
+
+  int prompt_screen_counter_for_metrics_ = 0;
+
+  // Store precalculated OS variants for metrics
+  Variant os_prompt_variant_ = Variant::kUninitialized;
+  Variant os_system_settings_variant_ = Variant::kUninitialized;
+
+  base::Time current_variant_first_display_time_;
 
   base::WeakPtrFactory<EmbeddedPermissionPromptFlowModel> weak_factory_{this};
 };
