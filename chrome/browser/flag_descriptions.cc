@@ -944,10 +944,16 @@ const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[] =
 #endif
 
 const char kClientSideDetectionBrandAndIntentForScamDetectionName[] =
-    "Client Side Detection Brand and  Intent for Scam Detection";
+    "Client Side Detection Brand and Intent for Scam Detection";
 const char kClientSideDetectionBrandAndIntentForScamDetectionDescription[] =
     "Enables on device LLM output on pages to inquire for brand and intent of "
     "the page.";
+
+const char kClientSideDetectionShowScamVerdictWarningName[] =
+    "Client Side Detection Show Scam Verdict Warning";
+const char kClientSideDetectionShowScamVerdictWarningDescription[] =
+    "Show warnings based on the scam verdict field in Client Side Detection "
+    "response.";
 
 const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[] =
     "Clear window name in top-level cross-site cross-browsing-context-group "

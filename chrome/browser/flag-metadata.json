@@ -1467,6 +1467,15 @@
     "expiry_milestone": 139
   },
   {
+    "name": "client-side-detection-show-scam-verdict-warning",
+    "owners": [
+      "andysjlim@chromium.org",
+      "xinghuilu@chromium.org",
+      "chrome-counter-abuse-alerts@google.com"
+    ],
+    "expiry_milestone": 141
+  },
+  {
     "name": "clipboard-history-longpress",
     "owners": ["newcomer@google.com", "multipaste@google.com"],
     "expiry_milestone": 125

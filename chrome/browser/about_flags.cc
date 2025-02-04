@@ -11693,6 +11693,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          safe_browsing::kClientSideDetectionBrandAndIntentForScamDetection)},
 
+    {"client-side-detection-show-scam-verdict-warning",
+     flag_descriptions::kClientSideDetectionShowScamVerdictWarningName,
+     flag_descriptions::kClientSideDetectionShowScamVerdictWarningDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kClientSideDetectionShowScamVerdictWarning)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-keyboard-used-palm-suppression",
      flag_descriptions::kEnableKeyboardUsedPalmSuppressionName,

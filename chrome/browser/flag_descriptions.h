@@ -169,6 +169,9 @@ extern const char kClientSideDetectionBrandAndIntentForScamDetectionName[];
 extern const char
     kClientSideDetectionBrandAndIntentForScamDetectionDescription[];
 
+extern const char kClientSideDetectionShowScamVerdictWarningName[];
+extern const char kClientSideDetectionShowScamVerdictWarningDescription[];
+
 extern const char kClipboardMaximumAgeName[];
 extern const char kClipboardMaximumAgeDescription[];
 
