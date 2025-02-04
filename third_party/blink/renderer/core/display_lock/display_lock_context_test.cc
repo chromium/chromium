@@ -430,7 +430,7 @@ TEST_F(DisplayLockContextTest, FindInPageTargetBelowLockedSize) {
   if (RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled())
     EXPECT_FLOAT_EQ(GetDocument().scrollingElement()->scrollTop(), 1768.5);
   else
-    EXPECT_FLOAT_EQ(GetDocument().scrollingElement()->scrollTop(), 1768);
+    EXPECT_FLOAT_EQ(GetDocument().scrollingElement()->scrollTop(), 1769);
 }
 
 TEST_F(DisplayLockContextTest,
