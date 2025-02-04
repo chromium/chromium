@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] With em and percentage
-  assert_equals: r1.width expected 40 but got 0
-Harness: the test ran to completion.
-
