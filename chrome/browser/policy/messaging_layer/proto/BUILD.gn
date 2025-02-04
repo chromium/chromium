@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("crd_event_proto") {
@@ -13,7 +14,7 @@ proto_library("crd_event_proto") {
   deps = [ "//components/reporting/proto:session_affiliated_user_proto" ]
 }
 
-proto_library("log_upload_event_proto") {
+fuzzable_proto_library("log_upload_event_proto") {
   proto_in_dir = "//"
   sources = [ "synced/log_upload_event.proto" ]
   import_dirs = [ "//components/reporting/proto/synced" ]
