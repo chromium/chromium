@@ -2021,6 +2021,37 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   EXPECT_EQ(1, samples->GetCount(3));  // Allow once
 }
 
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureWithVideoPlaybackBrowserTest,
+    PromptResultRecorded_VideoAndMediaPlaybackgNotShownBlocked) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  // Starts using camera/microphone.
+  GetUserMediaAndAccept(web_contents);
+
+  SetContentSetting(web_contents, CONTENT_SETTING_BLOCK);
+
+  base::HistogramTester histograms;
+  OpenNewTab(browser());
+  EXPECT_FALSE(web_contents->HasPictureInPictureDocument());
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples =
+      histograms.GetHistogramSamplesSinceCreation(kVideoConferencingHistogram);
+
+  // Verify that the "not shown blocked" prompt result is recorded once for the
+  // "video conferencing" metric.
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(1, samples->GetCount(6));  // Not shown blocked
+}
+
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        PromptResultRecorded_VideoConferencingTakesPrecedence) {
   // Load a page that registers for autopip and start video playback.
