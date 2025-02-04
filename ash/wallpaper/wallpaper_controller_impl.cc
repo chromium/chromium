@@ -5,6 +5,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -69,6 +70,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -308,6 +310,23 @@ std::unique_ptr<WallpaperInfo> CreateOnlineWallpaperInfo(
     return nullptr;
   }
   return std::make_unique<WallpaperInfo>(params, *selected_variant);
+}
+
+using GetCustomizationIdCallback =
+    base::OnceCallback<void(std::optional<std::string_view>)>;
+
+void OnMachineStatisticsReady(
+    GetCustomizationIdCallback get_customization_id_callback) {
+  std::move(get_customization_id_callback)
+      .Run(system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          system::kCustomizationIdKey));
+}
+
+void GetCustomizationId(
+    GetCustomizationIdCallback get_customization_id_callback) {
+  system::StatisticsProvider::GetInstance()->ScheduleOnMachineStatisticsLoaded(
+      base::BindOnce(&OnMachineStatisticsReady,
+                     std::move(get_customization_id_callback)));
 }
 
 }  // namespace
@@ -897,13 +916,11 @@ bool WallpaperControllerImpl::GetDailyGooglePhotosWallpaperIdCache(
 void WallpaperControllerImpl::SetTimeOfDayWallpaper(
     const AccountId& account_id,
     SetWallpaperCallback callback) {
-  OnlineWallpaperVariantInfoFetcher::FetchParamsCallback on_fetch =
-      base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
-                     set_wallpaper_weak_factory_.GetWeakPtr(),
-                     WallpaperType::kOnline, std::move(callback));
-  variant_info_fetcher_.FetchTimeOfDayWallpaper(
-      account_id, wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId,
-      std::move(on_fetch));
+  set_wallpaper_weak_factory_.InvalidateWeakPtrs();
+  GetCustomizationId(base::BindOnce(
+      &WallpaperControllerImpl::OnGetCustomizationIdForTimeOfDayWallpaper,
+      set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
+      std::move(callback)));
 }
 
 bool WallpaperControllerImpl::IsTimeOfDayWallpaper() const {
@@ -2010,11 +2027,26 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
 }
 
 void WallpaperControllerImpl::ShowOobeWallpaper() {
+  GetCustomizationId(
+      base::BindOnce(&WallpaperControllerImpl::OnGetCustomizationIdForOobe,
+                     set_wallpaper_weak_factory_.GetWeakPtr()));
+}
+
+void WallpaperControllerImpl::OnGetCustomizationIdForOobe(
+    std::optional<std::string_view> customization_id) {
   base::FilePath file_path;
   if (features::IsBootAnimationEnabled()) {
-    file_path = base::FilePath(
-        FILE_PATH_LITERAL("/usr/share/chromeos-assets/animated_splash_screen/"
-                          "oobe_wallpaper.jpg"));
+    const base::FilePath directory_path(
+        FILE_PATH_LITERAL("/usr/share/chromeos-assets/animated_splash_screen"));
+    const base::FilePath file_name(
+        customization_id ==
+                wallpaper_constants::kAlternateWallpaperCustomizationId
+            ? FILE_PATH_LITERAL("oobe_wallpaper_navi.jpg")
+            : FILE_PATH_LITERAL("oobe_wallpaper.jpg"));
+
+    DVLOG(1) << __func__ << " loading file_name " << file_name;
+
+    file_path = directory_path.Append(file_name);
   } else {
     file_path = GetDefaultWallpaperPath(user_manager::UserType::kRegular);
   }
@@ -2765,6 +2797,29 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
       DCHECK(false) << "Synced in an unsyncable wallpaper type";
       break;
   }
+}
+
+void WallpaperControllerImpl::OnGetCustomizationIdForTimeOfDayWallpaper(
+    const AccountId& account_id,
+    SetWallpaperCallback set_wallpaper_callback,
+    std::optional<std::string_view> customization_id) {
+  const auto unit_id =
+      customization_id ==
+              wallpaper_constants::kAlternateWallpaperCustomizationId
+          ? wallpaper_constants::kAlternateTimeOfDayWallpaperUnitId
+          : wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId;
+
+  DVLOG(1) << __func__
+           << " customization_id: " << customization_id.value_or("null")
+           << " unit_id: " << unit_id;
+
+  OnlineWallpaperVariantInfoFetcher::FetchParamsCallback on_fetch =
+      base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
+                     set_wallpaper_weak_factory_.GetWeakPtr(),
+                     WallpaperType::kOnline, std::move(set_wallpaper_callback));
+
+  variant_info_fetcher_.FetchTimeOfDayWallpaper(account_id, unit_id,
+                                                std::move(on_fetch));
 }
 
 void WallpaperControllerImpl::OnTimeOfDayWallpaperSetAfterOobe(bool success) {

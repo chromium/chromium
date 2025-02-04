@@ -6,6 +6,7 @@
 #define ASH_WALLPAPER_WALLPAPER_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -504,6 +505,9 @@ class ASH_EXPORT WallpaperControllerImpl
                                 SetWallpaperCallback callback,
                                 const gfx::ImageSkia& image);
 
+  void OnGetCustomizationIdForOobe(
+      std::optional<std::string_view> customization_id);
+
   // Used as the callback as soon as the OOBE wallpaper is loaded and decoded
   // from file system.
   void OnOobeWallpaperDecoded(const base::FilePath& path,
@@ -692,6 +696,11 @@ class ASH_EXPORT WallpaperControllerImpl
 
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    const WallpaperInfo& info);
+
+  void OnGetCustomizationIdForTimeOfDayWallpaper(
+      const AccountId& account_id,
+      SetWallpaperCallback set_wallpaper_callback,
+      std::optional<std::string_view> customization_id);
 
   // Called as a callback for `SetTimeOfDayWallpaper`.
   void OnTimeOfDayWallpaperSetAfterOobe(bool success);
