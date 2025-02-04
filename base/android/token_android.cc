@@ -4,15 +4,8 @@
 
 #include "base/android/token_android.h"
 
-#include "build/robolectric_buildflags.h"
-
-#if BUILDFLAG(IS_ROBOLECTRIC)
-#include "base/base_robolectric_jni/TokenBase_jni.h"  // nogncheck
-#include "base/base_robolectric_jni/Token_jni.h"      // nogncheck
-#else
-#include "base/base_jni/TokenBase_jni.h"
-#include "base/base_jni/Token_jni.h"
-#endif
+#include "base/base_minimal_jni/TokenBase_jni.h"
+#include "base/base_minimal_jni/Token_jni.h"
 
 namespace base::android {
 

@@ -11,14 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "build/robolectric_buildflags.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#if BUILDFLAG(IS_ROBOLECTRIC)
-#include "base/base_robolectric_jni/JavaExceptionReporter_jni.h"  // nogncheck
-#else
-#include "base/base_jni/JavaExceptionReporter_jni.h"
-#endif
+#include "base/base_minimal_jni/JavaExceptionReporter_jni.h"
 
 using jni_zero::JavaParamRef;
 using jni_zero::JavaRef;

@@ -19,11 +19,8 @@
 #include "build/robolectric_buildflags.h"
 #include "third_party/jni_zero/jni_zero.h"
 
-#if BUILDFLAG(IS_ROBOLECTRIC)
-#include "base/base_robolectric_jni/JniAndroid_jni.h"  // nogncheck
-#else
-#include "base/base_jni/JniAndroid_jni.h"
-#endif
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/base_minimal_jni/JniAndroid_jni.h"
 
 namespace base {
 namespace android {

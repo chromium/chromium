@@ -1161,11 +1161,6 @@ component("base") {
       "android/java_heap_dump_generator.h",
       "android/java_runtime.cc",
       "android/java_runtime.h",
-      "android/library_loader/anchor_functions.cc",
-      "android/library_loader/anchor_functions.h",
-      "android/library_loader/library_prefetcher.cc",
-      "android/library_loader/library_prefetcher.h",
-      "android/library_loader/library_prefetcher_hooks.cc",
       "android/locale_utils.cc",
       "android/locale_utils.h",
       "android/meminfo_dump_provider.cc",
@@ -1239,10 +1234,8 @@ component("base") {
       ":base_jni",
       ":base_shared_preferences_jni",
       ":callback_jni",
-      ":command_line_jni",
       ":content_uri_utils_jni",
       ":jank_tracker_jni",
-      ":library_loader_jni",
       ":memory_jni",
       ":metrics_jni",
       ":process_launcher_jni",
@@ -1287,7 +1280,6 @@ component("base") {
   if (is_robolectric) {
     # Make jni.h available.
     configs += [ "//third_party/jdk" ]
-    deps += [ ":base_robolectric_jni" ]
   }
   if (is_android || is_robolectric) {
     sources += [
@@ -1313,8 +1305,13 @@ component("base") {
       "android/jni_utils.cc",
       "android/jni_utils.h",
       "android/jni_weak_ref.h",
+      "android/library_loader/anchor_functions.cc",
+      "android/library_loader/anchor_functions.h",
       "android/library_loader/library_loader_hooks.cc",
       "android/library_loader/library_loader_hooks.h",
+      "android/library_loader/library_prefetcher.cc",
+      "android/library_loader/library_prefetcher.h",
+      "android/library_loader/library_prefetcher_hooks.cc",
       "android/native_uma_recorder.cc",
       "android/scoped_java_ref.h",
       "android/token_android.cc",
@@ -1324,7 +1321,13 @@ component("base") {
       "android/unguessable_token_android.cc",
       "android/unguessable_token_android.h",
     ]
-    deps += [ "//build:robolectric_buildflags" ]
+    deps += [
+      ":base_minimal_jni($default_toolchain)",
+      ":command_line_jni($default_toolchain)",
+      ":library_loader_jni($default_toolchain)",
+      ":tasks_minimal_jni($default_toolchain)",
+      "//build:robolectric_buildflags",
+    ]
     public_deps += [ "//third_party/jni_zero:jni_zero" ]
   }  # is_android || is_robolectric
 
@@ -4262,27 +4265,34 @@ if (enable_nocompile_tests) {
 }
 
 if (is_android || is_robolectric) {
-  # This is a subset of the main "base_jni", used in the robolectric toolchain.
-  # While it would be nice to just make 2 unique generate_jnis, we can't because
-  # we will have 2 GEN_JNI classes in one compilation unit. This is fixable, see
-  # crbug.com/330173100.
-  generate_jni("base_robolectric_jni") {
+  shared_library_with_jni("libbase_junit_tests") {
+    testonly = true
+    enable_target = is_robolectric
+    sources = [ "android/robolectric_jni_onload.cc" ]
+    deps = [ ":base($robolectric_toolchain)" ]
+    java_targets = [ ":base_junit_tests" ]
+    visibility = [ ":*" ]
+
+    # Make jni.h available.
+    configs += [ "//third_party/jdk" ]
+  }
+}  # is_android || is_robolectric
+
+if (is_android) {
+  # JNI supported in Robolectric tests.
+  generate_jni("base_minimal_jni") {
     sources = [
-      "android/java/src/org/chromium/base/Callback.java",
-      "android/java/src/org/chromium/base/CommandLine.java",
       "android/java/src/org/chromium/base/JNIUtils.java",
       "android/java/src/org/chromium/base/JavaExceptionReporter.java",
       "android/java/src/org/chromium/base/JniAndroid.java",
       "android/java/src/org/chromium/base/Token.java",
       "android/java/src/org/chromium/base/TokenBase.java",
-      "android/java/src/org/chromium/base/TraceEvent.java",
       "android/java/src/org/chromium/base/UnguessableToken.java",
-      "android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
-      "android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java",
     ]
     public_deps = [ ":android_runtime_jni_headers" ]
   }
 
+  # JNI not supported in Robolectric.
   generate_jni("base_jni") {
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
@@ -4299,10 +4309,7 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
       "android/java/src/org/chromium/base/InputHintChecker.java",
       "android/java/src/org/chromium/base/IntStringCallback.java",
-      "android/java/src/org/chromium/base/JNIUtils.java",
-      "android/java/src/org/chromium/base/JavaExceptionReporter.java",
       "android/java/src/org/chromium/base/JavaHandlerThread.java",
-      "android/java/src/org/chromium/base/JniAndroid.java",
       "android/java/src/org/chromium/base/JniCallbackUtils.java",
       "android/java/src/org/chromium/base/JniOnceCallback.java",
       "android/java/src/org/chromium/base/JniRepeatingCallback.java",
@@ -4312,9 +4319,6 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/PowerMonitor.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
       "android/java/src/org/chromium/base/TimezoneUtils.java",
-      "android/java/src/org/chromium/base/Token.java",
-      "android/java/src/org/chromium/base/TokenBase.java",
-      "android/java/src/org/chromium/base/UnguessableToken.java",
     ]
 
     if (use_clang_profiling) {
@@ -4323,7 +4327,10 @@ if (is_android || is_robolectric) {
       ]
     }
 
-    public_deps = [ ":android_runtime_jni_headers" ]
+    public_deps = [
+      ":android_runtime_jni_headers",
+      ":base_minimal_jni",
+    ]
   }
 
   generate_jar_jni("android_runtime_jni_headers") {
@@ -4334,28 +4341,6 @@ if (is_android || is_robolectric) {
     ]
   }
 
-  generate_jni("process_launcher_jni") {
-    sources = [ "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java" ]
-  }
-
-  generate_jni("base_shared_preferences_jni") {
-    sources = [ "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java" ]
-  }
-
-  shared_library_with_jni("libbase_junit_tests") {
-    testonly = true
-    enable_target = is_robolectric
-    sources = [ "android/robolectric_jni_onload.cc" ]
-    deps = [ ":base($robolectric_toolchain)" ]
-    java_targets = [ ":base_junit_tests" ]
-    visibility = [ ":*" ]
-
-    # Make jni.h available.
-    configs += [ "//third_party/jdk" ]
-  }
-}  # is_android || is_robolectric
-
-if (is_android) {
   java_cpp_features("java_features_srcjar") {
     # External code should depend on ":base_java" instead.
     visibility = [ ":*" ]
@@ -4376,6 +4361,10 @@ if (is_android) {
     visibility = [ ":*" ]
     sources = [ "base_switches.cc" ]
     template = "android/java/src/org/chromium/base/BaseSwitches.java.tmpl"
+  }
+
+  generate_jni("process_launcher_jni") {
+    sources = [ "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java" ]
   }
 
   android_library("process_launcher_java") {
@@ -4411,7 +4400,6 @@ if (is_android) {
   android_library("base_java") {
     srcjar_deps = [
       ":base_android_java_enums_srcjar",
-      ":base_jni",
       ":java_features_srcjar",
     ]
 
@@ -4504,6 +4492,8 @@ if (is_android) {
     # The current list were grandfathered during the refactoring of base_java.
     public_deps = [
       ":activity_state_java",
+      ":base_jni_java",
+      ":base_minimal_jni_java",
       ":base_switches_java",
       ":callback_java",
       ":command_line_java",
@@ -4548,10 +4538,7 @@ if (is_android) {
   }
 
   android_library("metrics_java") {
-    srcjar_deps = [
-      ":metrics_enum_srcjar",
-      ":metrics_jni",
-    ]
+    srcjar_deps = [ ":metrics_enum_srcjar" ]
     sources = [
       "android/java/src/org/chromium/base/metrics/CachingUmaRecorder.java",
       "android/java/src/org/chromium/base/metrics/HistogramBucket.java",
@@ -4567,6 +4554,7 @@ if (is_android) {
     deps = [
       ":callback_java",
       ":log_java",
+      ":metrics_jni_java",
       ":time_utils_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
@@ -4724,6 +4712,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/CallbackUtils.java",
     ]
     deps = [
+      ":callback_jni_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
@@ -4743,12 +4732,16 @@ if (is_android) {
     ]
   }
 
+  # JNI that is also supported in the Robolectric toolchain.
+  generate_jni("tasks_minimal_jni") {
+    sources = [ "android/java/src/org/chromium/base/TraceEvent.java" ]
+  }
+
   generate_jni("tasks_jni") {
     sources = [
       "android/java/src/org/chromium/base/ApplicationStatus.java",
       "android/java/src/org/chromium/base/EarlyTraceEvent.java",
       "android/java/src/org/chromium/base/ThreadUtils.java",
-      "android/java/src/org/chromium/base/TraceEvent.java",
       "android/java/src/org/chromium/base/task/PostTask.java",
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
     ]
@@ -4762,10 +4755,7 @@ if (is_android) {
   }
 
   android_library("tasks_java") {
-    srcjar_deps = [
-      ":task_trait_enum_srcjar",
-      ":tasks_jni",
-    ]
+    srcjar_deps = [ ":task_trait_enum_srcjar" ]
     sources = [
       # Dependencies added after this comment is tech-debt, should be untangled
       # and moved to their own separate android_library.
@@ -4797,6 +4787,10 @@ if (is_android) {
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
       "android/java/src/org/chromium/base/task/UiThreadTaskRunnerImpl.java",
     ]
+    public_deps = [
+      ":tasks_jni_java",
+      ":tasks_minimal_jni_java",
+    ]
     deps = [
       ":activity_state_java",
       ":base_switches_java",
@@ -4822,9 +4816,9 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/base/CommandLine.java" ]
   }
   android_library("command_line_java") {
-    srcjar_deps = [ ":command_line_jni" ]
     sources = [ "android/java/src/org/chromium/base/CommandLine.java" ]
     deps = [
+      ":command_line_jni_java",
       ":log_java",
       ":resetters_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
@@ -4904,10 +4898,7 @@ if (is_android) {
   }
 
   android_library("library_loader_java") {
-    srcjar_deps = [
-      ":library_loader_java_enums_srcjar",
-      ":library_loader_jni",
-    ]
+    srcjar_deps = [ ":library_loader_java_enums_srcjar" ]
     sources = [
       "android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
       "android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java",
@@ -4922,6 +4913,7 @@ if (is_android) {
       ":base_switches_java",
       ":callback_java",
       ":command_line_java",
+      ":library_loader_jni_java",
       ":log_java",
       ":metrics_java",
       ":resetters_java",
@@ -4937,9 +4929,14 @@ if (is_android) {
     ]
   }
 
+  generate_jni("base_shared_preferences_jni") {
+    sources = [ "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java" ]
+  }
+
   android_library("base_shared_preferences_java") {
     deps = [
       ":base_java",
+      ":base_shared_preferences_jni_java",
       "//third_party/android_deps:guava_android_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
