@@ -7,12 +7,14 @@ package org.chromium.components.browsing_data.content;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.Origin;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@NullMarked
 public class BrowsingDataModel {
 
     // A pointer to the C++ object for this model.
