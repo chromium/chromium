@@ -112,7 +112,7 @@ class WebIdlSchemaTest(unittest.TestCase):
     # Test basic types.
     self.assertEqual(
         None,
-        getFunctionReturn(schema, 'returnsVoid'),
+        getFunctionReturn(schema, 'returnsUndefined'),
     )
     self.assertEqual(
         {
@@ -350,6 +350,19 @@ class WebIdlSchemaTest(unittest.TestCase):
         expected_error_regex,
         web_idl_schema.Load,
         'test/web_idl/documentation_comment_top_of_file.idl',
+    )
+
+  # Tests that usage of the 'void' type will result in a schema compiler error.
+  # 'void' has been deprecated and 'undefined' should be used instead.
+  def testVoidUsageTriggersError(self):
+    expected_error_regex = (
+        'Error processing node PrimitiveType\(void\): Usage of "void" in IDL is'
+        ' deprecated, use "Undefined" instead.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/void_unsupported.idl',
     )
 
   # Tests that an API interface that uses the nodoc extended attribute has the
