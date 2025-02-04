@@ -7,8 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/format_macros.h"
 #import "base/logging.h"
-#import "base/metrics/histogram_macros.h"
-#import "base/time/time.h"
 #import "components/favicon/core/large_icon_service.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
@@ -82,9 +80,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
 /// scroll view.
 @property(nonatomic, assign) CGFloat keyboardHeight;
 
-/// Time the view appeared on screen. Used to record a metric of how long this
-/// view controller was on screen.
-@property(nonatomic, assign) base::TimeTicks viewAppearanceTime;
 /// Table view that displays the results.
 @property(nonatomic, strong) UITableView* tableView;
 
@@ -302,15 +297,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   [self adjustMarginsToMatchOmniboxWidth];
-
-  self.viewAppearanceTime = base::TimeTicks::Now();
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-      "MobileOmnibox.PopupOpenDuration",
-      base::TimeTicks::Now() - self.viewAppearanceTime);
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
