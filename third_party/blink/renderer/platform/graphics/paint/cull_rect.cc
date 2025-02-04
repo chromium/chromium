@@ -6,6 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -138,10 +139,13 @@ std::pair<bool, bool> CullRect::ApplyScrollTranslation(
   gfx::Rect container_rect = scroll->ContainerRect();
   rect_.Intersect(container_rect);
   if (rect_.IsEmpty()) {
+    DVLOG(3) << "No intersection with container rect";
     return {false, false};
   }
+  DVLOG(3) << "Clipped by container rect: " << rect_.ToString();
 
   ApplyTransform(scroll_translation);
+  DVLOG(3) << "Scrolled: " << rect_.ToString();
 
   if (expansion_ratio == 0) {
     return {false, false};
@@ -193,8 +197,11 @@ std::pair<bool, bool> CullRect::ApplyScrollTranslation(
   outset_x = std::min(std::max(outset_x, min_expansion), scroll_range_x);
   outset_y = std::min(std::max(outset_y, min_expansion), scroll_range_y);
   rect_.Outset(gfx::Outsets::VH(outset_y, outset_x));
+  DVLOG(3) << "Expanded(" << outset_x << "," << outset_y
+           << "): " << rect_.ToString();
 
   rect_.Intersect(contents_rect);
+  DVLOG(3) << "Clipped by contents_rect: " << rect_.ToString();
   return {outset_x > 0, outset_y > 0};
 }
 
@@ -205,12 +212,15 @@ bool CullRect::ApplyPaintPropertiesWithoutExpansion(
       GeometryMapper::LocalToAncestorClipRect(destination, source);
   if (clip_rect.Rect().IsEmpty()) {
     rect_ = gfx::Rect();
+    DVLOG(3) << "Empty clip";
     return false;
   }
   if (!clip_rect.IsInfinite()) {
     rect_.Intersect(gfx::ToEnclosingRect(clip_rect.Rect()));
-    if (rect_.IsEmpty())
+    if (rect_.IsEmpty()) {
+      DVLOG(3) << "Empty after clip";
       return false;
+    }
   }
   if (!IsInfinite()) {
     GeometryMapper::SourceToDestinationRect(source.Transform(),
@@ -218,6 +228,7 @@ bool CullRect::ApplyPaintPropertiesWithoutExpansion(
   }
   // Return true even if the transformed rect is empty (e.g. by rotateX(90deg))
   // because later transforms may make the content visible again.
+  DVLOG(3) << "ApplyPaintPropertiesWithoutExpansion: " << rect_.ToString();
   return true;
 }
 
@@ -362,12 +373,14 @@ bool CullRect::ApplyPaintProperties(
       if (expansion_bounds)
         expansion_bounds->Outset(gfx::Outsets::VH(0, pixel_distance_to_expand));
       expanded.first = true;
+      DVLOG(3) << "Expanded horizontally: " << rect_.ToString();
     }
     if (rect_.height() < pixel_distance_to_expand) {
       rect_.Outset(gfx::Outsets::VH(pixel_distance_to_expand, 0));
       if (expansion_bounds)
         expansion_bounds->Outset(gfx::Outsets::VH(pixel_distance_to_expand, 0));
       expanded.second = true;
+      DVLOG(3) << "Expanded vertically: " << rect_.ToString();
     }
   }
 
@@ -377,6 +390,7 @@ bool CullRect::ApplyPaintProperties(
       !ChangedEnough(expanded, *old_cull_rect, expansion_bounds,
                      expansion_ratio)) {
     rect_ = old_cull_rect->Rect();
+    DVLOG(3) << "!ChangedEnough, use old cull rect: " << rect_.ToString();
   }
 
   return expanded.first || expanded.second;

@@ -811,7 +811,7 @@ BASE_FEATURE_PARAM(bool,
                    kSmallScrollersUseMinCullRect,
                    &kExpandCompositedCullRect,
                    "small_scroller_opt",
-                   false);
+                   true);
 
 // Enable the <fencedframe> element; see crbug.com/1123606. Note that enabling
 // this feature does not automatically expose this element to the web, it only

@@ -869,7 +869,7 @@ TEST_P(PaintLayerPainterTest, PaintWithOverriddenCullRect) {
 
 TEST_P(PaintLayerPainterTest, DevtoolsPaintTraceEvents) {
   SetBodyInnerHTML(R"HTML(
-    <div id=scroller style="width: 100px; height: 100px; overflow-y: scroll;
+    <div id=scroller style="width: 400px; height: 400px; overflow-y: scroll;
                             position: relative">
       <div style="height: 5000px"></div>
       <div id=target style="position: relative; width: 50px; height: 50px;
@@ -930,7 +930,7 @@ TEST_P(PaintLayerPainterTest, DevtoolsPaintTraceEvents) {
               root_data.FindInt("nodeId"));
     // Scroller was SetNeedsRepaint on cull rect change.
     auto scroller_data = events[1]->GetKnownArgAsDict("data");
-    EXPECT_EQ(gfx::RectF(0, 0, 100, 7100), get_clip(scroller_data));
+    EXPECT_EQ(gfx::RectF(0, 0, 400, 7400), get_clip(scroller_data));
     EXPECT_EQ(frame_id, *scroller_data.FindString("frame"));
     EXPECT_EQ(IdentifiersFactory::IntIdForNode(scroller),
               scroller_data.FindInt("nodeId"));
@@ -938,7 +938,7 @@ TEST_P(PaintLayerPainterTest, DevtoolsPaintTraceEvents) {
     // reported along with `scroller` because `scroller` is not a stacking
     // context (thus not `target`s paint parent).
     auto target_data = events[2]->GetKnownArgAsDict("data");
-    EXPECT_EQ(gfx::RectF(0, -5000, 100, 7100), get_clip(target_data));
+    EXPECT_EQ(gfx::RectF(0, -5000, 400, 7400), get_clip(target_data));
     EXPECT_EQ(frame_id, *target_data.FindString("frame"));
     EXPECT_EQ(IdentifiersFactory::IntIdForNode(target),
               target_data.FindInt("nodeId"));
@@ -959,7 +959,7 @@ TEST_P(PaintLayerPainterTest, DevtoolsPaintTraceEvents) {
     EXPECT_EQ(IdentifiersFactory::IntIdForNode(&GetDocument()),
               root_data.FindInt("nodeId"));
     auto target_data = events[1]->GetKnownArgAsDict("data");
-    EXPECT_EQ(gfx::RectF(0, -5000, 100, 7100), get_clip(target_data));
+    EXPECT_EQ(gfx::RectF(0, -5000, 400, 7400), get_clip(target_data));
     EXPECT_EQ(frame_id, *root_data.FindString("frame"));
     EXPECT_EQ(IdentifiersFactory::IntIdForNode(target),
               target_data.FindInt("nodeId"));

@@ -989,8 +989,8 @@ TEST_P(ScrollingContentsCullRectTest, Basics) {
     <!doctype html>
     <style>
       .scroller {
-         width: 200px;
-         height: 200px;
+         width: 400px;
+         height: 400px;
          overflow: scroll;
          font-size: 20px;
          border: 20px solid black;
@@ -1032,9 +1032,9 @@ TEST_P(ScrollingContentsCullRectTest, Basics) {
   EXPECT_FALSE(CcLayerByDOMElementId("non-composited-under-clip"));
 
   CheckCullRect("short-composited-scroller", std::nullopt);
-  CheckCullRect("long-composited-scroller", gfx::Rect(20, 20, 200, 4200));
+  CheckCullRect("long-composited-scroller", gfx::Rect(20, 20, 400, 4400));
   CheckCullRect("narrow-non-composited-scroller", std::nullopt);
-  CheckCullRect("wide-non-composited-scroller", gfx::Rect(20, 20, 4200, 200));
+  CheckCullRect("wide-non-composited-scroller", gfx::Rect(20, 20, 4400, 400));
   CheckCullRect("composited-under-clip", std::nullopt);
   CheckCullRect("non-composited-under-clip", std::nullopt);
 
@@ -1068,9 +1068,9 @@ TEST_P(ScrollingContentsCullRectTest, Basics) {
   EXPECT_FALSE(CcLayerByDOMElementId("non-composited-under-clip"));
 
   CheckCullRect("short-composited-scroller", std::nullopt);
-  CheckCullRect("long-composited-scroller", gfx::Rect(20, 1020, 200, 8200));
+  CheckCullRect("long-composited-scroller", gfx::Rect(20, 1020, 400, 8400));
   CheckCullRect("narrow-non-composited-scroller", std::nullopt);
-  CheckCullRect("wide-non-composited-scroller", gfx::Rect(1020, 20, 8200, 200));
+  CheckCullRect("wide-non-composited-scroller", gfx::Rect(1020, 20, 8400, 400));
   CheckCullRect("composited-under-clip", std::nullopt);
   CheckCullRect("non-composited-under-clip", std::nullopt);
 }
@@ -1078,7 +1078,7 @@ TEST_P(ScrollingContentsCullRectTest, Basics) {
 TEST_P(ScrollingContentsCullRectTest, RepaintOnlyScroll) {
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <!doctype html>
-    <div id="scroller" style="width: 200px; height: 200px; overflow: scroll">
+    <div id="scroller" style="width: 400px; height: 400px; overflow: scroll">
       <div id="content" style="background: yellow">
         <div style="height: 100px; background: blue"></div>
       </div>
@@ -1094,7 +1094,7 @@ TEST_P(ScrollingContentsCullRectTest, RepaintOnlyScroll) {
   auto sequence_number = GetPropertyTrees()->sequence_number();
 
   EXPECT_TRUE(CcLayerByDOMElementId("scroller"));
-  CheckCullRect("scroller", gfx::Rect(0, 0, 200, 4200));
+  CheckCullRect("scroller", gfx::Rect(0, 0, 400, 4400));
 
   GetElementById("scroller")->scrollTo(0, 3000);
   UpdateAllLifecyclePhasesExceptPaint();
@@ -1118,7 +1118,7 @@ TEST_P(ScrollingContentsCullRectTest, RepaintOnlyScroll) {
   EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
             PaintArtifactCompositor::UpdateType::kRepaint);
   EXPECT_EQ(sequence_number, GetPropertyTrees()->sequence_number());
-  CheckCullRect("scroller", gfx::Rect(0, 1000, 200, 5100));
+  CheckCullRect("scroller", gfx::Rect(0, 1000, 400, 5100));
 }
 
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
@@ -3759,7 +3759,7 @@ TEST_P(CompositingSimTest, ScrollingContentsLayerRecordedBounds) {
       }
     </style>
     <div id="scroller" style="overflow: scroll; will-change: scroll-position;
-                              width: 200px; height: 200px">
+                              width: 400px; height: 400px">
       <div>1</div>
       <div>2</div>
       <div>3</div>

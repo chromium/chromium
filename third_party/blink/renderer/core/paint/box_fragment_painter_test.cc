@@ -56,7 +56,7 @@ TEST_P(BoxFragmentPainterTest, ScrollHitTestOrder) {
         width: 40px;
         height: 40px;
         overflow: scroll;
-        font-size: 500px;
+        font-size: 200px;
       }
     </style>
     <div id='scroller'>TEXT</div>
