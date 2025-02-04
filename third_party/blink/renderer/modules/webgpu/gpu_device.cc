@@ -199,11 +199,7 @@ GPUDevice::~GPUDevice() {
 
   // Clear the callbacks since we can't handle callbacks after finalization.
   if (GetHandle().Get() != nullptr) {
-#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
     GetHandle().SetLoggingCallback([](wgpu::LoggingType, wgpu::StringView) {});
-#else
-    GetHandle().SetLoggingCallback(nullptr, nullptr);
-#endif
   }
 }
 
