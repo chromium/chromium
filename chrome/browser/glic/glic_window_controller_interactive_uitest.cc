@@ -6,6 +6,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -131,8 +132,15 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                   new_browser, "attached to the other browser"));
 }
 
+// Disabled due to flakes Mac; see https://crbug.com/394350688.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OpenDetachedAndThenOpenAttached \
+  DISABLED_OpenDetachedAndThenOpenAttached
+#else
+#define MAYBE_OpenDetachedAndThenOpenAttached OpenDetachedAndThenOpenAttached
+#endif
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       OpenDetachedAndThenOpenAttached) {
+                       MAYBE_OpenDetachedAndThenOpenAttached) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
                   PressButton(kGlicButtonElementId),
                   WaitForEvent(kGlicButtonElementId, kGlicWidgetAttached),
