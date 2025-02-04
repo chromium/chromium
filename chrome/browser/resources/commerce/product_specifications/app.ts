@@ -336,14 +336,11 @@ export class ProductSpecificationsElement extends CrLitElement {
       this.isWindowFocused_ = false;
     });
 
-    // If the browser 'back' button is clicked and the previous history entry
-    // was the empty state, then reload the page to show the empty state. This
-    // allows the user to return to the empty state after clicking on a
-    // comparison table list item or creating a new set via adding a URL.
     window.addEventListener('popstate', () => {
-      if (window.location.hash === '') {
-        window.location.replace(window.location.origin);
-      }
+      // Since we are modifying the browser's history with pushState, navigating
+      // forward or backward will display but not load the URL associated with a
+      // history entry. This forces the URL to be loaded.
+      window.location.replace(window.location.href);
     });
 
     this.eventTracker_.add(
