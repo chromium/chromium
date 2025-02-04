@@ -22,18 +22,12 @@ class CONTENT_EXPORT SafeAreaUserData
   void set_viewport_fit(blink::mojom::ViewportFit value) { value_ = value; }
   blink::mojom::ViewportFit viewport_fit() { return value_; }
 
-  void set_safe_area_constraint(bool value) {
-    has_safe_area_constraint_ = value;
-  }
-  bool has_safe_area_constraint() { return has_safe_area_constraint_; }
-
  private:
   explicit SafeAreaUserData(RenderFrameHost* rfh)
       : DocumentUserData<SafeAreaUserData>(rfh) {}
 
   // The viewport-fit value known by blink, or kAuto.
   blink::mojom::ViewportFit value_ = blink::mojom::ViewportFit::kAuto;
-  bool has_safe_area_constraint_ = false;
 
   // NOTE: Do not add data members without updating SetViewportFitValue.
   // This is because data does not need to be stored if it consists purely
@@ -112,11 +106,7 @@ void SafeAreaInsetsHostImpl::ViewportFitChangedForFrame(
 void SafeAreaInsetsHostImpl::ComplexSafeAreaConstraintChangedForFrame(
     RenderFrameHost* rfh,
     bool has_constraint) {
-  DCHECK(rfh);
-  SetSafeAreaConstraintValue(rfh, has_constraint);
-
   if (rfh == active_render_frame_host()) {
-    active_has_constraint_ = has_constraint;
     web_contents_impl_->NotifySafeAreaConstraintChanged(has_constraint);
   }
 }
@@ -126,19 +116,12 @@ void SafeAreaInsetsHostImpl::MaybeActiveRenderFrameHostChanged() {
       fullscreen_rfh_ ? fullscreen_rfh_ : current_rfh_;
   active_rfh_ = new_active_rfh;
 
-  blink::mojom::ViewportFit new_viewport_fit =
+  blink::mojom::ViewportFit new_value =
       GetValueOrDefault(active_render_frame_host());
-  if (new_viewport_fit != active_viewport_fit_) {
-    active_viewport_fit_ = new_viewport_fit;
-    web_contents_impl_->NotifyViewportFitChanged(new_viewport_fit);
+  if (new_value != active_value_) {
+    active_value_ = new_value;
+    web_contents_impl_->NotifyViewportFitChanged(new_value);
   }
-  bool new_has_constraint =
-      GetSafeAreaConstraintOrDefault(active_render_frame_host());
-  if (new_has_constraint != active_has_constraint_) {
-    active_has_constraint_ = new_has_constraint;
-    web_contents_impl_->NotifySafeAreaConstraintChanged(new_has_constraint);
-  }
-
   // Update Blink so its document displays with the current insets.
   if (new_active_rfh) {
     MaybeSendSafeAreaToFrame(new_active_rfh.get(), insets_);
@@ -181,22 +164,16 @@ blink::mojom::ViewportFit SafeAreaInsetsHostImpl::GetValueOrDefault(
 void SafeAreaInsetsHostImpl::SetViewportFitValue(
     RenderFrameHost* rfh,
     blink::mojom::ViewportFit value) {
-  SafeAreaUserData::GetOrCreateForCurrentDocument(rfh)->set_viewport_fit(value);
-}
-
-void SafeAreaInsetsHostImpl::SetSafeAreaConstraintValue(RenderFrameHost* rfh,
-                                                        bool has_constraint) {
-  SafeAreaUserData::GetOrCreateForCurrentDocument(rfh)
-      ->set_safe_area_constraint(has_constraint);
-}
-
-bool SafeAreaInsetsHostImpl::GetSafeAreaConstraintOrDefault(
-    RenderFrameHost* rfh) const {
-  if (!rfh) {
-    return false;
+  if (value == blink::mojom::ViewportFit::kAuto) {
+    // We don't need to store UserData when it only contains the default
+    // value(s).
+    if (SafeAreaUserData::GetForCurrentDocument(rfh)) {
+      SafeAreaUserData::DeleteForCurrentDocument(rfh);
+    }
+  } else {
+    SafeAreaUserData::GetOrCreateForCurrentDocument(rfh)->set_viewport_fit(
+        value);
   }
-  SafeAreaUserData* data = SafeAreaUserData::GetForCurrentDocument(rfh);
-  return data != nullptr && data->has_safe_area_constraint();
 }
 
 }  // namespace content

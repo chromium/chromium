@@ -67,14 +67,11 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
   // Protected for testing only.
   blink::mojom::ViewportFit GetValueOrDefault(RenderFrameHost* rfh) const;
 
-  // Sets the stored viewport fit value / safe area constraint value for a
-  // frame, deleting the UserData if it's no longer needed.
+  // Sets the stored viewport fit value for a frame, deleting the UserData
+  // if it's no longer needed.
   // Protected for testing only.
   void SetViewportFitValue(RenderFrameHost* rfh,
                            blink::mojom::ViewportFit value);
-
-  void SetSafeAreaConstraintValue(RenderFrameHost* rfh, bool has_constraint);
-  bool GetSafeAreaConstraintOrDefault(RenderFrameHost* rfh) const;
 
  private:
   static constexpr gfx::Insets kZeroInsets = gfx::Insets();
@@ -114,11 +111,7 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
   base::WeakPtr<RenderFrameHostImpl> active_rfh_;
 
   // Stores the viewport-fit value that's active for this WebContents.
-  blink::mojom::ViewportFit active_viewport_fit_ =
-      blink::mojom::ViewportFit::kAuto;
-  // Stores the active value from |ComplexSafeAreaConstraintChangedForFrame| for
-  // the web contents.
-  bool active_has_constraint_ = false;
+  blink::mojom::ViewportFit active_value_ = blink::mojom::ViewportFit::kAuto;
 
   // The current insets.
   gfx::Insets insets_;
