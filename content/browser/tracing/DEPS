@@ -3,6 +3,7 @@ include_rules = [
   "+grit/tracing_resources.h",
   "+third_party/perfetto/include",
   "+third_party/perfetto/protos",
+  "+third_party/snappy",
 ]
 
 specific_include_rules = {

@@ -7,6 +7,8 @@
 #include <optional>
 #include <utility>
 
+#include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/uuid.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
@@ -18,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/snappy/src/snappy.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/functional/bind.h"
@@ -31,6 +34,41 @@
 #endif
 
 namespace content {
+namespace {
+
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+ParseSerializedPresetTracingConfig(
+    const base::span<const uint8_t>& config_bytes) {
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+  if (config_bytes.empty()) {
+    return std::nullopt;
+  }
+  if (config.ParseFromArray(config_bytes.data(), config_bytes.size())) {
+    return config;
+  }
+  return std::nullopt;
+}
+
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+ParseEncodedPresetTracingConfig(const std::string& config_string) {
+  std::string serialized_config;
+  if (!base::Base64Decode(config_string, &serialized_config)) {
+    return std::nullopt;
+  }
+
+  // `serialized_config` may optionally be compressed.
+  std::string decompressed_config;
+  if (!snappy::Uncompress(serialized_config.data(), serialized_config.size(),
+                          &decompressed_config)) {
+    return ParseSerializedPresetTracingConfig(
+        base::as_byte_span(serialized_config));
+  }
+
+  return ParseSerializedPresetTracingConfig(
+      base::as_byte_span(decompressed_config));
+}
+
+}  // namespace
 
 TraceReportHandler::TraceReportHandler(
     mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
@@ -147,6 +185,46 @@ void TraceReportHandler::GetPrivacyFilterEnabled(
 void TraceReportHandler::SetPrivacyFilterEnabled(bool enable) {
   tracing::BackgroundTracingStateManager::GetInstance().UpdatePrivacyFilter(
       enable);
+}
+
+void TraceReportHandler::SetScenariosConfigFromString(
+    const std::string& config_string,
+    SetScenariosConfigFromStringCallback callback) {
+  auto field_tracing_config = ParseEncodedPresetTracingConfig(config_string);
+  if (!field_tracing_config) {
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(SetScenariosConfig(std::move(*field_tracing_config)));
+}
+
+void TraceReportHandler::SetScenariosConfigFromBuffer(
+    mojo_base::BigBuffer config_pb,
+    SetScenariosConfigFromBufferCallback callback) {
+  auto field_tracing_config =
+      ParseSerializedPresetTracingConfig(config_pb.byte_span());
+  if (!field_tracing_config) {
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(SetScenariosConfig(std::move(*field_tracing_config)));
+}
+
+bool TraceReportHandler::SetScenariosConfig(
+    const perfetto::protos::gen::ChromeFieldTracingConfig& config) {
+  content::BackgroundTracingManager::DataFiltering data_filtering =
+      tracing::BackgroundTracingStateManager::GetInstance()
+              .privacy_filter_enabled()
+          ? content::BackgroundTracingManager::ANONYMIZE_DATA
+          : content::BackgroundTracingManager::NO_DATA_FILTERING;
+  background_tracing_manager_->AddPresetScenarios(std::move(config),
+                                                  data_filtering);
+  const auto& enabled_scenarios =
+      tracing::BackgroundTracingStateManager::GetInstance().enabled_scenarios();
+  if (!enabled_scenarios.empty()) {
+    background_tracing_manager_->SetEnabledScenarios(enabled_scenarios);
+  }
+  return true;
 }
 
 #if BUILDFLAG(IS_WIN)
