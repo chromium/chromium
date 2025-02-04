@@ -184,6 +184,30 @@ std::vector<url::Origin> GetServiceWorkerExtendedLifetimeOrigins(
   return origins;
 }
 
+// Verifies (via CHECK()) that the lazy context for the given `extension` is
+// currently active and registered in the ProcessManager.
+void VerifyLazyContextActive(
+    const Extension* extension,
+    const LazyContextTaskQueue::ContextInfo& context_info) {
+  CHECK(extension);
+  ProcessManager* process_manager =
+      ProcessManager::Get(context_info.browser_context);
+  if (BackgroundInfo::IsServiceWorkerBased(extension)) {
+    std::vector<WorkerId> service_workers =
+        process_manager->GetServiceWorkersForExtension(extension->id());
+    CHECK(!service_workers.empty());
+    CHECK(std::ranges::find_if(
+              service_workers, [&context_info](const WorkerId& worker_id) {
+                return worker_id.version_id ==
+                           context_info.service_worker_version_id &&
+                       worker_id.thread_id == context_info.worker_thread_id;
+              }) != service_workers.end());
+  } else {
+    CHECK(BackgroundInfo::HasLazyBackgroundPage(extension));
+    CHECK(process_manager->GetBackgroundHostForExtension(extension->id()));
+  }
+}
+
 }  // namespace
 
 struct MessageService::MessageChannel {
@@ -1292,6 +1316,11 @@ void MessageService::PendingLazyContextOpenChannel(
       ExtensionRegistry::Get(context_info->browser_context)
           ->enabled_extensions()
           .GetByID(context_info->extension_id);
+
+  // Verify the lazy context is properly registered. Otherwise, we'll fail to
+  // find it when we try to connect.
+  VerifyLazyContextActive(extension, *context_info);
+
   OpenChannelImpl(context_info->browser_context, std::move(params), extension,
                   true /* did_enqueue */);
 }
