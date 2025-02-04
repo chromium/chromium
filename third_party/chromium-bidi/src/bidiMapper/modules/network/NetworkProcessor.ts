@@ -211,7 +211,7 @@ export class NetworkProcessor {
     const cacheDisabled = params.cacheBehavior === 'bypass';
 
     await Promise.all(
-      contexts.values().map((context) => {
+      [...contexts.values()].map((context) => {
         return context.cdpTarget.toggleSetCacheDisabled(cacheDisabled);
       }),
     );
