@@ -224,7 +224,7 @@ void PrivacySandboxHandler::
   AllowJavascript();
   ResolveJavascriptCallback(
       args[0], base::FeatureList::IsEnabled(
-                   privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics));
+                   privacy_sandbox::kPrivacySandboxAdTopicsContentParity));
 }
 
 PrivacySandboxCountries* PrivacySandboxHandler::GetPrivacySandboxCountries() {

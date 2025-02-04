@@ -42,7 +42,7 @@ public class DoneFragment extends PrivacyGuideBasePage {
             psButton.setOnClickListener(this::onPsButtonClick);
 
             if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS)) {
+                    ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)) {
                 TextView privacy_sandbox_description = view.findViewById(R.id.ps_description);
                 privacy_sandbox_description.setText(
                         R.string.privacy_guide_privacy_sandbox_description_ad_topics);

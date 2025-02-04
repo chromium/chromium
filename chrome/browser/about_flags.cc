@@ -8621,11 +8621,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxInternalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxInternalsDevUI)},
 
-    {"privacy-sandbox-privacy-guide-ad-topics",
-     flag_descriptions::kPrivacySandboxPrivacyGuideAdTopicsName,
-     flag_descriptions::kPrivacySandboxPrivacyGuideAdTopicsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics)},
-
     {"private-state-tokens-dev-ui",
      flag_descriptions::kPrivateStateTokensDevUIName,
      flag_descriptions::kPrivateStateTokensDevUIDescription, kOsDesktop,

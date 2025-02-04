@@ -207,8 +207,8 @@ const base::FeatureParam<bool>
         &kPrivacySandboxActivityTypeStorage,
         kPrivacySandboxActivityTypeStorageSkipPreFirstTabName, false};
 
-BASE_FEATURE(kPrivacySandboxPrivacyGuideAdTopics,
-             "PrivacySandboxPrivacyGuideAdTopics",
+BASE_FEATURE(kPrivacySandboxAdTopicsContentParity,
+             "PrivacySandboxAdTopicsContentParity",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivacySandboxMigratePrefsToNoticeConsentDataModel,

@@ -3165,12 +3165,6 @@ const char kPrivateStateTokensDevUIDescription[] =
     "Enables the chrome://privacy-sandbox-internals/private-state-tokens page."
     "Relies on privacy-sandbox-internals also being enabled";
 
-const char kPrivacySandboxPrivacyGuideAdTopicsName[] =
-    "Privacy Sandbox Privacy Guide Ad Topics";
-const char kPrivacySandboxPrivacyGuideAdTopicsDescription[] =
-    "Enables the Ad Topics card in the Privacy Guide to be displayed, subject "
-    "to regional availability.";
-
 const char kPrivacySandboxPrivacyPolicyName[] =
     "Privacy Sandbox Privacy Policy";
 const char kPrivacySandboxPrivacyPolicyDescription[] =

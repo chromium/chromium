@@ -580,7 +580,7 @@ TEST_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
   feature_list()->Reset();
   if (is_feature_on) {
     feature_list()->InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+        privacy_sandbox::kPrivacySandboxAdTopicsContentParity);
   }
 
   ON_CALL(*mock_privacy_sandbox_countries(), IsConsentCountry())

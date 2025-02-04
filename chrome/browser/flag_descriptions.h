@@ -1821,9 +1821,6 @@ extern const char kPrivacySandboxEqualizedPromptButtonsDescription[];
 extern const char kPrivacySandboxInternalsName[];
 extern const char kPrivacySandboxInternalsDescription[];
 
-extern const char kPrivacySandboxPrivacyGuideAdTopicsName[];
-extern const char kPrivacySandboxPrivacyGuideAdTopicsDescription[];
-
 extern const char kPrivacySandboxPrivacyPolicyName[];
 extern const char kPrivacySandboxPrivacyPolicyDescription[];
 

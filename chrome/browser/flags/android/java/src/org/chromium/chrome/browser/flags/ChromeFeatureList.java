@@ -445,8 +445,8 @@ public abstract class ChromeFeatureList {
     public static final String PRIVACY_SANDBOX_SENTIMENT_SURVEY = "PrivacySandboxSentimentSurvey";
     public static final String PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY =
             "PrivacySandboxCctAdsNoticeSurvey";
-    public static final String PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS =
-            "PrivacySandboxPrivacyGuideAdTopics";
+    public static final String PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY =
+            "PrivacySandboxAdTopicsContentParity";
     public static final String PRIVACY_SANDBOX_PRIVACY_POLICY = "PrivacySandboxPrivacyPolicy";
     public static final String PUSH_MESSAGING_DISALLOW_SENDER_IDS =
             "PushMessagingDisallowSenderIDs";

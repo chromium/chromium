@@ -18200,7 +18200,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PrivacySandboxPrivacyGuideAdTopics"
+                        "PrivacySandboxAdTopicsContentParity"
                     ]
                 }
             ]

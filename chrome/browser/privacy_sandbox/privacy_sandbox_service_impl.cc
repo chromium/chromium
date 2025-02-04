@@ -1786,7 +1786,7 @@ bool PrivacySandboxServiceImpl::
     PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() {
   return GetPrivacySandboxCountries()->IsConsentCountry() &&
          base::FeatureList::IsEnabled(
-             privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+             privacy_sandbox::kPrivacySandboxAdTopicsContentParity);
 }
 
 bool PrivacySandboxServiceImpl::ShouldUsePrivacyPolicyChinaDomain() {
