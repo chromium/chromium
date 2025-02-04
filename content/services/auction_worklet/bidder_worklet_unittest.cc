@@ -2479,6 +2479,264 @@ TEST_F(PrivateModelTrainingEnabledTest,
       /*expected_report_url=*/GURL("https://foo.test/"));
 }
 
+// Test that `sendEncryptedTo()` can be called within `reportAggregateWin()`
+// without any errors.
+TEST_F(PrivateModelTrainingEnabledTest, SendEncryptedTo) {
+  const char kScript[] = R"(
+    function reportWin() {
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+          destination: "https://example.test",
+          aggregationCoordinatorOrigin: "https://example.test",
+          payloadLength: 256,
+        }
+      });
+      sendReportTo("https://foo.test");
+    }
+
+    function reportAggregateWin() {
+      sendEncryptedTo(new ArrayBuffer(16));
+    }
+  )";
+
+  // Valid base case
+  RunReportWinWithJavascriptExpectingResult(kScript, GURL("https://foo.test/"));
+}
+
+// Test scenarios where `sendEncryptedTo()` is blocked from being used and
+// cannot be called within `reportAggregateWin()`.
+// `sendEncryptedTo()` should be undefined when:
+//  - browserSignals.joinCount is accessed.
+//  - browserSignals.recency is accessed.
+//  - browserSignals.modelingSignals are accessed.
+TEST_F(PrivateModelTrainingEnabledTest, SendEncryptedToBlocked) {
+  const char kScript[] = R"(
+    function reportWin(unusedAuctionSignals, unusedPerBuyerSignals,
+                       unusedSellerSignals, browserSignals,
+                       unusedDirectFromSellerSignals) {
+      let x = %s;
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+        destination: "https://example.test",
+        aggregationCoordinatorOrigin: "https://example.test",
+        payloadLength: 256,
+        }
+      });
+      sendReportTo("https://foo.test");
+    }
+
+    function reportAggregateWin() {
+      sendEncryptedTo(new ArrayBuffer(16));
+    }
+  )";
+
+  // Accessing joinCount does not allow `sendEncryptedTo()` to be used.
+  browser_signal_join_count_ = 7;
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, "browserSignals.joinCount"),
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      {/*expected_errors=*/"https://url.test/:17 Uncaught ReferenceError: "
+                           "sendEncryptedTo is not "
+                           "defined."});
+
+  // Accessing modelingSignals does not allow `sendEncryptedTo()` to be used.
+  browser_signal_modeling_signals_ = 7;
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, "browserSignals.modelingSignals"),
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/:17 Uncaught ReferenceError: sendEncryptedTo is not "
+       "defined."});
+
+  // Accessing recency does not allow `sendEncryptedTo()` to be used.
+  browser_signal_recency_report_win_ = 7;
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, "browserSignals.recency"),
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/:17 Uncaught ReferenceError: sendEncryptedTo is not "
+       "defined."});
+}
+
+// If `modelingSignals` is not defined, we do not block `sendEncryptedTo()`
+// when it's accessed within `reportWin()`.
+TEST_F(PrivateModelTrainingEnabledTest,
+       AccessingUndefinedModelingSignalsDoesNotBlockSendEncryptedTo) {
+  const char kScript[] = R"(
+    function reportWin(unusedAuctionSignals, unusedPerBuyerSignals,
+                       unusedSellerSignals, browserSignals,
+                       unusedDirectFromSellerSignals) {
+      let x = %s;
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+        destination: "https://example.test",
+        aggregationCoordinatorOrigin: "https://example.test",
+        payloadLength: 256,
+        }
+      });
+      sendReportTo("https://foo.test");
+    }
+
+    function reportAggregateWin() {
+      sendEncryptedTo(new ArrayBuffer(16));
+    }
+  )";
+
+  browser_signal_modeling_signals_ = std::nullopt;
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, "browserSignals.modelingSignals"),
+      GURL("https://foo.test/"));
+}
+
+// These test scenarios verify that `sendEncryptedTo()` remains functional,
+// does not become undefined and is not inadvertently blocked when specific
+// fields within browserSignals are accessed in `reportAggregateWin()`.  This
+// contrasts with the behavior in `reportWin()`. These fields include:
+//  - browserSignals.joinCount
+//  - browserSignals.recency
+//  - browserSignals.modelingSignals
+TEST_F(PrivateModelTrainingEnabledTest,
+       SendEncryptedToNotBlockedWhenAccessInReportAggregateWin) {
+  const char kScript[] = R"(
+    function reportWin() {
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+          destination: "https://example.test",
+          aggregationCoordinatorOrigin: "https://example.test",
+          payloadLength: 256,
+        }
+      });
+      sendReportTo("https://foo.test");
+    }
+
+    function reportAggregateWin(unusedAggregateWinSignals,
+                                unusedModelingSignalsConfig,
+                                unusedAuctionSignals, unusedPerBuyerSignals,
+                                unusedSellerSignals, browserSignals,
+                                unusedDirectFromSellerSignals
+                                ) {
+      let x = %s;
+      sendEncryptedTo(new ArrayBuffer(16));
+    }
+  )";
+
+  // Accessing joinCount within `reportAggregateWin()` allows
+  // `sendEncryptedTo()` to still be called.
+  browser_signal_join_count_ = 7;
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, "browserSignals.joinCount"),
+      GURL("https://foo.test/"));
+
+  // Accessing modelingSignals within `reportAggregateWin()` allows
+  // `sendEncryptedTo()` to still be called.
+  browser_signal_modeling_signals_ = 7;
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, "browserSignals.modelingSignals"),
+      GURL("https://foo.test/"));
+
+  // Accessing recency within `reportAggregateWin()` allows `sendEncryptedTo()`
+  // to still be called.
+  browser_signal_recency_report_win_ = 7;
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, "browserSignals.recency"),
+      GURL("https://foo.test/"));
+}
+
+// `sendEncryptedTo()` should throw an error when it's passed anything that is
+// not an ArrayBuffer
+TEST_F(PrivateModelTrainingEnabledTest,
+       SendEncryptedToErrorsWhenPassedNonArrayBufferInput) {
+  const char kScript[] = R"(
+    function reportWin() {
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+        destination: "https://example.test",
+        aggregationCoordinatorOrigin: "https://example.test",
+        payloadLength: 256,
+        }
+      });
+      sendReportTo("https://foo.test");
+    }
+
+    function reportAggregateWin() {
+      %s
+    }
+  )";
+
+  // Passing `sendEncryptedTo()` an int results in error.
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, R"(sendEncryptedTo(10);)"),
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/:14 Uncaught TypeError: sendEncryptedTo() may only "
+       "take a ArrayBuffer."});
+
+  // Passing `sendEncryptedTo()` a string results in error.
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, R"(sendEncryptedTo("not-an-array-buffer");)"),
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/:14 Uncaught TypeError: sendEncryptedTo() may only "
+       "take a ArrayBuffer."});
+
+  // Passing `sendEncryptedTo()` an array of ints results in error.
+  RunReportWinWithJavascriptExpectingResult(
+      base::StringPrintf(kScript, R"(sendEncryptedTo([1,2,3]);)"),
+      /*expected_report_url=*/GURL("https://foo.test/"),
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/:14 Uncaught TypeError: sendEncryptedTo() may only "
+       "take a ArrayBuffer."});
+}
+
+// Verify that we cannot call `sendEncryptedTo()` in `reportWin()`.
+TEST_F(PrivateModelTrainingEnabledTest, NoSendEncryptedToInReportWin) {
+  const char kScript[] = R"(
+    function reportWin() {
+      queueReportAggregateWin({
+        modelingSignalsConfig: {
+        destination: "https://example.test",
+        aggregationCoordinatorOrigin: "https://example.test",
+        payloadLength: 256,
+        }
+      });
+      sendEncryptedTo(new ArrayBuffer(16));
+      sendReportTo("https://foo.test");
+    }
+
+    function reportAggregateWin() {
+      sendEncryptedTo(new ArrayBuffer(16));
+    }
+  )";
+
+  RunReportWinWithJavascriptExpectingResult(
+      kScript,
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/:10 Uncaught ReferenceError: sendEncryptedTo is not "
+       "defined."});
+}
+
 class PrivateModelTrainingDisabledTest : public BidderWorkletTest {
  public:
   PrivateModelTrainingDisabledTest() {

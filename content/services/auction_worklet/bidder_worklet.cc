@@ -1293,6 +1293,13 @@ void BidderWorklet::V8State::ReportWin(
   if (context_recycler.report_bindings()
           ->modeling_signals_config()
           .has_value()) {
+    // Allow `sendEncryptedTo()` to be called, if `modelingSignals`,
+    // `joinCount`, and `recency` were not accessed within `reportWin()`.
+    if (!context_recycler.report_win_lazy_filler()
+             ->ShouldBlockSendEncrypted()) {
+      context_recycler.AddPrivateModelTrainingBindings();
+    }
+
     v8::LocalVector<v8::Value> report_aggregate_win_args(isolate);
 
     const bool report_aggregate_win_signals_set = SetReportAggregateWinArgs(
