@@ -102,10 +102,6 @@ void SyncConsentScreenHandler::DeclareLocalizedValues(
       builder);
   RememberLocalizedValue("syncConsentScreenSubtitle",
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2, builder);
-  RememberLocalizedValue(
-      "syncConsentScreenTitleArcRestrictions",
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_ARC_RESTRICTED, builder);
-
   // Content section.
   RememberLocalizedValueWithDeviceName(
       "syncConsentScreenOsSyncTitle",
@@ -116,19 +112,11 @@ void SyncConsentScreenHandler::DeclareLocalizedValues(
   RememberLocalizedValue(
       "syncConsentScreenChromeBrowserSyncDescription",
       IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION, builder);
-  RememberLocalizedValueWithDeviceName(
-      "syncConsentScreenOsSyncDescriptionArcRestrictions",
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION_WITH_ARC_RESTRICTED,
-      builder);
 
   // Review sync options strings.
   RememberLocalizedValue(
       "syncConsentReviewSyncOptionsText",
       IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER, builder);
-  RememberLocalizedValue(
-      "syncConsentReviewSyncOptionsWithArcRestrictedText",
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER_ARC_RESTRICTED,
-      builder);
 
   // Bottom buttons strings.
   RememberLocalizedValue("syncConsentAcceptAndContinue",
@@ -138,24 +126,14 @@ void SyncConsentScreenHandler::DeclareLocalizedValues(
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC, builder);
   RememberLocalizedValue("syncConsentScreenDecline",
                          IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2, builder);
-
-  // App Tooltip text.
-  RememberLocalizedValue("syncConsentScreenOsSyncAppsTooltipText",
-                         IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_TEXT,
-                         builder);
-  RememberLocalizedValue(
-      "syncConsentScreenOsSyncAppsTooltipAdditionalText",
-      IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_ADDITIONAL_TEXT, builder);
 }
 
-void SyncConsentScreenHandler::Show(bool is_lacros_enabled) {
-  base::Value::Dict data;
-  data.Set("isLacrosEnabled", is_lacros_enabled);
-  ShowInWebUI(std::move(data));
+void SyncConsentScreenHandler::Show() {
+  ShowInWebUI();
 }
 
-void SyncConsentScreenHandler::ShowLoadedStep(bool os_sync_lacros) {
-  CallExternalAPI("showLoadedStep", os_sync_lacros);
+void SyncConsentScreenHandler::ShowLoadedStep() {
+  CallExternalAPI("showLoadedStep");
 }
 
 void SyncConsentScreenHandler::SetIsMinorMode(bool value) {

@@ -56,15 +56,7 @@ std::string DeviceInfoSyncClientImpl::GetSigninScopedDeviceId() const {
 
 // syncer::DeviceInfoSyncClient:
 bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
-  // TODO(crbug.com/40210838): Current logic allows to disable receiving tabs
-  // in Ash, while sending is still enabled - this seems to be the best solution
-  // for Lacros-Primary. Once Lacros-Only is the only available option, this
-  // should simply check whether SendTabToSelf datatype is enabled.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return !crosapi::browser_util::IsLacrosEnabled();
-#else
   return true;
-#endif
 }
 
 // syncer::DeviceInfoSyncClient:

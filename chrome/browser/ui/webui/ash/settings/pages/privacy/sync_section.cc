@@ -8,7 +8,6 @@
 
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
@@ -57,15 +56,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       {"osSyncWifiConfigurationsCheckboxLabel",
        IDS_OS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL},
       {"osSyncAppsCheckboxLabel", IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_LABEL},
-      {"osSyncAppsCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_SUBLABEL},
-      {"osSyncSettingsCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_SETTINGS_CHECKBOX_SUBLABEL},
-      {"osSyncWifiCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_WIFI_CHECKBOX_SUBLABEL},
-      {"osSyncWallpaperCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_WALLPAPER_CHECKBOX_SUBLABEL},
-      {"osSyncAppsTooltipText", IDS_OS_SETTINGS_SYNC_APPS_TOOLTIP},
       {"osSyncTurnOn", IDS_OS_SETTINGS_SYNC_TURN_ON},
       {"osSyncFeatureLabel", IDS_OS_SETTINGS_SYNC_FEATURE_LABEL},
       {"spellingPref", IDS_SETTINGS_SPELLING_PREF},
@@ -75,11 +65,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  html_source->AddBoolean(
-      "appsToggleSharingEnabled",
-      base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
-          crosapi::browser_util::IsLacrosEnabled());
 }
 
 base::span<const SearchConcept> GetCategorizedSyncSearchConcepts() {

@@ -155,13 +155,10 @@ found in the LICENSE file.
     aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
     for-step="ash-sync">
   <iron-icon slot="icon" icon="sync-consent-32:googleg"></iron-icon>
-  <h1 slot="title" consent-description hidden="[[isLacrosEnabled]]">
+  <h1 slot="title" consent-description>
     [[i18nDynamic(locale, 'syncConsentScreenTitle')]]
   </h1>
-  <h1 slot="title" consent-description hidden="[[!isLacrosEnabled]]">
-    [[i18nDynamic(locale, 'syncConsentScreenTitleArcRestrictions')]]
-  </h1>
-  <div slot="subtitle" consent-description hidden="[[isLacrosEnabled]]">
+  <div slot="subtitle" consent-description>
     [[i18nDynamic(locale, 'syncConsentScreenSubtitle')]]
   </div>
   <iron-icon slot="subtitle-illustration" icon="oobe-illos:sync-consent-illo"
@@ -169,8 +166,7 @@ found in the LICENSE file.
   </iron-icon>
   </div>
   <div slot="content" class="landscape-header-aligned">
-    <div class="overview-list-item layout horizontal"
-        hidden="[[isLacrosEnabled]]">
+    <div class="overview-list-item layout horizontal">
       <iron-icon icon="oobe-24:settings-gear" class="overview-list-item-icon"
           aria-hidden="true"></iron-icon>
       <div class="flex layout vertical center-justified">
@@ -180,8 +176,7 @@ found in the LICENSE file.
         </div>
       </div>
     </div>
-    <div class="overview-list-item layout horizontal"
-        hidden="[[isLacrosEnabled]]">
+    <div class="overview-list-item layout horizontal">
       <iron-icon icon="oobe-24:browser-sync" class="overview-list-item-icon"
           aria-hidden="true"></iron-icon>
       <div class="flex layout vertical center-justified">
@@ -195,14 +190,10 @@ found in the LICENSE file.
         </div>
       </div>
     </div>
-    <div hidden="[[!isLacrosEnabled]]" consent-description>
-      [[i18nDynamic(locale,
-          'syncConsentScreenOsSyncDescriptionArcRestrictions')]]
-    </div>
 
     <cr-checkbox id="reviewSettingsBox" hidden="[[isMinorMode]]"
         consent-description>
-      [[getReviewSettingText(locale, isLacrosEnabled)]]
+      [[getReviewSettingText(locale)]]
     </cr-checkbox>
   </div>
   <div slot="bottom-buttons">

@@ -8,7 +8,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/grit/branded_strings.h"
@@ -94,33 +93,16 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
     builder->Add("consolidatedConsentLocationOptInLearnMoreChild",
                  IDS_CONSOLIDATED_CONSENT_ARC_LOCATION_OPT_IN_LEARN_MORE_CHILD);
   }
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      features::IsOsSyncConsentRevampEnabled()) {
-    builder->Add("consolidatedConsentUsageOptInLearnMore",
-                 IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_OWNER_LACROS);
-    builder->Add(
-        "consolidatedConsentUsageOptInLearnMoreChild",
-        IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_CHILD_OWNER_LACROS);
-    builder->Add(
-        "consolidatedConsentUsageOptInLearnMoreArcDisabled",
-        IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_OWNER_LACROS);
-    builder->Add(
-        "consolidatedConsentUsageOptInLearnMoreArcDisabledChild",
-        IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_CHILD_OWNER_LACROS);
-
-  } else {
-    builder->Add("consolidatedConsentUsageOptInLearnMore",
-                 IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_OWNER);
-    builder->Add("consolidatedConsentUsageOptInLearnMoreChild",
-                 IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_CHILD_OWNER);
-    builder->Add(
-        "consolidatedConsentUsageOptInLearnMoreArcDisabled",
-        IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_OWNER);
-    builder->Add(
-        "consolidatedConsentUsageOptInLearnMoreArcDisabledChild",
-        IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_CHILD_OWNER);
-  }
-
+  builder->Add("consolidatedConsentUsageOptInLearnMore",
+               IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_OWNER);
+  builder->Add("consolidatedConsentUsageOptInLearnMoreChild",
+               IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_CHILD_OWNER);
+  builder->Add(
+      "consolidatedConsentUsageOptInLearnMoreArcDisabled",
+      IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_OWNER);
+  builder->Add(
+      "consolidatedConsentUsageOptInLearnMoreArcDisabledChild",
+      IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_CHILD_OWNER);
   builder->Add("consolidatedConsentBackupOptInLearnMore",
                IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE);
   builder->Add("consolidatedConsentBackupOptInLearnMoreChild",

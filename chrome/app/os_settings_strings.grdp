@@ -359,21 +359,6 @@
   <message name="IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of apps across devices.">
     Apps
   </message>
-  <message name="IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_SUBLABEL" desc="Disclaimer shown under label for the checkbox which enables syncing of apps across devices.">
-    Apps installed from the Play Store and web apps from Chrome browser
-  </message>
-  <message name="IDS_OS_SETTINGS_SYNC_SETTINGS_CHECKBOX_SUBLABEL" desc="Disclaimer shown under label for the checkbox which enables syncing of settings across devices.">
-    Keyboard and mouse behavior, language preferences, and more
-  </message>
-  <message name="IDS_OS_SETTINGS_SYNC_WIFI_CHECKBOX_SUBLABEL" desc="Disclaimer shown under label for the checkbox which enables syncing of Wi-Fi networks  across devices.">
-    Saved networks and passwords so you can connect instantly
-  </message>
-  <message name="IDS_OS_SETTINGS_SYNC_WALLPAPER_CHECKBOX_SUBLABEL" desc="Disclaimer shown under label for the checkbox which enables syncing of wallpaper across devices.">
-    Desktop backgrounds match across devices
-  </message>
-  <message name="IDS_OS_SETTINGS_SYNC_APPS_TOOLTIP" desc="Tooltip shown next to the apps toggle in OS sync settings.">
-    Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account. Web apps installed from Chrome browser will be synced even if browser sync is turned off.
-  </message>
   <message name="IDS_OS_SETTINGS_SYNC_PRINTERS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of printers across devices.">
     Printers
   </message>

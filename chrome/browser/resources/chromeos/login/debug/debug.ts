@@ -1166,61 +1166,26 @@ const KNOWN_SCREENS: ScreenDefType[] = [
   {
     id: 'sync-consent',
     kind: ScreenKind.NORMAL,
-    handledSteps: 'ash-sync,lacros-overview',
+    handledSteps: 'ash-sync',
     states: [
       {
         id: 'ash-sync',
         data: {
           isChildAccount: false,
-          isArcRestricted: false,
         },
         trigger: (screen: any) => {
           screen.setIsMinorMode(false);
-          screen.showLoadedStep(/*os_sync_lacros=*/ false);
+          screen.showLoadedStep();
         },
       },
       {
         id: 'ash-sync-minor-mode',
         data: {
           isChildAccount: true,
-          isArcRestricted: false,
         },
         trigger: (screen: any) => {
           screen.setIsMinorMode(true);
-          screen.showLoadedStep(/*os_sync_lacros=*/ false);
-        },
-      },
-      {
-        id: 'ash-sync-arc-restricted',
-        data: {
-          isChildAccount: false,
-          isArcRestricted: true,
-        },
-        trigger: (screen: any) => {
-          screen.setIsMinorMode(false);
-          screen.showLoadedStep(/*os_sync_lacros=*/ false);
-        },
-      },
-      {
-        id: 'lacros-overview',
-        data: {
-          isChildAccount: false,
-          isArcRestricted: false,
-        },
-        trigger: (screen: any) => {
-          screen.setIsMinorMode(false);
-          screen.showLoadedStep(/*os_sync_lacros=*/ true);
-        },
-      },
-      {
-        id: 'lacros-overview-minor',
-        data: {
-          isChildAccount: true,
-          isArcRestricted: false,
-        },
-        trigger: (screen: any) => {
-          screen.setIsMinorMode(true);
-          screen.showLoadedStep(/*os_sync_lacros=*/ true);
+          screen.showLoadedStep();
         },
       },
     ],

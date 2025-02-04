@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/attestation",
   "+chrome/browser/ash/base",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/customization",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/http_auth_dialog.h",

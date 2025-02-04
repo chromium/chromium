@@ -46,7 +46,6 @@ static_library("privacy") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/eche_app",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/session",
