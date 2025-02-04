@@ -120,42 +120,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2"
-    enum="Boolean" expires_after="2023-08-14">
-  <owner>alexmt@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For every navigation observed by the subresource filter that passes through
-    ReadyToCommitNavigation, whether the navigation results in a commit.
-    Recorded when the navigation finishes.
-
-    Excludes top-level frame navigations, same-document navigations, navigations
-    that are not handled by the network stack (e.g. about: URLs), navigations
-    with no available RenderFrameHost, and navigations with a dead RenderFrame.
-  </summary>
-</histogram>
-
-<histogram
-    name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2.RestrictedAdFrameNavigation"
-    enum="Boolean" expires_after="2023-08-28">
-  <owner>alexmt@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For every 'restricted' navigation observed by the subresource filter that
-    passes through ReadyToCommitNavigation and occurs in an ad frame, whether
-    the navigation results in a commit. Recorded when the navigation finishes.
-
-    A restricted navigation is one that is either to a URL matching an allowlist
-    rule on the filter list, or is both to a URL that matches no filter list
-    rule and is same-origin with the top-level frame's URL. Note that, if there
-    is a sequence of restricted navigations, each will be counted individually.
-
-    Excludes top-level frame navigations, same-document navigations, navigations
-    that are not handled by the network stack (e.g. about: URLs), navigations
-    with no available RenderFrameHost, and navigations with a dead RenderFrame.
-  </summary>
-</histogram>
-
 <histogram name="SubresourceFilter.IndexRuleset.CPUDuration" units="ms"
     expires_after="2025-07-10">
   <owner>jkarlin@chromium.org</owner>
