@@ -9,6 +9,7 @@
 import logging
 import multiprocessing
 import os
+import random
 import shutil
 import subprocess
 import sys
@@ -31,6 +32,7 @@ import version
 from chrome_driver_wrapper import ChromeDriverWrapper
 from common import get_build_info, get_ffx_isolate_dir, get_free_local_port
 from isolate_daemon import IsolateDaemon
+from repeating_log import RepeatingLog
 from run_webpage_test import capture_devtools_addr
 
 
@@ -38,9 +40,33 @@ HTTP_SERVER_PORT = get_free_local_port()
 LOG_DIR = os.environ.get('ISOLATED_OUTDIR', '/tmp')
 TEMP_DIR = os.environ.get('TMPDIR', '/tmp')
 
-VIDEOS =[
+# Note, AV1 is not supported on smart display.
+# Physical capacity:
+#   Sherlock: 1280x800 60fps
+#   Astro and Nelson: 1024x600 60fps
+# Target video quality:
+#   Sherlock: 720p60fps or upper.
+#   Astro and Nelson: 720p30fps or upper.
+
+# Keep names alphabetical order.
+VIDEOS = [
+    '480p30fpsH264_foodmarket_sync.mp4',
+    '480p30fpsVP9_foodmarket_sync.webm',
+    '480p60fpsH264_boat_sync.mp4',
+    '480p60fpsHEVC_boat_sync.mp4',
+    '480p60fpsVP9_boat_sync.mp4',
     '720p24fpsH264_gangnam_sync.mp4',
     '720p24fpsVP9_gangnam_sync.webm',
+    '720p60fpsH264_boat_yt_sync.mp4',
+    '720p60fpsHEVC_boat_sync.mp4',
+    '720p60fpsVP9_boat_yt_sync.webm',
+]
+
+# These videos are stretch goal of sherlock, worth trying.
+HIGH_PERF_VIDEOS = [
+    '1080p60fpsH264_boat_yt_sync.mp4',
+    '1080p60fpsHEVC_boat_sync.mp4',
+    '1080p60fpsVP9_boat_yt_sync.webm',
 ]
 
 
@@ -86,6 +112,19 @@ def parameters_of(file: str) -> camera.Parameters:
     return result
 
 
+def _wait_js_condition(driver: ChromeDriverWrapper, element,
+                       condition: str) -> bool:
+    """Waits a condition on the element once a second for at most 30 seconds,
+       returns True if the condition met."""
+    start = time.time()
+    while not driver.execute_script(f'return arguments[0].{condition};',
+                                    element):
+        if time.time() - start >= 30:
+            return False
+        time.sleep(1)
+    return True
+
+
 def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
                         host: str) -> None:
     perf_trace.start()
@@ -94,17 +133,27 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
     original_video = os.path.join(server.VIDEO_DIR, file)
     # Ensure the original video won't be overwritten.
     assert camera_params.video_file != original_video
+    video = driver.find_element_by_id('video')
+    with monitors.time_consumption(file, 'video_perf', 'playback', 'loading'), \
+         RepeatingLog(f'Waiting for video {file} to be loaded.'):
+        if not _wait_js_condition(driver, video, 'readyState >= 2'):
+            logging.warning(
+                '%s may never be loaded, still go ahead to play it.', file)
+            monitors.average(file, 'video_perf', 'playback',
+                             'failed_to_load').record(1)
     with StartProcess(camera.start, [camera_params], False):
-        video = driver.find_element_by_id('video')
         video.click()
     # Video playback should finish almost within the same time as the camera
     # recording, and this check is only necessary to indicate a very heavy
     # network laggy and buffering.
     # TODO(crbug.com/40935291): May need to adjust the strategy here, the
     # final frame / barcode is considered laggy and drops the score.
-    with monitors.time_consumption(file, 'video_perf', 'playback', 'laggy'):
-        while not driver.execute_script('return arguments[0].ended;', video):
-            time.sleep(1)
+    with monitors.time_consumption(file, 'video_perf', 'playback', 'laggy'), \
+         RepeatingLog(f'Waiting for video {file} playback to finish.'):
+        if not _wait_js_condition(driver, video, 'ended'):
+            logging.warning('%s may never finish', file)
+            monitors.average(file, 'video_perf', 'playback',
+                             'never_finish').record(1)
     logging.warning('Video %s finished', file)
     perf_trace.stop(file)
 
@@ -150,7 +199,18 @@ def run_test(proc: subprocess.Popen) -> None:
         # being accessible on the device by the fuchsia managed docker image.
         host = proxy_host + '0'
     with ChromeDriverWrapper((device, port)) as driver:
-        for file in VIDEOS:
+        # Waiting for a change like https://crrev.com/c/6063979 to loose the
+        # size limitation of the invocation which triggers an upload error when
+        # too many metrics are included.
+        # Before that, randomly select two of the videos to test so that we will
+        # have sufficient coverage after multiple runs.
+        # It also helps to reduce the time cost of each swarming job and ensures
+        # the devices can be restarted after several videos.
+        candidates = set(VIDEOS)
+        # Run extra 1080p tests on sherlock.
+        if build_info.board == 'sherlock':
+            candidates.update(HIGH_PERF_VIDEOS)
+        for file in random.sample(candidates, 2):
             run_video_perf_test(file, driver, host)
 
 
