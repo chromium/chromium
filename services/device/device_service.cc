@@ -150,6 +150,12 @@ void DeviceService::OverrideTimeZoneMonitorBinderForTesting(
   internal::GetTimeZoneMonitorBinderOverride() = std::move(binder);
 }
 
+// static
+void DeviceService::OverrideUsbDeviceManagerBinderForTesting(
+    UsbDeviceManagerBinder binder) {
+  internal::GetUsbDeviceManagerBinderOverride() = std::move(binder);
+}
+
 void DeviceService::BindBatteryMonitor(
     mojo::PendingReceiver<mojom::BatteryMonitor> receiver) {
 #if BUILDFLAG(IS_ANDROID)
@@ -335,6 +341,12 @@ void DeviceService::BindWakeLockProvider(
 
 void DeviceService::BindUsbDeviceManager(
     mojo::PendingReceiver<mojom::UsbDeviceManager> receiver) {
+  const auto& binder_override = internal::GetUsbDeviceManagerBinderOverride();
+  if (binder_override) {
+    binder_override.Run(std::move(receiver));
+    return;
+  }
+
   // TODO(crbug.com/40141825): usb::DeviceManagerImpl depends on the
   // permission_broker service on Chromium OS. We will need to redirect
   // connections for LaCrOS here.

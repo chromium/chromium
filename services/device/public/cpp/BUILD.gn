@@ -49,6 +49,8 @@ source_set("test_support") {
     "test/mock_usb_mojo_device.h",
     "test/scoped_geolocation_overrider.cc",
     "test/scoped_geolocation_overrider.h",
+    "test/scoped_usb_device_manager_overrider.cc",
+    "test/scoped_usb_device_manager_overrider.h",
     "test/test_wake_lock_provider.cc",
     "test/test_wake_lock_provider.h",
   ]

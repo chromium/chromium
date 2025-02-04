@@ -158,6 +158,12 @@ class DeviceService : public mojom::DeviceService {
   static void OverrideNFCProviderBinderForTesting(NFCProviderBinder binder);
 #endif
 
+  // Supports global override of UsbDeviceManager binding within the service.
+  using UsbDeviceManagerBinder = base::RepeatingCallback<void(
+      mojo::PendingReceiver<mojom::UsbDeviceManager>)>;
+  static void OverrideUsbDeviceManagerBinderForTesting(
+      UsbDeviceManagerBinder binder);
+
  private:
   // mojom::DeviceService implementation:
   void BindFingerprint(
