@@ -859,6 +859,10 @@ class PolicyManagersTest : public ::testing::Test {
 
   void DeleteOverridesFile() {
 #if BUILDFLAG(IS_MAC)
+    if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
+      GTEST_SKIP() << "test skipped for user install.";
+    }
+
     if (base::PathExists(*overrides_file_path_)) {
       RunCommand(std::vector<std::string>(
           {"/usr/bin/sudo", "/bin/rm", overrides_file_path_->value()}));
