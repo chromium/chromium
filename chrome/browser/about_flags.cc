@@ -3572,6 +3572,14 @@ const FeatureEntry::FeatureVariation kEdgeToEdgeEverywhereVariations[] = {
      std::size(kEdgeToEdgeEverywhereDebugFeatureParams), nullptr},
 };
 
+const FeatureEntry::FeatureParam kEdgeToEdgeSafeAreaConstraintFeatureParams[] =
+    {{"scrollable_when_stacking", "true"}};
+const FeatureEntry::FeatureVariation kEdgeToEdgeSafeAreaConstraintVariations[] =
+    {
+        {"scrollable variation", kEdgeToEdgeSafeAreaConstraintFeatureParams,
+         std::size(kEdgeToEdgeSafeAreaConstraintFeatureParams), nullptr},
+};
+
 const FeatureEntry::FeatureParam kBottomBrowserControlsRefactorParams[] = {
     {"disable_bottom_controls_stacker_y_offset", "false"}};
 const FeatureEntry::FeatureVariation
@@ -5640,7 +5648,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"edge-to-edge-safe-area-constraint",
      flag_descriptions::kEdgeToEdgeSafeAreaConstraintName,
      flag_descriptions::kEdgeToEdgeSafeAreaConstraintDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeSafeAreaConstraint)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kEdgeToEdgeSafeAreaConstraint,
+         kEdgeToEdgeSafeAreaConstraintVariations,
+         "EdgeToEdgeSafeAreaConstraint")},
     {"edge-to-edge-web-opt-in", flag_descriptions::kEdgeToEdgeWebOptInName,
      flag_descriptions::kEdgeToEdgeWebOptInDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeWebOptIn)},

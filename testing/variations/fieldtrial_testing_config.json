@@ -8641,7 +8641,8 @@
                     "params": {
                         "disable_bottom_controls_stacker_y_offset": "false",
                         "e2e_field_trial_oem_list": "oppo,xiaomi",
-                        "e2e_field_trial_oem_min_versions": "34,34"
+                        "e2e_field_trial_oem_min_versions": "34,34",
+                        "scrollable_when_stacking": "true"
                     },
                     "enable_features": [
                         "BottomBrowserControlsRefactor",
