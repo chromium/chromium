@@ -49,6 +49,9 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
+    session_manager::SessionManager* session_manager =
+        session_manager::SessionManager::Get();
+    session_manager->OnUserManagerCreated(fake_user_manager_.Get());
 
     delegate_.emplace();
 
@@ -63,8 +66,6 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, profile_.get());
 
-    session_manager::SessionManager* session_manager =
-        session_manager::SessionManager::Get();
     session_manager->CreateSession(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
