@@ -180,6 +180,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.AppModeFetching.Outcome"
+    enum="IOSAppModeFetchingOutcomeType" expires_after="2025-06-30">
+  <owner>erahmaoui@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    This event is recorded each time an application mode fetching is completed.
+    The enumeration indicates the nature of the application mode fetching
+    outcome.
+  </summary>
+</histogram>
+
 <histogram name="IOS.AppStoreRating.UserIsEligible" enum="Boolean"
     expires_after="2024-07-14">
   <owner>hiramahmood@google.com</owner>

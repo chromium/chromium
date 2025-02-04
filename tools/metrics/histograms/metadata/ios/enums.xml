@@ -182,6 +182,13 @@ the generic promo launch. -->
   <int value="7" label="ParcelCarrier"/>
 </enum>
 
+<enum name="IOSAppModeFetchingOutcomeType">
+  <int value="0" label="Incognito"/>
+  <int value="1" label="Non-Incognito"/>
+  <int value="2" label="Fetching Failure Error"/>
+  <int value="3" label="Fetching Time Out Error"/>
+</enum>
+
 <enum name="IOSBringAndroidTabsPromptActionType">
   <int value="0" label="Review tabs"/>
   <int value="1" label="Open tabs"/>
