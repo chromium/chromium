@@ -452,6 +452,10 @@ class MediaDevicesManagerTest : public ::testing::Test {
         type, MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
   }
 
+  MediaDevicesManager::CachePolicy GetCachePolicy(MediaDeviceType type) {
+    return media_devices_manager_->cache_policies_[static_cast<size_t>(type)];
+  }
+
   void ExpectVideoEnumerationHistogramReport(int success_count,
                                              int error_count = 0) {
     histogram_tester_.ExpectTotalCount(
@@ -1712,6 +1716,105 @@ TEST_F(MediaDevicesManagerTest, VideoSourceProviderTimer) {
   media_devices_manager_->UnsubscribeDeviceChangeNotifications(
       video_subscription_id);
   EXPECT_TRUE(IsDisconnectVideoSourceProviderTimerRunning());
+}
+
+TEST_F(MediaDevicesManagerTest, StartAndStopMonitoringWithModes) {
+  // Adjusting features in order to skip calling
+  // VideoCaptureDevicesChangedObserver and AudioServiceDeviceListener in
+  // order not to start service processes.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_
+      .InitFromCommandLine(/*enable_features=*/
+                           "RunVideoCaptureServiceInBrowserProcess",
+                           /*disable_features=*/"AudioServiceOutOfProcess");
+  auto system_monitor = std::make_unique<base::SystemMonitor>();
+
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+
+  EXPECT_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_)).Times(2);
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo()).Times(2);
+
+  EXPECT_CALL(*audio_manager_, MockGetAudioInputDeviceNames(_)).Times(2);
+  EXPECT_CALL(media_devices_manager_client_, InputDevicesChangedUI(_, _))
+      .Times(2);
+  EXPECT_CALL(*audio_manager_, MockGetAudioOutputDeviceNames(_)).Times(2);
+
+  // Monitor video only.
+  media_devices_manager_->StartMonitoring(
+      /*audio_device_monitoring_mode=*/MediaDevicesManager::
+          DeviceMonitoringMode(false),
+      /*video_device_monitoring_mode=*/MediaDevicesManager::
+          DeviceMonitoringMode(true));
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+
+  // Monitor audio only on top of the video monitoring.
+  media_devices_manager_->StartMonitoring(
+      /*audio_device_monitoring_mode=*/MediaDevicesManager::
+          DeviceMonitoringMode(true),
+      /*video_device_monitoring_mode=*/MediaDevicesManager::
+          DeviceMonitoringMode(false));
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+
+  // Stop monitoring video only.
+  media_devices_manager_->StopMonitoring(
+      MediaDevicesManager::DeviceMonitoringMode(false),
+      MediaDevicesManager::DeviceMonitoringMode(true));
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+
+  // Stop audio.
+  media_devices_manager_->StopMonitoring(
+      MediaDevicesManager::DeviceMonitoringMode(true),
+      MediaDevicesManager::DeviceMonitoringMode(false));
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+
+  // Start audio and video monitoring.
+  media_devices_manager_->StartMonitoring(
+      /*audio_device_monitoring_mode=*/MediaDevicesManager::
+          DeviceMonitoringMode(true),
+      /*video_device_monitoring_mode=*/MediaDevicesManager::
+          DeviceMonitoringMode(true));
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::SYSTEM_MONITOR);
+
+  // Stop audio and video will reset all.
+  media_devices_manager_->StopMonitoring(
+      MediaDevicesManager::DeviceMonitoringMode(true),
+      MediaDevicesManager::DeviceMonitoringMode(true));
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaAudioOutput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  EXPECT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
 }
 #endif
 }  // namespace content
