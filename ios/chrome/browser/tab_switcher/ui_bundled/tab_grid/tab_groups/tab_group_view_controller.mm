@@ -583,7 +583,7 @@ constexpr CGFloat kFacePileHeight = 44;
   [editActions addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
                  [weakSelf openNewTab];
                }]];
-  if (!_gridViewController.shared) {
+  if (_sharingState == SharingState::kNotShared) {
     [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                    [weakSelf ungroup];
                  }]];
@@ -602,10 +602,30 @@ constexpr CGFloat kFacePileHeight = 44;
           [weakSelf closeGroup];
         }]];
     if (!_incognito) {
-      [destructiveActions
-          addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-            [weakSelf deleteGroup];
-          }]];
+      switch (_sharingState) {
+        case SharingState::kNotShared: {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                [weakSelf deleteGroup];
+              }]];
+          break;
+        }
+        case SharingState::kShared: {
+          [destructiveActions
+              addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+                [weakSelf leaveSharedGroup];
+              }]];
+          break;
+        }
+
+        case SharingState::kSharedAndOwned: {
+          [destructiveActions
+              addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+                [weakSelf deleteSharedGroup];
+              }]];
+          break;
+        }
+      }
     }
   } else {
     [destructiveActions
@@ -672,6 +692,32 @@ constexpr CGFloat kFacePileHeight = 44;
 
   [self.mutator deleteGroup];
   [_handler hideTabGroup];
+}
+
+// Deletes the shared group and closes the view.
+- (void)deleteSharedGroup {
+  CHECK(IsTabGroupSyncEnabled());
+  CHECK(_gridViewController.shared);
+  CHECK_EQ(_sharingState, SharingState::kSharedAndOwned);
+
+  [_handler showTabGroupConfirmationForAction:TabGroupActionType::
+                                                  kDeleteSharedTabGroup
+                                        group:_tabGroup->GetWeakPtr()
+                             sourceButtonItem:_navigationBar.topItem
+                                                  .rightBarButtonItems[0]];
+}
+
+// Leaves the shared group and closes the view.
+- (void)leaveSharedGroup {
+  CHECK(IsTabGroupSyncEnabled());
+  CHECK(_gridViewController.shared);
+  CHECK_EQ(_sharingState, SharingState::kShared);
+
+  [_handler
+      showTabGroupConfirmationForAction:TabGroupActionType::kLeaveSharedTabGroup
+                                  group:_tabGroup->GetWeakPtr()
+                       sourceButtonItem:_navigationBar.topItem
+                                            .rightBarButtonItems[0]];
 }
 
 // Updates the safe area inset of the grid based on this VC safe areas and the

@@ -51,6 +51,7 @@ using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridDoneButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGroupBackButton;
+using chrome_test_util::TabGroupOverflowMenuButton;
 
 namespace {
 
@@ -456,6 +457,109 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       performAction:grey_tap()];
 
   // Check that the group is removed locally.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(1)];
+}
+
+// Checks opening the Share flow from the Tab Grid and actually sharing. Then
+// deleting the shared group from the group view as owner.
+- (void)testShareGroupAndDeleteFromGroupViewUsingContextMenus {
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Share the first group.
+  LongPressTabGroupCellAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      performAction:grey_tap()];
+
+  // Verify that this opened the fake Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Actually share the group.
+  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closes the Share flow.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:FakeShareFlowView()];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Display the tab group overflow menu.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
+      performAction:grey_tap()];
+
+  // Verify that the leave button is not available.
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Delete the shared group.
+  [[EarlGrey selectElementWithMatcher:DeleteSharedGroupButton()]
+      performAction:grey_tap()];
+  // Tap on the delete button again to confirm the deletion.
+  [[EarlGrey selectElementWithMatcher:DeleteSharedConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the group view is closed and the group deleted.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
+      assertWithMatcher:grey_notVisible()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(0)];
+}
+
+// Checks joining a group. Then leaving the shared group from the group view as
+// member.
+- (void)testJoinGroupAndLeaveFromGroupViewUsingContextMenus {
+  [TabGroupAppInterface mockSharedEntitiesPreview];
+  GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
+      data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
+  [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
+
+  // Verify that it opened the Join flow.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:FakeJoinFlowView()];
+
+  // Join the group.
+  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closed the Join flow.
+  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check that the group is loaded.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(1)];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
+      performAction:grey_tap()];
+
+  // Display the tab group overflow menu.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
+      performAction:grey_tap()];
+
+  // Verify that the delete button is not available.
+  [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Leave the shared group.
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupButton()]
+      performAction:grey_tap()];
+  // Tap on the leave button confirmation.
+  [[EarlGrey selectElementWithMatcher:LeaveSharedGroupConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Check that the group view is closed and the group leaved.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
+      assertWithMatcher:grey_notVisible()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(1)];
 }
