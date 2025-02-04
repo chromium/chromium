@@ -107,6 +107,7 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     this.browserProxy_.setGlicOsLauncherEnabled(event.detail);
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Glic.OsEntrypoint.Settings.Toggle', event.detail);
+    this.hideHelpBubble(OS_WIDGET_TOGGLE_ELEMENT_ID);
   }
 
   private async onShortcutUpdated_(event: CustomEvent<string>) {
@@ -115,6 +116,7 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
     // Records true if the shortcut string is not undefined or the empty string.
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Glic.OsEntrypoint.Settings.Shortcut', !!event.detail);
+    this.hideHelpBubble(OS_WIDGET_KEYBOARD_SHORTCUT_ELEMENT_ID);
   }
 
   private onInputCaptureChange_(event: CustomEvent<boolean>) {
