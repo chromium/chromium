@@ -15,6 +15,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/display/extended_mouse_warp_controller.h"
 #include "ash/display/mouse_cursor_event_filter.h"
+#include "ash/display/screen_ash.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/unified_mouse_warp_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -130,6 +131,11 @@ AshTestBase::AshTestBase(
 }
 
 AshTestBase::~AshTestBase() {
+  // Ensure the next test starts with a null display::Screen.  This must be done
+  // here instead of in TearDown() since some tests test access to the Screen
+  // after the shell shuts down (which they use TearDown() to trigger).
+  ScreenAsh::DeleteScreenForShutdown();
+
   CHECK(setup_called_)
       << "You have overridden SetUp but never called AshTestBase::SetUp";
   CHECK(teardown_called_)
@@ -150,6 +156,10 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
 
   init_params_.delegate = std::move(delegate);
   init_params_.local_state = local_state();
+  // AshTestBase destroys the Screen instance at the destructor,
+  // because some of the tests verifies the screen instance
+  // after the ash::Shell destroyed in AshTestHelper::TearDown().
+  init_params_.destroy_screen = false;
 
   // Prepare for a pixel test if having pixel init params.
   std::optional<pixel_test::InitParams> pixel_test_init_params =
@@ -191,6 +201,8 @@ void AshTestBase::TearDown() {
   base::RunLoop().RunUntilIdle();
 
   ash_test_helper_->TearDown();
+  OnHelperWillBeDestroyed();
+  ash_test_helper_.reset();
 
   event_generator_.reset();
   // Some tests set an internal display id,
