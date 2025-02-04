@@ -58,6 +58,20 @@ enum class IOSDefaultBrowserVideoPromoAction {
   kMaxValue = kTertiaryActionTapped,
 };
 
+// Enum actions for the IOS.DefaultBrowserBannerPromo.PromoSessionEnded UMA
+// metrics.
+// LINT.IfChange(IOSDefaultBrowserBannerPromoPromoSessionEndedReason)
+enum class IOSDefaultBrowserBannerPromoPromoSessionEndedReason {
+  kImpressionsMet = 0,
+  kUserClosed = 1,
+  kUserTappedPromo = 2,
+  kNavigationToSRP = 3,
+  kNavigationToNTP = 4,
+  kChromeNowDefault = 5,
+  kMaxValue = kChromeNowDefault,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSDefaultBrowserBannerPromoPromoSessionEndedReason)
+
 // The reason why a non modal promo was triggered.
 enum class NonModalDefaultBrowserPromoReason {
   // Indicates that no specific promo reason is applicable.
