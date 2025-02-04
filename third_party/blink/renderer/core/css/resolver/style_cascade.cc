@@ -1166,7 +1166,9 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
   DCHECK(!resolver.IsLocked(property));
   CascadeResolver::AutoLock lock(property, resolver);
 
+  CascadePriority priority = map_.At(property.GetCSSPropertyName());
   DCHECK_NE(property.PropertyID(), CSSPropertyID::kVariable);
+  DCHECK_NE(priority.GetOrigin(), CascadeOrigin::kNone);
 
   MarkHasVariableReference(property);
 
