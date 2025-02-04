@@ -399,15 +399,14 @@ bool FormTracker::CanInferFormSubmitted() {
     return !last_interacted_form ||
            std::ranges::none_of(
                last_interacted_form.GetFormControlElements(),  // nocheck
-               &form_util::IsWebElementFocusableForAutofill);
+               &WebElement::IsFocusable);
   }
   if (last_interacted_.formless_element.GetId()) {
     WebFormControlElement last_interacted_formless_element =
         last_interacted_.formless_element.GetField();
     // Infer submission if the field was removed or it's hidden.
     return !last_interacted_formless_element ||
-           !form_util::IsWebElementFocusableForAutofill(
-               last_interacted_formless_element);
+           !last_interacted_formless_element.IsFocusable();
   }
   return false;
 }

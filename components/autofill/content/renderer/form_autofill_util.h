@@ -113,9 +113,6 @@ bool IsWebauthnTaggedElement(const blink::WebFormControlElement& element);
 // Returns true if |element| can be edited (enabled and not read only).
 bool IsElementEditable(const blink::WebInputElement& element);
 
-// True if this element can take focus.
-bool IsWebElementFocusableForAutofill(const blink::WebElement& element);
-
 // Returns the FormRendererId of a given WebFormElement or contenteditable. If
 // WebFormElement::IsNull(), returns a null form renderer id, which is the
 // renderer id of the unowned form.

@@ -105,7 +105,6 @@ using form_util::GetFormByRendererId;
 using form_util::GetFormControlByRendererId;
 using form_util::GetFormRendererId;
 using form_util::IsElementEditable;
-using form_util::IsWebElementFocusableForAutofill;
 
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
@@ -334,9 +333,8 @@ void AnnotateFieldsWithSignatures(
     SetAttributeAsync(control_element,
                       kDebugAttributeForAlternativeFormSignature,
                       alternative_form_signature);
-    SetAttributeAsync(
-        control_element, kDebugAttributeForVisibility,
-        IsWebElementFocusableForAutofill(control_element) ? "true" : "false");
+    SetAttributeAsync(control_element, kDebugAttributeForVisibility,
+                      control_element.IsFocusable() ? "true" : "false");
   }
 }
 
@@ -377,7 +375,7 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
     const WebInputElement input = iter->DynamicTo<WebInputElement>();
     if (input && input.IsTextField() &&
         input.FormControlTypeForAutofill() != kInputPassword &&
-        IsElementEditable(input) && IsWebElementFocusableForAutofill(input)) {
+        IsElementEditable(input) && input.IsFocusable()) {
       return input;
     }
   }
@@ -993,9 +991,8 @@ bool PasswordAutofillAgent::FillUsernameAndPasswordElements(
     // If the `username_element` is visible/focusable and the `password_element`
     // is not, trigger submission on the former as the latter unlikely has an
     // Enter listener.
-    if (username_element &&
-        IsWebElementFocusableForAutofill(username_element) &&
-        !IsWebElementFocusableForAutofill(password_element)) {
+    if (username_element && username_element.IsFocusable() &&
+        !password_element.IsFocusable()) {
       field_renderer_id_to_submit_ = GetFieldRendererId(username_element);
     } else {
       field_renderer_id_to_submit_ = GetFieldRendererId(password_element);
@@ -1493,7 +1490,7 @@ void PasswordAutofillAgent::SendPasswordForms(
     if (only_visible) {
       bool is_form_visible =
           std::ranges::any_of(form_element.GetFormControlElements(),  // nocheck
-                              &IsWebElementFocusableForAutofill);
+                              &WebElement::IsFocusable);
       LogHTMLForm(logger.get(), Logger::STRING_FORM_FOUND_ON_PAGE,
                   form_element);
       LogBoolean(logger.get(), Logger::STRING_FORM_IS_VISIBLE, is_form_visible);
@@ -1539,8 +1536,8 @@ void PasswordAutofillAgent::SendPasswordForms(
   if (only_visible) {
     std::vector<WebFormControlElement> control_elements =
         form_util::GetOwnedAutofillableFormControls(doc, WebFormElement());
-    add_unowned_inputs = std::ranges::any_of(control_elements,
-                                             &IsWebElementFocusableForAutofill);
+    add_unowned_inputs =
+        std::ranges::any_of(control_elements, &WebElement::IsFocusable);
     LogBoolean(logger.get(), Logger::STRING_UNOWNED_INPUTS_VISIBLE,
                add_unowned_inputs);
   }
