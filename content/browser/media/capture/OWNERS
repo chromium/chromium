@@ -3,4 +3,6 @@ jophba@chromium.org
 alcooper@chromium.org
 sergeyu@chromium.org
 
+per-file native_screen_capture_picker*=agpalak@chromium.org
+per-file native_screen_capture_picker*=tovep@chromium.org
 per-file web_contents_*=ilnik@chromium.org
