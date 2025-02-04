@@ -34,10 +34,6 @@ void PhishingImageEmbedder::BeginImageEmbedding(DoneCallback done_callback) {
                                     this);
   DCHECK(is_ready());
 
-  // The RenderView should have CancelPendingImageEmbedding() before calling
-  // ImageEmbedding, so DCHECK this.
-  DCHECK(done_callback_.is_null());
-
   // However, in an opt build, we will go ahead and clean up the pending
   // image embedding so that we can start in a known state.
   CancelPendingImageEmbedding();
