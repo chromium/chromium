@@ -1,7 +1,0 @@
-syntax = "proto2";
-
-package utf8;
-
-message NoFeaturesProto2 {
-  optional string my_field = 1;
-}

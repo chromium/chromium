@@ -15,6 +15,9 @@
 #include "v8/include/libplatform/libplatform.h"
 #include "v8/include/v8.h"
 
+// Silence logging from the protobuf library.
+protobuf_mutator::protobuf::LogSilencer log_silencer;
+
 // Encapsulates process-wide v8 state, initialized once per fuzzing session.
 class Environment {
  public:

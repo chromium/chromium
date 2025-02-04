@@ -1,0 +1,13 @@
+diff --git a/src/google/protobuf/stubs/common.cc b/src/google/protobuf/stubs/common.cc
+index f1a815022d4d5..c1561e39b51c3 100644
+--- a/src/google/protobuf/stubs/common.cc
++++ b/src/google/protobuf/stubs/common.cc
+@@ -146,7 +146,7 @@ inline void DefaultLogHandler(LogLevel level, const char* filename, int line,
+   __android_log_write(android_log_level, "libprotobuf-native",
+                       ostr.str().c_str());
+   // Also output to std::cerr.
+-  fprintf(stderr, "%s", ostr.str().c_str());
++  fprintf(stderr, "%s\n", ostr.str().c_str());
+   fflush(stderr);
+ 
+   // Indicate termination if needed.

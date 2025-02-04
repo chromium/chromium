@@ -1,0 +1,25 @@
+From def602dd07b7eae1cac6823705975317b5607fc3 Mon Sep 17 00:00:00 2001
+From: Marjolein Heyndrickx <marjoleinheyndrickx@gmail.com>
+Date: Fri, 12 Aug 2022 11:22:09 +0200
+Subject: [PATCH] change macro to avoid pedantic warning
+
+---
+ src/google/protobuf/descriptor.h | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/src/google/protobuf/descriptor.h b/src/google/protobuf/descriptor.h
+index 699afd968..653f73443 100644
+--- a/src/google/protobuf/descriptor.h
++++ b/src/google/protobuf/descriptor.h
+@@ -199,7 +199,7 @@ namespace internal {
+ //
+ 
+ #if !defined(PROTOBUF_INTERNAL_CHECK_CLASS_SIZE)
+-#define PROTOBUF_INTERNAL_CHECK_CLASS_SIZE(t, expected)
++#define PROTOBUF_INTERNAL_CHECK_CLASS_SIZE(t, expected) static_assert(true, "")
+ #endif
+ 
+ class FlatAllocator;
+-- 
+2.37.1.595.g718a3a8f04-goog
+

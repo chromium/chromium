@@ -23,9 +23,13 @@ namespace remoting::internal {
 class DoNothingProto : public google::protobuf::MessageLite {
  public:
   // google::protobuf::MessageLite
-  const google::protobuf::internal::ClassData* GetClassData() const override;
+  std::string GetTypeName() const override;
+  MessageLite* New(google::protobuf::Arena* arena) const override;
   void Clear() override;
+  bool IsInitialized() const override;
+  void CheckTypeAndMergeFrom(const MessageLite& other) override;
   size_t ByteSizeLong() const override;
+  int GetCachedSize() const override;
   uint8_t* _InternalSerialize(
       uint8_t* ptr,
       google::protobuf::io::EpsCopyOutputStream* stream) const override;

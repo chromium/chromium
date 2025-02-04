@@ -1,9 +1,32 @@
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
+# https://developers.google.com/protocol-buffers/
 #
-# Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file or at
-# https://developers.google.com/open-source/licenses/bsd
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     * Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above
+# copyright notice, this list of conditions and the following disclaimer
+# in the documentation and/or other materials provided with the
+# distribution.
+#     * Neither the name of Google Inc. nor the names of its
+# contributors may be used to endorse or promote products derived from
+# this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """Contains routines for printing protocol messages in text format.
 
@@ -19,7 +42,7 @@ Simple usage example::
 
 __author__ = 'kenton@google.com (Kenton Varda)'
 
-# TODO Import thread contention leads to test failures.
+# TODO(b/129989314) Import thread contention leads to test failures.
 import encodings.raw_unicode_escape  # pylint: disable=unused-import
 import encodings.unicode_escape  # pylint: disable=unused-import
 import io
@@ -44,9 +67,6 @@ _FLOAT_INFINITY = re.compile('-?inf(?:inity)?f?$', re.IGNORECASE)
 _FLOAT_NAN = re.compile('nanf?$', re.IGNORECASE)
 _QUOTES = frozenset(("'", '"'))
 _ANY_FULL_TYPE_NAME = 'google.protobuf.Any'
-_DEBUG_STRING_SILENT_MARKER = '\t '
-
-_as_utf8_default = True
 
 
 class Error(Exception):
@@ -93,7 +113,7 @@ class TextWriter(object):
 
 def MessageToString(
     message,
-    as_utf8=_as_utf8_default,
+    as_utf8=False,
     as_one_line=False,
     use_short_repeated_primitives=False,
     pointy_brackets=False,
@@ -105,7 +125,8 @@ def MessageToString(
     indent=0,
     message_formatter=None,
     print_unknown_fields=False,
-    force_colon=False) -> str:
+    force_colon=False):
+  # type: (...) -> str
   """Convert protobuf message to text format.
 
   Double values can be formatted compactly with 15 digits of
@@ -170,7 +191,8 @@ def MessageToString(
   return result
 
 
-def MessageToBytes(message, **kwargs) -> bytes:
+def MessageToBytes(message, **kwargs):
+  # type: (...) -> bytes
   """Convert protobuf message to encoded text format.  See MessageToString."""
   text = MessageToString(message, **kwargs)
   if isinstance(text, bytes):
@@ -185,40 +207,10 @@ def _IsMapEntry(field):
           field.message_type.GetOptions().map_entry)
 
 
-def _IsGroupLike(field):
-  """Determines if a field is consistent with a proto2 group.
-
-  Args:
-    field: The field descriptor.
-
-  Returns:
-    True if this field is group-like, false otherwise.
-  """
-  # Groups are always tag-delimited.
-  if field.type != descriptor.FieldDescriptor.TYPE_GROUP:
-    return False
-
-  # Group fields always are always the lowercase type name.
-  if field.name != field.message_type.name.lower():
-    return False
-
-  if field.message_type.file != field.file:
-    return False
-
-  # Group messages are always defined in the same scope as the field.  File
-  # level extensions will compare NULL == NULL here, which is why the file
-  # comparison above is necessary to ensure both come from the same file.
-  return (
-      field.message_type.containing_type == field.extension_scope
-      if field.is_extension
-      else field.message_type.containing_type == field.containing_type
-  )
-
-
 def PrintMessage(message,
                  out,
                  indent=0,
-                 as_utf8=_as_utf8_default,
+                 as_utf8=False,
                  as_one_line=False,
                  use_short_repeated_primitives=False,
                  pointy_brackets=False,
@@ -280,7 +272,7 @@ def PrintField(field,
                value,
                out,
                indent=0,
-               as_utf8=_as_utf8_default,
+               as_utf8=False,
                as_one_line=False,
                use_short_repeated_primitives=False,
                pointy_brackets=False,
@@ -304,7 +296,7 @@ def PrintFieldValue(field,
                     value,
                     out,
                     indent=0,
-                    as_utf8=_as_utf8_default,
+                    as_utf8=False,
                     as_one_line=False,
                     use_short_repeated_primitives=False,
                     pointy_brackets=False,
@@ -339,16 +331,17 @@ def _BuildMessageFromTypeName(type_name, descriptor_pool):
   if descriptor_pool is None:
     from google.protobuf import descriptor_pool as pool_mod
     descriptor_pool = pool_mod.Default()
-  from google.protobuf import message_factory
+  from google.protobuf import symbol_database
+  database = symbol_database.Default()
   try:
     message_descriptor = descriptor_pool.FindMessageTypeByName(type_name)
   except KeyError:
     return None
-  message_type = message_factory.GetMessageClass(message_descriptor)
+  message_type = database.GetPrototype(message_descriptor)
   return message_type()
 
 
-# These values must match WireType enum in //google/protobuf/wire_format.h.
+# These values must match WireType enum in google/protobuf/wire_format.h.
 WIRETYPE_LENGTH_DELIMITED = 2
 WIRETYPE_START_GROUP = 3
 
@@ -360,7 +353,7 @@ class _Printer(object):
       self,
       out,
       indent=0,
-      as_utf8=_as_utf8_default,
+      as_utf8=False,
       as_one_line=False,
       use_short_repeated_primitives=False,
       pointy_brackets=False,
@@ -473,7 +466,7 @@ class _Printer(object):
           # entire tree.  Unfortunately this would take significant refactoring
           # of this file to work around.
           #
-          # TODO: refactor and optimize if this becomes an issue.
+          # TODO(haberman): refactor and optimize if this becomes an issue.
           entry_submsg = value.GetEntryClass()(key=key, value=value[key])
           self.PrintField(field, entry_submsg)
       elif field.label == descriptor.FieldDescriptor.LABEL_REPEATED:
@@ -561,11 +554,11 @@ class _Printer(object):
         else:
           out.write(field.full_name)
         out.write(']')
-      elif _IsGroupLike(field):
+      elif field.type == descriptor.FieldDescriptor.TYPE_GROUP:
         # For groups, use the capitalized name.
         out.write(field.message_type.name)
       else:
-        out.write(field.name)
+          out.write(field.name)
 
     if (self.force_colon or
         field.cpp_type != descriptor.FieldDescriptor.CPPTYPE_MESSAGE):
@@ -863,15 +856,10 @@ class _Parser(object):
       ParseError: On text parsing problems.
     """
     # Tokenize expects native str lines.
-    try:
-      str_lines = (
-          line if isinstance(line, str) else line.decode('utf-8')
-          for line in lines)
-      tokenizer = Tokenizer(str_lines)
-    except UnicodeDecodeError as e:
-      raise ParseError from e
-    if message:
-      self.root_type = message.DESCRIPTOR.full_name
+    str_lines = (
+        line if isinstance(line, str) else line.decode('utf-8')
+        for line in lines)
+    tokenizer = Tokenizer(str_lines)
     while not tokenizer.AtEnd():
       self._MergeField(tokenizer, message)
 
@@ -891,8 +879,6 @@ class _Parser(object):
       type_url_prefix, packed_type_name = self._ConsumeAnyTypeUrl(tokenizer)
       tokenizer.Consume(']')
       tokenizer.TryConsume(':')
-      self._DetectSilentMarker(tokenizer, message_descriptor.full_name,
-                               type_url_prefix + '/' + packed_type_name)
       if tokenizer.TryConsume('<'):
         expanded_any_end_token = '>'
       else:
@@ -931,6 +917,8 @@ class _Parser(object):
       # pylint: disable=protected-access
       field = message.Extensions._FindExtensionByName(name)
       # pylint: enable=protected-access
+
+
       if not field:
         if self.allow_unknown_extension:
           field = None
@@ -963,10 +951,12 @@ class _Parser(object):
         # names.
         if not field:
           field = message_descriptor.fields_by_name.get(name.lower(), None)
-          if field and not _IsGroupLike(field):
+          if field and field.type != descriptor.FieldDescriptor.TYPE_GROUP:
             field = None
-          if field and field.message_type.name != name:
-            field = None
+
+        if (field and field.type == descriptor.FieldDescriptor.TYPE_GROUP and
+            field.message_type.name != name):
+          field = None
 
       if not field and not self.allow_unknown_field:
         raise tokenizer.ParseErrorPreviousToken(
@@ -988,13 +978,9 @@ class _Parser(object):
 
       if field.cpp_type == descriptor.FieldDescriptor.CPPTYPE_MESSAGE:
         tokenizer.TryConsume(':')
-        self._DetectSilentMarker(tokenizer, message_descriptor.full_name,
-                                 field.full_name)
         merger = self._MergeMessageField
       else:
         tokenizer.Consume(':')
-        self._DetectSilentMarker(tokenizer, message_descriptor.full_name,
-                                 field.full_name)
         merger = self._MergeScalarField
 
       if (field.label == descriptor.FieldDescriptor.LABEL_REPEATED and
@@ -1012,19 +998,13 @@ class _Parser(object):
 
     else:  # Proto field is unknown.
       assert (self.allow_unknown_extension or self.allow_unknown_field)
-      self._SkipFieldContents(tokenizer, name, message_descriptor.full_name)
+      _SkipFieldContents(tokenizer)
 
     # For historical reasons, fields may optionally be separated by commas or
     # semicolons.
     if not tokenizer.TryConsume(','):
       tokenizer.TryConsume(';')
 
-  def _LogSilentMarker(self, immediate_message_type, field_name):
-    pass
-
-  def _DetectSilentMarker(self, tokenizer, immediate_message_type, field_name):
-    if tokenizer.contains_silent_marker_before_current_token:
-      self._LogSilentMarker(immediate_message_type, field_name)
 
   def _ConsumeAnyTypeUrl(self, tokenizer):
     """Consumes a google.protobuf.Any type URL and returns the type name."""
@@ -1077,7 +1057,7 @@ class _Parser(object):
         sub_message = message.Extensions[field]
       else:
         # Also apply _allow_multiple_scalars to message field.
-        # TODO: Change to _allow_singular_overwrites.
+        # TODO(jieluo): Change to _allow_singular_overwrites.
         if (not self._allow_multiple_scalars and
             message.HasField(field.name)):
           raise tokenizer.ParseErrorPreviousToken(
@@ -1098,6 +1078,12 @@ class _Parser(object):
         value.CopyFrom(sub_message.value)
       else:
         getattr(message, field.name)[sub_message.key] = sub_message.value
+
+  @staticmethod
+  def _IsProto3Syntax(message):
+    message_descriptor = message.DESCRIPTOR
+    return (hasattr(message_descriptor, 'syntax') and
+            message_descriptor.syntax == 'proto3')
 
   def _MergeScalarField(self, tokenizer, message, field):
     """Merges a single scalar field into a message.
@@ -1150,7 +1136,7 @@ class _Parser(object):
     else:
       if field.is_extension:
         if (not self._allow_multiple_scalars and
-            field.has_presence and
+            not self._IsProto3Syntax(message) and
             message.HasExtension(field)):
           raise tokenizer.ParseErrorPreviousToken(
               'Message type "%s" should not have multiple "%s" extensions.' %
@@ -1160,12 +1146,12 @@ class _Parser(object):
       else:
         duplicate_error = False
         if not self._allow_multiple_scalars:
-          if field.has_presence:
-            duplicate_error = message.HasField(field.name)
-          else:
-            # For field that doesn't represent presence, try best effort to
-            # check multiple scalars by compare to default values.
+          if self._IsProto3Syntax(message):
+            # Proto3 doesn't represent presence so we try best effort to check
+            # multiple scalars by compare to default values.
             duplicate_error = bool(getattr(message, field.name))
+          else:
+            duplicate_error = message.HasField(field.name)
 
         if duplicate_error:
           raise tokenizer.ParseErrorPreviousToken(
@@ -1174,112 +1160,105 @@ class _Parser(object):
         else:
           setattr(message, field.name, value)
 
-  def _SkipFieldContents(self, tokenizer, field_name, immediate_message_type):
-    """Skips over contents (value or message) of a field.
 
-    Args:
-      tokenizer: A tokenizer to parse the field name and values.
-      field_name: The field name currently being parsed.
-      immediate_message_type: The type of the message immediately containing
-        the silent marker.
-    """
-    # Try to guess the type of this field.
-    # If this field is not a message, there should be a ":" between the
-    # field name and the field value and also the field value should not
-    # start with "{" or "<" which indicates the beginning of a message body.
-    # If there is no ":" or there is a "{" or "<" after ":", this field has
-    # to be a message or the input is ill-formed.
-    if tokenizer.TryConsume(
-        ':') and not tokenizer.LookingAt('{') and not tokenizer.LookingAt('<'):
-      self._DetectSilentMarker(tokenizer, immediate_message_type, field_name)
-      if tokenizer.LookingAt('['):
-        self._SkipRepeatedFieldValue(tokenizer)
-      else:
-        self._SkipFieldValue(tokenizer)
+def _SkipFieldContents(tokenizer):
+  """Skips over contents (value or message) of a field.
+
+  Args:
+    tokenizer: A tokenizer to parse the field name and values.
+  """
+  # Try to guess the type of this field.
+  # If this field is not a message, there should be a ":" between the
+  # field name and the field value and also the field value should not
+  # start with "{" or "<" which indicates the beginning of a message body.
+  # If there is no ":" or there is a "{" or "<" after ":", this field has
+  # to be a message or the input is ill-formed.
+  if tokenizer.TryConsume(
+      ':') and not tokenizer.LookingAt('{') and not tokenizer.LookingAt('<'):
+    if tokenizer.LookingAt('['):
+      _SkipRepeatedFieldValue(tokenizer)
     else:
-      self._DetectSilentMarker(tokenizer, immediate_message_type, field_name)
-      self._SkipFieldMessage(tokenizer, immediate_message_type)
+      _SkipFieldValue(tokenizer)
+  else:
+    _SkipFieldMessage(tokenizer)
 
-  def _SkipField(self, tokenizer, immediate_message_type):
-    """Skips over a complete field (name and value/message).
 
-    Args:
-      tokenizer: A tokenizer to parse the field name and values.
-      immediate_message_type: The type of the message immediately containing
-        the silent marker.
-    """
-    field_name = ''
-    if tokenizer.TryConsume('['):
-      # Consume extension or google.protobuf.Any type URL
-      field_name += '[' + tokenizer.ConsumeIdentifier()
-      num_identifiers = 1
-      while tokenizer.TryConsume('.'):
-        field_name += '.' + tokenizer.ConsumeIdentifier()
-        num_identifiers += 1
-      # This is possibly a type URL for an Any message.
-      if num_identifiers == 3 and tokenizer.TryConsume('/'):
-        field_name += '/' + tokenizer.ConsumeIdentifier()
-        while tokenizer.TryConsume('.'):
-          field_name += '.' + tokenizer.ConsumeIdentifier()
-      tokenizer.Consume(']')
-      field_name += ']'
-    else:
-      field_name += tokenizer.ConsumeIdentifierOrNumber()
+def _SkipField(tokenizer):
+  """Skips over a complete field (name and value/message).
 
-    self._SkipFieldContents(tokenizer, field_name, immediate_message_type)
-
-    # For historical reasons, fields may optionally be separated by commas or
-    # semicolons.
-    if not tokenizer.TryConsume(','):
-      tokenizer.TryConsume(';')
-
-  def _SkipFieldMessage(self, tokenizer, immediate_message_type):
-    """Skips over a field message.
-
-    Args:
-      tokenizer: A tokenizer to parse the field name and values.
-      immediate_message_type: The type of the message immediately containing
-        the silent marker
-    """
-    if tokenizer.TryConsume('<'):
-      delimiter = '>'
-    else:
-      tokenizer.Consume('{')
-      delimiter = '}'
-
-    while not tokenizer.LookingAt('>') and not tokenizer.LookingAt('}'):
-      self._SkipField(tokenizer, immediate_message_type)
-
-    tokenizer.Consume(delimiter)
-
-  def _SkipFieldValue(self, tokenizer):
-    """Skips over a field value.
-
-    Args:
-      tokenizer: A tokenizer to parse the field name and values.
-
-    Raises:
-      ParseError: In case an invalid field value is found.
-    """
-    if (not tokenizer.TryConsumeByteString()and
-        not tokenizer.TryConsumeIdentifier() and
-        not _TryConsumeInt64(tokenizer) and
-        not _TryConsumeUint64(tokenizer) and
-        not tokenizer.TryConsumeFloat()):
-      raise ParseError('Invalid field value: ' + tokenizer.token)
-
-  def _SkipRepeatedFieldValue(self, tokenizer):
-    """Skips over a repeated field value.
-
-    Args:
-      tokenizer: A tokenizer to parse the field value.
-    """
-    tokenizer.Consume('[')
-    if not tokenizer.LookingAt(']'):
-      self._SkipFieldValue(tokenizer)
-      while tokenizer.TryConsume(','):
-        self._SkipFieldValue(tokenizer)
+  Args:
+    tokenizer: A tokenizer to parse the field name and values.
+  """
+  if tokenizer.TryConsume('['):
+    # Consume extension name.
+    tokenizer.ConsumeIdentifier()
+    while tokenizer.TryConsume('.'):
+      tokenizer.ConsumeIdentifier()
     tokenizer.Consume(']')
+  else:
+    tokenizer.ConsumeIdentifierOrNumber()
+
+  _SkipFieldContents(tokenizer)
+
+  # For historical reasons, fields may optionally be separated by commas or
+  # semicolons.
+  if not tokenizer.TryConsume(','):
+    tokenizer.TryConsume(';')
+
+
+def _SkipFieldMessage(tokenizer):
+  """Skips over a field message.
+
+  Args:
+    tokenizer: A tokenizer to parse the field name and values.
+  """
+
+  if tokenizer.TryConsume('<'):
+    delimiter = '>'
+  else:
+    tokenizer.Consume('{')
+    delimiter = '}'
+
+  while not tokenizer.LookingAt('>') and not tokenizer.LookingAt('}'):
+    _SkipField(tokenizer)
+
+  tokenizer.Consume(delimiter)
+
+
+def _SkipFieldValue(tokenizer):
+  """Skips over a field value.
+
+  Args:
+    tokenizer: A tokenizer to parse the field name and values.
+
+  Raises:
+    ParseError: In case an invalid field value is found.
+  """
+  # String/bytes tokens can come in multiple adjacent string literals.
+  # If we can consume one, consume as many as we can.
+  if tokenizer.TryConsumeByteString():
+    while tokenizer.TryConsumeByteString():
+      pass
+    return
+
+  if (not tokenizer.TryConsumeIdentifier() and
+      not _TryConsumeInt64(tokenizer) and not _TryConsumeUint64(tokenizer) and
+      not tokenizer.TryConsumeFloat()):
+    raise ParseError('Invalid field value: ' + tokenizer.token)
+
+
+def _SkipRepeatedFieldValue(tokenizer):
+  """Skips over a repeated field value.
+
+  Args:
+    tokenizer: A tokenizer to parse the field value.
+  """
+  tokenizer.Consume('[')
+  if not tokenizer.LookingAt(']'):
+    _SkipFieldValue(tokenizer)
+    while tokenizer.TryConsume(','):
+      _SkipFieldValue(tokenizer)
+  tokenizer.Consume(']')
 
 
 class Tokenizer(object):
@@ -1320,8 +1299,6 @@ class Tokenizer(object):
     self._skip_comments = skip_comments
     self._whitespace_pattern = (skip_comments and self._WHITESPACE_OR_COMMENT
                                 or self._WHITESPACE)
-    self.contains_silent_marker_before_current_token = False
-
     self._SkipWhitespace()
     self.NextToken()
 
@@ -1354,8 +1331,6 @@ class Tokenizer(object):
       match = self._whitespace_pattern.match(self._current_line, self._column)
       if not match:
         break
-      self.contains_silent_marker_before_current_token = match.group(0) == (
-          ' ' + _DEBUG_STRING_SILENT_MARKER)
       length = len(match.group(0))
       self._column += length
 
@@ -1608,7 +1583,6 @@ class Tokenizer(object):
     """Reads the next meaningful token."""
     self._previous_line = self._line
     self._previous_column = self._column
-    self.contains_silent_marker_before_current_token = False
 
     self._column += len(self.token)
     self._SkipWhitespace()
@@ -1627,7 +1601,7 @@ class Tokenizer(object):
       self.token = self._current_line[self._column]
 
 # Aliased so it can still be accessed by current visibility violators.
-# TODO: Migrate violators to textformat_tokenizer.
+# TODO(dbarnett): Migrate violators to textformat_tokenizer.
 _Tokenizer = Tokenizer  # pylint: disable=invalid-name
 
 
@@ -1806,7 +1780,7 @@ def ParseFloat(text):
       try:
         return float(text.rstrip('f'))
       except ValueError:
-        raise ValueError("Couldn't parse float: %s" % text)
+        raise ValueError('Couldn\'t parse float: %s' % text)
 
 
 def ParseBool(text):
@@ -1855,8 +1829,12 @@ def ParseEnum(field, value):
       raise ValueError('Enum type "%s" has no value named %s.' %
                        (enum_descriptor.full_name, value))
   else:
-    if not field.enum_type.is_closed:
-      return number
+    # Numeric value.
+    if hasattr(field.file, 'syntax'):
+      # Attribute is checked for compatibility.
+      if field.file.syntax == 'proto3':
+        # Proto3 accept numeric unknown enums.
+        return number
     enum_value = enum_descriptor.values_by_number.get(number, None)
     if enum_value is None:
       raise ValueError('Enum type "%s" has no value with number %d.' %
