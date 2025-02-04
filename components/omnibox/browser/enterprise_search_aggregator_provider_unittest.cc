@@ -48,6 +48,7 @@ class FakeEnterpriseSearchAggregatorProvider
   using EnterpriseSearchAggregatorProvider::
       ParseEnterpriseSearchAggregatorSearchResults;
   using EnterpriseSearchAggregatorProvider::RequestCompleted;
+  using EnterpriseSearchAggregatorProvider::UpdateResults;
 
   using EnterpriseSearchAggregatorProvider::done_;
   using EnterpriseSearchAggregatorProvider::input_;
@@ -191,6 +192,9 @@ const std::string kMissingFieldsJsonResponse = base::StringPrintf(
           }
         ]
         })");
+
+const std::string kNonDictJsonResponse =
+    base::StringPrintf(R"(["test","result1","result2"])");
 
 class EnterpriseSearchAggregatorProviderTest : public testing::Test,
                                                AutocompleteProviderListener {
@@ -361,6 +365,18 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithMissingFields) {
               testing::ElementsAre(u"http://www.yahoo.com/Document%201",
                                    u"http://www.yahoo.com/john@example.com",
                                    u"www.example.com"));
+}
+
+// Test non-dict results are skipped.
+TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithNonDict) {
+  AutocompleteInput input{u"keyword text", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier()};
+  input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
+
+  provider_->input_ = input;
+  provider_->UpdateResults(kNonDictJsonResponse);
+
+  EXPECT_THAT(GetMatches(), testing::ElementsAre());
 }
 
 // Test matches are cached and cleared in the appropriate flows.
