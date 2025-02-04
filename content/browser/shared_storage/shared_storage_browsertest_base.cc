@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -14,9 +15,13 @@
 
 #include "base/check.h"
 #include "base/debug/crash_logging.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/statistics_recorder.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/browser/fenced_frame/fenced_frame_config.h"
@@ -453,5 +458,32 @@ SharedStorageBrowserTestBase::test_runtime_manager() {
 }
 
 SharedStorageBrowserTestBase::~SharedStorageBrowserTestBase() = default;
+
+// static
+void SharedStorageBrowserTestBase::WaitForHistogram(
+    const std::string& histogram_name) {
+  // Continue if histogram was already recorded.
+  if (base::StatisticsRecorder::FindHistogram(histogram_name)) {
+    return;
+  }
+
+  // Else, wait until the histogram is recorded.
+  base::RunLoop run_loop;
+  auto histogram_observer =
+      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          histogram_name,
+          base::BindLambdaForTesting(
+              [&](const char* histogram_name, uint64_t name_hash,
+                  base::HistogramBase::Sample32 sample) { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
+// static
+void SharedStorageBrowserTestBase::WaitForHistograms(
+    const std::vector<std::string>& histogram_names) {
+  for (const auto& name : histogram_names) {
+    WaitForHistogram(name);
+  }
+}
 
 }  // namespace content

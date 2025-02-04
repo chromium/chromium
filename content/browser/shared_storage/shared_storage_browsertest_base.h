@@ -124,6 +124,10 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
   ~SharedStorageBrowserTestBase() override;
 
  protected:
+  static void WaitForHistogram(const std::string& histogram_name);
+  static void WaitForHistograms(
+      const std::vector<std::string>& histogram_names);
+
   static constexpr double kBudgetAllowed = 5.0;
   static constexpr int kStalenessThresholdDays = 1;
 
@@ -146,6 +150,14 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
     });
   }
 )";
+
+  static constexpr char kTimingSelectUrlExecutedInWorkletHistogram[] =
+      "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet";
+  static constexpr char kSelectUrlBudgetStatusHistogram[] =
+      "Storage.SharedStorage.Worklet.SelectURL.BudgetStatus";
+
+  static constexpr char kPageWithBlankIframePath[] =
+      "/page_with_blank_iframe.html";
 
   test::FencedFrameTestHelper fenced_frame_test_helper_;
 
