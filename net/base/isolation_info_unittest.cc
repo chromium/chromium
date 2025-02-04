@@ -86,6 +86,8 @@ TEST_F(IsolationInfoTest, RequestTypeMainFrame) {
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
   EXPECT_FALSE(isolation_info.nonce().has_value());
+  EXPECT_TRUE(isolation_info.IsMainFrameRequest());
+  EXPECT_TRUE(isolation_info.IsOutermostMainFrameRequest());
 
   DuplicateAndCompare(isolation_info);
 
@@ -105,6 +107,8 @@ TEST_F(IsolationInfoTest, RequestTypeMainFrame) {
   EXPECT_TRUE(redirected_isolation_info.site_for_cookies().IsFirstParty(
       kOrigin3.GetURL()));
   EXPECT_FALSE(redirected_isolation_info.nonce().has_value());
+  EXPECT_TRUE(redirected_isolation_info.IsMainFrameRequest());
+  EXPECT_TRUE(redirected_isolation_info.IsOutermostMainFrameRequest());
 }
 
 TEST_F(IsolationInfoTest, RequestTypeSubFrame) {
@@ -122,6 +126,8 @@ TEST_F(IsolationInfoTest, RequestTypeSubFrame) {
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
   EXPECT_FALSE(isolation_info.nonce().has_value());
+  EXPECT_FALSE(isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(isolation_info.IsOutermostMainFrameRequest());
 
   DuplicateAndCompare(isolation_info);
 
@@ -142,6 +148,8 @@ TEST_F(IsolationInfoTest, RequestTypeSubFrame) {
   EXPECT_TRUE(redirected_isolation_info.site_for_cookies().IsFirstParty(
       kOrigin1.GetURL()));
   EXPECT_FALSE(redirected_isolation_info.nonce().has_value());
+  EXPECT_FALSE(redirected_isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(redirected_isolation_info.IsOutermostMainFrameRequest());
 }
 
 TEST_F(IsolationInfoTest, RequestTypeMainFrameWithNonce) {
@@ -159,6 +167,8 @@ TEST_F(IsolationInfoTest, RequestTypeMainFrameWithNonce) {
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
   EXPECT_EQ(kNonce1, isolation_info.nonce().value());
+  EXPECT_TRUE(isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(isolation_info.IsOutermostMainFrameRequest());
 
   DuplicateAndCompare(isolation_info);
 
@@ -177,6 +187,8 @@ TEST_F(IsolationInfoTest, RequestTypeMainFrameWithNonce) {
   EXPECT_TRUE(redirected_isolation_info.site_for_cookies().IsFirstParty(
       kOrigin3.GetURL()));
   EXPECT_EQ(kNonce1, redirected_isolation_info.nonce().value());
+  EXPECT_TRUE(redirected_isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(redirected_isolation_info.IsOutermostMainFrameRequest());
 }
 
 TEST_F(IsolationInfoTest, RequestTypeSubFrameWithNonce) {
@@ -194,6 +206,8 @@ TEST_F(IsolationInfoTest, RequestTypeSubFrameWithNonce) {
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
   EXPECT_EQ(kNonce1, isolation_info.nonce().value());
+  EXPECT_FALSE(isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(isolation_info.IsOutermostMainFrameRequest());
 
   DuplicateAndCompare(isolation_info);
 
@@ -212,6 +226,8 @@ TEST_F(IsolationInfoTest, RequestTypeSubFrameWithNonce) {
   EXPECT_TRUE(redirected_isolation_info.site_for_cookies().IsFirstParty(
       kOrigin1.GetURL()));
   EXPECT_EQ(kNonce1, redirected_isolation_info.nonce().value());
+  EXPECT_FALSE(redirected_isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(redirected_isolation_info.IsOutermostMainFrameRequest());
 }
 
 TEST_F(IsolationInfoTest, RequestTypeOther) {
@@ -222,6 +238,8 @@ TEST_F(IsolationInfoTest, RequestTypeOther) {
   EXPECT_TRUE(isolation_info.network_isolation_key().IsEmpty());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_FALSE(isolation_info.nonce());
+  EXPECT_FALSE(isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(isolation_info.IsOutermostMainFrameRequest());
 
   DuplicateAndCompare(isolation_info);
 
@@ -244,6 +262,8 @@ TEST_F(IsolationInfoTest, RequestTypeOtherWithSiteForCookies) {
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
   EXPECT_FALSE(isolation_info.nonce());
+  EXPECT_FALSE(isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(isolation_info.IsOutermostMainFrameRequest());
 
   DuplicateAndCompare(isolation_info);
 
@@ -267,6 +287,8 @@ TEST_F(IsolationInfoTest, RequestTypeOtherWithEmptySiteForCookies) {
   EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_FALSE(isolation_info.nonce());
+  EXPECT_FALSE(isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(isolation_info.IsOutermostMainFrameRequest());
 
   DuplicateAndCompare(isolation_info);
 
@@ -285,6 +307,8 @@ TEST_F(IsolationInfoTest, CreateTransient) {
   EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   EXPECT_FALSE(isolation_info.nonce());
+  EXPECT_FALSE(isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(isolation_info.IsOutermostMainFrameRequest());
 
   DuplicateAndCompare(isolation_info);
 
@@ -303,6 +327,8 @@ TEST_F(IsolationInfoTest, CreateTransientWithNonce) {
   EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
   ASSERT_TRUE(isolation_info.nonce().has_value());
   EXPECT_EQ(isolation_info.nonce().value(), kNonce1);
+  EXPECT_FALSE(isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(isolation_info.IsOutermostMainFrameRequest());
 
   DuplicateAndCompare(isolation_info);
 
@@ -334,6 +360,8 @@ TEST_F(IsolationInfoTest, CreateForInternalRequest) {
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
   EXPECT_FALSE(isolation_info.nonce());
+  EXPECT_FALSE(isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(isolation_info.IsOutermostMainFrameRequest());
 
   DuplicateAndCompare(isolation_info);
 
@@ -366,6 +394,8 @@ TEST_F(IsolationInfoTest, CustomSchemeRequestTypeOther) {
   EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_TRUE(isolation_info.site_for_cookies().IsFirstParty(kCustomOriginUrl));
   EXPECT_FALSE(isolation_info.nonce());
+  EXPECT_FALSE(isolation_info.IsMainFrameRequest());
+  EXPECT_FALSE(isolation_info.IsOutermostMainFrameRequest());
 
   DuplicateAndCompare(isolation_info);
 

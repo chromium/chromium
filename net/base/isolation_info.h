@@ -180,6 +180,12 @@ class NET_EXPORT IsolationInfo {
     return RequestType::kMainFrame == request_type_;
   }
 
+  // If this request is associated with a outer most main frame. See
+  // `RenderFrameHost::GetOutermostMainFrame` for more information.
+  bool IsOutermostMainFrameRequest() const {
+    return IsMainFrameRequest() && !nonce();
+  }
+
   bool IsEmpty() const { return !top_frame_origin_; }
 
   // These may only be nullopt if created by the empty constructor. If one is
