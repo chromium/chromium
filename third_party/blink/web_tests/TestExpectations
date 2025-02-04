@@ -9138,8 +9138,5 @@ crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-013.html [ F
 crbug.com/391126821 [ Win11-arm64 ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]
 crbug.com/390565845 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/waiting-for-audio.html [ Crash Failure Pass Timeout ]
 
-# Temporarily disable for landing crrev.com/c/6119427
-crbug.com/365737493 http/tests/devtools/security/main-origin-assigned-despite-request-missing.js [ Failure Pass ]
-
 # Gardener 2025-02-04
 crbug.com/389946963 [ Mac13 ] external/wpt/mediacapture-fromelement/capture.html [ Failure Pass ]
