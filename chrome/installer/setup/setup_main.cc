@@ -463,7 +463,8 @@ installer::InstallStatus RenameChromeExecutables(
                                     temp_path.path(), WorkItem::ALWAYS_MOVE);
   install_list->AddDeleteTreeWorkItem(chrome_proxy_new_exe, temp_path.path());
 
-  AddFinalizeUpdateWorkItems(base::Version(chrome::kChromeVersion),
+  AddFinalizeUpdateWorkItems(original_state,
+                             base::Version(chrome::kChromeVersion),
                              *installer_state, setup_exe, install_list.get());
 
   // Add work items to delete Chrome's "opv", "cpv", and "cmd" values.
