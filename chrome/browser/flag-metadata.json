@@ -3737,7 +3737,7 @@
   {
     "name": "enable-search-aggregator-policy",
     "owners": [ "ftirelo@chromium.org", "jdonnelly@chromium.org", "mahmadi@chromium.org", "cbe-magic@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "enable-search-customizable-shortcuts-in-launcher",
