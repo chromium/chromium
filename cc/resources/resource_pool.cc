@@ -38,6 +38,9 @@ using base::trace_event::MemoryDumpLevelOfDetail;
 
 namespace cc {
 
+ResourcePool::Backing::Backing() = default;
+ResourcePool::Backing::~Backing() = default;
+
 ResourcePool::GpuBacking::GpuBacking() = default;
 ResourcePool::GpuBacking::~GpuBacking() {
   if (!shared_image) {
