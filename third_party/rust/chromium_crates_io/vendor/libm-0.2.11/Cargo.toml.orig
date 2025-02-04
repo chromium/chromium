@@ -1,0 +1,47 @@
+[package]
+authors = ["Jorge Aparicio <jorge@japaric.io>"]
+categories = ["no-std"]
+description = "libm in pure Rust"
+documentation = "https://docs.rs/libm"
+keywords = ["libm", "math"]
+license = "MIT AND (MIT OR Apache-2.0)"
+name = "libm"
+readme = "README.md"
+repository = "https://github.com/rust-lang/libm"
+version = "0.2.11"
+edition = "2021"
+exclude = ["/ci/", "/.github/workflows/"]
+rust-version = "1.63"
+
+[features]
+default = []
+
+# This tells the compiler to assume that a Nightly toolchain is being used and
+# that it should activate any useful Nightly things accordingly.
+unstable = []
+
+# Used to prevent using any intrinsics or arch-specific code.
+force-soft-floats = []
+
+[workspace]
+resolver = "2"
+members = [
+  "crates/compiler-builtins-smoke-test",
+  "crates/libm-bench",
+  "crates/libm-macros",
+  "crates/libm-test",
+  "crates/musl-math-sys",
+]
+default-members = [
+  ".",
+  "crates/libm-macros",
+  "crates/libm-test",
+]
+
+[dev-dependencies]
+no-panic = "0.1.30"
+
+
+# This is needed for no-panic to correctly detect the lack of panics
+[profile.release]
+lto = "fat"

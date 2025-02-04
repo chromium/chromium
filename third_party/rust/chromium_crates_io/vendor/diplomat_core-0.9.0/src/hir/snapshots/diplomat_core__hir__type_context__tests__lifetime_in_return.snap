@@ -1,0 +1,7 @@
+---
+source: core/src/hir/type_context.rs
+expression: output
+---
+Lowering error in Opaque::returns_self: Found elided lifetime in return type, please explicitly specify
+Lowering error in Opaque::returns_foo: Found elided lifetime in return type, please explicitly specify
+

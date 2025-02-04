@@ -1,0 +1,54 @@
+# This file is part of ICU4X. For terms of use, please see the file
+# called LICENSE at the top level of the ICU4X source tree
+# (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
+
+Lowry, Keith
+Long, Amelia
+Torrigiano, Pietro
+Glyde, Henry George
+Barnard, Rev. William Henry
+Béraud, Jean
+Pacher, Michael
+Waldo, Samuel Lovett
+Eun-ho, Kim
+Hook, James Clarke
+Rible, Dave
+Bowling, Frank
+Kettle, Tilly
+Wilson, George Washington
+Herrera Barnuevo, Sebastian de
+Laurence, Samuel
+Oost the Elder, Jacob van
+Nourse, Elizabeth
+Pietersz the Younger, Pieter
+Vorsterman the Elder, Lucas
+Cézanne, Paul
+Tischbein, Johann Heinrich Wilhelm
+Bossche, Aert van den
+Dawson, David
+Siberechts, Jan
+Flipart, Charles
+Bastien-Lepage, Jules
+Carpenter, Ed
+Lorenzetti, Ugolino
+Halswelle, Keeley
+Jefferys, James
+Cowles, Russell
+Stuempfig, Walter
+Foote, Will Howe
+Maltwood, Katherine Emma
+Traylor, Bill
+Krieghoff, Cornelius
+Campigli, Massimo
+Yun Ge
+Sallee, Charles
+Gardner, Todd
+Dixon, Ken
+Forsyth, William
+Godfrey, DeWitt
+Oliveira, Nathan
+Stott, Edward
+Tiepolo, Giovanni Battista
+Winter, Friedrich
+Gaywood, Richard
+Apt the Elder, Ulrich

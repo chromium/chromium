@@ -1,0 +1,10 @@
+Name: potential_utf
+URL: https://crates.io/crates/potential_utf
+Version: 0.1.0
+Revision: a55a78a30248fbd3b888fbb33ba19d9233059941
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/potential_utf-0.1.0/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Unvalidated string and character types

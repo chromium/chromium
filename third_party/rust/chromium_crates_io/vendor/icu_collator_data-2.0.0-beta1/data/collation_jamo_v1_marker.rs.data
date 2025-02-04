@@ -1,0 +1,75 @@
+// @generated
+/// Implement `DataProvider<CollationJamoV1Marker>` on the given struct using the data
+/// hardcoded in this file. This allows the struct to be used with
+/// `icu`'s `_unstable` constructors.
+///
+/// Using this implementation will embed the following data in the binary's data segment:
+/// * 1048B[^1] for the singleton data struct
+///
+/// [^1]: these numbers can be smaller in practice due to linker deduplication
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_collation_jamo_v1_marker {
+    ($ provider : ty) => {
+        #[clippy::msrv = "1.71.1"]
+        const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
+        #[clippy::msrv = "1.71.1"]
+        impl $provider {
+            #[doc(hidden)]
+            pub const SINGLETON_COLLATION_JAMO_V1_MARKER: &'static <icu::collator::provider::CollationJamoV1Marker as icu_provider::DynamicDataMarker>::DataStruct = &icu::collator::provider::CollationJamoV1 { ce32s: unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"\x05\x05\x06|\x05\x05\x08|\x05\x05\n|\x05\x05\x0C|\x05\x05\x0E|\x05\x05\x10|\x05\x05\x12|\x05\x05\x14|\x05\x05\x16|\x05\x05\x18|\x05\x05\x1A|\x05\x05\x1C|\x05\x05\x1E|\x05\x05 |\x05\x05\"|\x05\x05$|\x05\x05&|\x05\x05(|\x05\x05*|\x05\x05,|\x05\x05.|\x05\x050|\xC1\x022|\xC1\t2|\xC1\x102|\xC1\x172|\x05\x054|\x05\x056|\x05\x058|\x05\x05:|\x05\x05<|\x05\x05>|\x05\x05@|\x05\x05B|\x05\x05D|\x05\x05F|\xC1\x02H|\xC1\tH|\xC1\x10H|\x05\x05J|\x05\x05L|\x05\x05N|\x05\x05P|\x05\x05R|\x05\x05T|\x05\x05V|\x05\x05X|\x05\x05Z|\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\xCE`q\0\x05\x05_|\x05\x05a|\x05\x05c|\xC1\x02e|\xC1\te|\xC1\x10e|\xC1\x17e|\xC1\x1Ee|\xC1\xF0e|\xC1\xF7e|\x05\x05g|\x05\x05i|\x05\x05k|\x05\x05m|\x05\x05o|\x05\x05q|\x05\x05s|\x05\x05u|\x05\x05w|\x05\x05y|\x05\x05{|\x05\x05}|\x05\x05\x7F|\x05\x05\x81|\x05\x05\x83|\x05\x05\x85|\x05\x05\x87|\x05\x05\x89|\x05\x05\x8B|\x05\x05\x8D|\x05\x05\x8F|\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\xCE\x80q\0\x05\x05\x93|\x05\x05\x95|\x05\x05\x97|\x05\x05\x99|\x05\x05\x9B|\xC1\x02\x9D|\xC1\t\x9D|\xC1\x10\x9D|\xC1\x17\x9D|\xC1\x1E\x9D|\xC1%\x9D|\xC1,\x9D|\xC13\x9D|\x05\x05\x9F|\x05\x05\xA1|\x05\x05\xA3|\x05\x05\xA5|\xC1\x02\xA7|\xC1\t\xA7|\xC1\x10\xA7|\xC1\x17\xA7|\xC1\x1E\xA7|\xC1%\xA7|\xC1,\xA7|\xC13\xA7|\xC1:\xA7|\x05\x05\xA9|\x05\x05\xAB|\x05\x05\xAD|\x05\x05\xAF|\xC1\x02\xB1|\xC1\t\xB1|\xC1\x10\xB1|\xC1\x17\xB1|\xC1\x1E\xB1|\xC1%\xB1|\x05\x05\xB3|\x05\x05\xB5|\x05\x05\xB7|\x05\x05\xB9|\x05\x05\xBB|\x05\x05\xBD|\x05\x05\xBF|\x05\x05\xC1|\x05\x05\xC3|\x05\x05\xC5|\x05\x05\xC7|\x05\x05\xC9|\x05\x05\xCB|\x05\x05\xCD|\x05\x05\xCF|\x05\x05\xD1|\x05\x05\xD3|\x05\x05\xD5|\x05\x05\xD7|\x05\x05\xD9|\x05\x05\xDB|\x05\x05\xDD|\x05\x05\xDF|\x05\x05\xE1|\x05\x05\xE3|\x05\x05\xE5|\x05\x05\xE7|\xC1\x02\xE9|\xC1\t\xE9|\xC1\x10\xE9|\xC1\x17\xE9|\x05\x05\xEB|\x05\x05\xED|\xC1\x02\xEF|\xC1\t\xEF|\xC1\x10\xEF|\x05\x05\xF1|\x05\x05\xF3|\x05\x05\xF5|\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0\xCE\xA0q\0") } };
+        }
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::DataProvider<icu::collator::provider::CollationJamoV1Marker> for $provider {
+            fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::collator::provider::CollationJamoV1Marker>, icu_provider::DataError> {
+                if req.id.locale.is_default() {
+                    Ok(icu_provider::DataResponse { payload: icu_provider::DataPayload::from_static_ref(Self::SINGLETON_COLLATION_JAMO_V1_MARKER), metadata: Default::default() })
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::collator::provider::CollationJamoV1Marker as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+    };
+    ($ provider : ty , ITER) => {
+        __impl_collation_jamo_v1_marker!($provider);
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::IterableDataProvider<icu::collator::provider::CollationJamoV1Marker> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok([Default::default()].into_iter().collect())
+            }
+        }
+    };
+    ($ provider : ty , DRY) => {
+        __impl_collation_jamo_v1_marker!($provider);
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::DryDataProvider<icu::collator::provider::CollationJamoV1Marker> for $provider {
+            fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
+                if req.id.locale.is_default() {
+                    Ok(Default::default())
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::collator::provider::CollationJamoV1Marker as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+    };
+    ($ provider : ty , DRY , ITER) => {
+        __impl_collation_jamo_v1_marker!($provider);
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::DryDataProvider<icu::collator::provider::CollationJamoV1Marker> for $provider {
+            fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
+                if req.id.locale.is_default() {
+                    Ok(Default::default())
+                } else {
+                    Err(icu_provider::DataErrorKind::InvalidRequest.with_req(<icu::collator::provider::CollationJamoV1Marker as icu_provider::DataMarker>::INFO, req))
+                }
+            }
+        }
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::IterableDataProvider<icu::collator::provider::CollationJamoV1Marker> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok([Default::default()].into_iter().collect())
+            }
+        }
+    };
+}
+#[doc(inline)]
+pub use __impl_collation_jamo_v1_marker as impl_collation_jamo_v1_marker;

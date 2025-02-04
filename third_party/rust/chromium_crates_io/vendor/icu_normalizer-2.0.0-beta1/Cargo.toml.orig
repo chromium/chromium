@@ -1,0 +1,62 @@
+# This file is part of ICU4X. For terms of use, please see the file
+# called LICENSE at the top level of the ICU4X source tree
+# (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
+
+[package]
+name = "icu_normalizer"
+description = "API for normalizing text into Unicode Normalization Forms"
+
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+homepage.workspace = true
+include.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+license.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+displaydoc = { workspace = true }
+icu_collections = { workspace = true }
+icu_properties = { workspace = true, optional = true }
+icu_provider = { workspace = true, features = ["macros"] }
+smallvec = { workspace = true }
+utf16_iter = { workspace = true }
+utf8_iter = { workspace = true }
+write16 = { workspace = true, features = ["alloc"] }
+zerovec = { workspace = true }
+
+databake = { workspace = true, features = ["derive"], optional = true }
+serde = { workspace = true, features = ["derive", "alloc"], optional = true }
+
+icu_normalizer_data = { workspace = true, optional = true }
+
+[dev-dependencies]
+arraystring = { workspace = true }
+arrayvec = { workspace = true }
+atoi = { workspace = true }
+detone = { workspace = true }
+icu = { path = "../../components/icu", default-features = false }
+write16 = { workspace = true, features = ["arrayvec"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+criterion = { workspace = true }
+
+[features]
+default = ["compiled_data"]
+std = ["icu_collections/std", "icu_properties?/std", "icu_provider/std"]
+serde = ["dep:serde", "icu_collections/serde", "zerovec/serde", "icu_properties?/serde", "icu_provider/serde"]
+# n.b. "icu_properties" + "icu_properties?/datagen" is equivalent to "icu_properties/datagen", however
+# we specify this explicitly since "optional_dep/feature" is a footgun that leads to us often accidentally enabling features
+datagen = ["serde", "dep:databake", "icu_properties", "icu_collections/databake", "zerovec/databake", "icu_properties?/datagen"]
+experimental = []
+compiled_data = ["dep:icu_normalizer_data", "icu_properties?/compiled_data"]
+icu_properties = ["dep:icu_properties"]
+
+[[bench]]
+name = "bench"
+harness = false

@@ -1,0 +1,104 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "icu_capi"
+  epoch = "2"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/bidi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/calendar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/casemap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/collator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/collections_sets.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/date.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/datetime.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/datetime_formatter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/decimal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/displaynames.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/errors.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/exemplar_chars.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/fallbacker.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/fixed_decimal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/list.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/locale.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/locale_core.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/locale_directionality.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/logging.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/normalizer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/normalizer_properties.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/pluralrules.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/properties_enums.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/properties_iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/properties_maps.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/properties_names.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/properties_sets.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/properties_unisets.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/script.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/segmenter_grapheme.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/segmenter_line.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/segmenter_sentence.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/segmenter_word.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/time.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/timezone.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/timezone_mapper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/units_converter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/week.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_capi-2.0.0-beta1/src/zoned_formatter.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "2.0.0-beta1"
+  cargo_pkg_authors = "The ICU4X Project Developers"
+  cargo_pkg_name = "icu_capi"
+  cargo_pkg_description = "C interface to ICU4X"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/diplomat/v0_9:lib",
+    "//third_party/rust/diplomat_runtime/v0_9:lib",
+    "//third_party/rust/icu_calendar/v2:lib",
+    "//third_party/rust/icu_casemap/v2:lib",
+    "//third_party/rust/icu_collator/v2:lib",
+    "//third_party/rust/icu_datetime/v2:lib",
+    "//third_party/rust/icu_decimal/v2:lib",
+    "//third_party/rust/icu_experimental/v0_2:lib",
+    "//third_party/rust/icu_list/v2:lib",
+    "//third_party/rust/icu_locale/v2:lib",
+    "//third_party/rust/icu_locale_core/v2:lib",
+    "//third_party/rust/icu_normalizer/v2:lib",
+    "//third_party/rust/icu_plurals/v2:lib",
+    "//third_party/rust/icu_properties/v2:lib",
+    "//third_party/rust/icu_provider/v2:lib",
+    "//third_party/rust/icu_provider_adapters/v2:lib",
+    "//third_party/rust/icu_segmenter/v2:lib",
+    "//third_party/rust/icu_timezone/v2:lib",
+    "//third_party/rust/potential_utf/v0_1:lib",
+    "//third_party/rust/tinystr/v0_8:lib",
+    "//third_party/rust/writeable/v0_6:lib",
+    "//third_party/rust/zerovec/v0_11:lib",
+  ]
+  features = [
+    "calendar",
+    "compiled_data",
+  ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
+}

@@ -1,0 +1,18 @@
+# Additional sentence breaking tests, not in SentenceBreakTest.txt
+#
+# https://github.com/unicode-org/icu4x/issues/3885
+÷ 002E × 0020 ÷ 1F925 ÷ # [ATerm] [Sp] [Any]
+÷ 002E × 0020 × 000A ÷ 1F925 ÷ # [ATerm] [Sp] [ParaSep] [Any]
+÷ 002E × 0022 × 0020 ÷ 1F925 ÷ # [ATerm] [Close] [Sp] [Any]
+÷ 002E × 0022 × 0020 × 000A ÷ 1F925 ÷ # [ATerm] [Close] [Sp] [ParaSep] [Any]
+÷ 002E × 0022 × 0020 ÷ 0022 ÷ # [ATerm] [Close] [Sp] [Close]
+÷ 002E × 0022 × 0020 ÷ 0031 ÷ # [ATerm] [Close] [Sp] [Numeric]
+÷ 002E × 0022 × 0020 ÷ 0041 ÷ # [ATerm] [Close] [Sp] [Upper]
+÷ 002E × 0022 × 0020 ÷ 3041 ÷ # [ATerm] [Close] [Sp] [OLetter]
+÷ 0021 × 0020 ÷ 1F925 ÷ # [STerm] [Sp] [Any]
+÷ 0021 × 0020 × 000A ÷ 1F925 ÷ # [STerm] [Sp] [ParaSep] [Any]
+÷ 0021 × 0022 × 0020 × 000A ÷ 1F925 ÷ # [STerm] [Close] [Sp] [ParaSep] [Any]
+÷ 0021 × 0022 × 0020 ÷ 0022 ÷ # [STerm] [Close] [Sp] [Close]
+÷ 0021 × 0022 × 0020 ÷ 0031 ÷ # [STerm] [Close] [Sp] [Numeric]
+÷ 0021 × 0022 × 0020 ÷ 0041 ÷ # [STerm] [Close] [Sp] [Upper]
+÷ 0021 × 0022 × 0020 ÷ 3041 ÷ # [STerm] [Close] [Sp] [OLetter]

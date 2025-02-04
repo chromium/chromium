@@ -1,0 +1,60 @@
+// @generated
+/// Implement `DataProvider<PersianYearNamesV1Marker>` on the given struct using the data
+/// hardcoded in this file. This allows the struct to be used with
+/// `icu`'s `_unstable` constructors.
+///
+/// Using this implementation will embed the following data in the binary's data segment:
+/// * 307B for the lookup data structure (57 data identifiers)
+/// * 1372B[^1] for the actual data (22 unique structs)
+///
+/// [^1]: these numbers can be smaller in practice due to linker deduplication
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_persian_year_names_v1_marker {
+    ($ provider : ty) => {
+        #[clippy::msrv = "1.71.1"]
+        const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
+        #[clippy::msrv = "1.71.1"]
+        impl $provider {
+            const DATA_PERSIAN_YEAR_NAMES_V1_MARKER: icu_provider_baked::zerotrie::Data<icu::datetime::provider::neo::PersianYearNamesV1Marker> = icu_provider_baked::zerotrie::Data { trie: icu_provider_baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xCBafhlmrstuyz\x0BJOhs\x8D\xA0\xAB\xC4\xE1r\x1E\xC3345\x01\x02\x80\x80\x80\xC4afir\n\x19\x1D\x1E\xC3345\x01\x02\x81\x81\x8F-Adlm\x1E\xC3345\x01\x02\x82\x82\x82\x1E5\x90\0\xC2\x1E-\n\xC3345\x01\x02\x83\x83\x90\0CA\x1E\xC3345\x01\x02\x84\x84\x84e\x1E5\x90\x01\xC2ov\n\x1E\xC3345\x01\x02\x85\x85\x85\x1E\xC3345\x01\x02\x86\x86\x90\x02k\x1E\xC3345\x01\x02\x87\x87\x87\xC2ou\x0B\x1E\xC3345\x01\x02\x88\x88\x90\0\x1E\xC3345\x01\x02\x89\x89\x90\x03\xC2cv\x0B\x1E\xC3345\x01\x02\x8A\x8A\x90\x04\x1E5\x90\x05h\x1E\xC3345\x01\x02\x8B\x8B\x8B\xC2nz\x0Bd\x1E\xC3345\x01\x02\x84\x84\x84\x1E\xC3345\x01\x02\x8C\x8C\x8Cue\xC2\x1E-\t\xC3345\x01\x02\x8D\x8D\x8DHans\x1E\xC3345\x01\x02\x8E\x8E\x8Eh\xC2\x1E-\t\xC3345\x01\x02\x8E\x8E\x8EHant\x1E\xC3345\x01\x02\x8D\x8D\x8D" }, values: &[icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD9\x87\xE2\x80\x8D.\xD8\xB4") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD9\x87\xE2\x80\x8D.\xD8\xB4.") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xF0\x9E\xA4\x80\xF0\x9E\xA4\x86") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0A. P.") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0AP") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xBA\x9B\xE0\xBA\xB5\xE0\xBB\x80\xE0\xBA\x9B\xE0\xBA\xB5\xE0\xBB\x80\xE0\xBA\x8A\xE0\xBA\x8D") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0pers. gads") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD0\x90\xD0\x9F") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0A.P.") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD0\xBF\xD0\xB5\xD1\x80\xD1\x81. \xD0\xB3\xD0\xBE\xD0\xB4") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0a.p.") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xB8\x9B\xE0\xB8\xB5\xE0\xB9\x80\xE0\xB8\x9B\xE0\xB8\xAD\xE0\xB8\xA3\xE0\xB9\x8C\xE0\xB9\x80\xE0\xB8\x8B\xE0\xB8\xB5\xE0\xB8\xA2") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0forsiy") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE6\xB3\xA2\xE6\x96\xAF\xE6\x9B\x86") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE6\xB3\xA2\xE6\x96\xAF\xE5\x8E\x86") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD9\x87\xD8\xAC\xD8\xB1\xDB\x8C \xD8\xB4\xD9\x85\xD8\xB3\xDB\x8C") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0Anno Persico") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD7\x94\xD7\xA1\xD7\xA4\xD7\x99\xD7\xA8\xD7\x94 \xD7\x94\xD7\xA4\xD7\xA8\xD7\xA1\xD7\x99\xD7\xAA") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0persie\xC5\xA1u gads") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD0\xBF\xD0\xB5\xD1\x80\xD1\x81\xD0\xB8\xD0\xB4\xD1\x81\xD0\xBA\xD0\xB8\xD0\xB9 \xD0\xB3\xD0\xBE\xD0\xB4") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0annu persianu") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0Anno Persarum") })] };
+        }
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::DataProvider<icu::datetime::provider::neo::PersianYearNamesV1Marker> for $provider {
+            fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::datetime::provider::neo::PersianYearNamesV1Marker>, icu_provider::DataError> {
+                let mut metadata = icu_provider::DataResponseMetadata::default();
+                let payload = if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_PERSIAN_YEAR_NAMES_V1_MARKER, req.id, req.metadata.attributes_prefix_match) {
+                    payload
+                } else {
+                    const FALLBACKER: icu::locale::fallback::LocaleFallbackerWithConfig<'static> = icu::locale::fallback::LocaleFallbacker::new().for_config(<icu::datetime::provider::neo::PersianYearNamesV1Marker as icu_provider::DataMarker>::INFO.fallback_config);
+                    let mut fallback_iterator = FALLBACKER.fallback_for(req.id.locale.clone());
+                    loop {
+                        if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_PERSIAN_YEAR_NAMES_V1_MARKER, icu_provider::DataIdentifierBorrowed::for_marker_attributes_and_locale(req.id.marker_attributes, fallback_iterator.get()), req.metadata.attributes_prefix_match) {
+                            metadata.locale = Some(fallback_iterator.take());
+                            break payload;
+                        }
+                        if fallback_iterator.get().is_default() {
+                            return Err(icu_provider::DataErrorKind::IdentifierNotFound.with_req(<icu::datetime::provider::neo::PersianYearNamesV1Marker as icu_provider::DataMarker>::INFO, req));
+                        }
+                        fallback_iterator.step();
+                    }
+                };
+                Ok(icu_provider::DataResponse { payload: icu_provider::DataPayload::from_static_ref(payload), metadata })
+            }
+        }
+    };
+    ($ provider : ty , ITER) => {
+        __impl_persian_year_names_v1_marker!($provider);
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::IterableDataProvider<icu::datetime::provider::neo::PersianYearNamesV1Marker> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok(icu_provider_baked::DataStore::iter(&Self::DATA_PERSIAN_YEAR_NAMES_V1_MARKER).collect())
+            }
+        }
+    };
+    ($ provider : ty , DRY) => {};
+    ($ provider : ty , DRY , ITER) => {
+        __impl_persian_year_names_v1_marker!($provider, ITER);
+    };
+}
+#[doc(inline)]
+pub use __impl_persian_year_names_v1_marker as impl_persian_year_names_v1_marker;

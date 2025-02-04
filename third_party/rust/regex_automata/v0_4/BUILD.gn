@@ -109,6 +109,7 @@ cargo_crate("lib") {
   features = [
     "alloc",
     "dfa-onepass",
+    "dfa-search",
     "hybrid",
     "meta",
     "nfa-backtrack",
@@ -138,5 +139,4 @@ cargo_crate("lib") {
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
   # it from first-party code.
   visibility = [ "//third_party/rust/*" ]
-  testonly = true
 }

@@ -1,0 +1,60 @@
+// @generated
+/// Implement `DataProvider<IndianYearNamesV1Marker>` on the given struct using the data
+/// hardcoded in this file. This allows the struct to be used with
+/// `icu`'s `_unstable` constructors.
+///
+/// Using this implementation will embed the following data in the binary's data segment:
+/// * 747B for the lookup data structure (139 data identifiers)
+/// * 2051B[^1] for the actual data (35 unique structs)
+///
+/// [^1]: these numbers can be smaller in practice due to linker deduplication
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_indian_year_names_v1_marker {
+    ($ provider : ty) => {
+        #[clippy::msrv = "1.71.1"]
+        const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
+        #[clippy::msrv = "1.71.1"]
+        impl $provider {
+            const DATA_INDIAN_YEAR_NAMES_V1_MARKER: icu_provider_baked::zerotrie::Data<icu::datetime::provider::neo::IndianYearNamesV1Marker> = icu_provider_baked::zerotrie::Data { trie: icu_provider_baked::zerotrie::ZeroTrieSimpleAscii { store: b"\xE1vabcefghijklmnoprstuxyz\0\0\0\0\0\0\0\0\0\x01\x01\x01\x01\x01\x01\x01\x01\x02\x02\x02\x02\x0B5@h\xA5\xB1\xC9\xD4\xDF\x07\x15Lgu\x93\xA1\xEC\x195Dgs\x1E\xC3345\x01\x02\x80\x80\x80\xC3nrs\n\x15\x1E\xC3345\x01\x02\x81\x81\x81x\x1E\xC3345\x01\x02\x82\x82\x82-Cyrl\x1E\xC3345\x01\x02\x83\x83\x83s\x1E\xC3345\x01\x02\x84\x84\x84\xC2ls\n\x1E\xC3345\x01\x02\x85\x85\x85\xC2\x1E-\t\xC3345\x01\x02\x86\x86\x86419\x1E\xC3345\x01\x02\x87\x87\x87\xC5afiry\n\x19\x1D)\x1E\xC3345\x01\x02\x88\x88\x88-Adlm\x1E\xC3345\x01\x02\x89\x89\x89\x1E5\x90\x0E\xC2\x1E-\x035\x90\x0FCA\x1E5\x87\x1E\xC3345\x01\x02\x8A\x8A\x8Au\x1E\xC3345\x01\x02\x8B\x8B\x90\x10\xC2ei\n\x1E\xC3345\x01\x02\x8C\x8C\x8C\x1E\xC3345\x01\x02\x8D\x8D\x8Dd\x1E\xC3345\x01\x02\x8A\x8A\x8Aa\x1E\xC3345\x01\x02\x8E\x8E\x8E\xC3nos\n\x15\x1E\xC3345\x01\x02\x8F\x8F\x8Fk\x1E\xC3345\x01\x02\x8D\x8D\x8D\x1E\xC3345\x02\x04\x90\0\x90\0\x90\0o\x1E\xC3345\x02\x04\x90\x01\x90\x01\x90\x01\xC4aklr\x0B\x18%i\x1E\xC3345\x01\x02\x8D\x8D\x8D\x1E\xC3345\x02\x04\x90\x02\x90\x02\x90\x02\x1E\xC3345\x02\x04\x90\x03\x90\x03\x90\x03\x1E\xC3345\x01\x02\x8D\x8D\x8D\xC2eo\r\x1E\xC3345\x02\x04\x90\x04\x90\x04\x90\x04\x1E\xC3345\x01\x02\x86\x86\x86r\x1E\xC3345\x02\x04\x90\x05\x90\x05\x90\x05\xC2as\r\x1E\xC3345\x02\x04\x90\x06\x90\x06\x90\x06\x1E\xC3345\x02\x04\x90\0\x90\0\x90\0u\x1E\xC3345\x02\x04\x90\x02\x90\x02\x90\x02\xC5cdkrv\x04\x11\x1B6\x1E5\x90\x11\x1E\xC3345\x02\x04\x90\x07\x90\x07\x90\x07\x1E\xC3345\x01\x02\x84\x84\x84\xC2\x1E-\t\xC3345\x01\x02\x83\x83\x83Latn\x1E\xC3345\x01\x02\x8A\x8A\x8A\x1E\xC3345\x01\x02\x8A\x8A\x90\x12\xC3aeh\r\x1A\x1E\xC3345\x02\x04\x90\x08\x90\x08\x90\x08\x1E\xC3345\x02\x04\x90\t\x90\t\x90\t\x1E\xC3345\x02\x04\x90\n\x90\n\x90\n\xC2nr\x0Bd\x1E\xC3345\x01\x02\x87\x87\x87\x1E\xC3345\x02\x04\x90\0\x90\0\x90\0nr\x1E\xC3345\x02\x04\x90\x0B\x90\x0B\x90\x0Bue\xC2\x1E-\x0C\xC3345\x02\x04\x90\x0C\x90\x0C\x90\x0CHans\x1E\xC3345\x02\x04\x90\r\x90\r\x90\rh\xC2\x1E-\x0C\xC3345\x02\x04\x90\r\x90\r\x90\rHant\x1E\xC3345\x02\x04\x90\x0C\x90\x0C\x90\x0C" }, values: &[icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xA6\xB6\xE0\xA6\x95") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xA6\xB8\xE0\xA6\xBE\xE0\xA6\xB2") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xA4\xB8\xE0\xA4\xBE\xE0\xA4\x95\xE0\xA4\xBE") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD0\xA1\xD0\x90\xD0\x9A\xD0\x90") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xC5\xA0aka") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xCE\xA3\xCE\xAC\xCE\xBA\xCE\xB1") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0saka") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0Saka") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD8\xAA\xD9\x82\xD9\x88\xDB\x8C\xD9\x85 \xD8\xB3\xD8\xA7\xDA\xA9\xD8\xA7") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xF0\x9E\xA4\x85\xF0\x9E\xA4\xA2\xF0\x9E\xA4\xB3\xF0\x9E\xA4\xA2") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0SAKA") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xAA\xB6\xE0\xAA\x95") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD7\xA1\xD7\x90\xD7\xA7\xD7\x90") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xA4\xB6\xE0\xA4\x95") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE3\x82\xB5\xE3\x82\xAB") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xB2\xB6\xE0\xB2\x95") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD8\xB3\xD8\xA7\xDA\xA9\xD8\xA7") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xBA\xA1.\xE0\xBA\xAA.") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD0\xA1\xD0\xB0\xD0\xBA\xD0\xB0") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xB4\xB6\xE0\xB4\x95") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xA4\xB8\xE0\xA4\xBE\xE0\xA4\x95") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xAC\xB8\xE0\xAC\xBE\xE0\xAC\x95\xE0\xAC\xBE") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xA8\xB8\xE0\xA8\xBE\xE0\xA8\x95\xE0\xA8\xBE") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xD8\xB3\xD8\xA7\xDA\xAA\xD8\xA7") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xAE\x9A\xE0\xAE\xBE\xE0\xAE\x95\xE0\xAE\xBE") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xB0\xB6\xE0\xB0\x95") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xB8\xA1.\xE0\xB8\xA8.") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xA4\xB8\xE0\xA4\x95") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE5\x8D\xB0\xE5\xBA\xA6\xE6\x9B\x86") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE5\x8D\xB0\xE5\xBA\xA6\xE5\x8E\x86") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0Saka-ajanlaskua") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xC3\xA8re Saka") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0\xE0\xAA\xB8\xE0\xAA\xBE\xE0\xAA\x95\xE0\xAA\xBE") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0era Saka") }), icu::datetime::provider::neo::YearNamesV1::FixedEras(unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x01\0Saka-eran") })] };
+        }
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::DataProvider<icu::datetime::provider::neo::IndianYearNamesV1Marker> for $provider {
+            fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::datetime::provider::neo::IndianYearNamesV1Marker>, icu_provider::DataError> {
+                let mut metadata = icu_provider::DataResponseMetadata::default();
+                let payload = if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_INDIAN_YEAR_NAMES_V1_MARKER, req.id, req.metadata.attributes_prefix_match) {
+                    payload
+                } else {
+                    const FALLBACKER: icu::locale::fallback::LocaleFallbackerWithConfig<'static> = icu::locale::fallback::LocaleFallbacker::new().for_config(<icu::datetime::provider::neo::IndianYearNamesV1Marker as icu_provider::DataMarker>::INFO.fallback_config);
+                    let mut fallback_iterator = FALLBACKER.fallback_for(req.id.locale.clone());
+                    loop {
+                        if let Some(payload) = icu_provider_baked::DataStore::get(&Self::DATA_INDIAN_YEAR_NAMES_V1_MARKER, icu_provider::DataIdentifierBorrowed::for_marker_attributes_and_locale(req.id.marker_attributes, fallback_iterator.get()), req.metadata.attributes_prefix_match) {
+                            metadata.locale = Some(fallback_iterator.take());
+                            break payload;
+                        }
+                        if fallback_iterator.get().is_default() {
+                            return Err(icu_provider::DataErrorKind::IdentifierNotFound.with_req(<icu::datetime::provider::neo::IndianYearNamesV1Marker as icu_provider::DataMarker>::INFO, req));
+                        }
+                        fallback_iterator.step();
+                    }
+                };
+                Ok(icu_provider::DataResponse { payload: icu_provider::DataPayload::from_static_ref(payload), metadata })
+            }
+        }
+    };
+    ($ provider : ty , ITER) => {
+        __impl_indian_year_names_v1_marker!($provider);
+        #[clippy::msrv = "1.71.1"]
+        impl icu_provider::IterableDataProvider<icu::datetime::provider::neo::IndianYearNamesV1Marker> for $provider {
+            fn iter_ids(&self) -> Result<std::collections::BTreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
+                Ok(icu_provider_baked::DataStore::iter(&Self::DATA_INDIAN_YEAR_NAMES_V1_MARKER).collect())
+            }
+        }
+    };
+    ($ provider : ty , DRY) => {};
+    ($ provider : ty , DRY , ITER) => {
+        __impl_indian_year_names_v1_marker!($provider, ITER);
+    };
+}
+#[doc(inline)]
+pub use __impl_indian_year_names_v1_marker as impl_indian_year_names_v1_marker;

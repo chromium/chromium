@@ -1,0 +1,10 @@
+Name: icu_normalizer
+URL: https://crates.io/crates/icu_normalizer
+Version: 2.0.0-beta1
+Revision: 279807eb712ec2505a01cbf5a255f090a402051e
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/icu_normalizer-2.0.0-beta1/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: API for normalizing text into Unicode Normalization Forms

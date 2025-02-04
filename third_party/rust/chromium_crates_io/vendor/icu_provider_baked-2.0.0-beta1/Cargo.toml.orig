@@ -1,0 +1,45 @@
+# This file is part of ICU4X. For terms of use, please see the file
+# called LICENSE at the top level of the ICU4X source tree
+# (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
+
+[package]
+name = "icu_provider_baked"
+description = "Tooling for the ICU4X baked data provider"
+
+version.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+edition.workspace = true
+repository.workspace = true
+homepage.workspace = true
+license.workspace = true
+categories.workspace = true
+include.workspace = true
+
+[dependencies]
+icu_provider = { workspace = true }
+writeable = { workspace = true }
+zerotrie = { workspace = true, features = ["alloc"] }
+
+crlify = { workspace = true, optional = true }
+databake = { workspace = true, optional = true}
+icu_provider_registry = { workspace = true, optional = true }
+log = { workspace = true, optional = true }
+proc-macro2 = { workspace = true, optional = true }
+heck = { workspace = true, optional = true }
+
+[dev-dependencies]
+icu_provider = { path = "../core", features = ["export"] }
+icu_provider_export = { path = "../export" }
+
+[features]
+export = [
+    "dep:crlify",
+    "dep:databake",
+    "dep:heck",
+    "dep:icu_provider_registry",
+    "dep:log",
+    "dep:proc-macro2",
+    "icu_provider/export",
+    "zerotrie/databake",
+]

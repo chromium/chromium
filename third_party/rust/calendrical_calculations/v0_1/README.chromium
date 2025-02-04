@@ -1,0 +1,10 @@
+Name: calendrical_calculations
+URL: https://crates.io/crates/calendrical_calculations
+Version: 0.1.2
+Revision: 6bd4893cc44c2ca2718de47a119a31cc40045fe5
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/calendrical_calculations-0.1.2/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Calendrical calculations in Rust

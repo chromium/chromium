@@ -1,0 +1,54 @@
+# This file is part of ICU4X. For terms of use, please see the file
+# called LICENSE at the top level of the ICU4X source tree
+# (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
+
+[package]
+name = "icu_list"
+description = "ECMA-402 ListFormatter"
+
+license.workspace = true
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+displaydoc = { workspace = true }
+icu_provider = { workspace = true, features = ["macros"] }
+regex-automata = { workspace = true, features = ["dfa-search"] }
+writeable = { workspace = true }
+
+databake = { workspace = true, features = ["derive"], optional = true}
+serde = { workspace = true, features = ["derive", "alloc"], optional = true }
+
+icu_list_data = { workspace = true, optional = true }
+
+[dev-dependencies]
+icu = { path = "../../components/icu", default-features = false }
+icu_benchmark_macros = { path = "../../tools/benchmark/macros" }
+postcard = { workspace = true, features = ["use-std"] }
+rmp-serde = { workspace = true }
+serde_json = { workspace = true }
+
+
+[features]
+default = ["compiled_data"]
+std = ["icu_provider/std"]
+serde = ["dep:serde", "icu_provider/serde"]
+serde_human = ["serde", "regex-automata/dfa-build", "regex-automata/syntax"]
+datagen = ["serde", "std", "dep:databake", "regex-automata/dfa-build", "regex-automata/syntax"]
+bench = []
+compiled_data = ["dep:icu_list_data"]
+
+[package.metadata.cargo-all-features]
+# Bench feature gets tested separately and is only relevant for CI
+denylist = ["bench"]
+
+[[example]]
+name = "and_list"
