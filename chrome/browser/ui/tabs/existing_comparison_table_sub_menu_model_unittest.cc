@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/tabs/existing_comparison_table_sub_menu_model.h"
 
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/pref_names.h"
@@ -28,8 +27,6 @@ class ExistingComparisonTableSubMenuModelTest
     : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
-    test_features_.InitAndEnableFeature(commerce::kProductSpecifications);
-
     BrowserWithTestWindowTest::SetUp();
 
     product_specs_service =
@@ -41,7 +38,6 @@ class ExistingComparisonTableSubMenuModelTest
   TabStripModel* tab_strip() { return browser()->tab_strip_model(); }
 
  protected:
-  base::test::ScopedFeatureList test_features_;
   std::unique_ptr<MockProductSpecificationsService> product_specs_service;
 
   const std::vector<ProductSpecificationsSet> kProductSpecsSets = {
