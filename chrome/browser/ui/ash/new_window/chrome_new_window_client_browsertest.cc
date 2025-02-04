@@ -45,7 +45,9 @@ void CreateAndStartUserSession(const AccountId& account_id) {
       account_id, user_manager::ProfileRequiresPolicy::kNoPolicyRequired);
   const std::string user_id_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-  SessionManager::Get()->CreateSession(account_id, user_id_hash, false);
+  SessionManager::Get()->CreateSession(account_id, user_id_hash,
+                                       user_manager::UserType::kRegular,
+                                       /*has_active_session=*/false);
   profiles::testing::CreateProfileSync(
       g_browser_process->profile_manager(),
       ProfileHelper::GetProfilePathByUserIdHash(user_id_hash));

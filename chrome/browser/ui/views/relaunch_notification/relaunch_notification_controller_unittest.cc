@@ -925,13 +925,14 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
 
     const char test_user_email[] = "test_user@example.com";
     const AccountId test_account_id(AccountId::FromUserEmail(test_user_email));
-    user_manager_->AddUser(test_account_id);
+    auto* user = user_manager_->AddUser(test_account_id);
     user_manager_->LoginUser(test_account_id);
 
     // SessionManager is created by
     // |AshTestHelper::bluetooth_config_test_helper()|.
     session_manager::SessionManager::Get()->CreateSession(
-        test_account_id, test_user_email, false);
+        user->GetAccountId(), test_user_email, user->GetType(),
+        /*has_active_session=*/false);
     session_manager::SessionManager::Get()->SetSessionState(
         session_manager::SessionState::ACTIVE);
 

@@ -564,12 +564,13 @@ void AutomaticRebootManagerBasicTest::SetUpdateStatusNeedReboot() {
 }
 
 void AutomaticRebootManagerBasicTest::LogIn(user_manager::User* user) {
-  const AccountId account_id = user->GetAccountId();
-  std::string username_hash = user->username_hash();
-  user_manager_->UserLoggedIn(account_id, username_hash,
-                              /*browser_restart=*/false,
-                              /*is_child=*/false);
-  session_manager_.CreateSession(account_id, username_hash, true);
+  session_manager_.CreateSession(
+      user->GetAccountId(),
+      // TODO(crbug.com/278643115): Looks incorrect.
+      // User's username_hash should be set inside CreateSession via
+      // UserManager::UserLoggedIn().
+      user->username_hash(), user->GetType(),
+      /*has_active_session=*/false);
   session_manager_.SessionStarted();
   session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
 }

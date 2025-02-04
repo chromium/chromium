@@ -10,11 +10,11 @@
 
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_export.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_manager.h"
-
-class AccountId;
+#include "components/user_manager/user_type.h"
 
 namespace session_manager {
 
@@ -37,11 +37,22 @@ class SESSION_EXPORT SessionManager
 
   void SetSessionState(SessionState state);
 
-  // Creates a session for the given user. The first one is for regular cases
-  // and the 2nd one is for the crash-and-restart case.
+  // Creates a session for the given user, hash and the type.
+  // This is used for common session starts, and recovery from crash
+  // for the secondary+ users. For the latter case, `has_active_session`
+  // is set true.
   void CreateSession(const AccountId& user_account_id,
                      const std::string& user_id_hash,
-                     bool is_child);
+                     user_manager::UserType user_type,
+                     bool has_active_session);
+
+  // Similar to above, creates a session for the given user and hash,
+  // but for the primary user session on restarting chrome for crash recovering.
+  // (Note: for non primary user sessions, CreateSession() is called with
+  // `has_active_session == true`).
+  // For this case, we expect there already is a registered User, so in general
+  // the user type should be derived from the one. Though, there are edge
+  // cases. Please find UserManager::CalculateUserType() for details.
   void CreateSessionForRestart(const AccountId& user_account_id,
                                const std::string& user_id_hash);
 
@@ -80,6 +91,9 @@ class SESSION_EXPORT SessionManager
   void RemoveObserver(SessionManagerObserver* observer);
 
   void HandleUserSessionStartUpTaskCompleted();
+
+  // user_manager::UserManager::Observer:
+  void OnUserProfileCreated(const user_manager::User& user) override;
 
   // Various helpers to notify observers.
   void NotifyUserProfileLoaded(const AccountId& account_id);
@@ -127,6 +141,10 @@ class SESSION_EXPORT SessionManager
       user_manager_observation_{this};
 
   SessionState session_state_ = SessionState::UNKNOWN;
+
+  // ID of the user just added to the session that needs to be activated
+  // as soon as user's profile is loaded.
+  AccountId pending_active_account_id_ = EmptyAccountId();
 
   // True if SessionStarted() has been called.
   bool session_started_ = false;

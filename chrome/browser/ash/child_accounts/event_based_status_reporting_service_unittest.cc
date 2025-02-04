@@ -111,7 +111,9 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
 
     session_manager_.CreateSession(
         account_id(),
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id()), true);
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id()),
+        user_manager::UserType::kChild,
+        /*has_active_session=*/false);
     session_manager_.SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 

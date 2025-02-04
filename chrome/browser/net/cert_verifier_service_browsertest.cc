@@ -627,7 +627,8 @@ class CertVerifierMultiProfileUserSettingsTest
       session_manager::SessionManager::Get()->CreateSession(
           AccountId::FromUserEmailGaiaId(kSecondaryUserAccount,
                                          kSecondaryUserGaiaId),
-          kSecondaryUserHash, false);
+          kSecondaryUserHash, user_manager::UserType::kRegular,
+          /*has_active_session=*/false);
       // Set up the secondary profile.
       base::FilePath profile_dir = user_data_directory.Append(
           ash::ProfileHelper::GetUserProfileDir(kSecondaryUserHash).BaseName());

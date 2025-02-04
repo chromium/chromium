@@ -82,8 +82,13 @@ class BluetoothPowerControllerImplTest : public testing::Test {
 
     // Create a session in SessionManager. This will also login the user in
     // UserManager.
-    session_manager_->CreateSession(user->GetAccountId(), user->username_hash(),
-                                    /*is_child=*/false);
+    session_manager_->CreateSession(
+        user->GetAccountId(),
+        // TODO(crbug.com/278643115): Looks incorrect.
+        // User's username_hash should be set inside CreateSession via
+        // UserManager::UserLoggedIn().
+        user->username_hash(), user->GetType(),
+        /*has_active_session=*/false);
     session_manager_->SessionStarted();
 
     // Logging in doesn't set the user in UserManager as the active user if

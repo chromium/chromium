@@ -116,14 +116,17 @@ class ScreenLockerUnitTest : public testing::Test {
 
   void CreateSessionForUser(bool is_public_account) {
     ASSERT_FALSE(user_manager::UserManager::Get()->GetPrimaryUser());
+    user_manager::User* user = nullptr;
     if (is_public_account) {
-      fake_user_manager_->AddPublicAccountUser(test_account_id_);
+      user = fake_user_manager_->AddPublicAccountUser(test_account_id_);
     } else {
-      fake_user_manager_->AddUser(test_account_id_);
+      user = fake_user_manager_->AddUser(test_account_id_);
     }
     auto* session_manager = session_manager::SessionManager::Get();
-    session_manager->CreateSession(test_account_id_,
-                                   test_account_id_.GetUserEmail(), false);
+    session_manager->CreateSession(user->GetAccountId(),
+                                   user->GetAccountId().GetUserEmail(),
+                                   user->GetType(),
+                                   /*has_active_session=*/false);
     auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
     ASSERT_TRUE(primary_user);
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(primary_user,

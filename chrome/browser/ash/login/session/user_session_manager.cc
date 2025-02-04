@@ -608,7 +608,6 @@ UserSessionManager::UserSessionManager()
       authenticator_(nullptr),
       has_auth_cookies_(false),
       user_sessions_restored_(false),
-      user_sessions_restore_in_progress_(false),
       should_obtain_handles_(true),
       should_launch_browser_(true),
       waiting_for_child_account_status_(false),
@@ -773,7 +772,7 @@ void UserSessionManager::StartSession(
 
   VLOG(1) << "Starting user session.";
   PreStartSession(start_session_type);
-  CreateUserSession(user_context, has_auth_cookies);
+  CreateUserSession(user_context, has_auth_cookies, has_active_session);
 
   if (!has_active_session)
     StartCrosSession();
@@ -832,7 +831,6 @@ void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
 }
 
 void UserSessionManager::RestoreActiveSessions() {
-  user_sessions_restore_in_progress_ = true;
   SessionManagerClient::Get()->RetrieveActiveSessions(
       base::BindOnce(&UserSessionManager::OnRestoreActiveSessions,
                      GetUserSessionManagerAsWeakPtr()));
@@ -841,11 +839,6 @@ void UserSessionManager::RestoreActiveSessions() {
 bool UserSessionManager::UserSessionsRestored() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return user_sessions_restored_;
-}
-
-bool UserSessionManager::UserSessionsRestoreInProgress() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return user_sessions_restore_in_progress_;
 }
 
 void UserSessionManager::SetFirstLoginPrefs(
@@ -1180,14 +1173,15 @@ void UserSessionManager::StopChildStatusObserving(Profile* profile) {
 }
 
 void UserSessionManager::CreateUserSession(const UserContext& user_context,
-                                           bool has_auth_cookies) {
+                                           bool has_auth_cookies,
+                                           bool has_active_session) {
   user_context_ = user_context;
   has_auth_cookies_ = has_auth_cookies;
   ProcessAppModeSwitches();
   StoreUserContextDataBeforeProfileIsCreated();
   session_manager::SessionManager::Get()->CreateSession(
       user_context_.GetAccountId(), user_context_.GetUserIDHash(),
-      user_context.GetUserType() == user_manager::UserType::kChild);
+      user_context.GetUserType(), has_active_session);
 }
 
 void UserSessionManager::PreStartSession(StartSessionType start_session_type) {
@@ -2232,7 +2226,6 @@ void UserSessionManager::RestorePendingUserSessions() {
 void UserSessionManager::NotifyPendingUserSessionsRestoreFinished() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   user_sessions_restored_ = true;
-  user_sessions_restore_in_progress_ = false;
   for (auto& observer : session_state_observer_list_)
     observer.PendingUserSessionsRestoreFinished();
 }

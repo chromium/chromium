@@ -23,10 +23,6 @@ void FakeUserManagerDelegate::OverrideDirHome(const User& primary_user) {
   NOTIMPLEMENTED();
 }
 
-bool FakeUserManagerDelegate::IsUserSessionRestoreInProgress() {
-  return false;
-}
-
 std::optional<UserType> FakeUserManagerDelegate::GetDeviceLocalAccountUserType(
     std::string_view email) {
   NOTIMPLEMENTED();

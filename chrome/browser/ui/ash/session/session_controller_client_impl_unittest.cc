@@ -118,8 +118,13 @@ class SessionControllerClientImplTest : public testing::Test {
     const user_manager::User* user =
         is_child ? user_manager()->AddChildUser(account_id)
                  : user_manager()->AddUser(account_id);
-    session_manager_->CreateSession(account_id, user->username_hash(),
-                                    is_child);
+    session_manager_->CreateSession(
+        account_id,
+        // TODO(crbug.com/278643115): Looks incorrect.
+        // User's username_hash should be set inside CreateSession via
+        // UserManager::UserLoggedIn().
+        user->username_hash(), user->GetType(),
+        /*has_active_session=*/false);
 
     // Simulate that user profile is loaded.
     CreateTestingProfile(user);
@@ -418,7 +423,13 @@ TEST_F(SessionControllerClientImplTest, SendUserSession) {
       AccountId::FromUserEmailGaiaId("user@test.com", GaiaId("5555555555")));
   const user_manager::User* user = user_manager()->AddUser(account_id);
   CreateTestingProfile(user);
-  session_manager().CreateSession(account_id, user->username_hash(), false);
+  session_manager().CreateSession(
+      account_id,
+      // TODO(crbug.com/278643115): Looks incorrect.
+      // User's username_hash should be set inside CreateSession via
+      // UserManager::UserLoggedIn().
+      user->username_hash(), user->GetType(),
+      /*has_active_session=*/false);
   session_manager().SetSessionState(SessionState::ACTIVE);
 
   // User session was sent.
@@ -469,7 +480,13 @@ TEST_F(SessionControllerClientImplTest, UserPrefsChange) {
   const AccountId account_id(
       AccountId::FromUserEmailGaiaId("user@test.com", GaiaId("5555555555")));
   const user_manager::User* user = user_manager()->AddUser(account_id);
-  session_manager().CreateSession(account_id, user->username_hash(), false);
+  session_manager().CreateSession(
+      account_id,
+      // TODO(crbug.com/278643115): Looks incorrect.
+      // User's username_hash should be set inside CreateSession via
+      // UserManager::UserLoggedIn().
+      user->username_hash(), user->GetType(),
+      /*has_active_session=*/false);
 
   // Simulate the notification that the profile is ready.
   TestingProfile* const user_profile = CreateTestingProfile(user);

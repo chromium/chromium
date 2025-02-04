@@ -287,13 +287,6 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
     SetIsCurrentUserNew(false);
     SendMultiUserSignInMetrics();
 
-    // Special case for user session restoration after browser crash.
-    // We don't switch to each user session that has been restored as once all
-    // session will be restored we'll switch to the session that has been used
-    // before the crash.
-    if (!delegate_->IsUserSessionRestoreInProgress()) {
-      pending_user_switch_ = account_id;
-    }
     NotifyUserAddedToSession(user);
 
     return;
@@ -1291,12 +1284,6 @@ void UserManagerImpl::SetOwnerId(const AccountId& owner_account_id) {
   NotifyLoginStateUpdated();
 }
 
-void UserManagerImpl::ProcessPendingUserSwitchId() {
-  if (pending_user_switch_.is_valid()) {
-    SwitchActiveUser(std::exchange(pending_user_switch_, EmptyAccountId()));
-  }
-}
-
 void UserManagerImpl::EnsureUsersLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!local_state_) {
@@ -1537,7 +1524,6 @@ bool UserManagerImpl::OnUserProfileCreated(const AccountId& account_id,
 
   observer_list_.Notify(&UserManager::Observer::OnUserProfileCreated, *user);
 
-  ProcessPendingUserSwitchId();
   return true;
 }
 

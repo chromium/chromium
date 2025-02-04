@@ -1085,8 +1085,9 @@ class MultiProfileDownloadNotificationTest
   // Adds a new user for testing to the current session.
   void AddUser(const TestAccountInfo& info) {
     session_manager::SessionManager::Get()->CreateSession(
-        AccountId::FromUserEmailGaiaId(info.email, info.gaia_id), info.hash,
-        false);
+        AccountId::FromUserEmailGaiaId(info.email, GaiaId(info.gaia_id)),
+        info.hash, user_manager::UserType::kRegular,
+        /*has_active_session=*/false);
 
     user_manager::UserManager::Get()->SaveUserDisplayName(
         AccountId::FromUserEmailGaiaId(info.email, info.gaia_id),
