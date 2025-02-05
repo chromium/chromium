@@ -1428,6 +1428,12 @@
   <message name="IDS_AI_INTRO_SLIDE_BACKGROUND_TEXT" desc="The text of the background info slide">
     Personalize your camera backgrounds for video calls and more
   </message>
+  <message name="IDS_AI_INTRO_SLIDE_READ_TITLE" desc="The title of the read info slide">
+    Summarize content, simplify complex language, or ask questions
+  </message>
+  <message name="IDS_AI_INTRO_SLIDE_READ_TEXT" desc="The text of the read info slide">
+    Right-click to use Help me read
+  </message>
   <message name="IDS_AI_INTRO_SLIDE_LABEL" desc="Text of slide label for accessibility.">
     Extra content <ph name="CURRENT_ELEMENT">$1<ex>1</ex></ph> out of <ph name="TOTAL_ELEMENTS">$2<ex>2</ex></ph>
   </message>
