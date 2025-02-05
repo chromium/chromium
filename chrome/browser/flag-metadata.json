@@ -7136,15 +7136,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "private-state-tokens-dev-ui",
-    "owners": [
-      "kmg@google.com",
-      "koilos@google.com",
-      "dylancutler@google.com"
-    ],
-    "expiry_milestone": 134
-  },
-  {
     "name": "probabilistic-memory-saver",
     "owners": ["chrome-performance-ui-team@google.com"],
     "expiry_milestone": 125
@@ -7479,15 +7470,6 @@
     "name": "related-searches-switch",
     "owners": [ "gangwu@chromium.org", "related-searches-vteam@google.com" ],
     "expiry_milestone": 160
-  },
-  {
-    "name": "related-website-sets-dev-ui",
-    "owners": [
-      "kmg@google.com",
-      "dylancutler@google.com",
-      "koilos@google.com"
-    ],
-    "expiry_milestone": 134
   },
   {
     "name": "related-website-sets-permission-grants",

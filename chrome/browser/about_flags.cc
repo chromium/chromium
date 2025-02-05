@@ -8532,16 +8532,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxInternalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxInternalsDevUI)},
 
-    {"private-state-tokens-dev-ui",
-     flag_descriptions::kPrivateStateTokensDevUIName,
-     flag_descriptions::kPrivateStateTokensDevUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivateStateTokensDevUI)},
-
-    {"related-website-sets-dev-ui",
-     flag_descriptions::kRelatedWebsiteSetsDevUIName,
-     flag_descriptions::kRelatedWebsiteSetsDevUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kRelatedWebsiteSetsDevUI)},
-
     {"align-surface-layer-impl-to-pixel-grid",
      flag_descriptions::kAlignSurfaceLayerImplToPixelGridName,
      flag_descriptions::kAlignSurfaceLayerImplToPixelGridDescription, kOsAll,

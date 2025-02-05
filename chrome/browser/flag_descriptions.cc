@@ -3070,11 +3070,6 @@ const char kPrivacySandboxInternalsName[] = "Privacy Sandbox Internals Page";
 const char kPrivacySandboxInternalsDescription[] =
     "Enables the chrome://privacy-sandbox-internals debugging page.";
 
-const char kPrivateStateTokensDevUIName[] = "Private State Tokens Dev UI";
-const char kPrivateStateTokensDevUIDescription[] =
-    "Enables the chrome://privacy-sandbox-internals/private-state-tokens page."
-    "Relies on privacy-sandbox-internals also being enabled";
-
 const char kPrivacySandboxPrivacyPolicyName[] =
     "Privacy Sandbox Privacy Policy";
 const char kPrivacySandboxPrivacyPolicyDescription[] =
@@ -3103,11 +3098,6 @@ const char kPwaUpdateDialogForAppIconDescription[] =
 const char kRenderDocumentName[] = "Enable RenderDocument";
 const char kRenderDocumentDescription[] =
     "Enable swapping RenderFrameHosts on same-site navigations";
-
-const char kRelatedWebsiteSetsDevUIName[] = "Related Website Sets Dev UI";
-const char kRelatedWebsiteSetsDevUIDescription[] =
-    "Enables the chrome://privacy-sandbox-internals/related-website-sets page. "
-    "Relies on privacy-sandbox-internals also being enabled.";
 
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 const char kRustyPngName[] = "Rust-based PNG image handling";

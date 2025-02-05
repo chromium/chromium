@@ -1780,9 +1780,6 @@ extern const char kPrivacySandboxInternalsDescription[];
 extern const char kPrivacySandboxPrivacyPolicyName[];
 extern const char kPrivacySandboxPrivacyPolicyDescription[];
 
-extern const char kPrivateStateTokensDevUIName[];
-extern const char kPrivateStateTokensDevUIDescription[];
-
 extern const char kProtectedAudiencesConsentedDebugTokenName[];
 extern const char kProtectedAudiencesConsentedDebugTokenDescription[];
 
@@ -1795,9 +1792,6 @@ extern const char kPwaUpdateDialogForAppIconDescription[];
 
 extern const char kRenderDocumentName[];
 extern const char kRenderDocumentDescription[];
-
-extern const char kRelatedWebsiteSetsDevUIName[];
-extern const char kRelatedWebsiteSetsDevUIDescription[];
 
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 extern const char kRustyPngName[];
