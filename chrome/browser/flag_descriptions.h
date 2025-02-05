@@ -126,11 +126,6 @@ extern const char kAuxiliarySearchDonationDescription[];
 extern const char kBackgroundResourceFetchName[];
 extern const char kBackgroundResourceFetchDescription[];
 
-extern const char
-    kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsName[];
-extern const char
-    kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kBookmarksTreeViewName[];
 extern const char kBookmarksTreeViewDescription[];

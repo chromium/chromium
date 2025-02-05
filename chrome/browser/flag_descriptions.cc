@@ -183,13 +183,6 @@ const char kBiometricAuthIdentityCheckDescription[] =
     "biometric checks.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const char kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsName[] =
-    "Blink Scheduler Discrete Input Matches Responsiveness Metrics";
-const char
-    kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsDescription[] =
-        "Uses Responsiveness Metrics definitions for discrete input in blink "
-        "scheduler heuristics.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kBookmarksTreeViewName[] = "Top Chrome Bookmarks Tree View";
 const char kBookmarksTreeViewDescription[] =

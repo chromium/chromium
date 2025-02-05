@@ -3173,6 +3173,37 @@ TEST_F(MainThreadSchedulerImplTest,
   run_order.clear();
 }
 
+TEST_F(MainThreadSchedulerImplTest,
+       CompositorNotPrioritizedAfterContinuousInputTasks) {
+  Vector<String> run_order;
+
+  input_task_runner_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        scheduler_->DidHandleInputEventOnMainThread(
+            FakeInputEvent(WebInputEvent::Type::kMouseLeave),
+            WebInputEventResult::kHandledApplication,
+            /*frame_requested=*/true);
+        run_order.push_back("I1");
+      }));
+  PostTestTasks(&run_order, "D1 D2 CM1");
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(run_order, testing::ElementsAre("I1", "D1", "D2", "CM1"));
+
+  run_order.clear();
+  input_task_runner_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        scheduler_->DidHandleInputEventOnMainThread(
+            FakeInputEvent(WebInputEvent::Type::kTouchMove),
+            WebInputEventResult::kHandledApplication,
+            /*frame_requested=*/true);
+        run_order.push_back("I1");
+      }));
+  PostTestTasks(&run_order, "D1 D2 CM1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("I1", "D1", "D2", "CM1"));
+}
+
 TEST_F(MainThreadSchedulerImplTest, TaskQueueReferenceClearedOnShutdown) {
   // Ensure that the scheduler clears its references to a task queue after
   // |shutdown| and doesn't try to update its policies.
@@ -3972,68 +4003,6 @@ INSTANTIATE_TEST_SUITE_P(
           return "AllTypes";
       }
     });
-
-class DiscreteInputMatchesResponsivenessMetricsTest
-    : public MainThreadSchedulerImplTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  DiscreteInputMatchesResponsivenessMetricsTest() {
-    feature_list_.Reset();
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          {{features::
-                kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics}},
-          {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {{features::
-                    kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics}});
-    }
-  }
-};
-
-TEST_P(DiscreteInputMatchesResponsivenessMetricsTest, TestPolicy) {
-  Vector<String> run_order;
-
-  // This will not be considered discrete iff the feature is enabled.
-  input_task_runner_->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        scheduler_->DidHandleInputEventOnMainThread(
-            FakeInputEvent(WebInputEvent::Type::kMouseLeave),
-            WebInputEventResult::kHandledApplication,
-            /*frame_requested=*/true);
-        run_order.push_back("I1");
-      }));
-  PostTestTasks(&run_order, "D1 D2 CM1");
-  base::RunLoop().RunUntilIdle();
-
-  if (GetParam()) {
-    EXPECT_THAT(run_order, testing::ElementsAre("I1", "D1", "D2", "CM1"));
-  } else {
-    EXPECT_THAT(run_order, testing::ElementsAre("I1", "CM1", "D1", "D2"));
-  }
-
-  run_order.clear();
-  // This shouldn't be considered discrete in either case.
-  input_task_runner_->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        scheduler_->DidHandleInputEventOnMainThread(
-            FakeInputEvent(WebInputEvent::Type::kTouchMove),
-            WebInputEventResult::kHandledApplication,
-            /*frame_requested=*/true);
-        run_order.push_back("I1");
-      }));
-  PostTestTasks(&run_order, "D1 D2 CM1");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("I1", "D1", "D2", "CM1"));
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         DiscreteInputMatchesResponsivenessMetricsTest,
-                         testing::Values(true, false),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "Enabled" : "Disabled";
-                         });
 
 }  // namespace main_thread_scheduler_impl_unittest
 }  // namespace scheduler
