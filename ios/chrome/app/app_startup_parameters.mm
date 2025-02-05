@@ -274,12 +274,14 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
       _applicationModeRequestStatus = ApplicationModeRequestStatus::kRequested;
       __weak __typeof(self) weakSelf = self;
       auto fetching_response = base::BindOnce(
-          [](AppStartupParameters* startupParams, bool isAppSwitcherIncognito,
+          [](AppStartupParameters* startupParams,
+             base::TimeTicks startFetchTime, bool isAppSwitcherIncognito,
              NSError* error) {
             [startupParams handleApplicationModeRequest:isAppSwitcherIncognito
-                                                  error:error];
+                                                  error:error
+                                         startFetchTime:startFetchTime];
           },
-          weakSelf);
+          weakSelf, base::TimeTicks::Now());
       ios::provider::FetchApplicationMode(_externalURL, _sourceAppID,
                                           std::move(fetching_response));
       break;
@@ -309,7 +311,8 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
 }
 
 - (void)handleApplicationModeRequest:(BOOL)isAppSwitcherIncognito
-                               error:(NSError*)error {
+                               error:(NSError*)error
+                      startFetchTime:(base::TimeTicks)startFetchTime {
   _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
   AppModeFetchingOutcomeType outcome =
       AppModeFetchingOutcomeType::kNonIncognito;
@@ -335,6 +338,8 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
   }
   _pendingBlocks = nil;
   UMA_HISTOGRAM_ENUMERATION("IOS.AppModeFetching.Outcome", outcome);
+  UMA_HISTOGRAM_TIMES("IOS.AppModeFetching.Duration",
+                      base::TimeTicks::Now() - startFetchTime);
 }
 
 @end

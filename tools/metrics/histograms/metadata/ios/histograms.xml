@@ -180,6 +180,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.AppModeFetching.Duration" units="ms"
+    expires_after="2025-06-30">
+  <owner>erahmaoui@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The time it takes to fetch an application mode. The largest value should be
+    500ms, as anything more than that is considered as a fetching timeout.
+  </summary>
+</histogram>
+
 <histogram name="IOS.AppModeFetching.Outcome"
     enum="IOSAppModeFetchingOutcomeType" expires_after="2025-06-30">
   <owner>erahmaoui@google.com</owner>
