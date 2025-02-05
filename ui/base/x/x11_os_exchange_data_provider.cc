@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/x/x11_os_exchange_data_provider.h"
 
 #include <optional>
@@ -217,13 +212,8 @@ void XOSExchangeDataProvider::SetFilenames(
 
 void XOSExchangeDataProvider::SetPickledData(const ClipboardFormatType& format,
                                              const base::Pickle& pickle) {
-  const unsigned char* data =
-      reinterpret_cast<const unsigned char*>(pickle.data());
-
-  std::vector<unsigned char> bytes;
-  bytes.insert(bytes.end(), data, data + pickle.size());
-  auto mem = base::MakeRefCounted<base::RefCountedBytes>(std::move(bytes));
-
+  auto mem = base::MakeRefCounted<base::RefCountedBytes>(
+      std::vector<unsigned char>(pickle.begin(), pickle.end()));
   format_map_.Insert(x11::GetAtom(format.GetName().c_str()), mem);
 }
 
@@ -362,7 +352,7 @@ std::optional<base::Pickle> XOSExchangeDataProvider::GetPickledData(
     return std::nullopt;
   }
 
-  return base::Pickle::WithData(base::span(data.GetData(), data.GetSize()));
+  return base::Pickle::WithData(data.GetSpan());
 }
 
 bool XOSExchangeDataProvider::HasString() const {
@@ -479,8 +469,7 @@ XOSExchangeDataProvider::GetFileContents() const {
     return std::nullopt;
   }
 
-  base::FilePath filename =
-      base::FilePath(base::FilePath::StringPieceType(str.data(), str.size()));
+  base::FilePath filename(base::as_string_view(str));
   if (filename.empty()) {
     return std::nullopt;
   }
@@ -491,13 +480,14 @@ XOSExchangeDataProvider::GetFileContents() const {
   GetAtomIntersection(file_contents_atoms, GetTargets(), &requested_types);
 
   ui::SelectionData data = format_map_.GetFirstOf(requested_types);
-  if (data.IsValid()) {
-    std::string file_contents;
-    data.AssignTo(&file_contents);
-    return FileContentsInfo{.filename = filename,
-                            .file_contents = std::move(file_contents)};
+  if (!data.IsValid()) {
+    return std::nullopt;
   }
-  return std::nullopt;
+
+  std::string file_contents;
+  data.AssignTo(&file_contents);
+  return FileContentsInfo{.filename = filename,
+                          .file_contents = std::move(file_contents)};
 }
 
 bool XOSExchangeDataProvider::HasFileContents() const {
