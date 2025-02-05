@@ -40,7 +40,7 @@ class EntityInstance;
 //   entity_guid        Identifies owning entity instances (it's a foreign key).
 //   type               The instance's attribute type, represented as integer
 //                      value of the AttributeTypeName.
-//   value              The string value of the attribute.
+//   value_encrypted    The encrypted string value of the attribute.
 //   context            The format string of the attribute.
 // -----------------------------------------------------------------------------
 class EntityTable : public WebDatabaseTable {
