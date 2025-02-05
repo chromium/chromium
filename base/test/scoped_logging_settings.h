@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 namespace logging {
 

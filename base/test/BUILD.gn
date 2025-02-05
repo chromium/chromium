@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/compiled_action.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/ui.gni")
@@ -200,7 +199,6 @@ static_library("test_support") {
 
   deps = [
     ":proto_test_support",
-    "//build:chromeos_buildflags",
     "//testing/libfuzzer:fuzztest_init_support",
     "//third_party/google_benchmark",
     "//third_party/icu:icuuc",

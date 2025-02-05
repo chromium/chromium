@@ -55,7 +55,7 @@ BatteryStateSampler* BatteryStateSampler::Get() {
   // TODO(crbug.com/40871810): ChromeOS currently doesn't define
   // `HAS_BATTERY_LEVEL_PROVIDER_IMPL` but it should once the locations of the
   // providers and sampling sources are consolidated.
-#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL) || BUILDFLAG(IS_CHROMEOS)
   DCHECK(g_battery_state_sampler);
 #endif
   return g_battery_state_sampler;

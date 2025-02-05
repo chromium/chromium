@@ -57,7 +57,7 @@ remains an Undefined Behavior.
 `raw_ptr<T>` protection is enabled by default in all non-Renderer processes, on:
 - Android (incl. AndroidWebView, Android WebEngine, & Android ChromeCast)
 - Windows
-- ChromeOS (incl. Ash & Lacros)
+- ChromeOS
 - macOS
 - Linux
 - Fuchsia

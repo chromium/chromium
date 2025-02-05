@@ -258,9 +258,6 @@ namespace cronet {
 class CronetPrefsManager;
 class CronetContext;
 }  // namespace cronet
-namespace crosapi {
-class LacrosThreadTypeDelegate;
-}  // namespace crosapi
 namespace crypto {
 class ScopedAllowBlockingForNSS;
 }
@@ -615,7 +612,6 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class content::WebContentsViewMac;
   friend class cronet::CronetContext;
   friend class cronet::CronetPrefsManager;
-  friend class crosapi::LacrosThreadTypeDelegate;
   friend class crypto::ScopedAllowBlockingForNSS;  // http://crbug.com/59847
   friend class drive::FakeDriveService;
   friend class extensions::DesktopAndroidExtensionSystem;

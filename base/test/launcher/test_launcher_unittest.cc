@@ -29,7 +29,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -1519,15 +1518,15 @@ void MatchesFatalMessagesTest() {
 // retain during truncation.
 TEST(TestLauncherTools, TruncateSnippetFocusedMatchesFatalMessagesTest) {
   logging::ScopedLoggingSettings scoped_logging_settings;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   scoped_logging_settings.SetLogFormat(logging::LogFormat::LOG_FORMAT_SYSLOG);
 #endif
   MatchesFatalMessagesTest();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Validates TestSnippetFocused correctly identifies fatal messages to
-// retain during truncation, for ChromeOS Ash.
+// retain during truncation, for ChromeOS.
 TEST(TestLauncherTools, TruncateSnippetFocusedMatchesFatalMessagesCrosAshTest) {
   logging::ScopedLoggingSettings scoped_logging_settings;
   scoped_logging_settings.SetLogFormat(logging::LogFormat::LOG_FORMAT_CHROME);

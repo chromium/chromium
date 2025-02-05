@@ -55,7 +55,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/vlog.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/base/internal/raw_logging.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
@@ -115,7 +114,7 @@ typedef FILE* FileHandle;
 #include "base/android/jni_android.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/scoped_file.h"
 #endif
 
@@ -552,13 +551,13 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   // default log file will re-initialize to the new options.
   CloseLogFileUnlocked();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   if (settings.log_file) {
     CHECK(settings.log_file_path.empty(), base::NotFatalUntil::M127);
     g_log_file = settings.log_file;
     return true;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
   CHECK(!settings.log_file_path.empty(), base::NotFatalUntil::M127)
       << "LOG_TO_FILE set but no log_file_path!";
@@ -1175,7 +1174,7 @@ void CloseLogFile() {
   CloseLogFileUnlocked();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 FILE* DuplicateLogFILE() {
   if ((g_logging_destination & LOG_TO_FILE) == 0 ||
       !InitializeLogFileHandle()) {
@@ -1223,7 +1222,7 @@ ScopedLoggingSettings::ScopedLoggingSettings()
       logging_destination_(g_logging_destination),
 #if BUILDFLAG(IS_CHROMEOS)
       log_format_(g_log_format),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       enable_process_id_(g_log_process_id),
       enable_thread_id_(g_log_thread_id),
       enable_timestamp_(g_log_timestamp),
@@ -1265,7 +1264,7 @@ ScopedLoggingSettings::~ScopedLoggingSettings() {
 void ScopedLoggingSettings::SetLogFormat(LogFormat log_format) const {
   g_log_format = log_format;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void RawLog(int level, const char* message) {
   if (level >= g_min_log_level && message) {

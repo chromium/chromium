@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
@@ -250,7 +249,7 @@ class BASE_EXPORT Process {
   // of this value is OS dependent.
   int GetOSPriority() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Get the PID in its PID namespace.
   // If the process is not in a PID namespace or /proc/<pid>/status does not
   // report NSpid, kNullProcessId is returned.

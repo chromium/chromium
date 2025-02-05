@@ -1455,16 +1455,11 @@ message ChromeGraphicsPipeline {
     // "augmented_surface.set_frame_trace_id" to pass that value. As a result,
     // any of the Wayland clients that use EXO will be able to have a nice trace
     // connection and see their buffer submissions' flows.
-    //
-    // Speaking about the example, Lacros combines both STEP_BACKEND* and
-    // STEP_EXO* so that developers are able to trace the frame submission from
-    // Lacros (cc/viz/gpu) to Ozone/Wayland backend, then to EXO and to Ash
-    // (viz/gpu).
 
     // Frame submission stages when Exo (Wayland server implementation in Ash
-    // browser process) is involved. Wayland clients (such as Lacros or ARC++)
-    // submit visual contents via Wayland surface commits, with which Exo
-    // constructs compositor frames and forwards to Ash Viz.
+    // browser process) is involved. Wayland clients (such as ARC++) submit
+    // visual contents via Wayland surface commits, with which Exo constructs
+    // compositor frames and forwards to Ash Viz.
     STEP_EXO_CONSTRUCT_COMPOSITOR_FRAME = 15;
     STEP_EXO_SUBMIT_COMPOSITOR_FRAME = 16;
     STEP_EXO_DISCARD_COMPOSITOR_FRAME = 17;
