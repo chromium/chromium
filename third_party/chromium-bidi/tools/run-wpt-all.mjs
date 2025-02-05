@@ -62,5 +62,6 @@ runWpt({
   HEADLESS: true,
 });
 runWpt({
+  CHROMEDRIVER: false,
   HEADLESS: true,
 });
