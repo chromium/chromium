@@ -102,8 +102,7 @@ AutofillAiAnimatedGradientView::AutofillAiAnimatedGradientView()
           views::Emphasis::kLow)),
       end_point_offset_(CalculateGradientEndPoint()),
       overflow_point_x_value_(CalculateOverflowPointXValue()),
-      animation_{{gfx::MultiAnimation::Part{kAnimationDuration,
-                                            gfx::Tween::Type::LINEAR}}} {
+      animation_({{kAnimationDuration, gfx::Tween::Type::LINEAR}}) {
   SetPaintToLayer();
   SetFocusBehavior(FocusBehavior::NEVER);
   SetSize(gfx::Size(kWidth, kHeight));

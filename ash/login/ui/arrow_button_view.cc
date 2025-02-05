@@ -177,9 +177,7 @@ void ArrowButtonView::EnableLoadingAnimation(bool enabled) {
   // LinearAnimation.
   loading_animation_ =
       std::make_unique<gfx::MultiAnimation>(gfx::MultiAnimation::Parts{
-          gfx::MultiAnimation::Part(kLoadingAnimationStepDuration,
-                                    gfx::Tween::LINEAR),
-      });
+          {kLoadingAnimationStepDuration, gfx::Tween::LINEAR}});
   loading_animation_->set_delegate(&loading_animation_delegate_);
   loading_animation_->Start();
 }
