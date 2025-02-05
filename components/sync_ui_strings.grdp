@@ -13,6 +13,9 @@
     <message name="IDS_SYNC_DATATYPE_PASSWORDS" desc="Saved passwords, one of the data types that we allow syncing.">
       Passwords
     </message>
+    <message name="IDS_SYNC_DATATYPE_PASSWORDS_AND_PASSKEYS" desc="Saved passwords and passkeys, one of the data types that we allow syncing.">
+      Passwords and passkeys
+    </message>
     <message name="IDS_SYNC_DATATYPE_PREFERENCES" desc="Settings, one of the data types that we allow syncing.">
       Settings
     </message>

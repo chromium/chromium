@@ -742,7 +742,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       break;
     case syncer::UserSelectableType::kPasswords:
       itemType = PasswordsDataTypeItemType;
-      textStringID = IDS_SYNC_DATATYPE_PASSWORDS;
+      textStringID = IOSPasskeysM2Enabled()
+                         ? IDS_SYNC_DATATYPE_PASSWORDS_AND_PASSKEYS
+                         : IDS_SYNC_DATATYPE_PASSWORDS;
       accessibilityIdentifier = kSyncPasswordsIdentifier;
       break;
     case syncer::UserSelectableType::kTabs:
