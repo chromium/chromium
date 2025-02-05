@@ -32,6 +32,14 @@ void* GetKey() {
   return reinterpret_cast<void*>(&key);
 }
 
+// TODO(crbug.com/394292801): Remove when we migrate to WebDatabase's
+// versioning.
+namespace version {
+constexpr char kTableName[] = "entities_version";
+constexpr char kVersion[] = "version";
+constexpr int kCurrentVersion = 0;
+}  // namespace version
+
 namespace attributes {
 constexpr char kTableName[] = "attributes";
 constexpr char kEntityGuid[] = "entity_guid";
@@ -82,8 +90,7 @@ std::optional<EntityInstance> ValidateEntityInstance(
 }
 
 // If "--autofill-wipe-entities" is present, drops the tables and creates
-// new ones. This allows us to do breaking changes the schema without having to
-// write migration logic as long as the feature rollout hasn't been started.
+// new ones.
 //
 // If "--autofill-add-test-entities" is present, adds two example entities.
 //
@@ -149,6 +156,35 @@ WebDatabaseTable::TypeKey EntityTable::GetTypeKey() const {
 }
 
 bool EntityTable::CreateTablesIfNecessary() {
+  // TODO(crbug.com/394292801): Remove when we migrate to WebDatabase's
+  // versioning.
+  {
+    CreateTableIfNotExists(db(), /*table_name=*/version::kTableName,
+                           /*column_names_and_types=*/
+                           {{version::kVersion, "INTEGER"}});
+    auto get_table_version = [&] {
+      sql::Statement s;
+      SelectBuilder(db(), s, version::kTableName, {version::kVersion});
+      if (s.Step()) {
+        return s.ColumnInt(0);
+      }
+      constexpr int kDefaultVersion = 0;
+      InsertBuilder(db(), s, version::kTableName, {version::kVersion});
+      s.BindInt(0, kDefaultVersion);
+      s.Run();
+      return kDefaultVersion;
+    };
+    if (get_table_version() != version::kCurrentVersion) {
+      sql::Statement s;
+      UpdateBuilder(db(), s, version::kTableName, {version::kVersion},
+                    /*where_clause=*/"");
+      s.BindInt(0, version::kCurrentVersion);
+      s.Run();
+      DropTableIfExists(db(), attributes::kTableName);
+      DropTableIfExists(db(), entities::kTableName);
+    }
+  }
+
   auto create_attributes_table = [&] {
     return CreateTableIfNotExists(
         db(), /*table_name=*/attributes::kTableName,
