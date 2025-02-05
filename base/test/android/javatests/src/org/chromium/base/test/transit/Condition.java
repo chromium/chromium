@@ -17,6 +17,8 @@ import org.chromium.base.test.transit.ConditionStatus.Status;
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.transit.Transition.Trigger;
 
+import java.util.function.Function;
+
 /**
  * A condition that needs to be fulfilled for a state transition to be considered done.
  *
@@ -231,6 +233,21 @@ public abstract class Condition {
     @FormatMethod
     public static ConditionStatus whether(boolean isFulfilled, String message, Object... args) {
         return whether(isFulfilled, String.format(message, args));
+    }
+
+    /** {@link #checkWithSuppliers()} should return this as a convenience method to compare ints. */
+    public static ConditionStatus whetherEquals(
+            int expected, int actual, Function<Integer, String> nameConversion) {
+        return whether(
+                expected == actual,
+                "Expected: %s; Actual: %s",
+                nameConversion.apply(expected),
+                nameConversion.apply(actual));
+    }
+
+    /** {@link #checkWithSuppliers()} should return this as a convenience method to compare ints. */
+    public static ConditionStatus whetherEquals(int expected, int actual) {
+        return whether(expected == actual, "Expected: %d; Actual: %d", expected, actual);
     }
 
     /**
