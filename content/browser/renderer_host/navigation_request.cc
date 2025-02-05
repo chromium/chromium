@@ -2149,6 +2149,10 @@ NavigationRequest::NavigationRequest(
         frame_tree_node_->current_frame_host(),
         blink::mojom::WebFeature::kSameDocumentCrossOriginInitiator);
   }
+
+  if (!GetContentClient()->browser()->IsBrowserStartupComplete()) {
+    confidence_level_ = blink::mojom::ConfidenceLevel::kLow;
+  }
 }
 
 NavigationRequest::~NavigationRequest() {
