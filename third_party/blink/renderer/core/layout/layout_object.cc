@@ -5151,21 +5151,6 @@ void LayoutObject::SetModifiedStyleOutsideStyleRecalc(
   }
 }
 
-LayoutUnit LayoutObject::FlipForWritingModeInternal(
-    LayoutUnit position,
-    LayoutUnit width,
-    const LayoutBox* box_for_flipping) const {
-  NOT_DESTROYED();
-  DCHECK(!IsBox());
-  DCHECK(HasFlippedBlocksWritingMode());
-  DCHECK(!box_for_flipping || box_for_flipping == ContainingBlock());
-  // For now, block flipping doesn't apply for non-box SVG objects.
-  if (IsSVG())
-    return position;
-  return (box_for_flipping ? box_for_flipping : ContainingBlock())
-      ->FlipForWritingMode(position, width);
-}
-
 bool LayoutObject::SelfPaintingLayerNeedsVisualOverflowRecalc() const {
   NOT_DESTROYED();
   if (HasLayer()) {

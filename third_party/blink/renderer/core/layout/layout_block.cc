@@ -597,20 +597,12 @@ std::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
   const auto& font_metrics = font_data->GetFontMetrics();
   const auto baseline_type = style->GetFontBaseline();
   const LayoutUnit line_height = FirstLineHeight();
-  if (RuntimeEnabledFeatures::SidewaysWritingModesEnabled()) {
-    int ascent_or_descent = IsFlippedLinesWritingMode(style->GetWritingMode())
-                                ? font_metrics.Descent(baseline_type)
-                                : font_metrics.Ascent(baseline_type);
-    return LayoutUnit((ascent_or_descent +
-                       (line_height - font_metrics.Height()) / 2 +
-                       BorderAndPaddingBlockStart())
-                          .ToInt());
-  }
-  const LayoutUnit border_padding = style->IsHorizontalWritingMode()
-                                        ? BorderTop() + PaddingTop()
-                                        : BorderRight() + PaddingRight();
-  return LayoutUnit((font_metrics.Ascent(baseline_type) +
-                     (line_height - font_metrics.Height()) / 2 + border_padding)
+  int ascent_or_descent = IsFlippedLinesWritingMode(style->GetWritingMode())
+                              ? font_metrics.Descent(baseline_type)
+                              : font_metrics.Ascent(baseline_type);
+  return LayoutUnit((ascent_or_descent +
+                     (line_height - font_metrics.Height()) / 2 +
+                     BorderAndPaddingBlockStart())
                         .ToInt());
 }
 

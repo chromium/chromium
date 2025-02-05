@@ -1674,15 +1674,11 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id >= CSSValueID::kHorizontalTb &&
              value_id <= CSSValueID::kVerticalLr;
     case CSSPropertyID::kWritingMode:
-      if (RuntimeEnabledFeatures::SidewaysWritingModesEnabled()) {
-        if (value_id == CSSValueID::kSidewaysRl ||
-            value_id == CSSValueID::kSidewaysLr) {
-          return true;
-        }
-      }
       return value_id == CSSValueID::kHorizontalTb ||
              value_id == CSSValueID::kVerticalRl ||
              value_id == CSSValueID::kVerticalLr ||
+             value_id == CSSValueID::kSidewaysRl ||
+             value_id == CSSValueID::kSidewaysLr ||
              value_id == CSSValueID::kLrTb || value_id == CSSValueID::kRlTb ||
              value_id == CSSValueID::kTbRl || value_id == CSSValueID::kLr ||
              value_id == CSSValueID::kRl || value_id == CSSValueID::kTb;

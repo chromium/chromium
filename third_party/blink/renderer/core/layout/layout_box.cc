@@ -3072,47 +3072,22 @@ PhysicalRect LayoutBox::LocalCaretRect(int caret_offset) const {
       GetNode() &&
       !(EditingIgnoresContent(*GetNode()) || IsDisplayInsideTable(GetNode()));
 
-  if (RuntimeEnabledFeatures::SidewaysWritingModesEnabled()) {
-    WritingDirectionMode writing_direction = Style()->GetWritingDirection();
-    LogicalOffset offset;
-    LayoutUnit content_inline_size = size.inline_size;
-    if (apply_border_padding) {
-      BoxStrut border_padding = (BorderOutsets() + PaddingOutsets())
-                                    .ConvertToLogical(writing_direction);
-      offset.inline_offset = border_padding.inline_start;
-      offset.block_offset = border_padding.block_start;
-      content_inline_size -= border_padding.InlineSum();
-    }
-    if (caret_offset) {
-      offset.inline_offset += content_inline_size - caret_width;
-    }
-
-    LogicalRect rect(offset, LogicalSize(caret_width, caret_block_size));
-    return WritingModeConverter(writing_direction, Size()).ToPhysical(rect);
-  }
-  const bool is_horizontal = IsHorizontalWritingMode();
-  PhysicalOffset offset = PhysicalLocation();
-  PhysicalRect rect(offset, is_horizontal
-                                ? PhysicalSize(caret_width, caret_block_size)
-                                : PhysicalSize(caret_block_size, caret_width));
-  bool ltr = StyleRef().IsLeftToRightDirection();
-
-  if ((!caret_offset) ^ ltr) {
-    rect.Move(
-        is_horizontal
-            ? PhysicalOffset(size.inline_size - caret_width, LayoutUnit())
-            : PhysicalOffset(LayoutUnit(), size.inline_size - caret_width));
-  }
-
-  // Move to local coords
-  rect.Move(-offset);
-
+  WritingDirectionMode writing_direction = Style()->GetWritingDirection();
+  LogicalOffset offset;
+  LayoutUnit content_inline_size = size.inline_size;
   if (apply_border_padding) {
-    rect.SetX(rect.X() + BorderLeft() + PaddingLeft());
-    rect.SetY(rect.Y() + PaddingTop() + BorderTop());
+    BoxStrut border_padding = (BorderOutsets() + PaddingOutsets())
+                                  .ConvertToLogical(writing_direction);
+    offset.inline_offset = border_padding.inline_start;
+    offset.block_offset = border_padding.block_start;
+    content_inline_size -= border_padding.InlineSum();
+  }
+  if (caret_offset) {
+    offset.inline_offset += content_inline_size - caret_width;
   }
 
-  return rect;
+  LogicalRect rect(offset, LogicalSize(caret_width, caret_block_size));
+  return WritingModeConverter(writing_direction, Size()).ToPhysical(rect);
 }
 
 PositionWithAffinity LayoutBox::PositionForPointInFragments(
