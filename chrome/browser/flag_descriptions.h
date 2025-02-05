@@ -2801,9 +2801,6 @@ extern const char kCrossDeviceTabPaneAndroidDescription[];
 extern const char kHistoryPaneAndroidName[];
 extern const char kHistoryPaneAndroidDescription[];
 
-extern const char kTabGroupCreationDialogAndroidName[];
-extern const char kTabGroupCreationDialogAndroidDescription[];
-
 extern const char kTabGroupPaneAndroidName[];
 extern const char kTabGroupPaneAndroidDescription[];
 

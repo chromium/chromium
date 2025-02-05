@@ -8412,11 +8412,6 @@
     "expiry_milestone": 134
   },
   {
-    "name": "tab-group-creation-dialog-android",
-    "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "tab-group-indicator",
     "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 140

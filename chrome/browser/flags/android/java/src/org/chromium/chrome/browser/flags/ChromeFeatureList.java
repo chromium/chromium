@@ -524,7 +524,6 @@ public abstract class ChromeFeatureList {
             "SyncEnablePasswordsSyncErrorMessageAlternative";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
     public static final String TAB_DRAG_DROP_ANDROID = "TabDragDropAndroid";
-    public static final String TAB_GROUP_CREATION_DIALOG_ANDROID = "TabGroupCreationDialogAndroid";
     public static final String TAB_GROUP_PANE_ANDROID = "TabGroupPaneAndroid";
     public static final String TAB_GROUP_SYNC_ANDROID = "TabGroupSyncAndroid";
     public static final String TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH =
@@ -784,8 +783,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
     public static final CachedFlag sTabDragDropAsWindowAndroid =
             newCachedFlag(TAB_DRAG_DROP_ANDROID, false);
-    public static final CachedFlag sTabGroupCreationDialogAndroid =
-            newCachedFlag(TAB_GROUP_CREATION_DIALOG_ANDROID, true);
     public static final CachedFlag sTabGroupPaneAndroid =
             newCachedFlag(TAB_GROUP_PANE_ANDROID, /* defaultValue= */ true);
     public static final CachedFlag sTabResumptionModuleAndroid =
@@ -917,7 +914,6 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceReturnTime,
                     sTabClosureMethodRefactor,
                     sTabDragDropAsWindowAndroid,
-                    sTabGroupCreationDialogAndroid,
                     sTabGroupPaneAndroid,
                     sTabResumptionModuleAndroid,
                     sTabStateFlatBuffer,
