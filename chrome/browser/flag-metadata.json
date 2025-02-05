@@ -8707,15 +8707,7 @@
       "agale@google.com",
       "chrome-performance-ui-team@google.com"
     ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "top-chrome-toasts",
-    "owners": [
-      "agale@google.com",
-      "chrome-performance-ui-team@google.com"
-    ],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "top-chrome-touch-ui",
