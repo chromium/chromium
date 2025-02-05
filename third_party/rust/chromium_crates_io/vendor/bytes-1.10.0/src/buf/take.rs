@@ -1,6 +1,9 @@
-use crate::{Buf, Bytes};
+use crate::Buf;
 
 use core::cmp;
+
+#[cfg(feature = "std")]
+use std::io::IoSlice;
 
 /// A `Buf` adapter which limits the bytes read from an underlying buffer.
 ///
@@ -145,11 +148,57 @@ impl<T: Buf> Buf for Take<T> {
         self.limit -= cnt;
     }
 
-    fn copy_to_bytes(&mut self, len: usize) -> Bytes {
+    fn copy_to_bytes(&mut self, len: usize) -> crate::Bytes {
         assert!(len <= self.remaining(), "`len` greater than remaining");
 
         let r = self.inner.copy_to_bytes(len);
         self.limit -= len;
         r
+    }
+
+    #[cfg(feature = "std")]
+    fn chunks_vectored<'a>(&'a self, dst: &mut [IoSlice<'a>]) -> usize {
+        if self.limit == 0 {
+            return 0;
+        }
+
+        const LEN: usize = 16;
+        let mut slices: [IoSlice<'a>; LEN] = [
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+            IoSlice::new(&[]),
+        ];
+
+        let cnt = self
+            .inner
+            .chunks_vectored(&mut slices[..dst.len().min(LEN)]);
+        let mut limit = self.limit;
+        for (i, (dst, slice)) in dst[..cnt].iter_mut().zip(slices.iter()).enumerate() {
+            if let Some(buf) = slice.get(..limit) {
+                // SAFETY: We could do this safely with `IoSlice::advance` if we had a larger MSRV.
+                let buf = unsafe { std::mem::transmute::<&[u8], &'a [u8]>(buf) };
+                *dst = IoSlice::new(buf);
+                return i + 1;
+            } else {
+                // SAFETY: We could do this safely with `IoSlice::advance` if we had a larger MSRV.
+                let buf = unsafe { std::mem::transmute::<&[u8], &'a [u8]>(slice) };
+                *dst = IoSlice::new(buf);
+                limit -= slice.len();
+            }
+        }
+        cnt
     }
 }

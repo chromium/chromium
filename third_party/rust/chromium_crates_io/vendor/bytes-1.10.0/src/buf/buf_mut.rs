@@ -1,7 +1,7 @@
 use crate::buf::{limit, Chain, Limit, UninitSlice};
 #[cfg(feature = "std")]
 use crate::buf::{writer, Writer};
-use crate::{panic_advance, panic_does_not_fit};
+use crate::{panic_advance, panic_does_not_fit, TryGetError};
 
 use core::{mem, ptr, usize};
 
@@ -204,7 +204,10 @@ pub unsafe trait BufMut {
         Self: Sized,
     {
         if self.remaining_mut() < src.remaining() {
-            panic_advance(src.remaining(), self.remaining_mut());
+            panic_advance(&TryGetError {
+                requested: src.remaining(),
+                available: self.remaining_mut(),
+            });
         }
 
         while src.has_remaining() {
@@ -242,7 +245,10 @@ pub unsafe trait BufMut {
     #[inline]
     fn put_slice(&mut self, mut src: &[u8]) {
         if self.remaining_mut() < src.len() {
-            panic_advance(src.len(), self.remaining_mut());
+            panic_advance(&TryGetError {
+                requested: src.len(),
+                available: self.remaining_mut(),
+            });
         }
 
         while !src.is_empty() {
@@ -285,7 +291,10 @@ pub unsafe trait BufMut {
     #[inline]
     fn put_bytes(&mut self, val: u8, mut cnt: usize) {
         if self.remaining_mut() < cnt {
-            panic_advance(cnt, self.remaining_mut());
+            panic_advance(&TryGetError {
+                requested: cnt,
+                available: self.remaining_mut(),
+            })
         }
 
         while cnt > 0 {
@@ -1487,7 +1496,10 @@ unsafe impl BufMut for &mut [u8] {
     #[inline]
     unsafe fn advance_mut(&mut self, cnt: usize) {
         if self.len() < cnt {
-            panic_advance(cnt, self.len());
+            panic_advance(&TryGetError {
+                requested: cnt,
+                available: self.len(),
+            });
         }
 
         // Lifetime dance taken from `impl Write for &mut [u8]`.
@@ -1498,7 +1510,10 @@ unsafe impl BufMut for &mut [u8] {
     #[inline]
     fn put_slice(&mut self, src: &[u8]) {
         if self.len() < src.len() {
-            panic_advance(src.len(), self.len());
+            panic_advance(&TryGetError {
+                requested: src.len(),
+                available: self.len(),
+            });
         }
 
         self[..src.len()].copy_from_slice(src);
@@ -1509,7 +1524,10 @@ unsafe impl BufMut for &mut [u8] {
     #[inline]
     fn put_bytes(&mut self, val: u8, cnt: usize) {
         if self.len() < cnt {
-            panic_advance(cnt, self.len());
+            panic_advance(&TryGetError {
+                requested: cnt,
+                available: self.len(),
+            });
         }
 
         // SAFETY: We just checked that the pointer is valid for `cnt` bytes.
@@ -1534,7 +1552,10 @@ unsafe impl BufMut for &mut [core::mem::MaybeUninit<u8>] {
     #[inline]
     unsafe fn advance_mut(&mut self, cnt: usize) {
         if self.len() < cnt {
-            panic_advance(cnt, self.len());
+            panic_advance(&TryGetError {
+                requested: cnt,
+                available: self.len(),
+            });
         }
 
         // Lifetime dance taken from `impl Write for &mut [u8]`.
@@ -1545,7 +1566,10 @@ unsafe impl BufMut for &mut [core::mem::MaybeUninit<u8>] {
     #[inline]
     fn put_slice(&mut self, src: &[u8]) {
         if self.len() < src.len() {
-            panic_advance(src.len(), self.len());
+            panic_advance(&TryGetError {
+                requested: src.len(),
+                available: self.len(),
+            });
         }
 
         // SAFETY: We just checked that the pointer is valid for `src.len()` bytes.
@@ -1558,7 +1582,10 @@ unsafe impl BufMut for &mut [core::mem::MaybeUninit<u8>] {
     #[inline]
     fn put_bytes(&mut self, val: u8, cnt: usize) {
         if self.len() < cnt {
-            panic_advance(cnt, self.len());
+            panic_advance(&TryGetError {
+                requested: cnt,
+                available: self.len(),
+            });
         }
 
         // SAFETY: We just checked that the pointer is valid for `cnt` bytes.
@@ -1582,7 +1609,10 @@ unsafe impl BufMut for Vec<u8> {
         let remaining = self.capacity() - len;
 
         if remaining < cnt {
-            panic_advance(cnt, remaining);
+            panic_advance(&TryGetError {
+                requested: cnt,
+                available: remaining,
+            });
         }
 
         // Addition will not overflow since the sum is at most the capacity.

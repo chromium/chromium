@@ -16,7 +16,10 @@ if [[ "${RUST_VERSION}" == "nightly"* ]]; then
     cargo check --benches
 
     # Check minimal versions
-    cargo clean
-    cargo update -Zminimal-versions
+    # Remove dev-dependencies from Cargo.toml to prevent the next `cargo update`
+    # from determining minimal versions based on dev-dependencies.
+    cargo hack --remove-dev-deps --workspace
+    # Update Cargo.lock to minimal version dependencies.
+    cargo update -Z minimal-versions
     cargo check --all-features
 fi

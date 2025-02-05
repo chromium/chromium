@@ -63,6 +63,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+          - ubuntu-22.04-arm # TODO: update to 24.04 when https://github.com/rust-lang/rust/issues/135867 solved
           - macos-latest
           - windows-latest
     runs-on: ${{ matrix.os }}
@@ -89,34 +90,61 @@ jobs:
       - name: Test
         run: ci/test-stable.sh test
 
+  panic-abort:
+    name: panic=abort tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        run: rustup update $nightly && rustup default $nightly
+      - name: Run tests with -Cpanic=abort
+        run: ci/panic-abort.sh
+
   # Run tests on some extra platforms
   cross:
     name: cross
     strategy:
       matrix:
-        target:
-          - i686-unknown-linux-gnu
-          - armv7-unknown-linux-gnueabihf
-          - powerpc-unknown-linux-gnu
-          - powerpc64-unknown-linux-gnu
-          - wasm32-unknown-unknown
+        include:
+          - target: i686-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: armv7-unknown-linux-gnueabihf
+            os: ubuntu-22.04-arm # TODO: update to 24.04 when https://github.com/rust-lang/rust/issues/135867 solved
+          - target: powerpc-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: powerpc64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: wasm32-wasip1
+            os: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        run: rustup update stable
+      - uses: taiki-e/setup-cross-toolchain-action@v1
+        with:
+          target: ${{ matrix.target }}
+      - name: Test
+        run: cargo test --target ${{ matrix.target }}
+
+  # Build for no_std environment.
+  no-std:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust
         run: rustup update stable
-      - name: Install cross
-        uses: taiki-e/install-action@cross
-        if: matrix.target != 'wasm32-unknown-unknown'
-      - name: cross build --target ${{ matrix.target }}
-        run: cross build --target ${{ matrix.target }}
-        if: matrix.target != 'wasm32-unknown-unknown'
-      # WASM support
-      - name: cargo build --target ${{ matrix.target }}
-        run: |
-          rustup target add ${{ matrix.target }}
-          cargo build --target ${{ matrix.target }}
-        if: matrix.target == 'wasm32-unknown-unknown'
+      - name: Install cargo-hack
+        uses: taiki-e/install-action@cargo-hack
+      # thumbv6m-none-eabi supports atomic, but not atomic CAS.
+      # thumbv7m-none-eabi supports atomic CAS.
+      - run: rustup target add thumbv6m-none-eabi thumbv7m-none-eabi
+      # * --optional-deps is needed for serde feature
+      # * --no-dev-deps is needed to avoid https://github.com/rust-lang/cargo/issues/4866
+      - run: cargo hack build --target thumbv7m-none-eabi --feature-powerset --skip std,default --optional-deps --no-dev-deps
+      # A sound way to provide atomic CAS on platforms without native atomic CAS is system-dependent.
+      # portable-atomic provides major ways via cfgs and accepts user-defined implementations via critical-section feature.
+      - run: cargo hack build --target thumbv6m-none-eabi --feature-powerset --skip std,default --optional-deps --no-dev-deps --features extra-platforms,extra-platforms/critical-section
 
   # Sanitizers
   tsan:

@@ -209,7 +209,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 4 2
+infra 5 3
 infra/config/generated/luci 1 1
 infra/config/generators 2 1
 infra/config/gn_args 1 1
@@ -251,7 +251,7 @@ net/data/fuzzer_dictionaries 5 4
 net/disk_cache/blockfile 1 1
 net/dns 1 1
 net/docs 3 1
-net/http 23 2
+net/http 22 2
 net/proxy_resolution 1 1
 net/socket 1 1
 net/tools/crash_cache 1 1
@@ -649,7 +649,7 @@ third_party/rust/chromium_crates_io/vendor/anyhow-1.0.95/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/autocfg-1.4.0 1 1
 third_party/rust/chromium_crates_io/vendor/base64-0.13.1 1 1
 third_party/rust/chromium_crates_io/vendor/byteorder-1.5.0/.github/workflows 5 1
-third_party/rust/chromium_crates_io/vendor/bytes-1.9.0/.github/workflows 3 1
+third_party/rust/chromium_crates_io/vendor/bytes-1.10.0/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/cfg-if-1.0.0/.github/workflows 4 1
 third_party/rust/chromium_crates_io/vendor/clap-4.5.27 2 1
 third_party/rust/chromium_crates_io/vendor/clap-4.5.27/src 4 2
