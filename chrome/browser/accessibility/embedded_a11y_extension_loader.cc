@@ -7,7 +7,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -285,13 +285,11 @@ void EmbeddedA11yExtensionLoader::InstallExtension(
 // TODO(b/324143642): Extension manifest file should not be null.
 // Temporarily logging the error to prevent crashes while we diagnose why it's
 // null.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!manifest) {
     LOG(ERROR) << "Unable to load extension manifest for extension "
                << extension_id << "; Path: " << path;
     return;
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   CHECK(manifest) << "Unable to load extension manifest for extension "
                   << extension_id << "; Path: " << path;
   std::string actual_id =

@@ -7,7 +7,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/ax_main_node_annotator_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +29,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "extensions/browser/browsertest_util.h"
@@ -39,7 +38,7 @@
 #include <optional>
 
 #include "content/public/test/scoped_accessibility_mode_override.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
  public:
@@ -92,7 +91,7 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void EnableScreenReader(bool enabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Enable Chromevox.
     ash::AccessibilityManager::Get()->EnableSpokenFeedback(enabled);
     if (enabled) {
@@ -109,11 +108,11 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
       screen_reader_override_.emplace(ui::AXMode::kWebContents |
                                       ui::AXMode::kScreenReader);
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void DisableEarcons() {
     // Playing earcons from within a test is not only annoying if you're
     // running the test locally, but seems to cause crashes

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -16,7 +15,7 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "extensions/browser/browsertest_util.h"
@@ -25,7 +24,7 @@
 #include <optional>
 
 #include "content/public/test/scoped_accessibility_mode_override.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
@@ -45,7 +44,7 @@ class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override { EnableScreenReader(false); }
 
   void EnableScreenReader(bool enabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Enable Chromevox.
     ash::AccessibilityManager::Get()->EnableSpokenFeedback(enabled);
     if (enabled) {
@@ -62,11 +61,11 @@ class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
       screen_reader_override_.emplace(ui::AXMode::kWebContents |
                                       ui::AXMode::kScreenReader);
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void DisableEarcons() {
     // Playing earcons from within a test is not only annoying if you're
     // running the test locally, but seems to cause crashes

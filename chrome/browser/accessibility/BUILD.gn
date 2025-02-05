@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 if (!is_android) {
   source_set("test_support") {
     testonly = true
@@ -24,7 +22,7 @@ if (!is_android) {
       "//components/sync_preferences",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//ash/constants" ]
     }
   }
@@ -40,14 +38,13 @@ source_set("utils") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/browser/profiles",
     "//chrome/common",
     "//components/prefs",
     "//services/screen_ai/buildflags",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chrome/browser/ash/accessibility" ]
   } else {
     deps += [ "//content/public/browser" ]

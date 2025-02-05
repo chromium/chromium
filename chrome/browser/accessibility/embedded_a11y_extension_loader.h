@@ -25,8 +25,7 @@ class Profile;
 //
 // A class that manages the installation and uninstallation of the
 // Accessibility helper extension on every profile (including guest and
-// incognito) for Chrome Accessibility services and features on all platforms
-// except Lacros, where it just informs EmbeddedA11yHelperLacros.
+// incognito) for Chrome Accessibility services and features on all platforms.
 //
 class EmbeddedA11yExtensionLoader : public ProfileObserver,
                                     public ProfileManagerObserver {
