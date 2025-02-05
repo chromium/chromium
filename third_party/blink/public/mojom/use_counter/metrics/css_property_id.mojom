@@ -887,6 +887,14 @@ enum CSSSampleId {
     kAnimationTrigger = 828,
     kColumnRuleBreak = 829,
     kRowRuleBreak = 830,
+    kCornerBottomLeftShape = 831,
+    kCornerBottomRightShape = 832,
+    kCornerTopLeftShape = 833,
+    kCornerTopRightShape = 834,
+    kCornerStartStartShape = 835,
+    kCornerStartEndShape = 836,
+    kCornerEndStartShape = 837,
+    kCornerEndEndShape = 838,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

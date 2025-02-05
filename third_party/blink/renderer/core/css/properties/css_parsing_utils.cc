@@ -5086,6 +5086,11 @@ CSSValue* ParseBorderRadiusCorner(CSSParserTokenStream& stream,
                                             CSSValuePair::kDropIdenticalValues);
 }
 
+const CSSValue* ParseCornerShape(CSSParserTokenStream& stream,
+                                 const CSSParserContext& context) {
+  return ConsumeIdent<CSSValueID::kRound, CSSValueID::kScoop>(stream);
+}
+
 CSSValue* ParseBorderWidthSide(CSSParserTokenStream& stream,
                                const CSSParserContext& context,
                                const CSSParserLocalContext& local_context) {

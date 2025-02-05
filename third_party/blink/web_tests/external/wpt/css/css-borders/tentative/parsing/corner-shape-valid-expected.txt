@@ -1,15 +1,164 @@
 This is a testharness.js-based test.
-[FAIL] e.style['corner-shape'] = "round" should set the property value
+Found 80 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['corner-top-left-shape'] = "notch" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['corner-shape'] = "angle" should set the property value
+[FAIL] e.style['corner-top-left-shape'] = "bevel" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['corner-shape'] = "angle round" should set the property value
+[FAIL] e.style['corner-top-left-shape'] = "squircle" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['corner-shape'] = "round angle" should set the property value
+[FAIL] e.style['corner-top-left-shape'] = "straight" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['corner-shape'] = "angle round angle" should set the property value
+[FAIL] e.style['corner-top-left-shape'] = "superellipse(2)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['corner-shape'] = "angle round angle round" should set the property value
+[FAIL] e.style['corner-top-left-shape'] = "superellipse(.5)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-left-shape'] = "superellipse(7)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-left-shape'] = "superellipse(0.3)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-left-shape'] = "superellipse(infinity)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-left-shape'] = "superellipse(calc(0.5 * 4))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-right-shape'] = "notch" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-right-shape'] = "bevel" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-right-shape'] = "squircle" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-right-shape'] = "straight" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-right-shape'] = "superellipse(2)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-right-shape'] = "superellipse(.5)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-right-shape'] = "superellipse(7)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-right-shape'] = "superellipse(0.3)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-right-shape'] = "superellipse(infinity)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-top-right-shape'] = "superellipse(calc(0.5 * 4))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-left-shape'] = "notch" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-left-shape'] = "bevel" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-left-shape'] = "squircle" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-left-shape'] = "straight" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-left-shape'] = "superellipse(2)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-left-shape'] = "superellipse(.5)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-left-shape'] = "superellipse(7)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-left-shape'] = "superellipse(0.3)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-left-shape'] = "superellipse(infinity)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-left-shape'] = "superellipse(calc(0.5 * 4))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-right-shape'] = "notch" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-right-shape'] = "bevel" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-right-shape'] = "squircle" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-right-shape'] = "straight" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-right-shape'] = "superellipse(2)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-right-shape'] = "superellipse(.5)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-right-shape'] = "superellipse(7)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-right-shape'] = "superellipse(0.3)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-right-shape'] = "superellipse(infinity)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-bottom-right-shape'] = "superellipse(calc(0.5 * 4))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-start-shape'] = "notch" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-start-shape'] = "bevel" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-start-shape'] = "squircle" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-start-shape'] = "straight" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-start-shape'] = "superellipse(2)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-start-shape'] = "superellipse(.5)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-start-shape'] = "superellipse(7)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-start-shape'] = "superellipse(0.3)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-start-shape'] = "superellipse(infinity)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-start-shape'] = "superellipse(calc(0.5 * 4))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-end-shape'] = "notch" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-end-shape'] = "bevel" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-end-shape'] = "squircle" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-end-shape'] = "straight" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-end-shape'] = "superellipse(2)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-end-shape'] = "superellipse(.5)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-end-shape'] = "superellipse(7)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-end-shape'] = "superellipse(0.3)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-end-shape'] = "superellipse(infinity)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-start-end-shape'] = "superellipse(calc(0.5 * 4))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-start-shape'] = "notch" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-start-shape'] = "bevel" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-start-shape'] = "squircle" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-start-shape'] = "straight" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-start-shape'] = "superellipse(2)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-start-shape'] = "superellipse(.5)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-start-shape'] = "superellipse(7)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-start-shape'] = "superellipse(0.3)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-start-shape'] = "superellipse(infinity)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-start-shape'] = "superellipse(calc(0.5 * 4))" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-end-shape'] = "notch" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-end-shape'] = "bevel" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-end-shape'] = "squircle" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-end-shape'] = "straight" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-end-shape'] = "superellipse(2)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-end-shape'] = "superellipse(.5)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-end-shape'] = "superellipse(7)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-end-shape'] = "superellipse(0.3)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-end-shape'] = "superellipse(infinity)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-end-end-shape'] = "superellipse(calc(0.5 * 4))" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 

@@ -160,8 +160,24 @@ LogicalMapping<4> CSSDirectionAwareResolver::LogicalBorderRadiusMapping() {
   return LogicalMapping<4>(kProperties);
 }
 
+LogicalMapping<4> CSSDirectionAwareResolver::LogicalCornerShapeMapping() {
+  static const CSSProperty* kProperties[] = {
+      &GetCSSPropertyCornerStartStartShape(),
+      &GetCSSPropertyCornerStartEndShape(),
+      &GetCSSPropertyCornerEndStartShape(), &GetCSSPropertyCornerEndEndShape()};
+  return LogicalMapping<4>(kProperties);
+}
+
 PhysicalMapping<4> CSSDirectionAwareResolver::PhysicalBorderRadiusMapping() {
   return PhysicalMapping<4>(borderRadiusShorthand());
+}
+
+PhysicalMapping<4> CSSDirectionAwareResolver::PhysicalCornerShapeMapping() {
+  static const CSSProperty* kProperties[] = {
+      &GetCSSPropertyCornerTopLeftShape(), &GetCSSPropertyCornerTopRightShape(),
+      &GetCSSPropertyCornerBottomRightShape(),
+      &GetCSSPropertyCornerBottomLeftShape()};
+  return PhysicalMapping<4>(kProperties);
 }
 
 PhysicalMapping<4> CSSDirectionAwareResolver::PhysicalBorderWidthMapping() {

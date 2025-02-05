@@ -58,6 +58,7 @@ class CSSDirectionAwareResolver {
   static LogicalMapping<4> LogicalBorderRadiusMapping();
   static LogicalMapping<4> LogicalBorderStyleMapping();
   static LogicalMapping<4> LogicalBorderWidthMapping();
+  static LogicalMapping<4> LogicalCornerShapeMapping();
   static LogicalMapping<4> LogicalInsetMapping();
   static LogicalMapping<4> LogicalMarginMapping();
   static LogicalMapping<2> LogicalMaxSizeMapping();
@@ -77,6 +78,7 @@ class CSSDirectionAwareResolver {
   static PhysicalMapping<4> PhysicalBorderStyleMapping();
   static PhysicalMapping<4> PhysicalBorderWidthMapping();
   static PhysicalMapping<2> PhysicalContainIntrinsicSizeMapping();
+  static PhysicalMapping<4> PhysicalCornerShapeMapping();
   static PhysicalMapping<4> PhysicalInsetMapping();
   static PhysicalMapping<4> PhysicalMarginMapping();
   static PhysicalMapping<2> PhysicalMaxSizeMapping();

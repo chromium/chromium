@@ -7414,6 +7414,14 @@ Called by update_use_counter_css.py.-->
   <int value="828" label="animation-trigger"/>
   <int value="829" label="column-rule-break"/>
   <int value="830" label="row-rule-break"/>
+  <int value="831" label="corner-bottom-left-shape"/>
+  <int value="832" label="corner-bottom-right-shape"/>
+  <int value="833" label="corner-top-left-shape"/>
+  <int value="834" label="corner-top-right-shape"/>
+  <int value="835" label="corner-start-start-shape"/>
+  <int value="836" label="corner-start-end-shape"/>
+  <int value="837" label="corner-end-start-shape"/>
+  <int value="838" label="corner-end-end-shape"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

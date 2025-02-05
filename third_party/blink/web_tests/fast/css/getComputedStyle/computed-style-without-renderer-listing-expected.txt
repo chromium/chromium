@@ -153,6 +153,14 @@ contain-intrinsic-width: none
 container-name: none
 container-type: normal
 content: normal
+corner-bottom-left-shape: round
+corner-bottom-right-shape: round
+corner-end-end-shape: round
+corner-end-start-shape: round
+corner-start-end-shape: round
+corner-start-start-shape: round
+corner-top-left-shape: round
+corner-top-right-shape: round
 cursor: auto
 cx: 0px
 cy: 0px

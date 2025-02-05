@@ -37,6 +37,7 @@ ALIGNMENT_ORDER = [
     'std::optional<gfx::Size>',
     'double',
     'StyleViewTransitionGroup',
+    'Superellipse',
     # Aligns like a pointer (can be 32 or 64 bits)
     'NamedGridLinesMap',
     'NamedGridAreaMap',

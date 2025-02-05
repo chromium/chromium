@@ -1061,6 +1061,11 @@
       status: "stable",
     },
     {
+      // https://drafts.csswg.org/css-borders-4/#corner-shaping
+      name: "CSSCornerShape",
+      status: "experimental",
+    },
+    {
       // Unprefixed cross-fade() (in addition to the existing -webkit-cross-fade()).
       // https://drafts.csswg.org/css-images-4/#cross-fade-function
       name: "CSSCrossFade",
