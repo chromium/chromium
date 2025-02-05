@@ -58,7 +58,7 @@ void FireEventOnWindowChildWidgetAndRootView(aura::Window* window,
 
     views::View* root_view = widget->GetRootView();
     if (root_view) {
-      root_view->NotifyAccessibilityEvent(event, true);
+      root_view->NotifyAccessibilityEventDeprecated(event, true);
     }
   }
 }

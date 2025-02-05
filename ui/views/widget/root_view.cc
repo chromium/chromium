@@ -94,8 +94,8 @@ class AnnounceTextView : public View {
     UpdateAccessibleAttributes(text, announcement_type);
     CHECK(HasValidRole());
 
-    NotifyAccessibilityEvent(AnnounceEventType(announcement_type),
-                             /*send_native_event=*/true);
+    NotifyAccessibilityEventDeprecated(AnnounceEventType(announcement_type),
+                                       /*send_native_event=*/true);
   }
 
   ax::mojom::Event AnnounceEventType(

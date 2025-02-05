@@ -238,7 +238,8 @@ void HoverHighlightView::SetAccessibilityState(
   }
 
   if (accessibility_state_ != AccessibilityState::DEFAULT) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kCheckedStateChanged,
+                                       true);
   }
 }
 

@@ -654,8 +654,8 @@ void View::SetVisible(bool visible) {
     if (parent_) {
       parent_->ChildVisibilityChanged(this);
       if (!view_accessibility_ || !view_accessibility_->GetIsIgnored()) {
-        parent_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                          true);
+        parent_->NotifyAccessibilityEventDeprecated(
+            ax::mojom::Event::kChildrenChanged, true);
       }
     }
 
@@ -1680,7 +1680,7 @@ void View::OnMouseEvent(ui::MouseEvent* event) {
 
     case ui::EventType::kMouseEntered:
       if (event->flags() & ui::EF_TOUCH_ACCESSIBILITY) {
-        NotifyAccessibilityEvent(ax::mojom::Event::kHover, true);
+        NotifyAccessibilityEventDeprecated(ax::mojom::Event::kHover, true);
       }
       OnMouseEntered(*event);
       break;
@@ -2207,8 +2207,8 @@ gfx::NativeViewAccessible View::GetNativeViewAccessible() {
   return GetViewAccessibility().GetNativeObject();
 }
 
-void View::NotifyAccessibilityEvent(ax::mojom::Event event_type,
-                                    bool send_native_event) {
+void View::NotifyAccessibilityEventDeprecated(ax::mojom::Event event_type,
+                                              bool send_native_event) {
   GetViewAccessibility().NotifyEvent(event_type, send_native_event);
 }
 
@@ -2467,7 +2467,7 @@ void View::OnPaintLayer(const ui::PaintContext& context) {
 
 void View::OnLayerTransformed(const gfx::Transform& old_transform,
                               ui::PropertyChangeReason reason) {
-  NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged, false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kLocationChanged, false);
 
   observers_.Notify(&ViewObserver::OnViewLayerTransformed, this);
 }
@@ -2649,9 +2649,10 @@ void View::Focus() {
         view_accessibility_ ? view_accessibility_->FocusedVirtualChild()
                             : nullptr;
     if (focused_virtual_child) {
-      focused_virtual_child->NotifyAccessibilityEvent(ax::mojom::Event::kFocus);
+      focused_virtual_child->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kFocus);
     } else {
-      NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
     }
   }
 

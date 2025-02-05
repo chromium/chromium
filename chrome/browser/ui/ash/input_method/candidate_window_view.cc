@@ -381,8 +381,9 @@ void CandidateWindowView::UpdateCandidates(
     if (!candidate_window_.is_user_selecting() ||
         (selected_candidate_index_in_page_ != new_candidate_index_in_page &&
          new_candidate_index_in_page != -1)) {
-      candidate_views_[new_candidate_index_in_page]->NotifyAccessibilityEvent(
-          ax::mojom::Event::kSelection, false);
+      candidate_views_[new_candidate_index_in_page]
+          ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection,
+                                               false);
     }
   }
 

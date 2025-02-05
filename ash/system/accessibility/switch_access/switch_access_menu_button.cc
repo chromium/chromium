@@ -86,8 +86,8 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
 }
 
 void SwitchAccessMenuButton::OnButtonPressed() {
-  NotifyAccessibilityEvent(ax::mojom::Event::kClicked,
-                           /*send_native_event=*/false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kClicked,
+                                     /*send_native_event=*/false);
 }
 
 BEGIN_METADATA(SwitchAccessMenuButton)

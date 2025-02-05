@@ -493,10 +493,10 @@ void BookmarkBarView::SetBookmarkBarState(
   // hidden.
   if (state == BookmarkBar::SHOW) {
     GetViewAccessibility().SetIsLeaf(false);
-    NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTreeChanged, true);
   } else {
     GetViewAccessibility().SetIsLeaf(true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTreeChanged, true);
   }
 #endif
 

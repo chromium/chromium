@@ -423,7 +423,7 @@ void ContinueTaskContainerView::ClearAnimatingViews() {
     RemoveChildViewT(view);
   }
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, true);
 }
 
 void ContinueTaskContainerView::SetResults(

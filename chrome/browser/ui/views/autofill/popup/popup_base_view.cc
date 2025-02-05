@@ -310,8 +310,8 @@ void PopupBaseView::DoHide() {
     // navigates into the menu, otherwise some screen readers will ignore
     // any focus events outside of the menu, including a focus event on
     // the form control itself.
-    NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupEnd, true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kMenuEnd, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuPopupEnd, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuEnd, true);
     GetViewAccessibility().EndPopupFocusOverride();
 
     // Also fire an accessible focus event on what currently has focus,
@@ -349,8 +349,8 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
     // readers that the focus is only changing temporarily, and the screen
     // reader will restore the focus back to the appropriate textfield when the
     // menu closes.
-    NotifyAccessibilityEvent(ax::mojom::Event::kMenuStart, true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupStart, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuStart, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuPopupStart, true);
 
     is_ax_menu_start_event_fired_ = true;
   }

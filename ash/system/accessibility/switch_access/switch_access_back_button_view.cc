@@ -116,8 +116,8 @@ void SwitchAccessBackButtonView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void SwitchAccessBackButtonView::OnButtonPressed() {
-  NotifyAccessibilityEvent(ax::mojom::Event::kClicked,
-                           /*send_native_event=*/false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kClicked,
+                                     /*send_native_event=*/false);
 }
 
 BEGIN_METADATA(SwitchAccessBackButtonView)

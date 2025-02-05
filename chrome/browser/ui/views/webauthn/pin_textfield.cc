@@ -226,8 +226,8 @@ void PinTextfield::UpdateAccessibilityAfterPinChange() {
 
   // Don't announce the selected text (last typed digit) in `obscured_` mode.
   if (!obscured_) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged,
-                             /*send_native_event=*/true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTextSelectionChanged,
+                                       /*send_native_event=*/true);
   }
 }
 

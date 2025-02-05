@@ -832,7 +832,8 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
     if (!on_construction) {
       // An alert notification will ensure that the zoom label is always
       // announced even if is not focusable.
-      zoom_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+      zoom_label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                      true);
     }
     zoom_label_max_width_.reset();
   }

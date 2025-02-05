@@ -321,7 +321,7 @@ void DictationHintView::Update(
   // hints to the user.
   if (num_visible_hints > 0) {
     SetVisible(true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   } else {
     SetVisible(false);
   }

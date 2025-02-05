@@ -170,7 +170,7 @@ void ExitWarningHandler::Show() {
   widget_->Init(std::move(params));
   widget_->Show();
 
-  delegate->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  delegate->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 }
 
 void ExitWarningHandler::Hide() {

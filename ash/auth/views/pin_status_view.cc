@@ -146,8 +146,8 @@ void PinStatusView::SetPinStatus(
     return;
   }
 
-  text_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                        /*send_native_event=*/true);
+  text_label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                  /*send_native_event=*/true);
 
   if (pin_status_->AvailableAt().is_max()) {
     return;

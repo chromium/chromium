@@ -305,7 +305,7 @@ SkColor MediaItemUIDeviceSelectorView::GetIconLabelBubbleBackgroundColor()
 void MediaItemUIDeviceSelectorView::ShowDevices() {
   DCHECK(!is_expanded_);
   is_expanded_ = true;
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kExpandedChanged, true);
 
   // When this device selector view is used on Chrome OS ash, accessibility text
   // will be handled by MediaItemUIDetailedView instead of here.
@@ -337,7 +337,7 @@ void MediaItemUIDeviceSelectorView::ShowDevices() {
 void MediaItemUIDeviceSelectorView::HideDevices() {
   DCHECK(is_expanded_);
   is_expanded_ = false;
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kExpandedChanged, true);
 
   // When this device selector view is used on Chrome OS ash, accessibility text
   // will be handled by MediaItemUIDetailedView instead of here.

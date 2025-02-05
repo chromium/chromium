@@ -519,8 +519,9 @@ void LoginAuthFactorsView::OnThemeChanged() {
 }
 
 void LoginAuthFactorsView::FireAlert() {
-  label_wrapper_->label()->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                                    /*send_native_event=*/true);
+  label_wrapper_->label()->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kAlert,
+      /*send_native_event=*/true);
 }
 
 void LoginAuthFactorsView::ArrowButtonPressed(const ui::Event& event) {

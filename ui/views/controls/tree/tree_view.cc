@@ -306,10 +306,13 @@ void TreeView::Collapse(ui::TreeModelNode* model_node) {
     DrawnNodesChanged();
     AXVirtualView* ax_view = node->accessibility_view();
     if (ax_view) {
-      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged);
-      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kRowCollapsed);
+      ax_view->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kExpandedChanged);
+      ax_view->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kRowCollapsed);
     }
-    NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kRowCountChanged,
+                                       true);
   }
 }
 
@@ -321,10 +324,13 @@ void TreeView::Expand(TreeModelNode* node) {
     AXVirtualView* ax_view =
         internal_node ? internal_node->accessibility_view() : nullptr;
     if (ax_view) {
-      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged);
-      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kRowExpanded);
+      ax_view->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kExpandedChanged);
+      ax_view->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kRowExpanded);
     }
-    NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kRowCountChanged,
+                                       true);
   }
   // TODO(sky): need to support auto_expand_children_.
 }
@@ -347,10 +353,13 @@ void TreeView::ExpandAll(TreeModelNode* node) {
     AXVirtualView* ax_view =
         internal_node ? internal_node->accessibility_view() : nullptr;
     if (ax_view) {
-      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged);
-      ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kRowExpanded);
+      ax_view->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kExpandedChanged);
+      ax_view->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kRowExpanded);
     }
-    NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kRowCountChanged,
+                                       true);
   }
 }
 
@@ -394,7 +403,8 @@ void TreeView::SetRootShown(bool root_shown) {
   // There should always be a virtual accessibility view for the root, unless
   // someone calls this method before setting a model.
   if (ax_view) {
-    ax_view->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged);
+    ax_view->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kStateChanged);
   }
   DrawnNodesChanged();
 }
@@ -581,7 +591,8 @@ void TreeView::TreeNodeAdded(TreeModel* model,
   }
 
   if (IsExpanded(parent)) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kRowCountChanged,
+                                       true);
     DrawnNodesChanged();
   }
 }
@@ -640,7 +651,8 @@ void TreeView::TreeNodeRemoved(TreeModel* model,
   }
 
   if (IsExpanded(parent)) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kRowCountChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kRowCountChanged,
+                                       true);
     DrawnNodesChanged();
   }
 }
@@ -656,7 +668,7 @@ void TreeView::TreeNodeChanged(TreeModel* model, TreeModelNode* model_node) {
   if (old_width != node->text_width() &&
       ((node == &root_ && root_shown_) ||
        (node != &root_ && IsExpanded(node->parent()->model_node())))) {
-    node->accessibility_view()->NotifyAccessibilityEvent(
+    node->accessibility_view()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kLocationChanged);
     DrawnNodesChanged();
   }
@@ -908,9 +920,10 @@ void TreeView::UpdateSelection(TreeModelNode* model_node,
     AXVirtualView* ax_selected_view =
         node ? node->accessibility_view() : nullptr;
     if (ax_selected_view) {
-      ax_selected_view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+      ax_selected_view->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kSelection);
     } else {
-      NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
     }
   }
 

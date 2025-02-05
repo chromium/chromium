@@ -251,7 +251,7 @@ class SearchBoxTextfield : public views::Textfield {
     auto& accessibility = GetViewAccessibility();
     if (accessibility.GetIsIgnored()) {
       accessibility.SetIsIgnored(false);
-      NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
+      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTreeChanged, true);
     }
   }
 

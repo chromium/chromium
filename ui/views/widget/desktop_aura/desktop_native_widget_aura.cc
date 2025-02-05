@@ -422,7 +422,8 @@ void DesktopNativeWidgetAura::NotifyAccessibilityEvent(
   if (!GetWidget() || !GetWidget()->GetRootView()) {
     return;
   }
-  GetWidget()->GetRootView()->NotifyAccessibilityEvent(event_type, true);
+  GetWidget()->GetRootView()->NotifyAccessibilityEventDeprecated(event_type,
+                                                                 true);
 }
 
 void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {

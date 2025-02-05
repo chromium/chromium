@@ -1404,11 +1404,15 @@ class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
 
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
     if (active) {
-      owner_->NotifyAccessibilityEvent(ax::mojom::Event::kMenuStart, true);
-      owner_->NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupStart, true);
+      owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuStart,
+                                                 true);
+      owner_->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kMenuPopupStart, true);
     } else {
-      owner_->NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupEnd, true);
-      owner_->NotifyAccessibilityEvent(ax::mojom::Event::kMenuEnd, true);
+      owner_->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kMenuPopupEnd, true);
+      owner_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuEnd,
+                                                 true);
     }
   }
 

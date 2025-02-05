@@ -548,7 +548,7 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
       l10n_util::GetStringFUTF16(
           IDS_GLANCEABLES_TASKS_SELECTED_LIST_ACCESSIBLE_NAME,
           base::UTF8ToUTF16(task_list_title)));
-  items_container_view()->NotifyAccessibilityEvent(
+  items_container_view()->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kChildrenChanged,
       /*send_native_event=*/true);
 

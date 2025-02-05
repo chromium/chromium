@@ -1173,7 +1173,7 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
   if (visible && ui::IsAlert(GetAccessibleWindowRole())) {
     GetWidget()->GetRootView()->GetViewAccessibility().SetRole(
         GetAccessibleWindowRole());
-    GetWidget()->GetRootView()->NotifyAccessibilityEvent(
+    GetWidget()->GetRootView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kAlert, true);
   }
 }

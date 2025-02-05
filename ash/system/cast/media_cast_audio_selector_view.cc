@@ -106,7 +106,7 @@ void MediaCastAudioSelectorView::UpdateCurrentAudioDevice(
 void MediaCastAudioSelectorView::MediaCastAudioSelectorView::ShowDevices() {
   DCHECK(!is_expanded_);
   is_expanded_ = true;
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kExpandedChanged, true);
 
   list_view_container_->SetVisible(true);
 
@@ -123,7 +123,7 @@ void MediaCastAudioSelectorView::MediaCastAudioSelectorView::ShowDevices() {
 void MediaCastAudioSelectorView::HideDevices() {
   DCHECK(is_expanded_);
   is_expanded_ = false;
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kExpandedChanged, true);
 
   list_view_container_->SetVisible(false);
   PreferredSizeChanged();

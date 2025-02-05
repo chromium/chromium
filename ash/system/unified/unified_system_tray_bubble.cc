@@ -68,7 +68,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   bubble_view_->InitializeAndShowBubble();
 
   // Notify accessibility features that the status tray has opened.
-  NotifyAccessibilityEvent(ax::mojom::Event::kShow, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kShow, true);
 
   // Explicitly close the app list in clamshell mode.
   if (!display::Screen::GetScreen()->InTabletMode()) {
@@ -321,12 +321,13 @@ void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
       unified_system_tray_->shelf()->GetSystemTrayAnchorRect());
 }
 
-void UnifiedSystemTrayBubble::NotifyAccessibilityEvent(ax::mojom::Event event,
-                                                       bool send_native_event) {
+void UnifiedSystemTrayBubble::NotifyAccessibilityEventDeprecated(
+    ax::mojom::Event event,
+    bool send_native_event) {
   if (!bubble_view_) {
     return;
   }
-  bubble_view_->NotifyAccessibilityEvent(event, send_native_event);
+  bubble_view_->NotifyAccessibilityEventDeprecated(event, send_native_event);
 }
 
 bool UnifiedSystemTrayBubble::ShowingAudioDetailedView() const {

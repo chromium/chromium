@@ -478,8 +478,9 @@ void ClipboardHistoryItemView::SetPseudoFocus(PseudoFocus new_pseudo_focus) {
       ->GetInkDrop()
       ->SetFocused(IsDeleteButtonPseudoFocused());
   if (IsDeleteButtonPseudoFocused()) {
-    delete_button_->NotifyAccessibilityEvent(ax::mojom::Event::kHover,
-                                             /*send_native_event*/ true);
+    delete_button_->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kHover,
+        /*send_native_event*/ true);
   }
 
   if (repaint_main_button) {

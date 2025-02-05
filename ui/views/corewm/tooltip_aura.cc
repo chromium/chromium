@@ -242,7 +242,7 @@ void TooltipAura::Show() {
   if (widget_) {
     widget_->Show();
 
-    widget_->GetTooltipView()->NotifyAccessibilityEvent(
+    widget_->GetTooltipView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kTooltipOpened, true);
 
     // Add distance between `tooltip_window_` and its toplevel window to bounds
@@ -272,7 +272,7 @@ void TooltipAura::Hide() {
     // guarantees we never show outdated information.
     // TODO(http://crbug.com/998280): Figure out why the old content is
     // displayed despite the size change.
-    widget_->GetTooltipView()->NotifyAccessibilityEvent(
+    widget_->GetTooltipView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kTooltipClosed, true);
 
     // TODO(crbug.com/40246673): Use `tooltip_window_` instead of its toplevel

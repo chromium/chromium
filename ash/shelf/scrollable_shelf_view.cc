@@ -1223,8 +1223,9 @@ void ScrollableShelfView::OnImplicitAnimationsCompleted() {
     UpdateTappableIconIndices();
 
   // Notifies ChromeVox of the changed location at the end of animation.
-  shelf_view_->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
-                                        /*send_native_event=*/true);
+  shelf_view_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kLocationChanged,
+      /*send_native_event=*/true);
 
   if (!drag_item_bounds_in_screen_ ||
       AreBoundsWithinVisibleSpace(*drag_item_bounds_in_screen_)) {

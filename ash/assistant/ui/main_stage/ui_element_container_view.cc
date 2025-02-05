@@ -238,7 +238,7 @@ void UiElementContainerView::OnAllViewsAnimatedIn() {
   // and the card fallback text, but webview result is not included. We don't
   // read when there is TTS to avoid speaking over the server response.
   if (!response->has_tts())
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 }
 
 void UiElementContainerView::OnOverflowIndicatorVisibilityChanged(

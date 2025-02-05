@@ -483,7 +483,8 @@ void PinRequestView::UpdateState(PinRequestViewState state,
       access_code_view_->SetInputColorId(error_color_id);
       title_label_->SetEnabledColorId(error_color_id);
       // Read out the error.
-      title_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+      title_label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                       true);
       return;
     }
   }

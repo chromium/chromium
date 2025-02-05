@@ -259,7 +259,7 @@ void SavedDeskIconContainer::SortIcons() {
 
   // Notify the a11y API so that the spoken feedback order matches the view
   // order.
-  NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTreeChanged, true);
 }
 
 void SavedDeskIconContainer::UpdateOverflowIcon() {

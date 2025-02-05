@@ -368,14 +368,16 @@ void PopupRowAutofillAiFeedbackView::UpdateFocusedControl(
     GetFocusableControlView(*current_focused_control)
         .GetViewAccessibility()
         .SetIsSelected(false);
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+    NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelectedChildrenChanged, true);
   }
 
   if (new_focused_control) {
     views::View& view = GetFocusableControlView(*new_focused_control);
     GetA11ySelectionDelegate().NotifyAXSelection(view);
     view.GetViewAccessibility().SetIsSelected(true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+    NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelectedChildrenChanged, true);
   }
 
   manage_prediction_improvements_link_->SetBackground(

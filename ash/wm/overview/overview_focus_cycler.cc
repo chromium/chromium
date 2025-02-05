@@ -240,7 +240,7 @@ void OverviewFocusCycler::UpdateAccessibilityFocus() {
   if (a11y_widgets.size() == 1) {
     get_view_a11y(/*index=*/0).SetPreviousFocus(nullptr);
     get_view_a11y(/*index=*/0).SetNextFocus(nullptr);
-    a11y_widgets[0]->GetContentsView()->NotifyAccessibilityEvent(
+    a11y_widgets[0]->GetContentsView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kTreeChanged, true);
     return;
   }
@@ -251,7 +251,7 @@ void OverviewFocusCycler::UpdateAccessibilityFocus() {
     int next_index = (i + 1) % size;
     get_view_a11y(i).SetPreviousFocus(a11y_widgets[previous_index]);
     get_view_a11y(i).SetNextFocus(a11y_widgets[next_index]);
-    a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
+    a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kTreeChanged, true);
   }
 }

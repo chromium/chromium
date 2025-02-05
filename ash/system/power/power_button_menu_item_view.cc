@@ -93,7 +93,7 @@ gfx::Size PowerButtonMenuItemView::CalculatePreferredSize(
 
 void PowerButtonMenuItemView::OnFocus() {
   parent()->SetFocusBehavior(FocusBehavior::NEVER);
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
   SchedulePaint();
 }
 

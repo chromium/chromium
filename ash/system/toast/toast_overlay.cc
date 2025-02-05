@@ -254,7 +254,8 @@ void ToastOverlay::Show(bool visible) {
     overlay_widget_->ShowInactive();
 
     // Notify accessibility about the overlay.
-    overlay_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, false);
+    overlay_view_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                      false);
   } else {
     overlay_widget_->Hide();
   }

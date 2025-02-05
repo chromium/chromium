@@ -2140,7 +2140,7 @@ void Textfield::SetActiveCompositionForAccessibility(
 // Textfield, views::ViewObserver overrides:
 void Textfield::OnViewFocused(views::View* observed_view) {
   observed_view->RemoveObserver(this);
-  observed_view->NotifyAccessibilityEvent(
+  observed_view->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kTextSelectionChanged, true);
 }
 
@@ -2932,7 +2932,8 @@ void Textfield::OnCaretBoundsChanged() {
       }
     } else {
       UpdateAccessibleTextSelection();
-      NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+      NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kTextSelectionChanged, true);
     }
   }
 

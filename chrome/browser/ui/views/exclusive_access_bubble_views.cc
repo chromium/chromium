@@ -285,7 +285,8 @@ void ExclusiveAccessBubbleViews::AnimationProgressed(
 void ExclusiveAccessBubbleViews::AnimationEnded(
     const gfx::Animation* animation) {
   if (animation_->IsShowing()) {
-    GetView()->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    GetView()->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                  true);
   }
   AnimationProgressed(animation);
 }

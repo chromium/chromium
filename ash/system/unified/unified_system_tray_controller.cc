@@ -467,7 +467,7 @@ void UnifiedSystemTrayController::ShowDetailedView(
   if (bubble_) {
     UpdateBubble();
     // Notify accessibility features that a new view is showing.
-    bubble_->NotifyAccessibilityEvent(ax::mojom::Event::kShow, true);
+    bubble_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kShow, true);
   }
 }
 

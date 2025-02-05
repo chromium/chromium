@@ -166,8 +166,8 @@ ui::CallbackLayerAnimationObserver* BuildObserverToNotifyA11yLocationChanged(
           return true;
         }
 
-        view->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
-                                       false /*send_native_event*/);
+        view->NotifyAccessibilityEventDeprecated(
+            ax::mojom::Event::kLocationChanged, false /*send_native_event*/);
         return true;
       },
       view));
@@ -307,8 +307,8 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
     label_->SetText(GetTextForLabel());
 
     if (state == State::kFailure) {
-      label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                       /*send_native_event=*/true);
+      label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                 /*send_native_event=*/true);
     }
 
     DeprecatedLayoutImmediately();

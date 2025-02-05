@@ -74,7 +74,7 @@ void GameDashboardNetworkView::UpdateConnectionStatus(bool notify_a11y) {
   SetTooltipText(tooltip);
   if (notify_a11y && !accessible_name.empty() &&
       accessible_name != GetViewAccessibility().GetCachedName()) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   }
 
   if (accessible_description.empty()) {

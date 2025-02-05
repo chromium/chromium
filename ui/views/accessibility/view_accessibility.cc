@@ -226,7 +226,7 @@ void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
 
   if (view_->HasFocus()) {
     if (focused_virtual_child_) {
-      focused_virtual_child_->NotifyAccessibilityEvent(
+      focused_virtual_child_->NotifyAccessibilityEventDeprecated(
           ax::mojom::Event::kFocus);
     } else {
       NotifyEvent(ax::mojom::Event::kFocus, true);

@@ -189,8 +189,9 @@ void UpdateAccessibilityTree(const std::vector<views::Widget*>& widget_list) {
 
     view_a11y.SetPreviousFocus(widget_list[prev_index]);
     view_a11y.SetNextFocus(widget_list[next_index]);
-    contents_view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged,
-                                            /*send_native_event=*/true);
+    contents_view->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kTreeChanged,
+        /*send_native_event=*/true);
   }
 }
 

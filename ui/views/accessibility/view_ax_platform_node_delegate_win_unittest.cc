@@ -330,8 +330,8 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
   ASSERT_EQ(0, n_targets);
 
   // Fire alert events on the infobars.
-  infobar->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-  infobar2->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  infobar->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
+  infobar2->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 
   // Now calling get_relationTargetsOfType should retrieve the alerts.
   ASSERT_EQ(S_OK, root_view_accessible->get_relationTargetsOfType(

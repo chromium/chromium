@@ -93,7 +93,7 @@ void CreateAndShowWidget(views::WidgetDelegateView* delegate,
   widget->SetBounds(bounds);
 
   // Allow to use the message for spoken feedback.
-  delegate->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  delegate->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 }
 
 }  // namespace

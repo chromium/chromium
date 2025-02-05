@@ -220,7 +220,7 @@ void Slider::SetValueInternal(float value, SliderChangeReason reason) {
   if (accessibility_events_enabled_) {
     if (GetWidget() && GetWidget()->IsVisible() && GetVisible()) {
       DCHECK(!pending_accessibility_value_change_);
-      NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kValueChanged, true);
     } else {
       pending_accessibility_value_change_ = true;
     }
@@ -428,7 +428,7 @@ void Slider::ApplyPendingAccessibleValueUpdate() {
   if (!pending_accessibility_value_change_)
     return;
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kValueChanged, true);
   pending_accessibility_value_change_ = false;
 }
 
