@@ -33,8 +33,21 @@ class AwPrefetchManager {
       std::unique_ptr<content::PrefetchRequestStatusListener>
           request_status_listener);
 
+  // Returns the Time-to-Live (TTL) for prefetched content in seconds.
+  int GetTtlInSec() const { return ttl_in_sec_; }
+
+  // Returns the maximum number of allowed prefetches in cache.
+  int GetMaxPrefetches() const { return max_prefetches_; }
+
+  // Updates the TTL and maximum number of prefetches.
+  void UpdatePrefetchConfiguration(int ttl_in_sec, int max_prefetches);
+
  private:
   raw_ref<content::BrowserContext> browser_context_;
+
+  int ttl_in_sec_;
+
+  int max_prefetches_;
 };
 
 }  // namespace android_webview

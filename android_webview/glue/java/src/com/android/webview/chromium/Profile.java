@@ -161,5 +161,9 @@ public class Profile {
     }
 
     @UiThread
-    public void setSpeculativeLoadingConfig(SpeculativeLoadingConfig speculativeLoadingConfig) {}
+    public void setSpeculativeLoadingConfig(SpeculativeLoadingConfig speculativeLoadingConfig) {
+        mBrowserContext.setSpeculativeLoadingConfig(
+                speculativeLoadingConfig.prefetchTTLSeconds,
+                speculativeLoadingConfig.maxPrefetches);
+    }
 }

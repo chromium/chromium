@@ -27,4 +27,10 @@ void AwPrefetchManager::StartBrowserPrefetchRequest(
       additional_headers, std::move(request_status_listener));
 }
 
+void AwPrefetchManager::UpdatePrefetchConfiguration(int ttl_in_sec,
+                                                    int max_prefetches) {
+  ttl_in_sec_ = ttl_in_sec;
+  max_prefetches_ = max_prefetches;
+}
+
 }  // namespace android_webview

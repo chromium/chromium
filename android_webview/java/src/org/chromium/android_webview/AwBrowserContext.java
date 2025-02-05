@@ -325,6 +325,17 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @UiThread
+    public void setSpeculativeLoadingConfig(int prefetchTTLSeconds, int maxPrefetches) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.Profile.SET_SPECULATIVE_LOADING_CONFIG")) {
+            assert ThreadUtils.runningOnUiThread();
+            AwBrowserContextJni.get()
+                    .setSpeculativeLoadingConfig(
+                            mNativeAwBrowserContext, prefetchTTLSeconds, maxPrefetches);
+        }
+    }
+
+    @UiThread
     public void startPrefetchRequest(
             @NonNull String url,
             @Nullable AwPrefetchParameters prefetchParameters,
@@ -518,5 +529,8 @@ public class AwBrowserContext implements BrowserContextHandle {
                 AwPrefetchParameters prefetchParameters,
                 AwPrefetchCallback callback,
                 Executor callbackExecutor);
+
+        void setSpeculativeLoadingConfig(
+                long nativeAwBrowserContext, int ttlInSeconds, int maxPrefetches);
     }
 }

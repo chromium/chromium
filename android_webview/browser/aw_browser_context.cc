@@ -753,6 +753,12 @@ void AwBrowserContext::SetAllowedPrerenderingCount(int allowed_count) {
   allowed_prerendering_count_ = allowed_count;
 }
 
+void AwBrowserContext::SetSpeculativeLoadingConfig(JNIEnv* env,
+                                                   jint ttl_in_sec,
+                                                   jint max_prefetches) {
+  prefetch_manager_->UpdatePrefetchConfiguration(ttl_in_sec, max_prefetches);
+}
+
 std::unique_ptr<AwContentsIoThreadClient>
 AwBrowserContext::GetServiceWorkerIoThreadClientThreadSafe() {
   base::android::ScopedJavaLocalRef<jobject> java_delegate =

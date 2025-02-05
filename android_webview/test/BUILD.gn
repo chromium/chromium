@@ -854,6 +854,7 @@ test("android_webview_unittests") {
     "../browser/metrics/visibility_metrics_logger_unittest.cc",
     "../browser/permission/media_access_permission_request_unittest.cc",
     "../browser/permission/permission_request_handler_unittest.cc",
+    "../browser/prefetch/aw_prefetch_manager_unittest.cc",
     "../browser/renderer_host/auto_login_parser_unittest.cc",
     "../browser/safe_browsing/aw_ping_manager_factory_unittest.cc",
     "../browser/safe_browsing/aw_safe_browsing_allowlist_manager_unittest.cc",

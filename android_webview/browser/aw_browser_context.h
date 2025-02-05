@@ -126,6 +126,9 @@ class AwBrowserContext : public content::BrowserContext,
 
   int AllowedPrerenderingCount() const;
   void SetAllowedPrerenderingCount(int allowed_count);
+  void SetSpeculativeLoadingConfig(JNIEnv* env,
+                                   jint ttl_in_sec,
+                                   jint max_prefetches);
 
   // content::BrowserContext implementation.
   base::FilePath GetPath() override;
