@@ -63,6 +63,10 @@ PDFiumRange& PDFiumRange::operator=(PDFiumRange&&) noexcept = default;
 PDFiumRange::~PDFiumRange() = default;
 
 void PDFiumRange::SetCharCount(int char_count) {
+  if (char_count == char_count_) {
+    return;
+  }
+
   char_count_ = char_count;
 #if DCHECK_IS_ON()
   int dummy_index = 0;
