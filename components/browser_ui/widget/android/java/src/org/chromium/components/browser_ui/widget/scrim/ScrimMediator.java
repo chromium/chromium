@@ -239,7 +239,6 @@ class ScrimMediator implements TouchEventDelegate {
         // TODO(mdjones): This null check is exclusively for Android K which has a slightly
         //                different order for animation events. Once deprecated we should remove it.
         if (mModel == null) return;
-        if (MathUtils.areFloatsEqual(alpha, mModel.get(ScrimProperties.ALPHA))) return;
         mModel.set(ScrimProperties.ALPHA, alpha);
         if (mModel.get(ScrimProperties.AFFECTS_STATUS_BAR)) {
             mStatusBarScrimFractionSupplier.set(alpha);

@@ -258,9 +258,18 @@ public class ScrimManager {
     }
 
     public @Nullable ScrimView getViewForTesting() {
-        return mModelToScrim.isEmpty()
-                ? null
-                : mModelToScrim.values().iterator().next().getViewForTesting();
+        if (mModelToScrim.isEmpty()) {
+            return null;
+        } else {
+            assert mModelToScrim.size() == 1;
+            return mModelToScrim.values().iterator().next().getViewForTesting();
+        }
+    }
+
+    public @Nullable ScrimView getViewForTesting(PropertyModel model) {
+        @Nullable ScrimCoordinator coordinator = mModelToScrim.get(model);
+        if (coordinator == null) return null;
+        return coordinator.getViewForTesting();
     }
 
     public void disableAnimationForTesting(boolean disable) {
@@ -270,9 +279,9 @@ public class ScrimManager {
         }
     }
 
-    public boolean areAnimationsRunningForTesting() {
-        return mModelToScrim.isEmpty()
-                ? false
-                : mModelToScrim.values().iterator().next().areAnimationsRunningForTesting();
+    public boolean areAnimationsRunningForTesting(PropertyModel model) {
+        @Nullable ScrimCoordinator coordinator = mModelToScrim.get(model);
+        if (coordinator == null) return false;
+        return coordinator.areAnimationsRunningForTesting();
     }
 }

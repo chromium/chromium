@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.components.browser_ui.widget.scrim.ScrimView;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -1173,8 +1174,8 @@ public class TabGridDialogView extends FrameLayout {
         ResettersForTesting.register(() -> sSourceRectCallbackForTesting = null);
     }
 
-    ScrimManager getScrimManagerForTesting() {
-        return mScrimManager;
+    ScrimView getScrimViewForTesting() {
+        return mScrimManager.getViewForTesting(mScrimPropertyModel);
     }
 
     VisibilityListener getVisibilityListenerForTesting() {
