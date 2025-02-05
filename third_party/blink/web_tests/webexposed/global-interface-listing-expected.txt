@@ -2097,6 +2097,7 @@ interface Document : Node
     getter onchange
     getter onclick
     getter onclose
+    getter oncommand
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -2322,6 +2323,7 @@ interface Document : Node
     setter onchange
     setter onclick
     setter onclose
+    setter oncommand
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -3918,6 +3920,7 @@ interface HTMLElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncommand
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -4055,6 +4058,7 @@ interface HTMLElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncommand
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -5911,6 +5915,7 @@ interface MathMLElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncommand
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -6024,6 +6029,7 @@ interface MathMLElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncommand
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -8371,6 +8377,7 @@ interface SVGElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncommand
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -8486,6 +8493,7 @@ interface SVGElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncommand
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
@@ -12968,6 +12976,7 @@ namespace console
     getter onchange
     getter onclick
     getter onclose
+    getter oncommand
     getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
@@ -13203,6 +13212,7 @@ namespace console
     setter onchange
     setter onclick
     setter onclose
+    setter oncommand
     setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
