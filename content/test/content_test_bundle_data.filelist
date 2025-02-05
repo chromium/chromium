@@ -7227,6 +7227,8 @@ data/indexeddb/missing_sst/file__0.indexeddb.leveldb/LOCK
 data/indexeddb/missing_sst/file__0.indexeddb.leveldb/LOG
 data/indexeddb/missing_sst/file__0.indexeddb.leveldb/LOG.old
 data/indexeddb/missing_sst/file__0.indexeddb.leveldb/MANIFEST-000007
+data/indexeddb/nested_blob.html
+data/indexeddb/nested_blob.js
 data/indexeddb/object_store_test.html
 data/indexeddb/object_store_test.js
 data/indexeddb/open_bad_db.html
