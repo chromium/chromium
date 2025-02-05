@@ -3312,11 +3312,6 @@ const char kSafetyHubName[] = "Safety Check v2";
 const char kSafetyHubDescription[] =
     "When enabled, Safety Check v2 will be visible in settings.";
 
-const char kPlusAddressFullFormFillName[] = "Plus address full form filling";
-const char kPlusAddressFullFormFillDescription[] =
-    "When enabled, the email on address profile suggestions is replaced with "
-    "the user's plus address for the current domain";
-
 #if BUILDFLAG(IS_ANDROID)
 const char kSafetyHubMagicStackName[] = "Safety Check v2 - Magic Stack";
 const char kSafetyHubMagicStackDescription[] =

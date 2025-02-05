@@ -6929,14 +6929,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "plus-address-full-form-fill",
-    "owners": [
-      "vizcay@google.com",
-      "jkeitel@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "policy-promotion-banner-flag",
     "owners": ["austinzzr@chromium.org"],
     "expiry_milestone": 135

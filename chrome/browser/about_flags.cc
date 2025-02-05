@@ -9483,10 +9483,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSafetyHub,
                                     kSafetyHubVariations,
                                     "SafetyHub")},
-    {"plus-address-full-form-fill",
-     flag_descriptions::kPlusAddressFullFormFillName,
-     flag_descriptions::kPlusAddressFullFormFillDescription, kOsAll,
-     FEATURE_VALUE_TYPE(plus_addresses::features::kPlusAddressFullFormFill)},
 
     {"permission-site-settings-radio-button",
      flag_descriptions::kPermissionSiteSettingsRadioButtonName,

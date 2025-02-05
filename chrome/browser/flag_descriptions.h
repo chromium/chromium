@@ -1902,9 +1902,6 @@ extern const char kSafetyCheckUnusedSitePermissionsDescription[];
 extern const char kSafetyHubName[];
 extern const char kSafetyHubDescription[];
 
-extern const char kPlusAddressFullFormFillName[];
-extern const char kPlusAddressFullFormFillDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kSafetyHubMagicStackName[];
 extern const char kSafetyHubMagicStackDescription[];
