@@ -638,7 +638,8 @@ CONV_FN(PrintfFormatSpecifier, pfs) {
     }
   }
   if (pfs.has_width()) {
-    ret += std::to_string(pfs.width());
+    // Limit the width to avoid OOM; see https://crbug.com/386415609.
+    ret += std::to_string(std::min(pfs.width(), 255u));
   } else if (pfs.width_star()) {
     ret += "*";
   }
