@@ -104,8 +104,9 @@ class Handler : public content::WebContentsObserver {
 
     // If there is a single frame specified (and it was valid), we consider it
     // the "root" frame, which is used in result ordering and error collection.
-    if (frame_ids.size() == 1 && pending_render_frames_.size() == 1)
+    if (frame_ids.size() == 1 && pending_render_frames_.size() == 1) {
       root_frame_token_ = pending_render_frames_[0]->GetFrameToken();
+    }
 
     // If we are to include subframes, iterate over all descendants of frames in
     // `pending_render_frames_` and add them if they are alive (and not already
@@ -125,8 +126,9 @@ class Handler : public content::WebContentsObserver {
     for (content::RenderFrameHost* frame : pending_render_frames_)
       SendExecuteCode(pass_key, params.Clone(), frame);
 
-    if (pending_render_frames_.empty())
+    if (pending_render_frames_.empty()) {
       Finish();
+    }
   }
 
   Handler(const Handler&) = delete;
@@ -154,16 +156,18 @@ class Handler : public content::WebContentsObserver {
   void RenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override {
     int erased_count = std::erase(pending_render_frames_, render_frame_host);
-    if (erased_count == 0)
+    if (erased_count == 0) {
       return;
+    }
     CHECK_EQ(erased_count, 1);
 
     ScriptExecutor::FrameResult& frame_result =
         GetFrameResult(render_frame_host->GetFrameToken());
     frame_result.error = base::StringPrintf("Frame with ID %d was removed.",
                                             frame_result.frame_id);
-    if (pending_render_frames_.empty())
+    if (pending_render_frames_.empty()) {
       Finish();
+    }
   }
 
   content::RenderFrameHost::FrameIterationAction MaybeAddSubFrame(
@@ -235,8 +239,9 @@ class Handler : public content::WebContentsObserver {
     frame_result.frame_responded = true;
     frame_result.error = error;
     frame_result.url = url;
-    if (result.has_value())
+    if (result.has_value()) {
       frame_result.value = std::move(*result);
+    }
   }
 
   ScriptExecutor::FrameResult& GetFrameResult(
@@ -284,8 +289,9 @@ class Handler : public content::WebContentsObserver {
                              std::optional<base::Value> result) {
     auto* render_frame_host =
         content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-    if (!render_frame_host)
+    if (!render_frame_host) {
       return;
+    }
 
     DCHECK(!pending_render_frames_.empty());
     size_t erased = std::erase(pending_render_frames_, render_frame_host);
@@ -296,8 +302,9 @@ class Handler : public content::WebContentsObserver {
     UpdateResult(render_frame_host, error, on_url, std::move(result));
 
     // Wait until the final request finishes before reporting back.
-    if (pending_render_frames_.empty())
+    if (pending_render_frames_.empty()) {
       Finish();
+    }
   }
 
   void Finish() {
@@ -404,8 +411,9 @@ void ScriptExecutor::ExecuteScript(
         ExtensionRegistry::Get(web_contents_->GetBrowserContext())
             ->enabled_extensions()
             .GetByID(host_id.id);
-    if (!extension)
+    if (!extension) {
       return;
+    }
   } else {
     CHECK(process_type == WEB_VIEW_PROCESS);
   }

@@ -82,8 +82,9 @@ base::FilePath NormalizeFilePath(const base::FilePath& path) {
 // Work horse for FindWritableTempLocation. Creates a temp file in the folder
 // tries to normalize the path.
 bool VerifyWritableTempLocation(base::FilePath* temp_dir) {
-  if (temp_dir->empty())
+  if (temp_dir->empty()) {
     return false;
+  }
 
   base::FilePath temp_file;
   if (!base::CreateTemporaryFileInDir(*temp_dir, &temp_file)) {
@@ -322,8 +323,9 @@ void SandboxedUnpacker::StartWithCrx(const CRXFileInfo& crx_info) {
     expected_hash = base::ToLowerASCII(crx_info.expected_hash);
   }
 
-  if (!CreateTempDirectory())
+  if (!CreateTempDirectory()) {
     return;  // ReportFailure() already called.
+  }
 
   // Initialize the path that will eventually contain the unpacked extension.
   extension_root_ = temp_dir_.GetPath().AppendASCII(kTempExtensionName);
@@ -377,8 +379,9 @@ void SandboxedUnpacker::StartWithDirectory(const ExtensionId& extension_id,
 
   extension_id_ = extension_id;
   public_key_ = public_key;
-  if (!CreateTempDirectory())
+  if (!CreateTempDirectory()) {
     return;  // ReportFailure() already called.
+  }
 
   extension_root_ = temp_dir_.GetPath().AppendASCII(kTempExtensionName);
 
@@ -551,8 +554,9 @@ void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value::Dict manifest) {
 
   std::optional<base::Value::Dict> final_manifest(
       RewriteManifestFile(manifest));
-  if (!final_manifest)
+  if (!final_manifest) {
     return;
+  }
 
   // Create an extension object that refers to the temporary location the
   // extension was unpacked to. We use this until the extension is finally
@@ -615,8 +619,9 @@ data_decoder::DataDecoder* SandboxedUnpacker::GetDataDecoder() {
 
 void SandboxedUnpacker::OnImageDecoded(const base::FilePath& path,
                                        SkBitmap image) {
-  if (path == install_icon_path_)
+  if (path == install_icon_path_) {
     install_icon_ = image;
+  }
 }
 
 void SandboxedUnpacker::OnImageSanitizationDone(
@@ -761,8 +766,9 @@ void SandboxedUnpacker::OnJSONRulesetsIndexed(RulesetParseResult result) {
     return;
   }
 
-  if (!result.warnings.empty())
+  if (!result.warnings.empty()) {
     extension_->AddInstallWarnings(std::move(result.warnings));
+  }
 
   ruleset_install_prefs_ = std::move(result.ruleset_install_prefs);
 

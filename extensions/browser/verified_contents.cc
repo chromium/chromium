@@ -52,12 +52,14 @@ const base::Value::Dict* FindDictionaryWithValue(const base::Value::List& list,
                                                  const std::string& key,
                                                  const std::string& value) {
   for (const base::Value& item : list) {
-    if (!item.is_dict())
+    if (!item.is_dict()) {
       continue;
+    }
     // Finds a path because the |key| may include '.'.
     const std::string* found_value = item.GetDict().FindStringByDottedPath(key);
-    if (found_value && *found_value == value)
+    if (found_value && *found_value == value) {
       return &item.GetDict();
+    }
   }
   return nullptr;
 }

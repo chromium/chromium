@@ -123,8 +123,9 @@ bool QuotaLimitHeuristic::ApplyToArgs(const base::Value::List& args,
   for (auto i = buckets.begin(); i != buckets.end(); ++i) {
     if ((*i)->expiration().is_null())  // A brand new bucket.
       (*i)->Reset(config_, event_time);
-    if (!Apply(*i, event_time))
+    if (!Apply(*i, event_time)) {
       return false;  // It only takes one to spoil it for everyone.
+    }
   }
   return true;
 }
@@ -135,8 +136,9 @@ std::string QuotaLimitHeuristic::GetError() const {
 
 bool QuotaService::TimedLimit::Apply(Bucket* bucket,
                                      const base::TimeTicks& event_time) {
-  if (event_time > bucket->expiration())
+  if (event_time > bucket->expiration()) {
     bucket->Reset(config(), event_time);
+  }
 
   return bucket->DeductToken();
 }
