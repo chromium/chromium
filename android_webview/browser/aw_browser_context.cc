@@ -98,53 +98,6 @@ using content::BrowserThread;
 
 namespace android_webview {
 
-class AwPrefetchRequestStatusListener
-    : public content::PrefetchRequestStatusListener {
- public:
-  AwPrefetchRequestStatusListener(
-      const base::android::ScopedJavaGlobalRef<jobject>
-          browser_context_java_object,
-      const base::android::JavaRef<jobject>& callback,
-      const base::android::JavaRef<jobject>& callback_executor)
-      : browser_context_java_object_(browser_context_java_object),
-        prefetch_java_callback_(callback),
-        prefetch_java_callback_executor_(callback_executor) {}
-  ~AwPrefetchRequestStatusListener() override = default;
-
-  void OnPrefetchStartFailed() override {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AwBrowserContext_onPrefetchStartFailed(
-        env, browser_context_java_object_, prefetch_java_callback_,
-        prefetch_java_callback_executor_);
-  }
-
-  void OnPrefetchResponseCompleted() override {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AwBrowserContext_onPrefetchResponseCompleted(
-        env, browser_context_java_object_, prefetch_java_callback_,
-        prefetch_java_callback_executor_);
-  }
-
-  void OnPrefetchResponseError() override {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AwBrowserContext_onPrefetchResponseError(
-        env, browser_context_java_object_, prefetch_java_callback_,
-        prefetch_java_callback_executor_);
-  }
-
-  void OnPrefetchResponseServerError(int response_code) override {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AwBrowserContext_onPrefetchResponseServerError(
-        env, browser_context_java_object_, prefetch_java_callback_,
-        prefetch_java_callback_executor_, response_code);
-  }
-
- private:
-  base::android::ScopedJavaGlobalRef<jobject> browser_context_java_object_;
-  base::android::ScopedJavaGlobalRef<jobject> prefetch_java_callback_;
-  base::android::ScopedJavaGlobalRef<jobject> prefetch_java_callback_executor_;
-};
-
 namespace {
 
 const void* const kDownloadManagerDelegateKey = &kDownloadManagerDelegateKey;
@@ -685,7 +638,8 @@ AwBrowserContext::GetJavaBrowserContext() {
     JNIEnv* env = base::android::AttachCurrentThread();
     obj_ = Java_AwBrowserContext_create(
         env, reinterpret_cast<intptr_t>(this), name_, relative_path_.value(),
-        GetCookieManager()->GetJavaCookieManager(), IsDefaultBrowserContext());
+        GetCookieManager()->GetJavaCookieManager(),
+        prefetch_manager_->GetJavaPrefetchManager(), IsDefaultBrowserContext());
   }
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
 }
@@ -719,31 +673,6 @@ void AwBrowserContext::SetServiceWorkerIoThreadClient(
       base::android::ScopedJavaGlobalRef<jobject>(io_thread_client);
 }
 
-void AwBrowserContext::StartPrefetchRequest(
-    JNIEnv* env,
-    const std::string& url,
-    const base::android::JavaParamRef<jobject>& prefetch_params,
-    const base::android::JavaParamRef<jobject>& callback,
-    const base::android::JavaParamRef<jobject>& callback_executor) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT0("android_webview", "AwBrowserContext::StartPrefetchRequest");
-
-  GURL pf_url = GURL(url);
-  net::HttpRequestHeaders additional_headers =
-      GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
-  std::optional<net::HttpNoVarySearchData> expected_no_vary_search =
-      GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
-  std::unique_ptr<content::PrefetchRequestStatusListener>
-      request_status_listener =
-          std::make_unique<AwPrefetchRequestStatusListener>(obj_, callback,
-                                                            callback_executor);
-  prefetch_manager_->StartBrowserPrefetchRequest(
-      pf_url,
-      GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
-      expected_no_vary_search, additional_headers,
-      std::move(request_status_listener));
-}
-
 int AwBrowserContext::AllowedPrerenderingCount() const {
   return allowed_prerendering_count_;
 }
@@ -751,12 +680,6 @@ int AwBrowserContext::AllowedPrerenderingCount() const {
 void AwBrowserContext::SetAllowedPrerenderingCount(int allowed_count) {
   CHECK_GT(allowed_count, 0);
   allowed_prerendering_count_ = allowed_count;
-}
-
-void AwBrowserContext::SetSpeculativeLoadingConfig(JNIEnv* env,
-                                                   jint ttl_in_sec,
-                                                   jint max_prefetches) {
-  prefetch_manager_->UpdatePrefetchConfiguration(ttl_in_sec, max_prefetches);
 }
 
 std::unique_ptr<AwContentsIoThreadClient>

@@ -347,6 +347,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 () -> {
                     mActivityTestRule
                             .getAwBrowserContext()
+                            .getPrefetchManager()
                             .startPrefetchRequest(
                                     url, prefetchParameters, callback, callbackExecutor);
                 });

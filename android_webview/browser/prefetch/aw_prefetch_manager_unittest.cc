@@ -6,9 +6,8 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_context_store.h"
-#include "android_webview/browser/aw_browser_process.h"
-#include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/common/aw_features.h"
+#include "base/android/jni_android.h"
 #include "base/test/task_environment.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -46,8 +45,9 @@ class AwPrefetchManagerTest : public testing::Test {
 TEST_F(AwPrefetchManagerTest, UpdateCacheConfig) {
   AwPrefetchManager prefetch_manager(&browser_context_);
 
-  prefetch_manager.UpdatePrefetchConfiguration(/*ttl_in_sec*/ 60 * 10,
-                                               /* max_prefetches*/ 5);
+  prefetch_manager.UpdatePrefetchConfiguration(
+      base::android::AttachCurrentThread(), /*ttl_in_sec*/ 60 * 10,
+      /* max_prefetches*/ 5);
 
   EXPECT_EQ(prefetch_manager.GetTtlInSec(), 60 * 10);
   EXPECT_EQ(prefetch_manager.GetMaxPrefetches(), 5);

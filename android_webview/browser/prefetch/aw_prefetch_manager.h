@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
@@ -33,14 +34,25 @@ class AwPrefetchManager {
       std::unique_ptr<content::PrefetchRequestStatusListener>
           request_status_listener);
 
+  void StartPrefetchRequest(
+      JNIEnv* env,
+      const std::string& url,
+      const base::android::JavaParamRef<jobject>& prefetch_params,
+      const base::android::JavaParamRef<jobject>& callback,
+      const base::android::JavaParamRef<jobject>& callback_executor);
+
+  // Updates the TTL and maximum number of prefetches.
+  void UpdatePrefetchConfiguration(JNIEnv* env,
+                                   jint ttl_in_sec,
+                                   jint max_prefetches);
+
   // Returns the Time-to-Live (TTL) for prefetched content in seconds.
   int GetTtlInSec() const { return ttl_in_sec_; }
 
   // Returns the maximum number of allowed prefetches in cache.
   int GetMaxPrefetches() const { return max_prefetches_; }
 
-  // Updates the TTL and maximum number of prefetches.
-  void UpdatePrefetchConfiguration(int ttl_in_sec, int max_prefetches);
+  base::android::ScopedJavaLocalRef<jobject> GetJavaPrefetchManager();
 
  private:
   raw_ref<content::BrowserContext> browser_context_;
@@ -48,6 +60,9 @@ class AwPrefetchManager {
   int ttl_in_sec_;
 
   int max_prefetches_;
+
+  // Java object reference.
+  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 };
 
 }  // namespace android_webview
