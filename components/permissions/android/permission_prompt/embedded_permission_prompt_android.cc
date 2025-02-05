@@ -195,9 +195,6 @@ EmbeddedPermissionPromptAndroid::GetPositiveButtonText(JNIEnv* env,
                  : ConvertUTF16ToJavaString(
                        env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
 
-    case Variant::kAdministratorGranted:
-      return ConvertUTF16ToJavaString(
-          env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL));
     case Variant::kPreviouslyGranted:
       return ConvertUTF16ToJavaString(
           env,
@@ -212,8 +209,7 @@ EmbeddedPermissionPromptAndroid::GetPositiveButtonText(JNIEnv* env,
           env,
           l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CONTINUE_NOT_ALLOWING));
     case Variant::kAdministratorDenied:
-      return ConvertUTF16ToJavaString(
-          env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL));
+    case Variant::kAdministratorGranted:
     case Variant::kOsPrompt:
       return ConvertUTF16ToJavaString(env, std::u16string_view());
     case Variant::kUninitialized:
@@ -240,6 +236,8 @@ EmbeddedPermissionPromptAndroid::GetNegativeButtonText(JNIEnv* env,
           env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
     case Variant::kAdministratorGranted:
     case Variant::kAdministratorDenied:
+      return ConvertUTF16ToJavaString(
+          env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL));
     case Variant::kOsPrompt:
       return ConvertUTF16ToJavaString(env, std::u16string_view());
     case Variant::kUninitialized:
