@@ -452,6 +452,12 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_BUTTON_LABEL" desc="The shorter label used for the button in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
         Nearby visibility
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_ICON_TOOLTIP" desc="Quick Share tile icon tooltip.">
+        Toggle Quick Share. Quick Share is <ph name="quick_share_state">$1<ex>On</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP" desc="Quick Share tile tooltip.">
+        Show Quick Share settings
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_DETAILED_VIEW_SETTINGS_BUTTON_TOOLTIP" desc="Settings button tooltip.">
         Quick Share settings
       </message>
