@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/pref_names.h"
@@ -33,6 +34,10 @@ const int kFullItemCount = 4;
 class AddToComparisonTableSubMenuModelBrowserTest
     : public InProcessBrowserTest {
  public:
+  AddToComparisonTableSubMenuModelBrowserTest() {
+    test_features_.InitAndEnableFeature(commerce::kProductSpecifications);
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
@@ -54,6 +59,7 @@ class AddToComparisonTableSubMenuModelBrowserTest
   }
 
  protected:
+  base::test::ScopedFeatureList test_features_;
   std::unique_ptr<MockProductSpecificationsService> product_specs_service;
 
   const std::vector<ProductSpecificationsSet> kProductSpecsSets = {
