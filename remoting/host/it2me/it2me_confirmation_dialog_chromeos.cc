@@ -2,20 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/it2me/it2me_confirmation_dialog.h"
+
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "remoting/base/string_resources.h"
+#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/message_box.h"
-#include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -43,6 +46,18 @@ std::u16string FormatMessage(const std::string& remote_user_email,
       l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_CONFIRM));
 }
 
+std::u16string GetTitle() {
+  return l10n_util::GetStringUTF16(IDS_MODE_IT2ME);
+}
+
+std::u16string GetConfirmButtonLabel() {
+  return l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_CONFIRM);
+}
+
+std::u16string GetDeclineButtonLabel() {
+  return l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_DECLINE);
+}
+
 }  // namespace
 
 class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
@@ -62,8 +77,10 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
 
  private:
   void ShowConfirmationNotification(const std::string& remote_user_email);
-
   void OnConfirmationNotificationResult(std::optional<int> button_index);
+
+  void ShowConfirmationDialog(const std::string& remote_user_email);
+  void OnConfirmationDialogResult(MessageBox::Result result);
 
   const gfx::VectorIcon& GetIcon() const {
     switch (style_) {
@@ -95,7 +112,12 @@ void It2MeConfirmationDialogChromeOS::Show(const std::string& remote_user_email,
   DCHECK(!remote_user_email.empty());
   callback_ = std::move(callback);
 
-  ShowConfirmationNotification(remote_user_email);
+  if (base::FeatureList::IsEnabled(
+          remoting::features::kEnableCrdSharedSessionToUnattendedDevice)) {
+    ShowConfirmationDialog(remote_user_email);
+  } else {
+    ShowConfirmationNotification(remote_user_email);
+  }
 }
 
 void It2MeConfirmationDialogChromeOS::ShowConfirmationNotification(
@@ -103,16 +125,13 @@ void It2MeConfirmationDialogChromeOS::ShowConfirmationNotification(
   message_center::RichNotificationData data;
   data.pinned = false;
 
-  data.buttons.emplace_back(
-      l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_DECLINE));
-  data.buttons.emplace_back(
-      l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_CONFIRM));
+  data.buttons.emplace_back(GetDeclineButtonLabel());
+  data.buttons.emplace_back(GetConfirmButtonLabel());
 
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kConfirmationNotificationId,
-          l10n_util::GetStringUTF16(IDS_MODE_IT2ME),
-          FormatMessage(remote_user_email, style_), u"", GURL(),
+          GetTitle(), FormatMessage(remote_user_email, style_), u"", GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kConfirmationNotifierId,
@@ -149,6 +168,16 @@ void It2MeConfirmationDialogChromeOS::OnConfirmationNotificationResult(
       /*by_user=*/false);
 
   std::move(callback_).Run(*button_index == 0 ? Result::CANCEL : Result::OK);
+}
+
+void It2MeConfirmationDialogChromeOS::ShowConfirmationDialog(
+    const std::string& remote_user_email) {
+  // TODO(b:390164552): Implement modal logic using MessageBox.
+}
+
+void It2MeConfirmationDialogChromeOS::OnConfirmationDialogResult(
+    MessageBox::Result result) {
+  // TODO(b:390164552): Implement handling MessageBox callback.
 }
 
 std::unique_ptr<It2MeConfirmationDialog>
