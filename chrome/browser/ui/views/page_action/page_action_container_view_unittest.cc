@@ -95,7 +95,8 @@ TEST_F(PageActionContainerViewTest, NonEmptyViewWithNoVisiblePageAction) {
             page_action_container->GetInsideBorderInsets());
 }
 
-TEST_F(PageActionContainerViewTest, NonEmptyViewWithVisiblePageActionWithBridging) {
+TEST_F(PageActionContainerViewTest,
+       NonEmptyViewWithVisiblePageActionWithBridging) {
   auto action_item1 =
       actions::ActionItem::Builder().SetVisible(false).SetActionId(0).Build();
 
@@ -114,7 +115,8 @@ TEST_F(PageActionContainerViewTest, NonEmptyViewWithVisiblePageActionWithBridgin
             page_action_container->GetInsideBorderInsets());
 }
 
-TEST_F(PageActionContainerViewTest, NonEmptyViewWithVisiblePageActionWithoutBridging) {
+TEST_F(PageActionContainerViewTest,
+       NonEmptyViewWithVisiblePageActionWithoutBridging) {
   auto action_item1 =
       actions::ActionItem::Builder().SetVisible(false).SetActionId(0).Build();
 
