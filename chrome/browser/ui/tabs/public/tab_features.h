@@ -264,7 +264,6 @@ class TabFeatures {
 
   std::unique_ptr<DisconnectFileChooserOnBackgroundController>
       disconnect_file_chooser_on_background_controller_;
-
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
 #endif

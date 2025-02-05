@@ -35,6 +35,7 @@ class Separator;
 
 class ColorPickerView;
 class TabGroupHeader;
+class ManageSharingRow;
 
 // A dialog for changing a tab group's visual parameters.
 class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
@@ -113,7 +114,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<views::LabelButton> BuildDeleteGroupButton();
   std::unique_ptr<views::LabelButton> BuildLeaveGroupButton();
   std::unique_ptr<views::LabelButton> BuildMoveGroupToNewWindowButton();
-  std::unique_ptr<views::LabelButton> BuildManageSharedGroupButton();
+  std::unique_ptr<ManageSharingRow> BuildManageSharingButton();
   std::unique_ptr<views::LabelButton> BuildShareGroupButton();
   std::unique_ptr<views::LabelButton> BuildRecentActivityButton();
 
@@ -214,13 +215,14 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   raw_ptr<TitleField> title_field_ = nullptr;
   raw_ptr<ColorPickerView> color_selector_ = nullptr;
   raw_ptr<Footer> footer_ = nullptr;
+  raw_ptr<ManageSharingRow> manage_shared_group_button_ = nullptr;
   raw_ptr<views::ToggleButton> save_group_toggle_ = nullptr;
   raw_ptr<views::ImageView> save_group_icon_ = nullptr;
   raw_ptr<views::Label> save_group_label_ = nullptr;
 
   // the different menu items, used for referring back to specific children for
   // styling.
-  std::vector<raw_ptr<views::LabelButton>> menu_items_;
+  std::vector<raw_ptr<views::LabelButton>> simple_menu_items_;
 
   // If true will use the |anchor_rect_| provided in the constructor, otherwise
   // fall back to using the anchor view bounds.
