@@ -122,6 +122,10 @@ BASE_DECLARE_FEATURE(kFeedLowMemoryImprovement);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedRecyclerBinderUnmountOnDetach);
 
+// Feature that enables feed streaming.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kFeedStreaming);
+
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 bool IsWebFeedEnabledForLocale(const std::string& country);
 
