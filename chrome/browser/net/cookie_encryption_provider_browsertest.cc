@@ -221,6 +221,10 @@ class CookieEncryptionProviderBrowserTest
       return;
     }
 
+#if BUILDFLAG(IS_WIN)
+    maybe_uninstall_service_.reset();
+#endif  // BUILDFLAG(IS_WIN)
+
     auto metrics_expectation = content::IsPreTest()
                                    ? GetParam().metrics_expectation_before
                                    : GetParam().metrics_expectation_after;
