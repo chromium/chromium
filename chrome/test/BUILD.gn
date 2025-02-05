@@ -7637,6 +7637,7 @@ test("unit_tests") {
       "../browser/task_manager/test_task_manager.cc",
       "../browser/task_manager/test_task_manager.h",
       "../browser/themes/browser_theme_pack_unittest.cc",
+      "../browser/themes/theme_local_data_batch_uploader_unittest.cc",
       "../browser/themes/theme_properties_unittest.cc",
       "../browser/themes/theme_service_test_utils.cc",
       "../browser/themes/theme_service_test_utils.h",

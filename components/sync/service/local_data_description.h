@@ -27,11 +27,11 @@ struct LocalDataItemModel {
   // data types may have the same Id type.
   // The `DataId` is also used as key of map.
   using DataId = std::variant<
-      // BOOKMARKS
+      // BOOKMARKS.
       int64_t,  // bookmarks::BookmarkNode::id()
-      // CONTACT_INFO
+      // CONTACT_INFO, THEMES.
       std::string,
-      // PASSWORDS
+      // PASSWORDS.
       std::tuple<std::string,
                  GURL,
                  std::u16string,
