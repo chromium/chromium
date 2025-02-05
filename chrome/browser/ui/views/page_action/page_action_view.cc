@@ -99,23 +99,21 @@ void PageActionView::ViewHierarchyChanged(
 }
 
 bool PageActionView::ShouldShowLabel() const {
-  // TODO(382068900): Update this when the chip with a label state is
-  // implemented. In that state, the label should be displayed. However, if
-  // there isn't enough space for the label, it should remain hidden.
-  return should_show_label_;
-}
-
-void PageActionView::SetShouldShowLabelForTesting(bool should_show_label) {
-  should_show_label_ = should_show_label;
+  return observation_.IsObserving() &&
+         observation_.GetSource()->GetShowSuggestionChip();
 }
 
 void PageActionView::UpdateBorder() {
-  gfx::Insets new_insets = icon_insets_;
+  gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING);
   if (ShouldShowLabel()) {
-    new_insets += gfx::Insets::TLBR(0, 4, 0, 8);
+    constexpr int kInsetsLeftPadding = 4;
+    constexpr int kInsetsRightPadding = 8;
+    insets +=
+        gfx::Insets().set_left_right(kInsetsLeftPadding, kInsetsRightPadding);
   }
-  if (new_insets != GetInsets()) {
-    SetBorder(views::CreateEmptyBorder(new_insets));
+
+  if (GetInsets() != insets) {
+    SetBorder(views::CreateEmptyBorder(insets));
   }
 }
 
@@ -166,6 +164,19 @@ void PageActionView::UpdateIconImage() {
 void PageActionView::SetModel(PageActionModelInterface* model) {
   observation_.Reset();
   observation_.Observe(model);
+}
+
+gfx::Size PageActionView::GetMinimumSize() const {
+  const gfx::Insets insets =
+      GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING);
+  gfx::Size icon_preferred_size = image_container_view()->GetPreferredSize();
+  icon_preferred_size.Enlarge(insets.width(), insets.height());
+
+  return icon_preferred_size;
+}
+
+views::View* PageActionView::GetLabelForTesting() {
+  return label();
 }
 
 BEGIN_METADATA(PageActionView)
