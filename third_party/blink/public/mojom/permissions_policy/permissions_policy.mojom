@@ -4,9 +4,18 @@
 
 module blink.mojom;
 
-import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom";
 import "url/mojom/origin.mojom";
+
+// This struct mirrors network.mojom.CSPSource, but excludes members not used
+// in permissions policies like `path`.
+struct OriginWithPossibleWildcards {
+  string scheme;
+  string host;
+  int32 port = -1;
+  bool is_host_wildcard = false;
+  bool is_port_wildcard = false;
+};
 
 // This struct holds permissions policy allowlist data that needs to be replicated
 // between a RenderFrame and any of its associated RenderFrameProxies. A list of
@@ -14,7 +23,7 @@ import "url/mojom/origin.mojom";
 // NOTE: These types are used for replication frame state between processes.
 struct ParsedPermissionsPolicyDeclaration {
   network.mojom.PermissionsPolicyFeature feature;
-  array<network.mojom.OriginWithPossibleWildcards> allowed_origins;
+  array<OriginWithPossibleWildcards> allowed_origins;
   url.mojom.Origin? self_if_matches;
   bool matches_all_origins;
   bool matches_opaque_src;

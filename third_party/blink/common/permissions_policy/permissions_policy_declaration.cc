@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -22,7 +21,7 @@ ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
 
 ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
     network::mojom::PermissionsPolicyFeature feature,
-    const std::vector<network::OriginWithPossibleWildcards>& allowed_origins,
+    const std::vector<blink::OriginWithPossibleWildcards>& allowed_origins,
     const std::optional<url::Origin>& self_if_matches,
     bool matches_all_origins,
     bool matches_opaque_src)

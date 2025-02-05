@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 
 #include "base/test/gtest_util.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace network {
+namespace blink {
 
 TEST(OriginWithPossibleWildcardsTest, DoesMatchOrigin) {
   // Tuple of {origin to test, serialized value, should parse, should match,
@@ -351,4 +351,4 @@ TEST(OriginWithPossibleWildcardsTest, Opaque) {
           original, copy));
 }
 
-}  // namespace network
+}  // namespace blink

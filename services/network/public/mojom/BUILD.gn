@@ -1478,23 +1478,7 @@ mojom("mojom_host_resolver") {
 
 mojom("mojom_permissions_policy") {
   generate_java = true
-  sources = [
-    "permissions_policy/permissions_policy.mojom",
-    "permissions_policy/permissions_policy_feature.mojom",
-  ]
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "network.mojom.OriginWithPossibleWildcards"
-          cpp = "::network::OriginWithPossibleWildcards"
-        },
-      ]
-      traits_headers = [ "//services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h" ]
-      traits_private_headers = [ "//services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h" ]
-    },
-  ]
+  sources = [ "permissions_policy/permissions_policy_feature.mojom" ]
 
   if (!is_ios) {
     export_class_attribute = "BLINK_COMMON_EXPORT"

@@ -24,7 +24,7 @@
 #include "content/test/test_render_view_host.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 
 namespace browsing_topics {
 
@@ -94,21 +94,20 @@ class BrowsingTopicsPageLoadDataTrackerTest
     if (!browsing_topics_permissions_policy_allowed) {
       policy.emplace_back(
           network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
-          /*allowed_origins=*/
-          std::vector<network::OriginWithPossibleWildcards>(),
+          /*allowed_origins=*/std::vector<blink::OriginWithPossibleWildcards>(),
           /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false);
     }
 
     if (!interest_cohort_permissions_policy_allowed) {
-      policy.emplace_back(network::mojom::PermissionsPolicyFeature::
-                              kBrowsingTopicsBackwardCompatible,
-                          /*allowed_origins=*/
-                          std::vector<network::OriginWithPossibleWildcards>(),
-                          /*self_if_matches=*/std::nullopt,
-                          /*matches_all_origins=*/false,
-                          /*matches_opaque_src=*/false);
+      policy.emplace_back(
+          network::mojom::PermissionsPolicyFeature::
+              kBrowsingTopicsBackwardCompatible,
+          /*allowed_origins=*/std::vector<blink::OriginWithPossibleWildcards>(),
+          /*self_if_matches=*/std::nullopt,
+          /*matches_all_origins=*/false,
+          /*matches_opaque_src=*/false);
     }
 
     simulator->SetPermissionsPolicyHeader(std::move(policy));

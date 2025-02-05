@@ -28,7 +28,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_shared_storage_header_observer.h"
 #include "content/test/test_web_contents.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/shared_storage_utils.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
@@ -77,12 +76,12 @@ using OperationAndResult = SharedStorageWriteOperationAndResult;
     const url::Origin& request_origin,
     bool shared_storage_enabled_for_request,
     bool shared_storage_enabled_for_all) {
-  std::vector<network::OriginWithPossibleWildcards> allowed_origins =
+  std::vector<blink::OriginWithPossibleWildcards> allowed_origins =
       shared_storage_enabled_for_request
-          ? std::vector<network::OriginWithPossibleWildcards>(
-                {*network::OriginWithPossibleWildcards::FromOrigin(
+          ? std::vector<blink::OriginWithPossibleWildcards>(
+                {*blink::OriginWithPossibleWildcards::FromOrigin(
                     request_origin)})
-          : std::vector<network::OriginWithPossibleWildcards>();
+          : std::vector<blink::OriginWithPossibleWildcards>();
   return blink::ParsedPermissionsPolicy(
       {blink::ParsedPermissionsPolicyDeclaration(
           network::mojom::PermissionsPolicyFeature::kSharedStorage,

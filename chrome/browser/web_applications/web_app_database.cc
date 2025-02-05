@@ -59,9 +59,9 @@
 #include "components/sync/model/model_error.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
@@ -1604,11 +1604,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       decl.feature = feature_enum->second;
 
       for (const std::string& origin : decl_proto.allowed_origins()) {
-        std::optional<network::OriginWithPossibleWildcards>
+        std::optional<blink::OriginWithPossibleWildcards>
             maybe_origin_with_possible_wildcards =
-                network::OriginWithPossibleWildcards::Parse(
+                blink::OriginWithPossibleWildcards::Parse(
                     origin,
-                    network::OriginWithPossibleWildcards::NodeType::kHeader);
+                    blink::OriginWithPossibleWildcards::NodeType::kHeader);
         if (maybe_origin_with_possible_wildcards.has_value()) {
           decl.allowed_origins.emplace_back(
               *maybe_origin_with_possible_wildcards);

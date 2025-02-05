@@ -455,13 +455,13 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
         nullptr,
         {{{network::mojom::PermissionsPolicyFeature::
                kBrowsingTopics, /*allowed_origins=*/
-           {*network::OriginWithPossibleWildcards::FromOrigin(origin_b)},
+           {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
            /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false},
           {network::mojom::PermissionsPolicyFeature::
                kSharedStorage, /*allowed_origins=*/
-           {*network::OriginWithPossibleWildcards::FromOrigin(origin_b)},
+           {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
            /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
            /*matches_opaque_src=*/false}}},

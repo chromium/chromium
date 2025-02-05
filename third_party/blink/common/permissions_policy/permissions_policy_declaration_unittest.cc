@@ -4,8 +4,8 @@
 
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 
-#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -36,7 +36,7 @@ TEST(ParsedPermissionsPolicyDeclarationTest, Contains) {
   // Origin mismatch.
   ParsedPermissionsPolicyDeclaration mismatch_decl;
   mismatch_decl.allowed_origins.emplace_back(
-      *network::OriginWithPossibleWildcards::FromOrigin(
+      *OriginWithPossibleWildcards::FromOrigin(
           url::Origin::Create(GURL("https://example2.test/"))));
   EXPECT_FALSE(mismatch_decl.Contains(kTestOrigin));
   EXPECT_FALSE(mismatch_decl.Contains(kOpaqueOrigin));
@@ -44,7 +44,7 @@ TEST(ParsedPermissionsPolicyDeclarationTest, Contains) {
   // Origin match.
   ParsedPermissionsPolicyDeclaration match_decl;
   match_decl.allowed_origins.emplace_back(
-      *network::OriginWithPossibleWildcards::FromOrigin(
+      *OriginWithPossibleWildcards::FromOrigin(
           url::Origin::Create(GURL("https://example.test/"))));
   EXPECT_TRUE(match_decl.Contains(kTestOrigin));
   EXPECT_FALSE(match_decl.Contains(kOpaqueOrigin));

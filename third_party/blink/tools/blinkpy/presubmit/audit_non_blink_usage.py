@@ -2432,7 +2432,6 @@ _CONFIG = [
         ],
         'allowed': [
             'network::mojom::PermissionsPolicyFeature',
-            'network::OriginWithPossibleWildcards',
         ]
     },
     {
