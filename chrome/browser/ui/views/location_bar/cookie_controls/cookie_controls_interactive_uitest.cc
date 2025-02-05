@@ -762,7 +762,8 @@ class CookieControlsInteractiveUiTrackingProtectionTest
 
  protected:
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
-    return {privacy_sandbox::kActUserBypassUx,
+    return {privacy_sandbox::kTrackingProtectionContentSettingUbControl,
+            privacy_sandbox::kActUserBypassUx,
             privacy_sandbox::kFingerprintingProtectionUx};
   }
 

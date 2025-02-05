@@ -563,6 +563,8 @@ public abstract class ChromeFeatureList {
             "TrackingProtectionUserBypassPwa";
     public static final String TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER =
             "TrackingProtectionUserBypassPwaTrigger";
+    public static final String TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL =
+            "TrackingProtectionContentSettingUbControl";
     public static final String TRANSLATE_MESSAGE_UI = "TranslateMessageUI";
     public static final String TRANSLATE_TFLITE = "TFLiteLanguageDetectionEnabled";
     public static final String

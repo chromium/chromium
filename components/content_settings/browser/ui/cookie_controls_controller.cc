@@ -237,6 +237,7 @@ CookieControlsController::Status CookieControlsController::GetStatus(
 
 bool CookieControlsController::ShowActFeatures() {
   return base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx) &&
+         ShouldUpdateTpContentSetting() &&
          (tracking_protection_settings_->IsIpProtectionEnabled() ||
           tracking_protection_settings_->IsFpProtectionEnabled());
 }
@@ -261,21 +262,22 @@ CookieControlsController::CreateTrackingProtectionFeatureList(
 
   std::vector<TrackingProtectionFeature> features = {
       {FeatureType::kThirdPartyCookies, enforcement, status_label}};
-
-  if (tracking_protection_settings_->IsIpProtectionEnabled()) {
-    features.push_back(
-        {FeatureType::kIpProtection, CookieControlsEnforcement::kNoEnforcement,
-         act_exception ? TrackingProtectionBlockingStatus::kVisible
-                       : TrackingProtectionBlockingStatus::kHidden});
+  if (ShowActFeatures()) {
+    if (tracking_protection_settings_->IsIpProtectionEnabled()) {
+      features.push_back({FeatureType::kIpProtection,
+                          CookieControlsEnforcement::kNoEnforcement,
+                          act_exception
+                              ? TrackingProtectionBlockingStatus::kVisible
+                              : TrackingProtectionBlockingStatus::kHidden});
+    }
+    if (tracking_protection_settings_->IsFpProtectionEnabled()) {
+      features.push_back({FeatureType::kFingerprintingProtection,
+                          CookieControlsEnforcement::kNoEnforcement,
+                          act_exception
+                              ? TrackingProtectionBlockingStatus::kAllowed
+                              : TrackingProtectionBlockingStatus::kLimited});
+    }
   }
-  if (tracking_protection_settings_->IsFpProtectionEnabled()) {
-    features.push_back({FeatureType::kFingerprintingProtection,
-                        CookieControlsEnforcement::kNoEnforcement,
-                        act_exception
-                            ? TrackingProtectionBlockingStatus::kAllowed
-                            : TrackingProtectionBlockingStatus::kLimited});
-  }
-
   return features;
 }
 
