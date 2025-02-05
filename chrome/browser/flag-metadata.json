@@ -5093,12 +5093,12 @@
   {
     "name": "identity-confirmation-snackbar",
     "owners": ["jood@google.com", "treib@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 139
   },
   {
     "name": "identity-disc-account-menu",
     "owners": ["jood@google.com", "treib@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 139
   },
   {
     "name": "ignore-gpu-blocklist",
