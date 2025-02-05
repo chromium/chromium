@@ -122,6 +122,16 @@ inline void UmaHistogramDeletion(BtmCookieMode mode, BtmDeletionAction action) {
       action);
 }
 
+inline void UmaHistogramSiteToClearDomainLength(
+    std::string const& site_to_clear,
+    bool is_partition_key_serializable) {
+  base::UmaHistogramSparse(
+      is_partition_key_serializable
+          ? "Privacy.DIPS.DeletionDomainLength.Serializable"
+          : "Privacy.DIPS.DeletionDomainLength.NonSerializable",
+      site_to_clear.length());
+}
+
 void OnDeletionFinished(base::OnceClosure finished_callback,
                         base::Time deletion_start) {
   UmaHistogramDeletionLatency(deletion_start);
@@ -143,7 +153,17 @@ net::CookiePartitionKeyCollection CookiePartitionKeyCollectionForSites(
             ancestorChainBit,
             /*nonce=*/std::nullopt);
         if (key.has_value()) {
-          keys.push_back(*key);
+          // Track metrics around the length of cleared domains and whether they
+          // form valid cookie partition keys.
+          //
+          // TODO(crbug.com/393088777): Remove this histogram once crashes have
+          // resolved.
+          UmaHistogramSiteToClearDomainLength(site, key->IsSerializeable());
+          // Only collect serializeable cookie partition keys. BTM does not
+          // support wiping opaque sites.
+          if (key->IsSerializeable()) {
+            keys.push_back(*key);
+          }
         }
       }
     }
