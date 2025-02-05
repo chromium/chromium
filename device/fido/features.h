@@ -108,10 +108,6 @@ BASE_DECLARE_FEATURE(kWebAuthnPublishPrelinkingInfo);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnUpdateLastUsed);
 
-// Enables the refreshed UI for QR codes and security keys.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnSecurityKeyAndQrCodeUiRefresh);
-
 // Enables the WebAuthn Signal API for Windows Hello.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnHelloSignal);

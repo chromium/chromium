@@ -4859,8 +4859,6 @@ static_library("ui") {
       "views/webauthn/authenticator_priority_mechanism_sheet_view.h",
       "views/webauthn/authenticator_qr_centered_view.cc",
       "views/webauthn/authenticator_qr_centered_view.h",
-      "views/webauthn/authenticator_qr_sheet_view.cc",
-      "views/webauthn/authenticator_qr_sheet_view.h",
       "views/webauthn/authenticator_request_dialog_view.cc",
       "views/webauthn/authenticator_request_dialog_view.h",
       "views/webauthn/authenticator_request_dialog_view_controller_views.cc",

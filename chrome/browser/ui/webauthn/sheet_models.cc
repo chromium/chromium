@@ -1180,64 +1180,6 @@ std::u16string AuthenticatorSelectAccountSheetModel::GetAcceptButtonLabel()
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
 }
 
-// AuthenticatorQRSheetModel --------------------------------------------------
-
-// No illustration since there already is the QR code.
-AuthenticatorQRSheetModel::AuthenticatorQRSheetModel(
-    AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kVisible) {}
-
-AuthenticatorQRSheetModel::~AuthenticatorQRSheetModel() = default;
-
-std::u16string AuthenticatorQRSheetModel::GetStepTitle() const {
-  switch (dialog_model()->request_type) {
-    case device::FidoRequestType::kMakeCredential:
-      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CREATE_PASSKEY_QR_TITLE);
-    case device::FidoRequestType::kGetAssertion:
-      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_PASSKEY_QR_TITLE);
-  }
-}
-
-std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
-  switch (dialog_model()->request_type) {
-    case device::FidoRequestType::kMakeCredential:
-      return l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_CREATE_PASSKEY_QR_BODY,
-          GetRelyingPartyIdString(dialog_model()));
-    case device::FidoRequestType::kGetAssertion:
-      return l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_USE_PASSKEY_QR_BODY,
-          GetRelyingPartyIdString(dialog_model()));
-  }
-}
-
-std::vector<std::u16string> AuthenticatorQRSheetModel::GetSecurityKeyLabels()
-    const {
-  if (!dialog_model()->show_security_key_on_qr_sheet) {
-    return {};
-  }
-
-  switch (dialog_model()->request_type) {
-    case device::FidoRequestType::kMakeCredential: {
-      std::u16string body_text = l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_QR_CREATE_PASSKEY_ON_SECURITY_KEY_LABEL,
-          GetRelyingPartyIdString(dialog_model()));
-      std::u16string attestation_warning =
-          PossibleAttestationWarning(dialog_model());
-      if (attestation_warning.empty()) {
-        return {body_text};
-      } else {
-        return {body_text, attestation_warning};
-      }
-    }
-    case device::FidoRequestType::kGetAssertion:
-      return {l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_QR_USE_PASSKEY_ON_SECURITY_KEY_LABEL,
-          GetRelyingPartyIdString(dialog_model()))};
-  }
-}
-
 // AuthenticatorHybridAndSecurityKeySheetModel --------------------------------
 
 AuthenticatorHybridAndSecurityKeySheetModel::
