@@ -4720,11 +4720,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "force-signin-flows-profile-picker",
-    "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 126
-  },
-  {
     "name": "force-startup-signin-promo",
     "owners": [ "jlebel@chromium.org", "chrome-signin-team@google.com" ],
     // This is required by test teams and dev teams to verify the startup
