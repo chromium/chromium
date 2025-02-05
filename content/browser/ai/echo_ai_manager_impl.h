@@ -47,7 +47,8 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           client,
       blink::mojom::AILanguageModelCreateOptionsPtr options) override;
-  void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
+  void CanCreateSummarizer(blink::mojom::AISummarizerCreateOptionsPtr options,
+                           CanCreateSummarizerCallback callback) override;
   void CreateSummarizer(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
       blink::mojom::AISummarizerCreateOptionsPtr options) override;

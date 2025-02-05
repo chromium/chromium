@@ -200,8 +200,9 @@ TEST_F(AIWriterTest, CanCreateUnsupportedLanguages) {
   options->expected_input_languages = {"en", "fr", "jp"};
   options->expected_context_languages = {"ar", "zh", "hi"};
   base::MockCallback<AIManager::CanCreateWriterCallback> callback;
-  EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::kNoUnknown));
+  EXPECT_CALL(
+      callback,
+      Run(blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage));
   GetAIManagerInterface()->CanCreateWriter(std::move(options), callback.Get());
 }
 

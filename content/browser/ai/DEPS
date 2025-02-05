@@ -1,3 +1,4 @@
 include_rules = [
-  "+components/optimization_guide/core/optimization_guide_features.h"
+  "+components/language/core/common/locale_util.h",
+  "+components/optimization_guide/core/optimization_guide_features.h",
 ]

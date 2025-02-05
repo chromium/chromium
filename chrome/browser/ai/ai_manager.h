@@ -92,7 +92,8 @@ class AIManager : public base::SupportsUserData::Data,
   void CreateWriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
       blink::mojom::AIWriterCreateOptionsPtr options) override;
-  void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
+  void CanCreateSummarizer(blink::mojom::AISummarizerCreateOptionsPtr options,
+                           CanCreateSummarizerCallback callback) override;
   void CreateSummarizer(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
       blink::mojom::AISummarizerCreateOptionsPtr options) override;

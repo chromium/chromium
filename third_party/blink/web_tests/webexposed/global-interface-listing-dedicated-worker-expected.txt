@@ -91,8 +91,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method create
 [Worker] interface AISummarizer
 [Worker]     attribute @@toStringTag
+[Worker]     getter expectedContextLanguages
+[Worker]     getter expectedInputLanguages
 [Worker]     getter format
 [Worker]     getter length
+[Worker]     getter outputLanguage
 [Worker]     getter sharedContext
 [Worker]     getter type
 [Worker]     method constructor
@@ -107,6 +110,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method languageAvailable
 [Worker] interface AISummarizerFactory
 [Worker]     attribute @@toStringTag
+[Worker]     method availability
 [Worker]     method capabilities
 [Worker]     method constructor
 [Worker]     method create

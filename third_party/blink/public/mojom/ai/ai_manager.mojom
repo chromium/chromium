@@ -19,53 +19,55 @@ enum ModelAvailabilityCheckResult {
   kAfterDownload = 1,
   // The model cannot be created because the service is not running.
   kNoServiceNotRunning = 2,
+  // The model does not support the requested language options.
+  kNoUnsupportedLanguage = 3,
 
   // The following reasons are from
   // `optimization_guide::OnDeviceModelEligibilityReason`.
 
   // The model is not available because of unknown reason.
-  kNoUnknown = 3,
+  kNoUnknown = 4,
   // The model is not available because the feature flag gating on-device model
   // execution was disabled.
-  kNoFeatureNotEnabled = 4,
+  kNoFeatureNotEnabled = 5,
   // DEPRECATED: it's now split into kModelNotEligible and
   // kNoInsufficientDiskSpace.
   // The model is not available because there was no on-device model available.
-  // kNoModelNotAvailable = 5,
+  // kNoModelNotAvailable = 6,
   // The model is not available because the on-device model was available but
   // there was not an execution config available for the feature.
-  kNoConfigNotAvailableForFeature = 6,
+  kNoConfigNotAvailableForFeature = 7,
   // The model is not available because the GPU is blocked.
-  kNoGpuBlocked = 7,
+  kNoGpuBlocked = 8,
   // The model is not available because the on-device model process crashed too
   // many times for this version.
-  kNoTooManyRecentCrashes = 8,
+  kNoTooManyRecentCrashes = 9,
   // The model is not available because the on-device model took too long too
   // many times for this version.
-  kNoTooManyRecentTimeouts = 9,
+  kNoTooManyRecentTimeouts = 10,
   // The model is not available because the on-device safety model was required
   // but not available.
-  kNoSafetyModelNotAvailable = 10,
+  kNoSafetyModelNotAvailable = 11,
   // The model is not available because the on-device safety model was
   // available but there was not a safety config available for the feature.
-  kNoSafetyConfigNotAvailableForFeature = 11,
+  kNoSafetyConfigNotAvailableForFeature = 12,
   // The model is not available because the on-device language detection model
   // was required but not available.
-  kNoLanguageDetectionModelNotAvailable = 12,
+  kNoLanguageDetectionModelNotAvailable = 13,
   // The model is not available because the on-device model execution for this
   // feature was not enabled.
-  kNoFeatureExecutionNotEnabled = 13,
+  kNoFeatureExecutionNotEnabled = 14,
   // The model is not available because the on-device model adaptation was
   // required but not available.
-  kNoModelAdaptationNotAvailable = 14,
+  kNoModelAdaptationNotAvailable = 15,
   // Validation has not completed for the model yet.
-  kNoValidationPending = 15,
+  kNoValidationPending = 16,
   // Validation failed for the model.
-  kNoValidationFailed = 16,
+  kNoValidationFailed = 17,
   // The device is not eligible for running on-device model.
-  kModelNotEligible = 17,
+  kModelNotEligible = 18,
   // The device does not have sufficient disk space for the on-device model.
-  kNoInsufficientDiskSpace = 18,
+  kNoInsufficientDiskSpace = 19,
 
   // Append new line here
 };
@@ -110,7 +112,11 @@ interface AIManager {
     AILanguageModelCreateOptions options
   );
   // Returns summarizer model availability info from the underlying service.
-  CanCreateSummarizer() => (ModelAvailabilityCheckResult result);
+  // TODO(crbug.com/390477782): `options` field is optional since it is not
+  // supplied by `capabilities()` API. Make it non-optional once
+  // `capabilities()` is removed.
+  CanCreateSummarizer(AISummarizerCreateOptions? options) =>
+    (ModelAvailabilityCheckResult result);
   // Creates a summarizer.
   CreateSummarizer(
     pending_remote<AIManagerCreateSummarizerClient> client,

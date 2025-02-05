@@ -382,8 +382,9 @@ TEST_F(AIRewriterTest, CanCreateUnsupportedLanguages) {
   options->expected_input_languages = {"en", "fr", "jp"};
   options->expected_context_languages = {"ar", "zh", "hi"};
   base::MockCallback<AIManager::CanCreateRewriterCallback> callback;
-  EXPECT_CALL(callback,
-              Run(blink::mojom::ModelAvailabilityCheckResult::kNoUnknown));
+  EXPECT_CALL(
+      callback,
+      Run(blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage));
   GetAIManagerInterface()->CanCreateRewriter(std::move(options),
                                              callback.Get());
 }

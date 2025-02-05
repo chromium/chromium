@@ -90,8 +90,11 @@ interface AIRewriterFactory
     method create
 interface AISummarizer
     attribute @@toStringTag
+    getter expectedContextLanguages
+    getter expectedInputLanguages
     getter format
     getter length
+    getter outputLanguage
     getter sharedContext
     getter type
     method constructor
@@ -106,6 +109,7 @@ interface AISummarizerCapabilities
     method languageAvailable
 interface AISummarizerFactory
     attribute @@toStringTag
+    method availability
     method capabilities
     method constructor
     method create

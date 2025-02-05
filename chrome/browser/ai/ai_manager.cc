@@ -350,7 +350,16 @@ void AIManager::CreateLanguageModel(
   }
 }
 
-void AIManager::CanCreateSummarizer(CanCreateSummarizerCallback callback) {
+void AIManager::CanCreateSummarizer(
+    blink::mojom::AISummarizerCreateOptionsPtr options,
+    CanCreateSummarizerCallback callback) {
+  if (options && !SupportedLanguages(options->expected_input_languages,
+                                     options->expected_context_languages,
+                                     options->output_language)) {
+    std::move(callback).Run(
+        blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage);
+    return;
+  }
   CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kSummarize,
                    std::move(callback));
 }
@@ -358,6 +367,14 @@ void AIManager::CanCreateSummarizer(CanCreateSummarizerCallback callback) {
 void AIManager::CreateSummarizer(
     mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
     blink::mojom::AISummarizerCreateOptionsPtr options) {
+  if (options && !SupportedLanguages(options->expected_input_languages,
+                                     options->expected_context_languages,
+                                     options->output_language)) {
+    mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
+        std::move(client));
+    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AISummarizer>());
+    return;
+  }
   CreateContextBoundObjectTask<AISummarizer, blink::mojom::AISummarizer,
                                blink::mojom::AIManagerCreateSummarizerClient,
                                blink::mojom::AISummarizerCreateOptionsPtr>::
@@ -420,7 +437,7 @@ void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
                                      options->expected_context_languages,
                                      options->output_language)) {
     std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kNoUnknown);
+        blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage);
     return;
   }
   CanCreateSession(
@@ -455,7 +472,7 @@ void AIManager::CanCreateRewriter(
                                      options->expected_context_languages,
                                      options->output_language)) {
     std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::kNoUnknown);
+        blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage);
     return;
   }
   CanCreateSession(

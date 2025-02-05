@@ -36,6 +36,14 @@ struct AISummarizerCreateOptions {
   AISummarizerType type;
   AISummarizerFormat format;
   AISummarizerLength length;
+
+  // TODO(crbug.com/394238800): Use a struct to wrap the language code and
+  // update it for all Writing Assistance APIs.
+  // BCP 47 language codes requested for input, context, and output text.
+  // Creation fails if a model is not available for specified languages.
+  array<string> expected_input_languages;
+  array<string> expected_context_languages;
+  string output_language;
 };
 
 // A summarizer to summarize a given article

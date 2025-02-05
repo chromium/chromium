@@ -19,17 +19,11 @@ AISummarizer::AISummarizer(
     ExecutionContext* context,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::PendingRemote<mojom::blink::AISummarizer> pending_remote,
-    const WTF::String& shared_context,
-    V8AISummarizerType type,
-    V8AISummarizerFormat format,
-    V8AISummarizerLength length)
+    AISummarizerCreateOptions* options)
     : ExecutionContextClient(context),
       task_runner_(task_runner),
       summarizer_remote_(context),
-      shared_context_(shared_context),
-      type_(type),
-      format_(format),
-      length_(length) {
+      options_(options) {
   summarizer_remote_.Bind(std::move(pending_remote), task_runner_);
 }
 
@@ -37,11 +31,12 @@ void AISummarizer::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(summarizer_remote_);
+  visitor->Trace(options_);
 }
 
 ScriptPromise<IDLString> AISummarizer::summarize(
     ScriptState* script_state,
-    const WTF::String& input,
+    const String& input,
     const AISummarizerSummarizeOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -91,7 +86,7 @@ ScriptPromise<IDLString> AISummarizer::summarize(
 
 ReadableStream* AISummarizer::summarizeStreaming(
     ScriptState* script_state,
-    const WTF::String& input,
+    const String& input,
     const AISummarizerSummarizeOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {

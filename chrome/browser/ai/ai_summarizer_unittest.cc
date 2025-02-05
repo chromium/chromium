@@ -30,6 +30,25 @@ using optimization_guide::proto::SummarizerOutputFormat;
 using optimization_guide::proto::SummarizerOutputLength;
 using optimization_guide::proto::SummarizerOutputType;
 
+blink::mojom::AISummarizerCreateOptionsPtr GetDefaultOptionsWithoutLanguageInfo(
+    std::string shared_context,
+    blink::mojom::AISummarizerType type,
+    blink::mojom::AISummarizerFormat format,
+    blink::mojom::AISummarizerLength length) {
+  return blink::mojom::AISummarizerCreateOptions::New(
+      shared_context, type, format, length,
+      /*expected_input_languages=*/std::vector<std::string>(),
+      /*expected_context_languages=*/std::vector<std::string>(),
+      /*output_language=*/std::string());
+}
+
+blink::mojom::AISummarizerCreateOptionsPtr GetDefaultOptions() {
+  return GetDefaultOptionsWithoutLanguageInfo(
+      /*shared_context=*/"", blink::mojom::AISummarizerType::kTLDR,
+      blink::mojom::AISummarizerFormat::kPlainText,
+      blink::mojom::AISummarizerLength::kShort);
+}
+
 class AISummarizerUnitTest : public AITestUtils::AITestBase {
  public:
   AISummarizerUnitTest() = default;
@@ -102,7 +121,7 @@ TEST_F(AISummarizerUnitTest, CreateSummarizerWithoutService) {
             blink::mojom::ModelAvailabilityCheckResult::kNoServiceNotRunning);
         run_loop.Quit();
       }));
-  ai_manager.CanCreateSummarizer(callback.Get());
+  ai_manager.CanCreateSummarizer(GetDefaultOptions(), callback.Get());
   run_loop.Run();
 
   // The callback may still be pending, delete the WebContents and destroy the
@@ -152,19 +171,15 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
       .WillOnce(CreateModelExecutionMock(
           "Test input", "", SummarizerOutputType::SUMMARIZER_OUTPUT_TYPE_TL_DR,
           SummarizerOutputFormat::SUMMARIZER_OUTPUT_FORMAT_PLAIN_TEXT,
-          SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_MEDIUM,
+          SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_SHORT,
           "Test output"));
 
   ASSERT_EQ(0u, GetAIManagerContextBoundObjectSetSize());
 
   mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
   MockCreateSummarizerClient create_client;
-  mock_remote->CreateSummarizer(
-      create_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AISummarizerCreateOptions::New(
-          /*shared_context=*/"", blink::mojom::AISummarizerType::kTLDR,
-          blink::mojom::AISummarizerFormat::kPlainText,
-          blink::mojom::AISummarizerLength::kMedium));
+  mock_remote->CreateSummarizer(create_client.BindNewPipeAndPassRemote(),
+                                GetDefaultOptions());
   create_client.WaitForResult();
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
@@ -208,12 +223,8 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
 
   mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
   MockCreateSummarizerClient create_client;
-  mock_remote->CreateSummarizer(
-      create_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AISummarizerCreateOptions::New(
-          /*shared_context=*/"", blink::mojom::AISummarizerType::kTLDR,
-          blink::mojom::AISummarizerFormat::kPlainText,
-          blink::mojom::AISummarizerLength::kMedium));
+  mock_remote->CreateSummarizer(create_client.BindNewPipeAndPassRemote(),
+                                GetDefaultOptions());
   create_client.WaitForResult();
   mojo::Remote<blink::mojom::AISummarizer> summarizer =
       create_client.summarizer();
@@ -245,7 +256,7 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   MockCreateSummarizerClient create_client;
   mock_remote->CreateSummarizer(
       create_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AISummarizerCreateOptions::New(
+      GetDefaultOptionsWithoutLanguageInfo(
           "Shared context.", blink::mojom::AISummarizerType::kTeaser,
           blink::mojom::AISummarizerFormat::kMarkDown,
           blink::mojom::AISummarizerLength::kLong));
@@ -313,4 +324,50 @@ TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   summarizer.reset();
   ASSERT_TRUE(base::test::RunUntil(
       [&] { return GetAIManagerContextBoundObjectSetSize() == 0u; }));
+}
+
+TEST_F(AISummarizerUnitTest, CanCreateDefaultOptions) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillOnce(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+  GetAIManagerInterface()->CanCreateSummarizer(GetDefaultOptions(),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerUnitTest, CanCreateSupportedLanguages) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              GetOnDeviceModelEligibility(_))
+      .WillRepeatedly(testing::Return(
+          optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
+  auto options = GetDefaultOptions();
+  options->output_language = "en";
+  options->expected_input_languages = {"en-US", ""};
+  options->output_language = "en";
+  options->expected_input_languages = {"en-US", ""};
+  options->expected_context_languages = {"en-GB", ""};
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback,
+              Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
+}
+
+TEST_F(AISummarizerUnitTest, CanCreateUnsupportedLanguages) {
+  SetupMockOptimizationGuideKeyedService();
+  auto options = GetDefaultOptions();
+  options->output_language = "es-ES";
+  options->expected_input_languages = {"en", "fr", "jp"};
+  options->expected_context_languages = {"ar", "zh", "hi"};
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(
+      callback,
+      Run(blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage));
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
 }
