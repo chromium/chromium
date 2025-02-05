@@ -36,7 +36,9 @@ class CORE_EXPORT CascadeResolver {
  public:
   using Attribute = base::StrongAlias<class AttributeTag, AtomicString>;
   using LocalVariable = base::StrongAlias<class LocalVariableTag, AtomicString>;
-  using CycleElem = absl::variant<const CSSProperty*, Attribute, LocalVariable>;
+  using Function = base::StrongAlias<class FunctionTag, AtomicString>;
+  using CycleElem =
+      absl::variant<const CSSProperty*, Attribute, LocalVariable, Function>;
   // TODO(crbug.com/985047): Probably use a HashMap for this.
   using CycleStack = Vector<CycleElem, 8>;
 
@@ -46,6 +48,7 @@ class CORE_EXPORT CascadeResolver {
   bool IsLocked(const CSSProperty&) const;
   bool IsLocked(const Attribute&) const;
   bool IsLocked(const LocalVariable&) const;
+  bool IsLocked(const Function&) const;
 
   // Returns the property we're currently applying.
   const CSSProperty* CurrentProperty() const {
@@ -96,6 +99,7 @@ class CORE_EXPORT CascadeResolver {
     AutoLock(const CSSProperty&, CascadeResolver&);
     AutoLock(const Attribute&, CascadeResolver&);
     AutoLock(const LocalVariable&, CascadeResolver&);
+    AutoLock(const Function&, CascadeResolver&);
     ~AutoLock();
 
    private:
@@ -121,6 +125,7 @@ class CORE_EXPORT CascadeResolver {
   bool DetectCycle(const CSSProperty&);
   bool DetectCycle(const Attribute&);
   bool DetectCycle(const LocalVariable&);
+  bool DetectCycle(const Function&);
   bool DetectCycle(wtf_size_t index);
   // Returns true whenever the CascadeResolver is in a cycle state.
   // This DOES NOT detect cycles; the caller must call DetectCycle first.
@@ -131,6 +136,7 @@ class CORE_EXPORT CascadeResolver {
   wtf_size_t Find(const CSSProperty&) const;
   wtf_size_t Find(const Attribute&) const;
   wtf_size_t Find(const LocalVariable&) const;
+  wtf_size_t Find(const Function&) const;
 
   CycleStack stack_;
   // If we're in a cycle, cycle_start_ is the index of the stack_ item that

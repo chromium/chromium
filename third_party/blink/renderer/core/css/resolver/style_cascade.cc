@@ -1549,6 +1549,13 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
                                        TokenSequence& out) {
   state_.StyleBuilder().SetAffectedByCSSFunction();
 
+  AtomicString function_name_atomic(function_name);
+  using Function = CascadeResolver::Function;
+  if (resolver.DetectCycle(Function(function_name_atomic))) {
+    return false;
+  }
+  CascadeResolver::AutoLock lock(Function(function_name_atomic), resolver);
+
   // TODO(sesse): Deal with tree-scoped references.
   StyleRuleFunction* function = nullptr;
   if (GetDocument().GetScopedStyleResolver()) {
@@ -1659,7 +1666,13 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
       .locals = {},  // Populated by ApplyLocalVariables.
       .unresolved_locals = unresolved_locals,
       .parent = function_context};
+
   ApplyLocalVariables(resolver, context, local_function_context);
+
+  // Applying local variables may place this function in a cycle.
+  if (resolver.InCycle()) {
+    return false;
+  }
 
   const CSSValue* ret_value = ResolveFunctionExpression(
       unresolved_result->VariableDataValue()->OriginalText(),

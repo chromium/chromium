@@ -173,6 +173,140 @@
   </style>
 </template>
 
+<!-- Between <dashed-functions> -->
+
+<!--
+  Note that several of these tests call functions via a "--tmp" custom property.
+  This is to be able to trigger a fallback when the function is in a cycle.
+-->
+
+<template data-name="Dashed-function, self-cycle">
+  <style>
+    @function --f() {
+      result: --f();
+    }
+    #target {
+      --tmp: --f();
+      --actual: var(--tmp, PASS);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Cycle through other function (--g)">
+  <style>
+    @function --f() {
+      result: --g();
+    }
+    @function --g() {
+      result: --f();
+    }
+    #target {
+      --tmp: --g();
+      --actual: var(--tmp, PASS);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Cycle through other function (--f)">
+  <style>
+    @function --f() {
+      result: --g();
+    }
+    @function --g() {
+      result: --f();
+    }
+    #target {
+      --tmp: --f();
+      --actual: var(--tmp, PASS);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Cycle through local, self">
+  <style>
+    @function --f() {
+      --local: --f();
+      result: var(--local);
+    }
+    #target {
+      --local: FAIL;
+      --tmp: --f();
+      --actual: var(--tmp, PASS);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Cycle through unused local">
+  <style>
+    @function --f() {
+      --unused: --f();
+      result: FAIL-result;
+    }
+    #target {
+      --local: FAIL;
+      --tmp: --f();
+      --actual: var(--tmp, PASS);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Cycle through global, self">
+  <style>
+    @function --f() {
+      result: var(--global);
+    }
+    #target {
+      --global: --f();
+      --tmp: --f();
+      --actual: var(--tmp, PASS);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Cycle through local, other function">
+  <style>
+    @function --f() {
+      result: --g();
+    }
+    @function --g() {
+      --local: --f();
+      result: var(--local);
+    }
+    #target {
+      --local: FAIL;
+      --tmp: --g();
+      --actual: var(--tmp, PASS);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Cycle through various variables and other functions">
+  <style>
+    @function --f() {
+      --local: --g();
+      result: var(--local);
+    }
+    @function --g() {
+      --local: FAIL;
+      result: var(--global);
+    }
+    #target {
+      --local: FAIL;
+      --global: --f();
+      --tmp: --g();
+      --actual: var(--tmp, PASS);
+      --expected: PASS;
+    }
+  </style>
+</template>
+
 <script>
   test_all_templates();
 </script>

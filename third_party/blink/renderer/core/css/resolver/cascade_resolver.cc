@@ -24,6 +24,10 @@ bool CascadeResolver::IsLocked(const LocalVariable& local_variable) const {
   return Find(local_variable) != kNotFound;
 }
 
+bool CascadeResolver::IsLocked(const Function& function) const {
+  return Find(function) != kNotFound;
+}
+
 bool CascadeResolver::AllowSubstitution(CSSVariableData* data) const {
   if (data && data->IsAnimationTainted() && stack_.size()) {
     const CSSProperty* property = CurrentProperty();
@@ -45,6 +49,10 @@ bool CascadeResolver::DetectCycle(const Attribute& attribute) {
 
 bool CascadeResolver::DetectCycle(const LocalVariable& local_variable) {
   return DetectCycle(Find(local_variable));
+}
+
+bool CascadeResolver::DetectCycle(const Function& function) {
+  return DetectCycle(Find(function));
 }
 
 bool CascadeResolver::DetectCycle(wtf_size_t index) {
@@ -99,6 +107,10 @@ wtf_size_t CascadeResolver::Find(const LocalVariable& local_variable) const {
   return FindInternal(stack_, local_variable);
 }
 
+wtf_size_t CascadeResolver::Find(const Function& function) const {
+  return FindInternal(stack_, function);
+}
+
 CascadeResolver::AutoLock::AutoLock(const CSSProperty& property,
                                     CascadeResolver& resolver)
     : resolver_(resolver) {
@@ -118,6 +130,13 @@ CascadeResolver::AutoLock::AutoLock(const LocalVariable& local_variable,
     : resolver_(resolver) {
   DCHECK(!resolver.IsLocked(local_variable));
   resolver_.stack_.push_back(local_variable);
+}
+
+CascadeResolver::AutoLock::AutoLock(const Function& function,
+                                    CascadeResolver& resolver)
+    : resolver_(resolver) {
+  DCHECK(!resolver.IsLocked(function));
+  resolver_.stack_.push_back(function);
 }
 
 CascadeResolver::AutoLock::~AutoLock() {
