@@ -217,6 +217,13 @@ export class Service implements ServiceInterface {
     });
   }
 
+  setItemAllowedUserScripts(id: string, isAllowedUserScripts: boolean) {
+    chrome.developerPrivate.updateExtensionConfiguration({
+      extensionId: id,
+      userScriptsAccess: isAllowedUserScripts,
+    });
+  }
+
   setItemAllowedOnFileUrls(id: string, isAllowedOnFileUrls: boolean) {
     chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,

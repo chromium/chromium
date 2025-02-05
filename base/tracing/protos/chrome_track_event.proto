@@ -1281,6 +1281,13 @@ message ScrollDeltas {
   // The array of predicted deltas of inputs which were shown together in one
   // GPU frame.
   repeated float segregated_predicted_deltas_in_gpu_frame_y = 14;
+
+  // Data for overscrolls.
+  // Whether any of the scroll delta was unused.
+  optional bool did_overscroll_root = 15;
+  // The amount of the scroll delta that was not used for scrolling.
+  optional float unused_delta_x = 16;
+  optional float unused_delta_y = 17;
 }
 
 // Debug information for system layer of audio rendering on Windows.

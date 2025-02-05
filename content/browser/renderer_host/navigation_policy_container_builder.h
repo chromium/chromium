@@ -121,6 +121,10 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // This must be called before `ComputePolicies()`.
   void SetAllowCrossOriginIsolation(bool value);
 
+  // Sets whether crossOriginIsolation is enabled by DocumentIsolationPolicy.
+  // This must be called after `ComputePolicies()`.
+  void SetCrossOriginIsolationEnabledByDIP();
+
   // Records an additional Content Security Policy that will apply to the new
   // document. `policy` must not be null. Policies added this way are ignored
   // for failed navigations and history navigations.

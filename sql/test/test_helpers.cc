@@ -295,7 +295,7 @@ bool CreateDatabaseFromSQL(const base::FilePath& db_path,
   // http://crbug.com/307303 is for exploring this test issue.
   std::ignore = db.Execute("PRAGMA auto_vacuum = 0");
 
-  return db.Execute(sql);
+  return db.ExecuteScriptForTesting(sql);
 }
 
 std::string IntegrityCheck(Database& db) {

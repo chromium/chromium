@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -19,6 +20,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/common/content_features.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
@@ -638,8 +640,24 @@ Feature::Availability SimpleFeature::GetEnvironmentAvailability(
   if (!MatchesSessionTypes(session_type))
     return CreateAvailability(INVALID_SESSION_TYPE, session_type);
 
-  if (check_developer_mode &&
-      developer_mode_only_ && !GetCurrentDeveloperMode(context_id)) {
+  bool debugger_api_restricted = base::FeatureList::IsEnabled(
+      extensions_features::kDebuggerAPIRestrictedToDevMode);
+
+  if (check_developer_mode && developer_mode_only_ &&
+      !GetCurrentDeveloperMode(context_id)) {
+    // TODO(crbug.com/390138269): Once the kUserScriptUserExtensionToggle
+    // feature is default enabled, we should make the
+    // kDebuggerAPIRestrictedToDevMode feature control dev mode restriction
+    // entirely and no longer be specific to the debugger API (while also
+    // setting the debugger API to use dev mode in the features file so the dev
+    // mode restriction is continued to be tested).
+
+    // Restrict the debugger feature to dev mode if the extension feature is
+    // enabled. But if the feature is disabled, then we treat it like any other
+    // API.
+    if (name() == "debugger" && !debugger_api_restricted) {
+      return CreateAvailability(IS_AVAILABLE);
+    }
     return CreateAvailability(REQUIRES_DEVELOPER_MODE);
   }
 

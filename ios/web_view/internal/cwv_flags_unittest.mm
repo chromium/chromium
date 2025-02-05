@@ -7,11 +7,11 @@
 
 #import "base/containers/contains.h"
 #import "base/test/task_environment.h"
-#import "components/flags_ui/pref_service_flags_storage.h"
 #import "components/prefs/in_memory_pref_store.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/pref_service_factory.h"
+#import "components/webui/flags/pref_service_flags_storage.h"
 #import "ios/web_view/internal/cwv_flags_internal.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

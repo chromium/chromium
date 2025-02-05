@@ -1039,6 +1039,9 @@ public final class ProductionSupportedFlagList {
                 "Start decoding in-viewport images as soon as they have loaded, "
                         + "rather than waiting for them to appear in a raster task."),
         Flag.baseFeature(
+                BlinkFeatures.STANDARDIZED_TIMER_CLAMPING,
+                "Clamp nested timers according to the spec."),
+        Flag.baseFeature(
                 BlinkFeatures.WEB_SQL_WEBVIEW_ACCESS,
                 "If false, prevents access to WebSQL on webview."),
         Flag.baseFeature(

@@ -227,7 +227,6 @@ test("components_unittests") {
     "//components/favicon_base:unit_tests",
     "//components/feature_engagement:unit_tests",
     "//components/filename_generation:unit_tests",
-    "//components/flags_ui:unit_tests",
     "//components/gcm_driver:unit_tests",
     "//components/gcm_driver/crypto:unit_tests",
     "//components/google/core/common:unit_tests",
@@ -375,6 +374,7 @@ test("components_unittests") {
     "//components/webauthn/core/browser:unit_tests",
     "//components/webdata/common:unit_tests",
     "//components/webdata_services:unit_tests",
+    "//components/webui/flags:unit_tests",
   ]
 
   if (enable_supervised_users) {

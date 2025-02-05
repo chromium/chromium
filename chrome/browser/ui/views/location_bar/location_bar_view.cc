@@ -1678,9 +1678,7 @@ void LocationBarView::OnLocationIconDragged(const ui::MouseEvent& event) {
 SkColor LocationBarView::GetSecurityChipColor(
     security_state::SecurityLevel security_level) const {
   ui::ColorId id = kColorOmniboxText;
-  if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT) {
-    id = kColorOmniboxTextDimmed;
-  } else if (security_level == security_state::DANGEROUS) {
+  if (security_level == security_state::DANGEROUS) {
     id = kColorOmniboxSecurityChipDangerous;
   }
 

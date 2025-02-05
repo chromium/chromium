@@ -4,6 +4,8 @@
 
 package org.chromium.components.permissions.nfc;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -18,6 +20,9 @@ import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.permissions.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -29,10 +34,11 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Implements a modal dialog that prompts the user about turning on the NFC adapter on the system
  * level.
  */
+@NullMarked
 public class NfcSystemLevelPrompt implements ModalDialogProperties.Controller {
     private ModalDialogManager mModalDialogManager;
     private WindowAndroid mWindowAndroid;
-    private Runnable mCallback;
+    private @Nullable Runnable mCallback;
 
     /**
      * Triggers a prompt to ask the user to turn on the system NFC setting on their device.
@@ -51,10 +57,11 @@ public class NfcSystemLevelPrompt implements ModalDialogProperties.Controller {
         show(window, modalDialogManager, callback);
     }
 
+    @Initializer
     @VisibleForTesting
     protected void show(
             WindowAndroid window, ModalDialogManager modalDialogManager, Runnable callback) {
-        Activity activity = window.getActivity().get();
+        Activity activity = assumeNonNull(window.getActivity().get());
         LayoutInflater inflater = LayoutInflater.from(activity);
         View customView = inflater.inflate(R.layout.permission_dialog, null);
 

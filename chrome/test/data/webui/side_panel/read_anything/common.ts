@@ -27,26 +27,6 @@ export function emitEventWithTarget(
   flush();
 }
 
-/**
- * Suppresses harmless ResizeObserver errors due to a browser bug.
- * yaqs/2300708289911980032
- */
-export function suppressInnocuousErrors() {
-  const onerror = window.onerror;
-  window.onerror = (message, url, lineNumber, column, error) => {
-    if ([
-          'ResizeObserver loop limit exceeded',
-          'ResizeObserver loop completed with undelivered notifications.',
-        ].includes(message.toString())) {
-      console.info('Suppressed ResizeObserver error: ', message);
-      return;
-    }
-    if (onerror) {
-      onerror.apply(window, [message, url, lineNumber, column, error]);
-    }
-  };
-}
-
 // Runs the requestAnimationFrame callback immediately
 export function stubAnimationFrame() {
   window.requestAnimationFrame = (callback) => {

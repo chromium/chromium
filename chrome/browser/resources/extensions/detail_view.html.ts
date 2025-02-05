@@ -324,6 +324,15 @@ this text can be found by Ctrl + F because it isn't hidden. -->
             </extensions-toggle-row>` : ''}
         </div>
       </div>` : ''}
+      ${this.showUserScriptSectionToggle_() ? html`
+        <extensions-toggle-row id="allow-user-scripts"
+        ?checked="${this.data.userScriptsAccess.isActive}" class="hr"
+              @change="${this.onAllowUserScriptsChange_}">
+          <div>
+            <div>$i18n{itemAllowUserScripts}</div>
+            <div class="section-content">$i18n{userScriptInfoWarning}</div>
+          </div>
+        </extensions-toggle-row>` : ''}
     ${this.hasDependentExtensions_() ? html`
       <div class="section hr">
         <div class="section-title" role="heading" aria-level="2">

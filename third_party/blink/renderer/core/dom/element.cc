@@ -4140,6 +4140,10 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   if (child_change.TraverseChildren(*this)) {
+    if (!child_recalc_context.has_animating_ancestor &&
+        GetElementAnimations()) {
+      child_recalc_context.has_animating_ancestor = true;
+    }
     if (ShadowRoot* root = GetShadowRoot()) {
       root->RecalcDescendantStyles(child_change, child_recalc_context, *this);
       if (child_change.RecalcDescendants()) {

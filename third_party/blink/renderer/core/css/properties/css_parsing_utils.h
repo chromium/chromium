@@ -439,6 +439,9 @@ CSSValue* ParseBorderWidthSide(CSSParserTokenStream&,
 const CSSValue* ParseBorderStyleSide(CSSParserTokenStream&,
                                      const CSSParserContext&);
 
+const CSSValue* ParseCornerShape(CSSParserTokenStream&,
+                                 const CSSParserContext&);
+
 CSSValue* ConsumeGapDecorationPropertyList(CSSParserTokenStream&,
                                            const CSSParserContext&,
                                            const CSSGapDecorationPropertyType);

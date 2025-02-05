@@ -10,9 +10,11 @@ import android.text.TextUtils;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This class creates the model for the permission dialog custom view. */
+@NullMarked
 class PermissionDialogCustomViewModelFactory {
     public static PropertyModel getModel(PermissionDialogDelegate delegate) {
         Context context = delegate.getWindow().getContext().get();

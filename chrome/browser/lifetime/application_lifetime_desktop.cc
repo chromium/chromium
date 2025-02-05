@@ -57,6 +57,10 @@
 #include "chrome/browser/sessions/session_data_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
+#endif
+
 namespace chrome {
 
 namespace {
@@ -140,6 +144,14 @@ void ShutdownIfNoBrowsers() {
 
   // Tell everyone that we are shutting down.
   browser_shutdown::SetTryingToQuit(true);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  auto* glic_background_mode_manager =
+      glic::GlicBackgroundModeManager::GetInstance();
+  if (glic_background_mode_manager) {
+    glic_background_mode_manager->ExitBackgroundMode();
+  }
+#endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   // If ShuttingDownWithoutClosingBrowsers() returns true, the session

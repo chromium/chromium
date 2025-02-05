@@ -33,18 +33,6 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-// If this feature is disabled, the SuppressLocalAudioPlayback constraint
-// will become no-op if the user chooses to share a tab.
-BASE_FEATURE(kSuppressLocalAudioPlaybackForTabAudio,
-             "SuppressLocalAudioPlaybackForTabAudio",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If this feature is disabled, the SuppressLocalAudioPlayback constraint
-// will become no-op if the user chooses to share a screen.
-BASE_FEATURE(kSuppressLocalAudioPlaybackForSystemAudio,
-             "SuppressLocalAudioPlaybackForSystemAudio",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 // TODO(crbug.com/40181897): Eliminate code duplication with
@@ -286,10 +274,6 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
 
     if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
       content::WebContentsMediaCaptureId web_id = media_id.web_contents_id;
-      if (!base::FeatureList::IsEnabled(
-              kSuppressLocalAudioPlaybackForTabAudio)) {
-        suppress_local_audio_playback = false;  // Surface-specific killswitch.
-      }
       // TODO(crbug.com/40244028): Deprecate disable_local_echo, support the
       // same functionality based only on suppress_local_audio_playback.
       web_id.disable_local_echo =
@@ -297,10 +281,6 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
       out_devices.audio_device = blink::MediaStreamDevice(
           request.audio_type, web_id.ToString(), "Tab audio");
     } else {
-      if (!base::FeatureList::IsEnabled(
-              kSuppressLocalAudioPlaybackForSystemAudio)) {
-        suppress_local_audio_playback = false;  // Surface-specific killswitch.
-      }
       // Use the special loopback device ID for system audio capture.
       out_devices.audio_device = blink::MediaStreamDevice(
           request.audio_type,

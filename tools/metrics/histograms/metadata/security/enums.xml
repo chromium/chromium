@@ -377,7 +377,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="HTTP with warning (deprecated)"/>
   <int value="2" label="Secure with EV certificate (deprecated)"/>
   <int value="3" label="Secure"/>
-  <int value="4" label="Secure with policy-installed certificate"/>
+  <int value="4" label="Secure with policy-installed certificate (deprecated)"/>
   <int value="5" label="Dangerous"/>
   <int value="6" label="Warning"/>
 </enum>

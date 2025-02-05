@@ -353,13 +353,11 @@ TEST_F(PrivacySandboxAdTopicsContentParityEnabledTest, TopicsToggleChanged) {
 }
 
 TEST_F(PrivacySandboxAdTopicsContentParityEnabledTest,
-       CompletetionCardAdTopicsSubLabelShown) {
+       shouldShowAdTopicsContentParity) {
   base::Value::List args;
   args.Append(kCallbackId1);
   web_ui()->ProcessWebUIMessage(
-      GURL(),
-      "privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel",
-      std::move(args));
+      GURL(), "shouldShowPrivacySandboxAdTopicsContentParity", std::move(args));
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ(data.arg1()->GetString(), kCallbackId1);
@@ -384,13 +382,11 @@ class PrivacySandboxAdTopicsContentParityDisabledTest
 };
 
 TEST_F(PrivacySandboxAdTopicsContentParityDisabledTest,
-       CompletetionCardAdTopicsSubLabelNotShown) {
+       shouldNotShowAdTopicsContentParity) {
   base::Value::List args;
   args.Append(kCallbackId1);
   web_ui()->ProcessWebUIMessage(
-      GURL(),
-      "privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel",
-      std::move(args));
+      GURL(), "shouldShowPrivacySandboxAdTopicsContentParity", std::move(args));
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ(data.arg1()->GetString(), kCallbackId1);

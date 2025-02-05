@@ -375,6 +375,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
   RunTestCase("CanUploadAsAccountExtension");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, UserScripts) {
+  RunTestCase("UserScripts");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests
 

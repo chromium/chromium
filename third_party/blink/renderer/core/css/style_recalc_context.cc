@@ -13,12 +13,11 @@ namespace blink {
 StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
     Element& start_element) {
   StyleRecalcContext result;
-  bool have_container_result = false;
   for (auto* element = &start_element; element;
        element = FlatTreeTraversal::ParentElement(*element)) {
-    const ComputedStyle* style = element->GetComputedStyle();
-    if (!have_container_result) {
-      if (!style) {
+    if (result.container == nullptr) {
+      const ComputedStyle* style = element->GetComputedStyle();
+      if (style && style->IsContainerForSizeContainerQueries()) {
         // TODO(crbug.com/40250356): Eliminate all invalid calls to
         // StyleRecalcContext::From[Inclusive]Ancestors, then either turn
         // if (!style) into CHECK(style) or simplify into checking:
@@ -28,29 +27,26 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
         // many failures in the wild to keep around (would upload too many crash
         // reports). Consider adding UMA stats back if we want to track this or
         // land a strategy to figure it out and fix what's going on.
-        have_container_result = true;
-      } else if (style->IsContainerForSizeContainerQueries()) {
         result.container = element;
-        have_container_result = true;
       }
     }
-
-    if (auto* display_lock_context = element->GetDisplayLockContext()) {
-      if (display_lock_context->IsAuto() && display_lock_context->IsLocked()) {
-        result.has_content_visibility_auto_locked_ancestor = true;
+    if (!result.has_content_visibility_auto_locked_ancestor) {
+      if (const DisplayLockContext* display_lock_context =
+              element->GetDisplayLockContext()) {
+        if (display_lock_context->IsAuto() &&
+            display_lock_context->IsLocked()) {
+          result.has_content_visibility_auto_locked_ancestor = true;
+        }
       }
     }
-
-    if (have_container_result &&
-        result.has_content_visibility_auto_locked_ancestor) {
-      break;
+    if (!result.has_animating_ancestor && element->GetElementAnimations()) {
+      result.has_animating_ancestor = true;
     }
   }
   return result;
 }
 
 StyleRecalcContext StyleRecalcContext::FromAncestors(Element& element) {
-  // TODO(crbug.com/1145970): Avoid this work if we're not inside a container
   if (Element* parent = FlatTreeTraversal::ParentElement(element)) {
     return FromInclusiveAncestors(*parent);
   }

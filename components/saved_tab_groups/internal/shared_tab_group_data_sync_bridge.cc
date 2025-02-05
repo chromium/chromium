@@ -574,10 +574,17 @@ SharedTabGroupDataSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  model_wrapper_->OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType::kInitialMerge);
+
   // This data type does not have local data and hence there is nothing to
   // merge.
-  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
-                                     std::move(entity_data));
+  std::optional<syncer::ModelError> result = ApplyIncrementalSyncChanges(
+      std::move(metadata_change_list), std::move(entity_data));
+
+  model_wrapper_->OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType::kDefaultState);
+  return result;
 }
 
 std::optional<syncer::ModelError>
@@ -805,6 +812,8 @@ sync_pb::UniquePosition SharedTabGroupDataSyncBridge::GetUniquePosition(
 void SharedTabGroupDataSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  model_wrapper_->OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType::kDisableSync);
 
   // When the sync is disabled, all the corresponding groups and their tabs
   // should be closed. To do that, each of the tab needs to be closed
@@ -848,6 +857,9 @@ void SharedTabGroupDataSyncBridge::ApplyDisableSyncChanges(
   // `delete_metadata_change_list` is not used because all the metadata is
   // deleted anyway.
   store_->DeleteAllDataAndMetadata(base::DoNothing());
+
+  model_wrapper_->OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType::kDefaultState);
 }
 
 sync_pb::EntitySpecifics

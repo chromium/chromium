@@ -217,6 +217,13 @@ bool IsResourceWebAccessibleImpl(
         if (!result) {
           continue;
         }
+
+        // If a site calls e.g. document.location.replace, then `upstream_url`
+        // will contain the site that requested the resource and `initiator url`
+        // will only be chrome-extension://<guid>.
+        if (entry.matches.MatchesURL(upstream_url)) {
+          return result;
+        }
       }
 
       // Determine if the `initiator_url` is allowed to access this resource.

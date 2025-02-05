@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/flags/about_flags.h"
 
-#import "components/flags_ui/feature_entry.h"
-#import "components/flags_ui/flags_test_helpers.h"
+#import "components/webui/flags/feature_entry.h"
+#import "components/webui/flags/flags_test_helpers.h"
 #import "testing/platform_test.h"
 
 using AboutFlagsTest = PlatformTest;

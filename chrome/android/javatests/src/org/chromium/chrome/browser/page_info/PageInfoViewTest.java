@@ -1187,7 +1187,8 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures({
         ChromeFeatureList.ACT_USER_BYPASS_UX,
-        ChromeFeatureList.IP_PROTECTION_V1
+        ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL
     })
     @Feature({"RenderTest"})
     public void testShowCookiesSubpageTrackingProtectionLaunchIpp() throws IOException {
@@ -1227,7 +1228,8 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures({
         ChromeFeatureList.ACT_USER_BYPASS_UX,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
+        ChromeFeatureList.TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL
     })
     @Features.DisableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
     @Feature({"RenderTest"})
@@ -1270,6 +1272,7 @@ public class PageInfoViewTest {
         ChromeFeatureList.ACT_USER_BYPASS_UX,
         ChromeFeatureList.IP_PROTECTION_V1,
         ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
+        ChromeFeatureList.TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL
     })
     @Feature({"RenderTest"})
     public void testShowCookiesSubpageTrackingProtectionLaunchFppIpp() throws IOException {

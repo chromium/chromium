@@ -8,7 +8,7 @@ import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createAndSetVoices, createSpeechSynthesisVoice, emitEvent, setVoices, suppressInnocuousErrors} from './common.js';
+import {createAndSetVoices, createSpeechSynthesisVoice, emitEvent, setVoices} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -20,7 +20,6 @@ suite('PrefsTest', () => {
   let speechSynthesis: FakeSpeechSynthesis;
 
   setup(() => {
-    suppressInnocuousErrors();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
     BrowserProxy.setInstance(testBrowserProxy);

@@ -4,6 +4,9 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -14,6 +17,9 @@ import android.widget.Button;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.ui.LayoutInflaterUtils;
@@ -27,6 +33,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * Coordinator class for displaying the permission dialog. It proxies the communication to the
  * {@link PermissionDialogMediator}.
  */
+@NullMarked
 public class PermissionDialogCoordinator {
     /** A delegate interface for PermissionDialogCoordinator to interact with other classes. */
     interface Delegate {
@@ -57,7 +64,8 @@ public class PermissionDialogCoordinator {
             assert lastView instanceof Button;
             Button lastButton = (Button) lastView;
             if (lastButton.getVisibility() == View.GONE
-                    || lastButton.getText() != mDialogDelegate.getNegativeButtonText()) {
+                    || lastButton.getText()
+                            != assumeNonNull(mDialogDelegate).getNegativeButtonText()) {
                 return;
             }
 
@@ -86,14 +94,17 @@ public class PermissionDialogCoordinator {
         }
 
         /** Record histogram if a button is rendered out of screen. */
+        @NullUnmarked
         private void recordOutOfScreenNegativeButton(Button button) {
             int[] loc = new int[2];
             button.getLocationOnScreen(loc);
             int x = loc[0];
             int y = loc[1];
-            DimensionCompat dimension =
-                    DimensionCompat.create(
-                            ContextUtils.activityFromContext(button.getContext()), null);
+            Activity activity =
+                    assumeNonNull(ContextUtils.activityFromContext(button.getContext()));
+            // @NullUnmarked because passing null |positionUpdater| to DimensionCompat.create is
+            // is wrong.
+            DimensionCompat dimension = DimensionCompat.create(activity, null);
 
             boolean outOfScreen =
                     x < 0
@@ -105,13 +116,13 @@ public class PermissionDialogCoordinator {
         }
     }
 
-    private PropertyModel mCustomViewModel;
-    private PropertyModelChangeProcessor mCustomViewModelChangeProcessor;
-    private PermissionDialogDelegate mDialogDelegate;
-    private Delegate mCoordinatorDelegate;
-    private ModalDialogManager mModalDialogManager;
-    private ModalDialogManagerObserver mModalDialogManagerObserver;
-    private PermissionDialogMediator mMediator;
+    private @Nullable PropertyModel mCustomViewModel;
+    private @Nullable PropertyModelChangeProcessor mCustomViewModelChangeProcessor;
+    private @Nullable PermissionDialogDelegate mDialogDelegate;
+    private final Delegate mCoordinatorDelegate;
+    private @Nullable ModalDialogManager mModalDialogManager;
+    private @Nullable ModalDialogManagerObserver mModalDialogManagerObserver;
+    private @Nullable PermissionDialogMediator mMediator;
 
     public PermissionDialogCoordinator(Delegate delegate) {
         mCoordinatorDelegate = delegate;
@@ -124,6 +135,7 @@ public class PermissionDialogCoordinator {
     private View createCustomView() {
         Context context = getContext();
         // One time prompts don't share the same layout.
+        assumeNonNull(mDialogDelegate);
         View customView =
                 LayoutInflaterUtils.inflate(
                         context,
@@ -179,12 +191,12 @@ public class PermissionDialogCoordinator {
 
     /** Dismiss the current dialog, called from native. */
     public void dismissFromNative() {
-        mMediator.dismissFromNative();
+        assumeNonNull(mMediator).dismissFromNative();
     }
 
     /** Update the current dialog. This may hide the current dialog and show OS prompt instead. */
     public void updateDialog() {
-        mMediator.updateDialog(createCustomView());
+        assumeNonNull(mMediator).updateDialog(createCustomView());
     }
 
     /**
@@ -214,14 +226,16 @@ public class PermissionDialogCoordinator {
 
     private Context getContext() {
         assert mDialogDelegate != null;
+        Context context = mDialogDelegate.getWindow().getContext().get();
+        assert context != null;
         // Use the context to access resources instead of the activity because the activity may not
         // have the correct resources in some cases (e.g. WebLayer).
-        return mDialogDelegate.getWindow().getContext().get();
+        return context;
     }
 
     public void destroy() {
         if (mModalDialogManagerObserver != null) {
-            mModalDialogManager.removeObserver(mModalDialogManagerObserver);
+            assumeNonNull(mModalDialogManager).removeObserver(mModalDialogManagerObserver);
             mModalDialogManagerObserver = null;
         }
 
@@ -237,6 +251,6 @@ public class PermissionDialogCoordinator {
     }
 
     public void clickButtonForTest(@ModalDialogProperties.ButtonType int buttonType) {
-        mMediator.clickButtonForTest(buttonType); // IN-TEST
+        assumeNonNull(mMediator).clickButtonForTest(buttonType); // IN-TEST
     }
 }

@@ -124,6 +124,11 @@ class PollingElementStateObserver
   ~PollingElementStateObserver() override = default;
 };
 
+template <typename T>
+concept IsPollingStateObserver =
+    IsStateObserver<T> &&
+    std::derived_from<T, PollingStateObserver<typename T::ValueType>>;
+
 }  // namespace ui::test
 
 #endif  // UI_BASE_INTERACTION_POLLING_STATE_OBSERVER_H_

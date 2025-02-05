@@ -794,6 +794,8 @@
   "userScripts": {
     "dependencies": [ "permission:userScripts" ],
     "contexts": [ "privileged_extension" ],
+    // TODO(crbug.com/390138269): Remove developer mode only restriction once
+    // per extension toggle is launched.
     "developer_mode_only": true
   },
   "userScripts.getWorldConfigurations": {

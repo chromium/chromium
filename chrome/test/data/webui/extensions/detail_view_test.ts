@@ -36,6 +36,7 @@ suite('ExtensionDetailViewTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     extensionData = createExtensionInfo({
       incognitoAccess: {isEnabled: true, isActive: false},
+      userScriptsAccess: {isEnabled: true, isActive: false},
       fileAccess: {isEnabled: true, isActive: false},
       errorCollection: {isEnabled: true, isActive: false},
     });
@@ -57,6 +58,17 @@ suite('ExtensionDetailViewTest', function() {
     f(isChildVisible(item, id));
   }
 
+  function testIsVisible(selector: string): boolean {
+    return isChildVisible(item, selector);
+  }
+
+  // Check the checkboxes visibility and state. They should be visible only if
+  // the associated option is enabled, and checked if the associated option is
+  // active.
+  function isChecked(id: string): boolean {
+    return item.shadowRoot!.querySelector<CrCheckboxElement>(id)!.checked;
+  }
+
   function updateItemData(
       properties?: Partial<chrome.developerPrivate.ExtensionInfo>):
       Promise<void> {
@@ -72,20 +84,12 @@ suite('ExtensionDetailViewTest', function() {
   }
 
   test('Layout', async () => {
-    const testIsVisible: (selector: string) => boolean =
-        isChildVisible.bind(null, item);
     assertTrue(testIsVisible('#closeButton'));
     assertTrue(testIsVisible('#icon'));
     assertFalse(testIsVisible('#extensionsOptions'));
     assertTrue(
         item.$.description.textContent!.indexOf('This is an extension') !== -1);
     assertTrue(testIsVisible('#siteSettings'));
-
-    // Check the checkboxes visibility and state. They should be visible
-    // only if the associated option is enabled, and checked if the
-    // associated option is active.
-    const isChecked = (id: string) =>
-        item.shadowRoot!.querySelector<CrCheckboxElement>(id)!.checked;
 
     assertTrue(isChildVisible(item, '#allow-incognito'));
     assertFalse(isChecked('#allow-incognito'), '#allow-incognito');
@@ -1056,4 +1060,34 @@ suite('ExtensionDetailViewTest', function() {
         item.shadowRoot!.querySelector<HTMLElement>('#account-upload-button')!,
         'uploadItemToAccount', [item.data.id]);
   });
+
+  test('UserScripts', async () => {
+    // Confirm the toggle is in the layout.
+    assertTrue(item.data.userScriptsAccess.isEnabled);
+    assertTrue(testIsVisible('#allow-user-scripts'));
+
+    // Confirm the element changes visibility based on ExtensionInfo changes.
+    // Not visible.
+    await updateItemData(
+        {userScriptsAccess: {isEnabled: false, isActive: false}});
+    assertFalse(isChildVisible(item, '#allow-user-scripts'));
+    // Visible and checked.
+    await updateItemData(
+        {userScriptsAccess: {isEnabled: true, isActive: true}});
+    assertTrue(isChildVisible(item, '#allow-user-scripts'));
+    assertTrue(isChecked('#allow-user-scripts'));
+    // Visible and not checked.
+    await updateItemData(
+        {userScriptsAccess: {isEnabled: true, isActive: false}});
+    assertTrue(isChildVisible(item, '#allow-user-scripts'));
+    assertFalse(isChecked('#allow-user-scripts'));
+
+    // Confirm the toggle can be clicked to be checked when it's visible.
+    await mockDelegate.testClickingCalls(
+        item.shadowRoot!
+            .querySelector<ExtensionsToggleRowElement>(
+                '#allow-user-scripts')!.getLabel(),
+        'setItemAllowedUserScripts', [extensionData.id, true]);
+  });
+
 });

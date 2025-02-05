@@ -4,6 +4,8 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.SparseArray;
@@ -15,6 +17,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.WindowAndroid;
@@ -33,6 +36,7 @@ import java.util.function.Consumer;
  * Methods to handle requesting native permissions from Android when the user grants a website a
  * permission.
  */
+@NullMarked
 public class AndroidPermissionRequester {
     /**
      * An interface for classes which need to be informed of the outcome of asking a user to grant
@@ -250,7 +254,8 @@ public class AndroidPermissionRequester {
                                         context.getString(deniedStringId, appName),
                                         (model) -> {
                                             final ModalDialogManager modalDialogManager =
-                                                    windowAndroid.getModalDialogManager();
+                                                    assumeNonNull(
+                                                            windowAndroid.getModalDialogManager());
                                             modalDialogManager.dismissDialog(
                                                     model,
                                                     DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
@@ -324,7 +329,7 @@ public class AndroidPermissionRequester {
                         }
                     }
                 };
-        Context context = windowAndroid.getContext().get();
+        Context context = assumeNonNull(windowAndroid.getContext().get());
         View view = LayoutInflater.from(context).inflate(R.layout.update_permissions_dialog, null);
         TextView dialogText = view.findViewById(R.id.text);
         dialogText.setText(message);

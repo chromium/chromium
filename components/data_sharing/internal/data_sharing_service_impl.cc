@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -374,6 +375,12 @@ std::vector<GroupEvent> DataSharingServiceImpl::GetGroupEventsSinceStartup() {
 }
 
 void DataSharingServiceImpl::OnModelLoaded() {
+  std::set<GroupData> groups = ReadAllGroups();
+  for (const GroupData& group : groups) {
+    base::UmaHistogramCounts100("DataSharing.TotalMembersInGroup.AtStartup",
+                                group.members.size());
+  }
+
   for (auto& observer : observers_) {
     observer.OnGroupDataModelLoaded();
   }
@@ -382,7 +389,6 @@ void DataSharingServiceImpl::OnModelLoaded() {
 void DataSharingServiceImpl::OnGroupAdded(const GroupId& group_id,
                                           const base::Time& event_time) {
   CHECK(group_data_model_);
-
   std::optional<GroupData> group_data = group_data_model_->GetGroup(group_id);
   CHECK(group_data);
   for (auto& observer : observers_) {

@@ -56,7 +56,6 @@
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"

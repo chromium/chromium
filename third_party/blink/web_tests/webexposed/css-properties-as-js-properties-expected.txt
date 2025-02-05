@@ -157,6 +157,14 @@ containerName
 containerType
 content
 contentVisibility
+cornerBottomLeftShape
+cornerBottomRightShape
+cornerEndEndShape
+cornerEndStartShape
+cornerStartEndShape
+cornerStartStartShape
+cornerTopLeftShape
+cornerTopRightShape
 counterIncrement
 counterReset
 counterSet

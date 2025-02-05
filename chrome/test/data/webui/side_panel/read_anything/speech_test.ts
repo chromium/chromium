@@ -8,7 +8,7 @@ import {PauseActionSource, ToolbarEvent, WordBoundaryMode} from 'chrome-untruste
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
+import {createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText, waitForPlayFromSelection} from './common.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 
 // TODO: b/323960128 - Add tests for word boundaries here or in a
@@ -71,7 +71,6 @@ suite('Speech', () => {
   }
 
   setup(() => {
-    suppressInnocuousErrors();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to

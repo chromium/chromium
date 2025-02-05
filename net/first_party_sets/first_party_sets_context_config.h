@@ -27,8 +27,12 @@ namespace net {
 class NET_EXPORT FirstPartySetsContextConfig {
  public:
   FirstPartySetsContextConfig();
-  explicit FirstPartySetsContextConfig(
-      base::flat_map<SchemefulSite, FirstPartySetEntryOverride> customizations);
+
+  // Factory method that validates all preconditions, returning `std::nullopt`
+  // if any are violated.
+  static std::optional<FirstPartySetsContextConfig> Create(
+      base::flat_map<SchemefulSite, FirstPartySetEntryOverride> customizations,
+      base::flat_map<SchemefulSite, SchemefulSite> aliases = {});
 
   FirstPartySetsContextConfig(FirstPartySetsContextConfig&& other);
   FirstPartySetsContextConfig& operator=(FirstPartySetsContextConfig&& other);
@@ -62,13 +66,26 @@ class NET_EXPORT FirstPartySetsContextConfig {
       base::FunctionRef<bool(const SchemefulSite&,
                              const FirstPartySetEntryOverride&)> f) const;
 
+  // Synchronously iterates over all the aliases, calling `f` on each pair of
+  // (alias, canonical site).
+  void ForEachAlias(base::FunctionRef<void(const SchemefulSite&,
+                                           const SchemefulSite&)> f) const;
+
  private:
   // mojo (de)serialization needs access to private details.
   friend struct mojo::StructTraits<
       network::mojom::FirstPartySetsContextConfigDataView,
       FirstPartySetsContextConfig>;
 
+  FirstPartySetsContextConfig(
+      base::flat_map<SchemefulSite, FirstPartySetEntryOverride> customizations,
+      base::flat_map<SchemefulSite, SchemefulSite> aliases);
+
+  // All custom entries, including aliases.
   base::flat_map<SchemefulSite, FirstPartySetEntryOverride> customizations_;
+
+  // The alias customizations.
+  base::flat_map<SchemefulSite, SchemefulSite> aliases_;
 };
 
 }  // namespace net

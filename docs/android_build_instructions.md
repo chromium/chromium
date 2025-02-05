@@ -367,23 +367,6 @@ For information on running tests, see
 
 ## Faster Builds
 
-### Use Reclient
-
-*** note
-**Warning:** If you are a Google employee, do not follow the instructions below.
-See
-[go/building-android-chrome#initialize-remote-execution-distributed-builds](https://goto.google.com/building-android-chrome#initialize-remote-execution-distributed-builds)
-instead.
-***
-
-Chromium's build can be sped up significantly by using a remote execution system
-compatible with [REAPI](https://github.com/bazelbuild/remote-apis). This allows
-you to benefit from remote caching and executing many build actions in parallel
-on a shared cluster of workers.
-
-To use Reclient, follow the corresponding
-[Linux build instructions](linux/build_instructions.md#use-reclient).
-
 ### GN Args
 
 Args that affect build speed:
@@ -432,6 +415,23 @@ See the status of the server at any time via:
 ```
 build/android/fast_local_dev_server.py --print-status-all
 ```
+
+### Use Reclient
+
+*** note
+**Warning:** If you are a Google employee, do not follow the Reclient instructions
+in this section. Set up remote execution as described in
+[go/building-android-chrome](https://goto.google.com/building-android-chrome)
+instead.
+***
+
+Chromium's build can be sped up significantly by using a remote execution system
+compatible with [REAPI](https://github.com/bazelbuild/remote-apis). This allows
+you to benefit from remote caching and executing many build actions in parallel
+on a shared cluster of workers.
+
+To use Reclient, follow the corresponding
+[Linux build instructions](linux/build_instructions.md#use-reclient).
 
 ### Incremental Install
 [Incremental Install](/build/android/incremental_install/README.md) uses

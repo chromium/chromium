@@ -75,6 +75,8 @@ class KeywordProvider : public AutocompleteProvider {
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
 
+  bool done() const { return done_; }
+
  private:
   friend class KeywordExtensionsDelegateImpl;
 

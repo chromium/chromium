@@ -67,6 +67,8 @@ bool Configuration::ParseCommandLine(const wchar_t* command_line) {
   for (size_t i = 1; i < safe_args.size(); ++i) {
     if (0 == ::lstrcmpi(safe_args[i], L"--system-level")) {
       is_system_level_ = true;
+    } else if (0 == ::lstrcmpi(safe_args[i], L"--invalid-switch")) {
+      has_invalid_switch_ = true;
     } else if (0 == ::lstrcmpi(safe_args[i], L"--cleanup")) {
       operation_ = CLEANUP;
     }

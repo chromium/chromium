@@ -370,6 +370,7 @@ public abstract class ChromeFeatureList {
     public static final String INSTALL_MESSAGE_THROTTLE = "InstallMessageThrottle";
     public static final String IP_PROTECTION_V1 = "IpProtectionV1";
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
+    public static final String LEGACY_TAB_STATE_DEPRECATION = "LegacyTabStateDeprecation";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LINKED_SERVICES_SETTING = "LinkedServicesSetting";
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
@@ -563,6 +564,8 @@ public abstract class ChromeFeatureList {
             "TrackingProtectionUserBypassPwa";
     public static final String TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER =
             "TrackingProtectionUserBypassPwaTrigger";
+    public static final String TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL =
+            "TrackingProtectionContentSettingUbControl";
     public static final String TRANSLATE_MESSAGE_UI = "TranslateMessageUI";
     public static final String TRANSLATE_TFLITE = "TFLiteLanguageDetectionEnabled";
     public static final String
@@ -716,6 +719,11 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sHistoryPaneAndroid = newCachedFlag(HISTORY_PANE_ANDROID, false);
+    public static final CachedFlag sLegacyTabStateDeprecation =
+            newCachedFlag(
+                    LEGACY_TAB_STATE_DEPRECATION,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
     public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, true);
@@ -909,6 +917,7 @@ public abstract class ChromeFeatureList {
                     sSafetyHubWeakAndReusedPasswords,
                     sSearchInCCT,
                     sSearchInCCTAlternateTapHandling,
+                    sLegacyTabStateDeprecation,
                     sSettingsSingleActivity,
                     sSkipIsolatedSplitPreload,
                     sSmallerTabStripTitleLimit,

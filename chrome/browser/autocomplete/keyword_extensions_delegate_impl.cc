@@ -142,8 +142,11 @@ void KeywordExtensionsDelegateImpl::OnOmniboxSuggestionsReady(
     const std::string& extension_id) {
   DCHECK(suggestions);
 
-  if (suggestions->request_id != current_input_id_)
-    return;  // This is an old result. Just ignore.
+  // Ignore result if it's old or if the provider is done. Checking if the
+  // provider is done prevents the extension from sending multiple sets of
+  // suggestions for the same request.
+  if (suggestions->request_id != current_input_id_ || provider_->done())
+    return;
 
   TemplateURLService* model = provider_->GetTemplateURLService();
   DCHECK(model);

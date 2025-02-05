@@ -59,6 +59,13 @@ reviewer.
       summary="in an off-the-record profile, with third-party cookies blocked"/>
 </variants>
 
+<variants name="DIPSCookiePartitionKeyState">
+  <variant name="NonSerializable"
+      summary="The cookie parition key cannot be serialized."/>
+  <variant name="Serializable"
+      summary="The cookie parition key can be serialized."/>
+</variants>
+
 <variants name="DIPSDatabaseOperation">
   <variant name="ClearTimestamps" summary="ClearTimestamps"/>
   <variant name="FilterSitesWithProtectiveEvent"
@@ -528,6 +535,23 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     with empty databases, so that may explain why some database files are very
     small.
   </summary>
+</histogram>
+
+<histogram
+    name="Privacy.DIPS.DeletionDomainLength.{DIPSCookiePartitionKeyState}"
+    units="lengths" expires_after="2026-02-03">
+  <owner>liu@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    The length of a domain that will be cleared by bounce tracking mitigations.
+    This metric is recorded after any invalid domain filtering, so it only
+    includes domains that are registered to have data deleted.
+
+    This metric was created as part of crbug.com/393088777 and should be removed
+    after the bug is fixed.
+  </summary>
+  <token key="DIPSCookiePartitionKeyState"
+      variants="DIPSCookiePartitionKeyState"/>
 </histogram>
 
 <histogram name="Privacy.DIPS.DeletionLatency2" units="ms"

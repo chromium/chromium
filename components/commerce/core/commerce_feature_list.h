@@ -11,9 +11,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
-#include "components/flags_ui/feature_entry.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/webui/flags/feature_entry.h"
 #include "url/gurl.h"
 
 class PrefService;

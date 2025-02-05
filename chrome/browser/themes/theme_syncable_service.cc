@@ -417,18 +417,12 @@ void ThemeSyncableService::StopSyncing(syncer::DataType type) {
 
   if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
       base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
-    if (const base::Value* saved_local_theme =
-            profile_->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme)) {
-      std::string decoded_str;
-      sync_pb::ThemeSpecifics specifics;
-      if (base::Base64Decode(saved_local_theme->GetString(), &decoded_str) &&
-          specifics.ParseFromString(decoded_str)) {
-        MaybeSetTheme(GetThemeSpecificsFromCurrentTheme(), specifics);
-      }
+    // It is possible that saved local theme was cleared by the batch uploader.
+    // In such a case, apply the default theme.
+    if (!ApplySavedLocalThemeIfExistsAndClear()) {
+      theme_service_->UseDefaultTheme();
     }
   }
-
-  profile_->GetPrefs()->ClearPref(prefs::kSavedLocalTheme);
 }
 
 void ThemeSyncableService::OnBrowserShutdown(syncer::DataType type) {
@@ -881,4 +875,33 @@ void ThemeSyncableService::NotifyOnSyncStarted(ThemeSyncState startup_state) {
   for (Observer& observer : observer_list_) {
     observer.OnThemeSyncStarted(startup_state);
   }
+}
+
+std::optional<sync_pb::ThemeSpecifics>
+ThemeSyncableService::GetSavedLocalTheme() const {
+  CHECK(base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics));
+  CHECK(base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes));
+  if (const base::Value* saved_local_theme =
+          profile_->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme)) {
+    std::string decoded_str;
+    sync_pb::ThemeSpecifics specifics;
+    // The local theme is saved as a base64 encoded string.
+    if (base::Base64Decode(saved_local_theme->GetString(), &decoded_str) &&
+        specifics.ParseFromString(decoded_str)) {
+      return specifics;
+    }
+  }
+  return std::nullopt;
+}
+
+bool ThemeSyncableService::ApplySavedLocalThemeIfExistsAndClear() {
+  CHECK(base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics));
+  CHECK(base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes));
+  std::optional<sync_pb::ThemeSpecifics> local_theme_specifics =
+      GetSavedLocalTheme();
+  if (local_theme_specifics) {
+    MaybeSetTheme(GetThemeSpecificsFromCurrentTheme(), *local_theme_specifics);
+  }
+  profile_->GetPrefs()->ClearPref(prefs::kSavedLocalTheme);
+  return local_theme_specifics.has_value();
 }

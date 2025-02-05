@@ -150,15 +150,6 @@ class IpProtectionCoreHost
       TryGetAuthTokensCallback callback,
       absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens);
 
-  // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
-  // its callback.
-  void TryGetAuthTokensComplete(
-      std::optional<std::vector<ip_protection::BlindSignedAuthToken>>
-          bsa_tokens,
-      TryGetAuthTokensCallback callback,
-      ip_protection::TryGetAuthTokensResult result,
-      std::optional<base::TimeDelta> duration = std::nullopt);
-
   // Calls the IdentityManager asynchronously to request the OAuth token for the
   // logged in user. This method must only be called when
   // `CanRequestOAuthToken()` returns true.

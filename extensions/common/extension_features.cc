@@ -107,6 +107,10 @@ BASE_FEATURE(kExtensionSourceUrlEnforcement,
              "ExtensionSourceUrlEnforcement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionWARForRedirect,
+             "ExtensionWARForRedirect",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionWebFileHandlers,
              "ExtensionWebFileHandlers",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -198,6 +202,10 @@ BASE_FEATURE(kRemoveCoreSiteInstance,
 
 BASE_FEATURE(kUserScriptUserExtensionToggle,
              "UserScriptUserExtensionToggle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDebuggerAPIRestrictedToDevMode,
+             "DebuggerAPIRestrictedToDevMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace extensions_features

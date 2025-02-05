@@ -28,6 +28,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/interaction/state_observer.h"
@@ -305,8 +306,8 @@ class InteractiveTestApi {
   // Note: Some types are unavailable; for any UTF-8 string type, use
   // std::string. For any UTF-16 type, use std::u16string.
   template <typename ObserverBase, typename Observer>
-    requires std::derived_from<Observer, ObserverBase> &&
-             internal::IsValidMatcherType<typename Observer::ValueType>
+    requires(std::derived_from<Observer, ObserverBase> &&
+             IsStateObserver<ObserverBase>)
   [[nodiscard]] StepBuilder ObserveState(
       StateIdentifier<ObserverBase> id,
       std::unique_ptr<Observer> state_observer);
@@ -326,7 +327,7 @@ class InteractiveTestApi {
   // Note: Some types are unavailable; for any UTF-8 string type, use
   // std::string. For any UTF-16 type, use std::u16string.
   template <typename Observer, typename... Args>
-    requires internal::IsValidMatcherType<typename Observer::ValueType>
+    requires IsStateObserver<Observer>
   [[nodiscard]] StepBuilder ObserveState(StateIdentifier<Observer> id,
                                          Args&&... args);
 
@@ -338,7 +339,6 @@ class InteractiveTestApi {
   // `ObserveState()`, transient states may be missed, so prefer using a custom
   // event or `ObserveState()` when possible.
   template <typename T, typename C>
-    requires internal::IsValidMatcherType<T>
   [[nodiscard]] StepBuilder PollState(
       StateIdentifier<PollingStateObserver<T>> id,
       C&& callback,
@@ -357,7 +357,6 @@ class InteractiveTestApi {
   // `ObserveState()`, transient states may be missed, so prefer using a custom
   // event or `ObserveState()` when possible.
   template <typename T, typename C>
-    requires internal::IsValidMatcherType<T>
   [[nodiscard]] StepBuilder PollElement(
       StateIdentifier<PollingElementStateObserver<T>> id,
       ui::ElementIdentifier element_identifier,
@@ -374,7 +373,25 @@ class InteractiveTestApi {
   //
   // See /chrome/test/interaction/README.md for more information.
   template <typename O, typename V>
+    requires IsStateObserver<O>
   [[nodiscard]] static MultiStep WaitForState(StateIdentifier<O> id, V&& value);
+
+  // Checks that the current known state of observer `id` matches `value`. If
+  // `value` is a function, callback, or `std::reference_wrapper`, it will be
+  // called or unwrapped as the step is run, rather than having its value frozen
+  // when the test sequence is created. A matcher may also be passed, and the
+  // step will proceed when the value of the state satisfies the matcher.
+  //
+  // USE WITH CAUTION - if there's any chance of your state being transient or
+  // asynchronous this will almost certainly cause your test to flake. Use only
+  // to verify a state you have already observed through some other means.
+  //
+  // To this end, since they are inherently asynchronous, polling state
+  // observers are not supported. To verify the state of a polling observer, you
+  // must use `WaitForState()`.
+  template <typename O, typename V>
+    requires(IsStateObserver<O> && !IsPollingStateObserver<O>)
+  [[nodiscard]] static StepBuilder CheckState(StateIdentifier<O> id, V&& value);
 
   // Ends observation of a state. Each `StateObserver` is normally cleaned up
   // at the end of a test. This cleans up the observer with `id` immediately,
@@ -386,6 +403,7 @@ class InteractiveTestApi {
   //
   // Must be called in the same context as `ObserveState()`, `PollState()`, etc.
   template <typename O>
+    requires IsStateObserver<O>
   [[nodiscard]] StepBuilder StopObservingState(StateIdentifier<O> id);
 
   // Provides syntactic sugar so you can put "in any context" before an action
@@ -927,8 +945,8 @@ InteractionSequence::StepBuilder InteractiveTestApi::AnyOf(
 }
 
 template <typename ObserverBase, typename Observer>
-  requires std::derived_from<Observer, ObserverBase> &&
-           internal::IsValidMatcherType<typename Observer::ValueType>
+  requires(std::derived_from<Observer, ObserverBase> &&
+           IsStateObserver<ObserverBase>)
 InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
     StateIdentifier<ObserverBase> id,
     std::unique_ptr<Observer> observer) {
@@ -946,7 +964,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
 }
 
 template <typename Observer, typename... Args>
-  requires internal::IsValidMatcherType<typename Observer::ValueType>
+  requires IsStateObserver<Observer>
 InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
     StateIdentifier<Observer> id,
     Args&&... args) {
@@ -966,7 +984,6 @@ InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
 }
 
 template <typename T, typename C>
-  requires internal::IsValidMatcherType<T>
 InteractionSequence::StepBuilder InteractiveTestApi::PollState(
     StateIdentifier<PollingStateObserver<T>> id,
     C&& callback,
@@ -990,7 +1007,6 @@ InteractionSequence::StepBuilder InteractiveTestApi::PollState(
 }
 
 template <typename T, typename C>
-  requires internal::IsValidMatcherType<T>
 InteractionSequence::StepBuilder InteractiveTestApi::PollElement(
     StateIdentifier<PollingElementStateObserver<T>> id,
     ui::ElementIdentifier element_identifier,
@@ -1025,6 +1041,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::PollElement(
 
 // static
 template <typename O, typename V>
+  requires IsStateObserver<O>
 InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
     StateIdentifier<O> id,
     V&& value) {
@@ -1042,19 +1059,7 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
           seq->FailForTesting();
           return;
         }
-        if constexpr (internal::IsReferenceWrapper<U>) {
-          typed->SetTarget(testing::Matcher<T>(T(value.get())));
-        } else if constexpr (std::derived_from<U, testing::Matcher<T>>) {
-          // Note that a Matcher<T> is actually a wrapper around a "matcher"
-          // object, not a matcher itself.
-          typed->SetTarget(value);
-        } else if constexpr (internal::IsMatcher<U>) {
-          // Need to wrap the "matcher" in a Matcher<T> for it to be used.
-          typed->SetTarget(testing::Matcher<T>(value));
-        } else {
-          typed->SetTarget(testing::Matcher<T>(
-              T(internal::UnwrapArgument<U>(std::move(value)))));
-        }
+        typed->SetTarget(internal::CreateMatcherFromValue<T>(value));
       },
       id.identifier(), U(std::forward<V>(value)));
   auto result = Steps(WithElement(internal::kInteractiveTestPivotElementId,
@@ -1064,7 +1069,44 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
   return result;
 }
 
+// static
+template <typename O, typename V>
+  requires(IsStateObserver<O> && !IsPollingStateObserver<O>)
+InteractiveTestApi::StepBuilder InteractiveTestApi::CheckState(
+    StateIdentifier<O> id,
+    V&& value) {
+  using T = typename O::ValueType;
+  using U = internal::MatcherTypeFor<V>;
+  auto check_callback = base::BindOnce(
+      [](ElementIdentifier id, U value, InteractionSequence* seq,
+         TrackedElement* el) {
+        auto* const typed = internal::StateObserverElementT<T>::LookupElement(
+            id, el->context(), seq->IsCurrentStepInAnyContextForTesting());
+        if (!typed) {
+          LOG(ERROR) << "No state observer registered for identifier " << id
+                     << " in the current context. You must observe a state in "
+                        "the same context you observed it in.";
+          seq->FailForTesting();
+          return;
+        }
+        if (!internal::MatchAndExplain(
+                "CheckState()", internal::CreateMatcherFromValue<T>(value),
+                typed->current_value())) {
+          seq->FailForTesting();
+          return;
+        }
+      },
+      id.identifier(), U(std::forward<V>(value)));
+
+  auto step = WithElement(internal::kInteractiveTestPivotElementId,
+                          std::move(check_callback));
+  step.SetDescription(
+      base::StringPrintf("CheckState(%s)", id.identifier().GetName()));
+  return step;
+}
+
 template <typename O>
+  requires IsStateObserver<O>
 InteractiveTestApi::StepBuilder InteractiveTestApi::StopObservingState(
     StateIdentifier<O> id) {
   auto step = WithElement(

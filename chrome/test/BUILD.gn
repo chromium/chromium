@@ -1331,7 +1331,6 @@ source_set("platform_browser_tests") {
     "//components/enterprise:test_support",
     "//components/fingerprinting_protection_filter/browser:browser",
     "//components/fingerprinting_protection_filter/common:features",
-    "//components/flags_ui:switches",
     "//components/invalidation:test_support",
     "//components/invalidation/impl:test_support",
     "//components/language_detection/core",
@@ -1371,6 +1370,7 @@ source_set("platform_browser_tests") {
     "//components/user_prefs",
     "//components/variations",
     "//components/variations:test_support",
+    "//components/webui/flags:switches",
     "//content/public/browser",
     "//content/public/common",
     "//content/test:test_support",
@@ -2244,7 +2244,6 @@ if (!is_android) {
       "//components/feedback/redaction_tool",
       "//components/fingerprinting_protection_filter/browser",
       "//components/fingerprinting_protection_filter/common",
-      "//components/flags_ui",
       "//components/heavy_ad_intervention",
       "//components/history/content/browser",
       "//components/history/core/common",
@@ -2454,6 +2453,7 @@ if (!is_android) {
       "//components/webrtc",
       "//components/webrtc_logging/browser",
       "//components/webui/chrome_urls",
+      "//components/webui/flags",
       "//content/public/common",
       "//content/test:browsertest_support",
       "//content/test:test_support",
@@ -3465,7 +3465,7 @@ if (!is_android) {
     }
 
     if (is_win || is_mac || is_linux) {
-      sources += [ "../browser/supervised_user/linux_mac_windows/parent_access_dialog_web_contents_observer_browsertest.cc" ]
+      sources += [ "../browser/supervised_user/linux_mac_windows/parent_access_dialog_result_observer_browsertest.cc" ]
     }
 
     if (enable_nacl) {
@@ -6575,8 +6575,6 @@ test("unit_tests") {
     "//components/feedback/redaction_tool",
     "//components/fingerprinting_protection_filter/browser",
     "//components/fingerprinting_protection_filter/common",
-    "//components/flags_ui",
-    "//components/flags_ui:test_support",
     "//components/history/content/browser",
     "//components/history/core/common",
     "//components/history_clusters/core",
@@ -6803,6 +6801,8 @@ test("unit_tests") {
     "//components/webrtc",
     "//components/webui/chrome_urls",
     "//components/webui/chrome_urls/mojom:mojo_bindings",
+    "//components/webui/flags",
+    "//components/webui/flags:test_support",
     "//content/public/app",
     "//content/test:test_support",
     "//crypto:test_support",
@@ -7637,6 +7637,7 @@ test("unit_tests") {
       "../browser/task_manager/test_task_manager.cc",
       "../browser/task_manager/test_task_manager.h",
       "../browser/themes/browser_theme_pack_unittest.cc",
+      "../browser/themes/theme_local_data_batch_uploader_unittest.cc",
       "../browser/themes/theme_properties_unittest.cc",
       "../browser/themes/theme_service_test_utils.cc",
       "../browser/themes/theme_service_test_utils.h",
@@ -10845,7 +10846,6 @@ if (!is_android && !is_chromeos_device) {
       "//components/favicon/core",
       "//components/feature_engagement/public",
       "//components/feature_engagement/test:test_support",
-      "//components/flags_ui",
       "//components/fullscreen_control",
       "//components/global_media_controls",
       "//components/history_embeddings",
@@ -10894,6 +10894,7 @@ if (!is_android && !is_chromeos_device) {
       "//components/webapps/browser:test_support",
       "//components/webapps/common",
       "//components/webauthn/core/browser:test_support",
+      "//components/webui/flags",
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//crypto:test_support",
@@ -11553,9 +11554,9 @@ test("chrome_app_unittests") {
     "//chrome/common/profiler",
     "//chrome/gpu",
     "//components/crash/core/common",
-    "//components/flags_ui:switches",
     "//components/heap_profiling/in_process",
     "//components/safe_browsing:buildflags",
+    "//components/webui/flags:switches",
   ]
   if (is_android) {
     sources += [ "../app/android/chrome_main_delegate_android_unittest.cc" ]

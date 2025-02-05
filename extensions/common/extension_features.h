@@ -127,6 +127,10 @@ BASE_DECLARE_FEATURE(kAllowLegacyMV2Extensions);
 // IsValidSourceUrl enforcement for ExtensionHostMsg_OpenChannelToExtension IPC.
 BASE_DECLARE_FEATURE(kExtensionSourceUrlEnforcement);
 
+// Controls whether server-side redirects are subject to extensions' web
+// accessible resource restrictions.
+BASE_DECLARE_FEATURE(kExtensionWARForRedirect);
+
 // File Handlers.
 BASE_DECLARE_FEATURE(kExtensionWebFileHandlers);
 
@@ -239,6 +243,11 @@ BASE_DECLARE_FEATURE(kRemoveCoreSiteInstance);
 // Changes the chrome.userScript API to be enabled by a per-extension toggle
 // rather than the developer mode toggle on chrome://extensions.
 BASE_DECLARE_FEATURE(kUserScriptUserExtensionToggle);
+
+// Forces the debugger API/feature to always be restricted by developer mode.
+// This ensures we're always testing the developer mode API/feature restriction
+// capability, even when no other API/feature might be restricted by it.
+BASE_DECLARE_FEATURE(kDebuggerAPIRestrictedToDevMode);
 
 }  // namespace extensions_features
 

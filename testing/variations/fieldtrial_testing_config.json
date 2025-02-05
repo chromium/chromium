@@ -694,7 +694,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "UseFrameIntervalDecider"
+                        "UseFrameIntervalDecider",
+                        "UseFrameIntervalDeciderNewAndroidFeatures"
                     ]
                 }
             ]
@@ -22975,6 +22976,26 @@
             ]
         }
     ],
+    "StandardizedTimerClamping": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "StandardizedTimerClamping"
+                    ]
+                }
+            ]
+        }
+    ],
     "StartupImprovements": [
         {
             "platforms": [
@@ -23354,6 +23375,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabStripIncognitoMigration"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TabSwitcherForeignFaviconSupport": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabSwitcherForeignFaviconSupport"
                     ]
                 }
             ]

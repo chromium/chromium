@@ -19,7 +19,7 @@ class UrlFormatter;
 }  // namespace supervised_user
 
 class ParentAccessView;
-class ParentAccessDialogWebContentsObserver;
+class ParentAccessDialogResultObserver;
 
 // Windows / Mac / Linux implementation of web content handler, which
 // forces unsupported methods to fail.
@@ -56,7 +56,11 @@ class SupervisedUserWebContentHandlerImpl
 
   void CloseDialog();
 
-  std::unique_ptr<ParentAccessDialogWebContentsObserver>
+  // Aborts the local web approval flow with an Error result and closes any open
+  // parent approval dialog.
+  void AbortUrlApprovalDialog();
+
+  std::unique_ptr<ParentAccessDialogResultObserver>
       dialog_web_contents_observer_;
   base::WeakPtr<ParentAccessView> weak_parent_access_view_;
   base::WeakPtrFactory<SupervisedUserWebContentHandlerImpl> weak_ptr_factory_{

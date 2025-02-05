@@ -29,8 +29,6 @@ std::string GetHistogramSuffixForSecurityLevel(
       return "NONE";
     case WARNING:
       return "WARNING";
-    case SECURE_WITH_POLICY_INSTALLED_CERT:
-      return "SECURE_WITH_POLICY_INSTALLED_CERT";
     case DANGEROUS:
       return "DANGEROUS";
     default:

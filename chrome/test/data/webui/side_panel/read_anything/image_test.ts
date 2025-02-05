@@ -9,7 +9,7 @@ import {IMAGES_TOGGLE_BUTTON_ID} from 'chrome-untrusted://read-anything-side-pan
 import {assertEquals,assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {suppressInnocuousErrors} from './common.js';
+
 
 suite('Images', () => {
   let app: AppElement;
@@ -37,7 +37,7 @@ suite('Images', () => {
   }
 
   setup(async () => {
-    suppressInnocuousErrors();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     chrome.readingMode.onConnected = () => {};
 

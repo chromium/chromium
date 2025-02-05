@@ -36,6 +36,16 @@ class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
       const CSSProperty& property,
       ValueFilter filter = DefaultValueFilter);
 
+  // Used by GetAnimationForProperty and others to verify that the given
+  // animation meets compositable paint-worklet animation criteria, excluding
+  // additional checks in CheckCanStartAnimationOnCompositor which are the
+  // caller's responsibility to verify.
+  static bool AnimationIsValidForPaintWorklets(
+      Animation* compositable_animation,
+      const Element* element,
+      const CSSProperty& property,
+      NativeCssPaintDefinition::ValueFilter filter);
+
   // Used by GetAnimationForProperty to check the individual keyframe values.
   static bool CanGetValueFromKeyframe(const Element* element,
                                       const PropertySpecificKeyframe* frame,

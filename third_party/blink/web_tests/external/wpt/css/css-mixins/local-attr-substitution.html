@@ -5,7 +5,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
 
-<div id=target data-x="var(--x)"></div>
+<div id=target data-x="var(--x)" data-f="--f()"></div>
 <div id=main></div>
 
 <!-- To pass, a test must produce matching computed values for --actual and
@@ -94,6 +94,24 @@
       --x: FAIL1;
       --y: FAIL2;
       --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="attr() cycle through function">
+  <style>
+    @function --f() {
+      --local: --g();
+      result: var(--local);
+    }
+    @function --g() {
+      result: attr(data-f type(*));
+    }
+    #target {
+      --local: FAIL;
+      --tmp: --f();
+      --actual: var(--tmp, PASS);
       --expected: PASS;
     }
   </style>

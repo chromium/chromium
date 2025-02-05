@@ -4,9 +4,10 @@
 
 #include "chrome/browser/supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_web_contents_observer.h"
+#include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_result_observer.h"
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_view.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/supervised_user/core/common/features.h"
@@ -40,10 +41,13 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
       &SupervisedUserWebContentHandlerImpl::CreateObserverFromContents,
       weak_ptr_factory_.GetWeakPtr(), /*start_time=*/base::TimeTicks::Now(),
       target_url);
+  auto abort_dialog_callback = base::BindOnce(
+      &SupervisedUserWebContentHandlerImpl::AbortUrlApprovalDialog,
+      weak_ptr_factory_.GetWeakPtr());
 
   weak_parent_access_view_ = ParentAccessView::ShowParentAccessDialog(
       web_contents_, target_url, filtering_reason,
-      std::move(create_observer_callback));
+      std::move(create_observer_callback), std::move(abort_dialog_callback));
 
   // Runs the `callback` to inform the caller that the flow initiation was
   // successful.
@@ -68,7 +72,7 @@ void SupervisedUserWebContentHandlerImpl::CreateObserverFromContents(
   // The parent approval dialog and its new contents have been created. We start
   // observing them.
   dialog_web_contents_observer_ =
-      std::make_unique<ParentAccessDialogWebContentsObserver>(
+      std::make_unique<ParentAccessDialogResultObserver>(
           contents,
           /*url_approval_result_callback=*/
           base::BindOnce(&SupervisedUserWebContentHandlerImpl::
@@ -103,4 +107,10 @@ void SupervisedUserWebContentHandlerImpl::CloseDialog() {
     weak_parent_access_view_->CloseView();
     weak_parent_access_view_ = nullptr;
   }
+}
+
+void SupervisedUserWebContentHandlerImpl::AbortUrlApprovalDialog() {
+  supervised_user::WebContentHandler::RecordLocalWebApprovalResultMetric(
+      supervised_user::LocalApprovalResult::kError);
+  CloseDialog();
 }

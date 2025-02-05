@@ -12,18 +12,21 @@
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/browser/extension_navigation_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
@@ -196,8 +199,9 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
       // domain. Note: We can't use the extension_urls::IsWebstoreDomain check
       // here, as the webstore hosted app is associated with a specific path and
       // we don't want to block navigations to other paths on that domain.
-      if (url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().host()))
+      if (url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().host())) {
         return content::NavigationThrottle::BLOCK_REQUEST;
+      }
     }
 #endif
 
@@ -297,12 +301,21 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     // Cross-origin-redirects require that the resource is accessible in the
     // "web_accessible_resources" section of the manifest.
     if (!upstream_origin.opaque() && upstream_origin != target_origin) {
-      base::UmaHistogramBoolean(
-          target_extension->manifest_version() < 3
-              ? "Extensions.WAR.XOriginWebAccessible.MV2"
-              : "Extensions.WAR.XOriginWebAccessible.MV3",
+      bool is_accessible =
           WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
-              target_extension, url, target_origin, upstream));
+              target_extension, url, target_origin, upstream);
+
+      base::UmaHistogramBoolean(target_extension->manifest_version() < 3
+                                    ? "Extensions.WAR.XOriginWebAccessible.MV2"
+                                    : "Extensions.WAR.XOriginWebAccessible.MV3",
+                                is_accessible);
+
+      bool can_redirect_succeed =
+          ExtensionNavigationRegistry::Get(browser_context)
+              ->CanRedirectSucceed(navigation_handle()->GetNavigationId(), url);
+      if (!is_accessible && !can_redirect_succeed) {
+        return content::NavigationThrottle::BLOCK_REQUEST;
+      }
     }
   }
 
@@ -313,8 +326,9 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   // * Renderer-initiated navigations without an initiator origin represent a
   //   history traversal to an entry that was originally loaded in a
   //   browser-initiated navigation.
-  if (!navigation_handle()->GetInitiatorOrigin().has_value())
+  if (!navigation_handle()->GetInitiatorOrigin().has_value()) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   // Not automatically trusted navigation:
   // * Some browser-initiated navigations with an initiator origin are not
@@ -344,8 +358,9 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   }
 
   // An extension can initiate navigations to any of its resources.
-  if (initiator_origin == target_origin)
+  if (initiator_origin == target_origin) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   // Cancel cross-origin-initiator navigations to blob: or filesystem: URLs.
   if (!url_has_extension_scheme) {

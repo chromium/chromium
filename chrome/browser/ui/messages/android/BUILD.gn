@@ -11,6 +11,7 @@ android_resources("java_resources") {
     "java/res/layout/floating_snackbar.xml",
     "java/res/layout/snackbar.xml",
     "java/res/values-night/dimens.xml",
+    "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",
   ]
 

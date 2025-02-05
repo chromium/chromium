@@ -1790,7 +1790,8 @@ class CookieControlsUserBypassTrackingProtectionUiTest
   void SetUp() override {
     CookieControlsUserBypassTest::SetUp();
 
-    std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> enabled_features = {
+        privacy_sandbox::kTrackingProtectionContentSettingUbControl};
     if (std::get<1>(GetParam())) {
       enabled_features.push_back(privacy_sandbox::kActUserBypassUx);
       enabled_features.push_back(privacy_sandbox::kIpProtectionV1);

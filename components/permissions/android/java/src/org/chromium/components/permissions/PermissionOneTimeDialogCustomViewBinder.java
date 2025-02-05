@@ -13,10 +13,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** The {@View} binder class for the PermissionDialogCustomView MVC. */
+@NullMarked
 class PermissionOneTimeDialogCustomViewBinder {
     public static void bind(PropertyModel model, View customView, PropertyKey propertyKey) {
         if (PermissionDialogCustomViewProperties.MESSAGE_TEXT == propertyKey) {
@@ -46,9 +47,7 @@ class PermissionOneTimeDialogCustomViewBinder {
     }
 
     private static void updateMessageText(
-            @NonNull View customView,
-            @NonNull String messageText,
-            List<Pair<Integer, Integer>> boldedRanges) {
+            View customView, String messageText, List<Pair<Integer, Integer>> boldedRanges) {
         TextView messageTextView = customView.findViewById(R.id.text);
         final SpannableStringBuilder sb = new SpannableStringBuilder(messageText);
         final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
@@ -63,13 +62,12 @@ class PermissionOneTimeDialogCustomViewBinder {
         messageTextView.setText(sb);
     }
 
-    private static void updateIcon(@NonNull View customView, @NonNull Drawable icon) {
+    private static void updateIcon(View customView, Drawable icon) {
         ImageView iconView = customView.findViewById(R.id.icon);
         iconView.setImageDrawable(icon);
     }
 
-    private static void updateTintColor(
-            @NonNull View customView, @Nullable ColorStateList iconTint) {
+    private static void updateTintColor(View customView, @Nullable ColorStateList iconTint) {
         ImageView iconView = customView.findViewById(R.id.icon);
         iconView.setImageTintList(iconTint);
     }

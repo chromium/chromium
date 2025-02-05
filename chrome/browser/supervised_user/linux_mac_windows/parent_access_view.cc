@@ -8,10 +8,13 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
@@ -32,8 +35,48 @@ const GURL GetPacpUrl(
   return supervised_user::GetParentAccessURLForDesktop(
       g_browser_process->GetApplicationLocale(), blocked_url, filtering_reason);
 }
-
 }  // namespace
+
+DialogContentLoadWithTimeoutObserver::DialogContentLoadWithTimeoutObserver(
+    content::WebContents* web_contents,
+    const GURL& pacp_url,
+    base::OnceClosure show_dialog_callback,
+    base::OnceClosure cancel_flow_on_timeout_callback)
+    : content::WebContentsObserver(web_contents),
+      pacp_url_(pacp_url),
+      show_dialog_callback_(std::move(show_dialog_callback)) {
+  CHECK(show_dialog_callback_);
+  if (!web_contents) {
+    // The web contains of the dialog were not created, abort the dialog
+    // displaying.
+    std::move(cancel_flow_on_timeout_callback).Run();
+    return;
+  }
+  // Start a timer to abort the flow if the content fails to load by then.
+  initial_load_timer_.Start(
+      FROM_HERE,
+      base::Milliseconds(
+          supervised_user::kLocalWebApprovalBottomSheetLoadTimeoutMs.Get()),
+      std::move(cancel_flow_on_timeout_callback));
+}
+
+DialogContentLoadWithTimeoutObserver::~DialogContentLoadWithTimeoutObserver() =
+    default;
+
+void DialogContentLoadWithTimeoutObserver::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  if (!render_frame_host->IsInPrimaryMainFrame() ||
+      !validated_url.spec().starts_with(pacp_url_->spec())) {
+    return;
+  }
+
+  // Stop the timeout timer and display the dialog.
+  initial_load_timer_.Stop();
+  if (!show_dialog_callback_.is_null()) {
+    std::move(show_dialog_callback_).Run();
+  }
+}
 
 ParentAccessView::ParentAccessView(content::BrowserContext* context) {
   CHECK(context);
@@ -48,7 +91,8 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
     content::WebContents* web_contents,
     const GURL& target_url,
     const supervised_user::FilteringBehaviorReason& filtering_reason,
-    WebContentsObserverCreationCallback web_contents_observer_creation_cb) {
+    WebContentsObserverCreationCallback web_contents_observer_creation_cb,
+    base::OnceClosure abort_dialog_callback) {
   CHECK(web_contents);
   CHECK(web_contents_observer_creation_cb);
 
@@ -66,8 +110,8 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
 
   auto parent_access_view =
       std::make_unique<ParentAccessView>(web_contents->GetBrowserContext());
-  parent_access_view->Initialize(GetPacpUrl(target_url, filtering_reason),
-                                 corner_radius);
+  const GURL pacp_url = GetPacpUrl(target_url, filtering_reason);
+  parent_access_view->Initialize(pacp_url, corner_radius);
 
   // Keeps a pointer to the parent access views as it's ownership is transferred
   // to the delegate.
@@ -78,12 +122,20 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
       std::move(dialog_delegate),
       /*parent=*/web_contents->GetTopLevelNativeWindow());
 
-  // Shows the dialog.
-  view_weak_ptr->ShowNativeView();
-
-  // Starts observing the new dialog contents.
+  // Starts observing the new dialog contents that have been created in
+  // `Initialize`.
   std::move(web_contents_observer_creation_cb)
       .Run(view_weak_ptr->GetWebViewContents());
+
+  // TODO(crbug.com/394344573): Notify the user that a technical error has
+  // happened to avoid the impression that the button is unresponsive.
+  base::OnceClosure show_dialog_callback =
+      base::BindOnce(&ParentAccessView::ShowNativeView, view_weak_ptr);
+
+  view_weak_ptr.get()->content_loader_timeout_observer_ =
+      std::make_unique<DialogContentLoadWithTimeoutObserver>(
+          view_weak_ptr->GetWebViewContents(), pacp_url,
+          std::move(show_dialog_callback), std::move(abort_dialog_callback));
 
   return view_weak_ptr;
 }

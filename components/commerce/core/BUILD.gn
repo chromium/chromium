@@ -32,9 +32,9 @@ source_set("feature_list") {
     ":commerce_heuristics_data",
     ":pref_names",
     "//base",
-    "//components/flags_ui",
     "//components/prefs",
     "//components/search",
+    "//components/webui/flags",
     "//third_party/re2:re2",
     "//url:url",
   ]

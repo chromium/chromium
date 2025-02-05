@@ -1,7 +1,6 @@
 include_rules = [
   "+components/bookmarks",
   "+components/endpoint_fetcher",
-  "+components/flags_ui",
   "+components/grit/components_resources.h",
   "+components/history/core",
   "+components/keyed_service",
@@ -20,6 +19,7 @@ include_rules = [
   "+components/unified_consent",
   "+components/url_formatter",
   "+components/variations",
+  "+components/webui/flags",
   "+mojo/public/cpp/bindings",
   "+net/base/registry_controlled_domains/registry_controlled_domain.h",
   "+net/base/url_util.h",

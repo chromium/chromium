@@ -10403,6 +10403,10 @@ NavigationRequest::ComputeCrossOriginIsolationKey() {
     return std::nullopt;
   }
 
+  // Inform the PolicyContainer that DocumentIsolationPolicy has enabled
+  // crossOriginIsolation for the document.
+  policy_container_builder_->SetCrossOriginIsolationEnabledByDIP();
+
   url::Origin origin = GetOriginToCommit().value();
   return AgentClusterKey::CrossOriginIsolationKey(
       origin, CrossOriginIsolationMode::kConcrete);

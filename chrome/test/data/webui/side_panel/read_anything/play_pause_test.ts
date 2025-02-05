@@ -11,7 +11,6 @@ import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -25,7 +24,6 @@ suite('PlayPause', () => {
   let clickEmitted: boolean;
 
   setup(() => {
-    suppressInnocuousErrors();
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metrics = new TestMetricsBrowserProxy();

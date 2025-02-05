@@ -60,30 +60,13 @@ using content::DesktopMediaID;
 
 namespace {
 
-// The enable/disable property of this feature has no impact. The feature is
-// used solely to pass on the parameter below.
-BASE_FEATURE(kNativeDesktopMediaList,
-             "NativeDesktopMediaList",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The maximum number of window thumbnails that are concurrently captured when
 // the frame delivery mode is set to kMultipleSourcesRecurrent.
 // ThumbnailCapturerMac is the only capturer at the moment that implements this.
-const base::FeatureParam<int> kNativeDesktopMediaListMaxConcurrentStreams{
-    &kNativeDesktopMediaList, "max_concurrent_streams", 100};
-
-#if defined(USE_AURA)
-// Controls whether we take VideoCaptureLocks for aura windows to force them
-// to be visible. This is required for their thumbnails to be taken correctly
-// if native occlusion applying to the compositor
-// (`kApplyNativeOcclusionToCompositor`) is enabled.
-BASE_FEATURE(kMediaPickerWindowsForcedVisible,
-             "MediaPickerWindowsForcedVisible",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+constexpr size_t kNativeDesktopMediaListMaxConcurrentStreams = 100;
 
 // Update the list every second.
-const int kDefaultNativeDesktopMediaListUpdatePeriod = 1000;
+constexpr int kDefaultNativeDesktopMediaListUpdatePeriod = 1000;
 
 // Returns a hash of a DesktopFrame content to detect when image for a desktop
 // media source has changed, if the frame is valid, or absl::null_opt if not.
@@ -173,12 +156,6 @@ BOOL CALLBACK AllHwndCollector(HWND hwnd, LPARAM param) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kWindowCaptureMacV2,
-             "WindowCaptureMacV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
     DesktopMediaList::Type type) {
   switch (type) {
@@ -256,10 +233,8 @@ content::DesktopMediaID::Id GetUpdatedWindowId(
     }
   }
 #elif BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(kWindowCaptureMacV2)) {
-    if (remote_cocoa::ScopedCGWindowID::Get(desktop_media_id.id)) {
-      window_id = desktop_media_id.id;
-    }
+  if (remote_cocoa::ScopedCGWindowID::Get(desktop_media_id.id)) {
+    window_id = desktop_media_id.id;
   }
 #endif
 
@@ -441,9 +416,8 @@ void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
       ThumbnailCapturer::FrameDeliveryMethod::kMultipleSourcesRecurrent) {
     // TODO(crbug.com/40278456): Select windows to stream based on what's
     // visible. For now, select the first N windows.
-    const size_t target_size = std::min(
-        static_cast<size_t>(kNativeDesktopMediaListMaxConcurrentStreams.Get()),
-        sources.size());
+    const size_t target_size =
+        std::min(kNativeDesktopMediaListMaxConcurrentStreams, sources.size());
     std::vector<ThumbnailCapturer::SourceId> source_ids;
     for (size_t i = 0; i < target_size; ++i) {
       if (sources[i].id != excluded_window_id_) {
@@ -1093,9 +1067,7 @@ void NativeDesktopMediaList::CaptureAuraWindowThumbnail(
       gfx::Rect(thumbnail_size_), window_rect.size());
 
   pending_aura_capture_requests_++;
-  if (base::FeatureList::IsEnabled(kMediaPickerWindowsForcedVisible)) {
-    capture_locks_.push_back(window->GetHost()->CreateVideoCaptureLock());
-  }
+  capture_locks_.push_back(window->GetHost()->CreateVideoCaptureLock());
 
   ui::GrabWindowSnapshotAndScaleAura(
       window, window_rect, scaled_rect.size(),

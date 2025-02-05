@@ -4,8 +4,8 @@
 
 import type {BookmarksEditDialogElement} from 'chrome://bookmarks/bookmarks.js';
 import {BookmarksApiProxyImpl, normalizeNode, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 import {createFolder, createItem, replaceBody} from './test_util.js';
@@ -31,22 +31,25 @@ suite('<bookmarks-edit-dialog>', function() {
     replaceBody(dialog);
   });
 
-  test('editing an item shows the url field', function() {
+  test('editing an item shows the url field', async () => {
     const item = normalizeNode(createItem('0'));
     dialog.showEditDialog(item);
+    await microtasksFinished();
 
     assertFalse(dialog.$.url.hidden);
   });
 
-  test('editing a folder hides the url field', function() {
+  test('editing a folder hides the url field', async () => {
     const folder = normalizeNode(createFolder('0', []));
     dialog.showEditDialog(folder);
+    await microtasksFinished();
 
     assertTrue(dialog.$.url.hidden);
   });
 
-  test('adding a folder hides the url field', function() {
+  test('adding a folder hides the url field', async () => {
     dialog.showAddDialog(true, '1');
+    await microtasksFinished();
     assertTrue(dialog.$.url.hidden);
   });
 
@@ -55,10 +58,7 @@ suite('<bookmarks-edit-dialog>', function() {
     const item = normalizeNode(
         createItem('1', {url: 'http://website.com', title: 'website'}));
     dialog.showEditDialog(item);
-    await Promise.all([
-      dialog.$.name.updateComplete,
-      dialog.$.url.updateComplete,
-    ]);
+    await microtasksFinished();
 
     dialog.$.saveButton.click();
     assertEquals(item.id, lastUpdate.id);
@@ -68,12 +68,9 @@ suite('<bookmarks-edit-dialog>', function() {
     // Editing a folder, changing the title.
     const folder = normalizeNode(createFolder('2', [], {title: 'Cool Sites'}));
     dialog.showEditDialog(folder);
-    await Promise.all([
-      dialog.$.name.updateComplete,
-      dialog.$.url.updateComplete,
-    ]);
+    await microtasksFinished();
     dialog.$.name.value = 'Awesome websites';
-    await dialog.$.name.updateComplete;
+    await microtasksFinished();
 
     dialog.$.saveButton.click();
     assertEquals(folder.id, lastUpdate.id);
@@ -83,15 +80,12 @@ suite('<bookmarks-edit-dialog>', function() {
 
   test('add passes the correct details to the backend', async function() {
     dialog.showAddDialog(false, '1');
-    await Promise.all([
-      dialog.$.name.updateComplete,
-      dialog.$.url.updateComplete,
-    ]);
+    await microtasksFinished();
 
     dialog.$.name.value = 'Permission Site';
-    await dialog.$.name.updateComplete;
+    await microtasksFinished();
     dialog.$.url.value = 'permission.site';
-    await dialog.$.url.updateComplete;
+    await microtasksFinished();
 
     setDebouncerForTesting();
 
@@ -113,7 +107,7 @@ suite('<bookmarks-edit-dialog>', function() {
 
     dialog.$.url.value = 'example.com';
     assertTrue(dialog.validateUrl());
-    flush();
+    await microtasksFinished();
     assertEquals('http://example.com', dialog.$.url.value);
 
     dialog.$.url.value = '';
@@ -129,9 +123,10 @@ suite('<bookmarks-edit-dialog>', function() {
   test('doesn\'t save when URL is invalid', async () => {
     const item = normalizeNode(createItem('0'));
     dialog.showEditDialog(item);
+    await microtasksFinished();
 
     dialog.$.url.value = '';
-    await dialog.$.url.updateComplete;
+    await microtasksFinished();
     dialog.$.saveButton.click();
 
     assertTrue(dialog.$.url.invalid);

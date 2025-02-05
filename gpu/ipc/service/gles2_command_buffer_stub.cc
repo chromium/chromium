@@ -103,7 +103,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo(
         manager->gpu_driver_bug_workarounds(), manager->gpu_feature_info());
     context_group_ = new gles2::ContextGroup(
-        manager->gpu_preferences(), true, CreateMemoryTracker(),
+        manager->gpu_preferences(), CreateMemoryTracker(),
         manager->shader_translator_cache(),
         manager->framebuffer_completeness_cache(), feature_info,
         init_params.attribs.bind_generates_resource,

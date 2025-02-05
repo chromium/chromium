@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -14,6 +15,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_frame_host.h"
+#include "extensions/browser/extension_navigation_registry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -267,6 +269,7 @@ void ExtensionWebContentsObserver::ReadyToCommitNavigation(
 
 void ExtensionWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  DCHECK(navigation_handle);
   DCHECK(initialized_);
   if (!navigation_handle->HasCommitted())
     return;
@@ -285,6 +288,10 @@ void ExtensionWebContentsObserver::DidFinishNavigation(
   } else if (frame_extension && render_frame_host->IsRenderFrameLive()) {
     pm->RegisterRenderFrameHost(render_frame_host, frame_extension);
   }
+
+  // Delete the navigation id from ExtensionNavigationRegistry if it exists.
+  ExtensionNavigationRegistry::Get(web_contents()->GetBrowserContext())
+      ->Erase(navigation_handle->GetNavigationId());
 
   ScriptInjectionTracker::DidFinishNavigation(PassKey(), navigation_handle);
 }

@@ -9,7 +9,6 @@
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
 

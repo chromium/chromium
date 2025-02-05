@@ -300,6 +300,20 @@ class NET_EXPORT CookieMonster : public CookieStore {
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest,
                            FilterCookiesWithOptionsWarnShadowingDomains);
 
+  // For DeleteAllAliasCookies
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterLegacyScopeTest, DeleteAllAliasCookies);
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterLegacyScopeTest,
+                           DeleteAllAliasPartitionedCookies);
+  // For UpdateMostRecentCookies
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterLegacyScopeTest,
+                           UpdateMostRecentlyCreatedCookie);
+
+  // For CheckAndActivateLegacyScopeBehavior
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterLegacyScopeTest,
+                           CheckAndActivateLegacyScopeBehavior);
+  FRIEND_TEST_ALL_PREFIXES(CookieMonsterLegacyScopeTest,
+                           CheckAndActivateLegacyScopeBehaviorNullPrefDelegate);
+
   // For StoreLoadedCookies behavior with origin-bound cookies.
   FRIEND_TEST_ALL_PREFIXES(CookieMonsterTest_StoreLoadedCookies,
                            NoSchemeNoPort);
@@ -353,7 +367,12 @@ class NET_EXPORT CookieMonster : public CookieStore {
     // collection.
     DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN = 13,
 
-    DELETE_COOKIE_LAST_ENTRY = 14,
+    // When legacy scope behavior is active any cookies which alias a
+    // "most recently created" cookie must be deleted. Aliasing is when
+    // cookies share the same LegacyUniqueKey().
+    DELETE_COOKIE_ALIAS = 14,
+
+    DELETE_COOKIE_LAST_ENTRY = 15,
   };
 
   // Used to populate a histogram containing information about the
@@ -704,6 +723,27 @@ class NET_EXPORT CookieMonster : public CookieStore {
   CookieScopeSemantics GetScopeSemanticsForCookie(
       const CanonicalCookie& cookie) const;
 
+  // This function will use the pref_delegate to help identify if a cookie's
+  // domain is entering or exiting legacy scope mode for the first time. If this
+  // is the first time it is entering legacy mode DeleteAllAliasingCookies will
+  // be called for this cookie's domain.
+  CookieScopeSemantics CheckAndActivateLegacyScopeBehavior(
+      const CanonicalCookie& cookie);
+
+  // Helper function to delete all aliasing cookies for a given domain.
+  // This function will loop through partitioned and non-partitioned cookie maps
+  // and identify any cookie that is not the most recently created cookie of its
+  // aliases if the cookie is not most recently created it will be deleted.
+  void DeleteAllAliasingCookies(const std::string& domain);
+
+  // Helper function to update the most recent cookie. This is for when cookie
+  // scope semantics is set to legacy scope mode is active, a cookie is
+  // considered the most recent if it is the most recent cookie created.
+  void UpdateMostRecentCookie(
+      const CookieMapItPair& itpair,
+      std::map<UniqueCookieKey, std::pair<base::Time, UniqueCookieKey>>&
+          most_recent_cookies);
+
   // Statistics support
 
   // This function should be called repeatedly, and will record
@@ -816,6 +856,9 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // Minimum delay after updating a cookie's LastAccessDate before we will
   // update it again.
   const base::TimeDelta last_access_threshold_;
+
+  // Local copy of pref's dictionary.
+  std::unique_ptr<base::Value::Dict> pref_delegate_dict_;
 
   // Approximate date of access time of least recently accessed cookie
   // in |cookies_|.  Note that this is not guaranteed to be accurate, only a)

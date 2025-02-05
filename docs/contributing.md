@@ -360,6 +360,39 @@ with the ACK button to resolve them. If you cannot resolve all comments an
 override is provided through an "Unresolved-Comment-Reason:" stanza in your
 commit message.
 
+### Code Review Votes
+
+Submitting a CL requires different approvals depending on whether the author
+[is a committer][becoming-a-committer] and on the affected files.
+
+There are two types of approvals:
+* Code-Review approvals. These are CL-wide and can be granted by any committer
+  (other than the author themselves). Committers need one Code-Review +1
+  approval; non-committers require two separate Code-Review +1 approvals.
+* Code-Owners approvals. Files have different owners, which are specified in the
+  `OWNERS` files. Every file requires either an owner to +1 the CL or for the
+  author to be an OWNER of the file.
+
+#### Copying Votes to New Patch Sets
+
+When a new patch set is uploaded, approvals may be removed (in order to prevent
+someone from landing significantly different unreviewed code after getting
+approval in a previous patch set).
+
+Approvals may be copied between patch sets in some situations.
+* Code-Review approvals will be copied between patch sets if:
+  * It is a trivial rebase (as detected by Gerrit),
+  * It is a commit message change, or
+  * The author is a committer *and* the list of modified files has not changed
+    (for non-committers, any code change will result in loss of Code-Review
+    approvals).
+* Code-Owners approvals are *always* copied between patch sets (even if the
+  reviewer's +1 is no longer shown in Gerrit).
+
+If a patch set loses its approvals, these will need to be re-added before the
+patch set can be committed, inline with the requirements for the author (one
++1 for committers, two +1s for non-committers).
+
 ## Running automated tests
 
 Before being submitted, a change must pass the commit queue (CQ). The commit
@@ -602,6 +635,7 @@ formats.
     given commit diverged from main.
 
 [//]: # (the reference link section should be alphabetically sorted)
+[becoming-a-committer]: https://www.chromium.org/getting-involved/become-a-committer/
 [checkout-and-build]: https://chromium.googlesource.com/chromium/src/+/main/docs/#checking-out-and-building
 [chrome-dd-review-process]: http://go/chrome-dd-review-process
 [chromium-design-docs]: https://groups.google.com/a/chromium.org/forum/#!forum/chromium-design-docs

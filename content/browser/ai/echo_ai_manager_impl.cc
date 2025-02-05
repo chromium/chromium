@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_language_model.h"
 #include "content/browser/ai/echo_ai_rewriter.h"
@@ -25,6 +26,21 @@ namespace {
 
 const int kMockDownloadPreparationTimeMillisecond = 300;
 const int kMockModelSizeBytes = 3000;
+
+// TODO(crbug.com/394109104): This is duplicated from chrome AIManager in order
+// to keep the consistent wpt results run from CQ, which currently only supports
+// running wpt_internal/ tests on content_shell, using content EchoAIManager.
+// If there is enough divergence in two AI Managers' code, it should be
+// refactored to share the common code or use subclasses.
+bool SupportedLanguages(const std::vector<std::string>& input,
+                        const std::vector<std::string>& context,
+                        const std::string& output) {
+  auto supported = [](const std::string& l) {
+    return l.empty() || language::ExtractBaseLanguage(l) == "en";
+  };
+  return std::ranges::all_of(input, supported) &&
+         std::ranges::all_of(context, supported) && supported(output);
+}
 
 }  // namespace
 
@@ -75,7 +91,15 @@ void EchoAIManagerImpl::CreateLanguageModel(
 }
 
 void EchoAIManagerImpl::CanCreateSummarizer(
+    blink::mojom::AISummarizerCreateOptionsPtr options,
     CanCreateSummarizerCallback callback) {
+  if (options && !SupportedLanguages(options->expected_input_languages,
+                                     options->expected_context_languages,
+                                     options->output_language)) {
+    std::move(callback).Run(
+        blink::mojom::ModelAvailabilityCheckResult::kNoUnsupportedLanguage);
+    return;
+  }
   if (!summarizer_downloaded_) {
     std::move(callback).Run(
         blink::mojom::ModelAvailabilityCheckResult::kAfterDownload);
@@ -90,10 +114,15 @@ void EchoAIManagerImpl::CreateSummarizer(
     blink::mojom::AISummarizerCreateOptionsPtr options) {
   mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
       std::move(client));
+  if (options && !SupportedLanguages(options->expected_input_languages,
+                                     options->expected_context_languages,
+                                     options->output_language)) {
+    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AISummarizer>());
+    return;
+  }
   auto return_summarizer_task =
       base::BindOnce(&EchoAIManagerImpl::ReturnAISummarizerCreationResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(client_remote));
-
   if (!summarizer_downloaded_) {
     // In order to test the model download progress handling, the
     // `EchoAIManagerImpl` will always start from the `after-download` state,

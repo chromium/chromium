@@ -21515,6 +21515,36 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.LensViewFinder.CameraCapture">
+  <owner>radunitescu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the user captures an image in Lens View Finder.
+  </description>
+</action>
+
+<action name="Mobile.LensViewFinder.DismissTapped">
+  <owner>radunitescu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the user presses the dismiss button in Lens View Finder.
+  </description>
+</action>
+
+<action name="Mobile.LensViewFinder.GalleryImagePicked">
+  <owner>radunitescu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the user picks an image from the gallery in Lens View Finder.
+  </description>
+</action>
+
+<action name="Mobile.LensViewFinder.Opened">
+  <owner>radunitescu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>Recorded when the user opens Lens View Finder.</description>
+</action>
+
 <action name="Mobile.Omnibox.iOS.PastedValidURL">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>

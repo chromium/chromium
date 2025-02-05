@@ -102,13 +102,6 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/feature_entry_macros.h"
-#include "components/flags_ui/flags_state.h"
-#include "components/flags_ui/flags_storage.h"
-#include "components/flags_ui/flags_ui_metrics.h"
-#include "components/flags_ui/flags_ui_switches.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/history/core/browser/features.h"
 #include "components/history_clusters/core/config.h"
@@ -189,6 +182,13 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "components/webapps/browser/features.h"
+#include "components/webui/flags/feature_entry.h"
+#include "components/webui/flags/feature_entry_macros.h"
+#include "components/webui/flags/flags_state.h"
+#include "components/webui/flags/flags_storage.h"
+#include "components/webui/flags/flags_ui_metrics.h"
+#include "components/webui/flags/flags_ui_switches.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "device/base/features.h"
@@ -8855,6 +8855,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-legacy-tabstate-deprecation",
+     flag_descriptions::kLegacyTabStateDeprecationName,
+     flag_descriptions::kLegacyTabStateDeprecationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kLegacyTabStateDeprecation)},
+
     {"biometric-reauth-password-filling",
      flag_descriptions::kBiometricReauthForPasswordFillingName,
      flag_descriptions::kBiometricReauthForPasswordFillingDescription,
@@ -9483,10 +9488,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSafetyHub,
                                     kSafetyHubVariations,
                                     "SafetyHub")},
-    {"plus-address-full-form-fill",
-     flag_descriptions::kPlusAddressFullFormFillName,
-     flag_descriptions::kPlusAddressFullFormFillDescription, kOsAll,
-     FEATURE_VALUE_TYPE(plus_addresses::features::kPlusAddressFullFormFill)},
 
     {"permission-site-settings-radio-button",
      flag_descriptions::kPermissionSiteSettingsRadioButtonName,

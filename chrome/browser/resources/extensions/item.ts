@@ -32,6 +32,7 @@ export interface ItemDelegate {
   uninstallItem(id: string): Promise<void>;
   setItemEnabled(id: string, isEnabled: boolean): void;
   setItemAllowedIncognito(id: string, isAllowedIncognito: boolean): void;
+  setItemAllowedUserScripts(id: string, isAllowedUserScripts: boolean): void;
   setItemAllowedOnFileUrls(id: string, isAllowedOnFileUrls: boolean): void;
   setItemHostAccess(id: string, hostAccess: chrome.developerPrivate.HostAccess):
       void;
@@ -76,6 +77,7 @@ export class DummyItemDelegate {
   }
   setItemEnabled(_id: string, _isEnabled: boolean) {}
   setItemAllowedIncognito(_id: string, _isAllowedIncognito: boolean) {}
+  setItemAllowedUserScripts(_id: string, _isAllowedUserScripts: boolean) {}
   setItemAllowedOnFileUrls(_id: string, _isAllowedOnFileUrls: boolean) {}
   setItemHostAccess(
       _id: string, _hostAccess: chrome.developerPrivate.HostAccess) {}

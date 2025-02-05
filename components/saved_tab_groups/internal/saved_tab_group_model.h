@@ -233,6 +233,12 @@ class SavedTabGroupModel {
   // Mark the tab group as transitioned to shared.
   void MarkTransitionedToShared(const base::Uuid& group_id);
 
+  // Called to notify of the sync bridge state changes, e.g. whether initial
+  // merge or disable sync are in progress. Invoked only for shared tab group
+  // bridge.
+  void OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType sync_bridge_update_type);
+
  private:
   // Returns mutable group containing tab with ID `saved_tab_guid`, otherwise
   // returns null.

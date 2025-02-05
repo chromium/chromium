@@ -10,7 +10,7 @@ import {ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-a
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {emitEvent, suppressInnocuousErrors} from './common.js';
+import {emitEvent} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -77,7 +77,6 @@ suite('AppReceivesToolbarChanges', () => {
   }
 
   setup(() => {
-    suppressInnocuousErrors();
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
     BrowserProxy.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

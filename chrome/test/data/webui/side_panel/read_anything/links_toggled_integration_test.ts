@@ -9,7 +9,7 @@ import {LINK_TOGGLE_BUTTON_ID, PauseActionSource, ToolbarEvent} from 'chrome-unt
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
+import {createSpeechSynthesisVoice, emitEvent} from './common.js';
 
 suite('LinksToggledIntegration', () => {
   let app: AppElement;
@@ -62,7 +62,7 @@ suite('LinksToggledIntegration', () => {
   }
 
   setup(async () => {
-    suppressInnocuousErrors();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to

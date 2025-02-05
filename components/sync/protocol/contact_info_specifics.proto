@@ -116,6 +116,13 @@ message ContactInfoSpecifics {
   optional StringToken name_first = 7;
   optional StringToken name_middle = 8;
   optional StringToken name_last = 9;
+
+  // Prefix of the last name, e.g., "von" in "von Neumann".
+  optional StringToken name_last_prefix = 60;
+
+  // Core of the last name, excluding prefixes.
+  optional StringToken name_last_core = 61;
+
   // Sometimes the last name is composed of two names as it is common for
   // Hispanic/Latinx names. In the unstructured representation of the last name,
   // there may be even a conjunction between the first and the second last

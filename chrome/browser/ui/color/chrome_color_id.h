@@ -466,7 +466,6 @@
   E_CPONLY(kColorPwaMenuButtonIcon) \
   E_CPONLY(kColorPwaSecurityChipForeground) \
   E_CPONLY(kColorPwaSecurityChipForegroundDangerous) \
-  E_CPONLY(kColorPwaSecurityChipForegroundPolicyCert) \
   E_CPONLY(kColorPwaSecurityChipForegroundSecure) \
   E_CPONLY(kColorPwaTabBarBottomSeparator) \
   E_CPONLY(kColorPwaTabBarTopSeparator) \

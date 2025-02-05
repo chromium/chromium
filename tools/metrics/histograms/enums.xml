@@ -12471,6 +12471,7 @@ from previous Chrome versions.
   <int value="-656743717" label="HelpAppDiscoverTab:enabled"/>
   <int value="-656630541"
       label="WebAuthenticationEnclaveAuthenticator:disabled"/>
+  <int value="-656101798" label="LegacyTabStateDeprecation:enabled"/>
   <int value="-655608107" label="MediaAppCustomColors:enabled"/>
   <int value="-655294302"
       label="UseMlServiceForNonLongformHandwritingOnAllBoards:disabled"/>
@@ -18924,6 +18925,7 @@ from previous Chrome versions.
   <int value="1872768755" label="BackgroundResourceFetch:disabled"/>
   <int value="1872897574"
       label="AutofillEnableRankingFormulaCreditCards:disabled"/>
+  <int value="1872919020" label="LegacyTabStateDeprecation:disabled"/>
   <int value="1873476339" label="ScalableIph:disabled"/>
   <int value="1873688130"
       label="ExperimentalAccessibilityDictationMoreCommands:disabled"/>

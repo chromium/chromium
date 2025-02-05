@@ -21,6 +21,7 @@ export {BookmarksItemElement} from './item.js';
 export {BookmarksListElement} from './list.js';
 export {HIDE_FOCUS_RING_ATTRIBUTE} from './mouse_focus_behavior.js';
 export {reduceAction, updateFolderOpenState, updateNodes, updateSelectedFolder, updateSelection} from './reducers.js';
+export {BookmarksRouter} from './router.js';
 export {Store} from './store.js';
 export {StoreClientMixin} from './store_client_mixin.js';
 export {BookmarksToolbarElement} from './toolbar.js';

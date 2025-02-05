@@ -1204,6 +1204,10 @@
     // column-fill
     "balance",
 
+    // corner-shape
+    // "round",
+    "scoop",
+
     // -webkit-app-region
     "drag",
     "no-drag",

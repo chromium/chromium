@@ -129,7 +129,7 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
 
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path));
-    ASSERT_TRUE(db.Execute(contents));
+    ASSERT_TRUE(db.ExecuteScriptForTesting(contents));
   }
 
   base::ScopedTempDir temp_directory_;

@@ -78,7 +78,6 @@ public class PageInfoConnectionController
             case ConnectionSecurityLevel.WARNING:
                 return R.color.default_text_color_error;
             case ConnectionSecurityLevel.NONE:
-            case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
             case ConnectionSecurityLevel.SECURE:
                 return 0;
             default:

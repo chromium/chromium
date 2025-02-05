@@ -140,6 +140,6 @@ TEST_F(AIManagerTest, CanCreate) {
   AIManager ai_manager = AIManager(main_rfh()->GetBrowserContext());
   ai_manager.CanCreateLanguageModel(callback.Get());
   ai_manager.CanCreateWriter(/*options=*/{}, callback.Get());
-  ai_manager.CanCreateSummarizer(callback.Get());
+  ai_manager.CanCreateSummarizer(/*options=*/{}, callback.Get());
   ai_manager.CanCreateRewriter(/*options=*/{}, callback.Get());
 }

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 include_rules = [
+    "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
     "+ios/chrome/browser/browsing_data/model",
     "+ios/chrome/browser/discover_feed/model",
     "+ios/chrome/browser/signin/model/authentication_service.h",
@@ -12,5 +13,6 @@ include_rules = [
 specific_include_rules = {
 "action.mm": [
       "+ios/chrome/browser/web_state_list/model",
+      "+ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
 ]
 }

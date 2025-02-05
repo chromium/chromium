@@ -104,6 +104,7 @@ source_set("browser") {
     "//components/file_access",
     "//components/filename_generation",
     "//components/input",
+    "//components/language/core/common",
     "//components/language_detection/content/common",
     "//components/link_header_util",
     "//components/metrics",

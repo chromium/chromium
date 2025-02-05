@@ -28,7 +28,6 @@ public class SecurityStatusIcon {
                 return R.drawable.omnibox_not_secure_warning;
             case ConnectionSecurityLevel.DANGEROUS:
                 return R.drawable.omnibox_dangerous;
-            case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
             case ConnectionSecurityLevel.SECURE:
                 return useLockIconForSecureState
                         ? R.drawable.omnibox_https_valid_lock
@@ -49,7 +48,6 @@ public class SecurityStatusIcon {
                 return R.string.accessibility_security_btn_warn;
             case ConnectionSecurityLevel.DANGEROUS:
                 return R.string.accessibility_security_btn_dangerous;
-            case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
             case ConnectionSecurityLevel.SECURE:
                 return R.string.accessibility_security_btn_secure;
             default:

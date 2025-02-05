@@ -70,6 +70,7 @@ using testing::IsNull;
 using testing::NotNull;
 using testing::Pointee;
 using testing::Return;
+using testing::Sequence;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
@@ -168,6 +169,7 @@ class MockTabGroupModelObserver : public SavedTabGroupModelObserver {
   MOCK_METHOD(void,
               SavedTabGroupUpdatedLocally,
               (const base::Uuid&, const std::optional<base::Uuid>&));
+  MOCK_METHOD(void, OnSyncBridgeUpdateTypeChanged, (SyncBridgeUpdateType));
 
  private:
   base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
@@ -560,6 +562,16 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAddRemoteGroupsAtInitialSync) {
   change_list.push_back(CreateAddEntityChange(
       MakeTabGroupSpecifics("title 2", sync_pb::SharedTabGroup::RED),
       kCollaborationId2));
+
+  Sequence s;
+  EXPECT_CALL(
+      mock_model_observer(),
+      OnSyncBridgeUpdateTypeChanged(Eq(SyncBridgeUpdateType::kInitialMerge)))
+      .InSequence(s);
+  EXPECT_CALL(
+      mock_model_observer(),
+      OnSyncBridgeUpdateTypeChanged(Eq(SyncBridgeUpdateType::kDefaultState)))
+      .InSequence(s);
   bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
                               std::move(change_list));
 
@@ -880,7 +892,17 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldNotifyObserversOnDisableSync) {
   // Observers must be notified for closed groups to make it sure that
   // the group will be closed. Note that only group closure is notified which
   // will remove the whole group from model and UI.
-  EXPECT_CALL(mock_model_observer(), SavedTabGroupRemovedFromSync);
+  Sequence s;
+  EXPECT_CALL(
+      mock_model_observer(),
+      OnSyncBridgeUpdateTypeChanged(Eq(SyncBridgeUpdateType::kDisableSync)))
+      .InSequence(s);
+  EXPECT_CALL(mock_model_observer(), SavedTabGroupRemovedFromSync)
+      .InSequence(s);
+  EXPECT_CALL(
+      mock_model_observer(),
+      OnSyncBridgeUpdateTypeChanged(Eq(SyncBridgeUpdateType::kDefaultState)))
+      .InSequence(s);
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 }
 

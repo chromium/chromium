@@ -130,6 +130,7 @@ blink_core_sources_style = [
   "style_variables.h",
   "style_view_transition_group.h",
   "style_view_transition_name.h",
+  "superellipse.h",
   "svg_dash_array.cc",
   "svg_dash_array.h",
   "svg_paint.cc",

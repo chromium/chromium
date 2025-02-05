@@ -114,8 +114,9 @@ void IconImage::Source::ResetHost() {
 }
 
 gfx::ImageSkiaRep IconImage::Source::GetImageForScale(float scale) {
-  if (host_)
+  if (host_) {
     host_->LoadImageForScaleAsync(scale);
+  }
   return blank_image_.GetRepresentation(scale);
 }
 
@@ -140,8 +141,9 @@ IconImage::IconImage(content::BrowserContext* context,
           default_icon,
           skia::ImageOperations::RESIZE_BEST,
           gfx::Size(resource_size_in_dip, resource_size_in_dip))) {
-  if (observer)
+  if (observer) {
     AddObserver(observer);
+  }
   gfx::Size resource_size(resource_size_in_dip, resource_size_in_dip);
   source_ = new Source(this, resource_size);
   image_skia_ = gfx::ImageSkia(base::WrapUnique(source_.get()), resource_size);
@@ -180,8 +182,9 @@ IconImage::~IconImage() {
 
 void IconImage::LoadImageForScaleAsync(float scale) {
   // Do nothing if extension is unloaded.
-  if (!extension_)
+  if (!extension_) {
     return;
+  }
 
   const int resource_size_in_pixel =
       static_cast<int>(resource_size_in_dip_ * scale);
@@ -232,8 +235,9 @@ void IconImage::OnImageLoaded(float scale, const gfx::Image& image_in) {
       image_in.IsEmpty() ? &default_icon_ : image_in.ToImageSkia();
 
   // Maybe default icon was not set.
-  if (image->isNull())
+  if (image->isNull()) {
     return;
+  }
 
   OnImageRepLoaded(image->GetRepresentation(scale));
 }
@@ -259,8 +263,9 @@ void IconImage::OnImageRepLoaded(const gfx::ImageSkiaRep& rep) {
 void IconImage::OnExtensionUnloaded(content::BrowserContext* browser_context,
                                     const Extension* extension,
                                     UnloadedExtensionReason reason) {
-  if (extension == extension_)
+  if (extension == extension_) {
     extension_ = nullptr;
+  }
 }
 
 void IconImage::OnShutdown(ExtensionRegistry* extension_registry) {

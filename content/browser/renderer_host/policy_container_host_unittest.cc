@@ -87,7 +87,8 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
       std::move(dip), sandbox_flags,
       /*is_credentialless=*/true,
       /*can_navigate_top_without_user_gesture=*/true,
-      /*allow_cross_origin_isolation=*/false);
+      /*allow_cross_origin_isolation=*/false,
+      /*cross_origin_isolation_enabled_by_dip=*/false);
 
   EXPECT_THAT(policies.Clone(), Eq(ByRef(policies)));
 }

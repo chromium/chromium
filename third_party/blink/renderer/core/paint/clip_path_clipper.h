@@ -28,8 +28,7 @@ class CORE_EXPORT ClipPathClipper {
 
   // Gets the Animation object for an element with a compositable clip-path
   // animation. Returns nullptr if the animation is not compositable.
-  static Animation* GetCompositableClipPathAnimation(
-      const LayoutObject& layout_object);
+  static Animation* GetClipPathAnimation(const LayoutObject& layout_object);
 
   // Checks the composited paint status for a given Layout Object and checks
   // whether it contains a composited clip path animation. Assumes

@@ -2,17 +2,49 @@
 // META: timeout=long
 
 promise_test(async () => {
-  await createSummarizerMaybeDownload({});
-  capabilities = await ai.summarizer.capabilities();
-  assert_true(capabilities.available == "readily");
-  assert_true(capabilities.createOptionsAvailable({
+  const capabilities = await ai.summarizer.capabilities();
+  assert_not_equals(capabilities.available, "no");
+  assert_not_equals(capabilities.createOptionsAvailable({
     type: "tl;dr",
     format: "plain-text",
     length: "medium"
-  }) == "readily");
-  assert_true(capabilities.languageAvailable("en") == "readily");
-  assert_true(capabilities.languageAvailable("es") == "no");
-});
+  }), "no");
+  assert_not_equals(capabilities.languageAvailable("en"), "no");
+  assert_equals(capabilities.languageAvailable("es"), "no");
+}, 'AISummarizerFactory.capabilities');
+
+promise_test(async () => {
+  const availability = await ai.summarizer.availability({
+    type: "tl;dr",
+    format: "plain-text",
+    length: "medium",
+  });
+  assert_not_equals(availability, "no");
+}, 'AISummarizerFactory.availability is available');
+
+promise_test(async () => {
+  const availability = await ai.summarizer.availability({
+    type: "tl;dr",
+    format: "plain-text",
+    length: "medium",
+    expectedInputLanguages: ["en-GB"],
+    expectedContextLanguages: ["en"],
+    outputLanguage: "en",
+  });
+  assert_not_equals(availability, "no");
+}, 'AISummarizerFactory.availability is available for supported languages');
+
+promise_test(async () => {
+  const availability = await ai.summarizer.availability({
+    type: "tl;dr",
+    format: "plain-text",
+    length: "medium",
+    expectedInputLanguages: ["es"], // not supported
+    expectedContextLanguages: ["en"],
+    outputLanguage: "es", // not supported
+  });
+  assert_equals(availability, "no");
+}, 'AISummarizerFactory.availability returns no for unsupported languages');
 
 promise_test(async () => {
   const summarizer = await createSummarizerMaybeDownload({});
@@ -42,3 +74,31 @@ promise_test(async () => {
   const summarizer = await createSummarizerMaybeDownload({length: 'medium'});
   assert_equals(summarizer.length, 'medium');
 }, 'AISummarizer.length');
+
+promise_test(async () => {
+  const summarizer = await createSummarizerMaybeDownload({
+    expectedInputLanguages: ['en']
+  });
+  assert_array_equals(summarizer.expectedInputLanguages, ['en']);
+}, 'AISummarizer.expectedInputLanguages');
+
+promise_test(async () => {
+  const summarizer = await createSummarizerMaybeDownload({
+    expectedContextLanguages: ['en']
+  });
+  assert_array_equals(summarizer.expectedContextLanguages, ['en']);
+}, 'AISummarizer.expectedContextLanguages');
+
+promise_test(async () => {
+  const summarizer = await createSummarizerMaybeDownload({
+    outputLanguage: 'en'
+  });
+  assert_equals(summarizer.outputLanguage, 'en');
+}, 'AISummarizer.outputLanguage');
+
+promise_test(async () => {
+  const summarizer = await createSummarizerMaybeDownload({});
+  assert_equals(summarizer.expectedInputLanguages, null);
+  assert_equals(summarizer.expectedContextLanguages, null);
+  assert_equals(summarizer.outputLanguage, null);
+}, 'AISummarizer optional attributes return null');

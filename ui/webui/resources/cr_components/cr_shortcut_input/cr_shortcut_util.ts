@@ -98,7 +98,7 @@ export function keystrokeToString(e: KeyboardEvent): string {
   if (e.ctrlKey) {
     output.push('Ctrl');
   }
-  if (!e.ctrlKey && e.altKey) {
+  if (e.altKey) {
     output.push('Alt');
   }
   if (e.shiftKey) {

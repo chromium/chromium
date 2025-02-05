@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -47,7 +48,7 @@ class IdleActionTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     main_browsing_data_remover_ = std::make_unique<FakeBrowsingDataRemover>();
     incognito_browsing_data_remover_ =
         std::make_unique<FakeBrowsingDataRemover>();
@@ -59,7 +60,6 @@ class IdleActionTest : public PlatformTest {
     task_environment_.RunUntilIdle();
     main_browsing_data_remover_.reset();
     incognito_browsing_data_remover_.reset();
-    profile_.reset();
   }
 
   ActionFactory::ActionQueue GetActions(std::vector<ActionType> action_types) {
@@ -138,10 +138,11 @@ class IdleActionTest : public PlatformTest {
   raw_ptr<AuthenticationService> authentication_service_;
   // ScopedTestingLocalState needed for the authentication service.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
   std::unique_ptr<ActionFactory> action_factory_;
   std::unique_ptr<FakeBrowsingDataRemover> main_browsing_data_remover_;
   std::unique_ptr<FakeBrowsingDataRemover> incognito_browsing_data_remover_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestBrowser> incognito_browser_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;

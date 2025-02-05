@@ -490,11 +490,25 @@ public class TabStateFileManager {
         // off.
         // We must always have a safe fallback to hand-written based TabState to be able to roll out
         // FlatBuffers safely.
+        // When ChromeFeatureList.sLegacyTabStateDeprecation is turned on, the default is to save
+        // to the FlatBuffer format and delete the corresponding legacy TabState file.
         saveStateInternal(
-                getTabStateFile(directory, tabId, isEncrypted, false),
+                getTabStateFile(
+                        directory,
+                        tabId,
+                        isEncrypted,
+                        ChromeFeatureList.sLegacyTabStateDeprecation.isEnabled()),
                 tabState,
                 isEncrypted,
                 cipherFactory);
+        if (ChromeFeatureList.sLegacyTabStateDeprecation.isEnabled()) {
+            PostTask.runOrPostTask(
+                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                    () -> {
+                        ThreadUtils.assertOnBackgroundThread();
+                        deleteLegacyTabStateIfExists(directory, tabId, isEncrypted);
+                    });
+        }
     }
 
     /**
@@ -721,6 +735,11 @@ public class TabStateFileManager {
             File file = getTabStateFile(directory, tabId, encrypted, useFlatBuffer);
             if (file.exists() && !file.delete()) Log.e(TAG, "Failed to delete TabState: " + file);
         }
+    }
+
+    private static void deleteLegacyTabStateIfExists(File directory, int tabId, boolean encrypted) {
+        File file = getTabStateFile(directory, tabId, encrypted, /* isFlatbuffer= */ false);
+        if (file.exists() && !file.delete()) Log.e(TAG, "Failed to delete TabState: " + file);
     }
 
     /**

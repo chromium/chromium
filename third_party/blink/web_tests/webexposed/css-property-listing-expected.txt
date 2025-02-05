@@ -162,6 +162,14 @@ All changes to this list should go through Blink's feature review process: http:
     container-type
     content
     content-visibility
+    corner-bottom-left-shape
+    corner-bottom-right-shape
+    corner-end-end-shape
+    corner-end-start-shape
+    corner-start-end-shape
+    corner-start-start-shape
+    corner-top-left-shape
+    corner-top-right-shape
     counter-increment
     counter-reset
     counter-set

@@ -659,7 +659,7 @@ FirstPartySetsDatabase::FetchPolicyConfigurations(
     return std::nullopt;
   }
 
-  return net::FirstPartySetsContextConfig(std::move(results));
+  return net::FirstPartySetsContextConfig::Create(std::move(results));
 }
 
 bool FirstPartySetsDatabase::HasEntryInBrowserContextsClearedForTesting(
@@ -739,7 +739,7 @@ FirstPartySetsDatabase::FetchManualConfiguration(
     return std::nullopt;
   }
 
-  return net::FirstPartySetsContextConfig(std::move(results));
+  return net::FirstPartySetsContextConfig::Create(std::move(results));
 }
 
 bool FirstPartySetsDatabase::LazyInit() {

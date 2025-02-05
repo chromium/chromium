@@ -1736,6 +1736,30 @@ TEST_F(InteractiveTestTest, StopObservingState) {
       Check([this]() { return state_observers().empty(); }));
 }
 
+TEST_F(InteractiveTestTest, CheckStateSucceeds) {
+  TestObservable<std::string> observable("foo");
+  static const char* const kBar = "bar";
+  QueueActions([&]() { observable.SetValue(kBar); });
+  RunTestSequenceInContext(
+      kTestContext1, ObserveState(kStringTestState, &observable),
+      WaitForState(kStringTestState, kBar), CheckState(kStringTestState, kBar),
+      CheckState(kStringTestState, testing::Ne("foo")));
+}
+
+TEST_F(InteractiveTestTest, CheckStateFails) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+
+  TestObservable<std::string> observable("foo");
+  static const char* const kBar = "bar";
+
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run,
+      RunTestSequenceInContext(kTestContext1,
+                               ObserveState(kStringTestState, &observable),
+                               CheckState(kStringTestState, kBar)));
+}
+
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(PollingStateObserver<int>,
                                     kPollingTestState);
 

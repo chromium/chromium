@@ -1545,6 +1545,13 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
           reporter->add_high_latency_contribution_stage(stage);
         }
 
+        reporter->set_surface_frame_trace_id(args_.trace_id);
+        const std::optional<int64_t>& display_trace_id =
+            viz_breakdown_.presentation_feedback.display_trace_id;
+        if (display_trace_id) {
+          reporter->set_display_trace_id(*display_trace_id);
+        }
+
         // TODO(crbug.com/40132773): Set 'drop reason' if applicable.
       });
 

@@ -21,7 +21,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
-#include "components/flags_ui/flags_ui_switches.h"
+#include "components/webui/flags/flags_ui_switches.h"
 #include "content/public/common/content_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

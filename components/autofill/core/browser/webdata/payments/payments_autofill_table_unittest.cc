@@ -1583,7 +1583,7 @@ TEST_F(PaymentsAutofillTableTest, RemoveAllVirtualCardUsageData) {
 
 TEST_F(PaymentsAutofillTableTest, GetMaskedBankAccounts) {
   // Populate masked_bank_accounts table.
-  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
+  ASSERT_TRUE(db_->GetSQLConnection()->ExecuteScriptForTesting(
       "INSERT INTO masked_bank_accounts (instrument_id, bank_name, "
       "account_number_suffix, account_type, nickname, display_icon_url) "
       "VALUES(100, 'bank_name', 'account_number_suffix', 1, 'nickname', "
@@ -1627,7 +1627,7 @@ TEST_F(PaymentsAutofillTableTest,
        GetMaskedBankAccounts_BankAccountTypeOutOfBounds) {
   // Populate masked_bank_accounts table with the first row to have an invalid
   // bank account type with value 100.
-  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
+  ASSERT_TRUE(db_->GetSQLConnection()->ExecuteScriptForTesting(
       "INSERT INTO masked_bank_accounts (instrument_id, bank_name, "
       "account_number_suffix, account_type, nickname, display_icon_url) "
       "VALUES(100, 'bank_name', 'account_number_suffix', 100, 'nickname', "
@@ -1649,7 +1649,7 @@ TEST_F(PaymentsAutofillTableTest,
 }
 
 TEST_F(PaymentsAutofillTableTest, SetMaskedBankAccounts) {
-  ASSERT_TRUE(db_->GetSQLConnection()->Execute(
+  ASSERT_TRUE(db_->GetSQLConnection()->ExecuteScriptForTesting(
       "INSERT INTO masked_bank_accounts (instrument_id, bank_name, "
       "account_number_suffix, account_type, nickname, display_icon_url) "
       "VALUES(100, 'bank_name', 'account_number_suffix', 1, 'nickname', "

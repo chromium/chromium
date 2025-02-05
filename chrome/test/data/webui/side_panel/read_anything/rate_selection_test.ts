@@ -10,7 +10,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {getItemsInMenu, stubAnimationFrame, suppressInnocuousErrors} from './common.js';
+import {getItemsInMenu, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -21,7 +21,6 @@ suite('RateSelection', () => {
   let rateEmitted: boolean;
 
   setup(() => {
-    suppressInnocuousErrors();
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
     BrowserProxy.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

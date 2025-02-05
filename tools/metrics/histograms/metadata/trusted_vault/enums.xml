@@ -100,6 +100,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultFileReadStatus) -->
 
+<!-- LINT.IfChange(TrustedVaultRecoverabilityStatus) -->
+
+<enum name="TrustedVaultRecoverabilityStatus">
+  <int value="0" label="Not degraded"/>
+  <int value="1" label="Degraded"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_connection.h:TrustedVaultRecoverabilityStatus) -->
+
 </enums>
 
 </histogram-configuration>

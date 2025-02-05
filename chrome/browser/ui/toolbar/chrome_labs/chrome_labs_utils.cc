@@ -16,10 +16,10 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/channel_info.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/variations_switches.h"
+#include "components/webui/flags/feature_entry.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"

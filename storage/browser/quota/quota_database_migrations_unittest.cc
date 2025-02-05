@@ -70,7 +70,7 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
 
     sql::Database db(sql::test::kTestTag);
     if (!base::CreateDirectory(db_path.DirName()) || !db.Open(db_path) ||
-        !db.Execute(contents)) {
+        !db.ExecuteScriptForTesting(contents)) {
       return false;
     }
 

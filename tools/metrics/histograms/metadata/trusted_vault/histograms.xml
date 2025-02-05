@@ -144,6 +144,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TrustedVault.RecoverabilityStatusOnRequestCompletion"
+    enum="TrustedVaultRecoverabilityStatus" expires_after="2025-09-11">
+  <owner>mmrashad@google.com</owner>
+  <owner>mmoskvitin@google.com</owner>
+  <summary>
+    Records the status of the degraded recoverability upon the request
+    completion. Note that this is the status on the server side, which could be
+    error if the request was failed.
+  </summary>
+</histogram>
+
 <histogram name="TrustedVault.RecoveryKeyStoreURLFetchResponse{Reason}"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-07-31">
   <owner>mastiz@chromium.org</owner>

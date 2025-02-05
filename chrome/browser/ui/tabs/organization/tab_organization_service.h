@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/trigger_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 
 class Browser;
 class TabOrganizationSession;

@@ -204,6 +204,8 @@
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
       initWithOmniboxController:_editView->controller()];
   _omniboxPopupController = [[OmniboxPopupController alloc] init];
+  _omniboxPopupController.omniboxAutocompleteController =
+      _omniboxAutocompleteController;
   _omniboxAutocompleteController.omniboxPopupController =
       _omniboxPopupController;
 

@@ -9,6 +9,7 @@
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/sets_mutation.h"
 
 namespace net {
 
@@ -29,7 +30,12 @@ class NET_EXPORT LocalSetDeclaration {
   // Constructs a set declaration with the given entries. All entries must be in
   // the same set (i.e. they must have the same primary site). The set must not
   // be a singleton (i.e. must have more than one entry, or must be empty).
-  explicit LocalSetDeclaration(
+  //
+  // Every alias must satisfy the following conditions:
+  // * It must map to some canonical site that is in `set_entries`.
+  // * If the alias is also present in `set_entries`, its entry must be
+  // identical to the canonical's entry.
+  LocalSetDeclaration(
       base::flat_map<SchemefulSite, FirstPartySetEntry> set_entries,
       base::flat_map<SchemefulSite, SchemefulSite> aliases);
 
@@ -44,13 +50,9 @@ class NET_EXPORT LocalSetDeclaration {
 
   size_t size() const { return entries_.size(); }
 
-  const base::flat_map<SchemefulSite, FirstPartySetEntry>& entries() const {
-    return entries_;
-  }
-
-  const base::flat_map<SchemefulSite, SchemefulSite>& aliases() const {
-    return aliases_;
-  }
+  // Computes the SetsMutation that can be used to implement the changes
+  // described in this instance.
+  SetsMutation ComputeMutation() const;
 
  private:
   // Stores the set of entries, without ccTLD aliases. This may be empty if no

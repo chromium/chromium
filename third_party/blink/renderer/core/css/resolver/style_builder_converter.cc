@@ -24,6 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -95,6 +96,7 @@
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
+#include "third_party/blink/renderer/core/style/superellipse.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -1759,6 +1761,23 @@ int StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
 
   // Clamp the result to a reasonable range for layout.
   return ClampTo<int>(floor(result), 0, LayoutUnit::Max().ToInt());
+}
+
+Superellipse StyleBuilderConverter::ConvertCornerShape(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  if (const auto* keyword = DynamicTo<CSSIdentifierValue>(value)) {
+    switch (keyword->GetValueID()) {
+      case CSSValueID::kRound:
+        return Superellipse::Round();
+      case CSSValueID::kScoop:
+        return Superellipse::Scoop();
+      default:
+        NOTREACHED();
+    }
+  }
+
+  NOTREACHED();
 }
 
 LayoutUnit StyleBuilderConverter::ConvertLayoutUnit(

@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -67,7 +68,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     AppState* app_state = [[AppState alloc] initWithStartupInformation:nil];
     SceneState* scene_state = [[SceneState alloc] initWithAppState:app_state];
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state);
@@ -137,7 +138,8 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   SceneState* scene_state_mock_;
   StubBrowserProviderInterface* stub_browser_interface_provider_;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
   id<SystemIdentity> identity_ = nil;
   id<SystemIdentity> managed_identity_ = nil;
   id<SnackbarCommands> snackbar_handler_ =

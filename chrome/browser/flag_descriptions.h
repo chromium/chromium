@@ -12,10 +12,10 @@
 #include "build/buildflag.h"
 #include "chrome/common/buildflags.h"
 #include "components/compose/buildflags.h"
-#include "components/flags_ui/feature_entry.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/webui/flags/feature_entry.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
@@ -1902,9 +1902,6 @@ extern const char kSafetyCheckUnusedSitePermissionsDescription[];
 extern const char kSafetyHubName[];
 extern const char kSafetyHubDescription[];
 
-extern const char kPlusAddressFullFormFillName[];
-extern const char kPlusAddressFullFormFillDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kSafetyHubMagicStackName[];
 extern const char kSafetyHubMagicStackDescription[];
@@ -2671,6 +2668,9 @@ extern const char kRefreshFeedOnRestartDescription[];
 
 extern const char kInterestFeedV2Name[];
 extern const char kInterestFeedV2Description[];
+
+extern const char kLegacyTabStateDeprecationName[];
+extern const char kLegacyTabStateDeprecationDescription[];
 
 extern const char kLogoPolishName[];
 extern const char kLogoPolishDescription[];

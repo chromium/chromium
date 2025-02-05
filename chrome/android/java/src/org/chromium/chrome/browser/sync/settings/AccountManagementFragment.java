@@ -413,10 +413,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                     if (isChild) {
                                         mProfileDataCache.setBadge(
                                                 childAccount.getEmail(),
-                                                ProfileDataCache
-                                                        .createDefaultSizeChildAccountBadgeConfig(
-                                                                requireContext(),
-                                                                R.drawable.ic_account_child_20dp));
+                                                R.drawable.ic_account_child_20dp);
                                     }
                                 });
 
@@ -428,10 +425,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                     if (isChild) {
                                         mProfileDataCache.setBadge(
                                                 childAccount.getEmail(),
-                                                ProfileDataCache
-                                                        .createDefaultSizeChildAccountBadgeConfig(
-                                                                requireContext(),
-                                                                R.drawable.ic_account_child_20dp));
+                                                R.drawable.ic_account_child_20dp);
                                     }
                                 });
             }

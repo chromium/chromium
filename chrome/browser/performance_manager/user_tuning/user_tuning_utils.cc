@@ -15,6 +15,15 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include <algorithm>
+#include <string>
+#include <vector>
+
+#include "chrome/browser/performance_manager/policies/cannot_discard_reason.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #endif
@@ -76,4 +85,25 @@ void GetDiscardedMemoryEstimateForWebContents(
           page_node, std::move(result_callback)));
 }
 
+std::vector<std::string> GetCannotDiscardReasonsForPageNode(
+    const PageNode* page_node) {
+#if BUILDFLAG(IS_ANDROID)
+  return {};
+#else
+  policies::PageDiscardingHelper* discarding_helper =
+      policies::PageDiscardingHelper::GetFromGraph(page_node->GetGraph());
+
+  std::vector<policies::CannotDiscardReason> cannot_discard_reasons;
+  discarding_helper->CanDiscard(
+      page_node, policies::PageDiscardingHelper::DiscardReason::PROACTIVE,
+      policies::kNonVisiblePagesUrgentProtectionTime, &cannot_discard_reasons);
+
+  std::vector<std::string> results;
+  results.reserve(cannot_discard_reasons.size());  // Reserve space
+  std::transform(cannot_discard_reasons.begin(), cannot_discard_reasons.end(),
+                 std::back_inserter(results),
+                 policies::CannotDiscardReasonToString);
+  return results;
+#endif
+}
 }  //  namespace performance_manager::user_tuning

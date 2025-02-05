@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_view_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -461,9 +461,18 @@ IN_PROC_BROWSER_TEST_P(ParameterizedWebAccessibleResourcesBrowserTest,
 // TODO(crbug.com/390687767): Port to desktop Android. Currently the redirect
 // doesn't happen.
 class WebAccessibleResourcesBrowserRedirectTest
-    : public WebAccessibleResourcesBrowserTest {
+    : public WebAccessibleResourcesBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebAccessibleResourcesBrowserRedirectTest() {
+    feature_list_.InitWithFeatureState(
+        extensions_features::kExtensionWARForRedirect, GetParam());
+  }
+
  protected:
-  void TestBrowserRedirect(const char* kManifest, const char* kHistogramName) {
+  void TestBrowserRedirect(const char* kManifest,
+                           const char* kHistogramName,
+                           bool is_war_for_redirect_enabled) {
     // Load extension.
     TestExtensionDir test_dir;
     test_dir.WriteManifest(kManifest);
@@ -496,10 +505,12 @@ class WebAccessibleResourcesBrowserRedirectTest
 
     // Test cases.
     server_redirect(net::OK, "web_accessible_resource.html", true);
-    server_redirect(net::OK, "resource.html", false);
+    server_redirect(
+        is_war_for_redirect_enabled ? net::ERR_BLOCKED_BY_CLIENT : net::OK,
+        "resource.html", false);
   }
 
-  void TestBrowserRedirectMV2() {
+  void TestBrowserRedirectMV2(bool is_war_for_redirect_enabled) {
     TestBrowserRedirect(
         R"({
           "name": "Test browser redirect",
@@ -507,10 +518,10 @@ class WebAccessibleResourcesBrowserRedirectTest
           "manifest_version": 2,
           "web_accessible_resources": ["web_accessible_resource.html"]
         })",
-        "Extensions.WAR.XOriginWebAccessible.MV2");
+        "Extensions.WAR.XOriginWebAccessible.MV2", is_war_for_redirect_enabled);
   }
 
-  void TestBrowserRedirectMV3() {
+  void TestBrowserRedirectMV3(bool is_war_for_redirect_enabled) {
     TestBrowserRedirect(
         R"({
           "name": "Redirect Test",
@@ -523,15 +534,24 @@ class WebAccessibleResourcesBrowserRedirectTest
             }
           ]
         })",
-        "Extensions.WAR.XOriginWebAccessible.MV3");
+        "Extensions.WAR.XOriginWebAccessible.MV3", is_war_for_redirect_enabled);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebAccessibleResourcesBrowserRedirectTest,
+                         testing::Bool());
+
 // Test server redirect to a web accessible or extension resource.
-IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserRedirectTest, Manifests) {
-  TestBrowserRedirectMV2();
-  TestBrowserRedirectMV3();
+IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserRedirectTest, Manifests) {
+  bool is_war_for_redirect_enabled = GetParam();
+  TestBrowserRedirectMV2(is_war_for_redirect_enabled);
+  TestBrowserRedirectMV3(is_war_for_redirect_enabled);
 }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

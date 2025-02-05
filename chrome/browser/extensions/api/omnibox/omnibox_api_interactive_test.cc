@@ -1431,6 +1431,100 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnActionExecuted) {
   EXPECT_TRUE(listener.had_user_gesture());
 }
 
+// Tests that multiple unscoped extensions work at the same time and are
+// displayed with different headers.
+IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
+  constexpr char kManifest[] =
+      R"({
+          "name": "Basic Send Suggestions",
+          "manifest_version": 2,
+          "version": "0.1",
+          "omnibox": { "keyword": "alpha" },
+          "background": { "scripts": [ "background.js" ], "persistent": true },
+          "permissions" : [ "omnibox.directInput" ]
+        })";
+
+  constexpr char kManifest2[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "dog" },
+           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "permissions" : [ "omnibox.directInput" ]
+         })";
+
+  constexpr char kBackground[] =
+      R"(
+        chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+          suggest([
+            {content: 'first', description: 'description'}
+          ]);
+        });)";
+
+  constexpr char kBackground2[] =
+      R"(
+        chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+          suggest([
+            {content: 'second', description: 'description'}
+          ]);
+        });)";
+
+  TestExtensionDir test_dir;
+  TestExtensionDir test_dir2;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  test_dir2.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground2);
+  test_dir2.WriteManifest(kManifest2);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  const Extension* extension2 = LoadExtension(test_dir2.UnpackedPath());
+  ASSERT_TRUE(extension2);
+
+  AutocompleteController* autocomplete_controller = GetAutocompleteController();
+  chrome::FocusLocationBar(browser());
+
+  // Prevent the stop timer from killing the hints fetch early, which might
+  // cause test flakiness due to timeout.
+  autocomplete_controller->SetStartStopTimerDurationForTesting(
+      base::Seconds(20));
+
+  // Test that our extension can send suggestions back to us.
+  AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  autocomplete_controller->Start(input);
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  const AutocompleteResult& result = autocomplete_controller->result();
+  // Check if the suggestion is received (+1 for the default search entry).
+  ASSERT_EQ(3U, result.size()) << AutocompleteResultAsString(result);
+
+  // Each extension suggestion header should match the extension name that
+  // it came from.
+  std::set<std::u16string> extension_names = {u"alpha", u"dog"};
+  {
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result.match_at(1).provider->type());
+    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_1,
+              result.match_at(1).suggestion_group_id);
+    EXPECT_TRUE(base::Contains(extension_names,
+                               result.GetHeaderForSuggestionGroup(
+                                   *result.match_at(1).suggestion_group_id)));
+    extension_names.erase(result.GetHeaderForSuggestionGroup(
+        *result.match_at(1).suggestion_group_id));
+  }
+  {
+    EXPECT_EQ(AutocompleteProvider::TYPE_UNSCOPED_EXTENSION,
+              result.match_at(2).provider->type());
+    EXPECT_EQ(omnibox::GROUP_UNSCOPED_EXTENSION_2,
+              result.match_at(2).suggestion_group_id);
+    EXPECT_TRUE(base::Contains(extension_names,
+                               result.GetHeaderForSuggestionGroup(
+                                   *result.match_at(2).suggestion_group_id)));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          UnscopedOmniboxApiTest,
                          testing::Values(ContextType::kServiceWorker));

@@ -2816,6 +2816,11 @@ CSSValue* ComputedStyleUtils::ValueForBorderRadiusCorner(
       CSSValuePair::kDropIdenticalValues);
 }
 
+CSSValue* ComputedStyleUtils::ValueForCornerShape(const Superellipse&) {
+  // TODO(crbug.com/393989633) serialize computed corner-shape values.
+  return CSSIdentifierValue::Create(CSSValueID::kRound);
+}
+
 CSSFunctionValue* ComputedStyleUtils::ValueForTransform(
     const gfx::Transform& matrix,
     float zoom,

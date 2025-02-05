@@ -104,6 +104,8 @@ source_set("metrics_recorder") {
   sources = [
     "lens_overlay_metrics_recorder.h",
     "lens_overlay_metrics_recorder.mm",
+    "lens_view_finder_metrics_recorder.h",
+    "lens_view_finder_metrics_recorder.mm",
   ]
   deps = [
     "//base",

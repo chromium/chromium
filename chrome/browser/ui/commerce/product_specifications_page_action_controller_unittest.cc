@@ -60,7 +60,9 @@ class ProductSpecificationsPageActionControllerUnittest
       : prefs_(std::make_unique<TestingPrefServiceSimple>()) {}
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
+    scoped_feature_list_.InitWithFeatures(
+        {commerce::kProductSpecifications},
+        {commerce::kCompareConfirmationToast});
     shopping_service_ = std::make_unique<MockShoppingService>();
     base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
     account_checker_ = std::make_unique<MockAccountChecker>();

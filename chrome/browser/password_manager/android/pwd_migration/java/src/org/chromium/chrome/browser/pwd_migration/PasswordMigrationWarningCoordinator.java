@@ -28,10 +28,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningMediator.MigrationWarningOptionsHandler;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -45,7 +43,6 @@ public class PasswordMigrationWarningCoordinator
     public static final String EXPORT_METRICS_ID =
             "PasswordManager.PasswordMigrationWarning.Export";
     private final PasswordMigrationWarningMediator mMediator;
-    private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
     private final Context mContext;
     private final Profile mProfile;
     private final Class<? extends Fragment> mSyncSettingsFragment;
@@ -60,7 +57,6 @@ public class PasswordMigrationWarningCoordinator
             Context context,
             Profile profile,
             BottomSheetController sheetController,
-            SyncConsentActivityLauncher syncConsentActivityLauncher,
             Class<? extends Fragment> syncSettingsFragment,
             ExportFlowInterface exportFlow,
             Callback<PasswordListObserver> passwordListObserverCallback,
@@ -69,7 +65,6 @@ public class PasswordMigrationWarningCoordinator
             Callback<Throwable> exceptionReporter) {
         mContext = context;
         mProfile = profile;
-        mSyncConsentActivityLauncher = syncConsentActivityLauncher;
         mSyncSettingsFragment = syncSettingsFragment;
         mExportFlow = exportFlow;
         mMediator = new PasswordMigrationWarningMediator(profile, this, referrer);
@@ -103,10 +98,7 @@ public class PasswordMigrationWarningCoordinator
     }
 
     @Override
-    public void startSyncConsentFlow() {
-        mSyncConsentActivityLauncher.launchActivityIfAllowed(
-                mContext, SigninAccessPoint.PASSWORD_MIGRATION_WARNING_ANDROID);
-    }
+    public void startSyncConsentFlow() {}
 
     @Override
     public void openSyncSettings() {

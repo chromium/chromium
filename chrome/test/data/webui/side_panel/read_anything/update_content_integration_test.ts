@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+
 
 suite('UpdateContentIntegration', () => {
   let app: AppElement;
@@ -33,7 +33,6 @@ suite('UpdateContentIntegration', () => {
   }
 
   setup(() => {
-    suppressInnocuousErrors();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     chrome.readingMode.onConnected = () => {};
 

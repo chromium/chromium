@@ -5,9 +5,14 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_LINUX_MAC_WINDOWS_PARENT_ACCESS_VIEW_H_
 #define CHROME_BROWSER_SUPERVISED_USER_LINUX_MAC_WINDOWS_PARENT_ACCESS_VIEW_H_
 
+#include <memory>
+
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -18,6 +23,34 @@ namespace content {
 class WebContents;
 class BrowserContext;
 }  // namespace content
+
+// Helper class that aborts the displaying of the parent approval dialog,
+// if we fail to load the PACP contents that need to be displayed.
+// If the content is loaded successfully, it shows the dialog.
+class DialogContentLoadWithTimeoutObserver
+    : public content::WebContentsObserver {
+ public:
+  DialogContentLoadWithTimeoutObserver(
+      content::WebContents* web_contents,
+      const GURL& pacp_url,
+      base::OnceClosure show_dialog_callback,
+      base::OnceClosure cancel_flow_on_timeout_callback);
+  DialogContentLoadWithTimeoutObserver() = delete;
+  ~DialogContentLoadWithTimeoutObserver() override;
+  DialogContentLoadWithTimeoutObserver(
+      const DialogContentLoadWithTimeoutObserver&) = delete;
+  DialogContentLoadWithTimeoutObserver& operator=(
+      const DialogContentLoadWithTimeoutObserver&) = delete;
+
+ private:
+  // WebContentsObserver overrides:
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
+
+  raw_ref<const GURL> pacp_url_;
+  base::OneShotTimer initial_load_timer_;
+  base::OnceClosure show_dialog_callback_;
+};
 
 using WebContentsObserverCreationCallback =
     base::OnceCallback<void(content::WebContents*)>;
@@ -36,7 +69,8 @@ class ParentAccessView : public views::View {
       content::WebContents* web_contents,
       const GURL& target_url,
       const supervised_user::FilteringBehaviorReason& filtering_reason,
-      WebContentsObserverCreationCallback web_contents_observer_creation_cb);
+      WebContentsObserverCreationCallback web_contents_observer_creation_cb,
+      base::OnceClosure abort_dialog_callback);
 
   base::WeakPtr<ParentAccessView> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -52,6 +86,8 @@ class ParentAccessView : public views::View {
   void ShowNativeView();
   content::WebContents* GetWebViewContents();
 
+  std::unique_ptr<DialogContentLoadWithTimeoutObserver>
+      content_loader_timeout_observer_;
   bool is_initialized_ = false;
   int corner_radius_ = 0;
   raw_ptr<views::WebView> web_view_ = nullptr;

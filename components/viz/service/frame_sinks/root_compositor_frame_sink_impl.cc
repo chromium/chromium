@@ -643,8 +643,12 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
 
 #if BUILDFLAG(IS_ANDROID)
   matchers.push_back(std::make_unique<OnlyVideoMatcher>());
-  matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
-  matchers.push_back(std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
+  if (base::FeatureList::IsEnabled(
+          features::kUseFrameIntervalDeciderNewAndroidFeatures)) {
+    matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
+    matchers.push_back(
+        std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
+  }
 #elif BUILDFLAG(IS_IOS)
   matchers.push_back(std::make_unique<OnlyVideoMatcher>());
 #else

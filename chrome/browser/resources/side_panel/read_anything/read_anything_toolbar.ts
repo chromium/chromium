@@ -123,19 +123,18 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     ];
   }
 
-  // This function has to be static because it's called from the ResizeObserver
-  // callback which doesn't have access to "this"
-  static maybeUpdateMoreOptions(toolbar: HTMLElement) {
+  private maybeUpdateMoreOptions_() {
     // Hide the more options button first to calculate if we need it
+    const toolbar = this.$.toolbarContainer;
     const moreOptionsButton = toolbar.querySelector<HTMLElement>('#more');
     assert(moreOptionsButton, 'more options button doesn\'t exist');
-    ReadAnythingToolbarElement.hideElement(moreOptionsButton, false);
+    this.hideElement_(moreOptionsButton, false);
 
     // Show all the buttons to see if they fit.
     const buttons =
         Array.from(toolbar.querySelectorAll<HTMLElement>('.text-style-button'));
     assert(buttons, 'no toolbar buttons');
-    buttons.forEach(btn => ReadAnythingToolbarElement.showElement(btn));
+    buttons.forEach(btn => this.showElement_(btn));
     toolbar.dispatchEvent(new CustomEvent('reset-toolbar', {
       bubbles: true,
       composed: true,
@@ -182,16 +181,15 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
       // Hide the overflowed buttons and show the more options button in front
       // of them.
-      ReadAnythingToolbarElement.showElement(moreOptionsButton);
+      this.showElement_(moreOptionsButton);
       const overflowedButtons =
           buttons.slice(buttons.length - numOverflowButtons);
-      overflowedButtons.forEach(
-          btn => ReadAnythingToolbarElement.hideElement(btn, true));
+      overflowedButtons.forEach(btn => this.hideElement_(btn, true));
       toolbar.insertBefore(moreOptionsButton, overflowedButtons[0]);
     }
   }
 
-  static hideElement(element: HTMLElement, keepSpace: boolean) {
+  private hideElement_(element: HTMLElement, keepSpace: boolean) {
     if (keepSpace) {
       element.style.visibility = 'hidden';
     } else {
@@ -199,7 +197,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
   }
 
-  static showElement(element: HTMLElement) {
+  private showElement_(element: HTMLElement) {
     element.style.visibility = 'visible';
     element.style.display = 'inline-block';
   }
@@ -234,13 +232,15 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private areFontsLoaded_: boolean = false;
 
   private currentFocusId_: string = '';
-  private toolbarContainerObserver_: ResizeObserver|null;
   private windowResizeCallback_: () => void;
 
   // If Read Aloud is playing speech. This is set from the parent element via
   // one way data binding.
   isSpeechActive: boolean;
   settingsPrefs: SettingsPrefs;
+
+  // The previous speech active status so we can track when it changes.
+  private wasSpeechActive_: boolean = false;
 
   // If speech is actually playing. Due to latency with the TTS engine, there
   // can be a delay between when the user presses play and speech actually
@@ -291,9 +291,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         TimeFrom.TOOLBAR_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
         this.constructorTime, connectedCallbackTime);
 
-    this.toolbarContainerObserver_ = new ResizeObserver(this.onToolbarResize_);
-    this.toolbarContainerObserver_.observe(this.$.toolbarContainer);
-    this.windowResizeCallback_ = this.onWindowResize_.bind(this);
+    this.windowResizeCallback_ = this.maybeUpdateMoreOptions_.bind(this);
     window.addEventListener('resize', this.windowResizeCallback_);
 
     this.initFonts_();
@@ -306,7 +304,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (this.windowResizeCallback_) {
       window.removeEventListener('resize', this.windowResizeCallback_);
     }
-    this.toolbarContainerObserver_?.disconnect();
   }
 
   private initializeMenuButtons_() {
@@ -413,16 +410,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     // If we only overflow by a little, use the more options button.
     this.moreOptionsButtons_ = this.textStyleOptions_.slice(firstHiddenButton);
-  }
-
-  private onWindowResize_() {
-    ReadAnythingToolbarElement.maybeUpdateMoreOptions(this.$.toolbarContainer);
-  }
-
-  private onToolbarResize_(entries: ResizeObserverEntry[]) {
-    assert(entries.length === 1, 'resize observer is expecting one entry');
-    const toolbar = entries[0].target as HTMLElement;
-    ReadAnythingToolbarElement.maybeUpdateMoreOptions(toolbar);
   }
 
   private restoreFontMenu_() {
@@ -888,6 +875,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
          this.shadowRoot.activeElement.clientHeight === 0)) {
       this.$.toolbarContainer.querySelector<HTMLElement>('#play-pause')
           ?.focus();
+    }
+
+    if (this.isSpeechActive !== this.wasSpeechActive_) {
+      this.maybeUpdateMoreOptions_();
+      this.wasSpeechActive_ = this.isSpeechActive;
     }
   }
 

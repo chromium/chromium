@@ -234,7 +234,18 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             int prevWidth = lp.width;
             int prevGravity = lp.gravity;
 
-            if (mIsTablet) {
+            if (SnackbarManager.isFloatingSnackbarEnabled()) {
+                // If floating snackbar is enabled, set a max width of 600dp for both mobile and
+                // tablet.
+                int maxWidth =
+                        mParent.getResources().getDimensionPixelSize(R.dimen.snackbar_width_max);
+                int snackbarMargin =
+                        mParent.getResources()
+                                .getDimensionPixelSize(R.dimen.snackbar_floating_margin);
+                lp.width = Math.min(maxWidth, mParent.getWidth() - 2 * snackbarMargin);
+                lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
+            } else if (mIsTablet) {
+                // Floating Snackbar disabled && mIsTablet.
                 int margin =
                         mParent.getResources()
                                 .getDimensionPixelSize(R.dimen.snackbar_margin_tablet);

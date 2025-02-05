@@ -5,19 +5,19 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '/strings.m.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {getCss as getSharedStyleCss} from 'chrome://resources/cr_elements/cr_shared_style_lit.css.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
 import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {DialogFocusManager} from './dialog_focus_manager.js';
-import {getTemplate} from './edit_dialog.html.js';
+import {getHtml} from './edit_dialog.html.js';
 import type {BookmarkNode} from './types.js';
 
 export interface BookmarksEditDialogElement {
@@ -29,40 +29,44 @@ export interface BookmarksEditDialogElement {
   };
 }
 
-export class BookmarksEditDialogElement extends PolymerElement {
+export class BookmarksEditDialogElement extends CrLitElement {
   static get is() {
     return 'bookmarks-edit-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getSharedStyleCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      isFolder_: Boolean,
-      isEdit_: Boolean,
+      isFolder_: {type: Boolean},
+      isEdit_: {type: Boolean},
 
       /**
        * Item that is being edited, or null when adding.
        */
-      editItem_: Object,
+      editItem_: {type: Object},
 
       /**
        * Parent node for the item being added, or null when editing.
        */
-      parentId_: String,
-      titleValue_: String,
-      urlValue_: String,
+      parentId_: {type: String},
+      titleValue_: {type: String},
+      urlValue_: {type: String},
     };
   }
 
-  private isFolder_: boolean;
-  private isEdit_: boolean;
-  private editItem_: BookmarkNode|null;
-  private parentId_: string|null;
-  private titleValue_: string;
-  private urlValue_: string;
+  protected isFolder_: boolean = false;
+  private isEdit_: boolean = false;
+  private editItem_: BookmarkNode|null = null;
+  private parentId_: string|null = null;
+  protected titleValue_: string = '';
+  protected urlValue_: string = '';
 
   /**
    * Show the dialog to add a new folder (if |isFolder|) or item, which will be
@@ -104,15 +108,23 @@ export class BookmarksEditDialogElement extends PolymerElement {
     this.urlValue_ = '';
   }
 
-  private getDialogTitle_(isFolder: boolean, isEdit: boolean): string {
+  protected getDialogTitle_(): string {
     let title;
-    if (isEdit) {
-      title = isFolder ? 'renameFolderTitle' : 'editBookmarkTitle';
+    if (this.isEdit_) {
+      title = this.isFolder_ ? 'renameFolderTitle' : 'editBookmarkTitle';
     } else {
-      title = isFolder ? 'addFolderTitle' : 'addBookmarkTitle';
+      title = this.isFolder_ ? 'addFolderTitle' : 'addBookmarkTitle';
     }
 
     return loadTimeData.getString(title);
+  }
+
+  protected onTitleValueChanged_(e: CustomEvent<{value: string}>) {
+    this.titleValue_ = e.detail.value;
+  }
+
+  protected onUrlValueChanged_(e: CustomEvent<{value: string}>) {
+    this.urlValue_ = e.detail.value;
   }
 
   /**
@@ -129,6 +141,11 @@ export class BookmarksEditDialogElement extends PolymerElement {
 
     const originalValue = this.urlValue_;
     this.urlValue_ = 'http://' + originalValue;
+    // Force an update to propagate this to the cr-input synchronously. This is
+    // not best for performance, but validate() already forces an update to
+    // the cr-input by calling performUpdate() on that element below, and this
+    // method is not expected to be frequently called.
+    this.performUpdate();
 
     if (urlInput.validate()) {
       return true;
@@ -138,7 +155,7 @@ export class BookmarksEditDialogElement extends PolymerElement {
     return false;
   }
 
-  private onSaveButtonClick_() {
+  protected onSaveButtonClick_() {
     const edit: { title: string, url?: string, parentId?: string|null } =
         { 'title': this.titleValue_ };
     if (!this.isFolder_) {
@@ -160,7 +177,7 @@ export class BookmarksEditDialogElement extends PolymerElement {
     this.$.dialog.close();
   }
 
-  private onCancelButtonClick_() {
+  protected onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
 }
@@ -170,6 +187,9 @@ declare global {
     'bookmarks-edit-dialog': BookmarksEditDialogElement;
   }
 }
+
+// Exporting type for use in the autogenerated .html.ts file.
+export type EditDialogElement = BookmarksEditDialogElement;
 
 customElements.define(
     BookmarksEditDialogElement.is, BookmarksEditDialogElement);

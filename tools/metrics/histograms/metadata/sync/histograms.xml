@@ -564,7 +564,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.Crypto.CustomPassphraseKeyDerivationMethodStateOnStartup"
     enum="SyncCustomPassphraseKeyDerivationMethodState"
-    expires_after="2025-03-15">
+    expires_after="2025-09-15">
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -2117,17 +2117,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="TrustedVaultTimeSinceMigrationSuffix"
       variants="TrustedVaultTimeSinceMigrationSuffix"/>
-</histogram>
-
-<histogram name="Sync.TrustedVaultRecoverabilityStatusOnRequestCompletion"
-    enum="TrustedVaultRecoverabilityStatus" expires_after="2025-05-11">
-  <owner>mmrashad@google.com</owner>
-  <owner>mmoskvitin@google.com</owner>
-  <summary>
-    Records the status of the degraded recoverability upon the request
-    completion. Note that this is the status on the server side, which could be
-    error if the request was failed.
-  </summary>
 </histogram>
 
 <histogram name="Sync.UnsyncedDataOnSignout2" enum="SyncDataTypes"

@@ -8,6 +8,7 @@
 
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/sets_mutation.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,12 +33,19 @@ TEST(LocalSetDeclarationTest, Valid_Basic) {
       {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
   });
 
-  EXPECT_THAT(LocalSetDeclaration(entries, /*aliases=*/{}).entries(),
-              UnorderedElementsAre(
-                  Pair(primary, FirstPartySetEntry(primary, SiteType::kPrimary,
-                                                   std::nullopt)),
-                  Pair(associated,
-                       FirstPartySetEntry(primary, SiteType::kAssociated, 0))));
+  EXPECT_THAT(
+      LocalSetDeclaration(entries, /*aliases=*/{}).ComputeMutation(),
+      SetsMutation(
+          /*replacement_sets=*/
+          {
+              {
+                  {primary, FirstPartySetEntry(primary, SiteType::kPrimary,
+                                               std::nullopt)},
+                  {associated,
+                   FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+              },
+          },
+          /*addition_sets=*/{}, /*aliases=*/{}));
 }
 
 TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
@@ -58,16 +66,28 @@ TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
 
   // LocalSetDeclaration should allow these to pass through, after passing
   // validation.
-  EXPECT_THAT(local_set.entries(),
-              UnorderedElementsAre(
-                  Pair(primary, FirstPartySetEntry(primary, SiteType::kPrimary,
-                                                   std::nullopt)),
-                  Pair(associated,
-                       FirstPartySetEntry(primary, SiteType::kAssociated, 0))));
-
-  EXPECT_THAT(local_set.aliases(),
-              UnorderedElementsAre(Pair(associated_cctld, associated),
-                                   Pair(primary_cctld, primary)));
+  EXPECT_THAT(
+      local_set.ComputeMutation(),
+      SetsMutation(
+          /*replacement_sets=*/
+          {
+              {
+                  {primary, FirstPartySetEntry(primary, SiteType::kPrimary,
+                                               std::nullopt)},
+                  {primary_cctld,
+                   FirstPartySetEntry(primary, SiteType::kPrimary,
+                                      std::nullopt)},
+                  {associated,
+                   FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+                  {associated_cctld,
+                   FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+              },
+          },
+          /*addition_sets=*/{}, /*aliases=*/
+          {
+              {associated_cctld, associated},
+              {primary_cctld, primary},
+          }));
 }
 
 }  // namespace net

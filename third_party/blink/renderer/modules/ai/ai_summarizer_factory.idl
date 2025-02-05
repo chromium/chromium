@@ -25,6 +25,10 @@ dictionary AISummarizerCreateCoreOptions {
   AISummarizerType type = "key-points";
   AISummarizerFormat format = "markdown";
   AISummarizerLength length = "short";
+
+  sequence<DOMString> expectedInputLanguages;
+  sequence<DOMString> expectedContextLanguages;
+  DOMString outputLanguage;
 };
 
 dictionary AISummarizerCreateOptions : AISummarizerCreateCoreOptions {
@@ -45,6 +49,15 @@ interface AISummarizerFactory {
     RaisesException
   ]
   Promise<AISummarizer> create(optional AISummarizerCreateOptions options = {});
+
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AICapabilityAvailability> availability(optional AISummarizerCreateCoreOptions options = {});
+
+  // TODO(crbug.com/390477782): Deprecate this method.
   [
     Measure,
     CallWith=ScriptState,

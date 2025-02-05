@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/functional/function_ref.h"
 #include "base/not_fatal_until.h"
 #include "base/types/optional_ref.h"
@@ -69,20 +70,17 @@ GlobalFirstPartySets::GlobalFirstPartySets(
           public_sets_version.IsValid()
               ? std::move(aliases)
               : base::flat_map<SchemefulSite, SchemefulSite>(),
-          FirstPartySetsContextConfig(),
-          base::flat_map<SchemefulSite, SchemefulSite>()) {}
+          FirstPartySetsContextConfig()) {}
 
 GlobalFirstPartySets::GlobalFirstPartySets(
     base::Version public_sets_version,
     base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
     base::flat_map<SchemefulSite, SchemefulSite> aliases,
-    FirstPartySetsContextConfig manual_config,
-    base::flat_map<SchemefulSite, SchemefulSite> manual_aliases)
+    FirstPartySetsContextConfig manual_config)
     : public_sets_version_(std::move(public_sets_version)),
       entries_(std::move(entries)),
       aliases_(std::move(aliases)),
-      manual_config_(std::move(manual_config)),
-      manual_aliases_(std::move(manual_aliases)) {
+      manual_config_(std::move(manual_config)) {
   if (!public_sets_version_.IsValid()) {
     CHECK(entries_.empty());
     CHECK(aliases_.empty());
@@ -108,7 +106,7 @@ bool GlobalFirstPartySets::operator!=(const GlobalFirstPartySets& other) const =
 
 GlobalFirstPartySets GlobalFirstPartySets::Clone() const {
   return GlobalFirstPartySets(public_sets_version_, entries_, aliases_,
-                              manual_config_.Clone(), manual_aliases_);
+                              manual_config_.Clone());
 }
 
 std::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
@@ -176,27 +174,12 @@ FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
 void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
     const LocalSetDeclaration& local_set_declaration) {
   CHECK(manual_config_.empty());
-  CHECK(manual_aliases_.empty());
   if (local_set_declaration.empty()) {
     // Nothing to do.
     return;
   }
 
-  base::flat_map<SchemefulSite, SchemefulSite> manual_aliases =
-      local_set_declaration.aliases();
-
-  base::flat_map<SchemefulSite, FirstPartySetEntry> manual_entries =
-      local_set_declaration.entries();
-  for (const auto& [alias, canonical] : manual_aliases) {
-    manual_entries.emplace(alias, manual_entries.find(canonical)->second);
-  }
-
-  // We handle the manually-specified set the same way as we handle
-  // replacement enterprise policy sets.
-  manual_config_ = ComputeConfig(SetsMutation(
-      /*replacement_sets=*/{manual_entries},
-      /*addition_sets=*/{}));
-  manual_aliases_ = std::move(manual_aliases);
+  manual_config_ = ComputeConfig(local_set_declaration.ComputeMutation());
 
   CHECK(IsValid(), base::NotFatalUntil::M130) << "Sets must be valid";
 }
@@ -298,7 +281,7 @@ GlobalFirstPartySets::FindPrimariesAffectedByReplacements(
 }
 
 FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
-    const SetsMutation& mutation) const {
+    SetsMutation mutation) const {
   if (std::ranges::all_of(mutation.replacements(), &SingleSet::empty) &&
       std::ranges::all_of(mutation.additions(), &SingleSet::empty)) {
     // Nothing to do.
@@ -334,7 +317,7 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
     // Note: use a null config here, to avoid taking unrelated policy sets into
     // account.
     ForEachEffectiveSetEntry(
-        /*config=*/nullptr,
+        /*config=*/std::nullopt,
         [&](const SchemefulSite& member, const FirstPartySetEntry& set_entry) {
           // Reparent all sites in any intersecting addition sets.
           if (const auto entry =
@@ -389,10 +372,27 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
     }
   });
 
-  FirstPartySetsContextConfig config(std::move(site_to_override));
-  CHECK(IsValid(&config), base::NotFatalUntil::M130)
+  // Verify that the original set of aliases in the overlay don't refer to
+  // anything that was removed from the overlay. No alias can refer to a
+  // deletion.
+  CHECK(std::ranges::none_of(
+      mutation.aliases(), [&](const auto& alias_pair) -> bool {
+        const auto alias_override_it = std::ranges::find_if(
+            site_to_override, [&](const auto& site_override_pair) -> bool {
+              return site_override_pair.first == alias_pair.first;
+            });
+        return alias_override_it == site_to_override.end() ||
+               alias_override_it->second.IsDeletion();
+      }));
+
+  std::optional<FirstPartySetsContextConfig> config =
+      FirstPartySetsContextConfig::Create(std::move(site_to_override),
+                                          mutation.aliases());
+  CHECK(config.has_value());  // This class ensures the invariants that the
+                              // config relies on.
+  CHECK(IsValid(config), base::NotFatalUntil::M130)
       << "Sets must not contain singleton or orphan";
-  return config;
+  return std::move(config).value();
 }
 
 std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
@@ -477,11 +477,11 @@ bool GlobalFirstPartySets::ForEachEffectiveSetEntry(
 }
 
 bool GlobalFirstPartySets::ForEachEffectiveSetEntry(
-    const FirstPartySetsContextConfig* config,
+    base::optional_ref<const FirstPartySetsContextConfig> config,
     base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)> f)
     const {
   // Policy sets have highest precedence:
-  if (config != nullptr) {
+  if (config) {
     if (!config->ForEachCustomizationEntry(
             [&](const SchemefulSite& site,
                 const FirstPartySetEntryOverride& override) {
@@ -516,9 +516,8 @@ bool GlobalFirstPartySets::ForEachEffectiveSetEntry(
 void GlobalFirstPartySets::ForEachAlias(
     base::FunctionRef<void(const SchemefulSite&, const SchemefulSite&)> f)
     const {
-  for (const auto& [alias, site] : manual_aliases_) {
-    f(alias, site);
-  }
+  manual_config_.ForEachAlias(f);
+
   for (const auto& [alias, site] : aliases_) {
     if (manual_config_.Contains(alias)) {
       continue;
@@ -528,7 +527,7 @@ void GlobalFirstPartySets::ForEachAlias(
 }
 
 bool GlobalFirstPartySets::IsValid(
-    const FirstPartySetsContextConfig* config) const {
+    base::optional_ref<const FirstPartySetsContextConfig> config) const {
   FirstPartySetsValidator validator;
   ForEachEffectiveSetEntry(
       config,
@@ -556,10 +555,6 @@ std::ostream& operator<<(std::ostream& os, const GlobalFirstPartySets& sets) {
         os << "{" << site.Serialize() << ": " << override << "},";
         return true;
       });
-  os << "}, manual_aliases = {";
-  for (const auto& [alias, canonical] : sets.manual_aliases_) {
-    os << "{" << alias.Serialize() << ": " << canonical.Serialize() << "}, ";
-  }
   os << "}}";
   return os;
 }

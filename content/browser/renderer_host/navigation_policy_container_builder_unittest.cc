@@ -53,7 +53,8 @@ PolicyContainerPolicies MakeTestPolicies() {
       network::mojom::WebSandboxFlags::kNone,
       /*is_credentialless=*/false,
       /*can_navigate_top_without_user_gesture=*/true,
-      /*allow_cross_origin_isolation=*/false);
+      /*allow_cross_origin_isolation=*/false,
+      /*cross_origin_isolation_enabled_by_dip=*/false);
 }
 
 // Shorthand.

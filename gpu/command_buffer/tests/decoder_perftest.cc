@@ -187,10 +187,9 @@ class RecordReplayContext : public GpuControl {
 
     scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();
     scoped_refptr<gles2::ContextGroup> context_group = new gles2::ContextGroup(
-        gpu_preferences_, true, nullptr /* memory_tracker */,
-        &translator_cache_, &completeness_cache_, feature_info,
-        bind_generates_resource, nullptr /* progress_reporter */,
-        GpuFeatureInfo(), &discardable_manager_,
+        gpu_preferences_, /*memory_tracker=*/nullptr, &translator_cache_,
+        &completeness_cache_, feature_info, bind_generates_resource,
+        /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
         &passthrough_discardable_manager_, &shared_image_manager_);
     command_buffer_ = std::make_unique<RecordReplayCommandBuffer>();
 

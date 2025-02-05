@@ -144,7 +144,8 @@ void TabGroupChangeNotifierImpl::
 void TabGroupChangeNotifierImpl::OnTabGroupAdded(
     const tab_groups::SavedTabGroup& group,
     tab_groups::TriggerSource source) {
-  if (!is_initialized_) {
+  if (!is_initialized_ || sync_bridge_update_type_ !=
+                              tab_groups::SyncBridgeUpdateType::kDefaultState) {
     return;
   }
   if (!group.is_shared_tab_group()) {
@@ -167,7 +168,8 @@ void TabGroupChangeNotifierImpl::OnTabGroupAdded(
 void TabGroupChangeNotifierImpl::OnTabGroupUpdated(
     const tab_groups::SavedTabGroup& group,
     tab_groups::TriggerSource source) {
-  if (!is_initialized_) {
+  if (!is_initialized_ || sync_bridge_update_type_ !=
+                              tab_groups::SyncBridgeUpdateType::kDefaultState) {
     return;
   }
   if (!group.is_shared_tab_group()) {
@@ -196,7 +198,8 @@ void TabGroupChangeNotifierImpl::OnTabGroupUpdated(
 void TabGroupChangeNotifierImpl::OnTabGroupRemoved(
     const base::Uuid& sync_id,
     tab_groups::TriggerSource source) {
-  if (!is_initialized_) {
+  if (!is_initialized_ || sync_bridge_update_type_ !=
+                              tab_groups::SyncBridgeUpdateType::kDefaultState) {
     return;
   }
   auto group_it = last_known_tab_groups_.find(sync_id);
@@ -242,6 +245,11 @@ void TabGroupChangeNotifierImpl::OnTabGroupLocalIdChanged(
       FROM_HERE,
       base::BindOnce(&TabGroupChangeNotifierImpl::OnTabGroupOpenedOrClosed,
                      weak_ptr_factory_.GetWeakPtr(), sync_id, local_id));
+}
+
+void TabGroupChangeNotifierImpl::OnSyncBridgeUpdateTypeChanged(
+    tab_groups::SyncBridgeUpdateType sync_bridge_update_type) {
+  sync_bridge_update_type_ = sync_bridge_update_type;
 }
 
 void TabGroupChangeNotifierImpl::OnTabGroupOpenedOrClosed(

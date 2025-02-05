@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordManagerHand
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordinator;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningTriggers;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -119,8 +118,6 @@ public class PasswordMigrationWarningExportFlowTest {
                                     context,
                                     mChromeActivityRule.getProfile(false),
                                     bottomSheetController,
-                                    SyncConsentActivityLauncherImpl.getForProfile(
-                                            mChromeActivityRule.getProfile(false)),
                                     ManageSyncSettings.class,
                                     mExportFlow,
                                     (PasswordListObserver observer) ->

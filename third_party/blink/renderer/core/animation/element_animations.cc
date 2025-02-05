@@ -38,6 +38,22 @@
 
 namespace blink {
 
+namespace {
+
+ElementAnimations::CompositedPaintStatus CalculateStatusFromNativePaintReasons(
+    Animation::NativePaintWorkletReasons animation_type,
+    Animation::NativePaintWorkletReasons aggregated_reasons,
+    Animation::NativePaintWorkletReasons overlapping_reasons) {
+  if (animation_type & aggregated_reasons) {
+    return animation_type & overlapping_reasons
+               ? ElementAnimations::CompositedPaintStatus::kNotComposited
+               : ElementAnimations::CompositedPaintStatus::kNeedsRepaint;
+  }
+  return ElementAnimations::CompositedPaintStatus::kNoAnimation;
+}
+
+}  // namespace
+
 ElementAnimations::ElementAnimations()
     : animation_style_change_(false),
       composited_background_color_status_(static_cast<unsigned>(
@@ -57,6 +73,7 @@ void ElementAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(effect_stack_);
   visitor->Trace(animations_);
   visitor->Trace(worklet_animations_);
+  visitor->Trace(clip_path_paint_worklet_candidate_);
   ElementRareDataField::Trace(visitor);
 }
 
@@ -142,20 +159,32 @@ void ElementAnimations::RecalcCompositedStatus(Element* element) {
     base::debug::DumpWithoutCrashing();
   }
 
+  clip_path_paint_worklet_candidate_ = nullptr;
   Animation::NativePaintWorkletReasons reasons = Animation::kNoPaintWorklet;
+  // Multiple animations targeting the same property cannot be compsoited as
+  // the compositor does not support composite-ordering.
+  Animation::NativePaintWorkletReasons overlapping_reasons =
+      Animation::kNoPaintWorklet;
   for (auto& entry : Animations()) {
     if (entry.key->CalculateAnimationPlayState() ==
         V8AnimationPlayState::Enum::kIdle) {
       continue;
     }
+
+    overlapping_reasons |= reasons & entry.key->GetNativePaintWorkletReasons();
     reasons |= entry.key->GetNativePaintWorkletReasons();
+
+    if (entry.key->GetNativePaintWorkletReasons() &
+        Animation::kClipPathPaintWorklet) {
+      clip_path_paint_worklet_candidate_ = entry.key;
+    }
   }
 
   if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
     ElementAnimations::CompositedPaintStatus status =
-        reasons & Animation::kBackgroundColorPaintWorklet
-            ? ElementAnimations::CompositedPaintStatus::kNeedsRepaint
-            : ElementAnimations::CompositedPaintStatus::kNoAnimation;
+        CalculateStatusFromNativePaintReasons(
+            Animation::kBackgroundColorPaintWorklet, reasons,
+            overlapping_reasons);
     if (SetCompositedBackgroundColorStatus(status) &&
         element->GetLayoutObject()) {
       element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
@@ -163,9 +192,8 @@ void ElementAnimations::RecalcCompositedStatus(Element* element) {
   }
   if (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled()) {
     ElementAnimations::CompositedPaintStatus status =
-        reasons & Animation::kClipPathPaintWorklet
-            ? ElementAnimations::CompositedPaintStatus::kNeedsRepaint
-            : ElementAnimations::CompositedPaintStatus::kNoAnimation;
+        CalculateStatusFromNativePaintReasons(Animation::kClipPathPaintWorklet,
+                                              reasons, overlapping_reasons);
     if (SetCompositedClipPathStatus(status) && element->GetLayoutObject()) {
       element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
       // For clip paths, we also need to update the paint properties to switch
@@ -178,6 +206,11 @@ void ElementAnimations::RecalcCompositedStatus(Element* element) {
 bool ElementAnimations::SetCompositedClipPathStatus(
     CompositedPaintStatus status) {
   if (static_cast<unsigned>(status) != composited_clip_path_status_) {
+    if (status == ElementAnimations::CompositedPaintStatus::kNotComposited ||
+        status == ElementAnimations::CompositedPaintStatus::kNoAnimation) {
+      clip_path_paint_worklet_candidate_ = nullptr;
+    }
+
     composited_clip_path_status_ = static_cast<unsigned>(status);
     return true;
   }

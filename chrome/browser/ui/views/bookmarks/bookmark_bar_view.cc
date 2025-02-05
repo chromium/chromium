@@ -423,7 +423,7 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
 
 BookmarkBarView::~BookmarkBarView() {
   if (bookmark_service_) {
-    bookmark_service_->bookmark_model()->RemoveObserver(this);
+    bookmark_service_->RemoveObserver(this);
   }
 
   // It's possible for the menu to outlive us, reset the observer to make sure
@@ -1156,7 +1156,7 @@ void BookmarkBarView::BookmarkMenuControllerDeleted(
   }
 }
 
-void BookmarkBarView::BookmarkModelLoaded(bool ids_reassigned) {
+void BookmarkBarView::BookmarkMergedSurfaceServiceLoaded() {
   // There should be no buttons. If non-zero it means Load was invoked more than
   // once, or we didn't properly clear things. Either of which shouldn't happen.
   // The actual bookmark buttons are added from Layout().
@@ -1177,13 +1177,13 @@ void BookmarkBarView::BookmarkModelLoaded(bool ids_reassigned) {
   LayoutAndPaint();
 }
 
-void BookmarkBarView::BookmarkModelBeingDeleted() {
+void BookmarkBarView::BookmarkMergedSurfaceServiceBeingDeleted() {
   NOTREACHED();
 }
 
-void BookmarkBarView::BookmarkNodeMoved(const BookmarkNode* old_parent,
+void BookmarkBarView::BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
                                         size_t old_index,
-                                        const BookmarkNode* new_parent,
+                                        const BookmarkParentFolder& new_parent,
                                         size_t new_index) {
   // It is extremely rare for the model to mutate during a drop. Rather than
   // trying to validate the location (which may no longer be valid), this takes
@@ -1191,9 +1191,10 @@ void BookmarkBarView::BookmarkNodeMoved(const BookmarkNode* old_parent,
   // mouse/touch-device, the location will update accordingly.
   InvalidateDrop();
 
-  const BookmarkNode* moved_node = new_parent->children()[new_index].get();
-  bool needs_layout_and_paint = BookmarkNodeRemovedImpl(moved_node);
-  if (BookmarkNodeAddedImpl(moved_node)) {
+  bool needs_layout_and_paint = BookmarkNodeRemovedImpl(
+      old_parent, old_index,
+      bookmark_service_->GetNodeAtIndex(new_parent, new_index));
+  if (BookmarkNodeAddedImpl(new_parent, new_index)) {
     needs_layout_and_paint = true;
   }
   if (needs_layout_and_paint) {
@@ -1203,44 +1204,58 @@ void BookmarkBarView::BookmarkNodeMoved(const BookmarkNode* old_parent,
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void BookmarkBarView::BookmarkNodeAdded(const BookmarkNode* parent,
-                                        size_t index,
-                                        bool added_by_user) {
+void BookmarkBarView::BookmarkNodeAdded(const BookmarkParentFolder& parent,
+                                        size_t index) {
   // See comment in BookmarkNodeMoved() for details on this.
   InvalidateDrop();
-  if (BookmarkNodeAddedImpl(parent->children()[index].get())) {
+  if (BookmarkNodeAddedImpl(parent, index)) {
     LayoutAndPaint();
   }
 
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void BookmarkBarView::BookmarkNodeRemoved(const BookmarkNode* parent,
-                                          size_t old_index,
-                                          const BookmarkNode* node,
-                                          const std::set<GURL>& removed_urls,
-                                          const base::Location& location) {
+void BookmarkBarView::BookmarkNodesRemoved(
+    const BookmarkParentFolder& parent,
+    const base::flat_set<const bookmarks::BookmarkNode*>& nodes) {
   // See comment in BookmarkNodeMoved() for details on this.
   InvalidateDrop();
 
   // Close the menu if the menu is showing for the deleted node.
   if (bookmark_menu_) {
-    auto nodes =
+    auto bookmark_menu_nodes =
         bookmark_service_->GetUnderlyingNodes(bookmark_menu_->folder());
-    if (nodes.size() == 1u && nodes[0] == node) {
+    // `bookmark_menu_nodes` can only be of size 2 for permanent folders.
+    // Permanent folder can't be deleted.
+    if (bookmark_menu_nodes.size() == 1u &&
+        nodes.find(bookmark_menu_nodes[0]) != nodes.end()) {
       bookmark_menu_->Cancel();
     }
   }
-  if (BookmarkNodeRemovedImpl(node)) {
+
+  bool needs_layout = UpdateOtherAndManagedButtonsVisibility();
+  if (parent == BookmarkParentFolder::BookmarkBarFolder()) {
+    size_t index = 0;
+    size_t button_count = bookmark_buttons_.size();
+    while (index < bookmark_buttons_.size()) {
+      if (nodes.find(bookmark_buttons_[index].second) != nodes.end()) {
+        RemoveBookmarkButton(index);
+        needs_layout = true;
+        CHECK_EQ(--button_count, bookmark_buttons_.size());
+      } else {
+        ++index;
+      }
+    }
+  }
+
+  if (needs_layout) {
     LayoutAndPaint();
   }
 
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void BookmarkBarView::BookmarkAllUserNodesRemoved(
-    const std::set<GURL>& removed_urls,
-    const base::Location& location) {
+void BookmarkBarView::BookmarkAllUserNodesRemoved() {
   // See comment in BookmarkNodeMoved() for details on this.
   InvalidateDrop();
 
@@ -1260,11 +1275,12 @@ void BookmarkBarView::BookmarkNodeChanged(const BookmarkNode* node) {
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void BookmarkBarView::BookmarkNodeChildrenReordered(const BookmarkNode* node) {
+void BookmarkBarView::BookmarkParentFolderChildrenReordered(
+    const BookmarkParentFolder& folder) {
   // See comment in BookmarkNodeMoved() for details on this.
   InvalidateDrop();
 
-  if (node->type() != BookmarkNode::BOOKMARK_BAR) {
+  if (folder.as_permanent_folder() != PermanentFolderType::kBookmarkBarNode) {
     return;  // We only care about reordering of the bookmark bar node.
   }
 
@@ -1272,9 +1288,8 @@ void BookmarkBarView::BookmarkNodeChildrenReordered(const BookmarkNode* node) {
   RemoveAllBookmarkButtons();
 
   // Create the new buttons.
-  CHECK(node->is_folder());
-  BookmarkParentFolderChildren children = bookmark_service_->GetChildren(
-      BookmarkParentFolder::FromFolderNode(node));
+  BookmarkParentFolderChildren children =
+      bookmark_service_->GetChildren(folder);
   for (size_t i = 0; i < children.size(); i++) {
     InsertBookmarkButtonAtIndex(CreateBookmarkButton(children[i], i), i);
   }
@@ -1535,9 +1550,9 @@ void BookmarkBarView::Init() {
       BookmarkMergedSurfaceServiceFactory::GetForProfile(browser_->profile());
   managed_ = ManagedBookmarkServiceFactory::GetForProfile(browser_->profile());
   if (bookmark_service_) {
-    bookmark_service_->bookmark_model()->AddObserver(this);
+    bookmark_service_->AddObserver(this);
     if (bookmark_service_->loaded()) {
-      BookmarkModelLoaded(false);
+      BookmarkMergedSurfaceServiceLoaded();
     }
     // else case: we'll receive notification back from the BookmarkModel when
     // done loading, then we'll populate the bar.
@@ -1637,8 +1652,6 @@ void BookmarkBarView::RemoveBookmarkButton(size_t index) {
   CHECK_LE(index, bookmark_buttons_.size());
   views::LabelButton* button = bookmark_buttons_[index].first;
   bookmark_buttons_.erase(bookmark_buttons_.cbegin() + index);
-  // Set not visible before removing to advance focus if needed, and to ensure
-  // that the overflow menu is updated.
   button->SetVisible(false);
   button_visibility_changed_callbacks_.erase(button);
   RemoveChildViewT(button);
@@ -1646,7 +1659,7 @@ void BookmarkBarView::RemoveBookmarkButton(size_t index) {
 
 void BookmarkBarView::RemoveAllBookmarkButtons() {
   while (!bookmark_buttons_.empty()) {
-    RemoveBookmarkButton(0);
+    RemoveBookmarkButton(bookmark_buttons_.size() - 1);
   }
 }
 
@@ -1751,15 +1764,18 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
   button->SetMaxSize(gfx::Size(bookmark_button_util::kMaxButtonWidth, 0));
 }
 
-bool BookmarkBarView::BookmarkNodeAddedImpl(const BookmarkNode* node) {
+bool BookmarkBarView::BookmarkNodeAddedImpl(const BookmarkParentFolder& parent,
+                                            size_t index) {
   const bool needs_layout_and_paint = UpdateOtherAndManagedButtonsVisibility();
-  if (node->parent()->type() != BookmarkNode::BOOKMARK_BAR) {
+  if (parent.as_permanent_folder() != PermanentFolderType::kBookmarkBarNode) {
     return needs_layout_and_paint;
   }
 
-  size_t index = bookmark_service_->GetIndexOf(node);
   if (index < bookmark_buttons_.size()) {
-    InsertBookmarkButtonAtIndex(CreateBookmarkButton(node, index), index);
+    InsertBookmarkButtonAtIndex(
+        CreateBookmarkButton(bookmark_service_->GetNodeAtIndex(parent, index),
+                             index),
+        index);
     return true;
   }
   // If the new node was added after the last button we've created we may be
@@ -1769,15 +1785,22 @@ bool BookmarkBarView::BookmarkNodeAddedImpl(const BookmarkNode* node) {
 }
 
 bool BookmarkBarView::BookmarkNodeRemovedImpl(
+    const BookmarkParentFolder& old_parent,
+    size_t old_index,
     const bookmarks::BookmarkNode* node) {
   const bool needs_layout = UpdateOtherAndManagedButtonsVisibility();
-  for (size_t i = 0; i < bookmark_buttons_.size(); i++) {
-    if (bookmark_buttons_[i].second == node) {
-      RemoveBookmarkButton(i);
-      return true;
-    }
+  if (old_parent.as_permanent_folder() !=
+      PermanentFolderType::kBookmarkBarNode) {
+    return needs_layout;
   }
-  return needs_layout;
+
+  if (old_index >= bookmark_buttons_.size()) {
+    return needs_layout;
+  }
+
+  CHECK_EQ(bookmark_buttons_[old_index].second, node);
+  RemoveBookmarkButton(old_index);
+  return true;
 }
 
 void BookmarkBarView::BookmarkNodeChangedImpl(const BookmarkNode* node) {

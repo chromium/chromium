@@ -114,6 +114,12 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       base::UTF16ToUTF8(entry.GetRawInfo(NAME_MIDDLE))));
   specifics->add_name_last(
       data_util::TruncateUTF8(base::UTF16ToUTF8(entry.GetRawInfo(NAME_LAST))));
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    specifics->add_name_last_prefix(data_util::TruncateUTF8(
+        base::UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_PREFIX))));
+    specifics->add_name_last_core(data_util::TruncateUTF8(
+        base::UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_CORE))));
+  }
   specifics->add_name_last_first(data_util::TruncateUTF8(
       base::UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_FIRST))));
   specifics->add_name_last_second(data_util::TruncateUTF8(
@@ -129,6 +135,14 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       entry.GetVerificationStatus(NAME_MIDDLE)));
   specifics->add_name_last_status(ConvertProfileToSpecificsVerificationStatus(
       entry.GetVerificationStatus(NAME_LAST)));
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    specifics->add_name_last_prefix_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(NAME_LAST_PREFIX)));
+    specifics->add_name_last_core_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(NAME_LAST_CORE)));
+  }
   specifics->add_name_last_first_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(NAME_LAST_FIRST)));
@@ -371,6 +385,29 @@ std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
               : AutofillProfileSpecifics::VerificationStatus::
                     AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED));
 
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    profile.SetRawInfoWithVerificationStatus(
+        NAME_LAST_PREFIX,
+        base::UTF8ToUTF16(specifics.name_last_prefix_size()
+                              ? specifics.name_last_prefix(0)
+                              : std::string()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.name_last_prefix_status_size()
+                ? specifics.name_last_prefix_status(0)
+                : AutofillProfileSpecifics::VerificationStatus::
+                      AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED));
+
+    profile.SetRawInfoWithVerificationStatus(
+        NAME_LAST_CORE,
+        base::UTF8ToUTF16(specifics.name_last_core_size()
+                              ? specifics.name_last_core(0)
+                              : std::string()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.name_last_core_status_size()
+                ? specifics.name_last_core_status(0)
+                : AutofillProfileSpecifics::VerificationStatus::
+                      AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED));
+  }
   profile.SetRawInfoWithVerificationStatus(
       NAME_LAST_FIRST,
       base::UTF8ToUTF16(specifics.name_last_first_size()

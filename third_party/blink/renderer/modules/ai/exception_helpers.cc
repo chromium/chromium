@@ -180,6 +180,8 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
     case mojom::blink::ModelAvailabilityCheckResult::kNoServiceNotRunning:
       return "Unable to create a text session because the service is not "
              "running.";
+    case mojom::blink::ModelAvailabilityCheckResult::kNoUnsupportedLanguage:
+      return "The requested language options are not supported.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoUnknown:
       return "The service is unable to create new session.";
     case mojom::blink::ModelAvailabilityCheckResult::kNoFeatureNotEnabled:

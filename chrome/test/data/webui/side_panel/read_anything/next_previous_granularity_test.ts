@@ -10,7 +10,6 @@ import {MetricsBrowserProxyImpl, ReadAnythingLogger, ToolbarEvent} from 'chrome-
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -25,7 +24,6 @@ suite('NextPrevious', () => {
   let previousEmitted: boolean;
 
   setup(() => {
-    suppressInnocuousErrors();
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
     BrowserProxy.setInstance(testBrowserProxy);
     metrics = new TestMetricsBrowserProxy();

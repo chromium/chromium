@@ -9,9 +9,9 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/channel_info.h"
-#include "components/flags_ui/flags_storage.h"
-#include "components/flags_ui/flags_ui_constants.h"
 #include "components/version_info/channel.h"
+#include "components/webui/flags/flags_storage.h"
+#include "components/webui/flags/flags_ui_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/about_flags.h"

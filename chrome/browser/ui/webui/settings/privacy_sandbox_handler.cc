@@ -87,10 +87,10 @@ void PrivacySandboxHandler::RegisterMessages() {
               HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel",
+      "shouldShowPrivacySandboxAdTopicsContentParity",
       base::BindRepeating(
           &PrivacySandboxHandler::
-              HandlePrivacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel,
+              HandleShouldShowPrivacySandboxAdTopicsContentParity,
           base::Unretained(this)));
 }
 
@@ -218,9 +218,8 @@ void PrivacySandboxHandler::
   ResolveJavascriptCallback(args[0], should_show_ad_topics_card);
 }
 
-void PrivacySandboxHandler::
-    HandlePrivacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel(
-        const base::Value::List& args) {
+void PrivacySandboxHandler::HandleShouldShowPrivacySandboxAdTopicsContentParity(
+    const base::Value::List& args) {
   AllowJavascript();
   ResolveJavascriptCallback(
       args[0], base::FeatureList::IsEnabled(

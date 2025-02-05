@@ -1755,19 +1755,28 @@ TEST(FirstPartySetParser,
           R"(})");
 
   EXPECT_THAT(
-      local_set.entries(),
-      UnorderedElementsAre(
-          Pair(primary, net::FirstPartySetEntry(
-                            primary, net::SiteType::kPrimary, std::nullopt)),
-          Pair(associated1,
-               net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 0)),
-          Pair(associated2,
-               net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 1)),
-          Pair(service, net::FirstPartySetEntry(
-                            primary, net::SiteType::kService, std::nullopt))));
-
-  EXPECT_THAT(local_set.aliases(),
-              UnorderedElementsAre(Pair(associated2_cctld, associated2)));
+      local_set.ComputeMutation(),
+      net::SetsMutation(
+          /*replacement_sets=*/
+          {
+              {
+                  {primary,
+                   net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
+                                           std::nullopt)},
+                  {associated1, net::FirstPartySetEntry(
+                                    primary, net::SiteType::kAssociated, 0)},
+                  {associated2, net::FirstPartySetEntry(
+                                    primary, net::SiteType::kAssociated, 1)},
+                  {associated2_cctld,
+                   net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
+                                           1)},
+                  {service,
+                   net::FirstPartySetEntry(primary, net::SiteType::kService,
+                                           std::nullopt)},
+              },
+          },
+          /*addition_sets=*/{},
+          /*aliases=*/{{associated2_cctld, associated2}}));
 }
 
 }  // namespace content

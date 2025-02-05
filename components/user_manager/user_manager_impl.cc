@@ -340,11 +340,10 @@ UserManagerImpl::EnsuredUser UserManagerImpl::EnsureUser(
         break;
       }
 
+      // Ensure User is created.
       if (is_ephemeral) {
         user = AddEphemeralUser(account_id, user_type);
-        is_current_user_ephemeral_regular_user_ = true;
       } else {
-        // Ensure User is created.
         user = AddGaiaUser(account_id, user_type);
       }
       break;
@@ -1040,8 +1039,8 @@ bool UserManagerImpl::IsUserNonCryptohomeDataEphemeral(
 
   // Even though device-local accounts might be ephemeral (e.g. kiosk accounts),
   // non-cryptohome data of device-local accounts should be non-ephemeral.
-  if (const User* user = FindUser(account_id);
-      user && user->IsDeviceLocalAccount()) {
+  const User* user = FindUser(account_id);
+  if (user && user->IsDeviceLocalAccount()) {
     return false;
   }
 
@@ -1050,9 +1049,12 @@ bool UserManagerImpl::IsUserNonCryptohomeDataEphemeral(
   //    policy was enabled.
   //    - or -
   // b) The user logged into any other account type.
-  if (IsUserLoggedIn() && (account_id == GetActiveUser()->GetAccountId()) &&
-      (is_current_user_ephemeral_regular_user_ ||
-       !IsLoggedInAsUserWithGaiaAccount())) {
+  // TODO(crbug.com/278643115): The first condition may be redundant, because
+  // we already check it in UserExistsInList above.
+  if (user && user == active_user_ &&
+      ((user->GetType() == UserType::kRegular &&
+        std::ranges::find(persisted_users_, user) == persisted_users_.end()) ||
+       !user->HasGaiaAccount())) {
     return true;
   }
 

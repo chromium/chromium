@@ -5899,6 +5899,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5301" label="WindowProxyNamedGetter"/>
   <int value="5302" label="V8AILanguageModelFactory_Availability_Method"/>
   <int value="5303" label="V8AILanguageModelFactory_Params_Method"/>
+  <int value="5304" label="V8AISummarizerFactory_Availability_Method"/>
+  <int value="5305"
+      label="V8AISummarizer_ExpectedInputLanguages_AttributeGetter"/>
+  <int value="5306"
+      label="V8AISummarizer_ExpectedContextLanguages_AttributeGetter"/>
+  <int value="5307" label="V8AISummarizer_OutputLanguage_AttributeGetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -7414,6 +7420,14 @@ Called by update_use_counter_css.py.-->
   <int value="828" label="animation-trigger"/>
   <int value="829" label="column-rule-break"/>
   <int value="830" label="row-rule-break"/>
+  <int value="831" label="corner-bottom-left-shape"/>
+  <int value="832" label="corner-bottom-right-shape"/>
+  <int value="833" label="corner-top-left-shape"/>
+  <int value="834" label="corner-top-right-shape"/>
+  <int value="835" label="corner-start-start-shape"/>
+  <int value="836" label="corner-start-end-shape"/>
+  <int value="837" label="corner-end-start-shape"/>
+  <int value="838" label="corner-end-end-shape"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

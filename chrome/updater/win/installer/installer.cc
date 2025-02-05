@@ -27,6 +27,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
@@ -44,7 +45,9 @@
 #include "base/win/windows_version.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/ping_configurator.h"
 #include "chrome/updater/tag.h"
+#include "chrome/updater/update_usage_stats_task.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
@@ -55,6 +58,8 @@
 #include "chrome/updater/win/installer/splash_wnd.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/win_constants.h"
+#include "components/update_client/protocol_definition.h"
+#include "components/update_client/update_client.h"
 #include "third_party/wtl/include/atlapp.h"
 
 namespace updater {
@@ -81,7 +86,6 @@ base::ScopedClosureRunner CreateSplashScreen() {
     return base::ScopedClosureRunner(base::BindOnce([] {}));
   }
 
-  InitializeThreadPool("windows-installer");
   base::WaitableEvent ui_initialized_event;
   base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
@@ -104,9 +108,53 @@ base::ScopedClosureRunner CreateSplashScreen() {
   return base::ScopedClosureRunner(base::BindOnce(
       [](HWND splash_hwnd) {
         ::SendMessage(splash_hwnd, WM_CLOSE, 0, 0);
-        base::ThreadPoolInstance::Get()->Shutdown();
       },
       splash_hwnd));
+}
+
+void SendPing(int exit_code, int extra_code) {
+  struct SendPingResult : public base::RefCountedThreadSafe<SendPingResult> {
+    base::WaitableEvent ping_complete_event;
+
+   private:
+    friend class base::RefCountedThreadSafe<SendPingResult>;
+    virtual ~SendPingResult() = default;
+  };
+
+  auto result = base::MakeRefCounted<SendPingResult>();
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](scoped_refptr<SendPingResult> result, int exit_code,
+                 int extra_code) {
+                update_client::CrxComponent ping_data;
+                ping_data.app_id = kUpdaterAppId;
+                ping_data.version = base::Version(kUpdaterVersion);
+                ping_data.requires_network_encryption = false;
+                update_client::UpdateClientFactory(CreatePingConfigurator())
+                    ->SendPing(
+                        ping_data,
+                        {
+                            .event_type =
+                                update_client::protocol_request::kEventInstall,
+                            .result = 1,
+                            .error_code = exit_code,
+                            .extra_code1 = extra_code,
+                        },
+                        base::BindOnce(
+                            [](scoped_refptr<SendPingResult> result,
+                               update_client::Error error) {
+                              result->ping_complete_event.Signal();
+                            },
+                            result));
+              },
+              result, exit_code, extra_code));
+
+  result->ping_complete_event.TimedWait(base::Seconds(60));
 }
 
 }  // namespace
@@ -376,7 +424,7 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
                                  HRESULTFromLastError());
 }
 
-ProcessExitResult InstallerMain(HMODULE module) {
+ProcessExitResult InstallerMain(HMODULE module, bool& usage_stats_enable) {
   CHECK(EnableSecureDllLoading());
   EnableProcessHeapMetadataProtection();
 
@@ -404,6 +452,13 @@ ProcessExitResult InstallerMain(HMODULE module) {
            L" ", cmd_line_args.get()}));
 
   const UpdaterScope scope = GetUpdaterScopeForCommandLine(command_line);
+  usage_stats_enable = AreRawUsageStatsEnabled(scope);
+  const std::optional<tagging::TagArgs> tag_args =
+      GetTagArgsForCommandLine(command_line).tag_args;
+  if (tag_args) {
+    usage_stats_enable =
+        tag_args->usage_stats_enable.value_or(usage_stats_enable);
+  }
 
   if (!::IsUserAnAdmin() && IsSystemInstall(scope)) {
     ProcessExitResult run_elevated_result = HandleRunElevated(command_line);
@@ -534,7 +589,9 @@ ProcessExitResult InstallerMain(HMODULE module) {
 }
 
 int WMain(HMODULE module) {
-  const ProcessExitResult result = InstallerMain(module);
+  InitializeThreadPool("windows-installer");
+  bool usage_stats_enable = false;
+  const ProcessExitResult result = InstallerMain(module, usage_stats_enable);
   const DWORD wmain_exit_code = result.exit_code == UPDATER_EXIT_CODE
                                     ? result.windows_error
                                     : result.exit_code;
@@ -542,16 +599,21 @@ int WMain(HMODULE module) {
 
   // Display UI only for metainstaller errors.
   if (result.exit_code != SUCCESS_EXIT_CODE &&
-      result.exit_code != UPDATER_EXIT_CODE &&
-      !GetCommandLineLegacyCompatible().HasSwitch(kSilentSwitch)) {
-    base::FilePath exe_path;
-    base::PathService::Get(base::FILE_EXE, &exe_path);
-    ::MessageBoxEx(nullptr,
-                   GetLocalizedMetainstallerErrorString(result.exit_code,
-                                                        result.windows_error)
-                       .c_str(),
-                   exe_path.BaseName().value().c_str(), 0, 0);
+      result.exit_code != UPDATER_EXIT_CODE) {
+    if (!GetCommandLineLegacyCompatible().HasSwitch(kSilentSwitch)) {
+      base::FilePath exe_path;
+      base::PathService::Get(base::FILE_EXE, &exe_path);
+      ::MessageBoxEx(nullptr,
+                     GetLocalizedMetainstallerErrorString(result.exit_code,
+                                                          result.windows_error)
+                         .c_str(),
+                     exe_path.BaseName().value().c_str(), 0, 0);
+    }
+    if (usage_stats_enable) {
+      SendPing(result.exit_code, result.windows_error);
+    }
   }
+  base::ThreadPoolInstance::Get()->Shutdown();
   return wmain_exit_code;
 }
 

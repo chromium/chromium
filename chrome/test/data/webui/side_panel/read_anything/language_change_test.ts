@@ -13,7 +13,7 @@ import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-c
 import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechSynthesisVoice, emitEvent, setVoices, suppressInnocuousErrors} from './common.js';
+import {createSpeechSynthesisVoice, emitEvent, setVoices} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -72,7 +72,6 @@ suite('LanguageChanged', () => {
   }
 
   setup(() => {
-    suppressInnocuousErrors();
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
     BrowserProxy.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

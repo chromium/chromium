@@ -24,12 +24,12 @@ DatabaseStringTable::~DatabaseStringTable() = default;
 bool DatabaseStringTable::Initialize(sql::Database* connection) {
   if (!connection->DoesTableExist(table_.c_str())) {
     return connection->Execute(base::StrCat(
-        {"CREATE TABLE ", table_,
-         "(id INTEGER PRIMARY KEY, value TEXT NOT NULL);",
-         "CREATE UNIQUE INDEX ", table_, "_index ON ", table_, "(value)"}));
-  } else {
-    return true;
+               {"CREATE TABLE ", table_,
+                "(id INTEGER PRIMARY KEY, value TEXT NOT NULL)"})) &&
+           connection->Execute(base::StrCat({"CREATE UNIQUE INDEX ", table_,
+                                             "_index ON ", table_, "(value)"}));
   }
+  return true;
 }
 
 bool DatabaseStringTable::StringToInt(sql::Database* connection,

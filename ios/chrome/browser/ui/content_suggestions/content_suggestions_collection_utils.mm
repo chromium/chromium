@@ -7,6 +7,7 @@
 #import "base/i18n/rtl.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
@@ -149,6 +150,7 @@ CGFloat DoodleTopMargin(CGFloat top_inset,
   // If Magic Stack is not enabled, this value is zero (e.g. no-op).
   top_margin -= ReducedNTPTopMarginSpaceForMagicStack();
   top_margin += kDoodleTopMarginOther;
+  top_margin += TopPaddingToNTP();
   return top_margin;
 }
 

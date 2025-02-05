@@ -40,6 +40,7 @@
 #include "extensions/browser/api/web_request/web_request_time_tracker.h"
 #include "extensions/browser/api_activity_monitor.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_navigation_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_map.h"
@@ -406,6 +407,23 @@ GURL GetNewUrl(const GURL& redirect_url,
   auto dynamic_url =
       TransformToDynamicURLIfNecessary(redirect_url, browser_context);
   return dynamic_url.value_or(redirect_url);
+}
+
+// Write that extension caused redirect OnBeforeRequest, ExecuteDeltas.
+void RecordThatNavigationWasInitiatedByExtension(
+    const WebRequestInfo* request,
+    content::BrowserContext* browser_context,
+    GURL* new_url) {
+  GURL new_location = new_url ? *new_url : GURL();
+
+  // Now that the event type has been signaled, record that webRequest has
+  // intercepted this redirect.
+  if (request->navigation_id.has_value()) {
+    // Store the target url.
+    // TODO(crbug.com/40060076): Record the extension id that caused the action.
+    ExtensionNavigationRegistry::Get(browser_context)
+        ->RecordExtensionRedirect(request->navigation_id.value(), new_location);
+  }
 }
 
 using CallbacksForPageLoad = std::list<base::OnceClosure>;
@@ -1006,7 +1024,8 @@ int WebRequestEventRouter::OnBeforeRequest(
                     browser_context, action.extension_id, request->url,
                     action.redirect_url.value());
           }
-
+          RecordThatNavigationWasInitiatedByExtension(request, browser_context,
+                                                      new_url);
           return net::OK;
         case DNRRequestAction::Type::MODIFY_HEADERS:
           // Unlike other actions, allow web request extensions to intercept
@@ -2461,6 +2480,9 @@ int WebRequestEventRouter::ExecuteDeltas(
   for (const DNRRequestAction* action : matched_dnr_actions) {
     OnDNRActionMatched(browser_context, *request, *action);
   }
+
+  RecordThatNavigationWasInitiatedByExtension(request, browser_context,
+                                              blocked_request.new_url);
 
   const bool redirected =
       blocked_request.new_url && !blocked_request.new_url->is_empty();
