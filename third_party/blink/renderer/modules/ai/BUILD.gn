@@ -18,6 +18,8 @@ blink_modules_sources("ai") {
     "ai_language_model_capabilities.h",
     "ai_language_model_factory.cc",
     "ai_language_model_factory.h",
+    "ai_language_model_params.cc",
+    "ai_language_model_params.h",
     "ai_metrics.cc",
     "ai_metrics.h",
     "ai_mojo_client.h",

@@ -4,9 +4,8 @@
 // creation, and the session won't be created.
 promise_test(async t => {
   // Make sure the model availability is `after-download`.
-  const capabilities = await ai.languageModel.capabilities();
-  const status = capabilities.available;
-  if (status === "after-download") {
+  const availability = await ai.languageModel.availability();
+  if (availability === "after-download") {
     const error = new Error("test");
     const sessionPromise = ai.languageModel.create({
       // Start a new session with callback that will throw error.

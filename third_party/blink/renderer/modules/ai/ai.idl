@@ -4,12 +4,6 @@
 
 // https://github.com/webmachinelearning/prompt-api
 
-enum AICapabilityAvailability {
-  "readily",
-  "after-download",
-  "no"
-};
-
 [
   Exposed=(Window,Worker),
   SecureContext,

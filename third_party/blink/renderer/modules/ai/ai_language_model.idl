@@ -72,5 +72,5 @@ interface AILanguageModel : EventTarget {
     CallWith=ScriptState,
     RaisesException
   ]
-  void destroy();
+  undefined destroy();
 };
