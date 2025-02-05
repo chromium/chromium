@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback_forward.h"
 #import "base/ios/block_types.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -82,7 +83,16 @@ void MultiProfileSignOut(Browser* browser,
                          signin_metrics::ProfileSignout signout_source,
                          bool force_snackbar_over_toolbar,
                          MDCSnackbarMessage* snackbar_message,
-                         ProceduralBlock signout_completion);
+                         ProceduralBlock signout_completion,
+                         bool should_record_metrics = true);
+
+// Similar to `MultiProfileSignOut`, but switches to personal profile in all
+// windows and not just one. This also skips recording metrics for single
+// profile signout as policies have their own metrics for signout.
+void MultiProfileSignOutForProfile(
+    ProfileIOS* profile,
+    signin_metrics::ProfileSignout signout_source,
+    base::OnceClosure signout_completion_closure);
 
 }  // namespace signin
 

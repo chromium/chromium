@@ -294,6 +294,11 @@
 // 1. the UI is available
 // 2. it was never shown or if a scene displaying the dialog
 // was closed and anoher foregrouded window remained open.
+// TODO(crbug.com/364574533): `showIdleTimeoutConfirmation` will be called from
+// `sceneStateDidHideModalOverlay` in the case of multiple profiles when the
+// window that shows the _uiBlocker is closed. Call
+// `stopPresentingAndRunActionsAfterwards` without showing the dialog for <1
+// second as it looks buggy when this happens.
 - (void)maybeShowIdleTimeoutConfirmationDialog {
   // Initially set the pending snackbar flag to false in case it was set on
   // startup but actions failed to complete.

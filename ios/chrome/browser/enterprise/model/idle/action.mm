@@ -22,6 +22,7 @@
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/enterprise/idle/metrics.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -69,11 +70,11 @@ class SignOutAction : public Action {
     if (authentication_service->HasPrimaryIdentity(
             signin::ConsentLevel::kSignin)) {
       signout_start_time_ = base::TimeTicks::Now();
-      authentication_service->SignOut(
+      signin::MultiProfileSignOutForProfile(
+          profile,
           signin_metrics::ProfileSignout::kIdleTimeoutPolicyTriggeredSignOut,
-          base::CallbackToBlock(
-              base::BindOnce(&SignOutAction::OnSignOutCompleted,
-                             base::Unretained(this), std::move(continuation))));
+          base::BindOnce(&SignOutAction::OnSignOutCompleted,
+                         base::Unretained(this), std::move(continuation)));
       return;
     }
     // Run continuation right away if user is not signed in.
