@@ -26,7 +26,6 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
@@ -309,6 +308,9 @@ class TabDragController : public views::WidgetObserver,
     DONT_RELEASE_CAPTURE,
   };
 
+  // Enumeration of the possible positions the detached tab may detach from.
+  enum DetachPosition { DETACH_BEFORE, DETACH_AFTER, DETACH_ABOVE_OR_BELOW };
+
   // Specifies what should happen when a drag motion exits the tab strip region
   // in an attempt to detach a tab.
   enum DetachBehavior { DETACHABLE, NOT_DETACHABLE };
@@ -469,6 +471,10 @@ class TabDragController : public views::WidgetObserver,
   bool DoesTabStripContain(TabDragContext* context,
                            const gfx::Point& point_in_screen) const;
 
+  // Returns the DetachPosition given the specified location in screen
+  // coordinates.
+  DetachPosition GetDetachPosition(const gfx::Point& point_in_screen);
+
   // Begin the drag session by attaching to `source_context_`.
   void StartDrag();
 
@@ -499,19 +505,19 @@ class TabDragController : public views::WidgetObserver,
   // runs a nested move loop.
   void DetachIntoNewBrowserAndRunMoveLoop(const gfx::Point& point_in_screen);
 
-  // Runs a nested run loop that handles moving the current Browser.
-  // `drag_offset` is the desired offset between the cursor and the window
-  // origin. `point_in_screen` is the cursor location in screen space.
-  void RunMoveLoop(gfx::Point point_in_screen, gfx::Vector2d drag_offset);
+  // Runs a nested run loop that handles moving the current
+  // Browser. |drag_offset| is the offset from the window origin and is used in
+  // calculating the location of the window offset from the cursor while
+  // dragging.
+  void RunMoveLoop(const gfx::Vector2d& drag_offset);
 
   // Retrieves the bounds of the dragged tabs relative to the attached
   // TabDragContext. |tab_strip_point| is in the attached
   // TabDragContext's coordinate system.
   gfx::Rect GetDraggedViewTabStripBounds(const gfx::Point& tab_strip_point);
 
-  // Calculates where to position the dragged tabs, given the cursor is at
-  // `point_in_screen`. Keeps the same point within the source view under the
-  // cursor, unless that would push tabs outside the drag area.
+  // Gets the position of the dragged tabs relative to the attached tab strip
+  // with the mirroring transform applied.
   gfx::Point GetAttachedDragPoint(const gfx::Point& point_in_screen);
 
   // Finds the TabSlotViews within the specified TabDragContext that
@@ -586,26 +592,35 @@ class TabDragController : public views::WidgetObserver,
   // |source_context_|.
   bool AreTabsConsecutive();
 
-  // Restores and resizes `attached_context_` so it can be dragged.
-  void RestoreAttachedWindowForDrag();
-
-  // Calculates and returns new size for the dragged browser window.
+  // Calculates and returns new bounds for the dragged browser window.
   // Takes into consideration current and restore bounds of |source| tab strip
-  // preventing the dragged size from being too small.
-  gfx::Size CalculateDraggedWindowSize(TabDragContext* source);
+  // preventing the dragged size from being too small. Positions the new bounds
+  // such that the tab that was dragged remains under the |point_in_screen|.
+  // Offsets |drag_bounds| if necessary when dragging to the right from the
+  // source browser.
+  gfx::Rect CalculateDraggedBrowserBounds(TabDragContext* source,
+                                          const gfx::Point& point_in_screen,
+                                          std::vector<gfx::Rect>* drag_bounds);
 
-  // Calculates how tabs should be positioned in a to-be-detached window based
-  // on how the window is being detached. Returns the leading x coordinate of
-  // the leading-most dragged view.
-  int GetTabOffsetForDetachedWindow(gfx::Point point_in_screen);
+  // Calculates and returns the dragged bounds for the non-maximize dragged
+  // browser window. Takes into consideration the initial drag offset so that
+  // the dragged tab remains under the |point_in_screen|.
+  gfx::Rect CalculateNonMaximizedDraggedBrowserBounds(
+      views::Widget* widget,
+      const gfx::Point& point_in_screen);
 
-  // Positions the dragged tabs within `attached_context_` appropriately for
-  // kDraggingWindow. When `previous_tab_area_width` is larger than the new tab
-  // area width, the tabs are scaled and positioned to maintain a sense of
-  // continuity.
-  void AdjustTabBoundsForDrag(int previous_tab_area_width,
-                              int first_tab_leading_x,
-                              std::vector<gfx::Rect> drag_bounds);
+  // Calculates scaled `drag_bounds` for dragged tabs and sets the tabs bounds.
+  // Layout of the tabstrip is performed and a new tabstrip width calculated.
+  // When `previous_tab_area_width` is larger than the new tab area width the
+  // tabs in the attached tabstrip are scaled and repositioned and the attached
+  // browser is positioned such that the tab that was dragged remains under the
+  // `point_in_screen`. `drag_offset` is the offset of `point_in_screen` from
+  // the origin of the dragging browser window, and will be updated when this
+  // method ends up with changing the origin of the attached browser window.
+  void AdjustBrowserAndTabBoundsForDrag(int previous_tab_area_width,
+                                        const gfx::Point& point_in_screen,
+                                        gfx::Vector2d* drag_offset,
+                                        std::vector<gfx::Rect>* drag_bounds);
 
   // If the user is dragging a single tab that is controlled by one web app,
   // and features::kTearOffWebAppTabOpensWebAppWindow is enabled,
@@ -613,15 +628,18 @@ class TabDragController : public views::WidgetObserver,
   std::optional<webapps::AppId> GetControllingAppForDrag(Browser* browser);
 
   // Creates and returns a new Browser to handle the drag.
-  Browser* CreateBrowserForDrag(TabDragContext* source, gfx::Size initial_size);
+  Browser* CreateBrowserForDrag(TabDragContext* source,
+                                const gfx::Point& point_in_screen,
+                                gfx::Vector2d* drag_offset,
+                                std::vector<gfx::Rect>* drag_bounds);
 
   // Returns the location of the cursor. This is either the location of the
   // mouse or the location of the current touch point.
   gfx::Point GetCursorScreenPoint();
 
-  // Calculates the drag offset needed to place the correct point on the
-  // source view under the cursor.
-  gfx::Vector2d CalculateWindowDragOffset();
+  // Returns the offset from the top left corner of the window to
+  // |point_in_screen|.
+  gfx::Vector2d GetWindowOffset(const gfx::Point& point_in_screen);
 
   // Returns the NativeWindow in |window| at the specified point. If
   // |exclude_dragged_view| is true, then the dragged view is not considered.
