@@ -118,12 +118,16 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
   void SetConfig(std::unique_ptr<os_crypt::Config> config);
 #endif  // BUILDFLAG(IS_LINUX)
 
-  // On Linux returns true iff the real secret key (not hardcoded one) is
-  // available. On MacOS returns true if Keychain is available (for mock
-  // Keychain it returns true if not using locked Keychain, false if using
-  // locked mock Keychain). On Windows returns true if non mock encryption
-  // key is available. On other platforms, returns false as OSCryptImpl will use
-  // a hardcoded key.
+  // In production code:
+  // - On Linux, returns true iff the real secret key (not hardcoded one) is
+  //   available.
+  // - On MacOS, returns true if Keychain is available (for mock Keychain it
+  //   returns true if not using locked Keychain, false if using locked mock
+  //   Keychain).
+  // - On Windows, returns true if non mock encryption key is available.
+  // - On other platforms, returns true as OSCryptImpl will use a hardcoded key.
+  //
+  // Tests may override the above behavior.
   bool IsEncryptionAvailable();
 
   // Encrypt a string16. The output (second argument) is really an array of
