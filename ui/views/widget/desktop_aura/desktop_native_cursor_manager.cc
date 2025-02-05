@@ -95,11 +95,9 @@ void DesktopNativeCursorManager::SetMouseEventsEnabled(
   }
 }
 
-#if BUILDFLAG(IS_WIN)
-void DesktopNativeCursorManager::InitSystemCursorObservers(
+void DesktopNativeCursorManager::InitCursorSizeObserver(
     wm::NativeCursorManagerDelegate* delegate) {
   NOTREACHED();
 }
-#endif
 
 }  // namespace views
