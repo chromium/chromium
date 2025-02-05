@@ -199,8 +199,9 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
       // domain. Note: We can't use the extension_urls::IsWebstoreDomain check
       // here, as the webstore hosted app is associated with a specific path and
       // we don't want to block navigations to other paths on that domain.
-      if (url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().host()))
+      if (url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().host())) {
         return content::NavigationThrottle::BLOCK_REQUEST;
+      }
     }
 #endif
 
@@ -325,8 +326,9 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   // * Renderer-initiated navigations without an initiator origin represent a
   //   history traversal to an entry that was originally loaded in a
   //   browser-initiated navigation.
-  if (!navigation_handle()->GetInitiatorOrigin().has_value())
+  if (!navigation_handle()->GetInitiatorOrigin().has_value()) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   // Not automatically trusted navigation:
   // * Some browser-initiated navigations with an initiator origin are not
@@ -356,8 +358,9 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   }
 
   // An extension can initiate navigations to any of its resources.
-  if (initiator_origin == target_origin)
+  if (initiator_origin == target_origin) {
     return content::NavigationThrottle::PROCEED;
+  }
 
   // Cancel cross-origin-initiator navigations to blob: or filesystem: URLs.
   if (!url_has_extension_scheme) {
