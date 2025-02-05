@@ -6925,8 +6925,6 @@ bool ChromeContentBrowserClient::IsSecurityLevelAcceptableForWebAuthn(
       SecurityStateTabHelper::FromWebContents(web_contents);
   security_state::SecurityLevel security_level = helper->GetSecurityLevel();
   return security_level == security_state::SecurityLevel::SECURE ||
-         security_level ==
-             security_state::SecurityLevel::SECURE_WITH_POLICY_INSTALLED_CERT ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kIgnoreCertificateErrors);
 }

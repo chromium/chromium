@@ -619,8 +619,6 @@ void AppBrowserController::AddColorMixers(
   mixer[kColorPwaSecurityChipForeground] = {ui::kColorSecondaryForeground};
   mixer[kColorPwaSecurityChipForegroundDangerous] = {
       ui::kColorAlertHighSeverity};
-  mixer[kColorPwaSecurityChipForegroundPolicyCert] = {
-      ui::kColorDisabledForeground};
   mixer[kColorPwaSecurityChipForegroundSecure] = {
       kColorPwaSecurityChipForeground};
   auto separator_color =

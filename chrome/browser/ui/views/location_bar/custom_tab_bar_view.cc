@@ -87,8 +87,6 @@ bool IsUrlInAppScope(web_app::AppBrowserController* app_controller, GURL url) {
 ui::ColorId GetSecurityChipColorId(
     security_state::SecurityLevel security_level) {
   switch (security_level) {
-    case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      return kColorPwaSecurityChipForegroundPolicyCert;
     case security_state::SECURE:
       return kColorPwaSecurityChipForegroundSecure;
     case security_state::DANGEROUS:

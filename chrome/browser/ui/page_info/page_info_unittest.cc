@@ -1191,27 +1191,6 @@ TEST_F(PageInfoTest, HTTPSConnectionError) {
             page_info()->site_identity_status());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(PageInfoTest, HTTPSPolicyCertConnection) {
-  security_level_ = security_state::SECURE_WITH_POLICY_INSTALLED_CERT;
-  visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
-  visible_security_state_.certificate = cert();
-  visible_security_state_.cert_status = 0;
-  int status = 0;
-  status = SetSSLVersion(status, net::SSL_CONNECTION_VERSION_TLS1);
-  status = SetSSLCipherSuite(status, CR_TLS_RSA_WITH_AES_256_CBC_SHA256);
-  visible_security_state_.connection_status = status;
-  visible_security_state_.connection_info_initialized = true;
-
-  SetDefaultUIExpectations(mock_ui());
-
-  EXPECT_EQ(PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED,
-            page_info()->site_connection_status());
-  EXPECT_EQ(PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT,
-            page_info()->site_identity_status());
-}
-#endif
-
 TEST_F(PageInfoTest, HTTPSSHA1) {
   SetCertToSHA1();
   security_level_ = security_state::NONE;

@@ -111,9 +111,6 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
       return LocationBarSecurityIconType::NOT_SECURE_WARNING;
     case security_state::SECURE:
       return LocationBarSecurityIconType::NONE;
-    case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      NOTREACHED()
-          << "SECURE_WITH_POLICY_INSTALLED_CERT is used only on ChromeOS";
     case security_state::SECURITY_LEVEL_COUNT:
       NOTREACHED();
   }

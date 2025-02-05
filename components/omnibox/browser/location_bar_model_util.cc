@@ -30,8 +30,6 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
       return omnibox::kHttpChromeRefreshIcon;
     case security_state::SECURE:
       return omnibox::kSecurePageInfoChromeRefreshIcon;
-    case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      return vector_icons::kBusinessChromeRefreshIcon;
     case security_state::WARNING:
       return vector_icons::kNotSecureWarningChromeRefreshIcon;
     case security_state::DANGEROUS:

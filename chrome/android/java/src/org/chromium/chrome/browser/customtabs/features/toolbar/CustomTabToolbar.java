@@ -1585,8 +1585,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             @ConnectionSecurityLevel
             int securityLevel = mLocationBarDataProvider.getSecurityLevel();
             return securityLevel == ConnectionSecurityLevel.NONE
-                    || securityLevel == ConnectionSecurityLevel.SECURE
-                    || securityLevel == ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT;
+                    || securityLevel == ConnectionSecurityLevel.SECURE;
         }
 
         @VisibleForTesting(otherwise = VisibleForTesting.NONE)
