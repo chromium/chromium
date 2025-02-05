@@ -763,6 +763,7 @@ static_library("test_support") {
     "interaction/interaction_sequence_test_util.h",
     "interaction/interactive_test.cc",
     "interaction/interactive_test.h",
+    "interaction/interactive_test_definitions.h",
     "interaction/interactive_test_internal.cc",
     "interaction/interactive_test_internal.h",
     "interaction/polling_state_observer.h",
@@ -835,6 +836,8 @@ static_library("test_support") {
 
   public_deps = [
     ":base",
+    "//testing/gmock",
+    "//testing/gtest",
     "//ui/base/idle",
     "//ui/base/interaction:test_support",
   ]
@@ -848,8 +851,6 @@ static_library("test_support") {
     "//base/test:test_config",
     "//base/test:test_support",
     "//skia",
-    "//testing/gmock",
-    "//testing/gtest",
     "//ui/base/clipboard:file_info",
     "//ui/base/data_transfer_policy",
     "//ui/display:test_support",
