@@ -63,8 +63,18 @@ CollaborationGroupSyncBridge::MergeFullSyncData(
   CHECK(ids_to_specifics_.empty());
   // This is a read-only data type, meaning that no data originates locally,
   // hence there is nothing to merge.
-  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
-                                     std::move(entity_change_list));
+  for (auto& observer : observers_) {
+    observer.OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kInitialMerge);
+  }
+
+  std::optional<syncer::ModelError> result = ApplyIncrementalSyncChanges(
+      std::move(metadata_change_list), std::move(entity_change_list));
+
+  for (auto& observer : observers_) {
+    observer.OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kDefaultState);
+  }
+
+  return result;
 }
 
 std::optional<syncer::ModelError>
@@ -161,6 +171,9 @@ std::string CollaborationGroupSyncBridge::GetStorageKey(
 void CollaborationGroupSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& observer : observers_) {
+    observer.OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kDisableSync);
+  }
 
   const std::vector<GroupId> group_ids_to_delete = GetCollaborationGroupIds();
   ids_to_specifics_.clear();
@@ -171,6 +184,10 @@ void CollaborationGroupSyncBridge::ApplyDisableSyncChanges(
     observer.OnGroupsUpdated(/*added_group_ids=*/std::vector<GroupId>(),
                              /*updated_group_ids=*/std::vector<GroupId>(),
                              group_ids_to_delete);
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kDefaultState);
   }
 }
 

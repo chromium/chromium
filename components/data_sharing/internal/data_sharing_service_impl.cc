@@ -436,6 +436,13 @@ void DataSharingServiceImpl::OnMemberRemoved(const GroupId& group_id,
   }
 }
 
+void DataSharingServiceImpl::OnSyncBridgeUpdateTypeChanged(
+    SyncBridgeUpdateType sync_bridge_update_type) {
+  for (auto& observer : observers_) {
+    observer.OnSyncBridgeUpdateTypeChanged(sync_bridge_update_type);
+  }
+}
+
 void DataSharingServiceImpl::Shutdown() {
   if (sdk_delegate_) {
     sdk_delegate_->Shutdown();
