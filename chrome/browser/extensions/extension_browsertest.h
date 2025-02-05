@@ -33,7 +33,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
@@ -339,15 +338,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest,
 
   // Returns the WindowController for this test's browser window.
   WindowController* GetWindowController();
-
-  // Used for setting the default scoped current channel for extension browser
-  // tests to UNKNOWN (trunk), in order to enable channel restricted features.
-  // TODO(crbug.com/40261741): We should remove this and have the current
-  // channel respect what is defined on the builder. If a test requires a
-  // specific channel for a channel restricted feature, it should be defining
-  // its own scoped channel override. As this stands, it means we don't really
-  // have non-trunk coverage for most extension browser tests.
-  ScopedCurrentChannel current_channel_;
 
   // Disable external install UI.
   FeatureSwitch::ScopedOverride override_prompt_for_external_extensions_;

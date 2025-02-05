@@ -837,6 +837,7 @@ source_set("unit_tests") {
     "api/storage/settings_quota_unittest.cc",
     "api/storage/storage_api_unittest.cc",
     "api/storage/storage_frontend_unittest.cc",
+    "api/system_network/system_network_api_unittest.cc",
     "api/web_request/form_data_parser_unittest.cc",
     "api/web_request/upload_data_presenter_unittest.cc",
     "api/web_request/web_request_info_unittest.cc",
@@ -967,7 +968,6 @@ source_set("unit_tests") {
       "api/sockets_tcp/sockets_tcp_api_unittest.cc",
       "api/sockets_udp/sockets_udp_api_unittest.cc",
       "api/system_info/system_info_api_unittest.cc",
-      "api/system_network/system_network_api_unittest.cc",
     ]
 
     deps += [
@@ -1057,7 +1057,6 @@ if (enable_extensions) {
       "api/sockets_tcp_server/sockets_tcp_server_apitest.cc",
       "api/sockets_udp/sockets_udp_apitest.cc",
       "api/system_display/system_display_apitest.cc",
-      "api/system_network/system_network_apitest.cc",
       "api/system_storage/storage_api_test_util.cc",
       "api/system_storage/storage_api_test_util.h",
       "api/system_storage/system_storage_apitest.cc",

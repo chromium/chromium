@@ -22,6 +22,7 @@ extensions_api_schema_files_ = [
   "storage.json",
   "system_cpu.idl",
   "system_memory.idl",
+  "system_network.idl",
   "test.json",
   "web_request.json",
 ]
@@ -79,7 +80,6 @@ if (enable_extensions) {
     "sockets_tcp.idl",
     "sockets_udp.idl",
     "system_display.idl",
-    "system_network.idl",
     "system_storage.idl",
     "types.json",
     "usb.idl",

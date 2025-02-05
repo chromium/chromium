@@ -14,6 +14,7 @@
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/features/feature_channel.h"
 
 class Profile;
 
@@ -160,6 +161,15 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   class TestTabModel;
   std::unique_ptr<TestTabModel> tab_model_;
 #endif
+
+  // Used for setting the default scoped current channel for extension browser
+  // tests to UNKNOWN (trunk), in order to enable channel restricted features.
+  // TODO(crbug.com/40261741): We should remove this and have the current
+  // channel respect what is defined on the builder. If a test requires a
+  // specific channel for a channel restricted feature, it should be defining
+  // its own scoped channel override. As this stands, it means we don't really
+  // have non-trunk coverage for most extension browser tests.
+  ScopedCurrentChannel current_channel_;
 };
 
 }  // namespace extensions

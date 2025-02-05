@@ -1271,6 +1271,7 @@ if (is_chromeos && is_chromeos_device) {
   }
 }
 
+# Tests that are included in both browser_tests and android_browsertests.
 source_set("platform_browser_tests") {
   testonly = true
 
@@ -1423,6 +1424,8 @@ source_set("platform_browser_tests") {
   }
 
   if (enable_extensions_core) {
+    sources +=
+        [ "../browser/extensions/api/system_network/system_network_apitest.cc" ]
     deps += [ "//extensions:test_support" ]
   }
 }

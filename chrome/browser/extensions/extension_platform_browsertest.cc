@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +22,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_paths.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -189,7 +191,10 @@ class ExtensionPlatformBrowserTest::TestTabModel : public TabModel {
 
 ExtensionPlatformBrowserTest::ExtensionPlatformBrowserTest(
     ContextType context_type)
-    : context_type_(context_type) {
+    : context_type_(context_type),
+      // TODO(crbug.com/40261741): Move this ScopedCurrentChannel down into
+      // tests that specifically require it.
+      current_channel_(version_info::Channel::UNKNOWN) {
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 }
 
