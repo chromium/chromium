@@ -505,6 +505,20 @@ void CookieSettings::OnCookiePreferencesChanged() {
 }
 
 bool CookieSettings::ShouldBlockThirdPartyCookies() const {
+  return ShouldBlockThirdPartyCookies(std::nullopt,
+                                      net::CookieSettingOverrides());
+}
+
+bool CookieSettings::ShouldBlockThirdPartyCookies(
+    base::optional_ref<const url::Origin> top_frame_origin,
+    net::CookieSettingOverrides overrides) const {
+  if (Are3pcsForceDisabledByOverride(overrides)) {
+    return true;
+  }
+  if (top_frame_origin &&
+      IsBlockedByTopLevel3pcdOriginTrial(top_frame_origin->GetURL())) {
+    return true;
+  }
   base::AutoLock auto_lock(lock_);
   return block_third_party_cookies_;
 }

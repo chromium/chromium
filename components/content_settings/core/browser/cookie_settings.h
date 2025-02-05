@@ -24,6 +24,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
@@ -204,7 +205,7 @@ class CookieSettings
   // Returns true if third party cookies should be blocked.
   //
   // This method may be called on any thread. Virtual for testing.
-  bool ShouldBlockThirdPartyCookies() const override;
+  bool ShouldBlockThirdPartyCookies() const;
 
   // Returns true iff third party cookies deprecation mitigations should be
   // allowed.
@@ -267,6 +268,9 @@ class CookieSettings
       content_settings::SettingInfo* info) const override;
   bool IsThirdPartyCookiesAllowedScheme(
       const std::string& scheme) const override;
+  bool ShouldBlockThirdPartyCookies(
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides) const override;
 
   // TrackingProtectionSettingsObserver:
   void OnTrackingProtection3pcdChanged() override;
