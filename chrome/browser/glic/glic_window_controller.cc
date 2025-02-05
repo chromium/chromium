@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_resize_animation.h"
@@ -402,6 +403,7 @@ void GlicWindowController::Show(Browser* browser) {
   // unset.
   CHECK(!attached_browser_);
   state_ = State::kOpenAnimation;
+  glic_service_->metrics()->OnGlicWindowOpen();
 
   show_start_time_ = base::TimeTicks::Now();
 
@@ -850,6 +852,7 @@ void GlicWindowController::CloseFinish(bool reopen_detached) {
     return;
   }
 
+  glic_service_->metrics()->OnGlicWindowClose();
   base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState2",
                                 webui_state_);
 

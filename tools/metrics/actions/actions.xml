@@ -12278,11 +12278,26 @@ should be able to be added at any place in this file.
   <description>Tracks a single response stop in glic.</description>
 </action>
 
+<action name="GlicSessionBegin">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    A glic session is defined as the period of time from a user opening the glic
+    window to a user closing the glic window. This event tracks the opening of
+    the glic window.
+  </description>
+</action>
+
 <action name="GlicSessionEnd">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
-  <description>Tracks a session in glic is terminated.</description>
+  <description>
+    A glic session is defined as the period of time from a user opening the glic
+    window to a user closing the glic window. This event tracks the act of
+    closing the glic window.
+  </description>
 </action>
 
 <action name="GlicSessionWebClientCrash">
@@ -12297,6 +12312,16 @@ should be able to be added at any place in this file.
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <description>Tracks when glic webui crashes.</description>
+</action>
+
+<action name="GlicWebClientSessionEnd">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    A glic web client session is not well defined. This exists for diagnostic
+    purposes only.
+  </description>
 </action>
 
 <action name="Go">

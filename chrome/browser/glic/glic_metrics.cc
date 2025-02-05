@@ -25,9 +25,7 @@ enum class Error {
 
 }  // namespace
 
-GlicMetrics::GlicMetrics(GlicWindowController* window_controller)
-    : window_controller_(window_controller) {}
-
+GlicMetrics::GlicMetrics() = default;
 GlicMetrics::~GlicMetrics() = default;
 
 void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
@@ -46,7 +44,7 @@ void GlicMetrics::OnResponseStarted() {
     return;
   }
 
-  if (!window_controller_->IsShowing()) {
+  if (!controller_->IsShowing()) {
     base::UmaHistogramEnumeration("Glic.Response.Error",
                                   Error::kResponseStartWhileHidingOrHidden);
     return;
@@ -58,7 +56,7 @@ void GlicMetrics::OnResponseStarted() {
   base::RecordAction(base::UserMetricsAction("GlicResponse"));
 
   // More details metrics.
-  bool attached = window_controller_->IsAttached();
+  bool attached = controller_->IsAttached();
   base::UmaHistogramBoolean("Glic.Response.Attached", attached);
 }
 
@@ -80,11 +78,23 @@ void GlicMetrics::OnResponseStopped() {
 }
 
 void GlicMetrics::OnSessionTerminated() {
-  base::RecordAction(base::UserMetricsAction("GlicSessionEnd"));
+  base::RecordAction(base::UserMetricsAction("GlicWebClientSessionEnd"));
 }
 
 void GlicMetrics::OnResponseRated(bool positive) {
   base::UmaHistogramBoolean("Glic.Response.Rated", positive);
+}
+
+void GlicMetrics::OnGlicWindowOpen() {
+  base::RecordAction(base::UserMetricsAction("GlicSessionBegin"));
+}
+
+void GlicMetrics::OnGlicWindowClose() {
+  base::RecordAction(base::UserMetricsAction("GlicSessionEnd"));
+}
+
+void GlicMetrics::SetWindowController(GlicWindowController* controller) {
+  controller_ = controller;
 }
 
 }  // namespace glic

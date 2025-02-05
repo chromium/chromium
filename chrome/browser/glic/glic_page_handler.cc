@@ -32,6 +32,12 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace glic {
+
+// WARNING: One instance of this class is created per WebUI navigated to
+// chrome://glic. The design and implementation of this class, which plumbs
+// events through GlicKeyedService to other components, relies on the assumption
+// that there is exactly 1 WebUI instance. If this assumption is ever violated
+// then many classes will break.
 class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                              public GlicWindowController::StateObserver,
                              public GlicWebClientAccess {

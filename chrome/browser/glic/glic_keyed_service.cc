@@ -36,6 +36,7 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
                                    GlicProfileManager* profile_manager)
     : profile_(profile),
       configuration_(profile),
+      metrics_(std::make_unique<GlicMetrics>()),
       window_controller_(std::make_unique<GlicWindowController>(profile, this)),
       focused_tab_manager_(profile, *window_controller_),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
@@ -46,10 +47,12 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
           std::make_unique<AuthController>(profile, identity_manager)),
       profile_manager_(profile_manager) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
-  metrics_ = std::make_unique<GlicMetrics>(window_controller_.get());
+  metrics_->SetWindowController(window_controller_.get());
 }
 
-GlicKeyedService::~GlicKeyedService() = default;
+GlicKeyedService::~GlicKeyedService() {
+  metrics_->SetWindowController(nullptr);
+}
 
 void GlicKeyedService::Shutdown() {
   window_controller_->Shutdown();

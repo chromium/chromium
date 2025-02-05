@@ -136,10 +136,12 @@ class GlicWindowController : public views::WidgetObserver {
   bool IsActive();
 
   // Returns true if the state is anything other than kClosed.
-  bool IsShowing() const;
+  // Virtual for testing.
+  virtual bool IsShowing() const;
 
   // Returns whether or not the glic window is currently attached to a browser.
-  bool IsAttached();
+  // Virtual for testing.
+  virtual bool IsAttached();
 
   using WindowActivationChangedCallback =
       base::RepeatingCallback<void(bool active)>;
