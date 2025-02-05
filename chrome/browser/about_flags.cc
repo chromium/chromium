@@ -8855,6 +8855,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-legacy-tabstate-deprecation",
+     flag_descriptions::kLegacyTabStateDeprecationName,
+     flag_descriptions::kLegacyTabStateDeprecationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kLegacyTabStateDeprecation)},
+
     {"biometric-reauth-password-filling",
      flag_descriptions::kBiometricReauthForPasswordFillingName,
      flag_descriptions::kBiometricReauthForPasswordFillingDescription,

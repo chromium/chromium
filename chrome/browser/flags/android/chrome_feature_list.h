@@ -121,6 +121,7 @@ BASE_DECLARE_FEATURE(kLockBackPressHandlerAtStart);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);
 BASE_DECLARE_FEATURE(kImprovedA2HS);
 BASE_DECLARE_FEATURE(kLanguagesPreference);
+BASE_DECLARE_FEATURE(kLegacyTabStateDeprecation);
 BASE_DECLARE_FEATURE(kLensOnQuickActionSearchWidget);
 BASE_DECLARE_FEATURE(kLocationBarModelOptimizations);
 BASE_DECLARE_FEATURE(kLogoPolish);

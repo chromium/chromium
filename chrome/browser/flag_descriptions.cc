@@ -4555,6 +4555,12 @@ const char kInterestFeedV2Description[] =
     "Show content suggestions on the New Tab Page and Start Surface using the "
     "new Feed Component.";
 
+const char kLegacyTabStateDeprecationName[] =
+    "Enable Legacy TabState Deprecation";
+const char kLegacyTabStateDeprecationDescription[] =
+    "Deprecates the legacy pickle based TabState format following the launch "
+    "of the FlatBuffer based schema.";
+
 const char kLogoPolishName[] = "Logo Polish";
 const char kLogoPolishDescription[] = "Enable bigger doodle size for NTP.";
 

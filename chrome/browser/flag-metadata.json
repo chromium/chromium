@@ -3308,6 +3308,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "enable-legacy-tabstate-deprecation",
+    "owners": [ "davidjm@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "enable-lens-context-menu-unified-experience",
     "owners": ["radunitescu@google.com"],
     "expiry_milestone": 137
@@ -3914,7 +3919,7 @@
   {
     "name": "enable-tabstate-flatbuffer",
     "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 131
+    "expiry_milestone": 138
   },
   {
     "name": "enable-task-manager-clank",

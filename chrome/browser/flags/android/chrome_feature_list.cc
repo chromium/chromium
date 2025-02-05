@@ -273,6 +273,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kGroupNewTabWithParent,
     &kHideTabletToolbarDownloadButton,
     &kHistoryPaneAndroid,
+    &kLegacyTabStateDeprecation,
     &kLockBackPressHandlerAtStart,
     &kIncognitoScreenshot,
     &kLensOnQuickActionSearchWidget,
@@ -846,6 +847,10 @@ BASE_FEATURE(kGroupNewTabWithParent,
 
 BASE_FEATURE(kHistoryPaneAndroid,
              "HistoryPaneAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLegacyTabStateDeprecation,
+             "LegacyTabStateDeprecation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLockBackPressHandlerAtStart,
