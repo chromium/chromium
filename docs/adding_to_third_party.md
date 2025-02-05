@@ -371,6 +371,12 @@ Additionally, open source projects like Chromium are also allowed to use recipro
 Make sure you understand the license terms before checking in a dependency, and
 when making any local modifications or forks.
 
+The following restricted licenses are allowed under the following circumstances
+(this is not a definitive list):
+
+* GPL licenses are allowed for all non-shipped dependencies.
+* LGPLv2.1 is always okay as long as it is part of the Chromium binary.
+
 ## Get a review
 
 All third party additions and substantive changes like re-licensing need the
