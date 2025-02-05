@@ -25,14 +25,14 @@
       return;
     }
     const requestId = obj.params.requestId;
-    eventsByRequestId[requestId] = eventsByRequestId[requestId] || new Map();
-    for (const existingEvent of eventsByRequestId[requestId].values()) {
+    eventsByRequestId[requestId] = eventsByRequestId[requestId] || [];
+    for (const existingEvent of eventsByRequestId[requestId]) {
       if (existingEvent.sessionId !== obj.sessionId) {
         testRunner.log(`Session ID mismatch between ${
             JSON.stringify(existingEvent)} and ${message}`);
       }
     }
-    eventsByRequestId[requestId].set(obj.method, obj);
+    eventsByRequestId[requestId].push(obj);
     for (const listener of networkListeners) listener(obj);
   };
 
@@ -40,7 +40,7 @@
     let numPendingRequests = numRequests;
     return new Promise((resolve) => {
       const listener = (event) => {
-        if (eventsByRequestId[event.params.requestId].size ==
+        if (eventsByRequestId[event.params.requestId].length ==
             NETWORK_REQUEST_EVENTS.length) {
           delete eventsByRequestId[event.params.requestId];
           --numPendingRequests;
