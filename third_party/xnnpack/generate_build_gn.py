@@ -94,6 +94,7 @@ config("xnnpack_config") {
     "XNN_ENABLE_SPARSE=1",
     "XNN_LOG_LEVEL=0",
     "XNN_LOG_TO_STDIO=0",
+    "XNN_ENABLE_AVX512BF16=0",
   ]
 
   if (current_cpu == "arm64") {

@@ -45,6 +45,7 @@ config("xnnpack_config") {
     "XNN_ENABLE_SPARSE=1",
     "XNN_LOG_LEVEL=0",
     "XNN_LOG_TO_STDIO=0",
+    "XNN_ENABLE_AVX512BF16=0",
   ]
 
   if (current_cpu == "arm64") {
@@ -77,9 +78,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f16-f32acc-rdsum_f16c-no-avx2-no-fma",
     ":f16-f32acc-rsum_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
     ":f16-f32acc-rsum_f16c-no-avx2-no-fma",
-    ":f16-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16",
     ":f16-ibilinear_f16c-fma-no-avx2",
-    ":f16-igemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16",
     ":f16-maxpool_f16c-no-avx2-no-fma",
     ":f16-pavgpool_f16c-fma-avx2",
     ":f16-qs8-vcvt_x64",
@@ -484,7 +483,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":u8-vclamp_sse2-no-sse3",
     ":u8-vclamp_x64",
     ":x16-packw_f16c-fma-avx2",
-    ":x16-packw_x64",
     ":x16-transposec_f16c-fma-avx2",
     ":x16-transposec_sse2-no-sse3",
     ":x16-transposec_x64",
@@ -537,9 +535,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":f16-f32acc-rdsum_f16c-no-avx2-no-fma_standalone",
     ":f16-f32acc-rsum_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
     ":f16-f32acc-rsum_f16c-no-avx2-no-fma_standalone",
-    ":f16-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16_standalone",
     ":f16-ibilinear_f16c-fma-no-avx2_standalone",
-    ":f16-igemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16_standalone",
     ":f16-maxpool_f16c-no-avx2-no-fma_standalone",
     ":f16-pavgpool_f16c-fma-avx2_standalone",
     ":f16-qs8-vcvt_x64_standalone",
@@ -944,7 +940,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":u8-vclamp_sse2-no-sse3_standalone",
     ":u8-vclamp_x64_standalone",
     ":x16-packw_f16c-fma-avx2_standalone",
-    ":x16-packw_x64_standalone",
     ":x16-transposec_f16c-fma-avx2_standalone",
     ":x16-transposec_sse2-no-sse3_standalone",
     ":x16-transposec_x64_standalone",
@@ -2426,81 +2421,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
-  source_set(
-      "f16-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16") {
-    cflags = [
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512fp16",
-      "-mavx512vl",
-      "-mavx512vnni",
-      "-mf16c",
-      "-mfma",
-      "-mgfni",
-    ]
-
-    sources = [
-      "src/include/xnnpack.h",
-      "src/src/f16-gemm/gen/f16-gemm-1x64-minmax-avx512fp16-broadcast.c",
-      "src/src/f16-gemm/gen/f16-gemm-7x64-minmax-avx512fp16-broadcast.c",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-  }
-
-  # This is a target that cannot depend on //base.
-  source_set(
-      "f16-gemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16_standalone") {
-    cflags = [
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512fp16",
-      "-mavx512vl",
-      "-mavx512vnni",
-      "-mf16c",
-      "-mfma",
-      "-mgfni",
-    ]
-
-    sources = [
-      "src/include/xnnpack.h",
-      "src/src/f16-gemm/gen/f16-gemm-1x64-minmax-avx512fp16-broadcast.c",
-      "src/src/f16-gemm/gen/f16-gemm-7x64-minmax-avx512fp16-broadcast.c",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool:pthreadpool_standalone",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-
-    if (!(is_android && use_order_profiling)) {
-      assert_no_deps = [ "//base" ]
-    }
-  }
-
   source_set("f16-ibilinear_f16c-fma-no-avx2") {
     cflags = [
       "-mf16c",
@@ -2538,81 +2458,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f16-ibilinear/gen/f16-ibilinear-fma3-c8.c",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool:pthreadpool_standalone",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-
-    if (!(is_android && use_order_profiling)) {
-      assert_no_deps = [ "//base" ]
-    }
-  }
-
-  source_set(
-      "f16-igemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16") {
-    cflags = [
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512fp16",
-      "-mavx512vl",
-      "-mavx512vnni",
-      "-mf16c",
-      "-mfma",
-      "-mgfni",
-    ]
-
-    sources = [
-      "src/include/xnnpack.h",
-      "src/src/f16-igemm/gen/f16-igemm-1x64-minmax-avx512fp16-broadcast.c",
-      "src/src/f16-igemm/gen/f16-igemm-7x64-minmax-avx512fp16-broadcast.c",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-  }
-
-  # This is a target that cannot depend on //base.
-  source_set(
-      "f16-igemm_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16_standalone") {
-    cflags = [
-      "-mavx512bw",
-      "-mavx512cd",
-      "-mavx512dq",
-      "-mavx512f",
-      "-mavx512fp16",
-      "-mavx512vl",
-      "-mavx512vnni",
-      "-mf16c",
-      "-mfma",
-      "-mgfni",
-    ]
-
-    sources = [
-      "src/include/xnnpack.h",
-      "src/src/f16-igemm/gen/f16-igemm-1x64-minmax-avx512fp16-broadcast.c",
-      "src/src/f16-igemm/gen/f16-igemm-7x64-minmax-avx512fp16-broadcast.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5280,7 +5125,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-gemm/gen/f32-gemm-1x16-minmax-avx-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-avx-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-5x16-minmax-avx-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-5x8-minmax-avx-broadcast.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5309,7 +5156,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-gemm/gen/f32-gemm-1x16-minmax-avx-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-avx-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-5x16-minmax-avx-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-5x8-minmax-avx-broadcast.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5335,7 +5184,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-gemm/gen/f32-gemm-1x16-minmax-avx512f-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-1x32-minmax-avx512f-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-7x16-minmax-avx512f-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-7x32-minmax-avx512f-broadcast.c",
     ]
 
@@ -5359,7 +5210,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-gemm/gen/f32-gemm-1x16-minmax-avx512f-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-1x32-minmax-avx512f-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-7x16-minmax-avx512f-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-7x32-minmax-avx512f-broadcast.c",
     ]
 
@@ -5392,8 +5245,11 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/include/xnnpack.h",
       "src/src/f32-gemm/gen/f32-gemm-1x16-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-1x16s4-minmax-fma3-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-4x16s4-minmax-fma3-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-5x16-minmax-fma3-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-5x8-minmax-fma3-broadcast.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5422,8 +5278,11 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/include/xnnpack.h",
       "src/src/f32-gemm/gen/f32-gemm-1x16-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-1x16s4-minmax-fma3-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-4x16s4-minmax-fma3-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-4x8-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-5x16-minmax-fma3-broadcast.c",
+      "src/src/f32-gemm/gen/f32-gemm-5x8-minmax-fma3-broadcast.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5791,7 +5650,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-igemm/gen/f32-igemm-1x16-minmax-avx-broadcast.c",
+      "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-avx-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-5x16-minmax-avx-broadcast.c",
+      "src/src/f32-igemm/gen/f32-igemm-5x8-minmax-avx-broadcast.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5820,7 +5681,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/f32-igemm/gen/f32-igemm-1x16-minmax-avx-broadcast.c",
+      "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-avx-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-5x16-minmax-avx-broadcast.c",
+      "src/src/f32-igemm/gen/f32-igemm-5x8-minmax-avx-broadcast.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5846,7 +5709,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-igemm/gen/f32-igemm-1x16-minmax-avx512f-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-1x32-minmax-avx512f-broadcast.c",
+      "src/src/f32-igemm/gen/f32-igemm-7x16-minmax-avx512f-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-7x32-minmax-avx512f-broadcast.c",
     ]
 
@@ -5870,7 +5735,9 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-igemm/gen/f32-igemm-1x16-minmax-avx512f-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-1x32-minmax-avx512f-broadcast.c",
+      "src/src/f32-igemm/gen/f32-igemm-7x16-minmax-avx512f-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-7x32-minmax-avx512f-broadcast.c",
     ]
 
@@ -5903,8 +5770,11 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/include/xnnpack.h",
       "src/src/f32-igemm/gen/f32-igemm-1x16-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-1x16s4-minmax-fma3-broadcast.c",
+      "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-4x16s4-minmax-fma3-broadcast.c",
+      "src/src/f32-igemm/gen/f32-igemm-4x8-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-5x16-minmax-fma3-broadcast-prfm.c",
+      "src/src/f32-igemm/gen/f32-igemm-5x8-minmax-fma3-broadcast.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5933,8 +5803,11 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/include/xnnpack.h",
       "src/src/f32-igemm/gen/f32-igemm-1x16-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-1x16s4-minmax-fma3-broadcast.c",
+      "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-4x16s4-minmax-fma3-broadcast.c",
+      "src/src/f32-igemm/gen/f32-igemm-4x8-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-5x16-minmax-fma3-broadcast-prfm.c",
+      "src/src/f32-igemm/gen/f32-igemm-5x8-minmax-fma3-broadcast.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -26227,55 +26100,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
-  source_set("x16-packw_x64") {
-    cflags = []
-
-    sources = [
-      "src/include/xnnpack.h",
-      "src/src/x16-packw/gen/x16-packw-x64-gemm-goi-scalar-int-u4.c",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-  }
-
-  # This is a target that cannot depend on //base.
-  source_set("x16-packw_x64_standalone") {
-    cflags = []
-
-    sources = [
-      "src/include/xnnpack.h",
-      "src/src/x16-packw/gen/x16-packw-x64-gemm-goi-scalar-int-u4.c",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool:pthreadpool_standalone",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-
-    if (!(is_android && use_order_profiling)) {
-      assert_no_deps = [ "//base" ]
-    }
-  }
-
   source_set("x16-transposec_f16c-fma-avx2") {
     cflags = [
       "-mavx2",
@@ -26554,6 +26378,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/x32-packw/gen/x32-packw-x16-gemm-gio-avx-u8.c",
       "src/src/x32-packw/gen/x32-packw-x16-gemm-goi-avx-u4.c",
       "src/src/x32-packw/gen/x32-packw-x16s4-gemm-goi-avx-u4.c",
+      "src/src/x32-packw/gen/x32-packw-x8-gemm-gio-avx-u8.c",
+      "src/src/x32-packw/gen/x32-packw-x8-gemm-goi-avx-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -26584,6 +26410,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       "src/src/x32-packw/gen/x32-packw-x16-gemm-gio-avx-u8.c",
       "src/src/x32-packw/gen/x32-packw-x16-gemm-goi-avx-u4.c",
       "src/src/x32-packw/gen/x32-packw-x16s4-gemm-goi-avx-u4.c",
+      "src/src/x32-packw/gen/x32-packw-x8-gemm-gio-avx-u8.c",
+      "src/src/x32-packw/gen/x32-packw-x8-gemm-goi-avx-u4.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -26609,6 +26437,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/x32-packw/gen/x32-packw-x16-gemm-gio-avx512f-u8.c",
+      "src/src/x32-packw/gen/x32-packw-x16-gemm-goi-avx512f-u4-prfm.c",
       "src/src/x32-packw/gen/x32-packw-x32-gemm-gio-avx512f-u8.c",
       "src/src/x32-packw/gen/x32-packw-x32-gemm-goi-avx512f-u4-prfm.c",
     ]
@@ -26633,6 +26463,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/x32-packw/gen/x32-packw-x16-gemm-gio-avx512f-u8.c",
+      "src/src/x32-packw/gen/x32-packw-x16-gemm-goi-avx512f-u4-prfm.c",
       "src/src/x32-packw/gen/x32-packw-x32-gemm-gio-avx512f-u8.c",
       "src/src/x32-packw/gen/x32-packw-x32-gemm-goi-avx512f-u4-prfm.c",
     ]
@@ -34348,6 +34180,8 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/qp8-f32-qc4w-gemm/qp8-f32-qc4w-gemm-minmax-16x4c8s2-mstep4-aarch64-neondot.c",
+      "src/src/qp8-f32-qc4w-gemm/qp8-f32-qc4w-gemm-minmax-1x4c8s2-aarch64-neondot.c",
       "src/src/qp8-f32-qc4w-gemm/qp8-f32-qc4w-gemm-minmax-1x8c16s2-aarch64-neondot.c",
     ]
 
@@ -34371,6 +34205,8 @@ if (current_cpu == "arm64") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/qp8-f32-qc4w-gemm/qp8-f32-qc4w-gemm-minmax-16x4c8s2-mstep4-aarch64-neondot.c",
+      "src/src/qp8-f32-qc4w-gemm/qp8-f32-qc4w-gemm-minmax-1x4c8s2-aarch64-neondot.c",
       "src/src/qp8-f32-qc4w-gemm/qp8-f32-qc4w-gemm-minmax-1x8c16s2-aarch64-neondot.c",
     ]
 
@@ -37320,7 +37156,6 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/x16-packw/gen/x16-packw-x16-gemm-goi-neon-ld4lane-u8-prfm.c",
-      "src/src/x16-packw/gen/x16-packw-x64-gemm-goi-scalar-int-u4.c",
       "src/src/x16-packw/gen/x16-packw-x8-gemm-goi-neon-ld4lane-u8-prfm.c",
     ]
 
@@ -37345,7 +37180,6 @@ if (current_cpu == "arm64") {
     sources = [
       "src/include/xnnpack.h",
       "src/src/x16-packw/gen/x16-packw-x16-gemm-goi-neon-ld4lane-u8-prfm.c",
-      "src/src/x16-packw/gen/x16-packw-x64-gemm-goi-scalar-int-u4.c",
       "src/src/x16-packw/gen/x16-packw-x8-gemm-goi-neon-ld4lane-u8-prfm.c",
     ]
 
