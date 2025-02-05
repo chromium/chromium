@@ -3,7 +3,7 @@ Short Name: lss
 URL: https://chromium.googlesource.com/linux-syscall-support/
 Version: N/A
 Revision: DEPS
-License: BSD 3-clause
+License: BSD-3-Clause
 License File: lss/linux_syscall_support.h
 Security Critical: yes
 Shipped: yes

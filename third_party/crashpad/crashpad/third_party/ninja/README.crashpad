@@ -3,7 +3,7 @@ Short Name: ninja
 URL: https://github.com/ninja-build/ninja
 Version: N/A
 Revision: DEPS
-License: Apache License 2.0
+License: Apache-2.0
 License File: https://github.com/ninja-build/ninja/blob/master/COPYING
 Security Critical: no
 Shipped: no

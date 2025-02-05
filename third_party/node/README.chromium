@@ -81,7 +81,7 @@ Name: Typescript Compiler
 Short Name: typescript
 URL: https://www.npmjs.com/package/typescript
 Version: 5.7.2
-License: Apache 2.0
+License: Apache-2.0
 Security Critical: no
 Shipped: no
 
@@ -235,7 +235,7 @@ Name: ESLint JSDoc Plugin
 Short Name: eslint-plugin-jsdoc
 URL: https://www.npmjs.com/package/eslint-plugin-jsdoc
 Version: 50.2.2
-License: 3-Clause BSD
+License: BSD-3-Clause
 Security Critical: no
 Shipped: no
 
@@ -253,7 +253,7 @@ Name: ESLint Plugin TypeScript
 Short Name: @typescript-eslint/eslint-plugin
 URL: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
 Version: 8.4.0
-License: 2-Clause BSD
+License: BSD-2-Clause
 Security Critical: no
 Shipped: no
 
@@ -271,7 +271,7 @@ Name: TypeScript ESLint Parser
 Short Name: @typescript-eslint/parser
 URL: https://www.npmjs.com/package/@typescript-eslint/parser
 Version: 8.4.0
-License: 2-Clause BSD
+License: BSD-2-Clause
 Security Critical: no
 Shipped: no
 

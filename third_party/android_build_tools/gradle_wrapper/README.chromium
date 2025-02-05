@@ -2,7 +2,7 @@ Name: Gradle Wrapper
 Short Name: gradlew
 URL: https://gradle.org/
 Version: 8.10
-License: Apache Version 2.0
+License: Apache-2.0
 Security Critical: no
 Shipped: no
 
