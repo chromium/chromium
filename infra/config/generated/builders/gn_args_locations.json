@@ -952,6 +952,7 @@
     "linux-updater-try-builder-rel": "try/linux-updater-try-builder-rel/gn-args.json",
     "mac-updater-try-builder-dbg": "try/mac-updater-try-builder-dbg/gn-args.json",
     "mac-updater-try-builder-rel": "try/mac-updater-try-builder-rel/gn-args.json",
+    "win-arm64-updater-rel": "try/win-arm64-updater-rel/gn-args.json",
     "win-updater-try-builder-dbg": "try/win-updater-try-builder-dbg/gn-args.json",
     "win-updater-try-builder-rel": "try/win-updater-try-builder-rel/gn-args.json"
   },

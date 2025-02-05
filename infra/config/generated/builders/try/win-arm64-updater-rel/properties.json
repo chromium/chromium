@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/win-arm64-updater-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -59,18 +62,38 @@
       "builder_ids": [
         {
           "bucket": "ci",
+          "builder": "win-arm64-updater-builder-rel",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
           "builder": "win11-arm64-updater-tester-rel",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "win-arm64-updater-rel",
-          "group": "tryserver.chromium.updater"
-        }
-      ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/win11-arm64-updater-tester-rel/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win-arm64-updater-rel/targets"
     }
+  },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 150
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -79,6 +102,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.updater",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.updater",
+  "cq": "path-based",
+  "recipe": "chromium_trybot"
 }
