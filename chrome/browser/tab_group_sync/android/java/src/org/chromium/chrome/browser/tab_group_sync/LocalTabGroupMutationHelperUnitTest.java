@@ -168,7 +168,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         // Verify calls to create local tab group, and update ID mappings for group and tabs.
-        verify(mTabGroupModelFilter).createSingleTabGroup(any());
+        verify(mTabGroupModelFilter).createSingleTabGroup(any(), eq(false));
         verify(mTabGroupModelFilter).setTabGroupColor(anyInt(), anyInt());
         verify(mTabGroupModelFilter).setTabGroupTitle(anyInt(), any());
         verify(mTabGroupSyncService)

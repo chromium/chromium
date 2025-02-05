@@ -49,7 +49,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -972,6 +974,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID})
     public void onTabMergeToGroup_willMergingCreateNewGroup() {
         doReturn(true).when(mTabGroupModelFilter).willMergingCreateNewGroup(any());
 

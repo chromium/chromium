@@ -549,7 +549,7 @@ public class ChromeTabbedActivityTest {
                                             .getTabModelSelector()
                                             .getTabGroupModelFilterProvider()
                                             .getTabGroupModelFilter(false);
-                            filter.createSingleTabGroup(newTab);
+                            filter.createSingleTabGroup(newTab, false);
                             return newTab;
                         });
 

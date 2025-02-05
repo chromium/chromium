@@ -13,6 +13,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -102,8 +103,10 @@ public class TabListEditorGroupAction extends TabListEditorAction {
             Tab tab = tabs.get(0);
             if (tabGroupModelFilter.isTabInTabGroup(tab)) return true;
 
-            tabGroupModelFilter.createSingleTabGroup(tab);
-            mTabGroupCreationDialogManager.showDialog(tab.getRootId(), tabGroupModelFilter);
+            tabGroupModelFilter.createSingleTabGroup(tab, /* notify= */ true);
+            if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog()) {
+                mTabGroupCreationDialogManager.showDialog(tab.getRootId(), tabGroupModelFilter);
+            }
             return true;
         }
 
@@ -133,7 +136,7 @@ public class TabListEditorGroupAction extends TabListEditorAction {
                 tabGroupModelFilter.willMergingCreateNewGroup(tabsToMerge);
         tabGroupModelFilter.mergeListOfTabsToGroup(sortedTabs, destinationTab, /* notify= */ true);
 
-        if (willMergingCreateNewGroup) {
+        if (willMergingCreateNewGroup && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog()) {
             mTabGroupCreationDialogManager.showDialog(
                     destinationTab.getRootId(), tabGroupModelFilter);
         }

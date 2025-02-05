@@ -905,7 +905,7 @@ public class RecentlyClosedBridgeTest {
         final String[] titles = new String[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(tabA);
+                    mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
@@ -958,7 +958,7 @@ public class RecentlyClosedBridgeTest {
         final String[] titles = new String[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(tabA);
+                    mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
@@ -1010,7 +1010,7 @@ public class RecentlyClosedBridgeTest {
         final String[] titles = new String[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(tabA);
+                    mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
@@ -1037,7 +1037,7 @@ public class RecentlyClosedBridgeTest {
         final String[] titles = new String[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(tabA);
+                    mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
                     closeTabs(
@@ -1625,7 +1625,7 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabC.getId(), tabB.getId());
                     mTabGroupModelFilter.setTabGroupTitle(tabB.getId(), "Group 1");
-                    mTabGroupModelFilter.createSingleTabGroup(tabA);
+                    mTabGroupModelFilter.createSingleTabGroup(tabA, true);
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Group 2");
                     group2Titles[0] = tabA.getTitle();
                     group1Titles[1] = tabB.getTitle();

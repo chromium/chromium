@@ -438,7 +438,7 @@ public class TabModelSelectorImplTest {
                 TabModel.INVALID_TAB_INDEX,
                 TabModelUtils.getTabIndexById(mRegularTabModel, tab1.getId()));
 
-        filter.createSingleTabGroup(tab0);
+        filter.createSingleTabGroup(tab0, /* notify= */ true);
 
         assertTrue(filter.isTabInTabGroup(tab0));
         for (TabObserver observer : tab0.getObservers()) {

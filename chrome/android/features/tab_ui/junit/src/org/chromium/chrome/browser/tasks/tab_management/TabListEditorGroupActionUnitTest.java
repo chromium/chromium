@@ -27,6 +27,8 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -169,6 +171,7 @@ public class TabListEditorGroupActionUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID})
     public void testSingleTabToGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -192,7 +195,7 @@ public class TabListEditorGroupActionUnitTest {
 
         Tab tab = mTabModel.getTabAt(0);
         assertTrue(mAction.perform());
-        verify(mGroupFilter).createSingleTabGroup(tab);
+        verify(mGroupFilter).createSingleTabGroup(tab, true);
         verify(mTabGroupCreationDialogManager).showDialog(tab.getRootId(), mGroupFilter);
 
         when(mGroupFilter.isTabInTabGroup(tab)).thenReturn(true);
@@ -200,11 +203,12 @@ public class TabListEditorGroupActionUnitTest {
         verify(mGroupFilter, atLeastOnce()).getTabModel();
         verify(mGroupFilter, atLeastOnce()).isTabInTabGroup(any());
         // Ensure this isn't called again.
-        verify(mGroupFilter).createSingleTabGroup(tab);
+        verify(mGroupFilter).createSingleTabGroup(tab, true);
     }
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID})
     public void testGroupActionWithTabs_WillMergingCreateNewGroup() throws Exception {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(

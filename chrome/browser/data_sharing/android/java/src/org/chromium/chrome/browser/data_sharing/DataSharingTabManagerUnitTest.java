@@ -633,7 +633,7 @@ public class DataSharingTabManagerUnitTest {
         mDataSharingTabManager.createTabGroupAndShare(
                 mActivity, mTab, mCreateGroupFinishedCallback);
 
-        verify(mTabGroupModelFilter).createSingleTabGroup(eq(mTab));
+        verify(mTabGroupModelFilter).createSingleTabGroup(eq(mTab), anyBoolean());
         verify(mDataSharingUiDelegate).showCreateFlow(any());
     }
 
