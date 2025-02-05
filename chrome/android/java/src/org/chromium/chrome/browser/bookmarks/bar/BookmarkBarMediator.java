@@ -12,15 +12,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,6 +50,7 @@ class BookmarkBarMediator
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver;
 
+    private @Nullable BookmarkImageFetcher mImageFetcher;
     private @Nullable BookmarkBarItemsProvider mItemsProvider;
 
     /**
@@ -71,8 +78,13 @@ class BookmarkBarMediator
         mAllBookmarksButtonModel.set(
                 BookmarkBarButtonProperties.CLICK_CALLBACK, this::onAllBookmarksButtonClick);
         mAllBookmarksButtonModel.set(
-                BookmarkBarButtonProperties.ICON,
-                AppCompatResources.getDrawable(mActivity, R.drawable.ic_folder_outline_24dp));
+                BookmarkBarButtonProperties.ICON_SUPPLIER,
+                LazyOneshotSupplier.fromValue(
+                        AppCompatResources.getDrawable(
+                                mActivity, R.drawable.ic_folder_outline_24dp)));
+        mAllBookmarksButtonModel.set(
+                BookmarkBarButtonProperties.ICON_TINT_LIST_ID,
+                R.color.default_icon_color_tint_list);
         mAllBookmarksButtonModel.set(
                 BookmarkBarButtonProperties.TITLE,
                 mActivity.getString(R.string.bookmark_bar_all_bookmarks_button_title));
@@ -104,6 +116,11 @@ class BookmarkBarMediator
         mBrowserControlsManager.removeObserver(this);
         mHeightSupplier.removeObserver(mHeightChangeCallback);
 
+        if (mImageFetcher != null) {
+            mImageFetcher.destroy();
+            mImageFetcher = null;
+        }
+
         if (mItemsProvider != null) {
             mItemsProvider.destroy();
             mItemsProvider = null;
@@ -127,7 +144,7 @@ class BookmarkBarMediator
             @BookmarkBarItemsProvider.ObservationId int observationId,
             @NonNull BookmarkItem item,
             int index) {
-        mItemsModel.add(index, BookmarkBarUtils.createListItemFor(mActivity, item));
+        mItemsModel.add(index, BookmarkBarUtils.createListItemFor(mActivity, mImageFetcher, item));
     }
 
     @Override
@@ -147,7 +164,8 @@ class BookmarkBarMediator
             @BookmarkBarItemsProvider.ObservationId int observationId,
             @NonNull BookmarkItem item,
             int index) {
-        mItemsModel.update(index, BookmarkBarUtils.createListItemFor(mActivity, item));
+        mItemsModel.update(
+                index, BookmarkBarUtils.createListItemFor(mActivity, mImageFetcher, item));
     }
 
     @Override
@@ -157,7 +175,7 @@ class BookmarkBarMediator
             int index) {
         final List<ListItem> batch = new ArrayList<>();
         for (int i = 0; i < items.size(); i++) {
-            batch.add(BookmarkBarUtils.createListItemFor(mActivity, items.get(i)));
+            batch.add(BookmarkBarUtils.createListItemFor(mActivity, mImageFetcher, items.get(i)));
         }
         mItemsModel.addAll(batch, index);
     }
@@ -191,10 +209,10 @@ class BookmarkBarMediator
     // Private methods.
 
     private void onAllBookmarksButtonClick() {
+        // Open the manager iff the active profile and model are unchanged to prevent accidentally
+        // opening the manager for the wrong profile/model.
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profileAfterLoading, modelAfterLoading) -> {
-                    // Open the manager iff the active profile and model are unchanged to prevent
-                    // accidentally opening the manager for the wrong profile/model.
                     BookmarkUtils.showBookmarkManager(
                             mActivity,
                             modelAfterLoading.getRootFolderId(),
@@ -203,6 +221,11 @@ class BookmarkBarMediator
     }
 
     private void onProfileChange(@Nullable Profile profile) {
+        if (mImageFetcher != null) {
+            mImageFetcher.destroy();
+            mImageFetcher = null;
+        }
+
         if (mItemsProvider != null) {
             mItemsProvider.destroy();
             mItemsProvider = null;
@@ -214,10 +237,21 @@ class BookmarkBarMediator
             return;
         }
 
+        // Instantiate dependencies iff the active profile and model are unchanged to prevent
+        // accidentally instantiating dependencies for the wrong profile/model.
         runIfStillRelevantAfterFinishLoadingBookmarkModel(
                 (profileAfterLoading, modelAfterLoading) -> {
-                    // Instantiate the provider iff the active profile and model are unchanged to
-                    // prevent accidentally instantiating the provider for the wrong profile/model.
+                    mImageFetcher =
+                            new BookmarkImageFetcher(
+                                    profileAfterLoading,
+                                    mActivity,
+                                    modelAfterLoading,
+                                    ImageFetcherFactory.createImageFetcher(
+                                            ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                                            profileAfterLoading.getProfileKey(),
+                                            GlobalDiscardableReferencePool.getReferencePool()),
+                                    FaviconUtils.createCircularIconGenerator(mActivity));
+
                     mItemsProvider = new BookmarkBarItemsProvider(modelAfterLoading, this);
                 });
     }

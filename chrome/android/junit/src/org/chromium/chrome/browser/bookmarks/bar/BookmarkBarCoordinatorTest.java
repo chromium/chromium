@@ -46,7 +46,9 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.ui.base.TestActivity;
@@ -67,8 +69,10 @@ public class BookmarkBarCoordinatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BrowserControlsManager mBrowserControlsManager;
+    @Mock private FaviconHelperJni mFaviconHelperJni;
     @Mock private Callback<Integer> mHeightChangeCallback;
     @Mock private Callback<Integer> mHeightSupplierObserver;
+    @Mock private ImageServiceBridgeJni mImageServiceBridgeJni;
     @Mock private Profile mProfile;
 
     private BookmarkBarCoordinator mCoordinator;
@@ -83,7 +87,13 @@ public class BookmarkBarCoordinatorTest {
         mModel = FakeBookmarkModel.createModel();
         mDesktopFolderId = mModel.getDesktopFolderId();
         mProfileSupplier = new ObservableSupplierImpl<>(mProfile);
+
+        when(mFaviconHelperJni.init()).thenReturn(1L);
+
         BookmarkModel.setInstanceForTesting(mModel);
+        FaviconHelperJni.setInstanceForTesting(mFaviconHelperJni);
+        ImageServiceBridgeJni.setInstanceForTesting(mImageServiceBridgeJni);
+
         onActivity(this::createCoordinator);
     }
 
