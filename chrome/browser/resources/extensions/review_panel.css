@@ -28,7 +28,7 @@ cr-icon[icon='cr:check'] {
 
 @media (prefers-color-scheme: dark) {
   cr-icon[icon='cr:check'] {
-    fill: var(--grey-900-white-4-percent);
+    fill: var(--google-green-300);
   }
 }
 
