@@ -197,8 +197,9 @@ void ExtensionRegistrar::RemoveExtension(const ExtensionId& extension_id,
       registry_->GetExtensionById(extension_id, include_mask));
 
   // If the extension is blocked/blocklisted, no need to notify again.
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   if (registry_->terminated_extensions().Contains(extension_id)) {
     // The extension was already deactivated from the call to
