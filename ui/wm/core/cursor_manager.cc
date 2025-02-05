@@ -270,27 +270,6 @@ gfx::Size CursorManager::GetSystemCursorSize() const {
   return current_state_->system_cursor_size();
 }
 
-#if BUILDFLAG(IS_WIN)
-void CursorManager::UpdateSystemCursorVisibilityForTest(bool visible) {
-  CommitSystemCursorVisibility(visible);
-}
-#endif
-
-void CursorManager::CommitSystemCursorVisibility(bool visible) {
-  if (visible == current_state_->visible()) {
-    return;
-  }
-
-  // Use lock to prevent ShowCursor/HideCursor when system cursor is invisible.
-  if (!visible) {
-    scoped_cursor_lock_.emplace(this);
-  } else {
-    scoped_cursor_lock_.reset();
-  }
-
-  CommitVisibility(visible);
-}
-
 void CursorManager::CommitSystemCursorSize(
     const gfx::Size& system_cursor_size) {
   current_state_->set_system_cursor_size(system_cursor_size);

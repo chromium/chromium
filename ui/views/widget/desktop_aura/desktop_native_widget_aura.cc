@@ -34,6 +34,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/owned_window_anchor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/compositor/compositor.h"
@@ -617,9 +618,9 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
       cursor_manager_->SetDisplay(
           display::Screen::GetScreen()->GetDisplayNearestWindow(
               host_->window()));
-#if BUILDFLAG(IS_WIN)
-      native_cursor_manager_->InitSystemCursorObservers(cursor_manager_);
-#endif
+      if (features::IsSystemCursorSizeSupported()) {
+        native_cursor_manager_->InitCursorSizeObserver(cursor_manager_);
+      }
     }
     aura::client::SetCursorClient(host_->window(), cursor_manager_);
   }
