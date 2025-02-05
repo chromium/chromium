@@ -4,8 +4,8 @@
 
 module chrome.mojom;
 
-// Provides access to the browser-side metrics service.
-interface MetricsService {
+// Provides access to the browser-side metrics service for PPAPI.
+interface PpapiMetricsService {
   // Call to check if metrics and crash reporting is enabled.
   [Sync]
   IsMetricsAndCrashReportingEnabled() => (bool result);

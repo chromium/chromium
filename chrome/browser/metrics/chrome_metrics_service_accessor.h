@@ -17,7 +17,7 @@
 #include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PPAPI)
-#include "chrome/common/metrics.mojom.h"
+#include "chrome/common/ppapi_metrics.mojom.h"
 #endif
 
 class BrowserProcessImpl;
@@ -255,9 +255,9 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   static void SetForceIsMetricsReportingEnabledPrefLookup(bool value);
 
 #if BUILDFLAG(ENABLE_PPAPI)
-  // Provides an implementation of chrome::mojom::MetricsService.
-  static void BindMetricsServiceReceiver(
-      mojo::PendingReceiver<chrome::mojom::MetricsService> receiver);
+  // Provides an implementation of chrome::mojom::PpapiMetricsService.
+  static void BindPpapiMetricsServiceReceiver(
+      mojo::PendingReceiver<chrome::mojom::PpapiMetricsService> receiver);
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 };
 
