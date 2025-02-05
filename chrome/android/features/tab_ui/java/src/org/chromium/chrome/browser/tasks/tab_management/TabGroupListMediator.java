@@ -376,7 +376,8 @@ public class TabGroupListMediator {
         String messageTitle = MessageUtils.extractTabGroupTitle(message);
         if (TextUtils.isEmpty(messageTitle)) {
             @Nullable String syncId = MessageUtils.extractSyncTabGroupId(message);
-            @Nullable SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(syncId);
+            @Nullable
+            SavedTabGroup syncGroup = syncId == null ? null : mTabGroupSyncService.getGroup(syncId);
             @Nullable Token token = extractLocalId(syncGroup);
             int rootId = mFilter.getRootIdFromStableId(token);
             int tabCount = mFilter.getRelatedTabCountForRootId(rootId);
