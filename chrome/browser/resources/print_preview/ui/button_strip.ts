@@ -50,15 +50,6 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
           return loadTimeData.getString('printButton');
         },
       },
-
-      // <if expr="is_chromeos">
-      errorMessage_: {
-        type: String,
-        observer: 'errorMessageChanged_',
-      },
-
-      isPinValid: Boolean,
-      // </if>
     };
   }
 
@@ -66,11 +57,6 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     return [
       'updatePrintButtonLabel_(destination.id)',
       'updatePrintButtonEnabled_(state, destination.id, maxSheets, sheetCount)',
-      // <if expr="is_chromeos">
-      'updatePrintButtonEnabled_(isPinValid)',
-      'updateErrorMessage_(state, destination.id, maxSheets, sheetCount)',
-      // </if>
-
     ];
   }
 
@@ -79,15 +65,8 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
   maxSheets: number;
   sheetCount: number;
   state: State;
-  // <if expr="is_chromeos">
-  isPinValid: boolean;
-  // </if>
   private printButtonEnabled_: boolean;
   private printButtonLabel_: string;
-  // <if expr="is_chromeos">
-  private errorMessage_: string;
-  // </if>
-
   private lastState_: State = State.NOT_READY;
 
   private fire_(eventName: string, detail?: any) {
@@ -119,12 +98,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
         this.printButtonEnabled_ = false;
         break;
       case (State.READY):
-        // <if expr="is_chromeos">
-        this.printButtonEnabled_ = !this.printButtonDisabled_();
-        // </if>
-        // <if expr="not is_chromeos">
         this.printButtonEnabled_ = true;
-        // </if>
         if (this.firstLoad || this.lastState_ === State.PRINTING) {
           this.shadowRoot!
               .querySelector<CrButtonElement>(
@@ -138,58 +112,6 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     }
     this.lastState_ = this.state;
   }
-
-  // <if expr="is_chromeos">
-
-  /**
-   * This disables the print button if the sheets limit policy is violated or
-   * pin printing is enabled and the pin is invalid.
-   */
-  private printButtonDisabled_(): boolean {
-    return this.isSheetsLimitPolicyViolated_() || !this.isPinValid;
-  }
-
-  /**
-   * The sheets policy is violated if 3 conditions are met:
-   * * This is "real" printing, i.e. not saving to PDF/Drive.
-   * * Sheets policy is present.
-   * * Either number of sheets is not calculated or exceeds policy limit.
-   */
-  private isSheetsLimitPolicyViolated_(): boolean {
-    return !this.isPdf_() && this.maxSheets > 0 &&
-        (this.sheetCount === 0 || this.sheetCount > this.maxSheets);
-  }
-
-  /**
-   * @return Whether to show the "Too many sheets" error.
-   */
-  private showSheetsError_(): boolean {
-    // The error is shown if the number of sheets is already calculated and the
-    // print button is disabled.
-    return this.sheetCount > 0 && this.isSheetsLimitPolicyViolated_();
-  }
-
-  private updateErrorMessage_() {
-    if (!this.showSheetsError_()) {
-      this.errorMessage_ = '';
-      return;
-    }
-    PluralStringProxyImpl.getInstance()
-        .getPluralString('sheetsLimitErrorMessage', this.maxSheets)
-        .then(label => {
-          this.errorMessage_ = label;
-        });
-  }
-
-  /**
-   * Uses CrA11yAnnouncer to notify screen readers that an error is set.
-   */
-  private errorMessageChanged_() {
-    if (this.errorMessage_ !== '') {
-      getAnnouncerInstance().announce(this.errorMessage_);
-    }
-  }
-  // </if>
 }
 
 declare global {

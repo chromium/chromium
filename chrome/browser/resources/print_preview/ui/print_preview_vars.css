@@ -28,13 +28,6 @@ html {
   --iron-icon-width: var(--cr-icon-size);
   --search-icon-size: 32px;
   --throbber-size: 16px;
-
-<if expr="is_chromeos">
-  /* TODO(b/290239226): Remove hard-coded and google colors after print-preview
-                        is configured to use dynamic colors. */
-  --error-status-alert: var(--google-red-600);
-  --error-status-warning: #e37400;
-</if>
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,12 +35,5 @@ html {
     --preview-area-background-color: var(--google-grey-700);
     --print-preview-settings-border: var(--cr-separator-line);
     --iron-icon-fill-color: var(--google-grey-500);
-
-<if expr="is_chromeos">
-    /* TODO(b/290239226): Remove hard-coded and google colors after
-                          print-preview is configured to use dynamic colors. */
-    --error-status-alert: var(--google-red-300);
-    --error-status-warning: #fdd663;
-</if>
   }
 }

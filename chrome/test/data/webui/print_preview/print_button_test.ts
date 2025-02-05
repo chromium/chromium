@@ -30,9 +30,6 @@ suite('PrintButtonTest', function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
-    setNativeLayerCrosInstance();
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     nativeLayer.setInitialSettings(initialSettings);
     const localDestinationInfos = [
@@ -195,47 +192,4 @@ suite('PrintButtonTest', function() {
     ];
     assertDeepEquals(expectedStates, stateLog);
   });
-
-  // <if expr="is_chromeos">
-  // Tests that hidePreview() is not called if Save to Drive is selected on
-  // Chrome OS and the user clicks print while the preview is loading because
-  // Save to Drive needs to be treated like Save as PDF.
-  test('SaveToDriveVisiblePreviewCros', async () => {
-    await waitForInitialPreview();
-    nativeLayer.reset();
-    // Setup to print before the preview loads.
-    printBeforePreviewReady = true;
-
-    // Select Save to Drive destination
-    const destinationSettings = page.$.sidebar.$.destinationSettings;
-    const driveDestination =
-        destinationSettings.getDestinationStoreForTest().destinations().find(
-            d => d.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS);
-    assertTrue(!!driveDestination);
-    destinationSettings.getDestinationStoreForTest().selectDestination(
-        driveDestination!);
-
-    // Reload preview and wait for print.
-    const printTicket = await nativeLayer.whenCalled('doPrint');
-    assertFalse(previewHidden);
-
-    // Verify that the printer name is correct.
-    assertEquals(
-        GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS,
-        (JSON.parse(printTicket) as PrintTicket).deviceName);
-    const cancelled = await nativeLayer.whenCalled('dialogClose');
-    assertFalse(cancelled);
-
-    // Verify state transitions.
-    const expectedStates = [
-      State.READY,
-      State.NOT_READY,
-      State.READY,
-      State.PRINT_PENDING,
-      State.PRINTING,
-      State.CLOSING,
-    ];
-    assertDeepEquals(expectedStates, stateLog);
-  });
-  // </if>
 });

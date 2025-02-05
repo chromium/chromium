@@ -48,12 +48,6 @@
       disabled="[[controlsDisabled_]]"
       available class="settings-section">
   </print-preview-destination-settings>
-<if expr="is_chromeos">
-  <print-preview-pin-settings state="[[state]]" settings="[[settings]]"
-      disabled="[[controlsDisabled_]]" is-pin-valid="{{isPinValid_}}"
-      hidden$="[[!settings.pin.available]]" class="settings-section">
-  </print-preview-pin-settings>
-</if>
   <print-preview-pages-settings settings="[[settings]]"
       page-count="[[pageCount]]" disabled="[[controlsDisabled_]]"
       hidden$="[[!settings.pages.available]]" class="settings-section">
@@ -126,12 +120,10 @@
         hidden$="[[!settings.vendorItems.available]]"
         class="settings-section">
     </print-preview-advanced-options-settings>
-<if expr="not is_chromeos">
     <print-preview-link-container destination="[[destination]]"
         app-kiosk-mode="[[isInAppKioskMode_]]"
         disabled="[[controlsDisabled_]]">
     </print-preview-link-container>
-</if>
   </cr-collapse>
 </div>
 <print-preview-button-strip destination="[[destination]]"

@@ -130,13 +130,6 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
             'settings.duplex.available, settings.otherOptions.available, ' +
             'settings.vendorItems.available)',
       },
-
-      // <if expr="is_chromeos">
-      isPinValid_: {
-        type: Boolean,
-        value: true,
-      },
-      // </if>
     };
   }
 
@@ -153,9 +146,6 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   private settingsExpandedByUser_: boolean;
   private sheetCount_: number;
   private shouldShowMoreSettings_: boolean;
-  // <if expr="is_chromeos">
-  private isPinValid_: boolean;
-  // </if>
 
   /**
    * @param defaultPrinter The system default printer ID.
@@ -250,24 +240,12 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     }
   }
 
-  // <if expr="not is_chromeos">
   /** @return Whether the system dialog link is available. */
   systemDialogLinkAvailable(): boolean {
     const linkContainer =
         this.shadowRoot!.querySelector('print-preview-link-container');
     return !!linkContainer && linkContainer.systemDialogLinkAvailable();
   }
-  // </if>
-
-  // <if expr="is_chromeos">
-  /**
-   * Returns true if at least one non-PDF printer destination is shown in the
-   * destination dropdown.
-   */
-  printerExistsInDisplayedDestinations(): boolean {
-    return this.$.destinationSettings.printerExistsInDisplayedDestinations();
-  }
-  // </if>
 }
 
 declare global {

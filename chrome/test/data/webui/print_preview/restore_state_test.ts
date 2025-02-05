@@ -19,9 +19,6 @@ suite('RestoreStateTest', function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
-    setNativeLayerCrosInstance();
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
@@ -130,10 +127,6 @@ suite('RestoreStateTest', function() {
           isDuplexShortEdge: true,
           isLandscapeEnabled: true,
           isColorEnabled: true,
-          // <if expr="is_chromeos">
-          isPinEnabled: true,
-          pinValue: '0000',
-          // </if>
         };
         await testInitializeWithStickySettings(stickySettings);
       });
@@ -170,10 +163,6 @@ suite('RestoreStateTest', function() {
           isDuplexShortEdge: false,
           isLandscapeEnabled: false,
           isColorEnabled: false,
-          // <if expr="is_chromeos">
-          isPinEnabled: false,
-          pinValue: '',
-          // </if>
         };
         await testInitializeWithStickySettings(stickySettings);
       });
@@ -288,20 +277,6 @@ suite('RestoreStateTest', function() {
           printArea: 6,
         },
       },
-      // <if expr="is_chromeos">
-      {
-        section: 'print-preview-pin-settings',
-        settingName: 'pin',
-        key: 'isPinEnabled',
-        value: true,
-      },
-      {
-        section: 'print-preview-pin-settings',
-        settingName: 'pinValue',
-        key: 'pinValue',
-        value: '0000',
-      },
-      // </if>
     ];
 
     // Setup

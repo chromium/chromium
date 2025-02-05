@@ -248,7 +248,6 @@ suite('DestinationStoreTest', function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr = '';
         initialSettings.serializedAppStateStr = '';
         initialSettings.pdfPrinterDisabled = true;
-        initialSettings.isDriveMounted = false;
         initialSettings.printerName = '';
 
         return setInitialSettings(false).then(function(args) {
@@ -272,7 +271,6 @@ suite('DestinationStoreTest', function() {
         initialSettings.serializedDefaultDestinationSelectionRulesStr = '';
         initialSettings.serializedAppStateStr = '';
         initialSettings.pdfPrinterDisabled = true;
-        initialSettings.isDriveMounted = false;
         initialSettings.printerName = '';
         localDestinations = [];
 

@@ -26,11 +26,9 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, CopiesSettings) {
   RunTest("print_preview/copies_settings_test.js", "mocha.run()");
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DestinationSelect) {
   RunTest("print_preview/destination_select_test.js", "mocha.run()");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DpiSettings) {
   RunTest("print_preview/dpi_settings_test.js", "mocha.run()");
@@ -72,12 +70,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PagesPerSheetSettings) {
   RunTest("print_preview/pages_per_sheet_settings_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PinSettings) {
-  RunTest("print_preview/pin_settings_test.js", "mocha.run()");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SelectMixin) {
   RunTest("print_preview/select_mixin_test.js", "mocha.run()");
 }
@@ -111,12 +103,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewAppTest, HeaderFooterManaged) {
 IN_PROC_BROWSER_TEST_F(PrintPreviewAppTest, CssBackgroundManaged) {
   RunTestCase("CssBackgroundManaged");
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewAppTest, SheetsManaged) {
-  RunTestCase("SheetsManaged");
-}
-#endif
 
 class PrintPreviewSidebarTest : public PrintPreviewBrowserTest {
  protected:
@@ -257,24 +243,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, MediaSizePolicy) {
   RunTestCase("MediaSizePolicy");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, SheetsPolicy) {
-  RunTestCase("SheetsPolicy");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, ColorPolicy) {
-  RunTestCase("ColorPolicy");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, DuplexPolicy) {
-  RunTestCase("DuplexPolicy");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, PinPolicy) {
-  RunTestCase("PinPolicy");
-}
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(PrintPreviewPolicyTest, PrintPdfAsImageAvailability) {
   RunTestCase("PrintPdfAsImageAvailability");
@@ -381,22 +349,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, CustomMarginsAreNotStrings) {
   RunTestCase("CustomMarginsAreNotStrings");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, PrintToGoogleDriveCros) {
-  RunTestCase("PrintToGoogleDriveCros");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
-                       PolicyDefaultsOverrideDestinationDefaults) {
-  RunTestCase("PolicyDefaultsOverrideDestinationDefaults");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
-                       UserSelectedOptionsOverridePolicyDefaults) {
-  RunTestCase("UserSelectedOptionsOverridePolicyDefaults");
-}
-#endif
-
 class PrintPreviewPreviewGenerationTest : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {
@@ -479,7 +431,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewGenerationTest, PageSizeCalculation) {
   RunTestCase("PageSizeCalculation");
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 class PrintPreviewLinkContainerTest : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {
@@ -506,7 +457,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewLinkContainerTest,
 IN_PROC_BROWSER_TEST_F(PrintPreviewLinkContainerTest, InvalidState) {
   RunTestCase("InvalidState");
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(PrintPreviewLinkContainerTest, OpenInPreviewLinkClick) {
@@ -570,12 +520,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
   RunTestCase("DefaultDestinationSelectionRules");
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
                        SystemDefaultPrinterPolicy) {
   RunTestCase("SystemDefaultPrinterPolicy");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
                        KioskModeSelectsFirstPrinter) {
@@ -599,41 +547,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
                        DestinationAlreadySelected) {
   RunTestCase("DestinationAlreadySelected");
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest, LoadSaveToDriveCros) {
-  RunTestCase("LoadSaveToDriveCros");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest, SaveToDriveDisabled) {
-  RunTestCase("SaveToDriveDisabled");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
-                       ObserveLocalPrintersAfterSuccessfulSearch) {
-  RunTestCase("ObserveLocalPrintersAfterSuccessfulSearch");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
-                       ObserveLocalPrintersAfterNoSearch) {
-  RunTestCase("ObserveLocalPrintersAfterNoSearch");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
-                       LocalPrintersUpdatedEventPrintersAdded) {
-  RunTestCase("LocalPrintersUpdatedEventPrintersAdded");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
-                       LocalPrintersUpdatedEventStatusUpdate) {
-  RunTestCase("LocalPrintersUpdatedEventStatusUpdate");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationStoreTest,
-                       PrinterStatusOnlineChange) {
-  RunTestCase("PrinterStatusOnlineChange");
-}
-#endif
 
 class PrintPreviewDestinationDialogTest : public PrintPreviewBrowserTest {
  protected:
@@ -702,22 +615,9 @@ class PrintPreviewPreviewAreaTest : public PrintPreviewBrowserTest {
   }
 };
 
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, StateChanges) {
   RunTestCase("StateChanges");
 }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest,
-                       StateChangesPrinterSetupCros) {
-  RunTestCase("StateChangesPrinterSetupCros");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, ManagePrinterMetricsCros) {
-  RunTestCase("ManagePrinterMetricsCros");
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, ViewportSizeChanges) {
   RunTestCase("ViewportSizeChanges");
@@ -798,17 +698,6 @@ class PrintPreviewDestinationSearchTest : public PrintPreviewBrowserTest {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSearchTest,
-                       ReceiveSuccessfulSetup) {
-  RunTestCase("ReceiveSuccessfulSetup");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSearchTest, ResolutionFails) {
-  RunTestCase("ResolutionFails");
-}
-
-#else
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSearchTest,
                        GetCapabilitiesSucceeds) {
   RunTestCase("GetCapabilitiesSucceeds");
@@ -818,7 +707,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSearchTest,
                        GetCapabilitiesFails) {
   RunTestCase("GetCapabilitiesFails");
 }
-#endif
 
 class PrintPreviewHeaderTest : public PrintPreviewBrowserTest {
  protected:
@@ -864,12 +752,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewButtonStripTest, ButtonOrder) {
 IN_PROC_BROWSER_TEST_F(PrintPreviewButtonStripTest, ButtonStripFiresEvents) {
   RunTestCase("ButtonStripFiresEvents");
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewButtonStripTest, InvalidPinDisablesPrint) {
-  RunTestCase("InvalidPinDisablesPrint");
-}
-#endif
 
 class PrintPreviewDestinationItemTest : public PrintPreviewBrowserTest {
  protected:
@@ -972,13 +854,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPrintButtonTest, PDFPrintCancelPreview) {
   RunTestCase("PDFPrintCancelPreview");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewPrintButtonTest,
-                       SaveToDriveVisiblePreviewCros) {
-  RunTestCase("SaveToDriveVisiblePreviewCros");
-}
-#endif
-
 class PrintPreviewKeyEventTest : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {
@@ -1066,26 +941,9 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, SaveAsPdfRecent) {
   RunTestCase("SaveAsPdfRecent");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, GoogleDriveRecent) {
-  RunTestCase("GoogleDriveRecent");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
-                       GoogleDriveAutoselect) {
-  RunTestCase("GoogleDriveAutoselect");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, SelectSaveAsPdf) {
   RunTestCase("SelectSaveAsPdf");
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, SelectGoogleDrive) {
-  RunTestCase("SelectGoogleDrive");
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
                        SelectRecentDestination) {
@@ -1115,17 +973,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
                        MAYBE_NoDestinations) {
   RunTestCase("NoDestinations");
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest, EulaIsRetrieved) {
-  RunTestCase("EulaIsRetrieved");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
-                       SaveToDriveDisabled) {
-  RunTestCase("SaveToDriveDisabled");
-}
-#endif
 
 class PrintPreviewScalingSettingsTest : public PrintPreviewBrowserTest {
  protected:
