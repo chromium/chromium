@@ -461,14 +461,14 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/t
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 crbug.com/1490427 [ angle-vulkan arm fuchsia fuchsia-board-nelson web-engine-shell ] conformance/canvas/drawingbuffer-static-canvas-test.html [ Failure ]
-crbug.com/1490427 [ angle-vulkan arm fuchsia web-engine-shell ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
+crbug.com/1490427 [ angle-vulkan arm fuchsia fuchsia-board-nelson web-engine-shell ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
+crbug.com/1490427 [ angle-vulkan arm fuchsia fuchsia-board-sherlock web-engine-shell ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 
 # flaky and worth retrying.
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/state/gl-object-get-calls.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
 
 
-crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/state/gl-object-get-calls.html [ RetryOnFailure ]
 
 ####################
 # Win failures     #
