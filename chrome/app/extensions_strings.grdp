@@ -262,6 +262,12 @@
   <message name="IDS_EXTENSIONS_ITEM_ALLOW_INCOGNITO" desc="The text next to the checkbox to enable an extension in Incognito mode.">
     Allow in Incognito
   </message>
+  <message name="IDS_EXTENSIONS_ITEM_ALLOW_USER_SCRIPTS" desc="The text next to the checkbox to enable an extension to run user scripts.">
+    Allow User Scripts
+  </message>
+  <message name="IDS_EXTENSIONS_ALLOW_USER_SCRIPTS_WARNING" desc="Warns the user that the extension will be able to run code not review by Google. Displayed in extensions management UI after an extension is selected to allow these scripts.">
+    The extension will be able to run code which has not been reviewed by Google. It may be unsafe and you should only enable this if you know what you are doing.
+  </message>
   <message name="IDS_EXTENSIONS_ITEM_DEPENDENCIES" desc="The label above a list of any extensions that depend on this extension.">
     The following extensions depend on this extension:
   </message>

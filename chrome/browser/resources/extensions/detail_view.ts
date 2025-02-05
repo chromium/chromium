@@ -284,6 +284,10 @@ export class ExtensionsDetailViewElement extends
     return this.data.incognitoAccess.isEnabled && this.incognitoAvailable;
   }
 
+  protected showUserScriptSectionToggle_(): boolean {
+    return this.data.userScriptsAccess.isEnabled;
+  }
+
   protected onEnableToggleChange_() {
     this.delegate.setItemEnabled(this.data.id, this.$.enableToggle.checked);
     this.$.enableToggle.checked = this.isEnabled_();
@@ -384,6 +388,14 @@ export class ExtensionsDetailViewElement extends
         this.shadowRoot!
             .querySelector<ExtensionsToggleRowElement>(
                 '#allow-incognito')!.checked);
+  }
+
+  protected onAllowUserScriptsChange_() {
+    this.delegate.setItemAllowedUserScripts(
+        this.data.id,
+        this.shadowRoot!
+            .querySelector<ExtensionsToggleRowElement>(
+                '#allow-user-scripts')!.checked);
   }
 
   protected onAllowOnFileUrlsChange_() {
