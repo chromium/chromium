@@ -101,7 +101,7 @@ NativeLibrary LoadSystemLibraryHelper(const FilePath& library_path,
   return module;
 }
 
-FilePath GetSystemLibraryName(FilePath::StringPieceType name) {
+FilePath GetSystemLibraryName(FilePath::StringViewType name) {
   FilePath library_path;
   // Use an absolute path to load the DLL to avoid DLL preloading attacks.
   if (PathService::Get(DIR_SYSTEM, &library_path)) {
@@ -140,7 +140,7 @@ std::string GetLoadableModuleName(std::string_view name) {
   return GetNativeLibraryName(name);
 }
 
-NativeLibrary LoadSystemLibrary(FilePath::StringPieceType name,
+NativeLibrary LoadSystemLibrary(FilePath::StringViewType name,
                                 NativeLibraryLoadError* error) {
   FilePath library_path = GetSystemLibraryName(name);
   if (library_path.empty()) {
@@ -152,7 +152,7 @@ NativeLibrary LoadSystemLibrary(FilePath::StringPieceType name,
   return LoadSystemLibraryHelper(library_path, error);
 }
 
-NativeLibrary PinSystemLibrary(FilePath::StringPieceType name,
+NativeLibrary PinSystemLibrary(FilePath::StringViewType name,
                                NativeLibraryLoadError* error) {
   FilePath library_path = GetSystemLibraryName(name);
   if (library_path.empty()) {

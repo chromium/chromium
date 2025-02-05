@@ -78,7 +78,7 @@ BASE_EXPORT NativeLibrary LoadNativeLibrary(const FilePath& library_path,
 // get a handle if so. This method results in a lock that may block the calling
 // thread.
 BASE_EXPORT NativeLibrary
-LoadSystemLibrary(FilePath::StringPieceType name,
+LoadSystemLibrary(FilePath::StringViewType name,
                   NativeLibraryLoadError* error = nullptr);
 
 // Gets the module handle for the specified system library and pins it to
@@ -87,7 +87,7 @@ LoadSystemLibrary(FilePath::StringPieceType name,
 // method returns null and includes the error. This method results in a lock
 // that may block the calling thread.
 BASE_EXPORT NativeLibrary
-PinSystemLibrary(FilePath::StringPieceType name,
+PinSystemLibrary(FilePath::StringViewType name,
                  NativeLibraryLoadError* error = nullptr);
 #endif
 
