@@ -85,29 +85,26 @@ GetPrepopulatedEnginesForEeaRegionCountries(int country_id,
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
     int country_id,
     PrefService* prefs) {
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls;
+  CHECK(prefs);
 
-  if (!prefs) {
-    // Possible only in tests.
-    // TODO(crbug.com/40287734): Update tests and remove associated branches.
-    CHECK_IS_TEST();
-  } else if (search_engines::IsEeaChoiceCountry(country_id)) {
-    if (regional_capabilities::HasSearchEngineCountryListOverride()) {
-      auto country_override =
-          std::get<regional_capabilities::SearchEngineCountryListOverride>(
-              regional_capabilities::GetSearchEngineCountryOverride().value());
+  if (regional_capabilities::HasSearchEngineCountryListOverride()) {
+    auto country_override =
+        std::get<regional_capabilities::SearchEngineCountryListOverride>(
+            regional_capabilities::GetSearchEngineCountryOverride().value());
 
-      switch (country_override) {
-        case regional_capabilities::SearchEngineCountryListOverride::kEeaAll:
-          return GetAllEeaRegionPrepopulatedEngines();
-        case regional_capabilities::SearchEngineCountryListOverride::
-            kEeaDefault:
-          return GetDefaultPrepopulatedEngines();
-      }
+    switch (country_override) {
+      case regional_capabilities::SearchEngineCountryListOverride::kEeaAll:
+        return GetAllEeaRegionPrepopulatedEngines();
+      case regional_capabilities::SearchEngineCountryListOverride::kEeaDefault:
+        return GetDefaultPrepopulatedEngines();
     }
+  }
+
+  if (search_engines::IsEeaChoiceCountry(country_id)) {
     return GetPrepopulatedEnginesForEeaRegionCountries(country_id, prefs);
   }
 
+  std::vector<std::unique_ptr<TemplateURLData>> t_urls;
   std::vector<EngineAndTier> engines =
       GetPrepopulationSetFromCountryID(country_id);
   for (const EngineAndTier& engine : engines) {
@@ -219,6 +216,8 @@ int GetDataVersion(PrefService* prefs) {
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service) {
+  CHECK(search_engine_choice_service);
+
   // If there is a set of search engines in the preferences file, it overrides
   // the built-in set.
   std::vector<std::unique_ptr<TemplateURLData>> t_urls =
@@ -227,18 +226,8 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     return t_urls;
   }
 
-  int country_id;
-  if (search_engine_choice_service) {
-    country_id = search_engine_choice_service->GetCountryId();
-  } else {
-    // `search_engine_choice_service` (and `prefs`) can be null in tests.
-    // TODO(crbug.com/40287734): Make sure `prefs` and
-    // `search_engine_choice_service` are always not null.
-    CHECK_IS_TEST();
-    country_id = country_codes::GetCurrentCountryID();
-  }
-
-  return GetPrepopulatedTemplateURLData(country_id, prefs);
+  return GetPrepopulatedTemplateURLData(
+      search_engine_choice_service->GetCountryId(), prefs);
 }
 
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(
