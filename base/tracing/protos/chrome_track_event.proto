@@ -1533,6 +1533,10 @@ message ChromeGraphicsPipeline {
   // List of LatencyInfo.trace_ids associated with this frame, which
   // should allow us to match input to frame production.
   repeated int64 latency_ids = 9;
+
+  // Optional frame data containing of possible latch and present
+  // frame deadlines. Only set on Android devices.
+  optional AndroidChoreographerFrameCallbackData possible_deadlines = 11;
 };
 
 message LibunwindstackUnwinder {
