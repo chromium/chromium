@@ -799,7 +799,7 @@ void HangWatcher::WatchStateSnapShot::Init(
         const auto track = perfetto::Track::FromPointer(
             this, perfetto::ThreadTrack::ForThread(thread_id));
         TRACE_EVENT_BEGIN("latency", "HangWatcher::ThreadHung", track,
-                          deadline);
+                          now - monitoring_period);
         TRACE_EVENT_END("latency", track, now);
       }
 #endif
