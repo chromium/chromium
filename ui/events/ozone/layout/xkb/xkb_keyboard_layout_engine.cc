@@ -1066,13 +1066,13 @@ KeyboardCode XkbKeyboardLayoutEngine::DifficultKeyboardCode(
     return key_code;
 
   // Check the multi-character tables.
-  const PrintableMultiEntry* multi_end = kMultiMap + std::size(kMultiMap);
-  const PrintableMultiEntry* multi =
-      std::lower_bound(kMultiMap, multi_end, plain_character,
-                       [](const PrintableMultiEntry& e, char16_t c) {
-                         return e.plain_character < c;
-                       });
-  if ((multi != multi_end) && (multi->plain_character == plain_character)) {
+  const PrintableMultiEntry* multi = std::lower_bound(
+      std::begin(kMultiMap), std::end(kMultiMap), plain_character,
+      [](const PrintableMultiEntry& e, char16_t c) {
+        return e.plain_character < c;
+      });
+  if ((multi != std::end(kMultiMap)) &&
+      (multi->plain_character == plain_character)) {
     const char16_t kNonCharacter = kAny;
     char16_t shift_character = kNonCharacter;
     char16_t altgr_character = kNonCharacter;
@@ -1100,14 +1100,15 @@ KeyboardCode XkbKeyboardLayoutEngine::DifficultKeyboardCode(
   }
 
   // Check the simple character table.
-  const PrintableSimpleEntry* simple_end = kSimpleMap + std::size(kSimpleMap);
-  const PrintableSimpleEntry* simple =
-      std::lower_bound(kSimpleMap, simple_end, plain_character,
-                       [](const PrintableSimpleEntry& e, char16_t c) {
-                         return e.plain_character < c;
-                       });
-  if ((simple != simple_end) && (simple->plain_character == plain_character))
+  const PrintableSimpleEntry* simple = std::lower_bound(
+      std::begin(kSimpleMap), std::end(kSimpleMap), plain_character,
+      [](const PrintableSimpleEntry& e, char16_t c) {
+        return e.plain_character < c;
+      });
+  if ((simple != std::end(kSimpleMap)) &&
+      (simple->plain_character == plain_character)) {
     return simple->key_code;
+  }
 
   return VKEY_UNKNOWN;
 }
