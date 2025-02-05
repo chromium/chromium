@@ -433,7 +433,7 @@ void MahiWebContentsManagerImpl::RequestPDFContent(
   }
 
   pdf_observer_ = std::make_unique<MahiPDFObserver>(
-      web_contents_to_observe, ui::kAXModeWebContentsOnly | ui::AXMode::kPDFOcr,
+      web_contents_to_observe, ui::kAXModeWebContentsOnly,
       rfh_pdf->GetAXTreeID(),
       base::BindOnce(&MahiWebContentsManagerImpl::OnGetAXTreeUpdatesForPDF,
                      weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
