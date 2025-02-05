@@ -1941,6 +1941,20 @@ void CreateOperatorNodeForCumulativeSum(
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
+template <typename DML_OPERATOR_DESC, DML_OPERATOR_TYPE operator_type>
+const GraphNode* CreateUnaryOperator(const TensorDesc& input_tensor,
+                                     const TensorDesc& output_tensor,
+                                     const NodeOutput* input,
+                                     GraphBuilderDml& graph_builder,
+                                     std::string_view label = "") {
+  DML_OPERATOR_DESC unary_operator_desc{
+      .InputTensor = &input_tensor.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor.GetDMLTensorDesc()};
+  std::array<const NodeOutput*, 1> inputs = {input};
+  return graph_builder.CreateOperatorNode(operator_type, &unary_operator_desc,
+                                          inputs, label);
+}
+
 template <typename DML_OPERATOR_DESC>
 const GraphNode* CreateBinaryOperator(const TensorDesc& a_tensor,
                                       const TensorDesc& b_tensor,
@@ -1955,6 +1969,131 @@ const GraphNode* CreateBinaryOperator(const TensorDesc& a_tensor,
       .OutputTensor = &output_tensor.GetDMLTensorDesc()};
   return graph_builder.CreateOperatorNode(operator_type, &binary_operator_desc,
                                           inputs, label);
+}
+
+// Append an identity node to the input node output. Return the node output of
+// the identity operator if it's successfully created, otherwise return a
+// nullptr.
+const NodeOutput* AppendIdentityNode(
+    GraphBuilderDml& graph_builder,
+    const NodeOutput* input,
+    const TensorDesc* input_tensor_desc = nullptr) {
+  CHECK(input);
+  if (!input_tensor_desc) {
+    input_tensor_desc = &input->GetTensorDesc();
+  }
+  TensorDesc identity_tensor_desc(input_tensor_desc->GetDataType(),
+                                  DML_TENSOR_FLAG_NONE,
+                                  input_tensor_desc->GetDimensions());
+  const GraphNode* identity =
+      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
+                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
+          *input_tensor_desc, identity_tensor_desc, input, graph_builder);
+
+  return graph_builder.CreateNodeOutput(identity,
+                                        std::move(identity_tensor_desc));
+}
+
+// Create a reshape node with the given new shape.
+const NodeOutput* CreateReshapeNode(GraphBuilderDml& graph_builder,
+                                    const NodeOutput* input,
+                                    base::span<const uint32_t> new_shape) {
+  CHECK(input);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+  const TensorDesc reshaped_input_tensor_desc(
+      input_tensor_desc.GetDataType(), input_tensor_desc.GetFlags(),
+      std::vector<uint32_t>(new_shape.begin(), new_shape.end()));
+  const NodeOutput* reshape_node =
+      AppendIdentityNode(graph_builder, input, &reshaped_input_tensor_desc);
+
+  return reshape_node;
+}
+
+// Create a expand node with the given new shape.
+const NodeOutput* CreateExpandNode(GraphBuilderDml& graph_builder,
+                                   const NodeOutput* input,
+                                   base::span<const uint32_t> new_shape,
+                                   std::string_view label) {
+  CHECK(input);
+  auto input_tensor_desc = input->GetTensorDesc();
+  // Use identity to implement the expand operation with broadcasting strides
+  // https://learn.microsoft.com/en-us/windows/ai/directml/dml-strides#broadcasting-with-strides.
+  if (input_tensor_desc.GetDimensions() != new_shape) {
+    input_tensor_desc.BroadcastTo(new_shape);
+  }
+
+  const auto expand_tensor_desc =
+      TensorDesc(input_tensor_desc.GetDataType(),
+                 std::vector<uint32_t>(new_shape.begin(), new_shape.end()));
+  const GraphNode* identity_node =
+      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
+                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
+          input_tensor_desc, expand_tensor_desc, input, graph_builder, label);
+
+  const NodeOutput* expand_node = graph_builder.CreateNodeOutput(
+      identity_node, std::move(expand_tensor_desc));
+  return expand_node;
+}
+
+// Block-wise expand the dimension of the node_tensor_desc along the given axis.
+// Firstly, reshape the input to 4D by flattening consecutive dimensions before
+// and after the axis when the dimension count >= 4. otherwise, we
+// need to insert value 1 before and after the axis. Then broadcast axis by
+// block_size. Finally, reshape it back to output dimensions. For example,
+// given an 4-D input dimensions = {2, 3, 4, 5} and axis = 2, block_size = 3,
+// Firstly, we reshape the input dimensions to {6, 4, 1, 5}. Then broadcast {6,
+// 4, 1, 5} to {6, 4, 3, 5}. Finally, reshape {6, 4, 3, 5} to {2, 3, 12, 5}.
+base::expected<const NodeOutput*, mojom::ErrorPtr> BlockwiseExpandAlongAxis(
+    const NodeOutput* node,
+    GraphBuilderDml& graph_builder,
+    uint32_t axis,
+    uint32_t block_size,
+    std::string_view label) {
+  auto node_tensor_desc = node->GetTensorDesc();
+  auto input_dimensions = node_tensor_desc.GetDimensions();
+  std::array<uint32_t, 4> reshaped_input_dimensions;
+
+  // TODO: Validation work will be completed at blink-side, and DirectML backend
+  // should just check it.
+  base::CheckedNumeric<uint32_t> checked_pre_values =
+      std::accumulate(input_dimensions.begin(), input_dimensions.begin() + axis,
+                      base::CheckedNumeric<uint32_t>(1), std::multiplies());
+  if (!checked_pre_values.IsValid()) {
+    return base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "The shape values are too large for block-wise quantization emulation.",
+        label));
+  }
+  reshaped_input_dimensions[0] = checked_pre_values.ValueOrDie();
+  reshaped_input_dimensions[1] = input_dimensions[axis];
+  reshaped_input_dimensions[2] = 1;
+
+  // TODO: Validation work will be completed at blink-side, and DirectML backend
+  // should just check it.
+  base::CheckedNumeric<uint32_t> checked_after_values = std::accumulate(
+      input_dimensions.begin() + axis + 1, input_dimensions.end(),
+      base::CheckedNumeric<uint32_t>(1), std::multiplies());
+  if (!checked_after_values.IsValid()) {
+    return base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "The shape values are too large for block-wise quantization emulation.",
+        label));
+  }
+  reshaped_input_dimensions[3] = checked_after_values.ValueOrDie();
+
+  const NodeOutput* reshape_node =
+      CreateReshapeNode(graph_builder, node, reshaped_input_dimensions);
+
+  auto expanded_new_operand_dimensions = reshaped_input_dimensions;
+  expanded_new_operand_dimensions[2] = block_size;
+  const NodeOutput* expand_reshaped_node = CreateExpandNode(
+      graph_builder, reshape_node, expanded_new_operand_dimensions, label);
+
+  auto output_dimensions = input_dimensions;
+  output_dimensions[axis] = block_size * input_dimensions[axis];
+
+  return CreateReshapeNode(graph_builder, expand_reshaped_node,
+                           output_dimensions);
 }
 
 template <typename DML_OPERATOR_DESC, typename DequantizeOrQuantizeLinearPtr>
@@ -2024,16 +2163,37 @@ CreateOperatorNodeForDequantizeOrQuantizeLinear(
           4, TensorDesc::Alignment::kTrailing);
     }
   } else {
-    // TODO(crbug.com/376777336): Add emulation support for block-wise
-    // dequantizeLinear and quantizeLinear when FL < 6.3.
-    if (!BroadcastShapes(scale_tensor_desc.GetDimensions(), output_dimensions,
-                         /*bidirectional=*/false)) {
-      return base::unexpected(
-          CreateError(mojom::Error::Code::kUnknownError,
-                      "DequantizeLinear and quantizeLinear can't support "
-                      "block-wise when FL < 6.3.",
-                      label));
+    const auto input_dimensions = input_tensor_desc.GetDimensions();
+    auto scale_dimensions = scale_tensor_desc.GetDimensions();
+    // When FL < 6.3, DML_ELEMENT_WISE_DEQUANTIZE_LINEAR and
+    // DML_ELEMENT_WISE_QUANTIZE_LINEAR can't support block-wise.
+    // For each dimension where we need to do expansion of block_size which is
+    // calculated by input_dimensions[i] / scale_dimensions[i], we use reshape
+    // and broadcast to emulate.
+    for (size_t index = 0; index < scale_dimensions.size(); index++) {
+      if (input_dimensions[input_dimensions.size() - index - 1] !=
+              scale_dimensions[scale_dimensions.size() - index - 1] &&
+          input_dimensions[input_dimensions.size() - index - 1] != 1 &&
+          scale_dimensions[scale_dimensions.size() - index - 1] != 1) {
+        uint32_t block_size =
+            input_dimensions[input_dimensions.size() - index - 1] /
+            scale_dimensions[scale_dimensions.size() - index - 1];
+        uint32_t axis = scale_dimensions.size() - index - 1;
+
+        ASSIGN_OR_RETURN(scale,
+                         BlockwiseExpandAlongAxis(scale, graph_builder, axis,
+                                                  block_size, label));
+        scale_tensor_desc = scale->GetTensorDesc();
+        scale_dimensions = scale_tensor_desc.GetDimensions();
+
+        ASSIGN_OR_RETURN(zero_point,
+                         BlockwiseExpandAlongAxis(zero_point, graph_builder,
+                                                  axis, block_size, label));
+
+        zero_point_tensor_desc = zero_point->GetTensorDesc();
+      }
     }
+
     if (scale_tensor_desc.GetDimensions() != output_dimensions) {
       scale_tensor_desc.BroadcastTo(output_dimensions);
       zero_point_tensor_desc.BroadcastTo(output_dimensions);
@@ -2082,20 +2242,6 @@ CreateOperatorNodeForDequantizeOrQuantizeLinear(
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 
   return base::ok();
-}
-
-template <typename DML_OPERATOR_DESC, DML_OPERATOR_TYPE operator_type>
-const GraphNode* CreateUnaryOperator(const TensorDesc& input_tensor,
-                                     const TensorDesc& output_tensor,
-                                     const NodeOutput* input,
-                                     GraphBuilderDml& graph_builder,
-                                     std::string_view label = "") {
-  DML_OPERATOR_DESC unary_operator_desc{
-      .InputTensor = &input_tensor.GetDMLTensorDesc(),
-      .OutputTensor = &output_tensor.GetDMLTensorDesc()};
-  std::array<const NodeOutput*, 1> inputs = {input};
-  return graph_builder.CreateOperatorNode(operator_type, &unary_operator_desc,
-                                          inputs, label);
 }
 
 template <typename OperatorDesc,
@@ -3075,44 +3221,6 @@ void CreateOperatorNodeForReduce(const ContextProperties& context_properties,
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
-// Append an identity node to the input node output. Return the node output of
-// the identity operator if it's successfully created, otherwise return a
-// nullptr.
-const NodeOutput* AppendIdentityNode(
-    GraphBuilderDml& graph_builder,
-    const NodeOutput* input,
-    const TensorDesc* input_tensor_desc = nullptr) {
-  CHECK(input);
-  if (!input_tensor_desc) {
-    input_tensor_desc = &input->GetTensorDesc();
-  }
-  TensorDesc identity_tensor_desc(input_tensor_desc->GetDataType(),
-                                  DML_TENSOR_FLAG_NONE,
-                                  input_tensor_desc->GetDimensions());
-  const GraphNode* identity =
-      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
-                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
-          *input_tensor_desc, identity_tensor_desc, input, graph_builder);
-
-  return graph_builder.CreateNodeOutput(identity,
-                                        std::move(identity_tensor_desc));
-}
-
-// Create a reshape node with the given new shape.
-const NodeOutput* CreateReshapeNode(GraphBuilderDml& graph_builder,
-                                    const NodeOutput* input,
-                                    base::span<const uint32_t> new_shape) {
-  CHECK(input);
-  const auto& input_tensor_desc = input->GetTensorDesc();
-  const TensorDesc reshaped_input_tensor_desc(
-      input_tensor_desc.GetDataType(), input_tensor_desc.GetFlags(),
-      std::vector<uint32_t>(new_shape.begin(), new_shape.end()));
-  const NodeOutput* reshape_node =
-      AppendIdentityNode(graph_builder, input, &reshaped_input_tensor_desc);
-
-  return reshape_node;
-}
-
 // DirectML API does not have a real Reshape operator. The WebNN Reshape is
 // implemented by a DirectML Identity operator. DirectML runtime is able to
 // optimize the unnecessary IDENTITY operators when compiling the graph.
@@ -3220,22 +3328,11 @@ void CreateOperatorNodeForExpand(const ContextProperties& context_properties,
   const uint64_t output_id = expand->output_operand_id;
   const auto output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
-
-  // Use identity to implement the expand operation with broadcasting strides
-  // https://learn.microsoft.com/en-us/windows/ai/directml/dml-strides#broadcasting-with-strides.
   const auto& output_dimensions = output_tensor_desc.GetDimensions();
-  if (input_tensor_desc.GetDimensions() != output_dimensions) {
-    input_tensor_desc.BroadcastTo(output_dimensions);
-  }
 
-  const GraphNode* identity_node =
-      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
-                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
-          input_tensor_desc, output_tensor_desc, input, graph_builder,
-          expand->label);
+  const NodeOutput* node_output =
+      CreateExpandNode(graph_builder, input, output_dimensions, expand->label);
 
-  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
-      identity_node, std::move(output_tensor_desc));
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 }
