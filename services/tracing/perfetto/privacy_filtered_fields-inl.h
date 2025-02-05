@@ -380,8 +380,8 @@ constexpr MessageInfo kTabSwitchMeasurement = {kTabSwitchMeasurementIndices,
                                                nullptr};
 
 // Proto Message: ScrollDeltas
-constexpr int kScrollDeltasIndices[] = {1, 2,  3,  4,  5,  6,  7, 8,
-                                        9, 10, 11, 12, 13, 14, -1};
+constexpr int kScrollDeltasIndices[] = {1,  2,  3,  4,  5,  6,  7,  8,  9,
+                                        10, 11, 12, 13, 14, 15, 16, 17, -1};
 constexpr MessageInfo kScrollDeltas = {kScrollDeltasIndices, nullptr};
 
 // Proto Message: WinRenderAudioFromSource
