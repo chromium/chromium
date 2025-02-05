@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/profile_policy_connector.h"  // nogncheck crbug.com/1420759
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"

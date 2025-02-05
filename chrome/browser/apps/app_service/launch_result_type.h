@@ -16,7 +16,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
-// LaunchResult, and LaunchCallback can be used in Chrome Ash, lacros, and other
+// LaunchResult and LaunchCallback can be used in ChromeOS and other
 // desktop platforms. So this struct can't be moved to AppPublisher.
 
 struct LaunchResult {

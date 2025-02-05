@@ -39,7 +39,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/bluetooth/web_bluetooth_test_utils.h"
@@ -176,9 +175,9 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#include "ash/webui/settings/public/constants/routes.mojom.h"  // nogncheck
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #endif
 
@@ -1189,7 +1188,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, AutoplayPolicy) {
 
 // This test exercises the webview spatial navigation API
 // TODO(crbug.com/41493388): Flaky timeouts on Mac and Cros.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SpatialNavigationJavascriptAPI \
   DISABLED_SpatialNavigationJavascriptAPI
 #else
@@ -2821,8 +2820,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, IndexedDBIsolation) {
 // then launches the app window again. The process is repeated 3 times.
 // TODO(crbug.com/40621838): The test is flaky (crash) on ChromeOS debug and
 // ASan/LSan
-#if BUILDFLAG(IS_CHROMEOS_ASH) && \
-    (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_CloseOnLoadcommit DISABLED_CloseOnLoadcommit
 #else
 #define MAYBE_CloseOnLoadcommit CloseOnLoadcommit
@@ -3033,7 +3031,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuInspectElement) {
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class WebViewChromeOSTest : public WebViewTestBase,
                             public testing::WithParamInterface<bool> {
  public:
@@ -3063,7 +3061,7 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
 // Elsewhere, it will load chrome://settings/languages in a browser window.
 // In either case, this is a browser-initiated operation and so we expect it
 // to succeed if the embedder is allowed to perform the operation.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(WebViewChromeOSTest, ContextMenuLanguageSettings) {
 #else
 IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuLanguageSettings) {
@@ -3072,7 +3070,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuLanguageSettings) {
   content::WebContents* embedder = GetEmbedderWebContents();
   ASSERT_TRUE(embedder);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::SystemWebAppManager::Get(browser()->profile())
       ->InstallSystemAppsForTesting();
 #endif
@@ -3088,7 +3086,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenuLanguageSettings) {
   // Language Settings page.
   content::WebContents* new_contents =
       web_contents_added_observer.GetWebContents();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(GURL(chrome::kChromeUIOSSettingsURL)
                 .Resolve(chromeos::settings::mojom::kLanguagesSubpagePath),
             new_contents->GetVisibleURL());
@@ -5828,10 +5826,6 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
 // page with both an attached and an unattached <webview> and verifies that,
 // unlike the attached guest, no find requests are sent for the unattached
 // guest. For more context see https://crbug.com/897465.
-// TODO(mcnee): chrome://chrome-signin is not currently supported on Lacros.
-// Instead of repurposing existing webui pages to be able to create webviews
-// within a tabbed browser, create a dedicated test webui with the necessary
-// guest view permissions.
 IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
                        NoFindInPageForUnattachedGuest) {
   SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
