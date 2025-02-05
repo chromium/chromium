@@ -15,6 +15,8 @@
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_util.h"
@@ -32,6 +34,7 @@ class MFVideoProcessorAcceleratorTest : public ::testing::Test {
     dxgi_device_man_ = DXGIDeviceManager::Create({0, 0});
     ASSERT_TRUE(dxgi_device_man_);
     d3d11_device_ = dxgi_device_man_->GetDevice();
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   }
 
   void TearDown() override {
@@ -99,8 +102,8 @@ class MFVideoProcessorAcceleratorTest : public ::testing::Test {
     return image;
   }
 
-  std::unique_ptr<gfx::GpuMemoryBuffer>
-  TextureToGpuMemoryBuffer(ID3D11Texture2D* texture, int width, int height) {
+  scoped_refptr<VideoFrame>
+  TextureToMappableVideoFrame(ID3D11Texture2D* texture, int width, int height) {
     Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
     HRESULT hr = texture->QueryInterface(IID_PPV_ARGS(&dxgi_resource));
     if (FAILED(hr)) {
@@ -113,16 +116,27 @@ class MFVideoProcessorAcceleratorTest : public ::testing::Test {
     if (FAILED(hr)) {
       return nullptr;
     }
+
     gfx::GpuMemoryBufferHandle gmb_handle;
     gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
     gmb_handle.set_dxgi_handle(
         gfx::DXGIHandle(base::win::ScopedHandle(shared_handle)));
-    std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-        gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
-            std::move(gmb_handle), {width, height},
-            gfx::BufferFormat::BGRA_8888, gfx::BufferUsage::GPU_READ,
-            base::NullCallback(), nullptr, nullptr);
-    return gmb;
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+    auto shared_image = test_sii_->CreateSharedImage(
+        {viz::SinglePlaneFormat::kBGRA_8888,
+         {width, height},
+         gfx::ColorSpace(),
+         gpu::SharedImageUsageSet(si_usage),
+         "MFVideoProcessorAcceleratorTest"},
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
+        std::move(gmb_handle));
+
+    return media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+        base::NullCallback(), gfx::Rect(gfx::Size(width, height)),
+        {width, height}, base::Milliseconds(0));
   }
 
   template <typename F>
@@ -169,6 +183,7 @@ class MFVideoProcessorAcceleratorTest : public ::testing::Test {
   // These values are for BT709 with 16-235 nominal range
   static const BYTE kLumaGreen = 173;
   static const BYTE kLumaMagenta = 79;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 const RGBQUAD MFVideoProcessorAcceleratorTest::kGreen = {0, 255, 0, 0};
@@ -215,12 +230,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12) {
   d3d11_device_->GetImmediateContext(&d3d11_context);
   d3d11_context->Flush();
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-      TextureToGpuMemoryBuffer(texture.Get(), kWidth, kHeight);
-  ASSERT_TRUE(gmb);
-  auto timestamp = base::Milliseconds(0);
-  auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      {kWidth, kHeight}, {kWidth, kHeight}, std::move(gmb), timestamp);
+  auto frame = TextureToMappableVideoFrame(texture.Get(), kWidth, kHeight);
 
   Microsoft::WRL::ComPtr<IMFSample> sample;
   ASSERT_HRESULT_SUCCEEDED(video_processor->Convert(frame, &sample));
@@ -269,12 +279,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBResize) {
   d3d11_device_->GetImmediateContext(&d3d11_context);
   d3d11_context->Flush();
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-      TextureToGpuMemoryBuffer(texture.Get(), kWidth, kHeight);
-  ASSERT_TRUE(gmb);
-  auto timestamp = base::Milliseconds(0);
-  auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      {kWidth, kHeight}, {kWidth, kHeight}, std::move(gmb), timestamp);
+  auto frame = TextureToMappableVideoFrame(texture.Get(), kWidth, kHeight);
 
   Microsoft::WRL::ComPtr<IMFSample> sample;
   ASSERT_HRESULT_SUCCEEDED(video_processor->Convert(frame, &sample));
@@ -329,12 +334,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12Resize) {
   d3d11_device_->GetImmediateContext(&d3d11_context);
   d3d11_context->Flush();
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-      TextureToGpuMemoryBuffer(texture.Get(), kWidth, kHeight);
-  ASSERT_TRUE(gmb);
-  auto timestamp = base::Milliseconds(0);
-  auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      {kWidth, kHeight}, {kWidth, kHeight}, std::move(gmb), timestamp);
+  auto frame = TextureToMappableVideoFrame(texture.Get(), kWidth, kHeight);
 
   Microsoft::WRL::ComPtr<IMFSample> sample;
   ASSERT_HRESULT_SUCCEEDED(video_processor->Convert(frame, &sample));
@@ -412,13 +412,8 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12SizeChange) {
   d3d11_device_->GetImmediateContext(&d3d11_context);
   d3d11_context->Flush();
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-      TextureToGpuMemoryBuffer(texture.Get(), kWidth * 2, kHeight * 2);
-  ASSERT_TRUE(gmb);
-  auto timestamp = base::Milliseconds(0);
-  auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      {kWidth * 2, kHeight * 2}, {kWidth * 2, kHeight * 2}, std::move(gmb),
-      timestamp);
+  auto frame =
+      TextureToMappableVideoFrame(texture.Get(), kWidth * 2, kHeight * 2);
 
   Microsoft::WRL::ComPtr<IMFSample> sample;
   ASSERT_HRESULT_SUCCEEDED(video_processor->Convert(frame, &sample));
@@ -468,12 +463,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, VideoPixelFormatChange) {
   d3d11_device_->GetImmediateContext(&d3d11_context);
   d3d11_context->Flush();
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-      TextureToGpuMemoryBuffer(texture.Get(), kWidth, kHeight);
-  ASSERT_TRUE(gmb);
-  auto timestamp = base::Milliseconds(0);
-  auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      {kWidth, kHeight}, {kWidth, kHeight}, std::move(gmb), timestamp);
+  auto frame = TextureToMappableVideoFrame(texture.Get(), kWidth, kHeight);
 
   Microsoft::WRL::ComPtr<IMFSample> sample;
   ASSERT_HRESULT_SUCCEEDED(video_processor->Convert(frame, &sample));
@@ -496,11 +486,8 @@ TEST_F(MFVideoProcessorAcceleratorTest, VideoPixelFormatChange) {
                                          imageYuy2.data(), &textureYuy2));
   d3d11_context->Flush();
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmbYuy2 =
-      TextureToGpuMemoryBuffer(textureYuy2.Get(), kWidth, kHeight);
-  ASSERT_TRUE(gmbYuy2);
-  auto frameYuy2 = VideoFrame::WrapExternalGpuMemoryBuffer(
-      {kWidth, kHeight}, {kWidth, kHeight}, std::move(gmbYuy2), timestamp);
+  auto frameYuy2 =
+      TextureToMappableVideoFrame(textureYuy2.Get(), kWidth, kHeight);
 
   Microsoft::WRL::ComPtr<IMFSample> sample1;
   ASSERT_HRESULT_SUCCEEDED(video_processor->Convert(frameYuy2, &sample1));
@@ -609,12 +596,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToH264) {
   d3d11_device_->GetImmediateContext(&d3d11_context);
   d3d11_context->Flush();
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-      TextureToGpuMemoryBuffer(texture.Get(), kWidth, kHeight);
-  ASSERT_TRUE(gmb);
-  auto timestamp = base::Milliseconds(0);
-  auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      {kWidth, kHeight}, {kWidth, kHeight}, std::move(gmb), timestamp);
+  auto frame = TextureToMappableVideoFrame(texture.Get(), kWidth, kHeight);
   video_encoder->Encode(frame, false);
   video_encoder = nullptr;
 
