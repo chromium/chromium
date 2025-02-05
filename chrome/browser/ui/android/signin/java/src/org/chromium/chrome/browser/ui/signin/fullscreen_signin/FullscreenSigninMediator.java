@@ -539,11 +539,7 @@ public class FullscreenSigninMediator
     private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
         mModel.set(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
         // Selected account data will be updated in {@link #onProfileDataUpdated}
-        mProfileDataCache.setBadge(
-                isChild
-                        ? ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
-                                mContext, R.drawable.ic_account_child_20dp)
-                        : null);
+        mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);
     }
 
     /**

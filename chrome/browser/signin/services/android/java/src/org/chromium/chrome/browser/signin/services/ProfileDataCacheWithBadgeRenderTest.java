@@ -111,7 +111,7 @@ public class ProfileDataCacheWithBadgeRenderTest {
     public void testProfileDataWithSettingBadgeDynamically() throws IOException {
         setUpProfileDataCache(0);
         mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
-        setBadge(R.drawable.ic_account_child_20dp);
+        setBadgeConfig(R.drawable.ic_account_child_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
     }
 
@@ -121,7 +121,7 @@ public class ProfileDataCacheWithBadgeRenderTest {
     public void testProfileDataWithRemovingBadgeDynamically() throws IOException {
         setUpProfileDataCache(R.drawable.ic_account_child_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
-        setBadge(0);
+        setBadgeConfig(0);
         mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
     }
 
@@ -131,7 +131,7 @@ public class ProfileDataCacheWithBadgeRenderTest {
     public void testProfileDataWithExistingBadge() throws IOException {
         setUpProfileDataCache(R.drawable.ic_account_child_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
-        setBadge(R.drawable.ic_sync_badge_error_20dp);
+        setBadgeConfig(R.drawable.ic_sync_badge_error_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_sync_error_badge");
     }
 
@@ -161,15 +161,10 @@ public class ProfileDataCacheWithBadgeRenderTest {
                 });
     }
 
-    private void setBadge(@DrawableRes int badgeResId) {
+    private void setBadgeConfig(@DrawableRes int badgeResId) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProfileDataCache.setBadge(
-                            TestAccounts.ACCOUNT1.getEmail(),
-                            badgeResId == 0
-                                    ? null
-                                    : ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
-                                            sActivity, badgeResId));
+                    mProfileDataCache.setBadge(badgeResId);
                 });
         CriteriaHelper.pollUiThread(
                 () -> {
