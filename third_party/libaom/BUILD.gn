@@ -411,6 +411,8 @@ test("av1_encoder_fuzz_test") {
     "AV1EncodeFuzzTest.AV1EncodeArbitraryCallSequenceSucceeds",
   ]
 
+  fuzztest_stack_limit_kb = 256
+
   deps = [
     ":libaom",
     "//third_party/fuzztest:fuzztest_gtest_main",

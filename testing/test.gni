@@ -166,10 +166,12 @@ template("mixed_test") {
     }
   } else {
     target(invoker.target_type, target_name) {
-      forward_variables_from(
-          invoker,
-          "*",
-          TESTONLY_AND_VISIBILITY + _rs_vars + [ "fuzztests" ])
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + _rs_vars + [
+                                   "fuzztests",
+                                   "fuzztest_stack_limit_kb",
+                                 ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       sources = _cc_sources
       if (!defined(deps)) {
@@ -219,6 +221,54 @@ template("mixed_test") {
     # `target_name`.
     _fuzzer_binary_name = _output_name + _fuzzer_binary_extension
     _fuzztest_target_name = target_name
+
+    # Additional command-line arguments passed to fuzzer executables, common to
+    # all fuzz tests in this executable.
+    _common_fuzzer_args = [ "--corpus_database=" ]
+
+    if (use_centipede && defined(invoker.fuzztest_stack_limit_kb)) {
+      _common_fuzzer_args +=
+          [ "--stack_limit_kb=${invoker.fuzztest_stack_limit_kb}" ]
+    }
+
+    # If we're building for libfuzzer, we have to pass -undefok=max_len
+    # etc. for every conceivable libfuzzer argument, so that gtest doesn't
+    # get discombobulated by them. List is from https://llvm.org/docs/LibFuzzer.html
+    if (use_libfuzzer) {
+      _known_libfuzzer_args = [
+        "help",
+        "seed",
+        "runs",
+        "max_len",
+        "len_control",
+        "timeout",
+        "rss_limit_mb",
+        "malloc_limit_mb",
+        "timeout_exitcode",
+        "error_exitcode",
+        "max_total_time",
+        "merge",
+        "merge_control_file",
+        "minimize_crash",
+        "reload",
+        "jobs",
+        "workers",
+        "dict",
+        "use_counters",
+        "reduce_inputs",
+        "use_value_profile",
+        "only_ascii",
+        "artifact_prefix",
+        "exact_artifact_path",
+        "print_pcs",
+        "print_final_stats",
+        "detect_leaks",
+        "close_fd_mask",
+        "fork",
+      ]
+      _common_fuzzer_args +=
+          [ "-undefok=" + string_join(",", _known_libfuzzer_args) ]
+    }
 
     # Confirming that the "fuzztests =" directive is correct can only
     # be done on builds where we can confidently run the fuzzing binary.
@@ -271,51 +321,9 @@ template("mixed_test") {
       generated_file(_fuzztest_generate_fuzzer + "_constants") {
         outputs = [ "$target_gen_dir/$target_name/constants.cpp" ]
 
-        # If we're building for libfuzzer, we have to pass -undefok=max_len
-        # etc. for every conceivable libfuzzer argument, so that gtest doesn't
-        # get discombobulated by them. List is from https://llvm.org/docs/LibFuzzer.html
-        if (use_libfuzzer) {
-          known_libfuzzer_args = [
-            "help",
-            "seed",
-            "runs",
-            "max_len",
-            "len_control",
-            "timeout",
-            "rss_limit_mb",
-            "malloc_limit_mb",
-            "timeout_exitcode",
-            "error_exitcode",
-            "max_total_time",
-            "merge",
-            "merge_control_file",
-            "minimize_crash",
-            "reload",
-            "jobs",
-            "workers",
-            "dict",
-            "use_counters",
-            "reduce_inputs",
-            "use_value_profile",
-            "only_ascii",
-            "artifact_prefix",
-            "exact_artifact_path",
-            "print_pcs",
-            "print_final_stats",
-            "detect_leaks",
-            "close_fd_mask",
-            "fork",
-          ]
-          fuzzer_args = [ "-undefok=" + string_join(",", known_libfuzzer_args) ]
-        } else {
-          fuzzer_args = []
-        }
+        _fuzzer_args = _common_fuzzer_args + [ "--fuzz=${fuzztest_unit}" ]
 
-        fuzzer_args += [
-          "--fuzz=${fuzztest_unit}",
-          "--corpus_database=",
-        ]
-        fuzzer_args_joined = string_join(" ", fuzzer_args)
+        fuzzer_args_joined = string_join(" ", _fuzzer_args)
 
         NEWLINE = "$0x0A"
 
@@ -371,6 +379,8 @@ template("mixed_test") {
 #      fuzzing infrastructure can find and run such tests.
 #      This should be a list of the test names, for example
 #      fuzztests = [ "MyTestClass.MyTestName" ]
+#   fuzztest_stack_limit_kb: soft limit on the size of the stack in KB, enforced
+#     for fuzz tests in fuzzing mode only.
 template("test") {
   # Ensures a test filter file exists and if not, creates a dummy file.
   # The Regression Test Selection (rts) flag is passed in mb.py and used
