@@ -130,6 +130,8 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
 }
 
 void SavedTabGroupModelListener::TabGroupedStateChanged(
+    TabStripModel* tab_strip_model,
+    std::optional<tab_groups::TabGroupId> old_local_group_id,
     std::optional<tab_groups::TabGroupId> new_local_group_id,
     tabs::TabInterface* tab,
     int index) {

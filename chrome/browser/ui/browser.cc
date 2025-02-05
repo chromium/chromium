@@ -1645,7 +1645,9 @@ void Browser::TabPinnedStateChanged(TabStripModel* tab_strip_model,
 }
 
 void Browser::TabGroupedStateChanged(
-    std::optional<tab_groups::TabGroupId> group,
+    TabStripModel* tab_strip_model,
+    std::optional<tab_groups::TabGroupId> old_group,
+    std::optional<tab_groups::TabGroupId> new_group,
     tabs::TabInterface* tab,
     int index) {
   // See comment in Browser::OnTabGroupChanged
@@ -1659,7 +1661,7 @@ void Browser::TabGroupedStateChanged(
   sessions::SessionTabHelper* const session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(tab->GetContents());
   session_service->SetTabGroup(session_id(), session_tab_helper->session_id(),
-                               std::move(group));
+                               std::move(new_group));
 }
 
 void Browser::TabStripEmpty() {

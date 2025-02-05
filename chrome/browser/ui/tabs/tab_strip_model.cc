@@ -3026,7 +3026,8 @@ void TabStripModel::TabGroupStateChanged(
   if (initial_group.has_value()) {
     // Send the observation
     for (auto& observer : observers_) {
-      observer.TabGroupedStateChanged(std::nullopt, tab, index);
+      observer.TabGroupedStateChanged(this, initial_group, std::nullopt, tab,
+                                      index);
     }
     // Update the group model.
     RemoveTabFromGroupModel(initial_group.value());
@@ -3035,7 +3036,8 @@ void TabStripModel::TabGroupStateChanged(
   if (new_group.has_value()) {
     // Send the observation
     for (auto& observer : observers_) {
-      observer.TabGroupedStateChanged(new_group.value(), tab, index);
+      observer.TabGroupedStateChanged(this, std::nullopt, new_group, tab,
+                                      index);
     }
     // Update the group model.
     AddTabToGroupModel(new_group.value());
