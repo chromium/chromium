@@ -284,6 +284,14 @@ TEST(CookieUtilTest, GetCookieDomainWithString_UrlHostIP_DomainCookie) {
             "192.0.2.3");  // No dot.
 }
 
+TEST(CookieUtilTest, GetCookieDomainWithString_Invalid_UrlHostIP_SubDomain) {
+  CookieInclusionStatus status;
+  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://192.0.2.3/"),
+                                                      "192", status));
+  EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
+      GURL("http://0.0.16.0/0000000"), "00000000", status));
+}
+
 // A URL containing a TLD that is unknown as a registry is allowed, if it
 // matches the cookie domain.
 TEST(CookieUtilTest, GetCookieDomainWithString_UnknownRegistry) {
