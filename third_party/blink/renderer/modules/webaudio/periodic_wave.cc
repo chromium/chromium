@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 #if defined(ARCH_CPU_X86_FAMILY)
 #include <xmmintrin.h>
