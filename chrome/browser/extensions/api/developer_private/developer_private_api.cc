@@ -106,6 +106,7 @@
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_service_factory.h"
 #include "extensions/browser/zipfile_installer.h"
@@ -1141,6 +1142,12 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
   if (update.incognito_access) {
     util::SetIsIncognitoEnabled(
         extension->id(), browser_context(), *update.incognito_access);
+  }
+  if (update.user_scripts_access) {
+    ExtensionSystem::Get(browser_context())
+        ->user_script_manager()
+        ->SetUserScriptPrefEnabled(extension->id(),
+                                   *update.user_scripts_access);
   }
   if (update.error_collection) {
     ErrorConsole::Get(browser_context())->SetReportingAllForExtension(

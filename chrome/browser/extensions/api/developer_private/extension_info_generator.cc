@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -54,9 +55,11 @@
 #include "extensions/browser/image_loader.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/ui_util.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/command.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/install_warning.h"
@@ -336,6 +339,22 @@ bool CanAccessSiteData(PermissionsManager* permissions_manager,
              .ShouldWarnAllHosts() ||
          PermissionsParser::GetOptionalPermissions(&extension)
              .ShouldWarnAllHosts();
+}
+
+// Returns whether the extension has permission to run user scripts or can
+// request permission to do so.
+bool CanRunOrRequestUserScripts(const Extension& extension) {
+  // TODO(crbug.com/390138269): Once finch flag is default, remove the
+  // feature restriction.
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kUserScriptUserExtensionToggle)) {
+    return false;
+  }
+
+  return extension.permissions_data()->HasAPIPermission(
+             mojom::APIPermissionID::kUserScripts) ||
+         PermissionsParser::GetOptionalPermissions(&extension)
+             .HasAPIPermission(mojom::APIPermissionID::kUserScripts);
 }
 
 // Populates the |permissions| data for the given |extension|.
@@ -706,6 +725,16 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   info->incognito_access.is_enabled = util::CanBeIncognitoEnabled(&extension);
   info->incognito_access.is_active =
       util::IsIncognitoEnabled(extension.id(), browser_context_);
+
+  // User Scripts toggle.
+  info->user_scripts_access.is_enabled = CanRunOrRequestUserScripts(extension);
+  const UserScriptManager* user_script_manager =
+      ExtensionSystem::Get(browser_context_)->user_script_manager();
+  if (user_script_manager) {  // Not created in some unit tests.
+    info->user_scripts_access.is_active =
+        // User scripts will be able to run if the user has enabled the toggle.
+        user_script_manager->IsUserScriptPrefEnabled(extension.id());
+  }
 
   // Install warnings, but only if unpacked, the error console isn't enabled
   // (otherwise it shows these), and we're in developer mode (normal users don't

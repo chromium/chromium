@@ -54,6 +54,12 @@ class UserScriptManager : public ExtensionRegistryObserver {
   void SetUserScriptSourceEnabledForExtensions(UserScript::Source source,
                                                bool enabled);
 
+  // Returns true if the user enabled this extension to run user scripts.
+  // TODO(crbug.com/390138269): Test this behavior once this preference is
+  // controlling user script injection.
+  bool IsUserScriptPrefEnabled(const ExtensionId& extension) const;
+  void SetUserScriptPrefEnabled(const ExtensionId& extension, bool enabled);
+
  private:
   // ExtensionRegistryObserver implementation.
   void OnExtensionWillBeInstalled(content::BrowserContext* browser_context,

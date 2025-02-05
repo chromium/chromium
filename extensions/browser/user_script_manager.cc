@@ -6,10 +6,12 @@
 
 #include "base/containers/contains.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/pref_types.h"
 #include "extensions/browser/scripting_constants.h"
 #include "extensions/browser/scripting_utils.h"
 #include "extensions/browser/state_store.h"
@@ -22,6 +24,15 @@
 #include "extensions/common/utils/content_script_utils.h"
 
 namespace extensions {
+
+namespace {
+
+// Key corresponding to whether the user has allowed user scripts to run for the
+// extension.
+constexpr PrefMap kUserScriptsAllowedPref = {
+    "user_scripts_enabled", PrefType::kBool, PrefScope::kExtensionSpecific};
+
+}  // namespace
 
 UserScriptManager::UserScriptManager(content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
@@ -84,6 +95,23 @@ void UserScriptManager::SetUserScriptSourceEnabledForExtensions(
   for (auto& map_entry : extension_script_loaders_) {
     map_entry.second->SetSourceEnabled(source, enabled);
   }
+}
+
+bool UserScriptManager::IsUserScriptPrefEnabled(
+    const ExtensionId& extension_id) const {
+  bool user_scripts_allowed = false;
+  ExtensionPrefs::Get(browser_context_)
+      ->ReadPrefAsBoolean(extension_id, kUserScriptsAllowedPref,
+                          &user_scripts_allowed);
+
+  return user_scripts_allowed;
+}
+
+void UserScriptManager::SetUserScriptPrefEnabled(
+    const ExtensionId& extension_id,
+    bool enabled) {
+  ExtensionPrefs::Get(browser_context_)
+      ->SetBooleanPref(extension_id, kUserScriptsAllowedPref, enabled);
 }
 
 void UserScriptManager::OnExtensionWillBeInstalled(

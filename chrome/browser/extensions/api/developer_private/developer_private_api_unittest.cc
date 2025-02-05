@@ -43,6 +43,7 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
@@ -77,6 +78,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -714,6 +716,21 @@ TEST_F(DeveloperPrivateApiUnitTest,
       base::BindRepeating(&HasPrefsPermission, &util::AllowFileAccess,
                           profile(), id),
       "fileAccess", id, /*expected_default_value=*/false);
+
+  // Test userScriptsAccess pref.
+  auto* extension_system =
+      static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
+  ASSERT_TRUE(extension_system);
+  extension_system->CreateUserScriptManager();
+  UserScriptManager* user_script_manager =
+      extension_system->user_script_manager();
+  ASSERT_TRUE(user_script_manager);
+  auto user_scripts_enabled = [&]() {
+    return user_script_manager->IsUserScriptPrefEnabled(id);
+  };
+  TestExtensionPrefSetting(base::BindLambdaForTesting(user_scripts_enabled),
+                           "userScriptsAccess", id,
+                           /*expected_default_value=*/false);
 
   SitePermissionsHelper helper(profile());
   TestExtensionPrefSetting(
