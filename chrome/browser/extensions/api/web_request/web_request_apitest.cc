@@ -696,8 +696,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextTypeMV3,
 }
 #endif
 
-// TODO(crbug.com/371324825): Enable more tests for Android build.
-#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     PersistentBackground,
     ExtensionWebRequestApiTestWithContextType,
@@ -724,6 +722,8 @@ INSTANTIATE_TEST_SUITE_P(
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
     ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
 
+// TODO(crbug.com/371324825): Enable more tests for Android build.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     PersistentBackground,
     ExtensionWebRequestApiTestWithContextTypeForHstsTopLevelNavigationOnly,
@@ -2468,6 +2468,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiWebTransportTest, SharedWorker) {
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiWebTransportTest, ServiceWorker) {
   ASSERT_TRUE(RunTest("test_webtransport_service_worker.html")) << message_;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test behavior when intercepting requests from a browser-initiated url fetch.
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
@@ -2532,9 +2533,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
   // First, check normal requests (e.g., navigations) to verify the extension
   // is working correctly.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, google_url));
   EXPECT_EQ(google_url, web_contents->GetLastCommittedURL());
 
   // google.com should succeed.
@@ -2544,9 +2544,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   GURL example_url =
       embedded_test_server()->GetURL("example.com", "/extensions/body2.html");
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example_url));
+  // Navigation to example.com should fail.
+  ASSERT_FALSE(content::NavigateToURL(web_contents, example_url));
   {
-    // example.com should fail.
     content::NavigationEntry* nav_entry =
         web_contents->GetController().GetLastCommittedEntry();
     ASSERT_TRUE(nav_entry);
@@ -2626,7 +2626,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                          kExampleFullContent, net::OK);
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that extensions need host permissions to both the request url and
 // initiator to intercept a request.

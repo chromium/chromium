@@ -129,12 +129,6 @@ void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
 // ActivityType that doesn't restore tabs on cold start. Any type other than
 // kTabbed is fine.
 const auto kTestActivityType = chrome::android::ActivityType::kCustomTab;
-
-bool IsMV3AllowedContextType(ContextType context_type) {
-  return context_type == ContextType::kServiceWorker ||
-         context_type == ContextType::kFromManifest ||
-         context_type == ContextType::kNone;
-}
 #endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
 }  // namespace
@@ -197,10 +191,6 @@ ExtensionPlatformBrowserTest::ExtensionPlatformBrowserTest(
     ContextType context_type)
     : context_type_(context_type) {
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  // Android only allows certain context types.
-  EXPECT_TRUE(IsMV3AllowedContextType(context_type));
-#endif
 }
 
 ExtensionPlatformBrowserTest::~ExtensionPlatformBrowserTest() = default;
