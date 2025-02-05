@@ -29,6 +29,10 @@ class DirectSocketsDelegate;
 class CONTENT_EXPORT DirectSocketsServiceImpl
     : public blink::mojom::DirectSocketsService {
  public:
+  // TODO(crbug.com/393539884): Support context for shared workers
+  // (RenderProcessHost ID).
+  using Context = std::variant<const raw_ptr<RenderFrameHost>>;
+
   ~DirectSocketsServiceImpl() override;
 
   static void CreateForFrame(
@@ -104,11 +108,7 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       base::OnceCallback<void(int32_t, const std::optional<net::IPEndPoint>&)>
           callback);
 
-  RenderFrameHost& render_frame_host() const { return *context_; }
-
-  // Always outlives `this`. Not a `raw_ref` to allow integrating service worker
-  // support at a later stage (in this case there will be no render frame host).
-  const raw_ptr<RenderFrameHost> context_;
+  Context context_;
   std::unique_ptr<network::SimpleHostResolver> resolver_;
 
 #if BUILDFLAG(IS_CHROMEOS)
