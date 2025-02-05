@@ -885,12 +885,6 @@ void InProcessBrowserTest::PostRunTestOnMainThread() {
   autorelease_pool_->Recycle();
 #endif
 
-  // Sometimes tests leave Quit tasks in the MessageLoop (for shame), so let's
-  // run all pending messages here to avoid preempting the QuitBrowsers tasks.
-  // TODO(crbug.com/41435726): Remove this once it is no longer possible
-  // to post QuitCurrent* tasks.
-  content::RunAllPendingInMessageLoop();
-
   QuitBrowsers();
 
   // BrowserList should be empty at this point.
