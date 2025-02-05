@@ -239,6 +239,8 @@ component("headless_non_renderer") {
     "lib/browser/command_line_handler.h",
     "lib/browser/directory_enumerator.cc",
     "lib/browser/directory_enumerator.h",
+    "lib/browser/headless_bluetooth_delegate.cc",
+    "lib/browser/headless_bluetooth_delegate.h",
     "lib/browser/headless_browser_context_impl.cc",
     "lib/browser/headless_browser_context_impl.h",
     "lib/browser/headless_browser_context_options.cc",

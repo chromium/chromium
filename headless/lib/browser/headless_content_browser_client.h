@@ -18,6 +18,7 @@
 
 namespace headless {
 
+class HeadlessBluetoothDelegate;
 class HeadlessBrowserImpl;
 
 class HeadlessContentBrowserClient : public content::ContentBrowserClient {
@@ -148,6 +149,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldSandboxNetworkService() override;
 
+  content::BluetoothDelegate* GetBluetoothDelegate() override;
+
  private:
   class StubBadgeService;
 
@@ -162,6 +165,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   raw_ptr<HeadlessBrowserImpl> browser_;  // Not owned.
 
   std::unique_ptr<StubBadgeService> stub_badge_service_;
+
+  std::unique_ptr<HeadlessBluetoothDelegate> bluetooth_delegate_;
 };
 
 }  // namespace headless
