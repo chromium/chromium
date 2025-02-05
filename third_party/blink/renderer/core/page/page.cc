@@ -139,6 +139,29 @@ void SetSafeAreaEnvVariables(LocalFrame* frame,
                    StyleEnvironmentVariables::FormatFloatPx(safe_area.right()));
 }
 
+// static
+void SetSafeAreaMaxEnvVariables(
+    LocalFrame* frame,
+    const gfx::InsetsF& safe_area_max_in_physical_px) {
+  gfx::InsetsF safe_area_max = ScaleInsets(safe_area_max_in_physical_px,
+                                           1.0f / frame->LayoutZoomFactor());
+
+  DocumentStyleEnvironmentVariables& vars =
+      frame->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
+  vars.SetVariable(
+      UADefinedVariable::kSafeAreaMaxInsetTop,
+      StyleEnvironmentVariables::FormatFloatPx(safe_area_max.top()));
+  vars.SetVariable(
+      UADefinedVariable::kSafeAreaMaxInsetLeft,
+      StyleEnvironmentVariables::FormatFloatPx(safe_area_max.left()));
+  vars.SetVariable(
+      UADefinedVariable::kSafeAreaMaxInsetBottom,
+      StyleEnvironmentVariables::FormatFloatPx(safe_area_max.bottom()));
+  vars.SetVariable(
+      UADefinedVariable::kSafeAreaMaxInsetRight,
+      StyleEnvironmentVariables::FormatFloatPx(safe_area_max.right()));
+}
+
 }  // namespace
 
 // Function defined in third_party/blink/public/web/blink.h.
@@ -992,7 +1015,9 @@ void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
     applied_safe_area_insets_ = scaled_max_safe_area_insets_;
     SetSafeAreaEnvVariables(setter, scaled_max_safe_area_insets_);
   }
-  // TODO(crbug.com/391621941): Set safe-area-max-inset-* variables.
+  if (RuntimeEnabledFeatures::CSSSafeAreaMaxInsetEnabled()) {
+    SetSafeAreaMaxEnvVariables(setter, scaled_max_safe_area_insets_);
+  }
 }
 
 void Page::SettingsChanged(ChangeType change_type) {
