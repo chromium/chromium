@@ -6,8 +6,8 @@
 
 #include "base/containers/contains.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
@@ -66,19 +66,19 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
     // We need to retain any preexisting settings, just adding new origins.
     const auto& allow_list =
         current_policy->GetAllowlistForFeature(policy_name);
-    std::set<blink::OriginWithPossibleWildcards> origin_set(
+    std::set<network::OriginWithPossibleWildcards> origin_set(
         allow_list.AllowedOrigins().begin(), allow_list.AllowedOrigins().end());
     for (const auto& origin : pair.second) {
       if (auto origin_with_possible_wildcards =
-              blink::OriginWithPossibleWildcards::FromOrigin(origin);
+              network::OriginWithPossibleWildcards::FromOrigin(origin);
           origin_with_possible_wildcards.has_value()) {
         origin_set.insert(*origin_with_possible_wildcards);
       }
     }
     auto declaration = ParsedPermissionsPolicyDeclaration(
         policy_name,
-        std::vector<blink::OriginWithPossibleWildcards>(origin_set.begin(),
-                                                        origin_set.end()),
+        std::vector<network::OriginWithPossibleWildcards>(origin_set.begin(),
+                                                          origin_set.end()),
         allow_list.SelfIfMatches(), allow_list.MatchesAll(),
         allow_list.MatchesOpaqueSrc());
     container_policy.push_back(declaration);
@@ -143,7 +143,7 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
         maybe_window_allow_list.value().MatchesAll();
     merged_policy.matches_opaque_src |=
         maybe_window_allow_list.value().MatchesOpaqueSrc();
-    std::set<blink::OriginWithPossibleWildcards> origin_set;
+    std::set<network::OriginWithPossibleWildcards> origin_set;
     if (!merged_policy.matches_all_origins) {
       origin_set.insert(merged_policy.allowed_origins.begin(),
                         merged_policy.allowed_origins.end());

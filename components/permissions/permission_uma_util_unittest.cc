@@ -30,6 +30,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,10 +56,11 @@ blink::ParsedPermissionsPolicy CreatePermissionsPolicy(
     network::mojom::PermissionsPolicyFeature feature,
     const std::vector<std::string>& origins,
     bool matches_all_origins = false) {
-  std::vector<blink::OriginWithPossibleWildcards> allow_origins;
+  std::vector<network::OriginWithPossibleWildcards> allow_origins;
   for (const auto& origin : origins) {
-    allow_origins.emplace_back(*blink::OriginWithPossibleWildcards::FromOrigin(
-        url::Origin::Create(GURL(origin))));
+    allow_origins.emplace_back(
+        *network::OriginWithPossibleWildcards::FromOrigin(
+            url::Origin::Create(GURL(origin))));
   }
   return {{feature, allow_origins, /*self_if_matches=*/std::nullopt,
            matches_all_origins,

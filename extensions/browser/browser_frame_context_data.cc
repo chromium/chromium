@@ -11,6 +11,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace extensions {
 

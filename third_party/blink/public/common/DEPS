@@ -24,6 +24,7 @@ include_rules = [
     "+services/network/public/cpp/resource_request_body.h",
     "+services/network/public/cpp/shared_url_loader_factory.h",
     "+services/network/public/cpp/web_sandbox_flags.h",
+    "+services/network/public/cpp/permissions_policy",
     "+services/network/public/mojom",
     "+services/network/public/mojom/permissions_policy",
     "+services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom.h",

@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -386,14 +387,14 @@ TEST_F(PermissionsPolicyTest,
   ASSERT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
   ParsedPermissionsPolicy frame_policy = {
       {{kDefaultOffFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_a_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false},
        {kDefaultOffFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -441,7 +442,7 @@ TEST_F(PermissionsPolicyTest,
       nullptr,
       {{{kDefaultOffFeature,
          /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_a_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/origin_a_,
@@ -453,7 +454,7 @@ TEST_F(PermissionsPolicyTest,
   {
     ParsedPermissionsPolicy frame_policy = {{
         {kDefaultOffFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_a_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -492,14 +493,14 @@ TEST_F(PermissionsPolicyTest,
   // subframe.
   ParsedPermissionsPolicy header_policy = {{
       {kDefaultOnFeature, /*allowed_origins=*/
-       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_b_,
            /*has_subdomain_wildcard=*/false)},
        /*self_if_matches=*/std::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},
       {kDefaultSelfFeature, /*allowed_origins=*/
-       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_b_,
            /*has_subdomain_wildcard=*/false)},
        /*self_if_matches=*/std::nullopt,
@@ -559,7 +560,7 @@ TEST_F(PermissionsPolicyTest,
   ASSERT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
   ParsedPermissionsPolicy frame_policy = {
       {{kDefaultOffFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -694,7 +695,7 @@ TEST_F(PermissionsPolicyTest, TestSelectiveFrameInheritance) {
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -733,7 +734,7 @@ TEST_F(PermissionsPolicyTest, TestSelectiveFrameInheritance2) {
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -742,7 +743,7 @@ TEST_F(PermissionsPolicyTest, TestSelectiveFrameInheritance2) {
       origin_a_);
   ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -926,7 +927,7 @@ TEST_F(PermissionsPolicyTest, TestEnableForAllOriginsAndDelegate) {
                              origin_a_);
   ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -958,7 +959,7 @@ TEST_F(PermissionsPolicyTest, TestDefaultOnStillNeedsSelf) {
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultOnFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -994,7 +995,7 @@ TEST_F(PermissionsPolicyTest, TestDefaultOnEnablesForAllDescendants) {
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultOnFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/origin_a_,
@@ -1030,7 +1031,7 @@ TEST_F(PermissionsPolicyTest, TestDefaultSelfRequiresDelegation) {
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -1067,7 +1068,7 @@ TEST_F(PermissionsPolicyTest, TestDefaultSelfRespectsSameOriginEmbedding) {
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/origin_a_,
@@ -1218,18 +1219,19 @@ TEST_F(PermissionsPolicyTest, TestEnabledFrameCanDelegateByDefault) {
   // | +--------------------+ +--------------------+ |
   // +-----------------------------------------------+
   // Feature should be enabled in frames 1, 2, and 3, and disabled in frame 4.
-  std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
-      nullptr,
-      {{
-          {kDefaultOnFeature, /*allowed_origins=*/
-           {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-               origin_b_,
-               /*has_subdomain_wildcard=*/false)},
-           /*self_if_matches=*/origin_a_,
-           /*matches_all_origins=*/false,
-           /*matches_opaque_src=*/false},
-      }},
-      origin_a_);
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr,
+                             {{
+                                 {kDefaultOnFeature, /*allowed_origins=*/
+                                  {*network::OriginWithPossibleWildcards::
+                                       FromOriginAndWildcardsForTest(
+                                           origin_b_,
+                                           /*has_subdomain_wildcard=*/false)},
+                                  /*self_if_matches=*/origin_a_,
+                                  /*matches_all_origins=*/false,
+                                  /*matches_opaque_src=*/false},
+                             }},
+                             origin_a_);
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentPolicy(policy1.get(), /*header_policy=*/{}, origin_b_);
   std::unique_ptr<PermissionsPolicy> policy3 =
@@ -1260,7 +1262,7 @@ TEST_F(PermissionsPolicyTest, TestFeaturesDontDelegateByDefault) {
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/origin_a_,
@@ -1301,7 +1303,7 @@ TEST_F(PermissionsPolicyTest, TestFeaturesAreIndependent) {
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/origin_a_,
@@ -1315,7 +1317,7 @@ TEST_F(PermissionsPolicyTest, TestFeaturesAreIndependent) {
       origin_a_);
   ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/origin_a_,
@@ -1329,7 +1331,7 @@ TEST_F(PermissionsPolicyTest, TestFeaturesAreIndependent) {
       policy1.get(), /*header_policy=*/{}, frame_policy, origin_b_);
   ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_c_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/origin_a_,
@@ -1370,7 +1372,7 @@ TEST_F(PermissionsPolicyTest, TestSimpleFramePolicy) {
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
   ParsedPermissionsPolicy frame_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -1444,7 +1446,7 @@ TEST_F(PermissionsPolicyTest, TestFramePolicyCanBeFurtherDelegated) {
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
   ParsedPermissionsPolicy frame_policy1 = {{
       {kDefaultSelfFeature, /*allowed_origins=*/
-       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_b_,
            /*has_subdomain_wildcard=*/false)},
        /*self_if_matches=*/std::nullopt,
@@ -1455,7 +1457,7 @@ TEST_F(PermissionsPolicyTest, TestFramePolicyCanBeFurtherDelegated) {
       policy1.get(), /*header_policy=*/{}, frame_policy1, origin_b_);
   ParsedPermissionsPolicy frame_policy2 = {{
       {kDefaultSelfFeature, /*allowed_origins=*/
-       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_c_,
            /*has_subdomain_wildcard=*/false)},
        /*self_if_matches=*/std::nullopt,
@@ -1549,18 +1551,19 @@ TEST_F(PermissionsPolicyTest, TestFramePolicyModifiesHeaderPolicy) {
   // by frame policy, even though the parent frame's header policy would
   // otherwise enable it. This is true regardless of the child frame's header
   // policy.
-  std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
-      nullptr,
-      {{
-          {kDefaultSelfFeature, /*allowed_origins=*/
-           {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-               origin_b_,
-               /*has_subdomain_wildcard=*/false)},
-           /*self_if_matches=*/origin_a_,
-           /*matches_all_origins=*/false,
-           /*matches_opaque_src=*/false},
-      }},
-      origin_a_);
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr,
+                             {{
+                                 {kDefaultSelfFeature, /*allowed_origins=*/
+                                  {*network::OriginWithPossibleWildcards::
+                                       FromOriginAndWildcardsForTest(
+                                           origin_b_,
+                                           /*has_subdomain_wildcard=*/false)},
+                                  /*self_if_matches=*/origin_a_,
+                                  /*matches_all_origins=*/false,
+                                  /*matches_opaque_src=*/false},
+                             }},
+                             origin_a_);
   ParsedPermissionsPolicy frame_policy1 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/{},
         /*self_if_matches=*/std::nullopt,
@@ -1618,7 +1621,7 @@ TEST_F(PermissionsPolicyTest, TestCombineFrameAndHeaderPolicies) {
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
   ParsedPermissionsPolicy frame_policy1 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -1677,7 +1680,7 @@ TEST_F(PermissionsPolicyTest, TestFeatureDeclinedAtTopLevel) {
                              origin_a_);
   ParsedPermissionsPolicy frame_policy1 = {{
       {kDefaultSelfFeature, /*allowed_origins=*/
-       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_b_,
            /*has_subdomain_wildcard=*/false)},
        /*self_if_matches=*/std::nullopt,
@@ -1729,7 +1732,7 @@ TEST_F(PermissionsPolicyTest, TestFeatureDelegatedAndAllowed) {
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/origin_a_,
@@ -1738,7 +1741,7 @@ TEST_F(PermissionsPolicyTest, TestFeatureDelegatedAndAllowed) {
       origin_a_);
   ParsedPermissionsPolicy frame_policy1 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_a_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -1748,7 +1751,7 @@ TEST_F(PermissionsPolicyTest, TestFeatureDelegatedAndAllowed) {
       policy1.get(), /*header_policy=*/{}, frame_policy1, origin_b_);
   ParsedPermissionsPolicy frame_policy2 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -2361,25 +2364,27 @@ TEST_F(PermissionsPolicyTest,
     // |                          sharedStorageWritable: true}) |
     // +--------------------------------------------------------+
 
-    std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
-        nullptr,
-        {{{network::mojom::PermissionsPolicyFeature::
-               kBrowsingTopics, /*allowed_origins=*/
-           {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-               origin_b_,
-               /*has_subdomain_wildcard=*/false)},
-           /*self_if_matches=*/std::nullopt,
-           /*matches_all_origins=*/false,
-           /*matches_opaque_src=*/false},
-          {network::mojom::PermissionsPolicyFeature::
-               kSharedStorage, /*allowed_origins=*/
-           {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-               origin_b_,
-               /*has_subdomain_wildcard=*/false)},
-           /*self_if_matches=*/std::nullopt,
-           /*matches_all_origins=*/false,
-           /*matches_opaque_src=*/false}}},
-        origin_a_);
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr,
+                               {{{network::mojom::PermissionsPolicyFeature::
+                                      kBrowsingTopics, /*allowed_origins=*/
+                                  {*network::OriginWithPossibleWildcards::
+                                       FromOriginAndWildcardsForTest(
+                                           origin_b_,
+                                           /*has_subdomain_wildcard=*/false)},
+                                  /*self_if_matches=*/std::nullopt,
+                                  /*matches_all_origins=*/false,
+                                  /*matches_opaque_src=*/false},
+                                 {network::mojom::PermissionsPolicyFeature::
+                                      kSharedStorage, /*allowed_origins=*/
+                                  {*network::OriginWithPossibleWildcards::
+                                       FromOriginAndWildcardsForTest(
+                                           origin_b_,
+                                           /*has_subdomain_wildcard=*/false)},
+                                  /*self_if_matches=*/std::nullopt,
+                                  /*matches_all_origins=*/false,
+                                  /*matches_opaque_src=*/false}}},
+                               origin_a_);
 
     EXPECT_FALSE(policy->IsFeatureEnabledForSubresourceRequest(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin_a_,
@@ -2575,17 +2580,18 @@ TEST_F(PermissionsPolicyTest,
     // | fetch(<Origin C's url>, {sharedStorageWritable: true}) |
     // +--------------------------------------------------------+
 
-    std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
-        nullptr,
-        {{{network::mojom::PermissionsPolicyFeature::
-               kSharedStorage, /*allowed_origins=*/
-           {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-               origin_b_,
-               /*has_subdomain_wildcard=*/false)},
-           /*self_if_matches=*/std::nullopt,
-           /*matches_all_origins=*/false,
-           /*matches_opaque_src=*/false}}},
-        origin_a_);
+    std::unique_ptr<PermissionsPolicy> policy =
+        CreateFromParentPolicy(nullptr,
+                               {{{network::mojom::PermissionsPolicyFeature::
+                                      kSharedStorage, /*allowed_origins=*/
+                                  {*network::OriginWithPossibleWildcards::
+                                       FromOriginAndWildcardsForTest(
+                                           origin_b_,
+                                           /*has_subdomain_wildcard=*/false)},
+                                  /*self_if_matches=*/std::nullopt,
+                                  /*matches_all_origins=*/false,
+                                  /*matches_opaque_src=*/false}}},
+                               origin_a_);
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
         network::mojom::PermissionsPolicyFeature::kSharedStorage, origin_a_));
@@ -2697,7 +2703,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestCompletelyBlockedPolicy) {
 
   ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -2709,7 +2715,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestCompletelyBlockedPolicy) {
 
   ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_c_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -2777,7 +2783,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestDisallowedCrossOriginChildPolicy) {
   // This is a critical change from the existing semantics.
   ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -2789,7 +2795,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestDisallowedCrossOriginChildPolicy) {
 
   ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_c_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -2832,7 +2838,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestAllowedCrossOriginChildPolicy) {
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/origin_a_,
@@ -2860,7 +2866,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestAllowedCrossOriginChildPolicy) {
 
   ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -2872,7 +2878,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestAllowedCrossOriginChildPolicy) {
 
   ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_c_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -2940,7 +2946,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestAllAllowedCrossOriginChildPolicy) {
 
   ParsedPermissionsPolicy frame_policy5 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -2952,7 +2958,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestAllAllowedCrossOriginChildPolicy) {
 
   ParsedPermissionsPolicy frame_policy6 = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_c_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -2983,7 +2989,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestNestedPolicyPropagates) {
   std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/origin_a_,
@@ -3068,10 +3074,10 @@ TEST_F(PermissionsPolicyTest, CreateForSharedStorageFencedFrame) {
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicy) {
   ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_a_,
              /*has_subdomain_wildcard=*/false),
-         *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         *network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -3087,7 +3093,7 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicy) {
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyExcludingSelf) {
   ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -3115,12 +3121,12 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithBasePolicy) {
   ParsedPermissionsPolicy base_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {
-            *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-                origin_a_,
-                /*has_subdomain_wildcard=*/false),
-            *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-                origin_b_,
-                /*has_subdomain_wildcard=*/false),
+            *network::OriginWithPossibleWildcards::
+                FromOriginAndWildcardsForTest(origin_a_,
+                                              /*has_subdomain_wildcard=*/false),
+            *network::OriginWithPossibleWildcards::
+                FromOriginAndWildcardsForTest(origin_b_,
+                                              /*has_subdomain_wildcard=*/false),
         },
         /*self_if_matches=*/origin_self,
         /*matches_all_origins=*/false,
@@ -3128,12 +3134,12 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithBasePolicy) {
   ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
         {
-            *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-                origin_b_,
-                /*has_subdomain_wildcard=*/false),
-            *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
-                origin_c_,
-                /*has_subdomain_wildcard=*/false),
+            *network::OriginWithPossibleWildcards::
+                FromOriginAndWildcardsForTest(origin_b_,
+                                              /*has_subdomain_wildcard=*/false),
+            *network::OriginWithPossibleWildcards::
+                FromOriginAndWildcardsForTest(origin_c_,
+                                              /*has_subdomain_wildcard=*/false),
         },
         /*self_if_matches=*/origin_self,
         /*matches_all_origins=*/false,
@@ -3188,7 +3194,7 @@ TEST_F(PermissionsPolicyTest,
        CreateFromParsedPolicyWildcardWithMoreRestrictiveBasePolicy) {
   ParsedPermissionsPolicy base_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_b_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/origin_a_,
@@ -3216,7 +3222,7 @@ TEST_F(PermissionsPolicyTest, CreateFromParsedPolicyWithWildcardBasePolicy) {
         /*matches_opaque_src=*/false}}};
   ParsedPermissionsPolicy parsed_policy = {
       {{kDefaultSelfFeature, /*allowed_origins=*/
-        {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             origin_a_,
             /*has_subdomain_wildcard=*/false)},
         /*self_if_matches=*/std::nullopt,
@@ -3256,7 +3262,7 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
       nullptr,
       {{{network::mojom::PermissionsPolicyFeature::kClientHintDPR,
          /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -3266,7 +3272,7 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
   policy1 = policy1->WithClientHints(
       {{{network::mojom::PermissionsPolicyFeature::kClientHintDPR,
          /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_a_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -3280,7 +3286,7 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
       nullptr,
       {{{network::mojom::PermissionsPolicyFeature::kClientHintDPR,
          /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_a_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -3290,7 +3296,7 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
   policy2 = policy2->WithClientHints(
       {{{network::mojom::PermissionsPolicyFeature::kClientHintDPR,
          /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -3303,7 +3309,7 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
   auto policy3 = CreateFromParentPolicy(
       nullptr,
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_b_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -3313,7 +3319,7 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
   policy3 = policy3->WithClientHints(
       {{{network::mojom::PermissionsPolicyFeature::kClientHintDPR,
          /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_a_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -3326,7 +3332,7 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
   auto policy4 = CreateFromParentPolicy(nullptr, {}, origin_a_);
   EXPECT_DCHECK_DEATH(policy4->WithClientHints(
       {{{kDefaultSelfFeature, /*allowed_origins=*/
-         {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+         {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
              origin_a_,
              /*has_subdomain_wildcard=*/false)},
          /*self_if_matches=*/std::nullopt,
@@ -3335,8 +3341,8 @@ TEST_F(PermissionsPolicyTest, OverwriteHeaderPolicyForClientHints) {
 }
 
 TEST_F(PermissionsPolicyTest, GetAllowlistForFeatureIfExists) {
-  const std::vector<blink::OriginWithPossibleWildcards> origins1(
-      {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+  const std::vector<network::OriginWithPossibleWildcards> origins1(
+      {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
           origin_b_,
           /*has_subdomain_wildcard=*/false)});
   // If we set a policy, then we can extract it.
@@ -3362,8 +3368,8 @@ TEST_F(PermissionsPolicyTest, GetAllowlistForFeatureIfExists) {
       network::mojom::PermissionsPolicyFeature::kClientHintDPR);
   EXPECT_FALSE(maybe_allow_list2.has_value());
 
-  const std::vector<blink::OriginWithPossibleWildcards> origins3(
-      {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+  const std::vector<network::OriginWithPossibleWildcards> origins3(
+      {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
           origin_a_,
           /*has_subdomain_wildcard=*/false)});
   // If we set a policy, then overwrite it, we can extract it.
@@ -3391,11 +3397,11 @@ TEST_F(PermissionsPolicyTest, GetAllowlistForFeatureIfExists) {
   // If we don't set a policy, then overwrite it, we can extract it.
   auto policy4 =
       CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
-  const std::vector<blink::OriginWithPossibleWildcards> origins4(
-      {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+  const std::vector<network::OriginWithPossibleWildcards> origins4(
+      {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_a_,
            /*has_subdomain_wildcard=*/false),
-       *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       *network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
            origin_b_,
            /*has_subdomain_wildcard=*/false)});
   policy4 = policy4->WithClientHints(

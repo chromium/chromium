@@ -10,8 +10,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -115,10 +115,10 @@ class ParsingContext {
 
   std::optional<ParsedPermissionsPolicyDeclaration> ParseFeature(
       const PermissionsPolicyParser::Declaration& declaration_node,
-      const OriginWithPossibleWildcards::NodeType type);
+      const network::OriginWithPossibleWildcards::NodeType type);
 
   struct ParsedAllowlist {
-    std::vector<blink::OriginWithPossibleWildcards> allowed_origins
+    std::vector<network::OriginWithPossibleWildcards> allowed_origins
         ALLOW_DISCOURAGED_TYPE("Permission policy uses STL for code sharing");
     std::optional<url::Origin> self_if_matches;
     bool matches_all_origins{false};
@@ -133,7 +133,7 @@ class ParsingContext {
   // Parse allowlist for feature.
   ParsedAllowlist ParseAllowlist(
       const Vector<String>& origin_strings,
-      const OriginWithPossibleWildcards::NodeType type);
+      const network::OriginWithPossibleWildcards::NodeType type);
 
   void ReportFeatureUsage(network::mojom::PermissionsPolicyFeature feature);
   void ReportFeatureUsageLegacy(
@@ -212,10 +212,10 @@ ParsingContext::ParseFeatureName(const String& feature_name) {
 
 ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     const Vector<String>& origin_strings,
-    const OriginWithPossibleWildcards::NodeType type) {
+    const network::OriginWithPossibleWildcards::NodeType type) {
   // The source of the PermissionsPolicyParser::Node must have an explicit
   // source so that we know which wildcards can be enabled.
-  DCHECK_NE(OriginWithPossibleWildcards::NodeType::kUnknown, type);
+  DCHECK_NE(network::OriginWithPossibleWildcards::NodeType::kUnknown, type);
   ParsedAllowlist allowlist;
   if (origin_strings.empty()) {
     // If a policy entry has no listed origins (e.g. "feature_name1" in
@@ -228,9 +228,9 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     if (!src_origin_) {
       allowlist.self_if_matches = self_origin_->ToUrlOrigin();
     } else if (!src_origin_->IsOpaque()) {
-      std::optional<OriginWithPossibleWildcards>
+      std::optional<network::OriginWithPossibleWildcards>
           maybe_origin_with_possible_wildcards =
-              OriginWithPossibleWildcards::FromOrigin(
+              network::OriginWithPossibleWildcards::FromOrigin(
                   src_origin_->ToUrlOrigin());
       if (maybe_origin_with_possible_wildcards.has_value()) {
         allowlist.allowed_origins.emplace_back(
@@ -253,7 +253,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       // 'self' or 'src'. ('src' can only be used in the iframe allow
       // attribute.) Also determine if this target has a subdomain wildcard
       // (e.g., https://*.google.com).
-      OriginWithPossibleWildcards origin_with_possible_wildcards;
+      network::OriginWithPossibleWildcards origin_with_possible_wildcards;
 
       // If the iframe will have an opaque origin (for example, if it is
       // sandboxed, or has a data: URL), then 'src' needs to refer to the
@@ -275,9 +275,9 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       // when parsing an iframe allow attribute.
       else if (src_origin_ && EqualIgnoringASCIICase(origin_string, "'src'")) {
         if (!src_origin_->IsOpaque()) {
-          std::optional<OriginWithPossibleWildcards>
+          std::optional<network::OriginWithPossibleWildcards>
               maybe_origin_with_possible_wildcards =
-                  OriginWithPossibleWildcards::FromOrigin(
+                  network::OriginWithPossibleWildcards::FromOrigin(
                       src_origin_->ToUrlOrigin());
           if (maybe_origin_with_possible_wildcards.has_value()) {
             origin_with_possible_wildcards =
@@ -297,9 +297,10 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       // valid. Invalid strings will produce an opaque origin, which will
       // result in an error message.
       else {
-        std::optional<OriginWithPossibleWildcards>
+        std::optional<network::OriginWithPossibleWildcards>
             maybe_origin_with_possible_wildcards =
-                OriginWithPossibleWildcards::Parse(origin_string.Utf8(), type);
+                network::OriginWithPossibleWildcards::Parse(
+                    origin_string.Utf8(), type);
         if (maybe_origin_with_possible_wildcards.has_value()) {
           origin_with_possible_wildcards =
               *maybe_origin_with_possible_wildcards;
@@ -335,7 +336,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
 
 std::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
     const PermissionsPolicyParser::Declaration& declaration_node,
-    const OriginWithPossibleWildcards::NodeType type) {
+    const network::OriginWithPossibleWildcards::NodeType type) {
   std::optional<network::mojom::PermissionsPolicyFeature> feature =
       ParseFeatureName(declaration_node.feature_name);
   if (!feature) {
@@ -393,7 +394,7 @@ ParsedPermissionsPolicy ParsingContext::ParsePolicyFromNode(
 PermissionsPolicyParser::Node ParsingContext::ParseFeaturePolicyToIR(
     const String& policy) {
   PermissionsPolicyParser::Node root{
-      OriginWithPossibleWildcards::NodeType::kAttribute};
+      network::OriginWithPossibleWildcards::NodeType::kAttribute};
 
   if (policy.length() > MAX_LENGTH_PARSE) {
     logger_.Error("Feature policy declaration exceeds size limit(" +
@@ -474,7 +475,7 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
   }
 
   PermissionsPolicyParser::Node ir_root{
-      OriginWithPossibleWildcards::NodeType::kHeader};
+      network::OriginWithPossibleWildcards::NodeType::kHeader};
   for (const auto& feature_entry : root.value()) {
     const auto& key = feature_entry.first;
     const char* feature_name = key.c_str();

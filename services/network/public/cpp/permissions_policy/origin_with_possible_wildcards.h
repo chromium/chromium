@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_ORIGIN_WITH_POSSIBLE_WILDCARDS_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_ORIGIN_WITH_POSSIBLE_WILDCARDS_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_ORIGIN_WITH_POSSIBLE_WILDCARDS_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_ORIGIN_WITH_POSSIBLE_WILDCARDS_H_
 
+#include "base/component_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "url/origin.h"
 
-namespace blink {
+namespace network {
 
 // This struct can represent an origin like https://foo.com/ or like
 // https://*.foo.com/. The wildcard can only represent a subdomain.
 // Note that https://*.foo.com/ matches domains like https://example.foo.com/
 // or https://test.example.foo.com/ but does not match https://foo.com/.
 // Origins that do have wildcards cannot be opaque.
-class BLINK_COMMON_EXPORT OriginWithPossibleWildcards {
+class COMPONENT_EXPORT(NETWORK_CPP) OriginWithPossibleWildcards {
  public:
   // Indicates the source of a parsed permissions policy. kHeader represents a
   // permissions policy in an HTTP header. kAttribute represents an iframe allow
@@ -77,21 +77,21 @@ class BLINK_COMMON_EXPORT OriginWithPossibleWildcards {
 
  private:
   friend struct mojo::StructTraits<
-      blink::mojom::OriginWithPossibleWildcardsDataView,
-      blink::OriginWithPossibleWildcards>;
-  BLINK_COMMON_EXPORT
+      network::mojom::OriginWithPossibleWildcardsDataView,
+      network::OriginWithPossibleWildcards>;
+  COMPONENT_EXPORT(NETWORK_CPP)
   friend bool operator==(const OriginWithPossibleWildcards& lhs,
                          const OriginWithPossibleWildcards& rhs);
-  BLINK_COMMON_EXPORT
+  COMPONENT_EXPORT(NETWORK_CPP)
   friend bool operator!=(const OriginWithPossibleWildcards& lhs,
                          const OriginWithPossibleWildcards& rhs);
-  BLINK_COMMON_EXPORT
+  COMPONENT_EXPORT(NETWORK_CPP)
   friend bool operator<(const OriginWithPossibleWildcards& lhs,
                         const OriginWithPossibleWildcards& rhs);
 
   network::mojom::CSPSource csp_source;
 };
 
-}  // namespace blink
+}  // namespace network
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_ORIGIN_WITH_POSSIBLE_WILDCARDS_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_ORIGIN_WITH_POSSIBLE_WILDCARDS_H_

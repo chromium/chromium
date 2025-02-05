@@ -17,6 +17,7 @@
 #include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
@@ -175,13 +176,13 @@ class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
     policy.emplace_back(
         network::mojom::PermissionsPolicyFeature::kBrowsingTopics,
         /*allowed_origins=*/
-        std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+        std::vector{*network::OriginWithPossibleWildcards::FromOrigin(
                         url::Origin::Create(GURL("https://google.com"))),
-                    *blink::OriginWithPossibleWildcards::FromOrigin(
+                    *network::OriginWithPossibleWildcards::FromOrigin(
                         url::Origin::Create(GURL("https://foo1.com"))),
-                    *blink::OriginWithPossibleWildcards::FromOrigin(
+                    *network::OriginWithPossibleWildcards::FromOrigin(
                         url::Origin::Create(GURL("https://foo2.com"))),
-                    *blink::OriginWithPossibleWildcards::FromOrigin(
+                    *network::OriginWithPossibleWildcards::FromOrigin(
                         url::Origin::Create(GURL("https://foo3.com")))},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,

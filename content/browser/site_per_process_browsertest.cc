@@ -141,6 +141,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "services/viz/privileged/mojom/compositing/features.mojom-features.h"
@@ -149,7 +150,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
 #include "third_party/blink/public/common/switches.h"
@@ -388,7 +388,7 @@ CreateParsedPermissionsPolicyDeclaration(
 
   for (const auto& origin : origins)
     declaration.allowed_origins.emplace_back(
-        *blink::OriginWithPossibleWildcards::FromOrigin(
+        *network::OriginWithPossibleWildcards::FromOrigin(
             url::Origin::Create(origin)));
 
   std::sort(declaration.allowed_origins.begin(),

@@ -36,9 +36,9 @@
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -486,10 +486,10 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {network::mojom::PermissionsPolicyFeature::kGamepad,
-       {*blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+       {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.com")),
             /*has_subdomain_wildcard=*/false),
-        *blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+        *network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
             url::Origin::Create(GURL("https://example.net")),
             /*has_subdomain_wildcard=*/true)},
        /*self_if_matches=*/std::nullopt,

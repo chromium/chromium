@@ -21,9 +21,9 @@
 #include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "url/gurl.h"
 
@@ -273,7 +273,7 @@ TEST_F(PEPCInitiatedPermissionRequestTest,
   frame_policy.emplace_back(
       network::mojom::PermissionsPolicyFeature::kMicrophone,
       /*allowed_origins=*/
-      std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+      std::vector{*network::OriginWithPossibleWildcards::FromOrigin(
           url::Origin::Create(origin()))},
       /*self_if_matches=*/std::nullopt, /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
@@ -302,7 +302,7 @@ TEST_F(PEPCInitiatedPermissionRequestTest,
   blink::ParsedPermissionsPolicy frame_policy;
   frame_policy.push_back({network::mojom::PermissionsPolicyFeature::kMicrophone,
                           /*allowed_origins=*/
-                          {*blink::OriginWithPossibleWildcards::FromOrigin(
+                          {*network::OriginWithPossibleWildcards::FromOrigin(
                               url::Origin::Create(GURL("http://fakeurl.com")))},
                           /*self_if_matches=*/std::nullopt,
                           /*matches_all_origins=*/false,

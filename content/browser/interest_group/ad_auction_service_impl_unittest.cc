@@ -91,6 +91,7 @@
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -9802,7 +9803,7 @@ function reportResult() {
   policy.emplace_back(
       network::mojom::PermissionsPolicyFeature::kSharedStorage,
       /*allowed_origins=*/
-      std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
+      std::vector{*network::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
       /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
@@ -10003,7 +10004,8 @@ function scoreAd(
     policy.emplace_back(
         network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
-        std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
+        std::vector{
+            *network::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -10028,8 +10030,9 @@ function scoreAd(
     policy.emplace_back(
         network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
-        std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
-                    *blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
+        std::vector{
+            *network::OriginWithPossibleWildcards::FromOrigin(kOriginA),
+            *network::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -10088,7 +10091,8 @@ function scoreAd(
     policy.emplace_back(
         network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
-        std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
+        std::vector{
+            *network::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -10113,8 +10117,9 @@ function scoreAd(
     policy.emplace_back(
         network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
-        std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
-                    *blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
+        std::vector{
+            *network::OriginWithPossibleWildcards::FromOrigin(kOriginA),
+            *network::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
         /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);

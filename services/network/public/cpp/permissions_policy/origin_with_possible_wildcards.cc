@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
 #include "services/network/public/cpp/cors/origin_access_entry.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace blink {
+namespace network {
 
 OriginWithPossibleWildcards::OriginWithPossibleWildcards() = default;
 
@@ -108,4 +109,4 @@ bool operator<(const OriginWithPossibleWildcards& lhs,
   return lhs.csp_source < rhs.csp_source;
 }
 
-}  // namespace blink
+}  // namespace network
