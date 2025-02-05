@@ -164,9 +164,7 @@ absl::Status BackgroundBlurCalculatorWebGpu::Open(
       .storageTexture =
           {
               .access = wgpu::StorageTextureAccess::WriteOnly,
-              // TODO(http://b/384572750): explore different texture formats,
-              // maybe we can reduce the number of copies needed.
-              .format = wgpu::TextureFormat::RGBA32Float,
+              .format = wgpu::TextureFormat::RGBA8Unorm,
               .viewDimension = wgpu::TextureViewDimension::e2D,
           },
   });
@@ -209,8 +207,7 @@ const DEBUG_MASK: bool = false;
 
 @group(0) @binding(0) var inputBuffer: texture_2d<f32>;
 @group(0) @binding(1) var inputMask: texture_2d<f32>;
-@group(0) @binding(2) var outputBuffer: texture_storage_2d<rgba32float, write>;
-
+@group(0) @binding(2) var outputBuffer: texture_storage_2d<rgba8unorm, write>;
 
 @compute @workgroup_size(kTileSize, kTileSize, 1)
 fn blur(@builtin(global_invocation_id) id: vec3<u32>) {
@@ -221,8 +218,6 @@ fn blur(@builtin(global_invocation_id) id: vec3<u32>) {
   let outputPosition: vec2<u32> = id.xy;
   var maskPosition: vec2<u32> = vec2<u32>(
     (vec2<f32>(outputPosition) / vec2<f32>(outputSize)) * vec2<f32>(maskSize));
-  // Mask is produced upside-down, so perform a y-flip:
-  maskPosition = vec2<u32>(maskPosition.x, maskSize.y - 1 - maskPosition.y);
 
   // We only have things to do if the mask coordinates all fall under the mask,
   // (i.e. `maskPosition.x < maskSize.x && maskPosition.y < maskSize.y`).

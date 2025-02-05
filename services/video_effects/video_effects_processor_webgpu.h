@@ -5,15 +5,17 @@
 #ifndef SERVICES_VIDEO_EFFECTS_VIDEO_EFFECTS_PROCESSOR_WEBGPU_H_
 #define SERVICES_VIDEO_EFFECTS_VIDEO_EFFECTS_PROCESSOR_WEBGPU_H_
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
+#include "services/video_effects/calculators/video_effects_graph_webgpu.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
-#include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
 #include "third_party/khronos/GLES2/gl2.h"
+#include "third_party/mediapipe/buildflags.h"
 
 namespace viz {
 class ContextProviderCommandBuffer;
@@ -56,6 +58,8 @@ class VideoEffectsProcessorWebGpu {
   // Ensures that awaiting WebGPUInterface commands are flushed.
   void EnsureFlush();
 
+  void OnFrameProcessed(wgpu::Texture texture);
+
   void QueryDone(
       GLuint query_id,
       uint64_t trace_id,
@@ -66,6 +70,10 @@ class VideoEffectsProcessorWebGpu {
       mojom::VideoEffectsProcessor::PostProcessCallback post_process_cb);
 
   wgpu::ComputePipeline CreateComputePipeline();
+  wgpu::RenderPipeline CreateRenderPipelineForTextureCopy(
+      wgpu::TextureFormat destination_format);
+
+  void MaybeInitializeInferenceEngine();
 
   wgpu::Device device_;
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
@@ -79,9 +87,17 @@ class VideoEffectsProcessorWebGpu {
 
   // Compute pipeline executing basic compute shader on a video frame.
   wgpu::ComputePipeline compute_pipeline_;
+  wgpu::RenderPipeline render_pipeline_texture_copy_into_rgbaf32_;
+  wgpu::RenderPipeline render_pipeline_texture_copy_into_rgba8unorm_;
 
   // WebGPU buffer that we use to send the parameters to our compute shader.
   wgpu::Buffer uniforms_buffer_;
+  // Uniforms buffer specifically for render pipelines for texture copy.
+  wgpu::Buffer texture_copy_uniforms_buffer_;
+
+#if BUILDFLAG(MEDIAPIPE_BUILD_WITH_GPU_SUPPORT)
+  std::unique_ptr<VideoEffectsGraphWebGpu> graph_;
+#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 
