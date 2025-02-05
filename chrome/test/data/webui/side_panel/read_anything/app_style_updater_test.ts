@@ -27,6 +27,7 @@ suite('AppStyleUpdater', () => {
   }
 
   setup(() => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();

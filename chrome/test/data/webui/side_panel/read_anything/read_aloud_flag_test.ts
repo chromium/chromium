@@ -15,6 +15,7 @@ suite('ReadAloudFlag', () => {
   let toolbar: ReadAnythingToolbarElement;
 
   setup(() => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;

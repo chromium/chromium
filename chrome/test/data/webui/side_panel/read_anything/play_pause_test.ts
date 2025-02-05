@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MetricsBrowserProxyImpl, ReadAnythingLogger, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
@@ -12,7 +11,6 @@ import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrom
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 
@@ -24,7 +22,7 @@ suite('PlayPause', () => {
   let clickEmitted: boolean;
 
   setup(() => {
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metrics = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metrics);

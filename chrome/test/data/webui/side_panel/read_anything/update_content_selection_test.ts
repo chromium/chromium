@@ -29,8 +29,9 @@ suite('UpdateContentSelection', () => {
   }
 
   setup(() => {
-    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
