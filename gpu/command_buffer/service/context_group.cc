@@ -69,7 +69,6 @@ DisallowedFeatures AdjustDisallowedFeatures(
 
 ContextGroup::ContextGroup(
     const GpuPreferences& gpu_preferences,
-    bool supports_passthrough_command_decoders,
     std::unique_ptr<MemoryTracker> memory_tracker,
     ShaderTranslatorCache* shader_translator_cache,
     FramebufferCompletenessCache* framebuffer_completeness_cache,
@@ -128,8 +127,7 @@ ContextGroup::ContextGroup(
       shared_image_manager_(shared_image_manager) {
   DCHECK(discardable_manager);
   DCHECK(feature_info_);
-  use_passthrough_cmd_decoder_ = supports_passthrough_command_decoders &&
-                                 gpu_preferences_.use_passthrough_cmd_decoder;
+  use_passthrough_cmd_decoder_ = gpu_preferences_.use_passthrough_cmd_decoder;
 }
 
 gpu::ContextResult ContextGroup::Initialize(
