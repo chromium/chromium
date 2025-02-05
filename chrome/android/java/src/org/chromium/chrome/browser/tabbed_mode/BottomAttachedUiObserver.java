@@ -19,6 +19,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
@@ -297,6 +299,16 @@ public class BottomAttachedUiObserver
         }
         if (mOmniboxSuggestionsVisible && mOmniboxSuggestionsColor != null) {
             return mOmniboxSuggestionsColor;
+        }
+
+        // A visible bottom toolbar should dictate the color even if there is a bottom sheet or
+        // overlay panel.
+        boolean isBottomToolbarVisible =
+                mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM
+                        && !BrowserControlsUtils.areBrowserControlsOffScreen(
+                                mBrowserControlsStateProvider);
+        if (isBottomToolbarVisible && mUseBottomControlsColor) {
+            return mBottomControlsColor;
         }
         // If drawing edge-to-edge only match the bottom sheet color if the bottom sheet extends
         // across the full width. Since the bottom sheet shows in the front, if it doesn't extend

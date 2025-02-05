@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,6 +38,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
@@ -624,6 +626,43 @@ public class BottomAttachedUiObserverTest {
         // Hide bottom controls - should fall back to the snackbar color.
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(0, 0);
         mColorChangeObserver.assertState(SNACKBAR_COLOR, false, false);
+    }
+
+    @Test
+    public void testColorPrioritization_bottomToolbar() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
+        doReturn(0.0f).when(mBrowserControlsStateProvider).getBrowserControlHiddenRatio();
+
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
+
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.PEEKED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
+
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        mBottomAttachedUiObserver.onSheetOpened(0);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
+
+        doReturn(1.0f).when(mBrowserControlsStateProvider).getBrowserControlHiddenRatio();
+
+        mBottomAttachedUiObserver.onSheetContentChanged(mBottomSheetContentYellowBackground);
+        mBottomAttachedUiObserver.onSheetOpened(0);
+        mColorChangeObserver.assertState(BOTTOM_SHEET_YELLOW, false, false);
+
+        doReturn(0.0f).when(mBrowserControlsStateProvider).getBrowserControlHiddenRatio();
+        doReturn(ControlsPosition.TOP).when(mBrowserControlsStateProvider).getControlsPosition();
+
+        mBottomAttachedUiObserver.onSheetClosed(0);
+        mColorChangeObserver.assertState(OVERLAY_PANEL_COLOR, false, false);
+
+        mBottomAttachedUiObserver.onOverlayPanelStateChanged(
+                OverlayPanel.PanelState.CLOSED, OVERLAY_PANEL_COLOR);
+        mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
     }
 
     @Test
