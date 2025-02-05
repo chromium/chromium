@@ -2480,7 +2480,6 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
   // We don't need to bring capture mode UIs back if `proceed` is false or if
   // the session is about to shutdown. See also
   // `CaptureModeBehavior::ShouldReShowUisAtPerformingCapture`.
-  // TODO(b/374381937): Determine whether to reshow UIs or end the session.
   auto* active_behavior = capture_mode_session_->active_behavior();
   capture_mode_session_->OnWaitingForDlpConfirmationEnded(
       /*reshow_uis=*/proceed &&
