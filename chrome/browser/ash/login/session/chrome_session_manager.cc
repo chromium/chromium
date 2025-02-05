@@ -472,13 +472,7 @@ void ChromeSessionManager::SessionStarted() {
   user_manager()->OnSessionStarted();
 }
 
-void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
-                                              const std::string& user_id_hash,
-                                              bool browser_restart,
-                                              bool is_child) {
-  session_manager::SessionManager::NotifyUserLoggedIn(
-      user_account_id, user_id_hash, browser_restart, is_child);
-
+void ChromeSessionManager::OnSessionCreated(bool browser_restart) {
   if (user_manager()->GetLoggedInUsers().size() == 1) {
     InitFeaturesSessionType(user_manager()->GetPrimaryUser());
   }

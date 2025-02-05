@@ -52,10 +52,7 @@ class ChromeSessionManager : public session_manager::SessionManager {
   // session_manager::SessionManager:
   void OnUserManagerCreated(user_manager::UserManager* user_manager) override;
   void SessionStarted() override;
-  void NotifyUserLoggedIn(const AccountId& user_account_id,
-                          const std::string& user_id_hash,
-                          bool browser_restart,
-                          bool is_child) override;
+  void OnSessionCreated(bool browser_restart) override;
 
   // user_manager::UserManager::Observer:
   void OnUsersSignInConstraintsChanged() override;
