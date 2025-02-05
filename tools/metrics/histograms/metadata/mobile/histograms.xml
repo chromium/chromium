@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.CopyImage" enum="ContextMenuIOSCopyImage"
-    expires_after="2025-03-10">
+    expires_after="2026-01-31">
   <owner>djean@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.EntryPoints" enum="IOSMenuScenario"
-    expires_after="2025-07-13">
+    expires_after="2026-01-31">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
@@ -114,13 +114,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.GetImageDataByJsResult"
-    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2024-06-30">
+    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2026-01-31">
   <owner>djean@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     Result of getting image data by JavaScript for CopyImage, SaveImage and
     SearchByImage from iOS context menu. Recorded when the JavaScript returns,
-    or fails for timeout.
+    or fails for timeout. Warning: data gap between 2024-07 - 2025-02.
   </summary>
 </histogram>
 

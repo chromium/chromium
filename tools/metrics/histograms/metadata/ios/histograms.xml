@@ -149,12 +149,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Annotations.UserTap.Cancelled" enum="Boolean"
-    expires_after="2024-08-08">
+    expires_after="2026-01-01">
   <owner>djean@google.com</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
     Whether or not a user tap on an annotation got cancelled because some other
-    script in the web page triggered some mutations on the same tap.
+    script in the web page triggered some mutations on the same tap. Warning:
+    Data gap between 2024-08 - 2025-02.
   </summary>
 </histogram>
 
@@ -1471,7 +1472,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.ExperienceKitCalendar.Present"
-    enum="ExperienceKitCalendarTypes" expires_after="2025-02-16">
+    enum="ExperienceKitCalendarTypes" expires_after="2026-01-31">
   <owner>djean@chromium.org</owner>
   <owner>erahmaoui@google.com</owner>
   <summary>
@@ -1480,7 +1481,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.ExperienceKitCalendar.Success"
-    enum="ExperienceKitCalendarTypes" expires_after="2025-04-01">
+    enum="ExperienceKitCalendarTypes" expires_after="2026-01-31">
   <owner>djean@chromium.org</owner>
   <owner>erahmaoui@google.com</owner>
   <summary>
@@ -1490,7 +1491,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.ExperienceKitCalendar.TextClassifierModelAvailable"
-    enum="BooleanAvailable" expires_after="2025-06-22">
+    enum="BooleanAvailable" expires_after="2026-01-31">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
