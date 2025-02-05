@@ -264,14 +264,14 @@ struct OperandInfo {
   OperandDataType type;
   std::vector<uint32_t> dimensions;
   std::vector<T> values;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(WEBNN_USE_COREML)
   OperandInfo<int32_t> ToInt32() {
     return OperandInfo<int32_t>{
         .type = OperandDataType::kInt32,
         .dimensions = dimensions,
         .values = std::vector<int32_t>(values.begin(), values.end())};
   }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(WEBNN_USE_COREML)
 };
 
 void VerifyIsEqual(base::span<const float> actual,
@@ -376,7 +376,7 @@ void WebNNGraphImplBackendTest::SetUp() {
 }
 #endif  // #if BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(WEBNN_USE_COREML)
 class WebNNGraphImplBackendTest : public testing::Test {
  public:
   WebNNGraphImplBackendTest()
@@ -420,10 +420,11 @@ void WebNNGraphImplBackendTest::SetUp() {
 
   SetUpBase();
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(WEBNN_USE_COREML)
 
 // TODO(crbug.com/325612086): Parameterize these tests for different backends.
-#if BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(WEBNN_USE_COREML) && \
+    !BUILDFLAG(IS_WIN)
 class WebNNGraphImplBackendTest : public testing::Test {
  public:
   WebNNGraphImplBackendTest()
@@ -1054,32 +1055,32 @@ struct ElementWiseBinaryTester {
     uint64_t rhs_operand_id =
         builder.BuildInput("rhs", rhs.dimensions, rhs.type);
     auto graph_output_type = output.type;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(WEBNN_USE_COREML)
     if (output.type == OperandDataType::kUint8) {
       // macOS only supports FP16,FP32,DOUBLE,INT32 as outputs of graph.
       // For testing, we cast the output of the element-wise logical
       // operators to Int32 and set the graph output to Int32.
       graph_output_type = OperandDataType::kInt32;
     }
-#endif  // BUILD_FLAG(IS_MAC)
+#endif  // BUILDFLAG(WEBNN_USE_COREML)
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, graph_output_type);
     uint64_t element_wise_binary_output_operand_id = output_operand_id;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(WEBNN_USE_COREML)
     if (output.type == OperandDataType::kUint8) {
       element_wise_binary_output_operand_id = builder.BuildIntermediateOperand(
           output.dimensions, OperandDataType::kUint8);
     }
-#endif  // BUILD_FLAG(IS_MAC)
+#endif  // BUILDFLAG(WEBNN_USE_COREML)
     builder.BuildElementWiseBinary(kind, lhs_operand_id, rhs_operand_id,
                                    element_wise_binary_output_operand_id);
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(WEBNN_USE_COREML)
     if (output.type == OperandDataType::kUint8) {
       builder.BuildElementWiseUnary(mojom::ElementWiseUnary::Kind::kCast,
                                     element_wise_binary_output_operand_id,
                                     output_operand_id);
     }
-#endif  // BUILD_FLAG(IS_MAC)
+#endif  // BUILDFLAG(WEBNN_USE_COREML)
 
     base::flat_map<std::string, base::span<const I>> named_inputs;
     named_inputs.insert({"lhs", lhs.values});
@@ -1088,12 +1089,12 @@ struct ElementWiseBinaryTester {
         BuildAndCompute<O>(std::move(remote), builder.TakeGraphInfo(),
                            std::move(named_inputs));
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(WEBNN_USE_COREML)
     if (output.type == OperandDataType::kUint8) {
       VerifyIsEqual(named_outputs["output"], output.ToInt32());
       return;
     }
-#endif  // BUILD_FLAG(IS_MAC)
+#endif  // BUILDFLAG(WEBNN_USE_COREML)
 
     VerifyIsEqual(named_outputs["output"], output);
   }

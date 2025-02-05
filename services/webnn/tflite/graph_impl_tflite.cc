@@ -26,7 +26,7 @@
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/queueable_resource_state_base.h"
 #include "services/webnn/resource_task.h"
-#include "services/webnn/tflite/buffer_content.h"
+#include "services/webnn/tflite/buffer_content_tflite.h"
 #include "services/webnn/tflite/context_impl_tflite.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/op_resolver.h"

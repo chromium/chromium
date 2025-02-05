@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_TFLITE_BUFFER_CONTENT_H_
-#define SERVICES_WEBNN_TFLITE_BUFFER_CONTENT_H_
+#ifndef SERVICES_WEBNN_TFLITE_BUFFER_CONTENT_TFLITE_H_
+#define SERVICES_WEBNN_TFLITE_BUFFER_CONTENT_TFLITE_H_
 
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
@@ -32,4 +32,4 @@ class BufferContent {
 
 }  // namespace webnn::tflite
 
-#endif  // SERVICES_WEBNN_TFLITE_BUFFER_CONTENT_H_
+#endif  // SERVICES_WEBNN_TFLITE_BUFFER_CONTENT_TFLITE_H_

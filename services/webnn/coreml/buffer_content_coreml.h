@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_COREML_BUFFER_CONTENT_H_
-#define SERVICES_WEBNN_COREML_BUFFER_CONTENT_H_
+#ifndef SERVICES_WEBNN_COREML_BUFFER_CONTENT_COREML_H_
+#define SERVICES_WEBNN_COREML_BUFFER_CONTENT_COREML_H_
 
 #include <CoreML/CoreML.h>
 
@@ -38,4 +38,4 @@ class API_AVAILABLE(macos(12.3)) BufferContent {
 
 }  // namespace webnn::coreml
 
-#endif  // SERVICES_WEBNN_COREML_BUFFER_CONTENT_H_
+#endif  // SERVICES_WEBNN_COREML_BUFFER_CONTENT_COREML_H_

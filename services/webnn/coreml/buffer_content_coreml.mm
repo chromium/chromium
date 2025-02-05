@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/webnn/coreml/buffer_content.h"
+#include "services/webnn/coreml/buffer_content_coreml.h"
 
 #import <CoreML/CoreML.h>
 
