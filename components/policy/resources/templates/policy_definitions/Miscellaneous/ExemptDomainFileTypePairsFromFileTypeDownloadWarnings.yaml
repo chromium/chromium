@@ -40,7 +40,7 @@ features:
 future_on:
 - fuchsia
 owners:
-- flowerhorne@google.com
+- chlily@chromium.org
 schema:
   items:
     $ref: DomainFiletypePair
