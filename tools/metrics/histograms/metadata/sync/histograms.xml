@@ -2119,17 +2119,6 @@ chromium-metrics-reviews@google.com.
       variants="TrustedVaultTimeSinceMigrationSuffix"/>
 </histogram>
 
-<histogram name="Sync.TrustedVaultRecoverabilityStatusOnRequestCompletion"
-    enum="TrustedVaultRecoverabilityStatus" expires_after="2025-05-11">
-  <owner>mmrashad@google.com</owner>
-  <owner>mmoskvitin@google.com</owner>
-  <summary>
-    Records the status of the degraded recoverability upon the request
-    completion. Note that this is the status on the server side, which could be
-    error if the request was failed.
-  </summary>
-</histogram>
-
 <histogram name="Sync.UnsyncedDataOnSignout2" enum="SyncDataTypes"
     expires_after="2026-01-20">
   <owner>ankushkush@google.com</owner>
