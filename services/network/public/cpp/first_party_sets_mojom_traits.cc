@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/version.h"
 #include "mojo/public/cpp/base/version_mojom_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -127,29 +128,9 @@ bool StructTraits<network::mojom::GlobalFirstPartySetsDataView,
   if (!sets.ReadManualConfig(&manual_config))
     return false;
 
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> manual_aliases;
-  if (!sets.ReadManualAliases(&manual_aliases)) {
-    return false;
-  }
-
-  // The manual_config must contain both the alias overrides and their
-  // corresponding canonical overrides, none of which may be deletions.
-  if (!std::ranges::all_of(manual_aliases, [&](const auto& pair) {
-        std::optional<net::FirstPartySetEntryOverride> aliased_override =
-            manual_config.FindOverride(pair.first);
-        std::optional<net::FirstPartySetEntryOverride> canonical_override =
-            manual_config.FindOverride(pair.second);
-        return aliased_override.has_value() &&
-               !aliased_override->IsDeletion() &&
-               canonical_override.has_value() &&
-               !canonical_override->IsDeletion();
-      })) {
-    return false;
-  }
-
-  *out_sets = net::GlobalFirstPartySets(
-      std::move(public_sets_version), std::move(entries), std::move(aliases),
-      std::move(manual_config), std::move(manual_aliases));
+  *out_sets = net::GlobalFirstPartySets(std::move(public_sets_version),
+                                        std::move(entries), std::move(aliases),
+                                        std::move(manual_config));
 
   return true;
 }
@@ -172,15 +153,23 @@ bool StructTraits<network::mojom::FirstPartySetEntryOverrideDataView,
 
 bool StructTraits<network::mojom::FirstPartySetsContextConfigDataView,
                   net::FirstPartySetsContextConfig>::
-    Read(network::mojom::FirstPartySetsContextConfigDataView config,
+    Read(network::mojom::FirstPartySetsContextConfigDataView view,
          net::FirstPartySetsContextConfig* out_config) {
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntryOverride>
       customizations;
-  if (!config.ReadCustomizations(&customizations))
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> aliases;
+  if (!view.ReadCustomizations(&customizations) ||
+      !view.ReadAliases(&aliases)) {
     return false;
+  }
 
-  *out_config = net::FirstPartySetsContextConfig(std::move(customizations));
-
+  std::optional<net::FirstPartySetsContextConfig> config =
+      net::FirstPartySetsContextConfig::Create(std::move(customizations),
+                                               std::move(aliases));
+  if (!config) {
+    return false;
+  }
+  *out_config = std::move(config).value();
   return true;
 }
 

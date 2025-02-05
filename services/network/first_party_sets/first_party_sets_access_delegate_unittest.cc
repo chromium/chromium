@@ -305,14 +305,16 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest, QueryBeforeReady_FindEntries) {
 
 TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_ComputeMetadata) {
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig({
-          {kSet1AssociatedSite1,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kAssociated, 0))},
-          {kSet3Primary,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
-      }),
+      net::FirstPartySetsContextConfig::Create(
+          {
+              {kSet1AssociatedSite1,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kAssociated, 0))},
+              {kSet3Primary,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
+          })
+          .value(),
       /*cache_filter=*/std::nullopt));
 
   EXPECT_EQ(ComputeMetadataAndWait(kSet3Primary, &kSet1AssociatedSite1),
@@ -327,11 +329,13 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_ComputeMetadata) {
 
 TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_FindEntries) {
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig({
-          {kSet3Primary,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
-      }),
+      net::FirstPartySetsContextConfig::Create(
+          {
+              {kSet3Primary,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
+          })
+          .value(),
       /*cache_filter=*/std::nullopt));
 
   EXPECT_THAT(FindEntriesAndWait({kSet3Primary}),
@@ -343,14 +347,16 @@ class SyncFirstPartySetsAccessDelegateTest
  public:
   SyncFirstPartySetsAccessDelegateTest() {
     delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-        net::FirstPartySetsContextConfig({
-            {kSet3AssociatedSite1,
-             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                 kSet3Primary, net::SiteType::kAssociated, 0))},
-            {kSet3Primary,
-             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                 kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
-        }),
+        net::FirstPartySetsContextConfig::Create(
+            {
+                {kSet3AssociatedSite1,
+                 net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                     kSet3Primary, net::SiteType::kAssociated, 0))},
+                {kSet3Primary,
+                 net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                     kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
+            })
+            .value(),
         net::FirstPartySetsCacheFilter({{kSet1Primary, kClearAtRunId}},
                                        kBrowserRunId)));
   }
@@ -527,10 +533,11 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
   EXPECT_FALSE(delegate().ComputeMetadata(kSet2Primary, &kSet1AssociatedSite1,
                                           future.GetCallback()));
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig(
+      net::FirstPartySetsContextConfig::Create(
           {{kSet1AssociatedSite1,
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                kSet2Primary, net::SiteType::kAssociated, 0))}}),
+                kSet2Primary, net::SiteType::kAssociated, 0))}})
+          .value(),
       /*cache_filter=*/std::nullopt));
   EXPECT_EQ(future.Get(),
             std::make_tuple(
@@ -554,10 +561,11 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
   EXPECT_FALSE(
       delegate().FindEntries({kSet1AssociatedSite1}, future.GetCallback()));
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig(
+      net::FirstPartySetsContextConfig::Create(
           {{kSet1AssociatedSite1,
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                kSet2Primary, net::SiteType::kAssociated, 0))}}),
+                kSet2Primary, net::SiteType::kAssociated, 0))}})
+          .value(),
       /*cache_filter=*/std::nullopt));
   EXPECT_EQ(future.Get(),
             FirstPartySetsAccessDelegate::EntriesResult(
@@ -662,14 +670,16 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
        OverrideSets_ComputeMetadata) {
   base::HistogramTester histogram_tester;
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig({
-          {kSet1AssociatedSite1,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kAssociated, 0))},
-          {kSet3Primary,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
-      }),
+      net::FirstPartySetsContextConfig::Create(
+          {
+              {kSet1AssociatedSite1,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kAssociated, 0))},
+              {kSet3Primary,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
+          })
+          .value(),
       /*cache_filter=*/std::nullopt));
   base::RunLoop().RunUntilIdle();
 
@@ -692,11 +702,13 @@ TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
        OverrideSets_FindEntries) {
   base::HistogramTester histogram_tester;
   delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
-      net::FirstPartySetsContextConfig({
-          {kSet3Primary,
-           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-               kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
-      }),
+      net::FirstPartySetsContextConfig::Create(
+          {
+              {kSet3Primary,
+               net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+                   kSet3Primary, net::SiteType::kPrimary, std::nullopt))},
+          })
+          .value(),
       /*cache_filter=*/std::nullopt));
   base::RunLoop().RunUntilIdle();
 

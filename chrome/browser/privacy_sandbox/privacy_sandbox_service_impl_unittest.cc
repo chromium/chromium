@@ -2058,9 +2058,10 @@ TEST_F(PrivacySandboxServiceTest,
   // Simulate that associate2 is removed from the Global First-Party Sets for
   // this profile.
   mock_first_party_sets_handler().SetContextConfig(
-      net::FirstPartySetsContextConfig(
+      net::FirstPartySetsContextConfig::Create(
           {{net::SchemefulSite(GURL("https://associate2.test")),
-            net::FirstPartySetEntryOverride()}}));
+            net::FirstPartySetEntryOverride()}})
+          .value());
 
   first_party_sets_policy_service()->InitForTesting();
 
@@ -2187,11 +2188,12 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
   // Simulate that https://google.de is moved into a new First-Party Set for
   // this profile.
   mock_first_party_sets_handler().SetContextConfig(
-      net::FirstPartySetsContextConfig(
+      net::FirstPartySetsContextConfig::Create(
           {{net::SchemefulSite(GURL("https://google.de")),
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
                 net::SchemefulSite(GURL("https://new-primary.test")),
-                net::SiteType::kAssociated, 0))}}));
+                net::SiteType::kAssociated, 0))}})
+          .value());
 
   first_party_sets_policy_service()->InitForTesting();
 

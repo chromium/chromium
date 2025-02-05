@@ -178,8 +178,10 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
   FirstPartySetEntry assoc_entry(example, SiteType::kAssociated, 0);
   FirstPartySetEntry override_entry(example, SiteType::kAssociated, 1);
 
-  FirstPartySetsContextConfig config(
-      {{example, net::FirstPartySetEntryOverride(override_entry)}});
+  FirstPartySetsContextConfig config =
+      FirstPartySetsContextConfig::Create(
+          {{example, net::FirstPartySetEntryOverride(override_entry)}})
+          .value();
 
   EXPECT_THAT(GlobalFirstPartySets(kVersion,
                                    {
@@ -197,8 +199,10 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverride) {
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, std::nullopt);
   FirstPartySetEntry assoc_entry(example, SiteType::kAssociated, 0);
 
-  FirstPartySetsContextConfig config(
-      {{example, net::FirstPartySetEntryOverride()}});
+  FirstPartySetsContextConfig config =
+      FirstPartySetsContextConfig::Create(
+          {{example, net::FirstPartySetEntryOverride()}})
+          .value();
 
   EXPECT_THAT(GlobalFirstPartySets(kVersion,
                                    {
@@ -230,8 +234,10 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverrideWithDecoyAlias) {
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, std::nullopt);
   FirstPartySetEntry override_entry(example, SiteType::kAssociated, 1);
 
-  FirstPartySetsContextConfig config(
-      {{example_cctld, net::FirstPartySetEntryOverride(override_entry)}});
+  FirstPartySetsContextConfig config =
+      FirstPartySetsContextConfig::Create(
+          {{example_cctld, net::FirstPartySetEntryOverride(override_entry)}})
+          .value();
 
   EXPECT_THAT(GlobalFirstPartySets(kVersion,
                                    {
@@ -247,8 +253,10 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverrideWithDecoyAlias) {
   SchemefulSite example_cctld(GURL("https://example.cctld"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, std::nullopt);
 
-  FirstPartySetsContextConfig config(
-      {{example_cctld, net::FirstPartySetEntryOverride()}});
+  FirstPartySetsContextConfig config =
+      FirstPartySetsContextConfig::Create(
+          {{example_cctld, net::FirstPartySetEntryOverride()}})
+          .value();
 
   EXPECT_THAT(GlobalFirstPartySets(kVersion,
                                    {
@@ -265,8 +273,10 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_AliasesIgnoredForConfig) {
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, std::nullopt);
   FirstPartySetEntry override_entry(example, SiteType::kAssociated, 1);
 
-  FirstPartySetsContextConfig config(
-      {{example, net::FirstPartySetEntryOverride(override_entry)}});
+  FirstPartySetsContextConfig config =
+      FirstPartySetsContextConfig::Create(
+          {{example, net::FirstPartySetEntryOverride(override_entry)}})
+          .value();
 
   // FindEntry should ignore aliases when using the customizations. Public
   // aliases only apply to sites in the public sets.
@@ -1409,21 +1419,25 @@ class GlobalFirstPartySetsWithConfigTest
     : public PopulatedGlobalFirstPartySetsTest {
  public:
   GlobalFirstPartySetsWithConfigTest()
-      : config_({
-            // New entry:
-            {kPrimary3, net::FirstPartySetEntryOverride(
-                            FirstPartySetEntry(kPrimary3,
-                                               SiteType::kPrimary,
-                                               std::nullopt))},
-            // Removed entry:
-            {kAssociated1, net::FirstPartySetEntryOverride()},
-            // Remapped entry:
-            {kAssociated3,
-             net::FirstPartySetEntryOverride(
-                 FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0))},
-            // Removed alias:
-            {kAssociated1Cctld, net::FirstPartySetEntryOverride()},
-        }) {}
+      : config_(
+            FirstPartySetsContextConfig::Create(
+                {
+                    // New entry:
+                    {kPrimary3, net::FirstPartySetEntryOverride(
+                                    FirstPartySetEntry(kPrimary3,
+                                                       SiteType::kPrimary,
+                                                       std::nullopt))},
+                    // Removed entry:
+                    {kAssociated1, net::FirstPartySetEntryOverride()},
+                    // Remapped entry:
+                    {kAssociated3, net::FirstPartySetEntryOverride(
+                                       FirstPartySetEntry(kPrimary3,
+                                                          SiteType::kAssociated,
+                                                          0))},
+                    // Removed alias:
+                    {kAssociated1Cctld, net::FirstPartySetEntryOverride()},
+                })
+                .value()) {}
 
   FirstPartySetsContextConfig& config() { return config_; }
 

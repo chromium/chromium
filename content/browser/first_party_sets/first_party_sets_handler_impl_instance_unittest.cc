@@ -743,10 +743,11 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   // Calling ForEachEffectiveSetEntry with context config which add a new
   // associated site https://associatedsite2.test to the above set.
   EXPECT_TRUE(handler().ForEachEffectiveSetEntry(
-      net::FirstPartySetsContextConfig(
+      net::FirstPartySetsContextConfig::Create(
           {{associated2,
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                example, net::SiteType::kAssociated, std::nullopt))}}),
+                example, net::SiteType::kAssociated, std::nullopt))}})
+          .value(),
       [&](const net::SchemefulSite& site,
           const net::FirstPartySetEntry& entry) {
         set_entries.emplace_back(site, entry);

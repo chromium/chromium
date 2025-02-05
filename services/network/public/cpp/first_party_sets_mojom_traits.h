@@ -103,11 +103,6 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     return sets.manual_config_;
   }
 
-  static const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
-  manual_aliases(const net::GlobalFirstPartySets& sets) {
-    return sets.manual_aliases_;
-  }
-
   static bool Read(network::mojom::GlobalFirstPartySetsDataView sets,
                    net::GlobalFirstPartySets* out_sets);
 };
@@ -134,8 +129,12 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
   customizations(const net::FirstPartySetsContextConfig& config) {
     return config.customizations_;
   }
+  static const base::flat_map<net::SchemefulSite, net::SchemefulSite>& aliases(
+      const net::FirstPartySetsContextConfig& config) {
+    return config.aliases_;
+  }
 
-  static bool Read(network::mojom::FirstPartySetsContextConfigDataView config,
+  static bool Read(network::mojom::FirstPartySetsContextConfigDataView view,
                    net::FirstPartySetsContextConfig* out_config);
 };
 
