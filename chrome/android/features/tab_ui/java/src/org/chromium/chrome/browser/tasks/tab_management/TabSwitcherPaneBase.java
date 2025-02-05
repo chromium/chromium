@@ -408,6 +408,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                                     finalTopCornerRadius,
                                     finalBottomCornerRadius,
                                     coordinator.getThumbnailSize(),
+                                    isTopToolbar,
                                     useFallbackAnimation));
                 };
         coordinator.waitForLayoutWithTab(tabId, provideAnimationData);
