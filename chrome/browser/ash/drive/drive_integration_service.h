@@ -630,8 +630,8 @@ class DriveIntegrationServiceFactory : public ProfileKeyedServiceFactory {
   // This is static so it can be set without instantiating the factory. This
   // allows factory creation to be delayed until it normally happens (on profile
   // creation) rather than when tests are set up. DriveIntegrationServiceFactory
-  // transitively depends on ExtensionSystemFactory which crashes if created too
-  // soon (i.e. before the BrowserProcess exists).
+  // transitively depends on ChromeExtensionSystemFactory which crashes if
+  // created too soon (i.e. before the BrowserProcess exists).
   static FactoryCallback* factory_for_test_;
 };
 

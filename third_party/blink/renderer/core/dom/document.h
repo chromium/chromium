@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
 #include "third_party/blink/renderer/core/dom/node_list_invalidation_type.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
@@ -1874,7 +1875,7 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   bool IsVerticalScrollEnforced() const { return is_vertical_scroll_enforced_; }
-  bool IsFocusAllowed() const;
+  bool IsFocusAllowed(FocusTrigger trigger) const;
 
   LazyLoadImageObserver& EnsureLazyLoadImageObserver();
 

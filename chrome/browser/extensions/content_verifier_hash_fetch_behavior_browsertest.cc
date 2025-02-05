@@ -66,8 +66,8 @@ class ContentVerifierHashTest
   bool ShouldEnableContentVerification() override { return true; }
 
   void SetUp() override {
-    // Override content verification mode before ExtensionSystemImpl initializes
-    // ChromeContentVerifierDelegate.
+    // Override content verification mode before ChromeExtensionSystem
+    // initializes ChromeContentVerifierDelegate.
     ChromeContentVerifierDelegate::SetDefaultModeForTesting(
         uses_enforce_strict_mode()
             ? ChromeContentVerifierDelegate::VerifyInfo::Mode::ENFORCE_STRICT

@@ -595,8 +595,8 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Windows and macOS depend on policy - see policy_test.js for their
     // testing coverage.
     model.set('documentSettings.isModifiable', false);
-    // <if expr="is_linux or is_chromeos">
-    // Always available for PDFs on Linux and ChromeOS
+    // <if expr="is_linux">
+    // Always available for PDFs on Linux.
     assertTrue(model.settings.rasterize.available);
     assertFalse(model.settings.rasterize.setFromUi);
     // </if>
@@ -638,51 +638,4 @@ suite('ModelSettingsAvailabilityTest', function() {
     model.set('documentSettings.isFromArc', true);
     assertFalse(model.settings.pagesPerSheet.available);
   });
-
-  // <if expr="is_chromeos">
-  test('pin', function() {
-    // Make device unmanaged.
-    loadTimeData.overrideValues({isEnterpriseManaged: false});
-    // Check that pin setting is unavailable on unmanaged devices.
-    assertFalse(model.settings.pin.available);
-
-    // Make device enterprise managed.
-    loadTimeData.overrideValues({isEnterpriseManaged: true});
-    // Set capabilities again to update pin availability.
-    model.set(
-        'destination.capabilities',
-        getCddTemplate(model.destination.id).capabilities);
-    assertTrue(model.settings.pin.available);
-
-    // Remove pin capability.
-    let capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer!.pin;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.pin.available);
-
-    // Set not supported pin capability.
-    capabilities = getCddTemplate(model.destination.id).capabilities!;
-    capabilities.printer!.pin!.supported = false;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.pin.available);
-    assertFalse(model.settings.pin.setFromUi);
-  });
-
-  test('pinValue', function() {
-    assertTrue(model.settings.pinValue.available);
-
-    // Remove pin capability.
-    let capabilities = getCddTemplate(model.destination.id).capabilities!;
-    delete capabilities.printer.pin;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.pinValue.available);
-
-    // Set not supported pin capability.
-    capabilities = getCddTemplate(model.destination.id).capabilities!;
-    capabilities.printer.pin!.supported = false;
-    model.set('destination.capabilities', capabilities);
-    assertFalse(model.settings.pinValue.available);
-    assertFalse(model.settings.pinValue.setFromUi);
-  });
-  // </if>
 });

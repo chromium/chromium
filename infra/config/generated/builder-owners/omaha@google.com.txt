@@ -39,5 +39,6 @@ try/linux-updater-try-builder-dbg
 try/linux-updater-try-builder-rel
 try/mac-updater-try-builder-dbg
 try/mac-updater-try-builder-rel
+try/win-arm64-updater-rel
 try/win-updater-try-builder-dbg
 try/win-updater-try-builder-rel

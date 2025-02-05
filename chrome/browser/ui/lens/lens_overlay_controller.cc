@@ -525,7 +525,8 @@ void LensOverlayController::CloseUIAsync(
     page_->NotifyOverlayClosing();
   }
 
-  if (state_ == State::kOverlayAndResults) {
+  if (state_ == State::kOverlayAndResults ||
+      state_ == State::kLivePageAndResults) {
     if (side_panel_coordinator_->GetCurrentEntryId() ==
         SidePanelEntry::Id::kLensOverlayResults) {
       // If a close was triggered while our side panel is showing, instead of
@@ -556,12 +557,6 @@ void LensOverlayController::CloseUISync(
   }
 
   state_ = State::kClosing;
-  if (side_panel_coordinator_->GetCurrentEntryId() ==
-      SidePanelEntry::Id::kLensOverlayResults) {
-    side_panel_shown_subscription_ = base::CallbackListSubscription();
-    side_panel_coordinator_->Close();
-  }
-
   CloseUIPart2(dismissal_source);
 }
 

@@ -11,6 +11,7 @@ import("//third_party/tflite/features.gni")
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
+    "WEBNN_USE_COREML=$webnn_use_coreml",
     "WEBNN_USE_TFLITE=$webnn_use_tflite",
     "WEBNN_ENABLE_TFLITE_PROFILER=$webnn_enable_tflite_profiler",
   ]
@@ -87,10 +88,11 @@ component("webnn_service") {
     libs = [ "dxgi.lib" ]
   }
 
-  if (is_mac) {
+  if (webnn_use_coreml) {
+    assert(is_mac)
     sources += [
-      "coreml/buffer_content.h",
-      "coreml/buffer_content.mm",
+      "coreml/buffer_content_coreml.h",
+      "coreml/buffer_content_coreml.mm",
       "coreml/context_impl_coreml.h",
       "coreml/context_impl_coreml.mm",
       "coreml/graph_builder_coreml.cc",
@@ -115,8 +117,8 @@ component("webnn_service") {
 
   if (webnn_use_tflite) {
     sources += [
-      "tflite/buffer_content.cc",
-      "tflite/buffer_content.h",
+      "tflite/buffer_content_tflite.cc",
+      "tflite/buffer_content_tflite.h",
       "tflite/context_impl_tflite.cc",
       "tflite/context_impl_tflite.h",
       "tflite/graph_builder_tflite.cc",
@@ -142,7 +144,7 @@ component("webnn_service") {
     }
   }
 
-  if (webnn_use_tflite || is_mac) {
+  if (webnn_use_coreml || webnn_use_tflite) {
     sources += [
       "queueable_resource_state.h",
       "queueable_resource_state_base.cc",
@@ -180,7 +182,7 @@ source_set("tests") {
     ]
   }
 
-  if (webnn_use_tflite || is_mac || is_win) {
+  if (webnn_use_coreml || webnn_use_tflite || is_win) {
     sources += [
       "webnn_graph_impl_backend_test.cc",
       "webnn_tensor_impl_backend_test.cc",

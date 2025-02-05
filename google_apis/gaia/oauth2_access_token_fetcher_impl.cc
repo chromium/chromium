@@ -15,7 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -54,10 +54,10 @@ constexpr char kErrorKey[] = "error";
 constexpr char kErrorSubTypeKey[] = "error_subtype";
 constexpr char kErrorDescriptionKey[] = "error_description";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kRaptRequiredError[] = "rapt_required";
 constexpr char kInvalidRaptError[] = "invalid_rapt";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 OAuth2AccessTokenFetcherImpl::OAuth2Response
 OAuth2ResponseErrorToOAuth2Response(const std::string& error) {
@@ -129,7 +129,7 @@ static std::unique_ptr<network::SimpleURLLoader> CreateURLLoader(
 GoogleServiceAuthError CreateErrorForInvalidGrant(
     const std::string& error_subtype,
     const std::string& error_description) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS cannot handle RAPT-type re-authentication requests and is
   // supposed to be excluded from RAPT re-authentication on the server side.
   // Just to be safe we need to handle this anyways. If we do not handle this,
@@ -142,7 +142,7 @@ GoogleServiceAuthError CreateErrorForInvalidGrant(
     return GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
         error_description);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Persistent error requiring the user to sign in again.
   return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(

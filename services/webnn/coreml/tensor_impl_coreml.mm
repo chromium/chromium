@@ -9,7 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "services/webnn/coreml/buffer_content.h"
+#include "services/webnn/coreml/buffer_content_coreml.h"
 #include "services/webnn/coreml/context_impl_coreml.h"
 #include "services/webnn/coreml/utils_coreml.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"

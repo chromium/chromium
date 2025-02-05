@@ -139,7 +139,7 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   // UserManager implementation:
   void Shutdown() override;
-  const UserList& GetUsers() const override;
+  const UserList& GetPersistedUsers() const override;
   UserList GetUsersAllowedForMultiUserSignIn() const override;
   UserList FindLoginAllowedUsersFrom(const UserList& users) const final;
   const UserList& GetLoggedInUsers() const override;
@@ -370,7 +370,7 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   // List of all known users. User instances are owned by |this|. Regular users
   // are removed by |RemoveUserFromList|, device local accounts by
   // |UpdateAndCleanUpDeviceLocalAccounts|.
-  UserList users_;
+  UserList persisted_users_;
 
   // List of all users that are logged in current session. These point to User
   // instances in |users_|. Only one of them could be marked as active.

@@ -1442,7 +1442,7 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
     result.Set("isReadyForPassword",
                ash::LoginScreen::Get()->IsReadyForPassword());
 
-    const user_manager::UserList& users = user_manager->GetUsers();
+    const user_manager::UserList& users = user_manager->GetPersistedUsers();
     bool user_images_loaded = true;
     for (const user_manager::User* user : users) {
       if (user->image_is_loading()) {

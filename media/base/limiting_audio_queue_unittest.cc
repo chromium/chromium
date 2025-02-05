@@ -43,8 +43,8 @@ void VerifyAudioBuffer(scoped_refptr<AudioBuffer> buffer,
 
   for (int ch = 0; ch < kChannels; ++ch) {
     const size_t kSpanSize = sizeof(float) * static_cast<size_t>(number_frames);
-    base::span<uint8_t> input_span(
-        reinterpret_cast<uint8_t*>(expected_data->channel(ch)), kSpanSize);
+    base::span<const uint8_t> input_span(base::as_byte_span(
+        base::allow_nonunique_obj, expected_data->channel_span(ch)));
     base::span<uint8_t> output_span(buffer->channel_data()[ch], kSpanSize);
     EXPECT_EQ(input_span, output_span);
   }
@@ -80,11 +80,10 @@ class LimitingAudioQueueTest : public testing::Test {
         AudioTimestampHelper::FramesToTime(kBufferSize, kSampleRate);
 
     if (scale != 1.0f) {
-      for (int ch = 0; ch < kChannels; ++ch) {
-        float* channel_data = bus->channel(ch);
-        for (int i = 0; i < bus->frames(); ++i) {
-          channel_data[i] *= scale;
-        }
+      for (auto channel : bus->AllChannels()) {
+        std::ranges::transform(channel, channel.begin(), [scale](float sample) {
+          return sample * scale;
+        });
       }
     }
   }
@@ -133,10 +132,7 @@ TEST_F(LimitingAudioQueueTest, Clear_DropsPendingInputs) {
 
   // Fill the first channel with kGuardValue.
   input_bus_->Zero();
-  float* first_channel_data = input_bus_->channel(0);
-  for (int i = 0; i < input_bus_->frames(); ++i) {
-    first_channel_data[i] = kGuardValue;
-  }
+  std::ranges::fill(input_bus_->channel_span(0), kGuardValue);
 
   // Feed in data into the queue and clear it.
   bool first_buffer_emitted = false;

@@ -40,6 +40,14 @@ std::u16string RemainingTimeString(base::TimeDelta remaining_time) {
       static_cast<int>(remaining_time.InSeconds()) + 1);
 }
 
+std::u16string IconTooltipString(bool is_enabled) {
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_NEARBY_SHARE_ICON_TOOLTIP,
+      l10n_util::GetStringUTF16(
+          is_enabled ? IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_ON
+                     : IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_OFF));
+}
+
 }  // namespace
 
 NearbyShareFeaturePodController::NearbyShareFeaturePodController(
@@ -98,6 +106,9 @@ std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
     tile_->SetIconClickCallback(
         base::BindRepeating(&NearbyShareFeaturePodController::OnIconPressed,
                             weak_ptr_factory_.GetWeakPtr()));
+
+    tile_->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_TOOLTIP));
 
     // Set tile appearance.
     UpdateQSv2Button();
@@ -225,6 +236,7 @@ void NearbyShareFeaturePodController::ToggleTileOn() {
   auto& on_icon = nearby_share_delegate_->GetIcon(/*on_icon=*/true);
   tile_->SetVectorIcon(on_icon.is_empty() ? kQuickSettingsNearbyShareOnIcon
                                           : on_icon);
+  tile_->SetIconButtonTooltipText(IconTooltipString(/*is_enabled=*/true));
   tile_->SetToggled(true);
 
   if (nearby_share_delegate_->IsHighVisibilityOn()) {
@@ -259,6 +271,8 @@ void NearbyShareFeaturePodController::ToggleTileOff() {
   tile_->SetVectorIcon(off_icon.is_empty() ? kQuickSettingsNearbyShareOffIcon
                                            : off_icon);
   tile_->SetToggled(false);
+
+  tile_->SetIconButtonTooltipText(IconTooltipString(/*is_enabled=*/false));
   tile_->SetSubLabel(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_OFF));
 }

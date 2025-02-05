@@ -327,6 +327,11 @@ ci.thin_tester(
                     shards = 10,
                 ),
             ),
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.chrome_public_test_apk.filter",
+                ],
+            ),
             "chrome_public_unit_test_apk": targets.mixin(
                 args = [
                     # https://crbug.com/392649074

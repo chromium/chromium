@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenSamplePrompt} from './constants.js';
+import type {SeaPenSamplePrompt} from './constants.js';
 
 export const SEA_PEN_SUGGESTIONS: string[] = [
   '4k',

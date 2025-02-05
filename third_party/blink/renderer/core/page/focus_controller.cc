@@ -1788,13 +1788,10 @@ bool FocusController::AdvanceFocusInDocumentOrder(
   }
 
   Frame* new_frame = new_document.GetFrame();
-  new_frame->SetAllowFocusDuringFocusAdvance(true);
   SetFocusedFrame(new_frame);
-
   element->Focus(FocusParams(SelectionBehaviorOnFocus::kReset, type,
                              source_capabilities, FocusOptions::Create(),
                              FocusTrigger::kUserGesture));
-  new_frame->SetAllowFocusDuringFocusAdvance(false);
   return true;
 }
 

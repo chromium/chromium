@@ -4,8 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {AmbientModeAlbum, AmbientProviderInterface, AmbientTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
-import {PersonalizationStore} from '../personalization_store.js';
+import type {AmbientModeAlbum, AmbientProviderInterface, AmbientTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
+import type {PersonalizationStore} from '../personalization_store.js';
 
 import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAmbientThemeAction, setGeolocationIsUserModifiableAction, setGeolocationPermissionEnabledAction, setScreenSaverDurationAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';

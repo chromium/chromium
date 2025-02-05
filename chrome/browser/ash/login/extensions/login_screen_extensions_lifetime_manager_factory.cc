@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_lifetime_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -43,7 +43,7 @@ LoginScreenExtensionsLifetimeManagerFactory::
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
-  DependsOn(extensions::ExtensionSystemFactory::GetInstance());
+  DependsOn(extensions::ChromeExtensionSystemFactory::GetInstance());
   DependsOn(extensions::ProcessManagerFactory::GetInstance());
 }
 

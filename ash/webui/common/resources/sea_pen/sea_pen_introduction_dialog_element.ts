@@ -9,7 +9,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_auto_img/cr_auto_img.js';
 import './sea_pen_introduction_svg_element.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -73,7 +73,7 @@ export class SeaPenIntroductionDialogElement extends I18nMixin
   private onClickClose_() {
     this.$.dialog.cancel();
     if (isSeaPenTextInputEnabled()) {
-      this.dispatchEvent(new SeaPenFreeformIntroductionCloseEvent())
+      this.dispatchEvent(new SeaPenFreeformIntroductionCloseEvent());
     } else {
       this.dispatchEvent(new SeaPenIntroductionCloseEvent());
     }

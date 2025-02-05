@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
-#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -473,15 +472,7 @@ void ChromeSessionManager::SessionStarted() {
   user_manager()->OnSessionStarted();
 }
 
-void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
-                                              const std::string& user_id_hash,
-                                              bool browser_restart,
-                                              bool is_child) {
-  BootTimesRecorder* btl = BootTimesRecorder::Get();
-  btl->AddLoginTimeMarker("UserLoggedIn-Start", false);
-  session_manager::SessionManager::NotifyUserLoggedIn(
-      user_account_id, user_id_hash, browser_restart, is_child);
-
+void ChromeSessionManager::OnSessionCreated(bool browser_restart) {
   if (user_manager()->GetLoggedInUsers().size() == 1) {
     InitFeaturesSessionType(user_manager()->GetPrimaryUser());
   }
@@ -490,8 +481,6 @@ void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
   // session limit is defined by the policy.
   session_length_limiter_ = std::make_unique<SessionLengthLimiter>(
       /*delegate=*/nullptr, browser_restart);
-
-  btl->AddLoginTimeMarker("UserLoggedIn-End", false);
 }
 
 void ChromeSessionManager::OnUsersSignInConstraintsChanged() {

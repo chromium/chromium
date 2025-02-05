@@ -6,7 +6,8 @@
 // embedded chrome-untrusted:// child page.
 
 import {callbackRouter} from './page_handler.js';
-import {ChildUntrustedPageRemote, ParentTrustedPage, ParentTrustedPagePendingReceiver, ParentTrustedPageReceiver} from './sample_system_web_app_shared_ui.mojom-webui.js';
+import type {ChildUntrustedPageRemote, ParentTrustedPage, ParentTrustedPagePendingReceiver} from './sample_system_web_app_shared_ui.mojom-webui.js';
+import {ParentTrustedPageReceiver} from './sample_system_web_app_shared_ui.mojom-webui.js';
 
 /**
  * Implements ParentTrustedPage interface to handle requests from the child

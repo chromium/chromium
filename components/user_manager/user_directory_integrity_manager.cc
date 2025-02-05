@@ -104,7 +104,7 @@ UserDirectoryIntegrityManager::GetMisconfiguredUserAccountIdLegacy() {
     return std::nullopt;
   }
 
-  UserList users = UserManager::Get()->GetUsers();
+  UserList users = UserManager::Get()->GetPersistedUsers();
   auto misconfigured_user_it =
       std::ranges::find_if(users, [&misconfigured_user_email](User* user) {
         return user->GetAccountId().GetUserEmail() ==

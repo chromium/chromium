@@ -14,7 +14,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './reimaging_calibration_setup_page.html.js';
-import {CalibrationSetupInstruction, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import type {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import {CalibrationSetupInstruction} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 const INSRUCTION_MESSAGE_KEY_MAP = {

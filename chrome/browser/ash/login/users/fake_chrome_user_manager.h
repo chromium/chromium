@@ -68,7 +68,6 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
   void SimulateUserProfileLoad(const AccountId& account_id);
 
   // user_manager::UserManager override.
-  const user_manager::UserList& GetUsers() const override;
   user_manager::UserList GetUsersAllowedForMultiUserSignIn() const override;
   const user_manager::UserList& GetLoggedInUsers() const override;
   const user_manager::UserList& GetLRULoggedInUsers() const override;

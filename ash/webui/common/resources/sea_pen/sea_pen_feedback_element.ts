@@ -8,7 +8,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
-import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import type {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_feedback_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 

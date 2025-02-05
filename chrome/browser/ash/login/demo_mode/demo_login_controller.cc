@@ -297,7 +297,7 @@ void RemoveGaiaUsersOnDevice() {
   }
   // Make a copy of the list since we'll be removing users and the list would
   // change underneath.
-  const user_manager::UserList user_list = user_manager->GetUsers();
+  const user_manager::UserList user_list = user_manager->GetPersistedUsers();
   for (const user_manager::User* user : user_list) {
     // Skip if it is ephemeral user since the user will be removed by policy.
     // Should not remove device local account.

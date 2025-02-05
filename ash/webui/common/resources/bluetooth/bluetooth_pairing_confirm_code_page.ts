@@ -16,7 +16,8 @@ import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bluetooth_pairing_confirm_code_page.html.js';
-import {ButtonBarState, ButtonState} from './bluetooth_types.js';
+import type {ButtonBarState} from './bluetooth_types.js';
+import {ButtonState} from './bluetooth_types.js';
 
 const SettingsBluetoothPairingConfirmCodePageElementBase =
     I18nMixin(PolymerElement);

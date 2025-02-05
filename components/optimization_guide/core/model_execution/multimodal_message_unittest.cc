@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 
 #include <optional>
@@ -14,6 +19,9 @@ namespace optimization_guide {
 
 namespace {
 
+using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+using NestedProto = ::optimization_guide::proto::ExampleForTestingMessage;
+
 SkBitmap CreateBlackSkBitmap(int width, int height) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
@@ -24,7 +32,7 @@ SkBitmap CreateBlackSkBitmap(int width, int height) {
 
 TEST(MultimodalMessageTest, InvalidField) {
   auto field = ProtoField({999});
-  MultimodalMessage builder((proto::ExampleForTestingRequest()));
+  MultimodalMessage builder{RequestProto()};
   EXPECT_FALSE(builder.read().GetValue(field));
   EXPECT_FALSE(builder.read().GetImage(field));
   EXPECT_EQ(builder.read().GetRepeated(field)->Size(), 0);
@@ -32,19 +40,19 @@ TEST(MultimodalMessageTest, InvalidField) {
 
 TEST(MultimodalMessageTest, InvalidNestedField) {
   auto field = ProtoField({999, 1});
-  MultimodalMessage builder((proto::ExampleForTestingRequest()));
+  MultimodalMessage builder{RequestProto()};
   EXPECT_FALSE(builder.read().GetValue(field));
   EXPECT_FALSE(builder.read().GetImage(field));
   EXPECT_FALSE(builder.read().GetRepeated(field));
 }
 
 TEST(MultimodalMessageTest, StringField) {
-  auto field = ProtoField({2});
-  MultimodalMessage builder((proto::ExampleForTestingRequest()));
+  auto field = ProtoField({RequestProto::kStringValueFieldNumber});
+  MultimodalMessage builder{RequestProto()};
   EXPECT_EQ(builder.read().GetValue(field).value().string_value(), "");
   EXPECT_FALSE(builder.read().GetImage(field));
   EXPECT_EQ(builder.read().GetRepeated(field)->Size(), 0);
-  builder.edit().Set(2, "my_string_value");
+  builder.edit().Set(RequestProto::kStringValueFieldNumber, "my_string_value");
   EXPECT_EQ(builder.read().GetValue(field).value().string_value(),
             "my_string_value");
   EXPECT_FALSE(builder.read().GetImage(field));
@@ -52,35 +60,43 @@ TEST(MultimodalMessageTest, StringField) {
 }
 
 TEST(MultimodalMessageTest, ImageField) {
-  auto field = ProtoField({4, 4});
-  MultimodalMessage builder((proto::ExampleForTestingRequest()));
+  auto field = ProtoField(
+      {RequestProto::kNested1FieldNumber, NestedProto::kMediaFieldNumber});
+  MultimodalMessage builder{RequestProto()};
   EXPECT_FALSE(builder.read().GetValue(field));
   EXPECT_FALSE(builder.read().GetImage(field));
   EXPECT_EQ(builder.read().GetRepeated(field)->Size(), 0);
-  builder.edit().GetMutableMessage(4).Set(4, CreateBlackSkBitmap(1, 1));
+  builder.edit()
+      .GetMutableMessage(RequestProto::kNested1FieldNumber)
+      .Set(NestedProto::kMediaFieldNumber, CreateBlackSkBitmap(1, 1));
   EXPECT_FALSE(builder.read().GetValue(field));
   EXPECT_TRUE(builder.read().GetImage(field));
   EXPECT_EQ(builder.read().GetRepeated(field)->Size(), 0);
 }
 
 TEST(MultimodalMessageTest, ImageFieldInRepeated) {
-  auto repeated = ProtoField({6});
-  auto field = ProtoField({4});
-  MultimodalMessage builder((proto::ExampleForTestingRequest()));
+  auto repeated = ProtoField({RequestProto::kRepeatedFieldFieldNumber});
+  auto field = ProtoField({NestedProto::kMediaFieldNumber});
+  MultimodalMessage builder{RequestProto()};
   EXPECT_EQ(builder.read().GetRepeated(repeated)->Size(), 0);
-  builder.edit().MutableRepeatedField(6).Add().Set(4,
-                                                   CreateBlackSkBitmap(1, 1));
+  builder.edit()
+      .MutableRepeatedField(RequestProto::kRepeatedFieldFieldNumber)
+      .Add()
+      .Set(NestedProto::kMediaFieldNumber, CreateBlackSkBitmap(1, 1));
   EXPECT_EQ(builder.read().GetRepeated(repeated)->Size(), 1);
   EXPECT_TRUE(builder.read().GetRepeated(repeated)->Get(0).GetImage(field));
 }
 
 // Test that fields of nested messages can be initialized and read.
 TEST(MultimodalMessageTest, NestedMessage) {
-  auto nested_field = ProtoField({4});
-  auto bool_field = ProtoField({4, 1});
-  auto string_field = ProtoField({4, 2});
-  auto enum_field = ProtoField({4, 3});
-  MultimodalMessage builder((proto::ExampleForTestingRequest()));
+  auto nested_field = ProtoField({RequestProto::kNested1FieldNumber});
+  auto bool_field = ProtoField(
+      {RequestProto::kNested1FieldNumber, NestedProto::kBoolValueFieldNumber});
+  auto string_field = ProtoField({RequestProto::kNested1FieldNumber,
+                                  NestedProto::kStringValueFieldNumber});
+  auto enum_field = ProtoField(
+      {RequestProto::kNested1FieldNumber, NestedProto::kEnumValueFieldNumber});
+  MultimodalMessage builder{RequestProto()};
 
   EXPECT_FALSE(builder.read().GetValue(nested_field));
   EXPECT_FALSE(builder.read().GetImage(nested_field));
@@ -93,9 +109,10 @@ TEST(MultimodalMessageTest, NestedMessage) {
   proto::ExampleForTestingMessage nested;
   nested.set_enum_value(proto::ExampleForTestingMessage::VALUE1);
 
-  MultimodalMessageEditView nested_view = builder.edit().GetMutableMessage(4);
+  MultimodalMessageEditView nested_view =
+      builder.edit().GetMutableMessage(RequestProto::kNested1FieldNumber);
   nested_view.CheckTypeAndMergeFrom(nested);
-  nested_view.Set(2, "my_string_value");
+  nested_view.Set(NestedProto::kStringValueFieldNumber, "my_string_value");
 
   EXPECT_EQ(builder.read().GetValue(bool_field).value().boolean_value(), false);
   EXPECT_EQ(builder.read().GetValue(string_field).value().string_value(),
@@ -106,13 +123,20 @@ TEST(MultimodalMessageTest, NestedMessage) {
 
 // Tests the behavior of CheckTypeAndMergeFrom on a message with a nested field.
 TEST(MultimodalMessageTest, MergeWithNestedField) {
-  auto nested_field = ProtoField({4});
-  auto bool_field = ProtoField({4, 1});
-  auto string_field = ProtoField({4, 2});
-  auto image_field = ProtoField({4, 4});
-  MultimodalMessage builder((proto::ExampleForTestingRequest()));
-  builder.edit().GetMutableMessage(4).Set(2, "old_value");
-  builder.edit().GetMutableMessage(4).Set(4, CreateBlackSkBitmap(1, 1));
+  auto nested_field = ProtoField({RequestProto::kNested1FieldNumber});
+  auto bool_field = ProtoField(
+      {RequestProto::kNested1FieldNumber, NestedProto::kBoolValueFieldNumber});
+  auto string_field = ProtoField({RequestProto::kNested1FieldNumber,
+                                  NestedProto::kStringValueFieldNumber});
+  auto image_field = ProtoField(
+      {RequestProto::kNested1FieldNumber, NestedProto::kMediaFieldNumber});
+  MultimodalMessage builder{RequestProto()};
+  builder.edit()
+      .GetMutableMessage(RequestProto::kNested1FieldNumber)
+      .Set(NestedProto::kStringValueFieldNumber, "old_value");
+  builder.edit()
+      .GetMutableMessage(RequestProto::kNested1FieldNumber)
+      .Set(NestedProto::kMediaFieldNumber, CreateBlackSkBitmap(1, 1));
 
   proto::ExampleForTestingRequest to_merge;
   to_merge.mutable_nested1()->set_bool_value(true);
@@ -129,9 +153,9 @@ TEST(MultimodalMessageTest, MergeWithNestedField) {
 }
 
 TEST(MultimodalMessageTest, RepeatedMessages) {
-  auto repeated = ProtoField({6});
-  auto string_field = ProtoField({2});
-  auto image_field = ProtoField({4});
+  auto repeated = ProtoField({RequestProto::kRepeatedFieldFieldNumber});
+  auto string_field = ProtoField({NestedProto::kStringValueFieldNumber});
+  auto image_field = ProtoField({NestedProto::kMediaFieldNumber});
 
   proto::ExampleForTestingRequest initial;
   initial.add_repeated_field()->set_string_value("entry0");
@@ -141,8 +165,10 @@ TEST(MultimodalMessageTest, RepeatedMessages) {
 
   proto::ExampleForTestingMessage entry1;
   entry1.set_string_value("entry1");
-  builder.edit().MutableRepeatedField(6).Add(entry1).Set(
-      4, CreateBlackSkBitmap(1, 1));
+  builder.edit()
+      .MutableRepeatedField(RequestProto::kRepeatedFieldFieldNumber)
+      .Add(entry1)
+      .Set(NestedProto::kMediaFieldNumber, CreateBlackSkBitmap(1, 1));
 
   EXPECT_EQ(builder.read().GetRepeated(repeated)->Size(), 2);
 
@@ -152,7 +178,10 @@ TEST(MultimodalMessageTest, RepeatedMessages) {
 
   EXPECT_EQ(builder.read().GetRepeated(repeated)->Size(), 3);
 
-  builder.edit().MutableRepeatedField(6).Add().Set(2, "entry3");
+  builder.edit()
+      .MutableRepeatedField(RequestProto::kRepeatedFieldFieldNumber)
+      .Add()
+      .Set(NestedProto::kStringValueFieldNumber, "entry3");
 
   std::optional<RepeatedMultimodalMessageReadView> repeated_view =
       builder.read().GetRepeated(repeated);
@@ -174,7 +203,7 @@ TEST(MultimodalMessageTest, RepeatedMessages) {
 }
 
 TEST(MultimodalMessageTest, EmptyMerge) {
-  auto string_field = ProtoField({2});
+  auto string_field = ProtoField({RequestProto::kStringValueFieldNumber});
   MultimodalMessage empty;
 
   proto::ExampleForTestingRequest to_merge;
@@ -187,8 +216,8 @@ TEST(MultimodalMessageTest, EmptyMerge) {
 }
 
 TEST(MultimodalMessageTest, NonEmptyMerge) {
-  auto bool_field = ProtoField({1});
-  auto string_field = ProtoField({2});
+  auto bool_field = ProtoField({RequestProto::kBoolValueFieldNumber});
+  auto string_field = ProtoField({RequestProto::kStringValueFieldNumber});
 
   proto::ExampleForTestingRequest initial;
   initial.set_bool_value(true);

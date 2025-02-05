@@ -4,12 +4,14 @@
 
 import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 
-import {QUERY, SeaPenImageId} from './constants.js';
+import type {SeaPenImageId} from './constants.js';
+import {QUERY} from './constants.js';
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {MantaStatusCode, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import type {SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {MantaStatusCode} from './sea_pen.mojom-webui.js';
 import * as seaPenAction from './sea_pen_actions.js';
 import {logSeaPenImageSet} from './sea_pen_metrics_logger.js';
-import {SeaPenStoreInterface} from './sea_pen_store.js';
+import type {SeaPenStoreInterface} from './sea_pen_store.js';
 import {isNonEmptyArray, isPersonalizationApp} from './sea_pen_utils.js';
 import {withMinimumDelay} from './transition.js';
 

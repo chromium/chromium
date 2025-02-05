@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "build/branding_buildflags.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "google_apis/default_api_keys.h"
 
 // This file contains a definition of `GetDefaultApiKeysFromDefinedValues()`
@@ -73,7 +73,7 @@
 #endif
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // API key for the Nearby Sharing Service.
 #if !defined(GOOGLE_API_KEY_SHARING)
 #define GOOGLE_API_KEY_SHARING google_apis::DefaultApiKeys::kUnsetApiToken
@@ -92,7 +92,7 @@
 #if !defined(GOOGLE_API_KEY_BOCA)
 #define GOOGLE_API_KEY_BOCA google_apis::DefaultApiKeys::kUnsetApiToken
 #endif
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // These are used as shortcuts for developers and users providing
 // OAuth credentials via preprocessor defines or environment
@@ -122,7 +122,7 @@ constexpr ::google_apis::DefaultApiKeys GetDefaultApiKeysFromDefinedValues() {
 #endif  // BUILDFLAG(IS_ANDROID)
       .google_api_key_remoting = GOOGLE_API_KEY_REMOTING,
       .google_api_key_soda = GOOGLE_API_KEY_SODA,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       .google_api_key_sharing = GOOGLE_API_KEY_SHARING,
       .google_api_key_read_aloud = GOOGLE_API_KEY_READ_ALOUD,
       .google_api_key_fresnel = GOOGLE_API_KEY_FRESNEL,

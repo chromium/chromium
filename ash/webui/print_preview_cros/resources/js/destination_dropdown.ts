@@ -12,7 +12,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './destination_dropdown.html.js';
 import {DESTINATION_DROPDOWN_DROPDOWN_DISABLED_CHANGED, DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from './destination_dropdown_controller.js';
 import {type DestinationRowElement} from './destination_row.js';
-import {Destination} from './utils/print_preview_cros_app_types.js';
+import type {Destination} from './utils/print_preview_cros_app_types.js';
 
 
 /**

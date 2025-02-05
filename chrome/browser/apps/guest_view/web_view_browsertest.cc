@@ -2587,6 +2587,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, CannotNavigateGuestToChromeURL) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, ShimSrcAttribute) {
+  // TODO(crbug.com/40202416): Re-enable after fixing MPArch-related flakiness.
+  SKIP_FOR_MPARCH();
+
   ASSERT_TRUE(RunExtensionTest("platform_apps/web_view/src_attribute",
                                {.launch_as_platform_app = true}))
       << message_;

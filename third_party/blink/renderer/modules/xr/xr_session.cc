@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
@@ -1765,11 +1766,14 @@ void XRSession::UpdatePresentationFrameState(
   mojo_from_viewer_ =
       frame_data ? getPoseMatrix(frame_data->mojo_from_viewer) : nullptr;
 
+#if DCHECK_IS_ON()
   if (frame_data && mojo_from_floor_ != frame_data->mojo_from_floor) {
+    gfx::Transform identity;
     DVLOG(2) << __func__ << "mojo_from_floor_ changed! Now="
-             << frame_data->mojo_from_floor->ToString()
-             << " Was=" << mojo_from_floor_->ToString();
+             << frame_data->mojo_from_floor.value_or(identity).ToString()
+             << " Was=" << mojo_from_floor_.value_or(identity).ToString();
   }
+#endif  // DCHECK_IS_ON()
 
   mojo_from_floor_ = frame_data ? frame_data->mojo_from_floor : std::nullopt;
 

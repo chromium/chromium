@@ -285,7 +285,7 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
 
   auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
   base::flat_set<int> current_disable_reasons =
-      extension_prefs->GetDisableReasons(passkey, id);
+      extension_prefs->GetRawDisableReasons(passkey, id);
   base::flat_set<int> syncable_disable_reasons =
       GetSyncableDisableReasons(current_disable_reasons);
 
@@ -436,7 +436,7 @@ void ExtensionSyncService::ApplySyncData(
   // Figure out the resulting set of disable reasons.
   auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
   base::flat_set<int> disable_reasons =
-      extension_prefs->GetDisableReasons(passkey, id);
+      extension_prefs->GetRawDisableReasons(passkey, id);
 
   // Chrome versions M37-M44 used |extension_sync_data.remote_install()| to tag
   // not-yet-approved remote installs. It's redundant now that disable reasons
@@ -516,10 +516,11 @@ void ExtensionSyncService::ApplySyncData(
     // Note that |disable_reasons| includes any pre-existing reasons that
     // weren't explicitly removed above.
     if (extension_service()->IsExtensionEnabled(id)) {
-      extension_service()->DisableExtension(passkey, id, disable_reasons);
+      extension_service()->DisableExtensionWithRawReasons(passkey, id,
+                                                          disable_reasons);
     } else {
       // Already disabled, just replace the disable reasons.
-      extension_prefs->ReplaceDisableReasons(passkey, id, disable_reasons);
+      extension_prefs->ReplaceRawDisableReasons(passkey, id, disable_reasons);
     }
   }
 

@@ -35,6 +35,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/gpu_switching_manager.h"
@@ -799,6 +800,9 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
     const DisallowedFeatures& disallowed_features,
     const ContextCreationAttribs& attrib_helper) {
   TRACE_EVENT0("gpu", "GLES2DecoderPassthroughImpl::Initialize");
+  CHECK(gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE)
+      << "Running WebGL through passthrough command decoder without ANGLE's "
+      << "validation is a security risk";
   DCHECK(context->IsCurrent(surface.get()));
   api_ = gl::g_current_gl_context;
   // Take ownership of the context and surface. The surface can be replaced

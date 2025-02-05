@@ -585,11 +585,6 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   DCHECK_NE(gl::GetGLImplementationParts(), gl::kGLImplementationNone);
   gl::GLDisplayEGL* egl_display = display->GetAs<gl::GLDisplayEGL>();
 
-  // Now that we can check GL extensions, update passthrough support info.
-  if (!gl::PassthroughCommandDecoderSupported()) {
-    gpu_info->passthrough_cmd_decoder = false;
-  }
-
   scoped_refptr<gl::GLSurface> surface(InitializeGLSurface(display));
   if (!surface.get()) {
     LOG(ERROR) << "Could not create surface for info collection.";

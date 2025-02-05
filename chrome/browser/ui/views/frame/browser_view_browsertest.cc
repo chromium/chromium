@@ -462,9 +462,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForTabModal) {
 
 // MacOS does not need views window scrim. We use sheet to show window modals
 // (-[NSWindow beginSheet:]), which natively draws a scrim since macOS 11.
-// TODO(crbug.com/393558961): re-enable on ChromeOS. CLIENT_OWNS_WIDGET
-// currently causes issues during widget destruction.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForBrowserWindowModal) {
   if (!base::FeatureList::IsEnabled(features::kScrimForBrowserWindowModal)) {
     GTEST_SKIP();
@@ -491,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForBrowserWindowModal) {
   child_widget.reset();
   EXPECT_FALSE(browser_view()->window_scrim_view_for_testing()->GetVisible());
 }
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_MAC)
 
 namespace {
 

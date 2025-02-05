@@ -6,6 +6,20 @@
 // their fields, such as storing SkBitmap for image data fields, and tracking
 // fields being in an incomplete state. These can only be used for proto types
 // that have been registered via OnDeviceFeatureProtoRegistry.
+//
+// Typical usage involves creating an initial message with all of the non-media
+// fields set, then creating the Multimodal message and providing media fields.
+//
+// Example:
+//   using RequestProto = optimization_guide::proto::ExampleForTestingRequest;
+//   using NestedProto = optimization_guide::proto::ExampleForTestingMessage;
+//   RequestProto initial;
+//   initial.mutable_nested1().set_string_value("caption");
+//   MultimodalMessage request(initial);
+//   request.edit()
+//       .GetMutableMessage(RequestProto::kNested1FieldNumber)
+//       .Set(NestedProto::kMediaFieldNumber, std::move(skbitmap1));
+//   session->SetInput(std::move(request));
 
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MULTIMODAL_MESSAGE_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MULTIMODAL_MESSAGE_H_

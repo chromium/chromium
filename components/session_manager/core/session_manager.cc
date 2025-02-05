@@ -142,15 +142,6 @@ void SessionManager::NotifyUnlockAttempt(const bool success,
     observer.OnUnlockScreenAttempt(success, unlock_type);
 }
 
-void SessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
-                                        const std::string& user_id_hash,
-                                        bool browser_restart,
-                                        bool is_child) {
-  CHECK(user_manager_);
-  user_manager_->UserLoggedIn(user_account_id, user_id_hash, browser_restart,
-                              is_child);
-}
-
 void SessionManager::HandleUserSessionStartUpTaskCompleted() {
   // This method must not be called twice.
   CHECK(!user_session_start_up_task_completed_);
@@ -186,9 +177,15 @@ void SessionManager::CreateSessionInternal(const AccountId& user_account_id,
                                            const std::string& user_id_hash,
                                            bool browser_restart,
                                            bool is_child) {
+  CHECK(user_manager_);
   DCHECK(!HasSessionForAccountId(user_account_id));
+  observers_.Notify(&SessionManagerObserver::OnSessionCreationStarted,
+                    user_account_id);
   sessions_.push_back(std::make_unique<Session>(next_id_++, user_account_id));
-  NotifyUserLoggedIn(user_account_id, user_id_hash, browser_restart, is_child);
+  user_manager_->UserLoggedIn(user_account_id, user_id_hash, browser_restart,
+                              is_child);
+  OnSessionCreated(browser_restart);
+  observers_.Notify(&SessionManagerObserver::OnSessionCreated, user_account_id);
 }
 
 }  // namespace session_manager

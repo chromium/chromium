@@ -12,7 +12,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_switches.h"

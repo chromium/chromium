@@ -106,7 +106,15 @@ def get_current_signature(image_dir):
   version_file = os.path.join(image_dir, 'product_bundle.json')
   if os.path.exists(version_file):
     with open(version_file) as f:
-      return json.load(f)['product_version']
+      try:
+        data = json.load(f)
+      except json.decoder.JSONDecodeError:
+        logging.warning('product_bundle.json is not at the JSON format and may be empty.')
+        return None
+      if 'product_version' not in data:
+        logging.warning('The key "product_version" does not exist in product_bundle.json')
+        return None
+      return data['product_version']
   return None
 
 

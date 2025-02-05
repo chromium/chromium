@@ -220,8 +220,7 @@ D3DImageBackingFactory::SwapChainBackings::operator=(
 bool D3DImageBackingFactory::IsD3DSharedImageSupported(
     const GpuPreferences& gpu_preferences) {
   // Only supported for passthrough command decoder.
-  if (!gpu_preferences.use_passthrough_cmd_decoder ||
-      !gl::PassthroughCommandDecoderSupported()) {
+  if (!gpu_preferences.use_passthrough_cmd_decoder) {
     return false;
   }
 

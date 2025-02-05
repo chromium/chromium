@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] quantizeLinear float32 3D input with implicit block_size = [1, 2, 1].
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': DirectML: DequantizeLinear and quantizeLinear can't support block-wise when FL < 6.3."
 [FAIL] quantizeLinear float32 tensor with int4 zeroPoint which has odd size
   promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, output 'output' data type int4 must be one of [float32,float16,int32,uint32,int64,uint64,int8,uint8]."
 [FAIL] quantizeLinear float32 tensor with int4 zeroPoint which has even size

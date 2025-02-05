@@ -20,9 +20,6 @@ suite('ButtonStripTest', function() {
     buttonStrip.state = State.READY;
     // No max sheets limit is specified.
     buttonStrip.maxSheets = 0;
-    // <if expr="is_chromeos">
-    buttonStrip.isPinValid = true;
-    // </if>
     document.body.appendChild(buttonStrip);
   });
 
@@ -92,16 +89,4 @@ suite('ButtonStripTest', function() {
       return whenCancelRequested;
     });
   });
-
-  // <if expr="is_chromeos">
-  // Tests having an invalid pin disable the print button
-  test('InvalidPinDisablesPrint', function() {
-    const printButton = buttonStrip.shadowRoot!.querySelector<CrButtonElement>(
-        '.action-button')!;
-    assertFalse(printButton.disabled);
-
-    buttonStrip.isPinValid = false;
-    assertTrue(printButton.disabled);
-  });
-  // </if>
 });

@@ -21,14 +21,8 @@ void CaptureScreenshotsOfAllDisplays() {
   CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
 }
 
-bool IsSunfishOrScannerEnabled() {
-  // Returns true if sunfish session can be started, which is true if either the
-  // Sunfish or Scanner feature flag is enabled.
-  return features::IsSunfishFeatureEnabled() || features::IsScannerEnabled();
-}
-
 bool IsSunfishAllowedAndEnabled() {
-  if (!IsSunfishOrScannerEnabled()) {
+  if (!features::IsSunfishFeatureEnabled() && !features::IsScannerEnabled()) {
     return false;
   }
 

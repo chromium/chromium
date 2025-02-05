@@ -6591,7 +6591,7 @@ void Element::Focus(const FocusParams& params) {
     return;
   }
 
-  if (!GetDocument().IsFocusAllowed()) {
+  if (!GetDocument().IsFocusAllowed(params.focus_trigger)) {
     return;
   }
 

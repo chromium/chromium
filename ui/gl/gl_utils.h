@@ -39,8 +39,6 @@ GL_EXPORT void DisableANGLE();
 GL_EXPORT bool UsePassthroughCommandDecoder(
     const base::CommandLine* command_line);
 
-GL_EXPORT bool PassthroughCommandDecoderSupported();
-
 // Defines a set of workarounds that can be passed to ui/gl using the
 // SetGlWorkarounds function below.
 struct GlWorkarounds {

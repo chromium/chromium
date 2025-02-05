@@ -4,11 +4,12 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote, AcceleratorResultData, AcceleratorsUpdatedObserverRemote, EditDialogCompletedActions, PolicyUpdatedObserverRemote, Subactions, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
+import type {AcceleratorConfigurationProviderRemote, AcceleratorResultData, AcceleratorsUpdatedObserverRemote, EditDialogCompletedActions, PolicyUpdatedObserverRemote, Subactions, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
+import {AcceleratorConfigurationProvider} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from './fake_data.js';
 import {FakeShortcutProvider} from './fake_shortcut_provider.js';
-import {Accelerator, AcceleratorCategory, AcceleratorSource, MetaKey, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import type {Accelerator, AcceleratorCategory, AcceleratorSource, MetaKey, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 /**
  * @fileoverview

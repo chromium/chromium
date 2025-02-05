@@ -1442,23 +1442,22 @@ void CaptureModeSession::AddSmartActionsButton() {
 
 void CaptureModeSession::OnScannerActionsFetched(
     ScannerSession::FetchActionsResponse actions_response) {
-  // TODO(crbug.com/374381937): We should also account for other types of
-  // processing, e.g. OCR. The glow should be paused whenever all processing
-  // has finished.
   CHECK(capture_region_overlay_controller_);
   capture_region_overlay_controller_->PauseGlowAnimation();
 
   CHECK(action_container_widget_);
   if (!actions_response.has_value()) {
-    action_container_view_->ShowErrorView(actions_response.error());
+    action_container_view_->ShowErrorView(
+        actions_response.error(),
+        base::BindRepeating(&CaptureModeSession::OnScannerTryAgainPressed,
+                            weak_ptr_factory_.GetWeakPtr()));
     UpdateActionContainerWidget();
     return;
   }
 
   // This is inefficient, as we repeatedly sort, insert and recalculate the
-  // bounds for buttons one-by-one.
-  // TODO: b/369470078 - Fix this inefficiency by adding multiple action buttons
-  // simultaneously.
+  // bounds for buttons one-by-one. However, this is ok since there can only be
+  // a small number of action buttons.
   int size = static_cast<int>(actions_response->size());
   for (int i = 0; i < size; ++i) {
     ScannerActionViewModel& action = actions_response.value()[i];
@@ -1538,6 +1537,13 @@ void CaptureModeSession::OnScannerActionButtonPressed(
   controller_->CloseSearchResultsPanel();
   // End the session. `this` is destroyed here.
   controller_->Stop();
+}
+
+void CaptureModeSession::OnScannerTryAgainPressed() {
+  CHECK(action_container_view_);
+  action_container_view_->HideErrorView();
+  UpdateActionContainerWidget();
+  controller_->PerformCapture(PerformCaptureType::kScanner);
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {

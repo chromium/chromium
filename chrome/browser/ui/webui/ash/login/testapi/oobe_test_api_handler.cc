@@ -133,14 +133,14 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The current method is called early, before the user logs-in,
   // If Chrome was launched in OOBE, `is_owner` will be set to true since
-  // `user_manager->GetUsers().size()` would return 0.
+  // `user_manager->GetPersistedUsers().size()` would return 0.
   // If it's launched in the login screen to test the add person flow, then
   // the number of existing users before the new user logs-in should be > 0.
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   auto* user_manager = user_manager::UserManager::Get();
   bool is_owner = !connector->IsDeviceEnterpriseManaged() &&
-                  user_manager->GetUsers().size() == 0;
+                  user_manager->GetPersistedUsers().size() == 0;
   dict->Set("testapi_shouldSkipHwDataCollection",
             !is_owner || !switches::IsRevenBranding());
 #else

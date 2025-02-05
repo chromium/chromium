@@ -12,14 +12,15 @@ import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
 import './network_list.js';
 
 import {assert} from '//resources/js/assert.js';
-import {CrosNetworkConfigInterface, FilterType, GlobalPolicy, NO_LIMIT} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrosNetworkConfigInterface, GlobalPolicy} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {FilterType, NO_LIMIT} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
-import {NetworkListElement} from './network_list.js';
-import {NetworkList} from './network_list_types.js';
+import type {NetworkListElement} from './network_list.js';
+import type {NetworkList} from './network_list_types.js';
 import {NetworkListenerBehavior} from './network_listener_behavior.js';
 import {getTemplate} from './network_select.html.js';
 import {OncMojo} from './onc_mojo.js';

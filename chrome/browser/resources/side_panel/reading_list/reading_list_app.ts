@@ -68,7 +68,6 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
       buttonRipples: {type: Boolean},
       loadingContent_: {type: Boolean},
       itemSize_: {type: Number},
-      minViewportHeight_: {type: Number},
       scrollTarget_: {type: Object},
       unreadHeader_: {type: String},
       readHeader_: {type: String},
@@ -86,7 +85,6 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   buttonRipples: boolean = loadTimeData.getBoolean('useRipples');
   protected loadingContent_: boolean = true;
   protected itemSize_: number = 48;
-  protected minViewportHeight_: number = 200;
   protected scrollTarget_: HTMLElement|null = null;
   private unreadHeader_: string = loadTimeData.getString('unreadHeader');
   private readHeader_: string = loadTimeData.getString('readHeader');

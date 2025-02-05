@@ -30,12 +30,15 @@ class BlobReader : public blink::mojom::Blob,
                    public storage::mojom::BlobDataItemReader {
  public:
   BlobReader(const IndexedDBExternalObject& blob_info,
-             storage::mojom::BlobStorageContext& blob_registry,
              base::OnceClosure on_last_receiver_disconnected);
   ~BlobReader() override;
 
   BlobReader(const BlobReader&) = delete;
   BlobReader& operator=(const BlobReader&) = delete;
+
+  // Like Clone(), but called by the BucketContext (which owns `this`).
+  void AddReceiver(mojo::PendingReceiver<blink::mojom::Blob> receiver,
+                   storage::mojom::BlobStorageContext& blob_registry);
 
   // blink::mojom::Blob:
   void Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) override;
@@ -73,7 +76,7 @@ class BlobReader : public blink::mojom::Blob,
                         callback) override;
 
  private:
-  void OnReaderDisconnect();
+  void BindRegistryBlob(storage::mojom::BlobStorageContext& blob_registry);
   void OnMojoDisconnect();
 
   // This UUID is used for both the blob that's served via `blink::mojom::Blob`
@@ -88,12 +91,28 @@ class BlobReader : public blink::mojom::Blob,
   // normal (non-error).
   uint64_t blob_length_;
 
+  std::string content_type_;
+
   const base::FilePath file_path_;
 
+  // Notes on lifetimes:
+  //
+  // `receivers_` and `data_pipe_getter_receivers_` correspond to mojo
+  // connections to the renderer process. When these are both empty,
+  // `registry_blob_` will be reset. This *usually* causes the blob registry
+  // to drop the other side of the `BlobDataItemReader` (which is owned by a
+  // `ShareableBlobDataItem`), which triggers `this` to be destroyed by running
+  // `on_last_receiver_disconnected`. However, if that `ShareableBlobDataItem`
+  // is in fact shared, as is the case with composed blobs, then it will not
+  // drop the other side of the `BlobDataItemReader`. When that happens, `this`
+  // will continue living. If the renderer looks up the same blob again,
+  // `BucketContext` will reuse this object, and `AddReceiver()` will have to
+  // re-establish a placeholder with the blob registry, i.e. re-bind
+  // `registry_blob_`.
   mojo::ReceiverSet<blink::mojom::Blob> receivers_;
   mojo::ReceiverSet<network::mojom::DataPipeGetter> data_pipe_getter_receivers_;
 
-  mojo::Receiver<storage::mojom::BlobDataItemReader> reader_{this};
+  mojo::ReceiverSet<storage::mojom::BlobDataItemReader> readers_;
   mojo::Remote<blink::mojom::Blob> registry_blob_;
 
   base::OnceClosure on_last_receiver_disconnected_;

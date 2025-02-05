@@ -80,6 +80,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardHandwriting.docked@reven-vmtest",
   "inputs.VirtualKeyboardHandwriting.floating@reven-vmtest",
 
+  # b/394108883
+  "security.NetworkListenersNonARC@jacuzzi",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 

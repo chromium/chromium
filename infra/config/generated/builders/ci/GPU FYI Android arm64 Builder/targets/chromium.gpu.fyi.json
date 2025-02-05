@@ -3113,9 +3113,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--expected-vendor-id",
-          "5143",
+          "0",
           "--expected-device-id",
-          "43050a01",
+          "0",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
           "--initial-find-device-attempts=3"

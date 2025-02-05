@@ -13,8 +13,10 @@ import './network_shared.css.js';
 import {assert} from '//resources/js/assert.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
-import {NetworkConfigElementBehavior, NetworkConfigElementBehaviorInterface} from './network_config_element_behavior.js';
+import type {CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
+import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import type {NetworkConfigElementBehaviorInterface} from './network_config_element_behavior.js';
+import {NetworkConfigElementBehavior} from './network_config_element_behavior.js';
 import {getTemplate} from './network_config_toggle.html.js';
 
 const NetworkConfigToggleElementBase = mixinBehaviors(
@@ -24,7 +26,7 @@ const NetworkConfigToggleElementBase = mixinBehaviors(
                                            ],
                                            PolymerElement) as {
   new (): PolymerElement & CrPolicyNetworkBehaviorMojoInterface &
-  NetworkConfigElementBehaviorInterface
+      NetworkConfigElementBehaviorInterface,
 };
 
 export class NetworkConfigToggleElement extends NetworkConfigToggleElementBase {

@@ -1391,7 +1391,9 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPagePrinterStatus) {
   RunSettingsTest("os_printing_page/printer_status_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestWithExistingUser, OsPrivacyPage) {
+// Flaky - see http://crbug.com/394409166.
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestWithExistingUser,
+                       DISABLED_OsPrivacyPage) {
   RunSettingsTest("os_privacy_page/os_privacy_page_test.js");
 }
 

@@ -60,7 +60,8 @@ ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context,
       renderer_helper_(
           RendererStartupHelperFactory::GetForBrowserContext(browser_context)) {
   // ExtensionRegistrar is created by ExtensionSystem via ExtensionService, and
-  // ExtensionSystemFactory depends on ProcessManager, so this should be safe.
+  // ChromeExtensionSystemFactory depends on ProcessManager, so this should be
+  // safe.
   auto* process_manager = ProcessManager::Get(browser_context_);
   DCHECK(process_manager);
   process_manager_observation_.Observe(process_manager);
@@ -262,10 +263,10 @@ void ExtensionRegistrar::DisableExtension(
     const ExtensionId& extension_id,
     const DisableReasonSet& disable_reasons) {
   auto passkey = ExtensionPrefs::DisableReasonRawManipulationPasskey();
-  DisableExtension(passkey, extension_id, disable_reasons);
+  DisableExtensionWithRawReasons(passkey, extension_id, disable_reasons);
 }
 
-void ExtensionRegistrar::DisableExtension(
+void ExtensionRegistrar::DisableExtensionWithRawReasons(
     ExtensionPrefs::DisableReasonRawManipulationPasskey,
     const ExtensionId& extension_id,
     base::flat_set<int> disable_reasons) {
@@ -308,12 +309,13 @@ void ExtensionRegistrar::DisableExtension(
 
   // The extension may have been disabled already. Just add the disable reasons.
   if (!IsExtensionEnabled(extension_id)) {
-    extension_prefs_->AddDisableReasons(passkey, extension_id, disable_reasons);
+    extension_prefs_->AddRawDisableReasons(passkey, extension_id,
+                                           disable_reasons);
     return;
   }
 
-  extension_prefs_->SetExtensionDisabled(passkey, extension_id,
-                                         disable_reasons);
+  extension_prefs_->SetExtensionDisabledWithRawReasons(passkey, extension_id,
+                                                       disable_reasons);
 
   int include_mask =
       ExtensionRegistry::EVERYTHING & ~ExtensionRegistry::DISABLED;

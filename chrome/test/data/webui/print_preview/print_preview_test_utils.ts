@@ -31,13 +31,12 @@ export function getDefaultInitialSettings(isPdf: boolean = false):
     destinationsManaged: false,
     uiLocale: 'en-us',
     unitType: MeasurementSystemUnitType.IMPERIAL,
-    isDriveMounted: true,
   };
 }
 
 export function getCddTemplate(
     printerId: string, printerName?: string): CapabilitiesResponse {
-  const template: CapabilitiesResponse = {
+  return {
     printer: {
       deviceName: printerId,
       printerName: printerName || '',
@@ -128,10 +127,6 @@ export function getCddTemplate(
       },
     },
   };
-  // <if expr="is_chromeos">
-  template.capabilities!.printer.pin = {supported: true};
-  // </if>
-  return template;
 }
 
 /**
@@ -330,12 +325,6 @@ export function getExtensionDestinations(): ExtensionPrinters {
 export function getDestinations(localDestinations: LocalDestinationInfo[]):
     Destination[] {
   const destinations: Destination[] = [];
-  // <if expr="not is_chromeos">
-  const origin = DestinationOrigin.LOCAL;
-  // </if>
-  // <if expr="is_chromeos">
-  const origin = DestinationOrigin.CROS;
-  // </if>
   // Five destinations. FooDevice is the system default.
   [{deviceName: 'ID1', printerName: 'One'},
    {deviceName: 'ID2', printerName: 'Two'},
@@ -343,8 +332,8 @@ export function getDestinations(localDestinations: LocalDestinationInfo[]):
    {deviceName: 'ID4', printerName: 'Four'},
    {deviceName: 'FooDevice', printerName: 'FooName'}]
       .forEach(info => {
-        const destination =
-            new Destination(info.deviceName, origin, info.printerName);
+        const destination = new Destination(
+            info.deviceName, DestinationOrigin.LOCAL, info.printerName);
         localDestinations.push(info);
         destinations.push(destination);
       });
@@ -418,16 +407,6 @@ export function createDestinationStore(): DestinationStore {
   return new DestinationStore(
       testListenerElement.addWebUiListener.bind(testListenerElement));
 }
-
-// <if expr="is_chromeos">
-/**
- * @return The Google Drive destination.
- */
-export function getGoogleDriveDestination(): Destination {
-  return new Destination(
-      'Save to Drive CrOS', DestinationOrigin.LOCAL, 'Save to Google Drive');
-}
-// </if>
 
 /** @return The Save as PDF destination. */
 export function getSaveAsPdfDestination(): Destination {

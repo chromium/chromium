@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
@@ -178,7 +177,6 @@ component("google_apis") {
   public_deps = [
     ":buildflags",
     "//base",
-    "//build:chromeos_buildflags",
     "//services/network/public/cpp",
   ]
 
@@ -186,7 +184,6 @@ component("google_apis") {
     ":proto",
     "//base/version_info:channel",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//crypto",
     "//mojo/public/cpp/bindings:struct_traits",
     "//net",
@@ -288,7 +285,6 @@ test("google_apis_unittests") {
     "//base/test:test_support",
     "//base/version_info:channel",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//google_apis/calendar:calendar_unittests",
     "//google_apis/common:common_unittests",
     "//testing/gmock",

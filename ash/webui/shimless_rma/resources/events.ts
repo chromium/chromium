@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RmadErrorCode, StateResult} from './shimless_rma.mojom-webui.js';
+import type {RmadErrorCode, StateResult} from './shimless_rma.mojom-webui.js';
 
 export const DISABLE_NEXT_BUTTON = 'disable-next-button';
 export type DisableNextButtonEvent = CustomEvent<boolean>;

@@ -464,6 +464,10 @@ class ASH_EXPORT CaptureModeSession
   void OnScannerActionButtonPressed(
       const ScannerActionViewModel& scanner_action);
 
+  // Called back when the user clicks a link to try fetching Scanner actions
+  // again after a previous attempt failed.
+  void OnScannerTryAgainPressed();
+
   // Creates the feedback button widget if it wasn't previously created and
   // should be shown, and updates the widget's bounds and visibility.
   void UpdateFeedbackButtonWidget();

@@ -23,9 +23,10 @@ import './sea_pen_zero_state_svg_element.js';
 
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {QUERY, Query, SeaPenImageId} from './constants.js';
+import type {Query, SeaPenImageId} from './constants.js';
+import {QUERY} from './constants.js';
 import {isManagedSeaPenFeedbackEnabled, isSeaPenTextInputEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
-import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
+import type {MantaStatusCode, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
 import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenThumbnail} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_images_element.html.js';

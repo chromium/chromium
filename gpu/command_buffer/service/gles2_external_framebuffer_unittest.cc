@@ -115,8 +115,7 @@ class GLES2ExternalFrameBufferTest
 
   bool use_passthrough() {
     return gles2::UsePassthroughCommandDecoder(
-               base::CommandLine::ForCurrentProcess()) &&
-           gles2::PassthroughCommandDecoderSupported();
+        base::CommandLine::ForCurrentProcess());
   }
 
  protected:

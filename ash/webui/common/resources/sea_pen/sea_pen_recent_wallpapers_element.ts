@@ -15,15 +15,15 @@ import 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {AnchorAlignment} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
-import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
+import type {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SeaPenImageId} from './constants.js';
+import type {SeaPenImageId} from './constants.js';
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {RecentSeaPenThumbnailData, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import type {RecentSeaPenThumbnailData, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {deleteRecentSeaPenImage, fetchRecentSeaPenData, getSeaPenThumbnails, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logRecentImageActionMenuItemClick, RecentImageActionMenuItem} from './sea_pen_metrics_logger.js';

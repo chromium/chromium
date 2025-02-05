@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/capture_mode/action_button_view.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -121,8 +122,6 @@ ActionButtonContainerView::ErrorView::ErrorView()
               TypographyToken::kCrosAnnotation1))
           .Build());
 
-  // TODO(crbug.com/388451361): Implement keyboard navigation for the try again
-  // link.
   AddChildView(
       views::Builder<views::Link>()
           .CopyAddressTo(&try_again_link_)
@@ -135,6 +134,7 @@ ActionButtonContainerView::ErrorView::ErrorView()
           .SetProperty(views::kMarginsKey, kErrorViewTryAgainLinkPadding)
           .SetVisible(false)
           .Build());
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(try_again_link_);
 }
 
 ActionButtonContainerView::ErrorView::~ErrorView() = default;
@@ -259,6 +259,20 @@ void ActionButtonContainerView::ClearContainer() {
 
 const views::View::Views& ActionButtonContainerView::GetActionButtons() const {
   return action_button_row_->children();
+}
+
+std::vector<views::View*> ActionButtonContainerView::GetFocusableViews() {
+  std::vector<views::View*> focusable_views;
+  views::View* try_again_link = error_view_->try_again_link();
+  if (error_view_->GetVisible() && try_again_link->GetVisible()) {
+    focusable_views.push_back(try_again_link);
+  }
+  for (auto action_button : GetActionButtons()) {
+    if (action_button->GetEnabled()) {
+      focusable_views.push_back(action_button);
+    }
+  }
+  return focusable_views;
 }
 
 void ActionButtonContainerView::ShowErrorView(

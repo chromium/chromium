@@ -210,15 +210,6 @@ void ViewAXPlatformNodeDelegate::FireFocusAfterMenuClose() {
   }
 }
 
-bool ViewAXPlatformNodeDelegate::GetIsIgnored() const {
-  // TODO(accessibility): Make `ViewAccessibility::GetIsIgnored()` non-virtual
-  // and delete this method. For this to happen the logic relevant to
-  // `IsViewUnfocusableDescendantOfFocusableAncestor()` needs to be moved to be
-  // part of a "push" system rather than "pull".
-  // For more info: https://crbug.com/325137417
-  return GetData().IsIgnored();
-}
-
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNativeObject() const {
   DCHECK(ax_platform_node_);
   return ax_platform_node_->GetNativeViewAccessible();

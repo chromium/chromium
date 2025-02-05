@@ -13,13 +13,13 @@
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_cookies_factory.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_gcm_app_handler.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_sync_service_factory.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
@@ -52,7 +52,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExtensionGarbageCollectorFactory::GetInstance();
   extensions::ExtensionGCMAppHandler::GetFactoryInstance();
   extensions::ExtensionManagementFactory::GetInstance();
-  extensions::ExtensionSystemFactory::GetInstance();
+  extensions::ChromeExtensionSystemFactory::GetInstance();
   extensions::InstallTrackerFactory::GetInstance();
   extensions::InstallVerifierFactory::GetInstance();
   extensions::ManifestV2ExperimentManager::GetFactory();

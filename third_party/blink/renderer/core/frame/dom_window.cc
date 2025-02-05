@@ -534,6 +534,7 @@ void DOMWindow::focus(v8::Isolate* isolate) {
     return;
 
   Page* page = frame->GetPage();
+  // TODO(dcheng): This null check is probably not needed.
   if (!page)
     return;
 
@@ -605,8 +606,7 @@ void DOMWindow::focus(v8::Isolate* isolate) {
     // We are depending on user activation twice since IsFocusAllowed() will
     // check for activation. This should be addressed in
     // https://crbug.com/959815.
-    if (local_frame->GetDocument() &&
-        !local_frame->GetDocument()->IsFocusAllowed()) {
+    if (!local_frame->GetDocument()->IsFocusAllowed(FocusTrigger::kScript)) {
       return;
     }
   }

@@ -1142,11 +1142,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, SidePanelModalDialog) {
   // Close the lens overlay.
   controller->CloseUISync(lens::LensOverlayDismissalSource::kPageChanged);
 
-  // The side panel will not be closed immediately because the animation is in
-  // progress.
-  ASSERT_NE(side_panel->state(), SidePanel::State::kClosed);
-  ASSERT_TRUE(modal_widget->IsVisible());
-
   // Overlay should eventually close.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOff; }));

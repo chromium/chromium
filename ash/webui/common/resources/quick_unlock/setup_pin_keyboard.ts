@@ -19,7 +19,7 @@ import {ConfigureResult, PinFactorEditor} from 'chrome://resources/mojo/chromeos
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LockScreenProgress, recordLockScreenProgress} from './lock_screen_constants.js';
-import {PinKeyboardElement} from './pin_keyboard.js';
+import type {PinKeyboardElement} from './pin_keyboard.js';
 import {getTemplate} from './setup_pin_keyboard.html.js';
 import {fireAuthTokenInvalidEvent} from './utils.js';
 

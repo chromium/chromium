@@ -63,7 +63,7 @@ export class NetworkConfigInputElement extends NetworkConfigInputElementBase {
   value: string;
 
   override focus() {
-    const input = this.shadowRoot!.querySelector('cr-input')
+    const input = this.shadowRoot!.querySelector('cr-input');
     assert(input);
     input.focus();
   }

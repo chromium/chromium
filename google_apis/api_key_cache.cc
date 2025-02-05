@@ -20,7 +20,6 @@
 #include "base/strings/stringize_macros.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "google_apis/buildflags.h"
 #include "google_apis/default_api_keys.h"
 #include "google_apis/gaia/gaia_config.h"
@@ -153,7 +152,7 @@ ApiKeyCache::ApiKeyCache(const DefaultApiKeys& default_api_keys) {
       default_api_keys.allow_unset_values);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   api_key_sharing_ = CalculateKeyValue(
       default_api_keys.google_api_key_sharing,
       STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SHARING), nullptr, std::string(),

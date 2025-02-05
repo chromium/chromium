@@ -768,7 +768,7 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
   // Mark device will be consumer owned if the device is not managed and this is
   // the first user on the device.
   if (!is_enterprise_managed &&
-      user_manager::UserManager::Get()->GetUsers().empty()) {
+      user_manager::UserManager::Get()->GetPersistedUsers().empty()) {
     DeviceSettingsService::Get()->MarkWillEstablishConsumerOwnership();
 
     // Save the owner email in case Chrome restarts/crashes before fully taking
@@ -1050,7 +1050,7 @@ void ExistingUserController::DeviceSettingsChanged() {
         UserAddingScreen::Get()->IsRunning()
             ? user_manager::UserManager::Get()
                   ->GetUsersAllowedForMultiUserSignIn()
-            : user_manager::UserManager::Get()->GetUsers();
+            : user_manager::UserManager::Get()->GetPersistedUsers();
 
     UpdateLoginDisplay(users);
     ConfigureAutoLogin();

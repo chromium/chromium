@@ -88,6 +88,8 @@ export class GlicAppController implements PageInterface {
     this.contentLoaded = this.contentLoaded.bind(this);
     this.onNewWindow = this.onNewWindow.bind(this);
     this.onPermissionRequest = this.onPermissionRequest.bind(this);
+    this.onUnresponsive = this.onUnresponsive.bind(this);
+    this.onExit = this.onExit.bind(this);
 
     this.webview = this.createWebView();
 
@@ -122,6 +124,16 @@ export class GlicAppController implements PageInterface {
   private onPermissionRequest(e: any): void {
     if (e.permission === 'media' || e.permission === 'geolocation') {
       e.request.allow();
+    }
+  }
+
+  private onUnresponsive(): void {
+    this.setState(WebUiState.kUnresponsive);
+  }
+
+  private onExit(e: any): void {
+    if (e.reason !== 'normal') {
+      this.setState(WebUiState.kError);
     }
   }
 
@@ -187,6 +199,17 @@ export class GlicAppController implements PageInterface {
         onEnter: () => {
           $.guestPanel.classList.toggle('show-header', false);
           this.showPanel('guestPanel');
+        },
+      },
+    ],
+    [
+      WebUiState.kUnresponsive,
+      {
+        onEnter: () => {
+          this.destroyWebview();
+          // TODO(crbug.com/394162784): Create an unresponsive UI and permit
+          // transitioning back to being responsive.
+          this.showPanel('errorPanel');
         },
       },
     ],
@@ -271,6 +294,8 @@ export class GlicAppController implements PageInterface {
     webview.addEventListener('contentload', this.contentLoaded);
     webview.addEventListener('newwindow', this.onNewWindow);
     webview.addEventListener('permissionrequest', this.onPermissionRequest);
+    webview.addEventListener('unresponsive', this.onUnresponsive);
+    webview.addEventListener('exit', this.onExit);
 
     return webview;
   }

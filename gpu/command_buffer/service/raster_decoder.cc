@@ -1004,8 +1004,7 @@ RasterDecoderImpl::RasterDecoderImpl(
       display_context_on_another_thread_(
           shared_image_manager &&
           shared_image_manager->display_context_on_another_thread()),
-      use_passthrough_(gles2::PassthroughCommandDecoderSupported() &&
-                       gpu_preferences.use_passthrough_cmd_decoder),
+      use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder),
       gpu_preferences_(gpu_preferences),
       logger_(&debug_marker_manager_,
               base::BindRepeating(&DecoderClient::OnConsoleMessage,

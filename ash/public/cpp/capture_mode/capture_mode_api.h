@@ -17,9 +17,6 @@ void ASH_EXPORT CaptureScreenshotsOfAllDisplays();
 // Returns true if the active account can bypass the feature key check.
 bool ASH_EXPORT IsSunfishFeatureEnabledWithFeatureKey();
 
-// Returns true if either Sunfish or Scanner is enabled.
-bool ASH_EXPORT IsSunfishOrScannerEnabled();
-
 // Returns whether the Sunfish feature is allowed and enabled by the user, i.e.
 // via the user prefs.
 bool ASH_EXPORT IsSunfishAllowedAndEnabled();

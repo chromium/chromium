@@ -20,18 +20,20 @@ import {getSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_stor
 import {isImageDataUrl, isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import type {WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import {GooglePhotosEnablementState} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosIntegrationEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCountText, isSelectionEvent} from '../utils.js';
 
-import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
+import type {DefaultImageSymbol} from './constants.js';
+import {kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
 import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, getPathOrSymbol} from './utils.js';
 import {getTemplate} from './wallpaper_collections_element.html.js';
 import {fetchGooglePhotosEnabled, fetchLocalData, getDefaultImageThumbnail, initializeBackdropData} from './wallpaper_controller.js';

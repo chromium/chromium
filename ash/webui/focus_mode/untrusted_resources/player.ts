@@ -17,9 +17,9 @@ interface Track {
 
 function isTrack(a: any): a is Track {
   return (
-      a && typeof a == 'object' && typeof a.mediaUrl == 'string' &&
-      typeof a.thumbnailUrl == 'string' && typeof a.title == 'string' &&
-      typeof a.artist == 'string');
+      a && typeof a === 'object' && typeof a.mediaUrl === 'string' &&
+      typeof a.thumbnailUrl === 'string' && typeof a.title === 'string' &&
+      typeof a.artist === 'string');
 }
 
 interface Command {
@@ -28,7 +28,7 @@ interface Command {
 }
 
 function isCommand(a: any): a is Command {
-  return a && typeof a == 'object' && typeof a.cmd == 'string';
+  return a && typeof a === 'object' && typeof a.cmd === 'string';
 }
 
 function sendTrackRequest() {

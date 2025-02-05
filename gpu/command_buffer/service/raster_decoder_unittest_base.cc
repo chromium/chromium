@@ -31,7 +31,6 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/program_manager.h"
-#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_factory.h"
 #include "gpu/command_buffer/service/test_helper.h"
@@ -132,8 +131,7 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
       gl_.get(), all_extensions.c_str(), "", init.gl_version.c_str(),
       context_type);
   feature_info_->Initialize(context_type,
-                            gpu_preferences_.use_passthrough_cmd_decoder &&
-                                gles2::PassthroughCommandDecoderSupported(),
+                            gpu_preferences_.use_passthrough_cmd_decoder,
                             gles2::DisallowedFeatures());
 
   // Setup expectations for SharedContextState::InitializeGL().

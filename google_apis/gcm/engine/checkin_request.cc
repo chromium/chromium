@@ -8,7 +8,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 #include "google_apis/gcm/protocol/checkin.pb.h"
@@ -139,7 +139,7 @@ void CheckinRequest::Start() {
 
   checkin_proto::AndroidCheckinProto* checkin = request.mutable_checkin();
   checkin->mutable_chrome_build()->CopyFrom(request_info_.chrome_build_proto);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   checkin->set_type(checkin_proto::DEVICE_CHROME_OS);
 #else
   checkin->set_type(checkin_proto::DEVICE_CHROME_BROWSER);

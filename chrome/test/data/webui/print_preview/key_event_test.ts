@@ -32,9 +32,6 @@ suite('KeyEventTest', function() {
         getCddTemplateWithAdvancedSettings(1, initialSettings.printerName));
     nativeLayer.setPageCount(3);
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
-    setNativeLayerCrosInstance();
-    // </if>
     const pluginProxy = new TestPluginProxy();
     PluginProxyImpl.setInstance(pluginProxy);
 

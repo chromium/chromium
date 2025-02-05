@@ -15,10 +15,10 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
-import {CellularMetadata} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
+import type {CellularMetadata} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CellularSetupDelegate} from './cellular_setup_delegate.js';
+import type {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {getTemplate} from './provisioning_page.html.js';
 import {postDeviceDataToWebview} from './webview_post_util.js';
 

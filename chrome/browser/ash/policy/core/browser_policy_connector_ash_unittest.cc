@@ -50,13 +50,13 @@ TEST(BrowserPolicyConnectorAshTest, UserManager) {
 
   browser_policy_connector.OnUserManagerCreated(fake_user_manager.Get());
 
-  EXPECT_EQ(2u, fake_user_manager->GetUsers().size());
+  EXPECT_EQ(2u, fake_user_manager->GetPersistedUsers().size());
   EXPECT_EQ(0, test_wallpaper_controller.remove_user_wallpaper_count());
 
   fake_user_manager->RemoveUser(kAccountId,
                                 user_manager::UserRemovalReason::UNKNOWN);
 
-  EXPECT_EQ(1u, fake_user_manager->GetUsers().size());
+  EXPECT_EQ(1u, fake_user_manager->GetPersistedUsers().size());
   EXPECT_EQ(1, test_wallpaper_controller.remove_user_wallpaper_count());
 
   browser_policy_connector.OnUserManagerShutdown();

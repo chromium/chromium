@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
-import {Actions} from '../personalization_actions.js';
-import {ReducerFunction} from '../personalization_reducers.js';
-import {PersonalizationState} from '../personalization_state.js';
+import type {CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
+import type {Actions} from '../personalization_actions.js';
+import type {ReducerFunction} from '../personalization_reducers.js';
+import type {PersonalizationState} from '../personalization_state.js';
 
 import {KeyboardBacklightActionName} from './keyboard_backlight_actions.js';
-import {KeyboardBacklightState} from './keyboard_backlight_state.js';
+import type {KeyboardBacklightState} from './keyboard_backlight_state.js';
 
 export function currentBacklightStateReducer(
     state: CurrentBacklightState|null, action: Actions,

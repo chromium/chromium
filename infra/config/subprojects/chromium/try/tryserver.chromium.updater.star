@@ -132,6 +132,28 @@ updater_mac_builder(
 )
 
 updater_windows_builder(
+    name = "win-arm64-updater-rel",
+    description_html = _UPDATER_LINK + " Windows 11 arm64 release builder.",
+    mirrors = [
+        "ci/win-arm64-updater-builder-rel",
+        "ci/win11-arm64-updater-tester-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-arm64-updater-builder-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "omaha@google.com",
+    main_list_view = "try",
+    tryjob = try_.job(
+        location_filters = [
+            "chrome/updater/.+",
+        ],
+    ),
+)
+
+updater_windows_builder(
     name = "win-updater-try-builder-dbg",
     description_html = _UPDATER_LINK + " Windows 10 x64 debug builder.",
     mirrors = [

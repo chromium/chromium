@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, MojoSearchResult, TextAcceleratorPartType} from './shortcut_types.js';
+import type {Accelerator, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, MojoSearchResult} from './shortcut_types.js';
+import {AcceleratorCategory, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutStyle, Modifier, TextAcceleratorPartType} from './shortcut_types.js';
 import {keyToIconNameMap} from './shortcut_utils.js';
 
 const fakeTimestamp: TimeTicks = {

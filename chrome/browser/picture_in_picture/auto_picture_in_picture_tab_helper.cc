@@ -171,6 +171,7 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
     return;
   }
   is_in_picture_in_picture_ = is_in_picture_in_picture;
+  blocked_due_to_content_setting_ = false;
 
   if (!is_in_picture_in_picture_) {
     is_in_auto_picture_in_picture_ = false;
@@ -292,11 +293,16 @@ void AutoPictureInPictureTabHelper::MaybeScheduleAsyncTasks() {
   StopAndResetAsyncTasks();
 
   // Prevent scheduling asynchronous checks if we are already in picture in
-  // picture, or a media session does not exist. Also prevent these checks if we
-  // are already eligible for auto picture in picture, since auto picture in
-  // picture requests will succeed anyways.
+  // picture, picture in picture was blocked due to content setting/incognito,
+  // or a media session does not exist. Also prevent these checks if we are
+  // already eligible for auto picture in picture, since auto picture in picture
+  // requests will succeed anyways.
+  //
+  // The `blocked_due_to_content_setting_` check is performed to prevent
+  // recording duplicate entries for blocking metrics.
   if (is_in_picture_in_picture_ ||
       !(content::MediaSession::GetIfExists(web_contents())) ||
+      blocked_due_to_content_setting_ ||
       IsEligibleForAutoPictureInPicture(
           /*should_record_blocking_metrics=*/false)) {
     return;
@@ -318,6 +324,7 @@ void AutoPictureInPictureTabHelper::StopAndResetAsyncTasks() {
 }
 
 void AutoPictureInPictureTabHelper::MaybeExitAutoPictureInPicture() {
+  blocked_due_to_content_setting_ = false;
   MaybeRecordPictureInPictureChanged(false);
   StopAndResetAsyncTasks();
   auto_pip_trigger_reason_ = AutoPipSettingHelper::AutoPipReason::kUnknown;
@@ -382,6 +389,8 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
   // why autopip has been blocked.
   ContentSetting setting = GetCurrentContentSetting();
   if (setting == CONTENT_SETTING_BLOCK) {
+    blocked_due_to_content_setting_ = true;
+
     if (should_record_blocking_metrics) {
       EnsureAutoPipSettingHelper();
       auto_pip_setting_helper_->OnAutoPipBlockedByPermission(
@@ -391,6 +400,8 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
   } else if (setting == CONTENT_SETTING_ASK &&
              Profile::FromBrowserContext(web_contents()->GetBrowserContext())
                  ->IsIncognitoProfile()) {
+    blocked_due_to_content_setting_ = true;
+
     if (should_record_blocking_metrics) {
       EnsureAutoPipSettingHelper();
       auto_pip_setting_helper_->OnAutoPipBlockedByIncognito(

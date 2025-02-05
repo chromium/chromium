@@ -12,10 +12,11 @@ import 'chrome://resources/ash/common/personalization/personalization_shared_ico
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 
-import {FreeformTab, SeaPenSamplePrompt} from './constants.js';
-import {MantaStatusCode, SeaPenQuery} from './sea_pen.mojom-webui.js';
+import type {SeaPenSamplePrompt} from './constants.js';
+import {FreeformTab} from './constants.js';
+import type {MantaStatusCode, SeaPenQuery} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_freeform_element.html.js';
 import {logSamplePromptShuffleClicked, logSeaPenFreeformTabClicked} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
@@ -28,7 +29,7 @@ export interface SeaPenFreeformElement {
     resultsTab: HTMLElement,
     tabContainer: HTMLElement,
     tabKeys: IronA11yKeysElement,
-  }
+  };
 }
 
 export class SeaPenFreeformElement extends WithSeaPenStore {
@@ -102,7 +103,7 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
     // Remove focus state of focused tab.
     focusedElement?.removeAttribute('tabindex');
 
-    const nextTab = this.getOtherTab_(focusedElement)
+    const nextTab = this.getOtherTab_(focusedElement);
     if (nextTab) {
       // Add focus state for next tab.
       nextTab.setAttribute('tabindex', '0');
@@ -141,11 +142,11 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
   }
 
   private getSamplePromptsTabIndex_(tab: FreeformTab): string {
-    return this.isSamplePromptsTabSelected_(tab) ? '0' : '-1'
+    return this.isSamplePromptsTabSelected_(tab) ? '0' : '-1';
   }
 
   private getResultsTabIndex_(tab: FreeformTab): string {
-    return this.isResultsTabSelected_(tab) ? '0' : '-1'
+    return this.isResultsTabSelected_(tab) ? '0' : '-1';
   }
 
   private getOtherTab_(element: Element|null): HTMLElement|null {

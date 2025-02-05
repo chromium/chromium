@@ -18,14 +18,16 @@ import './color_icon_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {BacklightColor, CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
+import type {CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
+import {BacklightColor} from '../../personalization_app.mojom-webui.js';
 import {isMultiZoneRgbKeyboardSupported} from '../load_time_booleans.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {ColorInfo, getPresetColors, isSelectionEvent, RAINBOW, WALLPAPER, WHITE} from '../utils.js';
+import type {ColorInfo} from '../utils.js';
+import {getPresetColors, isSelectionEvent, RAINBOW, WALLPAPER, WHITE} from '../utils.js';
 
 import {getTemplate} from './color_selector_element.html.js';
 import {getShouldShowNudge, handleNudgeShown} from './keyboard_backlight_controller.js';

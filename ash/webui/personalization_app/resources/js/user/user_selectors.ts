@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {UserImage} from '../../personalization_app.mojom-webui.js';
-import {PersonalizationState} from '../personalization_state.js';
+import type {UserImage} from '../../personalization_app.mojom-webui.js';
+import type {PersonalizationState} from '../personalization_state.js';
 
 import {AVATAR_PLACEHOLDER_URL} from './utils.js';
 

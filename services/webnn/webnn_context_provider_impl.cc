@@ -29,7 +29,7 @@
 #include "services/webnn/dml/utils.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(WEBNN_USE_COREML)
 #include "services/webnn/coreml/context_impl_coreml.h"
 #endif
 
@@ -283,14 +283,14 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(WEBNN_USE_COREML)
   // TODO: crbug.com/325612086 - Consider using supporting older Macs either
   // with TFLite or a more restrictive implementation on CoreML.
   if (__builtin_available(macOS 14, *)) {
     context_impl = new coreml::ContextImplCoreml(std::move(receiver), this,
                                                  std::move(options));
   }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(WEBNN_USE_COREML)
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
   if (!context_impl) {

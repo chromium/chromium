@@ -33,6 +33,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/devtools_util.h"
@@ -42,7 +43,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_verifier.h"
@@ -508,7 +508,7 @@ void BrowserContextKeyedAPIFactory<
   DependsOn(ExtensionManagementFactory::GetInstance());
   DependsOn(CommandService::GetFactoryInstance());
   DependsOn(EventRouterFactory::GetInstance());
-  DependsOn(ExtensionSystemFactory::GetInstance());
+  DependsOn(ChromeExtensionSystemFactory::GetInstance());
   DependsOn(PermissionsManager::GetFactory());
   DependsOn(ToolbarActionsModelFactory::GetInstance());
   DependsOn(AccountExtensionTracker::GetFactory());

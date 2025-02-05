@@ -239,7 +239,7 @@
   {
     "name": "android-tab-declutter-archive-duplicate-tabs",
     "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "animate-suggestions-list-appearance",
@@ -3029,7 +3029,7 @@
   {
     "name": "enable-fast-ink-for-software-cursor",
     "owners": ["yichenz@chromium.org", "cros-sw-perf@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "enable-fast-touchpad-click",
@@ -8707,15 +8707,7 @@
       "agale@google.com",
       "chrome-performance-ui-team@google.com"
     ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "top-chrome-toasts",
-    "owners": [
-      "agale@google.com",
-      "chrome-performance-ui-team@google.com"
-    ],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "top-chrome-touch-ui",

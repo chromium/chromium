@@ -15,7 +15,6 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_features.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -161,7 +161,7 @@ bool IsSigninToAdd() {
 
 bool CanRemoveUser(const user_manager::User* user) {
   const bool is_single_user =
-      user_manager::UserManager::Get()->GetUsers().size() == 1;
+      user_manager::UserManager::Get()->GetPersistedUsers().size() == 1;
 
   // Single user check here is necessary because owner info might not be
   // available when running into login screen on first boot.

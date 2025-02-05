@@ -4,9 +4,10 @@
 
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ColorMode, FileType, PageSize, Scanner, SourceType} from './scanning.mojom-webui.js';
+import type {Scanner} from './scanning.mojom-webui.js';
+import {ColorMode, FileType, PageSize, SourceType} from './scanning.mojom-webui.js';
 
 /**
  * Converts a ColorMode string to the corresponding enum

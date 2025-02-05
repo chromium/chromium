@@ -9,7 +9,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/common/pref_names.h"
@@ -101,7 +101,7 @@ ThemeServiceFactory::ThemeServiceFactory()
               .Build()) {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
-  DependsOn(extensions::ExtensionSystemFactory::GetInstance());
+  DependsOn(extensions::ChromeExtensionSystemFactory::GetInstance());
 }
 
 ThemeServiceFactory::~ThemeServiceFactory() = default;

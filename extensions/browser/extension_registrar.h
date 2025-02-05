@@ -166,9 +166,10 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   // when unknown values are casted to DisableReason while constructing
   // DisableReasonSet. Most code should use the method above. We want to limit
   // the usage of the method below, so it is guarded by a passkey.
-  void DisableExtension(ExtensionPrefs::DisableReasonRawManipulationPasskey,
-                        const ExtensionId& extension_id,
-                        base::flat_set<int> disable_reasons);
+  void DisableExtensionWithRawReasons(
+      ExtensionPrefs::DisableReasonRawManipulationPasskey,
+      const ExtensionId& extension_id,
+      base::flat_set<int> disable_reasons);
 
   // Same as `DisableExtension`, but assumes that the request to disable
   // `extension_id` originates from `source_extension` when evaluating whether

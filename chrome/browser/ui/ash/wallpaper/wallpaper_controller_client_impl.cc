@@ -474,7 +474,7 @@ void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
   }
 
   const user_manager::UserList& users =
-      user_manager::UserManager::Get()->GetUsers();
+      user_manager::UserManager::Get()->GetPersistedUsers();
   user_manager::User* public_session = FindPublicSession(users);
 
   // Show the default signin wallpaper if there's no user to display.

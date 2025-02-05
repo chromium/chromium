@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {HidPreservingBluetoothStateController, HidPreservingBluetoothStateControllerInterface} from './hid_preserving_bluetooth_state_controller.mojom-webui.js';
+import type {HidPreservingBluetoothStateControllerInterface} from './hid_preserving_bluetooth_state_controller.mojom-webui.js';
+import {HidPreservingBluetoothStateController} from './hid_preserving_bluetooth_state_controller.mojom-webui.js';
 
 /**
  * @fileoverview

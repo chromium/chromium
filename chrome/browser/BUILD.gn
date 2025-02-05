@@ -278,6 +278,8 @@ static_library("browser") {
     "chrome_browser_field_trials.h",
     "chrome_browser_interface_binders.cc",
     "chrome_browser_interface_binders.h",
+    "chrome_browser_interface_binders_webui.cc",
+    "chrome_browser_interface_binders_webui.h",
     "chrome_browser_main.cc",
     "chrome_browser_main.h",
     "chrome_browser_main_extra_parts_nacl_deprecation.cc",

@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestEolReached) {
 // Test to verify that clicking on the confirm button on the popup in case of
 // update required and end-of-life reached, deletes all users on the device.
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestEolDeleteUsersConfirm) {
-  EXPECT_EQ(user_manager::UserManager::Get()->GetUsers().size(), 2u);
+  EXPECT_EQ(user_manager::UserManager::Get()->GetPersistedUsers().size(), 2u);
   update_engine_client()->set_eol_date(
       base::DefaultClock::GetInstance()->Now() - base::Days(1));
   ShowUpdateRequiredScreen();
@@ -288,13 +288,13 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestEolDeleteUsersConfirm) {
 
   test::OobeJS().CreateVisibilityWaiter(true, kEolNoUsersDataMsg)->Wait();
   test::OobeJS().ExpectHiddenPath(kEolDeleteUsersDataMessage);
-  EXPECT_EQ(user_manager::UserManager::Get()->GetUsers().size(), 0u);
+  EXPECT_EQ(user_manager::UserManager::Get()->GetPersistedUsers().size(), 0u);
 }
 
 // Test to verify that clicking on the cancel button on the popup in case of
 // update required and end-of-life reached, does not delete any user.
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestEolDeleteUsersCancel) {
-  EXPECT_EQ(user_manager::UserManager::Get()->GetUsers().size(), 2u);
+  EXPECT_EQ(user_manager::UserManager::Get()->GetPersistedUsers().size(), 2u);
   update_engine_client()->set_eol_date(
       base::DefaultClock::GetInstance()->Now() - base::Days(1));
   ShowUpdateRequiredScreen();
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestEolDeleteUsersCancel) {
 
   test::OobeJS().ExpectVisiblePath(kEolDeleteUsersDataMessage);
   test::OobeJS().ExpectHiddenPath(kEolNoUsersDataMsg);
-  EXPECT_EQ(user_manager::UserManager::Get()->GetUsers().size(), 2u);
+  EXPECT_EQ(user_manager::UserManager::Get()->GetPersistedUsers().size(), 2u);
 }
 
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestEolReachedAdminMessage) {
@@ -570,7 +570,7 @@ class UpdateRequiredScreenPolicyPresentTest : public OobeBaseTest {
 // still shows the update required screen to block user sign in.
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenPolicyPresentTest,
                        TestUpdateRequiredScreen) {
-  EXPECT_EQ(user_manager::UserManager::Get()->GetUsers().size(), 0u);
+  EXPECT_EQ(user_manager::UserManager::Get()->GetPersistedUsers().size(), 0u);
   OobeScreenWaiter update_screen_waiter(UpdateRequiredView::kScreenId);
   update_screen_waiter.set_assert_next_screen();
   update_screen_waiter.Wait();

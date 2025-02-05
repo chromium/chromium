@@ -53,7 +53,7 @@ void LoginAsh::LaunchManagedGuestSession(
   }
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  for (const user_manager::User* user : user_manager->GetUsers()) {
+  for (const user_manager::User* user : user_manager->GetPersistedUsers()) {
     if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
       continue;
     }

@@ -14,13 +14,13 @@ import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import {CrScrollableMixin} from '//resources/ash/common/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from '//resources/ash/common/cr_elements/list_property_update_mixin.js';
-import {GlobalPolicy} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
+import type {GlobalPolicy} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_list.html.js';
-import {NetworkList} from './network_list_types.js';
-import {OncMojo} from './onc_mojo.js';
+import type {NetworkList} from './network_list_types.js';
+import type {OncMojo} from './onc_mojo.js';
 
 /**
  * Polymer class definition for 'network-list'.

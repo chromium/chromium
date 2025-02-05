@@ -12,12 +12,13 @@ import {FocusRowMixin} from 'chrome://resources/ash/common/cr_elements/focus_row
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from '../accelerator_lookup_manager.js';
 import {Router} from '../router.js';
-import {LayoutStyle, MetaKey, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
+import type {MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from '../shortcut_types.js';
+import {LayoutStyle, MetaKey} from '../shortcut_types.js';
 import {getAriaLabelForStandardAccelerators, getAriaLabelForTextAccelerators, getModifiersForAcceleratorInfo, getTextAcceleratorParts, getURLForSearchResult, isStandardAcceleratorInfo, isTextAcceleratorInfo} from '../shortcut_utils.js';
 
 import {getBoldedDescription} from './search_result_bolding.js';

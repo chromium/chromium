@@ -211,10 +211,6 @@ bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
   return gl::UsePassthroughCommandDecoder(command_line);
 }
 
-bool PassthroughCommandDecoderSupported() {
-  return gl::PassthroughCommandDecoderSupported();
-}
-
 GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
   GpuPreferences gpu_preferences;
   gpu_preferences.compile_shader_always_succeeds =

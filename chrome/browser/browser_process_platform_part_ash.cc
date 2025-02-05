@@ -15,6 +15,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
@@ -200,11 +201,14 @@ void BrowserProcessPlatformPart::ShutdownDeviceDisablingManager() {
 }
 
 void BrowserProcessPlatformPart::InitializeSessionManager() {
+  CHECK(ash::BootTimesRecorder::GetIfCreated());
   CHECK(!session_manager_);
   session_manager_ = std::make_unique<ash::ChromeSessionManager>();
+  session_manager_->AddObserver(ash::BootTimesRecorder::Get());
 }
 
 void BrowserProcessPlatformPart::ShutdownSessionManager() {
+  session_manager_->RemoveObserver(ash::BootTimesRecorder::Get());
   session_manager_.reset();
 }
 

@@ -22,6 +22,7 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
@@ -80,6 +81,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
@@ -2566,6 +2568,102 @@ TEST_F(ScannerTest, ShowsErrorWhenScannerResponseContainsError) {
       session_test_api.GetActionContainerErrorView();
   ASSERT_TRUE(error_view);
   EXPECT_TRUE(error_view->GetVisible());
+}
+
+// Tests that the user can click try again to try fetching Scanner actions again
+// if their initial attempt failed.
+TEST_F(ScannerTest, CanTryAgainWhenScannerResponseContainsError) {
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillRepeatedly(WithArg<1>(InvokeFuture(fetch_actions_future)));
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+
+  // Simulate an error so that the try again link appears.
+  fetch_actions_future.Take().Run(
+      nullptr,
+      manta::MantaStatus{.status_code = manta::MantaStatusCode::kInvalidInput});
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  ActionButtonContainerView::ErrorView* error_view =
+      session_test_api.GetActionContainerErrorView();
+  views::View* try_again_link = error_view->try_again_link();
+  ASSERT_TRUE(try_again_link);
+  EXPECT_TRUE(try_again_link->GetVisible());
+
+  // Click the try again link.
+  LeftClickOn(try_again_link);
+
+  // Now simulate a successful response.
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
+  fetch_actions_future.Take().Run(std::move(output), manta::MantaStatus());
+
+  // Action buttons should be shown.
+  EXPECT_FALSE(error_view->GetVisible());
+  EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
+}
+
+// Tests that the user can use keyboard navigation to try fetching Scanner
+// actions again if their initial attempt failed.
+TEST_F(ScannerTest,
+       KeyboardNavigationTryAgainWhenScannerResponseContainsError) {
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillRepeatedly(WithArg<1>(InvokeFuture(fetch_actions_future)));
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+
+  // Simulate an error so that the try again link appears.
+  fetch_actions_future.Take().Run(
+      nullptr,
+      manta::MantaStatus{.status_code = manta::MantaStatusCode::kInvalidInput});
+  CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  ActionButtonContainerView::ErrorView* error_view =
+      session_test_api.GetActionContainerErrorView();
+  EXPECT_TRUE(error_view->GetVisible());
+  views::View* try_again_link = error_view->try_again_link();
+  ASSERT_TRUE(try_again_link);
+  EXPECT_TRUE(try_again_link->GetVisible());
+
+  // Use tab to navigate to the try again link.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN, /*count=*/2);
+  EXPECT_EQ(session_test_api.GetCurrentFocusGroup(),
+            CaptureModeSessionFocusCycler::FocusGroup::kActionButtons);
+  EXPECT_TRUE(
+      CaptureModeSessionFocusCycler::HighlightHelper::Get(try_again_link)
+          ->has_focus());
+  // Press enter to activate the try again link.
+  SendKey(ui::VKEY_RETURN, event_generator);
+
+  // Now simulate a successful response.
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
+  fetch_actions_future.Take().Run(std::move(output), manta::MantaStatus());
+
+  // Action buttons should be shown.
+  EXPECT_FALSE(error_view->GetVisible());
+  EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
 }
 
 // Tests that action buttons for a stale Scanner request are not added to a new

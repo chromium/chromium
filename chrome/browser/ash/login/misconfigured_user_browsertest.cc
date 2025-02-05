@@ -174,7 +174,8 @@ class MisconfiguredUserTest : public MisconfiguredOwnerUserTest {
 IN_PROC_BROWSER_TEST_F(
     MisconfiguredUserTest,
     PRE_MisconfiguredUserSuccessfullyRemovedFromUserManager) {
-  user_manager::UserList users = user_manager::UserManager::Get()->GetUsers();
+  user_manager::UserList users =
+      user_manager::UserManager::Get()->GetPersistedUsers();
 
   auto result =
       std::find_if(begin(users), end(users), [this](user_manager::User* user) {
@@ -191,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(MisconfiguredUserTest,
                        MisconfiguredUserSuccessfullyRemovedFromUserManager) {
-  user_manager::UserList users = user_manager::UserManager::Get()->GetUsers();
+  user_manager::UserList users =
+      user_manager::UserManager::Get()->GetPersistedUsers();
 
   auto result =
       std::find_if(begin(users), end(users), [this](user_manager::User* user) {

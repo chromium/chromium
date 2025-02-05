@@ -6,7 +6,8 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import {PowerRoutineResult, RoutineResult, RoutineResultInfo, RoutineRunnerInterface, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './system_routine_controller.mojom-webui.js';
+import type {PowerRoutineResult, RoutineResult, RoutineResultInfo, RoutineRunnerInterface, SystemRoutineControllerInterface} from './system_routine_controller.mojom-webui.js';
+import {RoutineType, StandardRoutineResult} from './system_routine_controller.mojom-webui.js';
 
 /**
  * @fileoverview

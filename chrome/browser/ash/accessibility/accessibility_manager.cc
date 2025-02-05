@@ -2486,7 +2486,7 @@ void AccessibilityManager::SetCaretBounds(const gfx::Rect& bounds_in_screen) {
 
 bool AccessibilityManager::GetStartupSoundEnabled() const {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  const user_manager::UserList& user_list = user_manager->GetUsers();
+  const user_manager::UserList& user_list = user_manager->GetPersistedUsers();
   if (user_list.empty())
     return false;
 
@@ -2514,7 +2514,7 @@ void AccessibilityManager::PreviewFlashNotification() const {
 const std::string AccessibilityManager::GetBluetoothBrailleDisplayAddress()
     const {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  const user_manager::UserList& user_list = user_manager->GetUsers();
+  const user_manager::UserList& user_list = user_manager->GetPersistedUsers();
   if (user_list.empty())
     return std::string();
 

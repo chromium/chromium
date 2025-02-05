@@ -8,13 +8,15 @@ import '../network/network_shared.css.js';
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from '//resources/js/assert.js';
 import {NetworkType, PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {NetworkHealthService, NetworkHealthServiceRemote} from '//resources/mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js';
-import {Network, NetworkHealthState, NetworkState, UInt32Value} from '//resources/mojo/chromeos/services/network_health/public/mojom/network_health_types.mojom-webui.js';
+import type {NetworkHealthServiceRemote} from '//resources/mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js';
+import {NetworkHealthService} from '//resources/mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js';
+import type {Network, NetworkHealthState, UInt32Value} from '//resources/mojo/chromeos/services/network_health/public/mojom/network_health_types.mojom-webui.js';
+import {NetworkState} from '//resources/mojo/chromeos/services/network_health/public/mojom/network_health_types.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OncMojo} from '../network/onc_mojo.js';
 
-import {NetworkHealthContainerElement} from './network_health_container.js';
+import type {NetworkHealthContainerElement} from './network_health_container.js';
 import {getTemplate} from './network_health_summary.html.js';
 
 enum TechnologyIcons {

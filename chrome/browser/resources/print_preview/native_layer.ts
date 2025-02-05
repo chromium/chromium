@@ -80,7 +80,6 @@ export interface NativeInitialSettings {
   serializedDefaultDestinationSelectionRulesStr: string|null;
   pdfPrinterDisabled: boolean;
   destinationsManaged: boolean;
-  isDriveMounted?: boolean;
 }
 
 export interface CapabilitiesResponse {

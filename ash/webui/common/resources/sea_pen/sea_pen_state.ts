@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenImageId} from './constants.js';
-import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
+import type {SeaPenImageId} from './constants.js';
+import type {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
 
 export interface SeaPenLoadingState {
   recentImageData: Record<SeaPenImageId, boolean>;

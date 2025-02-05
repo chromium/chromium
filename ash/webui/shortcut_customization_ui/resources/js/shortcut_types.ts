@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import * as AcceleratorTypes from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 
 import * as AcceleratorConfigurationTypes from '../mojom-webui/accelerator_configuration.mojom-webui.js';
 import * as AcceleratorInfoTypes from '../mojom-webui/accelerator_info.mojom-webui.js';
 import * as MetaKeyTypes from '../mojom-webui/meta_key.mojom-webui.js';
-import {SearchHandler, SearchHandlerInterface, SearchResult, SearchResultsAvailabilityObserverRemote} from '../mojom-webui/search.mojom-webui.js';
-import {AcceleratorConfigurationProviderInterface, AcceleratorResultData, AcceleratorsUpdatedObserverRemote, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
+import type {SearchHandlerInterface, SearchResult, SearchResultsAvailabilityObserverRemote} from '../mojom-webui/search.mojom-webui.js';
+import {SearchHandler} from '../mojom-webui/search.mojom-webui.js';
+import type {AcceleratorConfigurationProviderInterface, AcceleratorResultData, AcceleratorsUpdatedObserverRemote, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 
 
 /**

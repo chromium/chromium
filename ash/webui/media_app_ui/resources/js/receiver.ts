@@ -12,8 +12,9 @@ import type {Url as MojoUrl} from '//resources/mojo/url/mojom/url.mojom-webui.js
 import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 
 import {InitializeResult} from './mantis_service.mojom-webui.js';
-import {MahiUntrustedServiceRemote, MantisUntrustedServiceRemote, OcrUntrustedServiceRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
-import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import type {MahiUntrustedServiceRemote, MantisUntrustedServiceRemote, OcrUntrustedServiceRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
+import type {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import {Message, RenameResult} from './message_types.js';
 import {connectToMahiUntrustedService, connectToMantisUntrustedService, connectToOcrUntrustedService, isMantisAvailable, mahiCallbackRouter, mantisCallbackRouter, ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
 import {loadPiex} from './piex_module_loader.js';
 

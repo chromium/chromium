@@ -13,12 +13,15 @@ import './network_property_list_mojo.js';
 import './network_shared.css.js';
 
 import type {CrToggleElement} from '//resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
-import {IPConfigProperties, ManagedProperties, NO_ROUTING_PREFIX} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {IPConfigProperties, ManagedProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {NO_ROUTING_PREFIX} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {IPConfigType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 
-import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
+import type {CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
+import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {getTemplate} from './network_ip_config.html.js';
 import {OncMojo} from './onc_mojo.js';
 
@@ -174,8 +177,8 @@ export class NetworkIpConfigElement extends NetworkIpConfigElementBase {
   managedProperties: ManagedProperties|undefined;
   private automatic_: boolean;
   private ipConfig_: ({
-    ipv4: (OncMojo.IPConfigUIProperties|undefined),
-    ipv6: (OncMojo.IPConfigUIProperties|undefined)
+    ipv4: (OncMojo.IPConfigUIProperties | undefined),
+    ipv6: (OncMojo.IPConfigUIProperties|undefined),
   }|undefined);
   private ipConfigFields_: string[];
   private shouldShowAutoIpConfigToggle_: boolean;
@@ -233,7 +236,7 @@ export class NetworkIpConfigElement extends NetworkIpConfigElementBase {
             ipAddress: null,
             nameServers: null,
             netmask: null,
-            webProxyAutoDiscoveryUrl: null
+            webProxyAutoDiscoveryUrl: null,
           };
           if (ipv6) {
             ipv6.ipAddress =
@@ -315,7 +318,7 @@ export class NetworkIpConfigElement extends NetworkIpConfigElementBase {
     this.dispatchEvent(new CustomEvent('ip-change', {
       bubbles: true,
       composed: true,
-      detail: {field: 'ipAddressConfigType', value: 'DHCP'}
+      detail: {field: 'ipAddressConfigType', value: 'DHCP'},
     }));
   }
 
@@ -432,8 +435,8 @@ export class NetworkIpConfigElement extends NetworkIpConfigElementBase {
         field: 'staticIpConfig',
         value: this.ipConfig_ && this.ipConfig_.ipv4 ?
             this.getIPConfigProperties_(this.ipConfig_.ipv4) :
-            {}
-      }
+            {},
+      },
     }));
   }
 

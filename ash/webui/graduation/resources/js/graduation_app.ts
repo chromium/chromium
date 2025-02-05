@@ -9,11 +9,12 @@ import './graduation_welcome.js';
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
+import type {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AuthResult, GraduationScreen} from '../mojom/graduation_ui.mojom-webui.js';
+import type {AuthResult} from '../mojom/graduation_ui.mojom-webui.js';
+import {GraduationScreen} from '../mojom/graduation_ui.mojom-webui.js';
 
 import {getTemplate} from './graduation_app.html.js';
 import {getGraduationUiHandler} from './graduation_ui_handler.js';

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ErrorReasonTypes, ErrorWithReason} from 'glic_api/glic_api.js';
+
 import type {HostRequestTypes, WebClientRequestTypes} from './request_types.js';
 
 // This file contains helpers to send and receive messages over postMessage.
@@ -29,8 +31,25 @@ declare interface ResponseMessage {
   type: string;
   // The round-tripped `RequestMessage.requestId`.
   responseId: number;
-  // A payload. Each type of response has a distinct payload type.
-  responsePayload: any;
+  // A payload. Each type of response has a distinct payload type. Not set if
+  // exception is set.
+  responsePayload?: any;
+  // An error that occurred during processing the request. If this is set,
+  // responsePayload will not be set.
+  exception?: Error;
+  // If exception is set, this may be set to indicate that the exception
+  // is a ErrorWithReason exception.
+  exceptionReason?: ErrorWithReasonDetails;
+}
+
+/** Any ErrorWithReason<T>.reason type. */
+type AnyErrorReasonType = ErrorReasonTypes[keyof ErrorReasonTypes];
+/** Any ErrorWithReason type. */
+type AnyErrorWithReasonType = ErrorWithReason<keyof ErrorReasonTypes>;
+/** Sent in ResponseMessage to reconstruct the ErrorWithReason. */
+interface ErrorWithReasonDetails {
+  reason: AnyErrorReasonType;
+  reasonType: keyof ErrorReasonTypes;
 }
 
 // Something that has postMessage() - probably a window or WindowProxy.
@@ -85,11 +104,24 @@ export class PostMessageRequestSender {
   requestWithResponse<T extends keyof AllRequestTypes>(
       requestType: T, request: AllRequestTypes[T]['request'],
       transfer: Transferable[] = []): Promise<AllRequestTypes[T]['response']> {
-    const {promise, resolve} =
+    const {promise, resolve, reject} =
         Promise.withResolvers<AllRequestTypes[T]['response']>();
     const requestId = this.requestId++;
     this.responseHandlers.set(requestId, (response: ResponseMessage) => {
-      resolve(response.responsePayload as AllRequestTypes[T]['response']);
+      if (response.exception !== undefined) {
+        // Error types are serializable, but they do not serialize all members.
+        // If exceptionReason is provided, we use it to reconstruct a
+        // ErrorWithReason by just setting additional fields after
+        // serialization.
+        if (response.exceptionReason) {
+          const withReason = response.exception as AnyErrorWithReasonType;
+          withReason.reason = response.exceptionReason.reason;
+          withReason.reasonType = response.exceptionReason.reasonType;
+        }
+        reject(response.exception);
+      } else {
+        resolve(response.responsePayload as AllRequestTypes[T]['response']);
+      }
     });
 
     const message: RequestMessage = {
@@ -116,9 +148,23 @@ export class PostMessageRequestSender {
   }
 }
 
+/** Interface for handling postMessage requests. */
 export interface PostMessageRequestHandler {
-  handleRawRequest(type: string, payload: any):
-      Promise<{payload: any, transfer: Transferable[]}|undefined>;
+  /**
+   * Handles a 'raw' request.
+   * If this throws an exception, it will be sent back in the response. This
+   * supports built-in error types like Error, as well as ErrorWithReasonImpl.
+   *
+   * @param type The request type, from request_types.ts.
+   * @param payload The payload, from request_types.ts.
+   * @returns The response to be returned to the client.
+   */
+  handleRawRequest(type: string, payload: any): Promise<{
+    /** The payload of the response. */
+    payload: any,
+    /** Objects to be transferred over postMessage(). */
+    transfer: Transferable[],
+  }|undefined>;
 }
 
 // Receives requests over postMessage and forward them to a
@@ -149,9 +195,24 @@ export class PostMessageRequestReceiver {
     }
     const requestMessage = event.data as RequestMessage;
     const {requestId, type, requestPayload} = requestMessage;
-    const response = await this.handler.handleRawRequest(type, requestPayload);
-
-    // TODO(crbug.com/379684723): How should we handle rejected promises?
+    let response;
+    let exception: Error|undefined;
+    let reasonDetails: ErrorWithReasonDetails|undefined;
+    try {
+      response = await this.handler.handleRawRequest(type, requestPayload);
+    } catch (error) {
+      console.error('Unexpected error', error);
+      if (error instanceof Error) {
+        exception = error;
+        const [reasonType, reason] =
+            [(error as any).reasonType, (error as any).reason];
+        if (reasonType !== undefined && reason !== undefined) {
+          reasonDetails = {reason, reasonType};
+        }
+      } else {
+        exception = new Error(`Unexpected error: ${error}`);
+      }
+    }
 
     // If the message contains no `requestId`, a response is not requested.
     if (!requestId) {
@@ -162,6 +223,12 @@ export class PostMessageRequestReceiver {
       responseId: requestId,
       responsePayload: response?.payload,
     };
+    if (exception) {
+      responseMessage.exception = exception;
+      if (reasonDetails) {
+        responseMessage.exceptionReason = reasonDetails;
+      }
+    }
     this.postMessageSender.postMessage(
         responseMessage,
         this.embeddedOrigin,

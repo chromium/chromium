@@ -8,9 +8,10 @@ import {ListPropertyUpdateMixin} from 'chrome://resources/ash/common/cr_elements
 import {makeStoreClientMixin} from 'chrome://resources/ash/common/cr_elements/store_client/store_client.js';
 import {Store} from 'chrome://resources/js/store.js';
 
-import {Actions} from './personalization_actions.js';
+import type {Actions} from './personalization_actions.js';
 import {reduce} from './personalization_reducers.js';
-import {emptyState, PersonalizationState} from './personalization_state.js';
+import type {PersonalizationState} from './personalization_state.js';
+import {emptyState} from './personalization_state.js';
 
 /**
  * @fileoverview A singleton datastore for the personalization app. Page state

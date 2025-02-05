@@ -113,11 +113,11 @@ class SESSION_EXPORT SessionManager
  protected:
   user_manager::UserManager* user_manager() { return user_manager_.get(); }
 
-  // Notifies UserManager about a user signs in when creating a user session.
-  virtual void NotifyUserLoggedIn(const AccountId& user_account_id,
-                                  const std::string& user_id_hash,
-                                  bool browser_restart,
-                                  bool is_child);
+  // Called when a session is created. Make it possible for subclasses to inject
+  // their more specific behavior at the timing.
+  // TODO(crbug.com/278643115): Consolidate the subclass behaviors to this class
+  // or extract into one of SessionManagerObserver's implementation.
+  virtual void OnSessionCreated(bool browser_restart) {}
 
   // Sets SessionManager instance.
   static void SetInstance(SessionManager* session_manager);

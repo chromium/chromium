@@ -39,12 +39,7 @@ export enum DestinationState {
 }
 
 /** Number of recent destinations to save. */
-// <if expr="not is_chromeos">
 export const NUM_PERSISTED_DESTINATIONS: number = 5;
-// </if>
-// <if expr="is_chromeos">
-export const NUM_PERSISTED_DESTINATIONS: number = 10;
-// </if>
 
 /**
  * Number of unpinned recent destinations to display.
@@ -54,16 +49,9 @@ const NUM_UNPINNED_DESTINATIONS: number = 3;
 
 export interface PrintPreviewDestinationSettingsElement {
   $: {
-    // <if expr="not is_chromeos">
     destinationDialog:
         CrLazyRenderElement<PrintPreviewDestinationDialogElement>,
     destinationSelect: PrintPreviewDestinationSelectElement,
-    // </if>
-    // <if expr="is_chromeos">
-    destinationDialog:
-        CrLazyRenderElement<PrintPreviewDestinationDialogCrosElement>,
-    destinationSelect: PrintPreviewDestinationSelectCrosElement,
-    // </if>
   };
 }
 
@@ -116,19 +104,6 @@ export class PrintPreviewDestinationSettingsElement extends
 
       displayedDestinations_: Array,
 
-      // <if expr="is_chromeos">
-      driveDestinationKey_: {
-        type: String,
-        value: '',
-      },
-
-      hasPinSetting_: {
-        type: Boolean,
-        computed: 'computeHasPinSetting_(settings.pin.available)',
-        reflectToAttribute: true,
-      },
-      // </if>
-
       isDialogOpen_: {
         type: Boolean,
         value: false,
@@ -157,12 +132,6 @@ export class PrintPreviewDestinationSettingsElement extends
   state: State;
   private destinationStore_: DestinationStore|null;
   private displayedDestinations_: Destination[];
-
-  // <if expr="is_chromeos">
-  private driveDestinationKey_: string;
-  private hasPinSetting_: boolean;
-  // </if>
-
   private isDialogOpen_: boolean;
   private noDestinations_: boolean;
   private pdfPrinterDisabled_: boolean;
@@ -194,17 +163,6 @@ export class PrintPreviewDestinationSettingsElement extends
     this.tracker_.add(
         this.destinationStore_, DestinationStoreEventType.DESTINATIONS_INSERTED,
         this.updateDropdownDestinations_.bind(this));
-
-    // <if expr="is_chromeos">
-    this.tracker_.add(
-        this.destinationStore_,
-        DestinationStoreEventType.DESTINATION_EULA_READY,
-        this.updateDestinationEulaUrl_.bind(this));
-    this.tracker_.add(
-        this.destinationStore_,
-        DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
-        this.onPrinterStatusUpdate_.bind(this));
-    // </if>
   }
 
   override disconnectedCallback() {
@@ -404,12 +362,6 @@ export class PrintPreviewDestinationSettingsElement extends
           this.destination.type === PrinterType.PDF_PRINTER));
   }
 
-  // <if expr="is_chromeos">
-  private computeHasPinSetting_(): boolean {
-    return this.getSetting('pin').available;
-  }
-  // </if>
-
   /**
    * @param e Event containing the key of the recent destination that was
    *     selected, or "seeMore".
@@ -455,58 +407,6 @@ export class PrintPreviewDestinationSettingsElement extends
     assert(this.destinationStore_);
     return this.destinationStore_;
   }
-
-  // <if expr="is_chromeos">
-  /**
-   * @param e Event containing the current destination's EULA URL.
-   */
-  private updateDestinationEulaUrl_(e: CustomEvent<string>) {
-    if (!this.destination) {
-      return;
-    }
-
-    this.destination.eulaUrl = e.detail;
-    this.notifyPath('destination.eulaUrl');
-  }
-
-  /**
-   * Returns true if at least one non-PDF printer destination is shown in the
-   * destination dropdown.
-   */
-  printerExistsInDisplayedDestinations(): boolean {
-    return this.displayedDestinations_.some(
-        destination => destination.type !== PrinterType.PDF_PRINTER);
-  }
-
-  // Trigger updates to the printer status icons and text for the selected
-  // destination and corresponding dropdown.
-  private onPrinterStatusUpdate_(
-      e: CustomEvent<{destinationKey: string, nowOnline: boolean}>): void {
-    const destinationKey = e.detail.destinationKey;
-
-    // If `destinationKey` matches the currently selected destination, use
-    // notifyPath to trigger the destination to recalculate its status icon and
-    // error status text.
-    if (this.destination && this.destination.key === destinationKey) {
-      this.notifyPath(`destination.printerStatusReason`);
-
-      // If the selected destination was unreachable and now it's online, force
-      // select it again so the capabilities and preview will now load.
-      if (e.detail.nowOnline) {
-        this.destinationStore_!.selectDestination(
-            this.destination, /*refreshDestination=*/ true);
-      }
-    }
-
-    // If this destination is in the dropdown, notify it to recalculate its
-    // status icon.
-    const index = this.displayedDestinations_.findIndex(
-        destination => destination.key === destinationKey);
-    if (index !== -1) {
-      this.notifyPath(`displayedDestinations_.${index}.printerStatusReason`);
-    }
-  }
-  // </if>
 }
 
 declare global {

@@ -1543,8 +1543,8 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
 
     // Disable it if the test case says so.
     if (!test_case.previous_disable_reasons.empty()) {
-      service()->DisableExtension(passkey, id,
-                                  test_case.previous_disable_reasons);
+      service()->DisableExtensionWithRawReasons(
+          passkey, id, test_case.previous_disable_reasons);
       ASSERT_TRUE(registry()->disabled_extensions().Contains(id));
     }
 
@@ -1566,7 +1566,7 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
     const bool expect_enabled = test_case.expect_disable_reasons.empty();
     EXPECT_EQ(expect_enabled, service()->IsExtensionEnabled(id));
     EXPECT_EQ(test_case.expect_disable_reasons,
-              prefs->GetDisableReasons(passkey, id));
+              prefs->GetRawDisableReasons(passkey, id));
 
     // Remove the extension again, so we can install it again for the next case.
     UninstallExtension(id);

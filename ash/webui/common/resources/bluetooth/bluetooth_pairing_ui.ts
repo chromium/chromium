@@ -16,7 +16,8 @@ import './bluetooth_spinner_page.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
-import {BluetoothDeviceProperties, BluetoothDiscoveryDelegateInterface, BluetoothDiscoveryDelegateReceiver, BluetoothSystemProperties, BluetoothSystemState, DevicePairingDelegateInterface, DevicePairingDelegateReceiver, DevicePairingHandlerInterface, KeyEnteredHandlerInterface, KeyEnteredHandlerPendingReceiver, KeyEnteredHandlerReceiver, PairingResult, SystemPropertiesObserverInterface, SystemPropertiesObserverReceiver} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothDeviceProperties, BluetoothDiscoveryDelegateInterface, BluetoothSystemProperties, DevicePairingDelegateInterface, DevicePairingHandlerInterface, KeyEnteredHandlerInterface, KeyEnteredHandlerPendingReceiver, SystemPropertiesObserverInterface} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {BluetoothDiscoveryDelegateReceiver, BluetoothSystemState, DevicePairingDelegateReceiver, KeyEnteredHandlerReceiver, PairingResult, SystemPropertiesObserverReceiver} from '//resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bluetooth_pairing_ui.html.js';

@@ -17,15 +17,15 @@ import './network_shared.css.js';
 import './sim_lock_dialogs.js';
 
 import {assert} from '//resources/js/assert.js';
-import {GlobalPolicy} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {GlobalPolicy} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 
 import {isActiveSim} from './cellular_utils.js';
 import {getTemplate} from './network_siminfo.html.js';
-import {OncMojo} from './onc_mojo.js';
+import type {OncMojo} from './onc_mojo.js';
 
 const TOGGLE_DEBOUNCE_MS = 500;
 

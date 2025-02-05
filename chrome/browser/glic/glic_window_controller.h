@@ -21,6 +21,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
+class WindowFinder;
 namespace gfx {
 class Size;
 class Point;
@@ -311,6 +312,9 @@ class GlicWindowController : public views::WidgetObserver {
 
   void ResetPresentationTimingState();
 
+  // Returns true if a browser is occluded at point in screen coordinates.
+  bool IsBrowserOccludedAtPoint(Browser* browser, gfx::Point point);
+
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       glic_widget_observation_{this};
@@ -385,6 +389,8 @@ class GlicWindowController : public views::WidgetObserver {
   std::unique_ptr<ScopedGlicButtonIndicator> scoped_glic_button_indicator_;
 
   std::unique_ptr<GlicFreController> fre_controller_;
+
+  std::unique_ptr<WindowFinder> window_finder_;
 
   raw_ptr<GlicKeyedService> glic_service_;  // Owns this.
 

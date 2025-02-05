@@ -34,6 +34,7 @@
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extension_host_delegate.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_interface_binders.h"
@@ -43,7 +44,6 @@
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/event_router_forwarder.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/favicon/favicon_util.h"
@@ -512,7 +512,7 @@ bool ChromeExtensionsBrowserClient::IsLoggedInAsPublicAccount() {
 
 ExtensionSystemProvider*
 ChromeExtensionsBrowserClient::GetExtensionSystemFactory() {
-  return ExtensionSystemFactory::GetInstance();
+  return ChromeExtensionSystemFactory::GetInstance();
 }
 
 void ChromeExtensionsBrowserClient::RegisterBrowserInterfaceBindersForFrame(

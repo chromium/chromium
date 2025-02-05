@@ -38,7 +38,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
 
   // The `listen_for_extension_system_loaded` is only set true when initializing
   // the Extension System, e.g, when constructs UserScriptManager in
-  // ExtensionSystemImpl.
+  // ChromeExtensionSystem.
   ExtensionUserScriptLoader(content::BrowserContext* browser_context,
                             const Extension& extension,
                             StateStore* state_store,
