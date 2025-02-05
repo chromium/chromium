@@ -47,10 +47,8 @@ class PrivacySandboxHandler : public SettingsPageUIHandler {
   // AND the user to be located in a Privacy Sandbox Consent Country.
   void HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
       const base::Value::List& args);
-  // Determines if the V2 Ad Privacy sub-label should be shown on the completion
-  // card of the Privacy Guide. This decision is based on the status of the
-  // PrivacySandboxAdTopicsContentParity feature.
-  void HandlePrivacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel(
+  // Determines if the Ad Topics Content Parity should be shown.
+  void HandleShouldShowPrivacySandboxAdTopicsContentParity(
       const base::Value::List& args);
 
   virtual PrivacySandboxCountries* GetPrivacySandboxCountries();
