@@ -469,6 +469,10 @@ class Namespace:
         nodoc = True
       elif attribute_name == 'platforms':
         platforms = extended_attribute.GetProperty('VALUE')
+      else:
+        raise SchemaCompilerError(
+            f'Unknown extended attribute with name "{attribute_name}" when'
+            ' processing namespace.', self.namespace)
 
     return {
         'namespace': self.name,

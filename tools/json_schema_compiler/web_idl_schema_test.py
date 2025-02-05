@@ -289,7 +289,7 @@ class WebIdlSchemaTest(unittest.TestCase):
 
   # TODO(crbug.com/340297705): This will eventually be relaxed when adding
   # support for shared types to the new parser.
-  def testMissingBrowserInterface(self):
+  def testMissingBrowserInterfaceError(self):
     expected_error_regex = (
         '.* File\(test\/web_idl\/missing_browser_interface.idl\): Required'
         ' partial Browser interface not found in schema\.')
@@ -302,7 +302,7 @@ class WebIdlSchemaTest(unittest.TestCase):
 
   # Tests that having a Browser interface on an API definition with no attribute
   # throws an error.
-  def testMissingAttributeOnBrowser(self):
+  def testMissingAttributeOnBrowserError(self):
     expected_error_regex = (
         '.* Interface\(Browser\): The partial Browser interface should have'
         ' exactly one attribute for the name the API will be exposed under\.')
@@ -315,7 +315,7 @@ class WebIdlSchemaTest(unittest.TestCase):
 
   # Tests that using a valid basic WebIDL type with a "name" the schema compiler
   # doesn't support yet throws an error.
-  def testUnsupportedBasicType(self):
+  def testUnsupportedBasicTypeError(self):
     expected_error_regex = (
         '.* PrimitiveType\(float\): Unsupported basic type found when'
         ' processing type\.')
@@ -328,7 +328,7 @@ class WebIdlSchemaTest(unittest.TestCase):
 
   # Tests that using a valid WebIDL type with a node "class" the schema compiler
   # doesn't support yet throws an error.
-  def testUnsupportedTypeClass(self):
+  def testUnsupportedTypeClassError(self):
     expected_error_regex = (
         '.* Any\(\): Unsupported type class when processing type\.')
     self.assertRaisesRegex(
@@ -341,7 +341,7 @@ class WebIdlSchemaTest(unittest.TestCase):
   # Tests that if description parsing from file comments reaches the top of the
   # file, a schema compiler error is thrown (as the top of the file should
   # always be copyright lines and not part of the description).
-  def testDocumentationCommentReachedTopOfFile(self):
+  def testDocumentationCommentReachedTopOfFileError(self):
     expected_error_regex = (
         '.* Reached top of file when trying to parse description from file'
         ' comment. Make sure there is a blank line before the comment.')
@@ -363,6 +363,19 @@ class WebIdlSchemaTest(unittest.TestCase):
         expected_error_regex,
         web_idl_schema.Load,
         'test/web_idl/void_unsupported.idl',
+    )
+
+  # Tests that a namespace with an extended attribute that we don't have
+  # processing for results in a schema compiler error.
+  def testUnknownNamespaceExtendedAttributeNameError(self):
+    expected_error_regex = (
+        '.* Interface\(TestWebIdl\): Unknown extended attribute with name'
+        ' "UnknownExtendedAttribute" when processing namespace.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/unknown_namespace_extended_attribute.idl',
     )
 
   # Tests that an API interface that uses the nodoc extended attribute has the
