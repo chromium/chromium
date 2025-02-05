@@ -21,7 +21,12 @@ namespace blink {
 // communication channel. However, if a focus call can only be triggered
 // directly through user interaction and can't be triggered via script, it is
 // safe to not gate the focus call on user activation.
-enum class FocusTrigger { kScript, kUserGesture };
+enum class FocusTrigger {
+  // e.g. by calling `window.focus()`
+  kScript,
+  // e.g. by the user using tab to advance focus
+  kUserGesture,
+};
 
 struct FocusParams {
   STACK_ALLOCATED();

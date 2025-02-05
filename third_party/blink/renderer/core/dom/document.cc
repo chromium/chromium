@@ -8943,7 +8943,7 @@ bool Document::IsSlotAssignmentDirty() const {
          slot_assignment_engine_->HasPendingSlotAssignmentRecalc();
 }
 
-bool Document::IsFocusAllowed() const {
+bool Document::IsFocusAllowed(FocusTrigger trigger) const {
   LocalFrame* frame = GetFrame();
   if (!frame || frame->IsMainFrame() ||
       LocalFrame::HasTransientUserActivation(frame)) {
@@ -8967,7 +8967,7 @@ bool Document::IsFocusAllowed() const {
   CountUse(uma_type);
   if (!RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled())
     return true;
-  return GetFrame()->AllowFocusDuringFocusAdvance() ||
+  return trigger == FocusTrigger::kUserGesture ||
          GetExecutionContext()->IsFeatureEnabled(
              network::mojom::PermissionsPolicyFeature::
                  kFocusWithoutUserActivation);
