@@ -75,10 +75,11 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
     NSArray<NSData*>* prf_inputs) API_AVAILABLE(ios(17.0));
 
 // Returns whether or not the user should be asked to re-authenticate depending
-// on the provided `userVerificationPreferenceString` and whether biometric
+// on the provided `user_verification_preference_string` and whether biometric
 // authentication is enabled for the device.
 BOOL ShouldPerformUserVerificationForPreference(
-    NSString* user_verification_preference_string,
+    ASAuthorizationPublicKeyCredentialUserVerificationPreference
+        user_verification_preference_string,
     BOOL is_biometric_authentication_enabled);
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_UTIL_H_
