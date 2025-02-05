@@ -710,12 +710,6 @@ const char kAutofillEnableVerveCardSupportName[] =
 const char kAutofillEnableVerveCardSupportDescription[] =
     "When enabled, Verve-branded card art will be shown for Verve cards.";
 
-const char kAutofillEnableVirtualCardMetadataName[] =
-    "Enable showing metadata for virtual cards";
-const char kAutofillEnableVirtualCardMetadataDescription[] =
-    "When enabled, Chrome will show metadata together with other card "
-    "information when the virtual card is presented to users.";
-
 const char kAutofillImprovedLabelsName[] =
     "Autofill suggestions with improved labels";
 const char kAutofillImprovedLabelsDescription[] =

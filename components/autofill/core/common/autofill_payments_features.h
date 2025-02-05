@@ -83,7 +83,7 @@ BASE_DECLARE_FEATURE(kAutofillEnableVcnGrayOutForMerchantOptOut);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableVerveCardSupport);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardMetadata);
+BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillRemovePaymentsButterDropdown);
 COMPONENT_EXPORT(AUTOFILL)

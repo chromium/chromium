@@ -194,9 +194,7 @@ bool ShouldSplitCardNameAndLastFourDigitsForMetadata() {
 #if BUILDFLAG(IS_IOS)
   return false;
 #else
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableVirtualCardMetadata) &&
-         base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
+  return base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
 #endif
 }
 
@@ -315,17 +313,14 @@ Suggestion GenerateVirtualCardSuggestionFromCreditCardSuggestion(
   virtual_card_suggestion.type = SuggestionType::kVirtualCreditCardEntry;
   const std::u16string& virtual_card_label = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableVirtualCardMetadata)) {
-    virtual_card_suggestion.minor_text.value =
-        virtual_card_suggestion.main_text.value;
-    virtual_card_suggestion.main_text.value = virtual_card_label;
-    return virtual_card_suggestion;
-  }
+#if BUILDFLAG(IS_IOS)
+  virtual_card_suggestion.minor_text.value =
+      virtual_card_suggestion.main_text.value;
+  virtual_card_suggestion.main_text.value = virtual_card_label;
+#elif BUILDFLAG(IS_ANDROID)
   if (field_type == CREDIT_CARD_NUMBER) {
     virtual_card_suggestion.labels.clear();
   }
-#if BUILDFLAG(IS_ANDROID)
   if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
     virtual_card_suggestion.main_text.value = base::StrCat(
         {virtual_card_label, u"  ", virtual_card_suggestion.main_text.value});
@@ -335,6 +330,9 @@ Suggestion GenerateVirtualCardSuggestionFromCreditCardSuggestion(
     virtual_card_suggestion.main_text.value = virtual_card_label;
   }
 #else
+  if (field_type == CREDIT_CARD_NUMBER) {
+    virtual_card_suggestion.labels.clear();
+  }
   virtual_card_suggestion.labels.push_back(
       std::vector<Suggestion::Text>{Suggestion::Text(virtual_card_label)});
 #endif
@@ -1435,8 +1433,7 @@ void SuggestionMatchingTest::InitializeFeatures() {}
 #else
 void SuggestionMatchingTest::InitializeFeatures() {
   features_.InitWithFeatureStates(
-      {{features::kAutofillEnableVirtualCardMetadata, IsMetadataEnabled()},
-       {features::kAutofillEnableCardProductName, IsMetadataEnabled()}});
+      {{features::kAutofillEnableCardProductName, IsMetadataEnabled()}});
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
@@ -1445,10 +1442,8 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest {
  protected:
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
-    feature_list_card_metadata_and_product_name_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                               features::kAutofillEnableCardProductName});
+    feature_list_card_metadata_and_product_name_.InitAndDisableFeature(
+        features::kAutofillEnableCardProductName);
   }
 
  private:
@@ -1988,17 +1983,8 @@ class BrowserAutofillManagerTestForMetadataCardSuggestions
       public testing::WithParamInterface<bool> {
  public:
   BrowserAutofillManagerTestForMetadataCardSuggestions() {
-    if (IsMetadataEnabled()) {
-      card_metadata_flags_.InitWithFeatures(
-          /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                                features::kAutofillEnableCardProductName},
-          /*disabled_features=*/{});
-    } else {
-      card_metadata_flags_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*=disabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                                  features::kAutofillEnableCardProductName});
-    }
+    card_metadata_flags_.InitWithFeatureState(
+        features::kAutofillEnableCardProductName, IsMetadataEnabled());
   }
 
   bool IsMetadataEnabled() const { return GetParam(); }
@@ -5474,10 +5460,8 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
 TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_VirtualCard_MetadataEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                            features::kAutofillEnableCardProductName},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCardProductName);
   personal_data().test_payments_data_manager().ClearCreditCards();
   CreditCard masked_server_card(CreditCard::RecordType::kMaskedServerCard,
                                 /*server_id=*/"a123");
@@ -7054,17 +7038,8 @@ class BrowserAutofillManagerTestForSharingNickname
       : local_nickname_(GetParam().local_nickname),
         server_nickname_(GetParam().server_nickname),
         expected_nickname_(GetParam().expected_nickname) {
-    if (GetParam().metadata_enabled) {
-      card_metadata_flags_.InitWithFeatures(
-          /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                                features::kAutofillEnableCardProductName},
-          /*disabled_features=*/{});
-    } else {
-      card_metadata_flags_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
-                                 features::kAutofillEnableCardProductName});
-    }
+    card_metadata_flags_.InitWithFeatureState(
+        features::kAutofillEnableCardProductName, GetParam().metadata_enabled);
   }
 
   CreditCard GetLocalCard() {

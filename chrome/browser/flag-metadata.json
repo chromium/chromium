@@ -732,11 +732,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "autofill-enable-virtual-card-metadata",
-    "owners": [ "siyua@chromium.org", "siashah@chromium.org"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "autofill-highlight-only-changed-value-in-preview-mode",
     "owners": [ "koerber@chromium.org", "mamir@chromium.org" ],
     "expiry_milestone": 120

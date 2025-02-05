@@ -430,9 +430,6 @@ extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[];
 extern const char kAutofillEnableVerveCardSupportName[];
 extern const char kAutofillEnableVerveCardSupportDescription[];
 
-extern const char kAutofillEnableVirtualCardMetadataName[];
-extern const char kAutofillEnableVirtualCardMetadataDescription[];
-
 extern const char kAutofillImprovedLabelsName[];
 extern const char kAutofillImprovedLabelsDescription[];
 

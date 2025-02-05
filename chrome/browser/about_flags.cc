@@ -9437,12 +9437,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kEnableExternalKeyboardsInDiagnostics)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"autofill-enable-virtual-card-metadata",
-     flag_descriptions::kAutofillEnableVirtualCardMetadataName,
-     flag_descriptions::kAutofillEnableVirtualCardMetadataDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableVirtualCardMetadata)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"pwa-restore-backend", flag_descriptions::kPwaRestoreBackendName,
      flag_descriptions::kPwaRestoreBackendDescription, kOsAndroid,
