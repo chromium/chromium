@@ -91,6 +91,7 @@ class WorkerFetchContext final : public BaseFetchContext {
       const std::optional<float> resource_width,
       ResourceRequest&,
       const ResourceLoaderOptions&) override;
+  const FeatureContext* GetFeatureContext() const override;
   std::unique_ptr<ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() override;
   scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const override;

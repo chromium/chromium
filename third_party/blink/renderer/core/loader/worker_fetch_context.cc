@@ -281,6 +281,10 @@ void WorkerFetchContext::UpgradeResourceRequestForLoader(
     out_request.SetTopFrameOrigin(GetTopFrameOrigin());
 }
 
+const FeatureContext* WorkerFetchContext::GetFeatureContext() const {
+  return GetExecutionContext();
+}
+
 std::unique_ptr<ResourceLoadInfoNotifierWrapper>
 WorkerFetchContext::CreateResourceLoadInfoNotifierWrapper() {
   return web_context_->CreateResourceLoadInfoNotifierWrapper();

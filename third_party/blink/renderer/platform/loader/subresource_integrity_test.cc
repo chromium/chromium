@@ -11,6 +11,7 @@
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/crypto.h"
+#include "third_party/blink/renderer/platform/feature_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -107,7 +108,7 @@ class SubresourceIntegrityTest : public testing::Test {
 
     IntegrityAlgorithm algorithm;
     auto result = SubresourceIntegrity::ParseAttributeAlgorithm(
-        base::as_string_view(string_data), algorithm);
+        base::as_string_view(string_data), nullptr, algorithm);
     ASSERT_TRUE(result.has_value());
     // All algorithm identifiers are currently 6 or 7 characters long.
     EXPECT_TRUE(result.value() == 6u || result.value() == 7u);
@@ -121,7 +122,7 @@ class SubresourceIntegrityTest : public testing::Test {
 
     IntegrityAlgorithm algorithm;
     auto result = SubresourceIntegrity::ParseAttributeAlgorithm(
-        base::as_string_view(string_data), algorithm);
+        base::as_string_view(string_data), nullptr, algorithm);
     ASSERT_FALSE(result.has_value());
     EXPECT_EQ(expected_error, result.error());
   }
@@ -148,8 +149,8 @@ class SubresourceIntegrityTest : public testing::Test {
                    const char* expected_digest,
                    IntegrityAlgorithm expected_algorithm) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(1u, metadata_set.hashes.size());
     if (metadata_set.hashes.size() > 0) {
       IntegrityMetadata metadata = *metadata_set.hashes.begin();
@@ -166,15 +167,15 @@ class SubresourceIntegrityTest : public testing::Test {
       expected_metadata_set.hashes.insert(expected.ToPair());
     }
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(expected_metadata_set, metadata_set);
   }
 
   void ExpectParseFailure(const char* integrity_attribute) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(metadata_set.hashes.size(), 0u);
     EXPECT_EQ(metadata_set.signatures.size(), 0u);
   }
@@ -182,8 +183,8 @@ class SubresourceIntegrityTest : public testing::Test {
   void ExpectEmptyParseResult(const char* integrity_attribute) {
     IntegrityMetadataSet metadata_set;
 
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(0u, metadata_set.hashes.size());
     EXPECT_EQ(0u, metadata_set.signatures.size());
   }
@@ -213,8 +214,8 @@ class SubresourceIntegrityTest : public testing::Test {
                               const TestCase& test,
                               Expectation expectation) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(String(integrity),
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        String(integrity), metadata_set, /*feature_context=*/nullptr);
     SegmentedBuffer buffer;
     buffer.Append(base::span_from_cstring(kBasicScript));
     IntegrityReport integrity_report;
@@ -223,7 +224,7 @@ class SubresourceIntegrityTest : public testing::Test {
                   metadata_set, &buffer, test.url,
                   *CreateTestResource(test.url, test.request_mode,
                                       test.response_type),
-                  integrity_report, nullptr));
+                  nullptr, integrity_report, nullptr));
   }
 
   Resource* CreateTestResource(
@@ -599,8 +600,28 @@ class SubresourceIntegritySignatureTest
     : public SubresourceIntegrityTest,
       public ::testing::WithParamInterface<bool> {
  public:
+  class SignatureFeatureContext : public FeatureContext {
+   public:
+    explicit SignatureFeatureContext(bool status) : status_(status) {}
+
+    // This would need to be more complicated if we had more than one feature
+    // under test. Happily, we don't.
+    bool FeatureEnabled(mojom::blink::OriginTrialFeature) const override {
+      return status_;
+    }
+    RuntimeFeatureStateOverrideContext* GetRuntimeFeatureStateOverrideContext()
+        const override {
+      return nullptr;
+    }
+
+   private:
+    bool status_;
+  };
+
   SubresourceIntegritySignatureTest()
-      : scoped_integrity_(GetParam()), scoped_inline_integrity_(GetParam()) {}
+      : feature_context_(GetParam()),
+        scoped_integrity_(GetParam()),
+        scoped_inline_integrity_(GetParam()) {}
 
   bool SignaturesEnabled() { return GetParam(); }
 
@@ -610,8 +631,8 @@ class SubresourceIntegritySignatureTest
   void ValidateSingleSignatureBasedItem(const String& integrity_attribute,
                                         const String& digest) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(0u, metadata_set.hashes.size());
     if (SignaturesEnabled()) {
       ASSERT_EQ(1u, metadata_set.signatures.size());
@@ -630,8 +651,8 @@ class SubresourceIntegritySignatureTest
                              const Vector<IntegrityMetadataPair>& hashes,
                              const Vector<IntegrityMetadataPair>& signatures) {
     IntegrityMetadataSet metadata_set;
-    SubresourceIntegrity::ParseIntegrityAttribute(integrity_attribute,
-                                                  metadata_set);
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        integrity_attribute, metadata_set, /*feature_context=*/nullptr);
 
     // Validate hashes:
     ASSERT_EQ(hashes.size(), metadata_set.hashes.size());
@@ -649,6 +670,9 @@ class SubresourceIntegritySignatureTest
       ASSERT_EQ(0u, metadata_set.signatures.size());
     }
   }
+
+ protected:
+  SignatureFeatureContext feature_context_;
 
  private:
   ScopedSignatureBasedIntegrityForTest scoped_integrity_;
@@ -791,14 +815,14 @@ TEST_P(SubresourceIntegritySignatureTest, CheckEmpty) {
   String raw_headers = "";
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
       metadata_set, /*buffer=*/nullptr, sec_url, FetchResponseType::kCors,
-      raw_headers, integrity_report))
+      raw_headers, /*feature_context=*/nullptr, integrity_report))
       << "Fetch variant";
 
   Resource* resource =
       CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
-      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report,
-      nullptr))
+      metadata_set, /*buffer=*/nullptr, sec_url, *resource,
+      /*feature_context=*/nullptr, integrity_report, nullptr))
       << "Resource variant";
 }
 
@@ -811,17 +835,18 @@ TEST_P(SubresourceIntegritySignatureTest, CheckNotSigned) {
 
   // If the flag is set, the lack of a signature will fail any signature
   // integrity requirement.
-  EXPECT_EQ(!SignaturesEnabled(),
-            SubresourceIntegrity::CheckSubresourceIntegrity(
-                metadata_set, /*buffer=*/nullptr, sec_url,
-                FetchResponseType::kCors, raw_headers, integrity_report));
+  EXPECT_EQ(
+      !SignaturesEnabled(),
+      SubresourceIntegrity::CheckSubresourceIntegrity(
+          metadata_set, /*buffer=*/nullptr, sec_url, FetchResponseType::kCors,
+          raw_headers, /*feature_context=*/nullptr, integrity_report));
 
   Resource* resource =
       CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
   EXPECT_EQ(!SignaturesEnabled(),
             SubresourceIntegrity::CheckSubresourceIntegrity(
                 metadata_set, /*buffer=*/nullptr, sec_url, *resource,
-                integrity_report, nullptr))
+                /*feature_context=*/nullptr, integrity_report, nullptr))
       << "Resource variant";
 }
 
@@ -856,7 +881,7 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
   // Valid signature matching the integrity requirement should always pass.
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
       metadata_set, /*buffer=*/nullptr, sec_url, FetchResponseType::kCors,
-      raw_headers, integrity_report));
+      raw_headers, /*feature_context=*/nullptr, integrity_report));
 
   Resource* resource =
       CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
@@ -868,8 +893,8 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
   response.SetHttpHeaderField(http_names::kSignature,
                               AtomicString(kValidSignatureHeader));
   EXPECT_TRUE(SubresourceIntegrity::CheckSubresourceIntegrity(
-      metadata_set, /*buffer=*/nullptr, sec_url, *resource, integrity_report,
-      nullptr))
+      metadata_set, /*buffer=*/nullptr, sec_url, *resource,
+      /*feature_context=*/nullptr, integrity_report, nullptr))
       << "Resource variant";
 }
 
@@ -886,8 +911,8 @@ TEST_P(SubresourceIntegritySignatureTest, Inline_NoSignatures) {
   };
 
   for (const char* test : cases) {
-    EXPECT_TRUE(
-        SubresourceIntegrity::VerifyInlineIntegrity(kIntegrity, test, kSource));
+    EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
+        kIntegrity, test, kSource, &feature_context_));
   }
 }
 
@@ -899,19 +924,19 @@ TEST_P(SubresourceIntegritySignatureTest, Inline_MatchingSignature) {
       "QEVqirecUGwbPaVWGWXWF6CcZrhYlVwB2+"
       "64fDhfMKBXQna2RLH4lBBOPjWkZ8juVmIRItaoCQ==";
 
-  EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(kIntegrity,
-                                                          kSignature, kSource));
+  EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
+      kIntegrity, kSignature, kSource, &feature_context_));
   // Valid + valid = Verified
   EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
-      kIntegrity, kSignature + " " + kSignature, kSource));
+      kIntegrity, kSignature + " " + kSignature, kSource, &feature_context_));
 
   // Valid + invalid = Verified
   EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
-      kIntegrity, kSignature + " ed25519-aaa", kSource));
+      kIntegrity, kSignature + " ed25519-aaa", kSource, &feature_context_));
 
   // Invalid + valid = Verified
   EXPECT_TRUE(SubresourceIntegrity::VerifyInlineIntegrity(
-      kIntegrity, "ed25519-aaa " + kSignature, kSource));
+      kIntegrity, "ed25519-aaa " + kSignature, kSource, &feature_context_));
 }
 
 TEST_P(SubresourceIntegritySignatureTest, Inline_NonMatchingSignature) {
@@ -926,23 +951,26 @@ TEST_P(SubresourceIntegritySignatureTest, Inline_NonMatchingSignature) {
 
   // Non-matching => Fail verification
   EXPECT_EQ(should_fail_verification,
-            SubresourceIntegrity::VerifyInlineIntegrity(kIntegrity, kSignature,
-                                                        kSource));
+            SubresourceIntegrity::VerifyInlineIntegrity(
+                kIntegrity, kSignature, kSource, &feature_context_));
 
   // Non-matching + Non-matching => Fail verification
   EXPECT_EQ(should_fail_verification,
             SubresourceIntegrity::VerifyInlineIntegrity(
-                kIntegrity, kSignature + " " + kSignature, kSource));
+                kIntegrity, kSignature + " " + kSignature, kSource,
+                &feature_context_));
 
   // Non-matching + invalid => Fail verification
-  EXPECT_EQ(should_fail_verification,
-            SubresourceIntegrity::VerifyInlineIntegrity(
-                kIntegrity, kSignature + " ed25519-aaa", kSource));
+  EXPECT_EQ(
+      should_fail_verification,
+      SubresourceIntegrity::VerifyInlineIntegrity(
+          kIntegrity, kSignature + " ed25519-aaa", kSource, &feature_context_));
 
   // Invalid + non-matching => Fail verification
-  EXPECT_EQ(should_fail_verification,
-            SubresourceIntegrity::VerifyInlineIntegrity(
-                kIntegrity, "ed25519-aaa " + kSignature, kSource));
+  EXPECT_EQ(
+      should_fail_verification,
+      SubresourceIntegrity::VerifyInlineIntegrity(
+          kIntegrity, "ed25519-aaa " + kSignature, kSource, &feature_context_));
 }
 
 }  // namespace blink

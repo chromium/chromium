@@ -60,6 +60,7 @@
 
 namespace blink {
 
+class FeatureContext;
 class EncodedFormData;
 class PermissionsPolicy;
 
@@ -400,7 +401,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   }
 
   const String& GetFetchIntegrity() const { return fetch_integrity_; }
-  void SetFetchIntegrity(const String& integrity);
+  void SetFetchIntegrity(const String& integrity, const FeatureContext*);
 
   // The list of expected signatures is set as a side-effect of
   // `SetFetchIntegrity()`.

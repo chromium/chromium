@@ -191,6 +191,8 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return nullptr;
   }
 
+  virtual const FeatureContext* GetFeatureContext() const { return nullptr; }
+
   // Determine if the request is on behalf of an advertisement. If so, return
   // true. Checks `resource_request.Url()` unless `alias_url` is non-null, in
   // which case it checks the latter.

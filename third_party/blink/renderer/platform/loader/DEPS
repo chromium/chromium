@@ -63,6 +63,9 @@ specific_include_rules = {
   "subresource_integrity.cc": [
       "+third_party/boringssl/src/include",
   ],
+  "subresource_integrity_test.cc": [
+      "+third_party/blink/renderer/platform/feature_context.h",
+  ],
   "web_url_request_util.cc": [
       "+base/atomic_sequence_num.h",
   ],

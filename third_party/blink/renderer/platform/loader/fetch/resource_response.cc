@@ -434,8 +434,9 @@ std::optional<base::Time> ResourceResponse::LastModified(
   return last_modified_;
 }
 
-std::optional<UnencodedDigest> ResourceResponse::UnencodedDigest() const {
-  if (!RuntimeEnabledFeatures::UnencodedDigestEnabled()) {
+std::optional<UnencodedDigest> ResourceResponse::UnencodedDigest(
+    const FeatureContext* feature_context) const {
+  if (!RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context)) {
     return std::nullopt;
   }
   return UnencodedDigest::Create(HttpHeaderFields());

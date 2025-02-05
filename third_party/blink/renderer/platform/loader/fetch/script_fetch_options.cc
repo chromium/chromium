@@ -50,7 +50,8 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
     const DOMWrapperWorld* world_for_csp,
     CrossOriginAttributeValue cross_origin,
     const WTF::TextEncoding& encoding,
-    FetchParameters::DeferOption defer) const {
+    FetchParameters::DeferOption defer,
+    const FeatureContext* feature_context) const {
   // Step 1. Let request be the result of creating a potential-CORS request
   // given url, ... [spec text]
   ResourceRequest resource_request(url);
@@ -83,7 +84,7 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
   // its integrity metadata to options's integrity metadata, [spec text]
   params.SetIntegrityMetadata(GetIntegrityMetadata());
   params.MutableResourceRequest().SetFetchIntegrity(
-      GetIntegrityAttributeValue());
+      GetIntegrityAttributeValue(), feature_context);
 
   // its parser metadata to options's parser metadata, [spec text]
   params.SetParserDisposition(ParserState());
