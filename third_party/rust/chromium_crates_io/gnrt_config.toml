@@ -114,6 +114,12 @@ ban_features = [
 [crate.bytes]
 group = 'test'
 
+[crate.bytemuck]
+extra_kv = { configs_to_remove = [
+  # This allows using `std::simd` helpers, which are needed by first-party code.
+  '//build/config/compiler:disallow_unstable_features',
+] }
+
 [crate.clap]
 # These files are included from source files and are thus required as part of
 # building the crate.
