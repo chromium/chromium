@@ -325,7 +325,8 @@ std::optional<LayoutUnit> ContentMinimumInlineSize(
 void AttachScrollMarkers(LayoutObject& parent,
                          Node::AttachContext& context,
                          bool has_absolute_containment = false,
-                         bool has_fixed_containment = false) {
+                         bool has_fixed_containment = false,
+                         bool has_ancestor_marker = false) {
   if (parent.CanContainAbsolutePositionObjects()) {
     has_absolute_containment = true;
     if (parent.CanContainFixedPositionObjects()) {
@@ -339,10 +340,15 @@ void AttachScrollMarkers(LayoutObject& parent,
         (child->IsAbsolutePositioned() && !has_absolute_containment)) {
       continue;
     }
+    bool did_attach_marker = false;
     if (auto* element = DynamicTo<Element>(child->GetNode())) {
       if (PseudoElement* marker =
               element->GetPseudoElement(kPseudoIdScrollMarker)) {
         marker->AttachLayoutTree(context);
+        did_attach_marker = true;
+        if (has_ancestor_marker) {
+          element->GetDocument().CountUse(WebFeature::kNestedScrollMarkers);
+        }
       }
     }
     // Descend into the subtree of the child unless it is a scroll marker group,
@@ -355,7 +361,8 @@ void AttachScrollMarkers(LayoutObject& parent,
     // outermost scroll marker group.
     if (!child->IsScrollMarkerGroup() && !child->GetScrollMarkerGroup()) {
       AttachScrollMarkers(*child, context, has_absolute_containment,
-                          has_fixed_containment);
+                          has_fixed_containment,
+                          has_ancestor_marker || did_attach_marker);
     }
   }
 

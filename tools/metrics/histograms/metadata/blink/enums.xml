@@ -5905,6 +5905,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5306"
       label="V8AISummarizer_ExpectedContextLanguages_AttributeGetter"/>
   <int value="5307" label="V8AISummarizer_OutputLanguage_AttributeGetter"/>
+  <int value="5308" label="NestedScrollMarkers"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

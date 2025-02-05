@@ -4691,6 +4691,7 @@ enum WebFeature {
   kV8AISummarizer_ExpectedInputLanguages_AttributeGetter = 5305,
   kV8AISummarizer_ExpectedContextLanguages_AttributeGetter = 5306,
   kV8AISummarizer_OutputLanguage_AttributeGetter = 5307,
+  kNestedScrollMarkers = 5308,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
