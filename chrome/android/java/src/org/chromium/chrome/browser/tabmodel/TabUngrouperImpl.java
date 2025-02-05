@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabModelRemover.TabModelRemoverFlowHandler;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -147,7 +148,7 @@ public class TabUngrouperImpl implements TabUngrouper {
                                 : mActionConfirmationManager.willSkipUngroupTabAttempt();
                 listener.willPerformActionOrShowDialog(DialogType.SYNC, willSkipDialog);
             }
-            var adaptedCallback = adaptOnResultCallback(onResult, DialogType.SYNC, listener);
+            var adaptedCallback = adaptSyncOnResultCallback(onResult, listener);
             if (mIsTabGroup) {
                 mActionConfirmationManager.processUngroupAttempt(adaptedCallback);
             } else {
@@ -157,14 +158,15 @@ public class TabUngrouperImpl implements TabUngrouper {
 
         @Override
         public void showCollaborationKeepDialog(
-                @MemberRole int memberRole, @NonNull String title, Callback<Integer> onResult) {
+                @MemberRole int memberRole,
+                @NonNull String title,
+                Callback<MaybeBlockingResult> onResult) {
             @Nullable TabModelActionListener listener = takeListener();
             if (listener != null) {
                 listener.willPerformActionOrShowDialog(
                         DialogType.COLLABORATION, /* willSkipDialog= */ false);
             }
-            var adaptedCallback =
-                    adaptOnResultCallback(onResult, DialogType.COLLABORATION, listener);
+            var adaptedCallback = adaptCollaborationOnResultCallback(onResult, listener);
             if (memberRole == MemberRole.OWNER) {
                 mActionConfirmationManager.processCollaborationOwnerRemoveLastTab(
                         title, adaptedCallback);
@@ -205,10 +207,20 @@ public class TabUngrouperImpl implements TabUngrouper {
         }
     }
 
-    private static @NonNull Callback<Integer> adaptOnResultCallback(
-            @NonNull Callback<Integer> callback,
-            @DialogType int plannedDialogType,
+    private static @NonNull Callback<MaybeBlockingResult> adaptCollaborationOnResultCallback(
+            @NonNull Callback<MaybeBlockingResult> callback,
             @Nullable TabModelActionListener listener) {
+        return (MaybeBlockingResult maybeBlockingResult) -> {
+            callback.onResult(maybeBlockingResult);
+            if (listener != null) {
+                listener.onConfirmationDialogResult(
+                        DialogType.COLLABORATION, maybeBlockingResult.result);
+            }
+        };
+    }
+
+    private static @NonNull Callback<Integer> adaptSyncOnResultCallback(
+            @NonNull Callback<Integer> callback, @Nullable TabModelActionListener listener) {
         return (result) -> {
             callback.onResult(result);
             if (listener != null) {
@@ -216,7 +228,7 @@ public class TabUngrouperImpl implements TabUngrouper {
                 int dialogType =
                         result == ActionConfirmationResult.IMMEDIATE_CONTINUE
                                 ? DialogType.NONE
-                                : plannedDialogType;
+                                : DialogType.SYNC;
                 listener.onConfirmationDialogResult(dialogType, result);
             }
         };

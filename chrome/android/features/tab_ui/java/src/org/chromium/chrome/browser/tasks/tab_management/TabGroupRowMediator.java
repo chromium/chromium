@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -260,15 +261,9 @@ class TabGroupRowMediator {
         // no other users.
         mActionConfirmationManager.processDeleteSharedGroupAttempt(
                 groupTitle,
-                (@ActionConfirmationResult Integer result) -> {
-                    if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        TabUiUtils.exitCollaborationWithoutWarning(
-                                mContext,
-                                mModalDialogManager,
-                                mDataSharingService,
-                                collaborationId,
-                                MemberRole.OWNER);
-                    }
+                (result) -> {
+                    exitCollaborationWithoutWarningWrapper(
+                            collaborationId, result, MemberRole.OWNER);
                 });
     }
 
@@ -277,16 +272,30 @@ class TabGroupRowMediator {
         // no other users.
         mActionConfirmationManager.processLeaveGroupAttempt(
                 groupTitle,
-                (@ActionConfirmationResult Integer result) -> {
-                    if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        TabUiUtils.exitCollaborationWithoutWarning(
-                                mContext,
-                                mModalDialogManager,
-                                mDataSharingService,
-                                collaborationId,
-                                MemberRole.MEMBER);
-                    }
+                (result) -> {
+                    exitCollaborationWithoutWarningWrapper(
+                            collaborationId, result, MemberRole.MEMBER);
                 });
+    }
+
+    private void exitCollaborationWithoutWarningWrapper(
+            String collaborationId,
+            MaybeBlockingResult maybeBlockingResult,
+            @MemberRole int memberRole) {
+        if (maybeBlockingResult.result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
+            assert maybeBlockingResult.finishBlocking != null;
+            TabUiUtils.exitCollaborationWithoutWarning(
+                    mContext,
+                    mModalDialogManager,
+                    mDataSharingService,
+                    collaborationId,
+                    memberRole,
+                    maybeBlockingResult.finishBlocking);
+        } else if (maybeBlockingResult.finishBlocking != null) {
+            assert false : "Should not be reachable.";
+            // Do the safe thing and run the runnable anyway.
+            maybeBlockingResult.finishBlocking.run();
+        }
     }
 
     private void deleteGroup(boolean allowDialog) {
