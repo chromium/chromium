@@ -83,7 +83,7 @@ void SodaInstallerImpl::InstallLanguage(const std::string& language,
   language_pack_progress_.insert({locale, 0.0});
   SodaInstaller::RegisterLanguage(language, global_prefs);
   component_updater::RegisterSodaLanguageComponent(
-      g_browser_process->component_updater(), language, global_prefs,
+      g_browser_process->component_updater(), language,
       base::BindOnce(&SodaInstallerImpl::OnSodaLanguagePackInstalled,
                      weak_factory_.GetWeakPtr()));
 
