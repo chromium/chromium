@@ -568,6 +568,10 @@ class ASH_EXPORT CaptureModeController
   // clipboard, show a notification, and close the capture session.
   void OnCopyTextButtonClicked(const std::u16string& text);
 
+  // Shows scanner discliamer if necessary, which has an option to accept or
+  // decline consent for scanner.
+  void MaybeShowScannerDisclaimerOnSunfishStartup(bool startup_success);
+
   // Called back when the Scanner feature has processed a captured image to
   // suggest available Scanner actions.
   void OnScannerActionsFetched(

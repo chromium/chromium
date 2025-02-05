@@ -946,7 +946,11 @@ void CaptureModeController::StartSunfishSession() {
   }
   // Close the launcher nudge if it is still visible.
   AnchoredNudgeManager::Get()->Cancel(capture_mode::kSunfishLauncherNudgeId);
-  StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
+  StartInternal(
+      SessionType::kReal, CaptureModeEntryType::kSunfish,
+      base::BindOnce(
+          &CaptureModeController::MaybeShowScannerDisclaimerOnSunfishStartup,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptureModeController::Stop() {
@@ -2049,6 +2053,23 @@ void CaptureModeController::OnCopyTextButtonClicked(
   CopyTextToClipboard(text);
   ShowTextCopiedToast();
   Stop();
+}
+
+void CaptureModeController::MaybeShowScannerDisclaimerOnSunfishStartup(
+    bool startup_success) {
+  if (!startup_success ||
+      // Below conditions imply scanner is disabled in some way.
+      // Hence we should skip showing the disclaimer.
+      !Shell::Get()->scanner_controller() ||
+      !Shell::Get()->scanner_controller()->CanShowConsentScreenEntryPoints()) {
+    return;
+  }
+  // Since this is at the end of startup internal, the capture_mode_session
+  // should exist.
+  CHECK(capture_mode_session_);
+
+  capture_mode_session_->MaybeShowScannerDisclaimer(
+      /*accept_callback=*/base::DoNothing());
 }
 
 void CaptureModeController::OnScannerActionsFetched(

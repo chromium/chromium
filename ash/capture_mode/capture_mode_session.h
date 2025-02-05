@@ -192,6 +192,8 @@ class ASH_EXPORT CaptureModeSession
                                     ActionButtonRank rank,
                                     ActionButtonViewID id) override;
   void AddSmartActionsButton() override;
+  void MaybeShowScannerDisclaimer(
+      base::RepeatingClosure accept_callback) override;
   void OnScannerActionsFetched(
       ScannerSession::FetchActionsResponse actions_response) override;
   gfx::Rect GetFeedbackWidgetScreenBounds() const override;
@@ -438,15 +440,7 @@ class ASH_EXPORT CaptureModeSession
   // case returns true if `this` was deleted.
   [[nodiscard]] bool ShowDefaultActionButtonsOrPerformSearch();
 
-  // Checks if the controller needs to show the disclaimer and shows if
-  // necessary. `accept_callback` is run if disclaimer is accepted.
-  // Takes a repeating closure because the button that triggers this (Smart
-  // actions button) will continue to appear after the disclaimer is dismissed,
-  // allowing the user to click on it again and trigger the callback again.
-  void MaybeShowDisclaimer(base::RepeatingClosure accept_callback);
-
-  // Called by the consent disclaimer on accept, which will run the `callback`
-  // to `OnSmartActionsButtonDisclaimerCheckSuccess()`.
+  // Called by the consent disclaimer on accept.
   void OnDisclaimerAccepted(base::RepeatingClosure callback);
 
   // Called by the consent disclaimer on decline.
