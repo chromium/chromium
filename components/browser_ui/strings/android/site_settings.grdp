@@ -613,6 +613,9 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage option in settings">
     Block third-party cookies:
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_ALLOW_THIRD_PARTY_SUBTITLE" desc="" translateable="false">
+    Allow third-party cookies:
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_RWS_TOGGLE_TITLE" desc="Related Website Sets toggle title in the cookie site settings subpage.">
     Allow related sites to see your activity in the group
   </message>

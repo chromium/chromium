@@ -217,6 +217,10 @@ public class TriStateCookieSettingsPreference extends Preference
         if (params.isAlwaysBlock3pcsIncognitoEnabled) {
             int allowLabelId = R.string.website_settings_third_party_cookies_page_allow_radio_label;
             mBlockThirdPartyIncognitoButton.setPrimaryText(getResources().getString(allowLabelId));
+            int allowSublabelId =
+                    R.string.settings_cookies_block_third_party_settings_allow_sublabel;
+            mBlockThirdPartyIncognitoButton.setDescriptionText(
+                    getResources().getString(allowSublabelId));
         }
         mAllowButton.setEnabled(true);
         mBlockThirdPartyIncognitoButton.setEnabled(true);
