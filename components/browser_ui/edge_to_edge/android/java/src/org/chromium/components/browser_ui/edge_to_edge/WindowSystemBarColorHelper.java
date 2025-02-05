@@ -38,7 +38,6 @@ public final class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
     @Override
     protected void applyStatusBarColor() {
         mWindow.setStatusBarColor(mStatusBarColor);
-        updateStatusBarIconColor(mWindow.getDecorView());
     }
 
     @Override
@@ -50,7 +49,6 @@ public final class WindowSystemBarColorHelper extends BaseSystemBarColorHelper {
     @Override
     protected void applyNavBarColor() {
         mWindow.setNavigationBarColor(mNavBarColor);
-        updateNavigationBarIconColor(mWindow.getDecorView());
     }
 
     @Override

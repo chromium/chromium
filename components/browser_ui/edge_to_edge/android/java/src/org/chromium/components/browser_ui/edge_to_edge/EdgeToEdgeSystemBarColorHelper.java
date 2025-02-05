@@ -24,6 +24,7 @@ import org.chromium.build.annotations.NullMarked;
 public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
     private final ObservableSupplier<Boolean> mDoesContentFitWindowSupplier;
     private final OneshotSupplier<SystemBarColorHelper> mEdgeToEdgeDelegateHelperSupplier;
+    private final Window mWindow;
     private final WindowSystemBarColorHelper mWindowColorHelper;
     private final Callback<Boolean> mOnEdgeToEdgeChanged = this::onContentFitsWindowChanged;
 
@@ -43,6 +44,7 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
             ObservableSupplier<Boolean> doesContentFitWindowSupplier,
             OneshotSupplier<SystemBarColorHelper> delegateHelperSupplier,
             boolean canColorStatusBarColor) {
+        mWindow = window;
         mDoesContentFitWindowSupplier = doesContentFitWindowSupplier;
         mEdgeToEdgeDelegateHelperSupplier = delegateHelperSupplier;
         mWindowColorHelper = new WindowSystemBarColorHelper(window);
@@ -107,6 +109,8 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
             delegateHelper.setNavigationBarColor(mNavBarColor);
             delegateHelper.setNavigationBarDividerColor(mNavBarDividerColor);
         }
+
+        updateNavigationBarIconColor(mWindow.getDecorView(), mNavBarColor);
     }
 
     private void updateStatusBarColor() {
@@ -126,6 +130,8 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
 
         mWindowColorHelper.setStatusBarColor(windowStatusBarColor);
         mWindowColorHelper.setStatusBarContrastEnforced(!mIsActivityEdgeToEdge);
+
+        updateStatusBarIconColor(mWindow.getDecorView(), mNavBarColor);
     }
 
     WindowSystemBarColorHelper getWindowHelperForTesting() {

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.view.View;
 import android.view.Window;
 
 import org.junit.Before;
@@ -37,6 +38,7 @@ public class EdgeToEdgeManagerUnitTest {
 
     @Mock Activity mActivity;
     @Mock Window mWindow;
+    @Mock View mDecorView;
     @Mock EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     @Mock SystemBarColorHelper mSystemBarColorHelper;
 
@@ -46,6 +48,7 @@ public class EdgeToEdgeManagerUnitTest {
     @Before
     public void setup() {
         doReturn(mWindow).when(mActivity).getWindow();
+        doReturn(mDecorView).when(mWindow).getDecorView();
 
         mSystemBarColorHelperSupplier = new OneshotSupplierImpl<>();
         mSystemBarColorHelperSupplier.set(mSystemBarColorHelper);
