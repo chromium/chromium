@@ -106,11 +106,17 @@ bool IsEligibleForSyntheticResponseInternal(const GURL& client_url,
   const std::vector<std::string> parsed_urls = base::SplitString(
       allowed_urls, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& it : parsed_urls) {
-    const GURL url = GURL(it);
+    const GURL url(it);
     // TODO(crbug.com/352578800): It's OK to use `start_with()` as far as the
     // variation of given `client_url` value is limited, but consider
     // replacing it with the standard SW scope matching if possible.
-    if (client_url.spec().starts_with(it)) {
+    //
+    // We intentionally ignore port matching as the port is dynamically decided
+    // in tests, which is not predictable at the browser launch phase.
+    if (client_url.scheme_piece() == url.scheme_piece() &&
+        client_url.host_piece() == url.host_piece() &&
+        client_url.path_piece() == url.path_piece() &&
+        client_url.query_piece().starts_with(url.query_piece())) {
       return true;
     }
   }
