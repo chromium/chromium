@@ -82,7 +82,7 @@ void ReadSimpleValueUniformsHelper(
     std::vector<PaintShader::Uniform<ValueType>>* output_uniforms) {
   size_t count = 0u;
   reader.ReadSize(&count);
-  if (count == 0) {
+  if (!reader.valid() || count == 0u) {
     return;
   }
   output_uniforms->reserve(count);
