@@ -272,10 +272,6 @@ const char kCopyImageFilenameToClipboardDescription[] =
     "Whether to write filename to the clipboard when copying image downloads.";
 
 #if BUILDFLAG(IS_CHROMEOS)
-const char kCoralFeatureKeyName[] = "Secret key for Coral feature.";
-const char kCoralFeatureKeyDescription[] =
-    "Secret key for Coral feature. Incorrect values will cause chrome crashes.";
-
 const char kCrosSwitcherName[] = "ChromeOS Switcher feature.";
 const char kCrosSwitcherDescription[] =
     "Enable/Disable ChromeOS Switcher feature.";

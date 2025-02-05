@@ -1620,11 +1620,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "coral-feature-key",
-    "owners": [ "cros-coral@google.com" ],
-    "expiry_milestone": 134
-  },
-  {
     "name": "cpe-automatic-passkey-upgrade",
     "owners": ["sugoi@chromium.org", "bling-transactions-eng@google.com"],
     "expiry_milestone": 145

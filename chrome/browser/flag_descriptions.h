@@ -188,9 +188,6 @@ extern const char kCopyImageFilenameToClipboardName[];
 extern const char kCopyImageFilenameToClipboardDescription[];
 
 #if BUILDFLAG(IS_CHROMEOS)
-extern const char kCoralFeatureKeyName[];
-extern const char kCoralFeatureKeyDescription[];
-
 extern const char kCrosSwitcherName[];
 extern const char kCrosSwitcherDescription[];
 #endif  // IS_CHROMEOS
