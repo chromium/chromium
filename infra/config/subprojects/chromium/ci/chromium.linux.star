@@ -1035,7 +1035,6 @@ ci.builder(
         configs = [
             "libcxx_modules",
             "linux",
-            "no_siso",
             "release_builder",
             "x64",
         ],
