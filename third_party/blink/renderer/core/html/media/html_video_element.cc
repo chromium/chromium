@@ -590,7 +590,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       (resource_provider_->IsAccelerated() &&
        resource_provider_->IsGpuContextLost()) ||
       allow_accelerated_images != allow_accelerated_images_ ||
-      resource_provider_info != resource_provider_info_) {
+      resource_provider_info != resource_provider_->GetSkImageInfo()) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (allow_accelerated_images) {
       if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
@@ -604,7 +604,6 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
         resource_provider_info, raster_context_provider);
     if (!resource_provider_)
       return nullptr;
-    resource_provider_info_ = resource_provider_info;
     allow_accelerated_images_ = allow_accelerated_images;
   }
   cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
