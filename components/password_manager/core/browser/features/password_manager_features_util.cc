@@ -111,6 +111,14 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
 
 bool CanCreateAccountStore(const PrefService* pref_service) {
 #if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid)) {
+    // The login DB deprecation stops migrations to UPM, so the migration
+    // status becomes irrelevant. Depending on the GMS Core version, the account
+    // store might be backed by an empty backend instead of a real one,
+    // but it can be created nonetheless.
+    return true;
+  }
   using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
   switch (
       static_cast<UseUpmLocalAndSeparateStoresState>(pref_service->GetInteger(

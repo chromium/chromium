@@ -57,6 +57,8 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
 // This doesn't necessarily mean the store is being used, e.g. this predicate
 // can return true for a signed-out user. For whether the store can be used,
 // see IsAccountStorageEnabled() instead.
+// On Android, if the internal backend is not present (i.e. in a public build),
+// this method will return true, but the store itself will not be created.
 bool CanCreateAccountStore(const PrefService* pref_service);
 
 // Whether the Google account storage for passwords is enabled for the current
