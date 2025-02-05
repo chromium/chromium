@@ -104,7 +104,18 @@ HttpStreamPool::Job::~Job() {
     }
   }
 
-  job_net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE);
+  job_net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE, [&] {
+    base::Value::Dict dict;
+    if (result_.has_value()) {
+      // Use "net_error" for the result as the NetLog viewer converts the value
+      // to a human-readable string.
+      dict.Set("net_error", *result_);
+    }
+    if (negotiated_protocol_.has_value()) {
+      dict.Set("negotiated_protocol", NextProtoToString(*negotiated_protocol_));
+    }
+    return dict;
+  });
 
   // `group_` may be deleted after this call.
   group_.ExtractAsDangling()->OnJobComplete(this);
@@ -163,6 +174,7 @@ void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
                                         NextProto negotiated_protocol) {
   CHECK(delegate_);
   CHECK(!result_.has_value());
+  CHECK(!negotiated_protocol_);
 
   int result = OK;
   if (!allowed_alpns_.Has(negotiated_protocol)) {
@@ -182,6 +194,7 @@ void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
   }
 
   result_ = OK;
+  negotiated_protocol_ = negotiated_protocol;
   group_->http_network_session()->proxy_resolution_service()->ReportSuccess(
       delegate_->proxy_info());
   delegate_->OnStreamReady(this, std::move(stream), negotiated_protocol);
