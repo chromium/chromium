@@ -105,13 +105,6 @@ enum PaintLayerType {
 // See https://drafts.csswg.org/css-writing-modes-3/#text-flow for some
 // extra details.
 //
-// - physical coordinates with flipped block-flow direction: those are physical
-//   coordinates but we flipped the block direction. Almost all geometries
-//   in box layout use this coordinate space, except those having explicit
-//   "Logical" or "Physical" prefix in their names, or the name implies logical
-//   (e.g. InlineStart, BlockEnd) or physical (e.g. Top, Left), or the return
-//   type is PhysicalRect.
-//
 // - logical coordinates without flipping inline direction: those are "logical
 //   block coordinates", without considering text direction. Examples are
 //   "LogicalLeft" and "LogicalRight".

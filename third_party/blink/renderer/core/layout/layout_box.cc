@@ -3796,12 +3796,13 @@ PhysicalSize LayoutBox::ComputeSize() const {
 
 LayoutBox* LayoutBox::LocationContainer() const {
   NOT_DESTROYED();
-  // Location of a non-root SVG object derived from LayoutBox should not be
-  // affected by writing-mode of the containing box (SVGRoot).
-  if (IsSVGChild())
+  // A non-root SVG object derived from LayoutBox doesn't have a meaningful
+  // location container.
+  if (IsSVGChild()) {
     return nullptr;
+  }
 
-  // Normally the box's location is relative to its containing box.
+  // The box's location is relative to its containing box.
   LayoutObject* container = Container();
   while (container && !container->IsBox())
     container = container->Container();

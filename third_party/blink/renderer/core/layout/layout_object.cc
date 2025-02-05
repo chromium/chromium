@@ -2375,8 +2375,7 @@ bool LayoutObject::MapToVisualRectInAncestorSpaceInternal(
     VisualRectFlags visual_rect_flags) const {
   NOT_DESTROYED();
   // For any layout object that doesn't override this method (the main example
-  // is LayoutText), the rect is assumed to be in the parent's coordinate space,
-  // except for container flip.
+  // is LayoutText), the rect is assumed to be in the parent's coordinate space.
 
   if (ancestor == this)
     return true;

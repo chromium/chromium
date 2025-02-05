@@ -101,9 +101,9 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
-  // A scrollbar part's Location() and PhysicalLocation() are relative to the
-  // scrollbar (instead of relative to any LayoutBox ancestor), and both are
-  // in physical coordinates.
+  // A scrollbar part's PhysicalLocation() is relative to the scrollbar
+  // (instead of relative to any LayoutBox ancestor), so it doesn't have a
+  // meaningful location container as a LayoutBox.
   LayoutBox* LocationContainer() const override {
     NOT_DESTROYED();
     return nullptr;
