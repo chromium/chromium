@@ -118,22 +118,6 @@ namespace {
 // maximized size.
 constexpr int kMaximizedWindowInset = 10;  // DIPs.
 
-// Some platforms, such and Desktop Linux with Wayland, disallow
-// client applications to manipulate absolute screen positions, by design.
-// Preventing, for example, clients from programmatically positioning toplevel
-// windows using absolute coordinates. By default, this class assumes that the
-// underlying platform supports it, unless indicated by the Ozone platform
-// properties.
-bool PlatformProvidesAbsoluteWindowPositions() {
-#if BUILDFLAG(IS_OZONE)
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformProperties()
-      .supports_global_screen_coordinates;
-#else
-  return true;
-#endif
-}
-
 constexpr char kTabDraggingPresentationTimeHistogram[] =
     "Browser.TabDragging.PresentationTime";
 constexpr char kTabDraggingPresentationTimeMaxHistogram[] =
@@ -712,40 +696,19 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
         return;
       }
 
-      views::Widget* widget = GetAttachedBrowserWidget();
-      gfx::Rect new_bounds;
-      gfx::Vector2d drag_offset;
-      if (was_source_maximized_ ||
-          (was_source_fullscreen_ && CanRestoreFullscreenWindowDuringDrag())) {
-        did_restore_window_ = true;
-        // When all tabs in a maximized browser are dragged the browser gets
-        // restored during the drag and maximized back when the drag ends.
-        const int previous_tab_area_width =
-            attached_context_->GetTabDragAreaWidth();
-        std::vector<gfx::Rect> drag_bounds =
-            attached_context_->CalculateBoundsForDraggedViews(attached_views_);
-        OffsetX(GetAttachedDragPoint(point_in_screen).x(), &drag_bounds);
-        new_bounds = CalculateDraggedBrowserBounds(
-            source_context_, point_in_screen, &drag_bounds);
-        new_bounds.Offset(-widget->GetRestoredBounds().x() +
-                              point_in_screen.x() - mouse_offset_.x(),
-                          0);
-        widget->SetVisibilityChangedAnimationsEnabled(false);
-        widget->Restore();
-        widget->SetBounds(new_bounds);
-        drag_offset = GetWindowOffset(point_in_screen);
-        AdjustBrowserAndTabBoundsForDrag(previous_tab_area_width,
-                                         point_in_screen, &drag_offset,
-                                         &drag_bounds);
-        widget->SetVisibilityChangedAnimationsEnabled(true);
-      } else {
-        new_bounds =
-            CalculateNonMaximizedDraggedBrowserBounds(widget, point_in_screen);
-        widget->SetBounds(new_bounds);
-        drag_offset = GetWindowOffset(point_in_screen);
+      did_restore_window_ =
+          was_source_maximized_ ||
+          (was_source_fullscreen_ && CanRestoreFullscreenWindowDuringDrag());
+      if (did_restore_window_) {
+        RestoreAttachedWindowForDrag();
       }
 
-      RunMoveLoop(drag_offset);
+      // Drag the window relative to `start_point_in_screen_` to pretend that
+      // this was the plan all along.
+      const gfx::Vector2d drag_offset =
+          start_point_in_screen_ -
+          attached_context_->GetWidget()->GetWindowBoundsInScreen().origin();
+      RunMoveLoop(point_in_screen, drag_offset);
       return;
     }
   }
@@ -1359,20 +1322,6 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
   }
 }
 
-TabDragController::DetachPosition TabDragController::GetDetachPosition(
-    const gfx::Point& point_in_screen) {
-  DCHECK(attached_context_);
-  gfx::Point attached_point(point_in_screen);
-  views::View::ConvertPointFromScreen(attached_context_, &attached_point);
-  if (attached_point.x() < attached_context_->TabDragAreaBeginX()) {
-    return DETACH_BEFORE;
-  }
-  if (attached_point.x() >= attached_context_->TabDragAreaEndX()) {
-    return DETACH_AFTER;
-  }
-  return DETACH_ABOVE_OR_BELOW;
-}
-
 void TabDragController::DetachAndAttachToNewContext(
     ReleaseCapture release_capture,
     TabDragContext* target_context) {
@@ -1630,18 +1579,32 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       return;
     }
 
-    RunMoveLoop(GetWindowOffset(point_in_screen));
+    const bool restore_window =
+        attached_context_->GetWidget()->IsMaximized() ||
+        (attached_context_->GetWidget()->IsFullscreen() &&
+         CanRestoreFullscreenWindowDuringDrag());
+    if (attached_context_ == source_context_) {
+      did_restore_window_ = restore_window;
+    }
+    if (restore_window) {
+      RestoreAttachedWindowForDrag();
+    }
+
+    const gfx::Vector2d drag_offset =
+        point_in_screen -
+        attached_context_->GetWidget()->GetWindowBoundsInScreen().origin();
+    RunMoveLoop(point_in_screen, drag_offset);
     return;
   }
 
   const int previous_tab_area_width = attached_context_->GetTabDragAreaWidth();
-  std::vector<gfx::Rect> drag_bounds =
+  const gfx::Size new_size = CalculateDraggedWindowSize(attached_context_);
+  const int first_tab_leading_x =
+      GetTabOffsetForDetachedWindow(point_in_screen);
+  const std::vector<gfx::Rect> drag_bounds =
       attached_context_->CalculateBoundsForDraggedViews(attached_views_);
-  OffsetX(GetAttachedDragPoint(point_in_screen).x(), &drag_bounds);
 
-  gfx::Vector2d drag_offset;
-  Browser* const browser = CreateBrowserForDrag(
-      attached_context_, point_in_screen, &drag_offset, &drag_bounds);
+  Browser* browser = CreateBrowserForDrag(attached_context_, new_size);
 
   BrowserView* const dragged_browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
@@ -1669,9 +1632,6 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   }
 #endif
 
-  dragged_widget->SetCanAppearInExistingFullscreenSpaces(true);
-  dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
-
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, Detach should release capture; |can_release_capture_| is
   // false on ChromeOS because it can cancel touches, but for this cases
@@ -1695,10 +1655,19 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
     return;
   }
 
-  AdjustBrowserAndTabBoundsForDrag(previous_tab_area_width, point_in_screen,
-                                   &drag_offset, &drag_bounds);
+  AdjustTabBoundsForDrag(previous_tab_area_width, first_tab_leading_x,
+                         drag_bounds);
+
+  // Set the window origin before making it visible, to avoid flicker on
+  // Windows. See https://crbug.com/394529650
+  const gfx::Vector2d drag_offset = CalculateWindowDragOffset();
+  dragged_widget->SetBounds(
+      gfx::Rect(point_in_screen - drag_offset, dragged_widget->GetSize()));
+
+  dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
   browser->window()->Show();
   dragged_widget->SetVisibilityChangedAnimationsEnabled(true);
+
   // Activate may trigger a focus loss, destroying us.
   {
     base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
@@ -1707,14 +1676,17 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       return;
     }
   }
-  RunMoveLoop(drag_offset);
+  RunMoveLoop(point_in_screen, drag_offset);
 }
 
-void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
+void TabDragController::RunMoveLoop(gfx::Point point_in_screen,
+                                    gfx::Vector2d drag_offset) {
   CHECK(!ShouldDragWindowUsingSystemDnD());
 
   move_loop_widget_ = GetAttachedBrowserWidget();
   DCHECK(move_loop_widget_);
+  move_loop_widget_->SetBounds(
+      gfx::Rect(point_in_screen - drag_offset, move_loop_widget_->GetSize()));
 
   // RunMoveLoop can be called reentrantly from within another RunMoveLoop,
   // in which case the observation is already established.
@@ -2311,98 +2283,78 @@ bool TabDragController::AreTabsConsecutive() {
   return true;
 }
 
-gfx::Rect TabDragController::CalculateDraggedBrowserBounds(
-    TabDragContext* source,
-    const gfx::Point& point_in_screen,
-    std::vector<gfx::Rect>* drag_bounds) {
-  // Vertically center the dragged tabs around the mouse.
-  gfx::Point center(0, drag_bounds->front().CenterPoint().y());
-  views::View::ConvertPointToWidget(source, &center);
+void TabDragController::RestoreAttachedWindowForDrag() {
+  const gfx::Size restored_size = CalculateDraggedWindowSize(attached_context_);
+
+  views::Widget* widget = attached_context_->GetWidget();
+  widget->SetVisibilityChangedAnimationsEnabled(false);
+  widget->Restore();
+  widget->SetVisibilityChangedAnimationsEnabled(true);
+
+  widget->SetSize(restored_size);
+}
+
+gfx::Size TabDragController::CalculateDraggedWindowSize(
+    TabDragContext* source) {
   // To support immersive fullscreen on macOS get the top level widget, which
   // will be the browser widget. In immersive fullscreen there are other
   // intermediate widgets that host the toolbar and tab strip, getting their
   // restored bounds is not helpful. Getting the top level widget in the
   // non-immersive fullscreen case is a essentially a NOP, so use it
   // unconditionally here for all platforms.
-  gfx::Rect new_bounds(
-      source->GetWidget()->GetTopLevelWidget()->GetRestoredBounds());
+  gfx::Size new_size(
+      source->GetWidget()->GetTopLevelWidget()->GetRestoredBounds().size());
 
-  gfx::Rect work_area = display::Screen::GetScreen()
-                            ->GetDisplayNearestPoint(last_point_in_screen_)
-                            .work_area();
-  if (new_bounds.size().width() >= work_area.size().width() &&
-      new_bounds.size().height() >= work_area.size().height()) {
-    new_bounds = work_area;
-    new_bounds.Inset(kMaximizedWindowInset);
-    // Behave as if the |source| was maximized at the start of a drag since this
-    // is consistent with a browser window creation logic in case of windows
-    // that are as large as the |work_area|. Note: Some platforms do not support
-    // global screen coordinates tracking, eg: Linux/Wayland, in such cases,
-    // avoid this heuristic to determine whether the new browser window should
-    // be maximized or not when completing the drag session.
-    if (PlatformProvidesAbsoluteWindowPositions()) {
-      was_source_maximized_ = true;
-    }
+  // Limit the window size to the current display's size, less some insets.
+  const gfx::Size work_area =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestPoint(last_point_in_screen_)
+          .work_area()
+          .size();
+  if (new_size.width() >= work_area.width() &&
+      new_size.height() >= work_area.height()) {
+    new_size = work_area;
+    new_size.Enlarge(-2 * kMaximizedWindowInset, -2 * kMaximizedWindowInset);
   }
 
   if (source->GetWidget()->IsMaximized()) {
     // If the restore bounds is really small, we don't want to honor it
     // (dragging a really small window looks wrong), instead make sure the new
     // window is at least 50% the size of the old.
-    const gfx::Size max_size(
+    const gfx::Size maximized_size(
         source->GetWidget()->GetWindowBoundsInScreen().size());
-    new_bounds.set_width(std::max(max_size.width() / 2, new_bounds.width()));
-    new_bounds.set_height(std::max(max_size.height() / 2, new_bounds.height()));
+    new_size.set_width(std::max(maximized_size.width() / 2, new_size.width()));
+    new_size.set_height(
+        std::max(maximized_size.height() / 2, new_size.height()));
   }
 
-  new_bounds.set_y(point_in_screen.y() - center.y());
-  switch (GetDetachPosition(point_in_screen)) {
-    case DETACH_BEFORE:
-      new_bounds.set_x(point_in_screen.x() - center.x());
-      new_bounds.Offset(-mouse_offset_.x(), 0);
-      break;
-    case DETACH_AFTER: {
-      gfx::Point right_edge(source->width(), 0);
-      views::View::ConvertPointToWidget(source, &right_edge);
-      new_bounds.set_x(point_in_screen.x() - right_edge.x());
-      new_bounds.Offset(drag_bounds->back().right() - mouse_offset_.x(), 0);
-      OffsetX(-drag_bounds->front().x(), drag_bounds);
-      break;
-    }
-    default:
-      break;  // Nothing to do for DETACH_ABOVE_OR_BELOW.
-  }
-
-  // Account for the extra space above the tabstrip on restored windows versus
-  // maximized windows.
-  if (source->GetWidget()->IsMaximized()) {
-    const auto* frame_view = static_cast<BrowserNonClientFrameView*>(
-        source->GetWidget()->non_client_view()->frame_view());
-    new_bounds.Offset(
-        0, frame_view->GetTopInset(false) - frame_view->GetTopInset(true));
-  }
-
-  return new_bounds;
+  return new_size;
 }
 
-gfx::Rect TabDragController::CalculateNonMaximizedDraggedBrowserBounds(
-    views::Widget* widget,
-    const gfx::Point& point_in_screen) {
-  gfx::Rect bounds = widget->GetWindowBoundsInScreen();
+int TabDragController::GetTabOffsetForDetachedWindow(
+    gfx::Point point_in_screen) {
+  DCHECK(attached_context_);
+  const gfx::Point attached_point =
+      views::View::ConvertPointFromScreen(attached_context_, point_in_screen);
+  if (attached_point.x() < attached_context_->TabDragAreaBeginX()) {
+    // Detaching to the left; tabs should be at the beginning of the window.
+    return 0;
+  }
+  if (attached_point.x() >= attached_context_->TabDragAreaEndX()) {
+    // Detaching to the right; tabs should be at the beginning of the window.
+    return 0;
+  }
 
-  // The user has to move the mouse some amount of pixels before the drag
-  // starts. Offset the window by this amount so that the relative offset
-  // of the initial location is consistent. See https://crbug.com/518740
-  bounds.Offset(point_in_screen.x() - start_point_in_screen_.x(),
-                point_in_screen.y() - start_point_in_screen_.y());
-  return bounds;
+  // Detaching above or below; tabs should keep their current offset.
+  return GetAttachedDragPoint(point_in_screen).x();
 }
 
-void TabDragController::AdjustBrowserAndTabBoundsForDrag(
+void TabDragController::AdjustTabBoundsForDrag(
     int previous_tab_area_width,
-    const gfx::Point& point_in_screen,
-    gfx::Vector2d* drag_offset,
-    std::vector<gfx::Rect>* drag_bounds) {
+    int first_tab_leading_x,
+    std::vector<gfx::Rect> drag_bounds) {
+  CHECK(!ShouldDragWindowUsingSystemDnD());
+
   attached_context_->ForceLayout();
   const int current_tab_area_width = attached_context_->GetTabDragAreaWidth();
 
@@ -2415,51 +2367,25 @@ void TabDragController::AdjustBrowserAndTabBoundsForDrag(
     // `leading_ratio` is the proportion of the previous tab area width which is
     // ahead of the first dragged tab's previous position.
     const float leading_ratio =
-        drag_bounds->front().x() / static_cast<float>(previous_tab_area_width);
-    *drag_bounds =
-        attached_context_->CalculateBoundsForDraggedViews(attached_views_);
+        first_tab_leading_x / static_cast<float>(previous_tab_area_width);
 
     // If the tabs can fit within the new tab area with room to spare, align
     // them within it so the leading tab is in the same position as it was in
     // the previous tab area, proportionally speaking.
-    if (drag_bounds->back().right() < current_tab_area_width) {
+    if (drag_bounds.back().right() < current_tab_area_width) {
       // The tabs must stay within the tabstrip.
       const int maximum_tab_x =
           current_tab_area_width -
-          (drag_bounds->back().right() - drag_bounds->front().x());
+          (drag_bounds.back().right() - drag_bounds.front().x());
       const int leading_tab_x =
           std::min(static_cast<int>(leading_ratio * current_tab_area_width),
                    maximum_tab_x);
-      OffsetX(leading_tab_x, drag_bounds);
+      OffsetX(leading_tab_x, &drag_bounds);
     }
-
-    // Reposition the restored window such that the tab that was dragged remains
-    // under the mouse cursor.
-    gfx::Rect source_tab_bounds = (*drag_bounds)[source_view_index_];
-
-    int cursor_offset_within_tab =
-        base::ClampRound(source_tab_bounds.width() * offset_to_width_ratio_);
-    gfx::Point cursor_offset_in_widget(
-        attached_context_->GetMirroredXInView(source_tab_bounds.x() +
-                                              cursor_offset_within_tab),
-        0);
-    views::View::ConvertPointToWidget(attached_context_,
-                                      &cursor_offset_in_widget);
-    gfx::Rect bounds = GetAttachedBrowserWidget()->GetWindowBoundsInScreen();
-    bounds.set_x(point_in_screen.x() - cursor_offset_in_widget.x());
-
-    // This function is about horizontal alignment and assumes `drag_offset`'s Y
-    // was previously calculated and set, so only X is modified here.
-    drag_offset->set_x(point_in_screen.x() - bounds.x());
-
-    // Some platforms, such as Linux/Wayland, do not support window positioning
-    // using screen coordinates, in which case tab dragging is backed by system
-    // drag-and-drop instead.
-    if (PlatformProvidesAbsoluteWindowPositions()) {
-      GetAttachedBrowserWidget()->SetBounds(bounds);
-    }
+  } else {
+    OffsetX(first_tab_leading_x, &drag_bounds);
   }
-  attached_context_->SetBoundsForDrag(attached_views_, *drag_bounds);
+  attached_context_->SetBoundsForDrag(attached_views_, drag_bounds);
 }
 
 std::optional<webapps::AppId> TabDragController::GetControllingAppForDrag(
@@ -2482,11 +2408,8 @@ std::optional<webapps::AppId> TabDragController::GetControllingAppForDrag(
   return all_controlling_apps.begin()->first;
 }
 
-Browser* TabDragController::CreateBrowserForDrag(
-    TabDragContext* source,
-    const gfx::Point& point_in_screen,
-    gfx::Vector2d* drag_offset,
-    std::vector<gfx::Rect>* drag_bounds) {
+Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
+                                                 gfx::Size initial_size) {
   source->GetWidget()
       ->GetCompositor()
       ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
@@ -2498,19 +2421,6 @@ Browser* TabDragController::CreateBrowserForDrag(
                               presentation_timestamp - now);
           },
           base::TimeTicks::Now()));
-  gfx::Rect new_bounds(
-      CalculateDraggedBrowserBounds(source, point_in_screen, drag_bounds));
-  *drag_offset = point_in_screen - new_bounds.origin();
-
-  // On Wayland, for example, coordinates are always relative to the window's
-  // origin, and the origin should always be (0, 0). Ensure we set the origin to
-  // (0, 0) in this case, or operations like finding the window under the cursor
-  // might not work as expected.
-  if (!PlatformProvidesAbsoluteWindowPositions()) {
-    // `new_bounds` comes from window bounds, but in tests windows sometimes
-    // have a non-(0, 0) origin, so play it safe and explicitly set the origin.
-    new_bounds.set_origin({0, 0});
-  }
 
   // Find if there's a controlling app, and thus we should open an app window.
   Browser* from_browser = BrowserView::GetBrowserViewForNativeWindow(
@@ -2533,7 +2443,7 @@ Browser* TabDragController::CreateBrowserForDrag(
   // Web app windows have their own initial size independent of the source
   // browser window.
   if (!open_as_web_app) {
-    create_params.initial_bounds = new_bounds;
+    create_params.initial_bounds = gfx::Rect(initial_size);
   }
   create_params.user_gesture = true;
   create_params.in_tab_dragging = true;
@@ -2566,13 +2476,16 @@ Browser* TabDragController::CreateBrowserForDrag(
 
   Browser* browser = Browser::Create(create_params);
   is_dragging_new_browser_ = true;
+  BrowserView::GetBrowserViewForBrowser(browser)
+      ->GetWidget()
+      ->SetCanAppearInExistingFullscreenSpaces(true);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // If the window is created maximized then the bounds we supplied are ignored.
   // We need to reset them again so they are honored. On ChromeOS, this is
   // handled in NativeWidgetAura.
   if (!open_as_web_app) {
-    browser->window()->SetBounds(new_bounds);
+    browser->window()->SetBounds(gfx::Rect(initial_size));
   }
 #endif
 
@@ -2592,15 +2505,18 @@ gfx::Point TabDragController::GetCursorScreenPoint() {
 #endif
 }
 
-gfx::Vector2d TabDragController::GetWindowOffset(
-    const gfx::Point& point_in_screen) {
-  TabDragContext* owning_context =
-      attached_context_ ? attached_context_.get() : source_context_.get();
-  views::View* toplevel_view = owning_context->GetWidget()->GetContentsView();
-
-  gfx::Point point = point_in_screen;
-  views::View::ConvertPointFromScreen(toplevel_view, &point);
-  return point.OffsetFromOrigin();
+gfx::Vector2d TabDragController::CalculateWindowDragOffset() {
+  const gfx::Rect source_tab_bounds =
+      attached_views_[source_view_index_]->bounds();
+  const int cursor_offset_within_tab =
+      base::ClampRound(source_tab_bounds.width() * offset_to_width_ratio_);
+  gfx::Point desired_cursor_pos_in_widget(
+      attached_context_->GetMirroredXInView(source_tab_bounds.x() +
+                                            cursor_offset_within_tab),
+      source_tab_bounds.height() / 2);
+  views::View::ConvertPointToWidget(attached_context_,
+                                    &desired_cursor_pos_in_widget);
+  return desired_cursor_pos_in_widget.OffsetFromOrigin();
 }
 
 TabDragController::Liveness TabDragController::GetLocalProcessWindow(
