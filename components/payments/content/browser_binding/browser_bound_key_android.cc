@@ -30,7 +30,7 @@ std::vector<uint8_t> BrowserBoundKeyAndroid::Sign(
   return signature_output;
 }
 
-std::vector<uint8_t> BrowserBoundKeyAndroid::GetPublicKeyAsCoseKey() {
+std::vector<uint8_t> BrowserBoundKeyAndroid::GetPublicKeyAsCoseKey() const {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_BrowserBoundKey_getPublicKeyAsCoseKey(env, impl_);
 }

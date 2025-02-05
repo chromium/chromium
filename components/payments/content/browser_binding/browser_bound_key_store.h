@@ -22,6 +22,8 @@ std::unique_ptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance();
 // An interface for creating storing and retrieving browser bound keys.
 class BrowserBoundKeyStore {
  public:
+  using CredentialInfoList =
+      std::vector<device::PublicKeyCredentialParams::CredentialInfo>;
   BrowserBoundKeyStore() = default;
   BrowserBoundKeyStore(const BrowserBoundKeyStore&) = delete;
   BrowserBoundKeyStore& operator=(const BrowserBoundKeyStore&) = delete;
@@ -34,8 +36,7 @@ class BrowserBoundKeyStore {
   virtual std::unique_ptr<BrowserBoundKey>
   GetOrCreateBrowserBoundKeyForCredentialId(
       const std::vector<uint8_t>& credential_id,
-      const std::vector<device::PublicKeyCredentialParams::CredentialInfo>&
-          allowed_credentials) = 0;
+      const CredentialInfoList& allowed_credentials) = 0;
 };
 
 }  // namespace payments

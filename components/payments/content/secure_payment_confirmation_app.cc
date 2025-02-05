@@ -20,6 +20,8 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/payments/content/browser_binding/browser_bound_key.h"
+#include "components/payments/content/browser_binding/passkey_browser_binder.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
@@ -66,7 +68,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     const std::u16string& payment_instrument_label,
     std::unique_ptr<SkBitmap> payment_instrument_icon,
     std::vector<uint8_t> credential_id,
-    std::optional<std::vector<uint8_t>> browser_bound_key_id,
+    std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder,
     const url::Origin& merchant_origin,
     base::WeakPtr<PaymentRequestSpec> spec,
     mojom::SecurePaymentConfirmationRequestPtr request,
@@ -83,11 +85,11 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       payment_instrument_label_(payment_instrument_label),
       payment_instrument_icon_(std::move(payment_instrument_icon)),
       credential_id_(std::move(credential_id)),
-      browser_bound_key_id_(std::move(browser_bound_key_id)),
       merchant_origin_(merchant_origin),
       spec_(spec),
       request_(std::move(request)),
       authenticator_(std::move(authenticator)),
+      passkey_browser_binder_(std::move(passkey_browser_binder)),
       network_label_(network_label),
       network_icon_(network_icon),
       issuer_label_(issuer_label),
@@ -138,35 +140,25 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
   options->challenge = request_->challenge;
   std::optional<std::vector<uint8_t>> browser_bound_public_key = std::nullopt;
 #if BUILDFLAG(IS_ANDROID)
-  if (browser_bound_key_id_) {
-    if (!browser_bound_key_store_) {
-      browser_bound_key_store_ = GetBrowserBoundKeyStoreInstance();
-    }
-    browser_bound_key_ =
-        browser_bound_key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-            *browser_bound_key_id_,
+  if (passkey_browser_binder_) {
+    std::vector<device::PublicKeyCredentialParams::CredentialInfo>
+        credential_parameters =
             options->extensions->payment_browser_bound_key_parameters.value_or(
-                base::ToVector(kDefaultBrowserBoundKeyCredentialParameters)));
-    if (browser_bound_key_) {
-      browser_bound_public_key = browser_bound_key_->GetPublicKeyAsCoseKey();
-    }
+                base::ToVector(kDefaultBrowserBoundKeyCredentialParameters));
+    passkey_browser_binder_->GetOrCreateBoundKeyForPasskey(
+        credential_id_, effective_relying_party_identity_,
+        credential_parameters,
+        base::BindOnce(&SecurePaymentConfirmationApp::OnGetBrowserBoundKey,
+                       weak_ptr_factory_.GetWeakPtr(), delegate,
+                       std::move(options)));
+  } else {
+    OnGetBrowserBoundKey(delegate, std::move(options),
+                         /*browser_bound_key=*/nullptr);
   }
-#endif  // BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/40225659): The 'showOptOut' flag status must also be signed
-  // in the assertion, so that the verifier can check that the caller offered
-  // the experience if desired.
-  // TODO(crbug.com/333945861): The network and issuer information must also be
-  // signed in the assertion, so that the verifier can check that the caller
-  // passed the correct information.
-  authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
-      spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
-      request_->instrument.Clone(), request_->payee_name,
-      request_->payee_origin, browser_bound_public_key));
-
-  authenticator_->GetAssertion(
-      std::move(options),
-      base::BindOnce(&SecurePaymentConfirmationApp::OnGetAssertion,
-                     weak_ptr_factory_.GetWeakPtr(), delegate));
+#else   // BUILDFLAG(IS_ANDROID))
+  OnGetBrowserBoundKey(delegate, std::move(options),
+                       /*browser_bound_key=*/nullptr);
+#endif  // BUILDFLAG(IS_ANDROID))
 }
 
 bool SecurePaymentConfirmationApp::IsCompleteForPayment() const {
@@ -286,17 +278,36 @@ void SecurePaymentConfirmationApp::RenderFrameDeleted(
   }
 }
 
-void SecurePaymentConfirmationApp::SetBrowserBoundKeyStoreForTesting(
-    std::unique_ptr<BrowserBoundKeyStore> key_store) {
-  browser_bound_key_store_ = std::move(key_store);
+PasskeyBrowserBinder*
+SecurePaymentConfirmationApp::GetPasskeyBrowserBinderForTesting() {
+  return passkey_browser_binder_.get();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-const std::optional<std::vector<uint8_t>>&
-SecurePaymentConfirmationApp::GetBrowserBoundKeyIdForTesting() const {
-  return browser_bound_key_id_;
+void SecurePaymentConfirmationApp::OnGetBrowserBoundKey(
+    base::WeakPtr<Delegate> delegate,
+    blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+    std::unique_ptr<BrowserBoundKey> browser_bound_key) {
+  browser_bound_key_ = std::move(browser_bound_key);
+  std::optional<std::vector<uint8_t>> browser_bound_public_key = std::nullopt;
+  if (browser_bound_key_) {
+    browser_bound_public_key = browser_bound_key_->GetPublicKeyAsCoseKey();
+  }
+  // TODO(crbug.com/40225659): The 'showOptOut' flag status must also be signed
+  // in the assertion, so that the verifier can check that the caller offered
+  // the experience if desired.
+  // TODO(crbug.com/333945861): The network and issuer information must also be
+  // signed in the assertion, so that the verifier can check that the caller
+  // passed the correct information.
+  authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
+      spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
+      request_->instrument.Clone(), request_->payee_name,
+      request_->payee_origin, std::move(browser_bound_public_key)));
+
+  authenticator_->GetAssertion(
+      std::move(options),
+      base::BindOnce(&SecurePaymentConfirmationApp::OnGetAssertion,
+                     weak_ptr_factory_.GetWeakPtr(), delegate));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 void SecurePaymentConfirmationApp::OnGetAssertion(
     base::WeakPtr<Delegate> delegate,

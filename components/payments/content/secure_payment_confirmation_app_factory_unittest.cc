@@ -11,6 +11,8 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
+#include "components/payments/content/browser_binding/passkey_browser_binder.h"
 #include "components/payments/content/mock_payment_app_factory_delegate.h"
 #include "components/payments/content/mock_payment_manifest_web_data_service.h"
 #include "components/payments/core/features.h"
@@ -38,11 +40,9 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ByMove;
-using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Return;
 using ::testing::ReturnRef;
-using ::testing::SaveArg;
 
 static constexpr char kChallengeBase64[] = "aaaa";
 static constexpr char kCredentialIdBase64[] = "cccc";
@@ -81,7 +81,6 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
 
     return spc_request;
   }
-
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   content::TestBrowserContext context_;
@@ -528,6 +527,15 @@ TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
 #if BUILDFLAG(IS_ANDROID)
 class SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest
     : public SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest {
+ protected:
+  std::unique_ptr<BrowserBoundKeyStore> MakeFakeBrowserBoundKeyStore() {
+    auto key_store = std::make_unique<FakeBrowserBoundKeyStore>();
+    browser_bound_key_store_ = key_store->GetWeakPtr();
+    return key_store;
+  }
+
+  base::WeakPtr<FakeBrowserBoundKeyStore> browser_bound_key_store_;
+
  private:
   base::test::ScopedFeatureList feature_list_{
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys};
@@ -535,12 +543,11 @@ class SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest
 
 // Test that the browser bound key is retrieved
 TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
-       RetrievesBrowserBoundKey) {
+       ProvidesBrowserBoundingToSecurePaymentConfirmationApp) {
   base::test::ScopedFeatureList feature_list{
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys};
   url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
   std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
-  WebDataServiceBase::Handle web_data_service_handle = 1234;
   auto method_data = mojom::PaymentMethodData::New();
   method_data->supported_method = "secure-payment-confirmation";
   method_data->secure_payment_confirmation =
@@ -551,6 +558,9 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
   std::string relying_party_id =
       method_data->secure_payment_confirmation->rp_id;
   GURL icon = method_data->secure_payment_confirmation->instrument->icon;
+
+  secure_payment_confirmation_app_factory_.SetBrowserBoundKeyStoreForTesting(
+      MakeFakeBrowserBoundKeyStore());
 
   auto mock_authenticator =
       std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
@@ -568,11 +578,6 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
 
   scoped_refptr<MockPaymentManifestWebDataService> mock_service =
       base::MakeRefCounted<MockPaymentManifestWebDataService>();
-  WebDataServiceConsumer* web_data_service_consumer = nullptr;
-  EXPECT_CALL(*mock_service, GetBrowserBoundKey(Eq(credential_ids[0]),
-                                                Eq(relying_party_id), _))
-      .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
-                      Return(web_data_service_handle)));
   EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
       .WillOnce(Return(ByMove(std::move(mock_authenticator))));
   EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
@@ -584,11 +589,6 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
       .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
 
   secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
-  ASSERT_TRUE(web_data_service_consumer);
-  web_data_service_consumer->OnWebDataServiceRequestDone(
-      web_data_service_handle,
-      std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
-          WDResultType::BROWSER_BOUND_KEY, browser_bound_key_id));
   std::vector<gfx::Size> icon_sizes({{32, 32}});
   std::vector<SkBitmap> icon_bitmaps(1);
   icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/32);
@@ -597,10 +597,15 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
                              std::move(icon_bitmaps), std::move(icon_sizes));
 
   ASSERT_TRUE(secure_payment_confirmation_app);
-  EXPECT_EQ(static_cast<SecurePaymentConfirmationApp*>(
-                secure_payment_confirmation_app.get())
-                ->GetBrowserBoundKeyIdForTesting(),
-            browser_bound_key_id);
+  PasskeyBrowserBinder* passkey_browser_binder =
+      static_cast<SecurePaymentConfirmationApp*>(
+          secure_payment_confirmation_app.get())
+          ->GetPasskeyBrowserBinderForTesting();
+  ASSERT_TRUE(passkey_browser_binder);
+  EXPECT_EQ(browser_bound_key_store_.get(),
+            passkey_browser_binder->GetBrowserBoundKeyStoreForTesting());
+  EXPECT_EQ(mock_service.get(),
+            passkey_browser_binder->GetWebDataServiceForTesting());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

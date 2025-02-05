@@ -31,7 +31,7 @@ class FakeBrowserBoundKey : public BrowserBoundKey {
   ~FakeBrowserBoundKey() override;
 
   std::vector<uint8_t> Sign(const std::vector<uint8_t>& client_data) override;
-  std::vector<uint8_t> GetPublicKeyAsCoseKey() override;
+  std::vector<uint8_t> GetPublicKeyAsCoseKey() const override;
 
   int32_t algorithm_identifier() const { return algorithm_identifier_; }
 

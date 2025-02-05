@@ -208,7 +208,15 @@ static_library("test_support") {
   ]
 }
 
-source_set("unit_tests") {
+group("unit_tests") {
+  testonly = true
+  deps = [
+    ":payment_content_unit_tests",
+    "//components/payments/content/browser_binding:passkey_browser_binder_unittests",
+  ]
+}
+
+source_set("payment_content_unit_tests") {
   testonly = true
   sources = [
     "android_app_communication_test_support.h",
@@ -258,8 +266,8 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/os_crypt/async/browser:test_support",
+    "//components/payments/content/browser_binding",
     "//components/payments/content/browser_binding:fake_browser_bound_key_store",
-    "//components/payments/content/browser_binding:interface",
     "//components/payments/core",
     "//components/payments/core:error_strings",
     "//components/payments/core:method_strings",

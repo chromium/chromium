@@ -25,12 +25,6 @@
 #endif
 
 namespace payments {
-namespace {
-#if BUILDFLAG(IS_ANDROID)
-// The length of the random browser bound key identifiers.
-constexpr size_t kBrowserBoundKeyIdLength = 32;
-#endif  // BUILDFLAG(IS_ANDROID)
-}  // namespace
 
 SecurePaymentConfirmationService::SecurePaymentConfirmationService(
     content::RenderFrameHost& render_frame_host,
@@ -39,12 +33,7 @@ SecurePaymentConfirmationService::SecurePaymentConfirmationService(
     std::unique_ptr<webauthn::InternalAuthenticator> authenticator)
     : DocumentService(render_frame_host, std::move(receiver)),
       web_data_service_(web_data_service),
-      authenticator_(std::move(authenticator)) {
-#if BUILDFLAG(IS_ANDROID)
-  random_bytes_as_vector_callback_ =
-      base::BindRepeating(crypto::RandBytesAsVector);
-#endif
-}
+      authenticator_(std::move(authenticator)) {}
 
 SecurePaymentConfirmationService::~SecurePaymentConfirmationService() {
   Reset();
@@ -134,31 +123,27 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     MakePaymentCredentialCallback callback) {
   std::string relying_party_id;
-  std::optional<std::vector<uint8_t>> browser_bound_key_id;
-  std::unique_ptr<BrowserBoundKey> browser_bound_key;
+  std::optional<PasskeyBrowserBinder::UnboundKey> browser_bound_key;
 #if BUILDFLAG(IS_ANDROID)
   if (options &&
       base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
     relying_party_id = options->relying_party.id;
-    // To set the browser bound key in the client data json before creating the
-    // credential, the browser bound key must be created with a random id since
-    // the credential id is not known until after creating the credential.
-    browser_bound_key_id =
-        random_bytes_as_vector_callback_.Run(kBrowserBoundKeyIdLength);
-    if (browser_bound_key_store_ == nullptr) {
-      browser_bound_key_store_ = GetBrowserBoundKeyStoreInstance();
+    if (!passkey_browser_binder_) {
+      if (std::unique_ptr<BrowserBoundKeyStore> key_store =
+              GetBrowserBoundKeyStoreInstance()) {
+        passkey_browser_binder_ = std::make_unique<PasskeyBrowserBinder>(
+            GetBrowserBoundKeyStoreInstance(), web_data_service_);
+      }
     }
-    if (browser_bound_key_store_) {
+    if (passkey_browser_binder_) {
       // TODO(crbug.com/384940850): Regenerate the browser bound key identifier
       // if a browser bound key with the same identifier already exists.
       // TODO(crbug.com/377278827): Provide the browser bound public key
       // credential parameters from the payment extensions to the key store.
-      browser_bound_key =
-          browser_bound_key_store_->GetOrCreateBrowserBoundKeyForCredentialId(
-              *browser_bound_key_id,
-              options->payment_browser_bound_key_parameters.value_or(
-                  options->public_key_parameters));
+      browser_bound_key = passkey_browser_binder_->CreateUnboundKey(
+          options->payment_browser_bound_key_parameters.value_or(
+              options->public_key_parameters));
     }
     if (browser_bound_key) {
       auto payment_options = ::blink::mojom::PaymentOptions::New();
@@ -166,7 +151,7 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
       payment_options->instrument =
           ::blink::mojom::PaymentCredentialInstrument::New();
       payment_options->browser_bound_public_key =
-          browser_bound_key->GetPublicKeyAsCoseKey();
+          browser_bound_key->Get().GetPublicKeyAsCoseKey();
       authenticator_->SetPaymentOptions(std::move(payment_options));
     }
   }
@@ -176,37 +161,19 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
       base::BindOnce(
           &SecurePaymentConfirmationService::OnAuthenticatorMakeCredential,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-          std::move(relying_party_id), std::move(browser_bound_key_id),
-          std::move(browser_bound_key)));
+          std::move(relying_party_id), std::move(browser_bound_key)));
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void SecurePaymentConfirmationService::SetBrowserBoundKeyStoreForTesting(
-    std::unique_ptr<BrowserBoundKeyStore> browser_bound_key_store) {
-  browser_bound_key_store_ = std::move(browser_bound_key_store);
-}
-
-void SecurePaymentConfirmationService::SetRandomBytesAsVectorForTesting(
-    base::RepeatingCallback<std::vector<uint8_t>(size_t)> callback) {
-  random_bytes_as_vector_callback_ = std::move(callback);
+void SecurePaymentConfirmationService::SetPasskeyBrowserBinderForTesting(
+    std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder) {
+  passkey_browser_binder_ = std::move(passkey_browser_binder);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void SecurePaymentConfirmationService::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle h,
     std::unique_ptr<WDTypedResult> result) {
-#if BUILDFLAG(IS_ANDROID)
-  if (set_browser_bound_key_request_handle_ &&
-      base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
-    if (set_browser_bound_key_request_handle_ == h) {
-      // TODO(crbug.com/384954763): Delete the browser bound key from the key
-      // store if the result was false (not successful).
-      set_browser_bound_key_request_handle_ = std::nullopt;
-      return;
-    }
-  }
-#endif
   if (state_ != State::kStoringCredential || !IsCurrentStateValid() ||
       data_service_request_handle_ != h) {
     Reset();
@@ -227,8 +194,7 @@ void SecurePaymentConfirmationService::OnWebDataServiceRequestDone(
 void SecurePaymentConfirmationService::OnAuthenticatorMakeCredential(
     SecurePaymentConfirmationService::MakePaymentCredentialCallback callback,
     std::string relying_party,
-    std::optional<std::vector<uint8_t>> browser_bound_key_id,
-    std::unique_ptr<BrowserBoundKey> browser_bound_key,
+    std::optional<PasskeyBrowserBinder::UnboundKey> browser_bound_key,
     ::blink::mojom::AuthenticatorStatus authenticator_status,
     ::blink::mojom::MakeCredentialAuthenticatorResponsePtr response,
     ::blink::mojom::WebAuthnDOMExceptionDetailsPtr maybe_exception_details) {
@@ -236,15 +202,15 @@ void SecurePaymentConfirmationService::OnAuthenticatorMakeCredential(
   if (response &&
       base::FeatureList::IsEnabled(
           blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
-    if (browser_bound_key_id && browser_bound_key) {
+    if (browser_bound_key) {
       std::vector<uint8_t> signature_output =
-          browser_bound_key->Sign(response->info->client_data_json);
+          browser_bound_key->Get().Sign(response->info->client_data_json);
       response->payment =
           blink::mojom::AuthenticationExtensionsPaymentResponse::New();
       response->payment->browser_bound_signature = std::move(signature_output);
-      web_data_service_->SetBrowserBoundKey(
-          response->info->raw_id, std::move(relying_party),
-          std::move(*browser_bound_key_id), this);
+      passkey_browser_binder_->BindKey(std::move(*browser_bound_key),
+                                       response->info->raw_id,
+                                       std::move(relying_party));
     }
   }
 #endif
