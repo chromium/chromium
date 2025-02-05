@@ -1004,6 +1004,10 @@ AXObject* AXObjectCacheImpl::EnsureFocusedObject() {
     if (!obj->IsAriaHidden()) {
       return obj;
     }
+
+    if (delay_bad_aria_hidden_focus_repair_) {
+      return nullptr;
+    }
     // Repair illegal usage of aria-hidden: it should never contain the focus.
     // The aria-hidden will be ignored when this occurs.
     DiscardBadAriaHiddenBecauseOfFocus(*obj);
@@ -2336,6 +2340,7 @@ void AXObjectCacheImpl::DiscardBadAriaHiddenBecauseOfFocus(AXObject& obj) {
   ancestor_to_rebuild->UpdateChildrenIfNecessary();
   bad_aria_hidden_ancestor = Get(bad_aria_hidden_ancestor_node);
   if (bad_aria_hidden_ancestor) {
+    MarkAXSubtreeDirtyWithCleanLayout(bad_aria_hidden_ancestor);
     CHECK(!bad_aria_hidden_ancestor->IsAriaHiddenRoot());
     CHECK(!bad_aria_hidden_ancestor->IsAriaHidden());
   }
@@ -3193,7 +3198,26 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
       // point to the same node to be added to the processing queue.
       relation_cache_->ProcessUpdatesWithCleanLayout();
 
-      EnsureFocusedObject();
+      // If the focus is still in an aria-hidden subtree, give the page a bit
+      // more time to move it to somewhere else, so that we don't overapply the
+      // repair in DiscardBadAriaHiddenBecauseOfFocus().
+      if (delay_bad_aria_hidden_focus_repair_) {
+        if (AXObject* focus = Get(document_->FocusedElement())) {
+          if (focus->IsAriaHidden()) {
+            // Schedule a serialization immediately after the next layout
+            // update, when we will discard the bad aria-hidden if it still
+            // contains the focus. Delay serialization until this next tick in
+            // the cyecle, so that focus is in a legal place one way the other.
+            ScheduleImmediateSerialization();
+            delay_bad_aria_hidden_focus_repair_ = false;
+            return;
+          }
+        }
+      } else {
+        EnsureFocusedObject();
+        // Set to true so that the next aria-hidden repair is on a delay.
+        delay_bad_aria_hidden_focus_repair_ = true;
+      }
       if (mark_all_dirty_) {
         // In some cases, EnsureFocusedObject() causes bad aria-hidden subtrees
         // to be removed, if they contained the focus. This can in turn lead to
@@ -4115,6 +4139,12 @@ void AXObjectCacheImpl::HandleNodeLostFocusWithCleanLayout(Node* node) {
 
 void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
   AXObject* obj = EnsureFocusedObject();
+  // The focus can very briefly be null in the case where focus is moved into an
+  // aria-hidden area. On the next rendering cycle the aria-hidden will be
+  // discarded if it is still hiding the focus.
+  if (!obj) {
+    return;
+  }
 
   PostNotification(obj, ax::mojom::Event::kFocus);
 

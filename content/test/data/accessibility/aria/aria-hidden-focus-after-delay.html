@@ -1,0 +1,73 @@
+<!--
+@WAIT-FOR:done
+-->
+<!--
+Normally when focus occurs within an aria-hidden, we mark the aria-hidden
+as bad and ignore it from that point forward. This is in order to avoid a
+situation where aria-hidden hides the focus.
+
+This tests ensures that as long as the focus is not within aria-hidden for very
+long, that the aria-hidden is not considered bad and therefore not ignored.
+
+On success, nodes in the subtree of <main> will be ignored or not included in
+the a11y tree.
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #modal-container {
+        display: none; /* Hidden by default */
+        position: fixed;
+    }
+  </style>
+</head>
+<body>
+  <main id="page-container">
+    <p>This is some content on the page. This becomes aria-hidden and should not show in the a11y tree.</p>
+    <button id="open-modal-button">Open Modal</button>
+  </main>
+
+  <div id="modal-container">
+    <div id="modal-content" role="dialog">
+        <p>The quick brown fox jumps over the lazy dog.</p>
+        <button id="close-modal-button">Close Modal</button>
+    </div>
+  </div>
+
+  <script>
+    const body = document.body;
+    const modalContainer = document.getElementById('modal-container');
+    const pageContainer = document.getElementById('page-container');
+    const openModalButton = document.getElementById('open-modal-button');
+    const closeModalButton = document.getElementById('close-modal-button');
+
+    function focusInsideDialog() {
+      closeModalButton.focus();
+      setTimeout(() => document.title = 'done');
+    }
+
+    function openModalAndHideRestOfPage() {
+      // Open the modal
+      modalContainer.style.display = 'block';
+      // Hide rest of the page
+      pageContainer.setAttribute('aria-hidden', 'true');
+      body.classList.add("modal-open");
+
+      // The purpose of the delay is to mimic the implementation of Angular
+      // Material dialog that focuses the first element in the dialog after the
+      // dialog is rendered. This works with the error message.
+      setTimeout(focusInsideDialog, 0);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Start with focus inside the aria-hidden.
+      // This also ensures an immediate serialization before the focus changes again.
+      openModalButton.focus();
+      openModalAndHideRestOfPage();
+    });
+
+  </script>
+</body>
+</html>
