@@ -77,6 +77,18 @@ const ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE = Object.freeze([
 ]);
 
 /**
+ * Returns an array of contributions, each of which could be passed into
+ * `privateAggregation.contributeToHistogram()`. This function constructs
+ * inputs; for the expected output payload, pass the same value of
+ * `numContributions` to `buildPayloadWithSequentialContributions()`.
+ */
+function buildArrayOfSequentialContributions(numContributions) {
+  return Array(numContributions)
+      .fill()
+      .map((_, i) => ({bucket: BigInt(i) + 1n, value: 1}));
+}
+
+/**
  * Returns a frozen payload object with contributions of the form `{bucket: i,
  * value: 1}` for i from 1 to `numContributions`, inclusive.
  */
@@ -279,7 +291,8 @@ const verifyReport =
       if (debug_key || expected_payload) {
         // A debug key cannot be set without debug mode being enabled and the
         // `expected_payload` should be undefined if debug mode is not enabled.
-        assert_true(is_debug_enabled);
+        assert_true(
+            is_debug_enabled, 'verifyReport(): Debug mode should be enabled.');
       }
 
       assert_own_property(report, 'shared_info');
