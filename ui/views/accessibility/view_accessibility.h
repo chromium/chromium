@@ -653,15 +653,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // Fully initialize the cache.
   void CompleteCacheInitializationRecursive();
 
-  // Initializes the role attribute on the `data_` object with the one returned
-  // from `View::GetAccessibleNodeData` called on the owning view to ensure that
-  // the role is set before calling `SetName` or `SetDescription`.
-  //
-  // TODO(crbug.com/325137417): This is currently called by the setters before
-  // they perform their operations, but it won't be needed once we rely entirely
-  // on the cache and initialize it with the output of `GetAccessibleNodeData`.
-  void InitializeRoleIfNeeded();
-
   // Prune/Unprune all descendant views from the accessibility tree. We prune
   // for two reasons: 1) The view has been explicitly marked as a leaf node, 2)
   // The view is focusable and lacks focusable descendants (e.g. a button with a

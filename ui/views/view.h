@@ -1511,18 +1511,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Get the object managing the accessibility interface for this View.
   ViewAccessibility& GetViewAccessibility() const;
 
-  // Modifies `node_data` to reflect the current accessible state of this view.
-  // It accomplishes this by keeping the data up-to-date in response to the use
-  // of the accessible-property setters.
-  // NOTE: View authors should use the available property setters rather than
-  // overriding this function. Views which need to expose accessibility
-  // properties which are currently not supported View properties should ensure
-  // their view's `GetAccessibleNodeData` calls `GetAccessibleNodeData` on the
-  // parent class. This ensures that if an owning view customizes an accessible
-  // property, such as the name, role, or description, that customization is
-  // included in your view's `AXNodeData`.
-  virtual void GetAccessibleNodeData(ui::AXNodeData* node_data) {}
-
   // This method allows lazy loading of some accessibility attributes. It is
   // used only for accessibility attributes that can be expensive to compute
   // and/or heavy to store, such as long string attributes. Views that override

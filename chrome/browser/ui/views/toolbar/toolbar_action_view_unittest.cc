@@ -22,6 +22,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
 
 namespace {
@@ -222,7 +223,7 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
   // controller's.
   EXPECT_EQ(tooltip, view->GetRenderedTooltipText(gfx::Point()));
   ui::AXNodeData ax_node_data;
-  view->GetAccessibleNodeData(&ax_node_data);
+  view->GetViewAccessibility().GetAccessibleNodeData(&ax_node_data);
   EXPECT_EQ(name, ax_node_data.GetString16Attribute(
                       ax::mojom::StringAttribute::kName));
 

@@ -75,6 +75,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
@@ -231,7 +232,7 @@ class PageInfoBubbleViewTestApi {
   std::u16string GetTextOnView(views::View* view) {
     EXPECT_TRUE(view);
     ui::AXNodeData data;
-    view->GetAccessibleNodeData(&data);
+    view->GetViewAccessibility().GetAccessibleNodeData(&data);
     const std::string& name =
         data.GetStringAttribute(ax::mojom::StringAttribute::kName);
     return base::ASCIIToUTF16(name);
@@ -242,7 +243,7 @@ class PageInfoBubbleViewTestApi {
   std::u16string GetCookiesLinkText() {
     EXPECT_TRUE(cookie_button());
     ui::AXNodeData data;
-    cookie_button()->GetAccessibleNodeData(&data);
+    cookie_button()->GetViewAccessibility().GetAccessibleNodeData(&data);
     const std::string& name =
         data.GetStringAttribute(ax::mojom::StringAttribute::kName);
     return base::ASCIIToUTF16(name);
