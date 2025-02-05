@@ -39,11 +39,9 @@ typedef (DOMString or AILMPromptContentDict) AILMPromptContent;
 // TODO(crbug.com/394123703): Use ImageBitmapSource and include BufferSource.
 typedef (HTMLImageElement or
          SVGImageElement or
-         HTMLCanvasElement or
          Blob or
          ImageData or
          ImageBitmap or
-         OffscreenCanvas or
          AudioBuffer or
          HTMLAudioElement or
          DOMString) AILanguageModelPromptData;
