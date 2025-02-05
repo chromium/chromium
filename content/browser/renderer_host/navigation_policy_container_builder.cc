@@ -119,6 +119,11 @@ void NavigationPolicyContainerBuilder::SetAllowCrossOriginIsolation(
   delivered_policies_.allow_cross_origin_isolation = value;
 }
 
+void NavigationPolicyContainerBuilder::SetCrossOriginIsolationEnabledByDIP() {
+  DCHECK(HasComputedPolicies());
+  host_->SetCrossOriginIsolationEnabledByDIP();
+}
+
 void NavigationPolicyContainerBuilder::AddContentSecurityPolicy(
     network::mojom::ContentSecurityPolicyPtr policy) {
   DCHECK(!HasComputedPolicies());

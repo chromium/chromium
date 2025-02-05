@@ -35,6 +35,7 @@ struct WebPolicyContainerPolicies {
   // when it's false. Note that it is a necessary condition but not a sufficient
   // condition on its own.
   bool allow_cross_origin_isolation = false;
+  bool cross_origin_isolation_enabled_by_dip = false;
 };
 
 // TODO(antoniosartori): Remove this when CommitNavigation IPC will be handled

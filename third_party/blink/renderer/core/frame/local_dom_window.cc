@@ -2497,9 +2497,21 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
 }
 
 bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
-  return Agent::IsCrossOriginIsolated() &&
-         IsFeatureEnabled(
-             network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated) &&
+  // When crossOriginIsolation is enabled by DocumentIsolationPolicy, it ignores
+  // the restriction placed on COI capability by the CrossOriginIsolated
+  // permission policy. This is because the permission policy is necessary for
+  // defending against cross-origin iframes when COI is enabled by COOP + COEP.
+  // But with DocumentIsolationPolicy, the cross-origin iframe is guaranteed to
+  // be out-of-process, so there is no risk to it having COI capability.
+  // Therefore, it is safe to ignore the permission policy in this case.
+  // TODO(crbug.com/393522283): Ensure the COI status of a context is properly
+  // computed in the browser process and just pass it instead of passing several
+  // booleans to the renderer process and having it do the computation.
+  bool permission_policy_allows_coi =
+      IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated) ||
+      GetPolicyContainer()->GetPolicies().cross_origin_isolation_enabled_by_dip;
+  return Agent::IsCrossOriginIsolated() && permission_policy_allows_coi &&
          GetPolicyContainer()->GetPolicies().allow_cross_origin_isolation;
 }
 

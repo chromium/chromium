@@ -46,7 +46,8 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       network::mojom::WebSandboxFlags sandbox_flags,
       bool is_credentialless,
       bool can_navigate_top_without_user_gesture,
-      bool allow_cross_origin_isolation);
+      bool allow_cross_origin_isolation,
+      bool cross_origin_isolation_enabled_by_dip);
 
   explicit PolicyContainerPolicies(
       const blink::mojom::PolicyContainerPolicies& policies);
@@ -144,7 +145,19 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // by another origin. Hence, we pass down this boolean to tell the renderer to
   // restrict those capabilities. For more detail, see
   // https://github.com/hemeryar/coi-with-popups/blob/main/docs/cross_origin_iframe_popup.MD
+  // TODO(crbug.com/393522283): Ensure the COI status of a context is properly
+  // computed in the browser process and just pass it instead of passing several
+  // booleans to the renderer process and having it do the computation.
   bool allow_cross_origin_isolation = false;
+
+  // Whether crossOriginIsolation was enabled by DocumentIsolationPolicy. We
+  // pass this to the renderer process, because crossOriginIsolation enabled by
+  // DocumentIsolationPolicy is not subject to the CrossOriginIoslation
+  // Permission Policy (computed in the renderer process).
+  // TODO(crbug.com/393522283): Ensure the COI status of a context is properly
+  // computed in the browser process and just pass it instead of passing several
+  // booleans to the renderer process and having it do the computation.
+  bool cross_origin_isolation_enabled_by_dip = false;
 };
 
 // PolicyContainerPolicies structs are comparable for equality.
@@ -254,6 +267,10 @@ class CONTENT_EXPORT PolicyContainerHost
 
   void SetAllowCrossOriginIsolation(bool value) {
     policies_.allow_cross_origin_isolation = value;
+  }
+
+  void SetCrossOriginIsolationEnabledByDIP() {
+    policies_.cross_origin_isolation_enabled_by_dip = true;
   }
 
   // Return a PolicyContainer containing copies of the policies and a pending

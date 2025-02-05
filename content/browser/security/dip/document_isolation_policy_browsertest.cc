@@ -1773,6 +1773,60 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   )"));
 }
 
+// Check that a same-origin iframe can become cross-origin isolated using
+// DocumentIsolationPolicy regardless of its parent's crossOriginIsolated
+// status.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
+                       CrossOriginIsolatedIframe_SameOrigin) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  GURL iframe_url = GetDocumentIsolationPolicyURL("a.test");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("g_iframe = document.createElement('iframe');"
+                               "g_iframe.src = $1;"
+                               "document.body.appendChild(g_iframe);",
+                               iframe_url)));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(false, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(true, EvalJs(sub_document, "self.crossOriginIsolated"));
+
+  EXPECT_NE(main_document->GetSiteInstance()->GetProcess(),
+            sub_document->GetSiteInstance()->GetProcess());
+}
+
+// Check that a cross-origin iframe can become cross-origin isolated using
+// DocumentIsolationPolicy regardless of its parent's crossOriginIsolated
+// status.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
+                       CrossOriginIsolatedIframe_CrossOrigin) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  GURL iframe_url = GetDocumentIsolationPolicyURL("b.test");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("g_iframe = document.createElement('iframe');"
+                               "g_iframe.src = $1;"
+                               "document.body.appendChild(g_iframe);",
+                               iframe_url)));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(false, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(true, EvalJs(sub_document, "self.crossOriginIsolated"));
+
+  EXPECT_NE(main_document->GetSiteInstance()->GetProcess(),
+            sub_document->GetSiteInstance()->GetProcess());
+}
+
 // TODO(crbug.com/349104385): Add a test checking that the
 // Document-Isolation-Policy header is ignored on redirect responses.
 
