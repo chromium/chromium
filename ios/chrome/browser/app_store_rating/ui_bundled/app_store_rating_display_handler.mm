@@ -21,7 +21,7 @@
   DCHECK(self.handler);
   if (GetApplicationContext()->GetLocalState()->GetBoolean(
           prefs::kAppStoreRatingPolicyEnabled)) {
-    [self.handler requestAppStoreReview];
+    [self.handler showAppStoreReviewPrompt];
   }
 }
 

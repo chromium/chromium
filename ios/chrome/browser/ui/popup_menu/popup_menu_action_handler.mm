@@ -81,7 +81,7 @@ using base::UserMetricsAction;
       if (!currentWebState) {
         return;
       }
-      [self.bookmarksCommandsHandler bookmarkWithWebState:currentWebState];
+      [self.bookmarksCommandsHandler addBookmarkForWebState:currentWebState];
       break;
     }
     case PopupMenuActionTranslate:

@@ -57,7 +57,7 @@
 }
 
 - (void)shareAction {
-  [self.activityHandler sharePage];
+  [self.activityHandler showShareSheet];
 }
 
 - (void)reloadAction {

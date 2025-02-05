@@ -1678,7 +1678,7 @@ enum class ToolbarKind {
   }
 
   [HandlerForProtocol(self.dispatcher, ContextualPanelEntrypointCommands)
-      contextualPanelEntrypointIPHWasDismissed];
+      notifyContextualPanelEntrypointIPHDismissed];
 
   ProfileIOS* profile = self.browser->GetProfile();
   feature_engagement::Tracker* engagementTracker =
@@ -1752,7 +1752,7 @@ enum class ToolbarKind {
   [self.sharingCoordinator start];
 }
 
-- (void)sharePage {
+- (void)showShareSheet {
   // Defocus Find-In-Page before opening the share sheet. This will result in
   // closing the Find-In-Page for some OS versions.
   [self defocusFindInPage];
@@ -1764,7 +1764,7 @@ enum class ToolbarKind {
   }
 }
 
-- (void)shareChromeApp {
+- (void)showShareSheetForChromeApp {
   GURL URL = GURL(kChromeAppStoreUrl);
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_TITLE);
@@ -1789,7 +1789,7 @@ enum class ToolbarKind {
   [self.sharingCoordinator start];
 }
 
-- (void)shareHighlight:(ShareHighlightCommand*)command {
+- (void)showShareSheetForHighlight:(ShareHighlightCommand*)command {
   SharingParams* params =
       [[SharingParams alloc] initWithURL:command.URL
                                    title:command.title
@@ -1806,7 +1806,7 @@ enum class ToolbarKind {
   [self.sharingCoordinator start];
 }
 
-- (void)shareURLFromContextMenu:(ActivityServiceShareURLCommand*)command {
+- (void)showShareSheetForURL:(ActivityServiceShareURLCommand*)command {
   SharingParams* params = [[SharingParams alloc]
       initWithURL:command.URL
             title:command.title
@@ -2327,10 +2327,10 @@ enum class ToolbarKind {
 
 #pragma mark - ContextualPanelEntrypointIPHCommands
 
-- (BOOL)maybeShowContextualPanelEntrypointIPHWithConfig:
+- (BOOL)showContextualPanelEntrypointIPHWithConfig:
             (ContextualPanelItemConfiguration*)config
-                                            anchorPoint:(CGPoint)anchorPoint
-                                        isBottomOmnibox:(BOOL)isBottomOmnibox {
+                                       anchorPoint:(CGPoint)anchorPoint
+                                   isBottomOmnibox:(BOOL)isBottomOmnibox {
   ContextualPanelItemConfiguration& config_ref = CHECK_DEREF(config);
 
   feature_engagement::Tracker* engagementTracker =
@@ -2398,7 +2398,7 @@ enum class ToolbarKind {
   return YES;
 }
 
-- (void)dismissContextualPanelEntrypointIPHAnimated:(BOOL)animated {
+- (void)dismissContextualPanelEntrypointIPH:(BOOL)animated {
   [_contextualPanelEntrypointHelpPresenter dismissAnimated:animated];
   _contextualPanelEntrypointHelpPresenter = nil;
 }
@@ -2694,7 +2694,7 @@ enum class ToolbarKind {
 
 #pragma mark - PromosManagerCommands
 
-- (void)maybeDisplayPromo {
+- (void)showPromo {
   if (!self.promosManagerCoordinator) {
     id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(),
@@ -2723,7 +2723,7 @@ enum class ToolbarKind {
   }
 }
 
-- (void)requestAppStoreReview {
+- (void)showAppStoreReviewPrompt {
   if (IsAppStoreRatingEnabled()) {
     UIWindowScene* scene = [self.browser->GetSceneState() scene];
     [SKStoreReviewController requestReviewInScene:scene];
@@ -2741,7 +2741,7 @@ enum class ToolbarKind {
   self.whatsNewCoordinator.shouldShowBubblePromoOnDismiss = YES;
 }
 
-- (void)maybeDisplayDefaultBrowserPromo {
+- (void)showDefaultBrowserPromo {
   if (self.defaultBrowserGenericPromoCoordinator) {
     // The default browser promo manager is already being displayed. Early
     // return as this is expected if a default browser promo was open and the
@@ -2759,7 +2759,7 @@ enum class ToolbarKind {
   [self.defaultBrowserGenericPromoCoordinator start];
 }
 
-- (void)displayDefaultBrowserPromoAfterRemindMeLater {
+- (void)showDefaultBrowserPromoAfterRemindMeLater {
   self.defaultBrowserGenericPromoCoordinator =
       [[DefaultBrowserGenericPromoCoordinator alloc]
           initWithBaseViewController:self.viewController

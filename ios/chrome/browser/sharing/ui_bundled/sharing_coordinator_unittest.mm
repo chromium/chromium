@@ -174,9 +174,9 @@ TEST_F(SharingCoordinatorTest, GenerateQRCode) {
                                        completion:nil];
 
   auto handler = static_cast<id<QRGenerationCommands>>(coordinator);
-  [handler generateQRCode:[[GenerateQRCodeCommand alloc]
-                              initWithURL:GURL("https://example.com")
-                                    title:@"Some Title"]];
+  [handler showQRCode:[[GenerateQRCodeCommand alloc]
+                          initWithURL:GURL("https://example.com")
+                                title:@"Some Title"]];
 
   EXPECT_OCMOCK_VERIFY(vc_partial_mock);
 

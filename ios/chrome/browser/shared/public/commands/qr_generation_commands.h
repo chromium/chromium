@@ -11,7 +11,7 @@
 @protocol QRGenerationCommands <NSObject>
 
 // Generates a QR code based on the `command` properties and displays it.
-- (void)generateQRCode:(GenerateQRCodeCommand*)command;
+- (void)showQRCode:(GenerateQRCodeCommand*)command;
 
 // Dismisses the view showing a QR code, if present.
 - (void)hideQRCode;

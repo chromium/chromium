@@ -118,12 +118,11 @@ TEST_F(BookmarkActivityTest, PerformActivity_BookmarkAddCommand) {
   BookmarkActivity* activity = CreateActivity(testUrl);
 
   [[mocked_handler_ expect]
-      createOrEditBookmarkWithURL:[OCMArg
-                                      checkWithBlock:^BOOL(URLWithTitle* URL) {
-                                        EXPECT_EQ(testUrl, URL.URL);
-                                        EXPECT_EQ(kTestTitle, URL.title);
-                                        return YES;
-                                      }]];
+      addOrEditBookmark:[OCMArg checkWithBlock:^BOOL(URLWithTitle* URL) {
+        EXPECT_EQ(testUrl, URL.URL);
+        EXPECT_EQ(kTestTitle, URL.title);
+        return YES;
+      }]];
 
   id activity_partial_mock = OCMPartialMock(activity);
   [[activity_partial_mock expect] activityDidFinish:YES];

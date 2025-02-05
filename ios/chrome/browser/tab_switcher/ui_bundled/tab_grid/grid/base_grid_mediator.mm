@@ -1545,7 +1545,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 
   NSArray<URLWithTitle*>* URLs = [self urlsWithTitleFromItemIDs:itemIDs];
 
-  [bookmarkHandler bookmarkWithFolderChooser:URLs];
+  [bookmarkHandler addBookmarksAndShowFolderChooser:URLs];
 }
 
 - (NSArray<URLWithTitle*>*)urlsWithTitleFromItemIDs:

@@ -672,7 +672,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                          accessibilityID:kToolsMenuShareChromeId
                             hideItemText:nil
                                  handler:^{
-                                   [weakSelf shareChromeApp];
+                                   [weakSelf showShareSheetForChromeApp];
                                  }];
 
   self.editActionsAction = [self
@@ -2155,7 +2155,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   if (!currentWebState) {
     return;
   }
-  [self.bookmarksHandler bookmarkWithWebState:currentWebState];
+  [self.bookmarksHandler addBookmarkForWebState:currentWebState];
 }
 
 // Dismisses the menu and adds the current page to the reading list.
@@ -2289,9 +2289,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 }
 
 // Dismisses the menu and opens share sheet to share Chrome's app store link
-- (void)shareChromeApp {
+- (void)showShareSheetForChromeApp {
   [self dismissMenu];
-  [self.activityServiceHandler shareChromeApp];
+  [self.activityServiceHandler showShareSheetForChromeApp];
 }
 
 // Dismisses the menu and opens history.
