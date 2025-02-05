@@ -44,7 +44,6 @@ public class LayoutTypeVisibleCondition extends Condition {
             case LayoutType.TAB_SWITCHER -> "TAB_SWITCHER";
             case LayoutType.TOOLBAR_SWIPE -> "TOOLBAR_SWIPE";
             case LayoutType.SIMPLE_ANIMATION -> "SIMPLE_ANIMATION";
-            case LayoutType.START_SURFACE -> "START_SURFACE";
             default -> "UNKNOWN";
         };
     }

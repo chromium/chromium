@@ -7,6 +7,7 @@ package org.chromium.chrome.test.transit.page;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.app.Activity;
@@ -273,6 +274,9 @@ public class PageStation extends Station<ChromeTabbedActivity> {
             elements.declareEnterCondition(
                     new PageUrlContainsCondition(mExpectedUrlSubstring, mPageLoadedSupplier));
         }
+
+        elements.declareEnterCondition(
+                new LayoutTypeVisibleCondition(mActivityElement, LayoutType.BROWSING));
     }
 
     public boolean isIncognito() {

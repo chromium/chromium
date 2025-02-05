@@ -26,6 +26,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
@@ -348,7 +349,8 @@ public class HubToolbarMediator {
     }
 
     /** Utility to determine which UI variants to show based on device width. */
-    private static boolean isScreenWidthTablet(int screenWidthDp) {
+    @VisibleForTesting
+    public static boolean isScreenWidthTablet(int screenWidthDp) {
         return screenWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
     }
 

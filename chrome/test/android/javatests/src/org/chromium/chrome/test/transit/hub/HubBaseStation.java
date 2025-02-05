@@ -98,9 +98,9 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
             }
         }
 
+        elements.declareEnterCondition(new HubLayoutNotInTransition());
         elements.declareEnterCondition(
                 new LayoutTypeVisibleCondition(mActivityElement, LayoutType.TAB_SWITCHER));
-        elements.declareEnterCondition(new HubLayoutNotInTransition());
     }
 
     /** Returns the {@link Condition} that acts as {@link Supplier<TabModelSelector>}. */

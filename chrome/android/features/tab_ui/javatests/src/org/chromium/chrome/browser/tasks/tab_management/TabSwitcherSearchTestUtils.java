@@ -16,6 +16,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -57,21 +58,32 @@ public class TabSwitcherSearchTestUtils {
     }
 
     /**
-     * Opens the given urls, the first URL will be opened in the current active tab. The rest of the
-     * URLs will be opened in new tabs.
+     * Opens the given urls, the first URL will be opened in the current active tab (unless
+     * incognito). The rest of the URLs will be opened in new tabs.
+     *
+     * @return The {@link WebPageStation} of the last opened URL.
      */
-    public static void openUrls(
-            ChromeTabbedActivityTestRule activityTestRule,
+    // TODO(crbug.com/393653256): Consider reusing for more tab suites.
+    public static WebPageStation openUrls(
+            EmbeddedTestServer testServer,
+            WebPageStation webPageStation,
             List<String> urlsToOpen,
             boolean incognito) {
+        WebPageStation lastStation = webPageStation;
         for (int i = 0; i < urlsToOpen.size(); i++) {
-            String url = urlsToOpen.get(i);
-            if (!incognito && i == 0) {
-                activityTestRule.loadUrl(activityTestRule.getTestServer().getURL(url));
+            String url = testServer.getURL(urlsToOpen.get(i));
+            if (i == 0) {
+                if (incognito) {
+                    lastStation =
+                            lastStation.openNewIncognitoTabFast().loadWebPageProgrammatically(url);
+                } else {
+                    lastStation = lastStation.loadWebPageProgrammatically(url);
+                }
             } else {
-                activityTestRule.loadUrlInNewTab(
-                        activityTestRule.getTestServer().getURL(url), incognito);
+                lastStation = lastStation.openFakeLinkToWebPage(url);
             }
         }
+
+        return lastStation;
     }
 }
