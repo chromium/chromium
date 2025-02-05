@@ -25,7 +25,7 @@ import type {GlicAppController} from '../glic_app_controller.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {AnnotatedPageDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, UserProfileInfoPrivate} from './request_types.js';
-import {ImageAlphaType, ImageColorType} from './request_types.js';
+import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType} from './request_types.js';
 
 // Turn everything except void into a promise.
 type Promisify<T> = T extends void ? void : Promise<T>;
@@ -212,11 +212,8 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 
   async glicBrowserGetContextFromFocusedTab(
-      request: {options: TabContextOptions},
-      transfer: Transferable[]): Promise<{
-    tabContextResult?: TabContextResultPrivate,
-    error?: GetTabContextErrorReason,
-  }> {
+      request: {options: TabContextOptions}, transfer: Transferable[]):
+      Promise<{tabContextResult: TabContextResultPrivate}> {
     const {
       result: {errorReason, tabContext},
     } = await this.handler.getContextFromFocusedTab({
@@ -234,7 +231,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       if (errorReason === MojoGetTabContextErrorReason.kWebContentsChanged) {
         error = GetTabContextErrorReason.WEB_CONTENTS_CHANGED;
       }
-      return {error};
+      throw new ErrorWithReasonImpl('tabContext', error);
     }
     const tabData = tabContext.tabData;
     let favicon: RgbaImage|undefined = undefined;
@@ -318,25 +315,27 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     options?: {durationMs?: number},
   }) {
     this.appController.onGuestResizeRequest(request.size);
-    const durationMs = request.options?.durationMs || 0;
+    const durationMs = request.options?.durationMs ?? 0;
+    if (!Number.isFinite(durationMs)) {
+      throw new Error(
+          'Invalid resize duration: ' + request.options?.durationMs);
+    }
     return await this.handler.resizeWidget(request.size, {
       microseconds: BigInt(Math.floor(durationMs * 1000)),
     });
   }
 
   async glicBrowserCaptureScreenshot(_request: {}, transfer: Transferable[]):
-      Promise<{
-        screenshot?: Screenshot,
-        errorReason?: CaptureScreenshotErrorReason,
-      }> {
+      Promise<{screenshot: Screenshot}> {
     const {
       result: {screenshot, errorReason},
     } = await this.handler.captureScreenshot();
     if (!screenshot) {
-      const returnedErrorReason =
+      throw new ErrorWithReasonImpl(
+          'captureScreenshot',
           (errorReason as CaptureScreenshotErrorReason | undefined) ??
-          CaptureScreenshotErrorReason.SCREEN_CAPTURE_FAILED_FOR_UNKNOWN_REASON;
-      return {errorReason: returnedErrorReason};
+              CaptureScreenshotErrorReason
+                  .SCREEN_CAPTURE_FAILED_FOR_UNKNOWN_REASON);
     }
     const screenshotArray = new Uint8Array(screenshot.data);
     transfer.push(screenshotArray.buffer);

@@ -554,9 +554,19 @@ export declare interface Screenshot {
   originAnnotations: ImageOriginAnnotations;
 }
 
+/** Maps the ErrorWithReason.reasonType to the type of reason. */
+export declare interface ErrorReasonTypes {
+  tabContext: GetTabContextErrorReason;
+  captureScreenshot: CaptureScreenshotErrorReason;
+}
+
 /** Error implementation with a typed generic reason attached. */
-export declare interface ErrorWithReason<T> extends Error {
-  reason: T;
+export declare interface ErrorWithReason<
+    T extends keyof ErrorReasonTypes> extends Error {
+  /** A tag that identifies the reason type. */
+  reasonType: T;
+  /** The reason for the error. */
+  reason: ErrorReasonTypes[T];
 }
 
 /** Reason for failure while extracting tab context. */
@@ -583,11 +593,10 @@ export enum CaptureScreenshotErrorReason {
 }
 
 /** Error type used for tab context extraction errors. */
-export type GetTabContextError = ErrorWithReason<GetTabContextErrorReason>;
+export type GetTabContextError = ErrorWithReason<'tabContext'>;
 
 /** Error type used for screenshot capture errors. */
-export type CaptureScreenshotError =
-    ErrorWithReason<CaptureScreenshotErrorReason>;
+export type CaptureScreenshotError = ErrorWithReason<'captureScreenshot'>;
 
 /**
  * A rectangular area based in the glic window's coordinate system. All

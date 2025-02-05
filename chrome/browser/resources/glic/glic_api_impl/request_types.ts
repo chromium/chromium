@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, CaptureScreenshotErrorReason, ChromeVersion, DraggableArea, GetTabContextErrorReason, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -74,20 +74,13 @@ export declare interface HostRequestTypes {
       options: TabContextOptions,
     },
     response: {
-      // Present on success.
-      tabContextResult?: TabContextResultPrivate,
-      // The error reason. Should be present when `tabContextResult` is not, but
-      // might still be undefined for some older chrome versions.
-      error?: GetTabContextErrorReason,
+      tabContextResult: TabContextResultPrivate,
     },
   };
   glicBrowserCaptureScreenshot: {
     request: {},
     response: {
-      // Present on success.
-      screenshot?: Screenshot,
-      // The error reason. Should be present when `screenshot` is not.
-      errorReason?: CaptureScreenshotErrorReason,
+      screenshot: Screenshot,
     },
   };
   glicBrowserResizeWindow: {
@@ -303,4 +296,16 @@ export declare interface PdfDocumentDataPrivate extends
 export declare interface AnnotatedPageDataPrivate extends
     Omit<AnnotatedPageData, 'annotatedPageContent'> {
   annotatedPageContent?: ArrayBuffer;
+}
+
+
+export class ErrorWithReasonImpl<T extends keyof ErrorReasonTypes> extends Error
+    implements ErrorWithReason<T> {
+  constructor(
+      public reasonType: T,
+      public reason: ErrorReasonTypes[T],
+      message?: string,
+  ) {
+    super(message ?? `${reasonType} Error: ${reason}`);
+  }
 }

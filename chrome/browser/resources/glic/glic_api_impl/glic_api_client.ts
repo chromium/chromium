@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorWithReason, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
-import {CaptureScreenshotErrorReason, GetTabContextErrorReason} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {AnnotatedPageDataPrivate, PdfDocumentDataPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClientRequestTypes} from './request_types.js';
@@ -234,22 +233,12 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       Promise<TabContextResult> {
     const context = await this.sender.requestWithResponse(
         'glicBrowserGetContextFromFocusedTab', {options});
-    if (!context.tabContextResult) {
-      throw new ErrorWithReasonImpl(
-          'getContext failed',
-          context.error || GetTabContextErrorReason.UNKNOWN);
-    }
     return convertTabContextResultFromPrivate(context.tabContextResult);
   }
 
   async resizeWindow(width: number, height: number, options?: {
     durationMs?: number,
   }): Promise<void> {
-    const durationMs = options?.durationMs;
-    if (durationMs !== undefined && !Number.isFinite(durationMs)) {
-      throw new Error('Invalid resize duration: ' + durationMs);
-    }
-
     return this.sender.requestWithResponse(
         'glicBrowserResizeWindow', {size: {width, height}, options});
   }
@@ -257,13 +246,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   async captureScreenshot(): Promise<Screenshot> {
     const screenshotResult = await this.sender.requestWithResponse(
         'glicBrowserCaptureScreenshot', {});
-    if (!screenshotResult.screenshot) {
-      throw new ErrorWithReasonImpl(
-          'captureScreenshot failed',
-          screenshotResult.errorReason ??
-              CaptureScreenshotErrorReason
-                  .SCREEN_CAPTURE_FAILED_FOR_UNKNOWN_REASON);
-    }
     return screenshotResult.screenshot;
   }
 
@@ -383,12 +365,6 @@ export function createGlicHostRegistryOnLoad(): Promise<GlicHostRegistry> {
   };
   window.addEventListener('message', messageHandler);
   return promise;
-}
-
-class ErrorWithReasonImpl<T> extends Error implements ErrorWithReason<T> {
-  constructor(message: string, public reason: T) {
-    super(message);
-  }
 }
 
 // Converts an RgbaImage into a Blob through the canvas API. Output is a PNG.
