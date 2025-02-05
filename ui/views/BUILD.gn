@@ -779,6 +779,7 @@ component("views") {
       "accessibility/ax_virtual_view_wrapper.h",
       "accessibility/ax_widget_obj_wrapper.h",
       "accessibility/ax_window_obj_wrapper.h",
+      "accessibility/tree/views_ax_manager.h",
       "controls/native/native_view_host_aura.h",
       "corewm/tooltip.h",
       "corewm/tooltip_aura.h",
@@ -807,6 +808,7 @@ component("views") {
       "accessibility/ax_virtual_view_wrapper.cc",
       "accessibility/ax_widget_obj_wrapper.cc",
       "accessibility/ax_window_obj_wrapper.cc",
+      "accessibility/tree/views_ax_manager.cc",
       "controls/menu/menu_pre_target_handler_aura.cc",
       "controls/menu/menu_pre_target_handler_aura.h",
       "controls/native/native_view_host_aura.cc",
@@ -830,6 +832,7 @@ component("views") {
       sources += [ "accessibility/widget_ax_tree_id_map.cc" ]
     }
     deps += [
+      "//components/crash/core/common:crash_key",
       "//ui/aura",
       "//ui/base/cursor/mojom:cursor_type_shared",
       "//ui/events",

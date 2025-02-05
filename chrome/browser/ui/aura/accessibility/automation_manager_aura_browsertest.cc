@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, WebAppearsOnce) {
 
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
   manager->Enable();
-  auto* tree = manager->tree_.get();
+  auto* tree = manager->GetTreeSource();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_ScrollView) {
   manager->send_window_state_on_enable_ = false;
   manager->Enable();
   AutomationEventWaiter waiter;
-  auto* tree = manager->tree_.get();
+  auto* tree = manager->GetTreeSource();
 
   // Create a widget with size 200, 200.
   views::Widget* widget = new views::Widget;
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
   // accessibility event that shows this view is focused.
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kFocus;
-  action_data.target_tree_id = manager->tree_.get()->tree_id();
+  action_data.target_tree_id = manager->GetTreeSource()->tree_id();
   action_data.target_node_id = wrapper2->GetUniqueId();
 
   manager->PerformAction(action_data);
