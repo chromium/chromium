@@ -105,9 +105,10 @@ class IncognitoProcessManager : public ProcessManager {
 
 static void CreateBackgroundHostForExtensionLoad(
     ProcessManager* manager, const Extension* extension) {
-  if (BackgroundInfo::HasPersistentBackgroundPage(extension))
+  if (BackgroundInfo::HasPersistentBackgroundPage(extension)) {
     manager->CreateBackgroundHost(extension,
                                   BackgroundInfo::GetBackgroundURL(extension));
+  }
 }
 
 void PropagateExtensionWakeResult(
