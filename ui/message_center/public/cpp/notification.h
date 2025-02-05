@@ -20,7 +20,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/message_center_public_export.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"

@@ -36,7 +36,6 @@
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
 

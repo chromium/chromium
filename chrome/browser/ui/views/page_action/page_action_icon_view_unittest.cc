@@ -11,7 +11,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
