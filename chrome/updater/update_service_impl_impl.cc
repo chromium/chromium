@@ -852,8 +852,7 @@ void UpdateServiceImplImpl::RunPeriodicTasks(base::OnceClosure callback) {
       base::MakeRefCounted<AutoRunOnOsUpgradeTask>(
           GetUpdaterScope(), config_->GetUpdaterPersistedData())));
   new_tasks.push_back(base::BindOnce(
-      &CleanupTask::Run,
-      base::MakeRefCounted<CleanupTask>(GetUpdaterScope(), config_)));
+      &CleanupTask::Run, base::MakeRefCounted<CleanupTask>(GetUpdaterScope())));
 
   const auto barrier_closure =
       base::BarrierClosure(new_tasks.size(), std::move(callback));

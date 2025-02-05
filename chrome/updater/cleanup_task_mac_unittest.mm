@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chrome/updater/configurator.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,8 +36,8 @@ TEST(CleanupTaskMacTest, CleansOldCache) {
   EXPECT_TRUE(base::CreateDirectory(crx_cache));
   EXPECT_TRUE(base::WriteFile(file, "contents"));
 
-  auto cleanup_task = base::MakeRefCounted<CleanupTask>(
-      GetUpdaterScopeForTesting(), /*config=*/nullptr);
+  auto cleanup_task =
+      base::MakeRefCounted<CleanupTask>(GetUpdaterScopeForTesting());
   base::RunLoop run_loop;
   cleanup_task->Run(run_loop.QuitClosure());
   run_loop.Run();
@@ -63,8 +62,8 @@ TEST(CleanupTaskMacTest, CleansOldCacheSymlinkSafe) {
   ASSERT_TRUE(base::DeletePathRecursively(cache));
   ASSERT_FALSE(symlink(temp.GetPath().value().c_str(), cache.value().c_str()));
 
-  auto cleanup_task = base::MakeRefCounted<CleanupTask>(
-      GetUpdaterScopeForTesting(), /*config=*/nullptr);
+  auto cleanup_task =
+      base::MakeRefCounted<CleanupTask>(GetUpdaterScopeForTesting());
   base::RunLoop run_loop;
   cleanup_task->Run(run_loop.QuitClosure());
   run_loop.Run();

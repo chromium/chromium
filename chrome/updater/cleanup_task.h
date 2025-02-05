@@ -15,14 +15,12 @@
 
 namespace updater {
 
-class Configurator;
-
 // The Cleanup houses both periodic and one-time cleanup work items. For
 // example, it is used to clean up obsolete files that were in-use at the time
 // setup ran but can be cleaned up now.
 class CleanupTask : public base::RefCountedThreadSafe<CleanupTask> {
  public:
-  CleanupTask(UpdaterScope scope, scoped_refptr<Configurator> config);
+  explicit CleanupTask(UpdaterScope scope);
   void Run(base::OnceClosure callback);
 
  private:
@@ -31,7 +29,6 @@ class CleanupTask : public base::RefCountedThreadSafe<CleanupTask> {
 
   SEQUENCE_CHECKER(sequence_checker_);
   UpdaterScope scope_;
-  scoped_refptr<Configurator> config_;
 };
 
 #if BUILDFLAG(IS_MAC)
