@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/bookmarks/bookmark_api_helpers.h"
+#include "chrome/browser/extensions/bookmarks/bookmarks_helpers.h"
 
 #include <stdint.h>
 
@@ -37,7 +37,7 @@ using api::bookmarks::BookmarkTreeNode;
 using ::testing::Eq;
 using ::testing::ExplainMatchResult;
 
-namespace bookmark_api_helpers {
+namespace bookmarks_helpers {
 
 // Matches a BookmarkTreeNode that represents a folder node with the given
 // `expected_type` and `expected_unmodifiable`.
@@ -371,5 +371,5 @@ TEST_F(ExtensionBookmarksTest, GetMetaInfo) {
   }
 }
 
-}  // namespace bookmark_api_helpers
+}  // namespace bookmarks_helpers
 }  // namespace extensions

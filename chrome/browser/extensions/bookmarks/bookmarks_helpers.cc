@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/bookmarks/bookmark_api_helpers.h"
+#include "chrome/browser/extensions/bookmarks/bookmarks_helpers.h"
 
 #include <memory>
 #include <utility>
@@ -26,7 +26,7 @@ namespace extensions {
 
 using api::bookmarks::BookmarkTreeNode;
 
-namespace bookmark_api_helpers {
+namespace bookmarks_helpers {
 
 namespace {
 
@@ -99,14 +99,11 @@ void PopulateBookmarkTreeNode(
     out_bookmark_tree_node->folder_type =
         api::bookmarks::FolderType::kBookmarksBar;
   } else if (node->type() == BookmarkNode::Type::OTHER_NODE) {
-    out_bookmark_tree_node->folder_type =
-        api::bookmarks::FolderType::kOther;
+    out_bookmark_tree_node->folder_type = api::bookmarks::FolderType::kOther;
   } else if (node->type() == BookmarkNode::Type::MOBILE) {
-    out_bookmark_tree_node->folder_type =
-        api::bookmarks::FolderType::kMobile;
+    out_bookmark_tree_node->folder_type = api::bookmarks::FolderType::kMobile;
   } else if (node == managed->managed_node()) {
-    out_bookmark_tree_node->folder_type =
-        api::bookmarks::FolderType::kManaged;
+    out_bookmark_tree_node->folder_type = api::bookmarks::FolderType::kManaged;
   }
 
   if (bookmarks::IsDescendantOf(node, managed->managed_node())) {
@@ -172,8 +169,9 @@ bool RemoveNode(BookmarkModel* model,
 
 void GetMetaInfo(const BookmarkNode& node,
                  base::Value::Dict& id_to_meta_info_map) {
-  if (!node.IsVisible())
+  if (!node.IsVisible()) {
     return;
+  }
 
   const BookmarkNode::MetaInfoMap* meta_info = node.GetMetaInfoMap();
   base::Value::Dict value;
@@ -186,10 +184,11 @@ void GetMetaInfo(const BookmarkNode& node,
   id_to_meta_info_map.Set(base::NumberToString(node.id()), std::move(value));
 
   if (node.is_folder()) {
-    for (const auto& child : node.children())
+    for (const auto& child : node.children()) {
       GetMetaInfo(*child, id_to_meta_info_map);
+    }
   }
 }
 
-}  // namespace bookmark_api_helpers
+}  // namespace bookmarks_helpers
 }  // namespace extensions

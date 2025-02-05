@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_BOOKMARKS_BOOKMARK_API_HELPERS_H_
-#define CHROME_BROWSER_EXTENSIONS_API_BOOKMARKS_BOOKMARK_API_HELPERS_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_BOOKMARKS_BOOKMARKS_HELPERS_H_
+#define CHROME_BROWSER_EXTENSIONS_BOOKMARKS_BOOKMARKS_HELPERS_H_
 
 #include <stdint.h>
 
@@ -16,11 +16,11 @@ namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 class ManagedBookmarkService;
-}
+}  // namespace bookmarks
 
 // Helper functions.
 namespace extensions {
-namespace bookmark_api_helpers {
+namespace bookmarks_helpers {
 
 api::bookmarks::BookmarkTreeNode GetBookmarkTreeNode(
     bookmarks::BookmarkModel* model,
@@ -63,7 +63,7 @@ bool RemoveNode(bookmarks::BookmarkModel* model,
 void GetMetaInfo(const bookmarks::BookmarkNode& node,
                  base::Value::Dict& id_to_meta_info_map);
 
-}  // namespace bookmark_api_helpers
+}  // namespace bookmarks_helpers
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_BOOKMARKS_BOOKMARK_API_HELPERS_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_BOOKMARKS_BOOKMARKS_HELPERS_H_
