@@ -30,10 +30,14 @@ SERVER_SCRIPT = pathlib.Path(
 ) / 'build' / 'android' / 'fast_local_dev_server.py'
 
 
+def AssertEnvironmentVariables():
+  assert os.environ.get('AUTONINJA_BUILD_ID')
+  assert os.environ.get('AUTONINJA_STDOUT_NAME')
+
+
 def MaybeRunCommand(name, argv, stamp_file, use_build_server=False):
   """Returns True if the command was successfully sent to the build server."""
-
-  if platform.system() == "Darwin":
+  if not use_build_server or platform.system() == 'Darwin':
     # Build server does not support Mac.
     return False
 
@@ -44,11 +48,10 @@ def MaybeRunCommand(name, argv, stamp_file, use_build_server=False):
   if BUILD_SERVER_ENV_VARIABLE in os.environ:
     return False
 
-  if not use_build_server:
-    return False
-
-  autoninja_tty = os.environ.get('AUTONINJA_STDOUT_NAME')
-  autoninja_build_id = os.environ.get('AUTONINJA_BUILD_ID')
+  build_id = os.environ.get('AUTONINJA_BUILD_ID')
+  if not build_id:
+    raise Exception(
+        'AUTONINJA_BUILD_ID is not set. Should have been set by autoninja.')
 
   with contextlib.closing(socket.socket(socket.AF_UNIX)) as sock:
     try:
@@ -66,10 +69,9 @@ def MaybeRunCommand(name, argv, stamp_file, use_build_server=False):
         sock, {
             'name': name,
             'message_type': ADD_TASK,
-            'cmd': argv,
+            'cmd': [sys.executable] + argv,
             'cwd': os.getcwd(),
-            'tty': autoninja_tty,
-            'build_id': autoninja_build_id,
+            'build_id': build_id,
             'stamp_file': stamp_file,
         })
 

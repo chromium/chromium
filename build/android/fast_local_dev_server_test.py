@@ -12,8 +12,8 @@ import signal
 import socket
 import subprocess
 import sys
+import tempfile
 import time
-import uuid
 
 import fast_local_dev_server as server
 
@@ -24,7 +24,7 @@ from util import server_utils
 class RegexTest(unittest.TestCase):
 
   def testBuildIdRegex(self):
-    self.assertRegex(server.FIRST_LOG_LINE.format(build_id='abc'),
+    self.assertRegex(server.FIRST_LOG_LINE.format(build_id='abc', outdir='PWD'),
                      server.BUILD_ID_RE)
 
 
@@ -72,10 +72,15 @@ def blockingFifo(fifo_path='/tmp/.fast_local_dev_server_test.fifo'):
 
 
 class ServerStartedTest(unittest.TestCase):
+  build_id_counter = 0
+  task_name_counter = 0
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self._tty_path = None
+    self._build_id = None
 
   def setUp(self):
-    self._TTY_FILE = pathlib.Path('/tmp/fast_local_dev_server_test_tty')
-    self._TTY_FILE.touch()
     if pollServer():
       # TODO(mheikal): Support overriding the standard named pipe for
       # communicating with the server so that we can run an instance just for
@@ -95,11 +100,34 @@ class ServerStartedTest(unittest.TestCase):
       time.sleep(0.05)
 
   def tearDown(self):
-    self._TTY_FILE.unlink(missing_ok=True)
     self._process.terminate()
     stdout, _ = self._process.communicate()
     if stdout != '':
       self.fail(f'build server should be silent but it output:\n{stdout}')
+
+  @contextlib.contextmanager
+  def _register_build(self):
+    with tempfile.NamedTemporaryFile() as f:
+      build_id = f'BUILD_ID_{ServerStartedTest.build_id_counter}'
+      os.environ['AUTONINJA_BUILD_ID'] = build_id
+      os.environ['AUTONINJA_STDOUT_NAME'] = f.name
+      ServerStartedTest.build_id_counter += 1
+      build_proc = subprocess.Popen(
+          [sys.executable, '-c', 'import time; time.sleep(100)'])
+      callServer(
+          ['--register-build', build_id, '--builder-pid',
+           str(build_proc.pid)])
+      self._tty_path = f.name
+      self._build_id = build_id
+      try:
+        yield
+      finally:
+        self._tty_path = None
+        self._build_id = None
+        del os.environ['AUTONINJA_BUILD_ID']
+        del os.environ['AUTONINJA_STDOUT_NAME']
+        build_proc.kill()
+        build_proc.wait()
 
   def sendTask(self, cmd, stamp_path=None):
     if stamp_path:
@@ -108,25 +136,23 @@ class ServerStartedTest(unittest.TestCase):
       _stamp_file = pathlib.Path('/tmp/.test.stamp')
     _stamp_file.touch()
 
+    name_prefix = f'{self._build_id}-{ServerStartedTest.task_name_counter}'
     sendMessage({
-        'name': f'{self.id()}({uuid.uuid4()}): {" ".join(cmd)}',
+        'name': f'{name_prefix}: {" ".join(cmd)}',
         'message_type': server_utils.ADD_TASK,
         'cmd': cmd,
         # So that logfiles do not clutter cwd.
         'cwd': '/tmp/',
-        'tty': str(self._TTY_FILE),
-        'build_id': self.id(),
+        'build_id': self._build_id,
         'stamp_file': _stamp_file.name,
     })
+    ServerStartedTest.task_name_counter += 1
 
   def getTtyContents(self):
-    if self._TTY_FILE.exists():
-      with open(self._TTY_FILE, 'rt') as tty:
-        return tty.read()
-    return ''
+    return pathlib.Path(self._tty_path).read_text()
 
   def getBuildInfo(self):
-    build_info = server.query_build_info(self.id())['builds'][0]
+    build_info = server.query_build_info(self._build_id)['builds'][0]
     pending_tasks = build_info['pending_tasks']
     completed_tasks = build_info['completed_tasks']
     return pending_tasks, completed_tasks
@@ -148,88 +174,79 @@ class ServerStartedTest(unittest.TestCase):
       time.sleep(0.1)
 
   def testRunsQuietTask(self):
-    self.sendTask(['true'])
-    self.waitForTasksDone()
-    self.assertEqual(self.getTtyContents(), '\x1b]2;Analysis Steps: 1/1\x07')
+    with self._register_build():
+      self.sendTask(['true'])
+      self.waitForTasksDone()
+      self.assertEqual(self.getTtyContents(), '')
 
   def testRunsNoisyTask(self):
-    self.sendTask(['echo', 'some_output'])
-    self.waitForTasksDone()
-    tty_contents = self.getTtyContents()
-    self.assertIn('some_output', tty_contents)
+    with self._register_build():
+      self.sendTask(['echo', 'some_output'])
+      self.waitForTasksDone()
+      tty_contents = self.getTtyContents()
+      self.assertIn('some_output', tty_contents)
 
   def testStampFileDeletedOnFailedTask(self):
-    stamp_file = pathlib.Path('/tmp/.failed_task.stamp')
-    self.sendTask(['echo', 'some_output'], stamp_path=stamp_file)
-    self.waitForTasksDone()
-    self.assertFalse(stamp_file.exists())
+    with self._register_build():
+      stamp_file = pathlib.Path('/tmp/.failed_task.stamp')
+      self.sendTask(['echo', 'some_output'], stamp_path=stamp_file)
+      self.waitForTasksDone()
+      self.assertFalse(stamp_file.exists())
 
   def testStampFileNotDeletedOnSuccess(self):
-    stamp_file = pathlib.Path('/tmp/.successful_task.stamp')
-    self.sendTask(['true'], stamp_path=stamp_file)
-    self.waitForTasksDone()
-    self.assertTrue(stamp_file.exists())
-
-  def testRegisterBuilderMessage(self):
-    sendMessage({
-        'message_type': server_utils.REGISTER_BUILDER,
-        'build_id': self.id(),
-        'builder_pid': os.getpid(),
-    })
-    pollServer()
-    self.assertEqual(self.getTtyContents(), '')
-
-  def testRegisterBuilderServerCall(self):
-    callServer(
-        ['--register-build',
-         self.id(), '--builder-pid',
-         str(os.getpid())])
-    self.assertEqual(self.getTtyContents(), '')
+    with self._register_build():
+      stamp_file = pathlib.Path('/tmp/.successful_task.stamp')
+      self.sendTask(['true'], stamp_path=stamp_file)
+      self.waitForTasksDone()
+      self.assertTrue(stamp_file.exists())
 
   def testWaitForBuildServerCall(self):
-    callServer(['--wait-for-build', self.id()])
-    self.assertEqual(self.getTtyContents(), '')
+    with self._register_build():
+      callServer(['--wait-for-build', self._build_id])
+      self.assertEqual(self.getTtyContents(), '')
 
   def testWaitForIdleServerCall(self):
-    self.sendTask(['true'])
-    self.waitForTasksDone()
-    proc_result = callServer(['--wait-for-idle'])
-    self.assertIn('All', proc_result.stdout)
-    self.assertIn('Analysis Steps: 1/1', self.getTtyContents())
+    with self._register_build():
+      self.sendTask(['true'])
+      proc_result = callServer(['--wait-for-idle'])
+      self.assertIn('All', proc_result.stdout)
+      self.assertEqual('', self.getTtyContents())
 
   def testCancelBuildServerCall(self):
-    callServer(['--cancel-build', self.id()])
-    self.assertEqual(self.getTtyContents(), '')
+    with self._register_build():
+      callServer(['--cancel-build', self._build_id])
+      self.assertEqual(self.getTtyContents(), '')
 
   def testBuildStatusServerCall(self):
-    proc_result = callServer(['--print-status', self.id()])
-    self.assertEqual(proc_result.stdout, '')
+    with self._register_build():
+      proc_result = callServer(['--print-status', self._build_id])
+      self.assertEqual(proc_result.stdout, '')
 
-    proc_result = callServer(['--print-status-all'])
-    self.assertIn(self.id(), proc_result.stdout)
+      proc_result = callServer(['--print-status-all'])
+      self.assertIn(self._build_id, proc_result.stdout)
 
-    self.sendTask(['true'])
-    self.waitForTasksDone()
+      self.sendTask(['true'])
+      self.waitForTasksDone()
 
-    proc_result = callServer(['--print-status', self.id()])
-    self.assertIn('[1/1]', proc_result.stdout)
+      proc_result = callServer(['--print-status', self._build_id])
+      self.assertIn('[1/1]', proc_result.stdout)
 
-    proc_result = callServer(['--print-status-all'])
-    self.assertIn('has 1 registered build', proc_result.stdout)
-    self.assertIn('[1/1]', proc_result.stdout)
+      proc_result = callServer(['--print-status-all'])
+      self.assertIn('has 1 registered build', proc_result.stdout)
+      self.assertIn('[1/1]', proc_result.stdout)
 
-    with blockingFifo() as fifo_path:
-      # cat gets stuck until we open the other end of the fifo.
-      self.sendTask(['cat', str(fifo_path)])
-      proc_result = callServer(['--print-status', self.id()])
-      self.assertIn('[1/2]', proc_result.stdout)
-      self.assertIn('--wait-for-idle', proc_result.stdout)
+      with blockingFifo() as fifo_path:
+        # cat gets stuck until we open the other end of the fifo.
+        self.sendTask(['cat', str(fifo_path)])
+        proc_result = callServer(['--print-status', self._build_id])
+        self.assertIn('[1/2]', proc_result.stdout)
+        self.assertIn('--wait-for-idle', proc_result.stdout)
 
-    self.waitForTasksDone()
-    callServer(['--cancel-build', self.id()])
-    self.waitForTasksDone()
-    proc_result = callServer(['--print-status', self.id()])
-    self.assertIn('[2/2]', proc_result.stdout)
+      self.waitForTasksDone()
+      callServer(['--cancel-build', self._build_id])
+      self.waitForTasksDone()
+      proc_result = callServer(['--print-status', self._build_id])
+      self.assertIn('[2/2]', proc_result.stdout)
 
     proc_result = callServer(['--print-status-all'])
     self.assertIn('Siso finished', proc_result.stdout)
@@ -239,9 +256,10 @@ class ServerStartedTest(unittest.TestCase):
     with blockingFifo() as fifo_path:
       self.assertFalse(output_stamp.exists())
       # dd blocks on fifo so task never finishes inside with block.
-      self.sendTask(['dd', f'if={str(fifo_path)}', f'of={str(output_stamp)}'])
-      callServer(['--cancel-build', self.id()])
-      self.waitForTasksDone()
+      with self._register_build():
+        self.sendTask(['dd', f'if={str(fifo_path)}', f'of={str(output_stamp)}'])
+        callServer(['--cancel-build', self._build_id])
+        self.waitForTasksDone()
     self.assertFalse(output_stamp.exists())
 
   def testKeyboardInterrupt(self):
@@ -252,7 +270,7 @@ class ServerStartedTest(unittest.TestCase):
 class ServerNotStartedTest(unittest.TestCase):
 
   def testWaitForBuildServerCall(self):
-    proc_result = callServer(['--wait-for-build', self.id()])
+    proc_result = callServer(['--wait-for-build', 'invalid-build-id'])
     self.assertIn('No server running', proc_result.stdout)
 
   def testBuildStatusServerCall(self):
