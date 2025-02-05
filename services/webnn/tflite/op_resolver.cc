@@ -17,6 +17,11 @@
 #include "third_party/tflite/src/tensorflow/lite/tflite_with_xnnpack_optional.h"
 #endif
 
+#if defined(ENABLE_ML_INTERNAL)
+#include "services/on_device_model/ml/chrome_ml.h"  // nogncheck
+#include "services/on_device_model/ml/chrome_ml_api.h"  // nogncheck
+#endif
+
 namespace webnn::tflite {
 
 OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
@@ -281,6 +286,24 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
             delete static_cast<::tflite::StatefulNnApiDelegate*>(delegate);
           });
     });
+  }
+#endif
+
+#if defined(ENABLE_ML_INTERNAL)
+  if (options.device == mojom::CreateContextOptions::Device::kGpu) {
+    // TODO(crbug.com/394119734): Simplify this check once these functions are
+    // always available.
+    auto* chrome_ml = ml::ChromeML::Get();
+    if (chrome_ml && chrome_ml->api().CreateGpuDelegate &&
+        chrome_ml->api().DestroyGpuDelegate) {
+      delegate_creators_.push_back([](TfLiteContext* context) {
+        return std::unique_ptr<TfLiteDelegate, void (*)(TfLiteDelegate*)>(
+            ml::ChromeML::Get()->api().CreateGpuDelegate(),
+            [](TfLiteDelegate* delegate) {
+              ml::ChromeML::Get()->api().DestroyGpuDelegate(delegate);
+            });
+      });
+    }
   }
 #endif
 

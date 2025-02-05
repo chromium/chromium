@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
+import("//services/on_device_model/on_device_model.gni")
 import("//services/webnn/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
@@ -23,6 +24,8 @@ source_set("webnn_switches") {
 }
 
 component("webnn_service") {
+  defines = [ "IS_WEBNN_SERVICE_IMPL" ]
+
   sources = [
     "error.h",
     "webnn_constant_operand.cc",
@@ -142,6 +145,14 @@ component("webnn_service") {
     if (build_tflite_with_xnnpack) {
       deps += [ "//third_party/xnnpack" ]
     }
+
+    if (enable_ml_internal) {
+      deps += [
+        "//services/on_device_model/ml",
+      ]
+
+      defines += [ "ENABLE_ML_INTERNAL" ]
+    }
   }
 
   if (webnn_use_coreml || webnn_use_tflite) {
@@ -153,8 +164,6 @@ component("webnn_service") {
       "resource_task.h",
     ]
   }
-
-  defines = [ "IS_WEBNN_SERVICE_IMPL" ]
 }
 
 source_set("tests") {
