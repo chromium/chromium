@@ -2320,7 +2320,7 @@
   {
     "name": "enable-accessibility-include-long-click-action",
     "owners": ["mschillaci@google.com", "//ui/accessibility/OWNERS"],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "enable-accessibility-magnifier-follows-chromevox",
@@ -2350,12 +2350,12 @@
   {
     "name": "enable-accessibility-page-zoom",
     "owners": [ "mschillaci@chromium.org", "aldietz@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "enable-accessibility-page-zoom-enhancements",
     "owners": [ "mschillaci@chromium.org", "aldietz@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 145
   },
   {
     "name": "enable-accessibility-reduced-animations",
@@ -3828,7 +3828,7 @@
       "aashnas@google.com",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "enable-snackbar-in-settings",
@@ -5790,7 +5790,7 @@
   {
     "name": "main-node-annotations",
     "owners": [ "abigailbklein@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "main-thread-compositing-priority",
