@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
-#include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
@@ -769,15 +768,8 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
 
   switch (category.type) {
     case DesktopMediaList::Type::kScreen: {
-      bool show_warning = suppress_local_audio_playback_;
-      if (request_source_ == RequestSource::kGetDisplayMedia &&
-          !base::FeatureList::IsEnabled(
-              ::kSuppressLocalAudioPlaybackForSystemAudio)) {
-        // Suppression blocked by killswitch, so no need to show a warning.
-        show_warning = false;
-      }
       return l10n_util::GetStringUTF16(
-          show_warning
+          suppress_local_audio_playback_
               ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN_WITH_MUTE_WARNING
               : IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO);
     }
