@@ -200,10 +200,6 @@ class BookmarkMergedSurfaceService : public KeyedService,
   void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override;
-  void OnWillRemoveBookmarks(const bookmarks::BookmarkNode* parent,
-                             size_t old_index,
-                             const bookmarks::BookmarkNode* node,
-                             const base::Location& location) override;
   void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
@@ -246,15 +242,6 @@ class BookmarkMergedSurfaceService : public KeyedService,
   const bookmarks::BookmarkNode dummy_empty_node_;
 
   ShowMoveStorageDialogCallback show_move_storage_dialog_for_testing_;
-
-  // Non-empty in the middle of bookmark node removal.
-  // It is set in `OnWillRemoveBookmarks()` and cleared in
-  // `BookmarkNodeRemoved()`.
-  // - It can contain zero, one or more elements in case of account node removal
-  // based on the account node's children size.
-  // - Otherwise, it contains a single node that is being removed.
-  base::flat_map<size_t, raw_ptr<const bookmarks::BookmarkNode>>
-      cached_index_for_nodes_removal_;
 
   // Non-empty in the middle of moving a bookmark node.
   // It is set in `OnWillMoveBookmarkNode()` and cleared in

@@ -7,7 +7,7 @@
 
 #include <cstddef>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/observer_list_types.h"
 
 struct BookmarkParentFolder;
@@ -33,8 +33,7 @@ class BookmarkMergedSurfaceServiceObserver : public base::CheckedObserver {
 
   virtual void BookmarkNodesRemoved(
       const BookmarkParentFolder& parent,
-      const base::flat_map<size_t, raw_ptr<const bookmarks::BookmarkNode>>&
-          old_indices_to_nodes) = 0;
+      const base::flat_set<const bookmarks::BookmarkNode*>& nodes) = 0;
 
   virtual void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
                                  size_t old_index,
