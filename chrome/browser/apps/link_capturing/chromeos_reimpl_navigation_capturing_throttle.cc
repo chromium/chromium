@@ -193,7 +193,6 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
   AppIdsToLaunchForUrl app_ids_to_launch =
       FindAppIdsToLaunchForUrl(proxy, handle->GetURL());
 
-  // Handle projector app redirection below.
   const std::vector<std::string>& app_candidates = app_ids_to_launch.candidates;
   // If there are no candidates for launching the url in an app or the app is
   // not preferred for launching the url, allow navigation to proceed normally.
@@ -201,21 +200,24 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  // If the projector app does not exist in the list of candidates, allow
-  // navigation to proceed normally.
-  if (!base::Contains(app_candidates,
-                      ash::kChromeUIUntrustedProjectorSwaAppId)) {
+  const std::string launch_app_id = *app_ids_to_launch.preferred;
+  const AppType app_type = proxy->AppRegistryCache().GetAppType(launch_app_id);
+  const bool does_projector_swa_handle_url =
+      base::Contains(app_candidates, ash::kChromeUIUntrustedProjectorSwaAppId);
+  const bool is_app_capturable =
+      (app_type == AppType::kArc) || does_projector_swa_handle_url;
+
+  if (!is_app_capturable) {
     return content::NavigationThrottle::PROCEED;
   }
-  std::string launch_app_id = *app_ids_to_launch.preferred;
-  CHECK_EQ(launch_app_id, ash::kChromeUIUntrustedProjectorSwaAppId);
 
-  // Add more use-cases to be handled here for navigations on ChromeOS.
-  AppType app_type = proxy->AppRegistryCache().GetAppType(launch_app_id);
   auto launch_source = IsCapturableLinkClick() ? LaunchSource::kFromLink
                                                : LaunchSource::kFromOmnibox;
-  GURL redirected_url = RedirectUrlIfProjectorApp(
-      &profile_.get(), launch_app_id, handle->GetURL());
+  GURL redirected_url =
+      does_projector_swa_handle_url
+          ? RedirectUrlIfProjectorApp(&profile_.get(), launch_app_id,
+                                      handle->GetURL())
+          : handle->GetURL();
 
   // Close existing web contents if it is around.
   std::unique_ptr<ScopedKeepAlive> browser_keep_alive;
