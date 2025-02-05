@@ -64,7 +64,7 @@
       "dullweber@chromium.org",
       "zalmashni@google.com",
       "chrome-browser-privacy-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 139
   },
   {
     "name": "ai-settings-page-refresh",
@@ -72,7 +72,7 @@
       "zalmashni@google.com",
       "rainhard@chromium.org",
       "chrome-browser-privacy-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 139
   },
   {
     "name": "align-surface-layer-impl-to-pixel-grid",
