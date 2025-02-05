@@ -4,7 +4,8 @@
 
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ColorModel, DuplexMode, MarginType, MediaSize, PageRange, PreviewTicket, PrinterType, ScalingType} from '../utils/print_preview_cros_app_types.js';
+import type {MediaSize, PageRange, PreviewTicket} from '../utils/print_preview_cros_app_types.js';
+import {ColorModel, DuplexMode, MarginType, PrinterType, ScalingType} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview

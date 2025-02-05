@@ -4,7 +4,7 @@
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {FileSnapshot, LastLoadedFilesResponse, TestMessageQueryData, TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
+import type {FileSnapshot, LastLoadedFilesResponse, TestMessageQueryData, TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
 import {TEST_ONLY} from './launch.js';
 
 const {

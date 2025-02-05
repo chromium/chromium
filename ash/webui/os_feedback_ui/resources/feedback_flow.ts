@@ -19,7 +19,8 @@ import {ConfirmationPageElement} from './confirmation_page.js';
 import {getTemplate} from './feedback_flow.html.js';
 import {showScrollingEffectOnStart, showScrollingEffects} from './feedback_utils.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
-import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './os_feedback_ui.mojom-webui.js';
+import type {FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './os_feedback_ui.mojom-webui.js';
+import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction} from './os_feedback_ui.mojom-webui.js';
 import {SearchPageElement} from './search_page.js';
 import {ShareDataPageElement} from './share_data_page.js';
 

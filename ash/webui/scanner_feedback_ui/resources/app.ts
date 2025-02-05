@@ -68,8 +68,10 @@ export class ScannerFeedbackAppElement extends I18nMixin
               return this
                   .i18nAdvanced('feedbackDisclaimer', {
                     substitutions: [
-                      linkPolicyBegin, linkPolicyEnd, linkTermsOfServiceBegin,
-                      linkTermsOfServiceEnd
+                      linkPolicyBegin,
+                      linkPolicyEnd,
+                      linkTermsOfServiceBegin,
+                      linkTermsOfServiceEnd,
                     ],
                     attrs: ['id', 'class', 'role', 'aria-label'],
                   })
@@ -84,7 +86,7 @@ export class ScannerFeedbackAppElement extends I18nMixin
     MSG_PRIVACY_POLICY: this.i18n('privacyPolicy'),
     MSG_TERMS_OF_SERVICE: this.i18n('termsOfService'),
     MSG_CANCEL: this.i18n('cancel'),
-    MSG_SEND: this.i18n('send')
+    MSG_SEND: this.i18n('send'),
   };
   private readonly openUrl = (url: string) => {
     window.open(url, '_blank');

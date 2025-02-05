@@ -11,12 +11,14 @@ import './firmware_shared_fonts.css.js';
 import './firmware_update.mojom-webui.js';
 import '/strings.m.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FirmwareUpdate, UpdatePriority} from './firmware_update.mojom-webui.js';
-import {OpenConfirmationDialogEventDetail} from './firmware_update_types.js';
+import type {FirmwareUpdate} from './firmware_update.mojom-webui.js';
+import {UpdatePriority} from './firmware_update.mojom-webui.js';
+import type {OpenConfirmationDialogEventDetail} from './firmware_update_types.js';
 import {getTemplate} from './update_card.html.js';
 
 /**

@@ -8,9 +8,10 @@ import {ListPropertyUpdateMixin} from 'chrome://resources/ash/common/cr_elements
 import {makeStoreClientMixin} from 'chrome://resources/ash/common/cr_elements/store_client/store_client.js';
 import {Store} from 'chrome://resources/js/store.js';
 
-import {SeaPenActions} from './sea_pen_actions.js';
+import type {SeaPenActions} from './sea_pen_actions.js';
 import {seaPenReducer} from './sea_pen_reducer.js';
-import {emptyState, SeaPenState} from './sea_pen_state.js';
+import type {SeaPenState} from './sea_pen_state.js';
+import {emptyState} from './sea_pen_state.js';
 
 export class SeaPenStore extends Store<SeaPenState, SeaPenActions> {
   constructor() {

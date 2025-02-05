@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {DestinationProviderInterface} from '../../destination_provider.mojom-webui.js';
+import type {DestinationProviderInterface} from '../../destination_provider.mojom-webui.js';
 
 /**
  * @fileoverview

@@ -7,9 +7,9 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './fingerprint_progress_icons.html.js';
 import '//resources/cros_components/lottie_renderer/lottie-renderer.js';
 
-import {LottieRenderer} from '//resources/cros_components/lottie_renderer/lottie-renderer.js';
+import type {LottieRenderer} from '//resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {assert} from '//resources/js/assert.js';
-import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './fingerprint_progress.html.js';

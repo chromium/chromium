@@ -12,7 +12,8 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CLICK_REPAIR_COMPONENT_BUTTON, ClickRepairComponentButtonEvent, createCustomEvent} from './events.js';
+import type {ClickRepairComponentButtonEvent} from './events.js';
+import {CLICK_REPAIR_COMPONENT_BUTTON, createCustomEvent} from './events.js';
 import {getTemplate} from './repair_component_chip.html.js';
 import {modifyTabbableElement} from './shimless_rma_util.js';
 

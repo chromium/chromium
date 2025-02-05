@@ -23,17 +23,19 @@ import './network_password_input.js';
 import './network_shared.css.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
-import {CertificateType, ConfigProperties, CrosNetworkConfigInterface, EAPConfigProperties, GlobalPolicy, HiddenSsidMode, IPSecConfigProperties, L2TPConfigProperties, ManagedBoolean, ManagedEAPProperties, ManagedInt32, ManagedIPSecProperties, ManagedL2TPProperties, ManagedOpenVPNProperties, ManagedProperties, ManagedString, ManagedStringList, ManagedWireGuardProperties, NetworkCertificate, OpenVPNConfigProperties, SecurityType, StartConnectResult, SubjectAltName, VpnType, WireGuardConfigProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ConfigProperties, CrosNetworkConfigInterface, EAPConfigProperties, GlobalPolicy, IPSecConfigProperties, L2TPConfigProperties, ManagedBoolean, ManagedEAPProperties, ManagedInt32, ManagedIPSecProperties, ManagedL2TPProperties, ManagedOpenVPNProperties, ManagedProperties, ManagedString, ManagedStringList, ManagedWireGuardProperties, NetworkCertificate, OpenVPNConfigProperties, SubjectAltName, WireGuardConfigProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CertificateType, HiddenSsidMode, SecurityType, StartConnectResult, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, IPConfigType, NetworkType, OncSource, PolicySource} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 import {getTemplate} from './network_config.html.js';
 import {NetworkConfigInputElement} from './network_config_input.js';
 import {NetworkListenerBehavior} from './network_listener_behavior.js';
-import {NetworkPasswordInputElement} from './network_password_input.js';
+import type {NetworkPasswordInputElement} from './network_password_input.js';
 import {OncMojo} from './onc_mojo.js';
 
 enum VPNConfigType {
@@ -2034,7 +2036,7 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
       assert(vpnConfig);
       // VPN.Host can be an IP address but will not be recognized as such if
       // there is initial whitespace, so trim it.
-      if (!!vpnConfig.host) {
+      if (vpnConfig.host) {
         vpnConfig.host = vpnConfig.host.trim();
       }
       assert(vpnConfig.type);

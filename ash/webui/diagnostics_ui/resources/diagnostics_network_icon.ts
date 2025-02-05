@@ -15,14 +15,16 @@ import './diagnostics_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {CellularStateProperties, NetworkStateProperties, SecurityType as MojomSecurityType, WiFiStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CellularStateProperties, NetworkStateProperties, WiFiStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {SecurityType as MojomSecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType as MojomConnectionStateType, NetworkType as MojomNetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './diagnostics_network_icon.html.js';
 import {getNetworkType} from './diagnostics_utils.js';
-import {Network, NetworkState, NetworkType, SecurityType} from './network_health_provider.mojom-webui.js';
+import type {Network} from './network_health_provider.mojom-webui.js';
+import {NetworkState, NetworkType, SecurityType} from './network_health_provider.mojom-webui.js';
 
 /**
  * Type alias for network_config NetworkStateProperties struct.

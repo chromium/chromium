@@ -12,13 +12,15 @@ import '//resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
-import {ApnProperties, ApnState, ApnType, CrosNetworkConfigInterface} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ApnProperties, CrosNetworkConfigInterface} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnState, ApnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './apn_list_item.html.js';
-import {ApnDetailDialogMode, ApnEventData, getApnDisplayName} from './cellular_utils.js';
+import type {ApnEventData} from './cellular_utils.js';
+import {ApnDetailDialogMode, getApnDisplayName} from './cellular_utils.js';
 import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 
 const ApnListItemBase = I18nMixin(PolymerElement);

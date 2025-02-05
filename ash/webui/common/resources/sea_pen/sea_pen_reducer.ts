@@ -5,10 +5,11 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {SeaPenImageId} from './constants.js';
-import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
-import {SeaPenActionName, SeaPenActions} from './sea_pen_actions.js';
-import {SeaPenLoadingState, SeaPenState} from './sea_pen_state.js';
+import type {SeaPenImageId} from './constants.js';
+import type {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
+import type {SeaPenActions} from './sea_pen_actions.js';
+import {SeaPenActionName} from './sea_pen_actions.js';
+import type {SeaPenLoadingState, SeaPenState} from './sea_pen_state.js';
 
 function loadingReducer(
     state: SeaPenLoadingState, action: SeaPenActions): SeaPenLoadingState {

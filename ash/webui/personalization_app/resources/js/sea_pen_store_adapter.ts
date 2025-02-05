@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenActionName, SeaPenActions} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
-import {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
-import {SeaPenStoreInterface, setSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
+import type {SeaPenActions} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
+import {SeaPenActionName} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
+import type {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
+import type {SeaPenStoreInterface} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
+import {setSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {DeferredAction, StoreObserver} from 'chrome://resources/js/store.js';
+import type {DeferredAction, StoreObserver} from 'chrome://resources/js/store.js';
 
 import {beginLoadSelectedImageAction, setFullscreenStateAction} from './personalization_app.js';
-import {PersonalizationState} from './personalization_state.js';
+import type {PersonalizationState} from './personalization_state.js';
 import {PersonalizationStore} from './personalization_store.js';
 
 /**

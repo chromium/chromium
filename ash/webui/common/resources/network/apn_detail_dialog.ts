@@ -23,13 +23,14 @@ import type {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/c
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {ApnAuthenticationType, ApnIpType, ApnState, ApnType, CrosNetworkConfigInterface} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrosNetworkConfigInterface} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnAuthenticationType, ApnIpType, ApnState, ApnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './apn_detail_dialog.html.js';
 import {ApnDetailDialogMode} from './cellular_utils.js';
 import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
-import {ApnProperties} from './onc_mojo.js';
+import type {ApnProperties} from './onc_mojo.js';
 
 const AuthenticationTypes: ApnAuthenticationType[] = [
   ApnAuthenticationType.kAutomatic,

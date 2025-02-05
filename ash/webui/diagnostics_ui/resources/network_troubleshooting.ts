@@ -4,12 +4,12 @@
 
 import './diagnostics_shared.css.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {TroubleshootingInfo} from './diagnostics_types.js';
+import type {TroubleshootingInfo} from './diagnostics_types.js';
 import {getTemplate} from './network_troubleshooting.html.js';
 
 const NetworkTroubleshootingElementBase = I18nMixin(PolymerElement);

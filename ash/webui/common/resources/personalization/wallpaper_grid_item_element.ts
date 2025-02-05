@@ -12,7 +12,7 @@ import './common.css.js';
 import './wallpaper.css.js';
 
 import {assert} from '//resources/js/assert.js';
-import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './wallpaper_grid_item_element.html.js';

@@ -6,12 +6,13 @@ import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {VKey as ash_mojom_VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
-import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
+import type {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
 import {ModifierKeyCodes} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorConfigResult, AcceleratorId, AcceleratorInfo, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
+import type {Accelerator, AcceleratorId, AcceleratorInfo, AcceleratorSource, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
+import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier} from './shortcut_types.js';
 
 // TODO(jimmyxgong): ChromeOS currently supports up to F24 but can be updated to
 // F32. Update here when F32 is available.

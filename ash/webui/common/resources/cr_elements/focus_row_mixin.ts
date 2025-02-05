@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {afterNextRender, dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {FocusRow, FocusRowDelegate} from '//resources/js/focus_row.js';
+import type {FocusRowDelegate} from '//resources/js/focus_row.js';
+import {FocusRow} from '//resources/js/focus_row.js';
 // clang-format on
 
 interface ListItem {

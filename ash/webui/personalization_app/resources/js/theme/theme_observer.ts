@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {ColorScheme} from '../../color_scheme.mojom-webui.js';
-import {SampleColorScheme, ThemeObserverInterface, ThemeObserverReceiver, ThemeProviderInterface} from '../../personalization_app.mojom-webui.js';
+import type {ColorScheme} from '../../color_scheme.mojom-webui.js';
+import type {SampleColorScheme, ThemeObserverInterface, ThemeProviderInterface} from '../../personalization_app.mojom-webui.js';
+import {ThemeObserverReceiver} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setColorModeAutoScheduleEnabledAction, setColorSchemeAction, setDarkModeEnabledAction, setGeolocationIsUserModifiableAction, setGeolocationPermissionEnabledAction, setSampleColorSchemesAction, setStaticColorAction, setSunriseTimeAction, setSunsetTimeAction} from './theme_actions.js';

@@ -7,8 +7,8 @@ import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js
 import {assert} from 'chrome://resources/js/assert.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {FakeGeneratePreviewObserver, PreviewTicket, type PrintPreviewPageHandler, type PrintRequestOutcome, SessionContext} from '../utils/print_preview_cros_app_types.js';
-import type {PrintTicket} from '../utils/print_preview_cros_app_types.js';
+import {type PrintPreviewPageHandler, type PrintRequestOutcome} from '../utils/print_preview_cros_app_types.js';
+import type {FakeGeneratePreviewObserver, PreviewTicket, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview

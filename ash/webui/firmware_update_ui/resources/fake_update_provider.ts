@@ -4,8 +4,8 @@
 
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 
-import {FirmwareUpdate, InstallControllerRemote, UpdateObserverRemote} from './firmware_update.mojom-webui.js';
-import {FakeInstallControllerInterface, FakeUpdateProviderInterface} from './firmware_update_types.js';
+import type {FirmwareUpdate, InstallControllerRemote, UpdateObserverRemote} from './firmware_update.mojom-webui.js';
+import type {FakeInstallControllerInterface, FakeUpdateProviderInterface} from './firmware_update_types.js';
 import {getUpdateController, setUseFakeProviders} from './mojo_interface_provider.js';
 
 // Method names.

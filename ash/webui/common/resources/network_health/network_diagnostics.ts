@@ -6,12 +6,14 @@ import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import './routine_group.js';
 
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
-import {ArcDnsResolutionProblem, ArcHttpProblem, ArcPingProblem, CaptivePortalProblem, DnsLatencyProblem, DnsResolutionProblem, DnsResolverPresentProblem, GatewayCanBePingedProblem, HasSecureWiFiConnectionProblem, HttpFirewallProblem, HttpsFirewallProblem, HttpsLatencyProblem, RoutineCallSource, RoutineProblems, RoutineType, RoutineVerdict, SignalStrengthProblem, VideoConferencingProblem} from '//resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
+import type {RoutineProblems} from '//resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
+import {ArcDnsResolutionProblem, ArcHttpProblem, ArcPingProblem, CaptivePortalProblem, DnsLatencyProblem, DnsResolutionProblem, DnsResolverPresentProblem, GatewayCanBePingedProblem, HasSecureWiFiConnectionProblem, HttpFirewallProblem, HttpsFirewallProblem, HttpsLatencyProblem, RoutineCallSource, RoutineType, RoutineVerdict, SignalStrengthProblem, VideoConferencingProblem} from '//resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNetworkDiagnosticsService} from './mojo_interface_provider.js';
 import {getTemplate} from './network_diagnostics.html.js';
-import {Routine, RoutineGroup, RoutineResponse} from './network_diagnostics_types.js';
+import type {Routine, RoutineResponse} from './network_diagnostics_types.js';
+import {RoutineGroup} from './network_diagnostics_types.js';
 
 /**
  * @fileoverview Polymer element for interacting with Network Diagnostics.

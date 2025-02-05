@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
+import type {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {Action} from 'chrome://resources/js/store.js';
+import type {Action} from 'chrome://resources/js/store.js';
 
-import {SeaPenImageId} from './constants.js';
-import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
+import type {SeaPenImageId} from './constants.js';
+import type {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
 
 /**
  * @fileoverview defines the actions to change SeaPen state.

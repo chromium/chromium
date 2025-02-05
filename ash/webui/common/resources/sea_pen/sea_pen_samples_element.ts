@@ -14,10 +14,10 @@ import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import './sea_pen.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
+import type {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SeaPenSamplePrompt} from './constants.js';
+import type {SeaPenSamplePrompt} from './constants.js';
 import {logSamplePromptClicked} from './sea_pen_metrics_logger.js';
 import {getTemplate} from './sea_pen_samples_element.html.js';
 

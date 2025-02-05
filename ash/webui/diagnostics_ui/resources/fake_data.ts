@@ -4,11 +4,15 @@
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
-import {CellularNetwork, EthernetNetwork, NetworkGuidInfo, WiFiNetwork} from './diagnostics_types.js';
-import {BottomLeftLayout, BottomRightLayout, ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey, TopRowKey} from './input.mojom-webui.js';
-import {TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
-import {AuthenticationType, LockType, NetworkState, NetworkType, RoamingState, SecurityType, WiFiStateProperties} from './network_health_provider.mojom-webui.js';
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, CpuUsage, ExternalPowerSource, MemoryUsage, SystemInfo} from './system_data_provider.mojom-webui.js';
+import type {CellularNetwork, EthernetNetwork, NetworkGuidInfo, WiFiNetwork} from './diagnostics_types.js';
+import type {KeyboardInfo} from './input.mojom-webui.js';
+import {BottomLeftLayout, BottomRightLayout, ConnectionType, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey, TopRowKey} from './input.mojom-webui.js';
+import type {TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {TouchDeviceType} from './input_data_provider.mojom-webui.js';
+import type {WiFiStateProperties} from './network_health_provider.mojom-webui.js';
+import {AuthenticationType, LockType, NetworkState, NetworkType, RoamingState, SecurityType} from './network_health_provider.mojom-webui.js';
+import type {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from './system_data_provider.mojom-webui.js';
+import {BatteryState, ExternalPowerSource} from './system_data_provider.mojom-webui.js';
 
 export const fakeBatteryChargeStatus: BatteryChargeStatus[] = [
   {

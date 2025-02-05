@@ -8,7 +8,7 @@ import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import './diagnostics_shared.css.js';
 import '/strings.m.js';
 
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './percent_bar_chart.html.js';

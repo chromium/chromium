@@ -16,21 +16,23 @@ import './sea_pen_icons.html.js';
 import './sea_pen_options_element.js';
 import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 
-import {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
+import type {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getSeaPenTemplates, SeaPenOption, SeaPenTemplate} from './constants.js';
+import type {SeaPenOption, SeaPenTemplate} from './constants.js';
+import {getSeaPenTemplates} from './constants.js';
 import {isSeaPenTextInputEnabled, isSeaPenUseExptTemplateEnabled} from './load_time_booleans.js';
-import {SeaPenQuery, SeaPenThumbnail, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
+import type {SeaPenQuery, SeaPenThumbnail, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
 import {getSeaPenThumbnails} from './sea_pen_controller.js';
-import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
+import type {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logGenerateSeaPenWallpaper} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
-import {ChipToken, getDefaultOptions, getSelectedOptionsFromQuery, getTemplateTokens, isNonEmptyArray, isPersonalizationApp, TemplateToken} from './sea_pen_utils.js';
+import type {ChipToken, TemplateToken} from './sea_pen_utils.js';
+import {getDefaultOptions, getSelectedOptionsFromQuery, getTemplateTokens, isNonEmptyArray, isPersonalizationApp} from './sea_pen_utils.js';
 import {getTransitionEnabled} from './transition.js';
 
 // Two options are the same if they have the same key-value pairs.

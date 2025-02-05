@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {KeyboardKeyState} from './keyboard_key.js';
+import type {KeyboardKeyState} from './keyboard_key.js';
 
 export enum MechanicalLayout {
   ANSI = 'ansi',

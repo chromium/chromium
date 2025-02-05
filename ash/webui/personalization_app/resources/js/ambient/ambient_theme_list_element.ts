@@ -9,7 +9,7 @@
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import './ambient_theme_item_element.js';
 
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {AmbientTheme} from '../../personalization_app.mojom-webui.js';
 import {isTimeOfDayScreenSaverEnabled} from '../load_time_booleans.js';
