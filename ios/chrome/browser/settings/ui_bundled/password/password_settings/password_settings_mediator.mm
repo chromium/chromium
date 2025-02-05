@@ -217,15 +217,8 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 }
 
 - (void)userDidStartExportFlow {
-  // Use GetSavedCredentials, rather than GetSavedPasswords, because the latter
-  // can return duplicate passwords that shouldn't be included in the export.
-  // However, this method also returns blocked sites ("Never save for
-  // example.com"), so those must be filtered before passing to the exporter.
   std::vector<CredentialUIEntry> passwords =
-      _savedPasswordsPresenter->GetSavedCredentials();
-  std::erase_if(passwords, [](const auto& credential) {
-    return credential.blocked_by_user;
-  });
+      _savedPasswordsPresenter->GetSavedPasswords();
   [self.passwordExporter startExportFlow:passwords];
 }
 
