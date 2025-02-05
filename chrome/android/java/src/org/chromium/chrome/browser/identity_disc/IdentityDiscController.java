@@ -19,6 +19,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -30,6 +31,9 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
@@ -52,6 +56,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
 
 /**
  * Handles displaying IdentityDisc on toolbar depending on several conditions (user sign-in state,
@@ -61,15 +66,20 @@ public class IdentityDiscController
         implements NativeInitObserver,
                 ProfileDataCache.Observer,
                 IdentityManager.Observer,
+                SyncService.SyncStateChangedListener,
                 ButtonDataProvider {
     // Context is used for fetching resources and launching preferences page.
     private final Context mContext;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver = this::setProfile;
+    private Profile mProfile;
 
     // We observe IdentityManager to receive primary account state change notifications.
     private IdentityManager mIdentityManager;
+
+    // SyncService is observed to update mIdentityError.
+    private SyncService mSyncService;
 
     // ProfileDataCache facilitates retrieving profile picture.
     private ProfileDataCache mProfileDataCache;
@@ -79,6 +89,8 @@ public class IdentityDiscController
     private boolean mNativeIsInitialized;
 
     private boolean mIsTabNtp;
+
+    private @SyncError int mIdentityError = SyncError.NO_ERROR;
 
     /**
      * @param context The Context for retrieving resources, launching preference activity, etc.
@@ -273,8 +285,41 @@ public class IdentityDiscController
             mIdentityManager = null;
         }
 
+        if (mSyncService != null) {
+            mSyncService.removeSyncStateChangedListener(this);
+            mSyncService = null;
+        }
+
         if (mNativeIsInitialized) {
             mProfileSupplier.removeObserver(mProfileSupplierObserver);
+            mProfile = null;
+        }
+    }
+
+    /** {@link SyncService.SyncStateChangedListener} implementation. */
+    @Override
+    public void syncStateChanged() {
+        if (mProfile == null) {
+            return;
+        }
+
+        @SyncError int error = SyncSettingsUtils.getIdentityError(mProfile);
+        if (error == mIdentityError
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            // Nothing changed.
+            return;
+        }
+        mIdentityError = error;
+
+        CoreAccountInfo coreAccountInfo = getSignedInAccountInfo();
+        if (coreAccountInfo != null) {
+            ensureProfileDataCache();
+            mProfileDataCache.setBadge(
+                    coreAccountInfo.getEmail(),
+                    mIdentityError == SyncError.NO_ERROR
+                            ? null
+                            : ProfileDataCache.createToolbarIdentityDiscBadgeConfig(
+                                    mContext, R.drawable.ic_error_badge_14dp));
         }
     }
 
@@ -308,15 +353,28 @@ public class IdentityDiscController
      * mIdentityManager is updated with the profile, as set to null if profile is off-the-record.
      */
     private void setProfile(Profile profile) {
+        mProfile = profile;
+
+        if (mSyncService != null) {
+            mSyncService.removeSyncStateChangedListener(this);
+        }
+
         if (mIdentityManager != null) {
             mIdentityManager.removeObserver(this);
         }
 
         if (profile.isOffTheRecord()) {
             mIdentityManager = null;
+            mSyncService = null;
         } else {
             mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
             mIdentityManager.addObserver(this);
+
+            mSyncService = SyncServiceFactory.getForProfile(profile);
+            if (mSyncService != null) {
+                mSyncService.addSyncStateChangedListener(this);
+            }
+
             notifyObservers(true);
         }
     }

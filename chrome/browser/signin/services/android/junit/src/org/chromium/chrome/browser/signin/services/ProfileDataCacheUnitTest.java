@@ -102,7 +102,11 @@ public class ProfileDataCacheUnitTest {
 
     @Test
     public void accountInfoIsUpdatedWithOnlyBadgeConfig() {
-        mProfileDataCache.setBadge(R.drawable.ic_sync_badge_error_20dp);
+        mProfileDataCache.setBadge(
+                ACCOUNT.getEmail(),
+                ProfileDataCache.createDefaultSizeChildAccountBadgeConfig(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        R.drawable.ic_sync_badge_error_20dp));
         mProfileDataCache.addObserver(mObserverMock);
         Assert.assertFalse(mProfileDataCache.hasProfileDataForTesting(ACCOUNT.getEmail()));
 
