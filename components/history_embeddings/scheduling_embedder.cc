@@ -4,6 +4,7 @@
 
 #include "components/history_embeddings/scheduling_embedder.h"
 
+#include <atomic>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -22,6 +23,12 @@ namespace history_embeddings {
 namespace {
 
 using passage_embeddings::PassagePriority;
+
+#if BUILDFLAG(USE_BLINK)
+using ScenarioScope = blink::performance_scenarios::ScenarioScope;
+using LoadingScenario = blink::performance_scenarios::LoadingScenario;
+using InputScenario = blink::performance_scenarios::InputScenario;
+#endif
 
 }  // namespace
 
@@ -50,9 +57,15 @@ SchedulingEmbedder::SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
       use_performance_scenario_(use_performance_scenario) {
 #if BUILDFLAG(USE_BLINK)
   if (use_performance_scenario_) {
+    loading_scenario_ =
+        blink::performance_scenarios::GetLoadingScenario(ScenarioScope::kGlobal)
+            ->load(std::memory_order_relaxed);
+    input_scenario_ =
+        blink::performance_scenarios::GetInputScenario(ScenarioScope::kGlobal)
+            ->load(std::memory_order_relaxed);
     performance_scenario_observation_.Observe(
         blink::performance_scenarios::PerformanceScenarioObserverList::
-            GetForScope(blink::performance_scenarios::ScenarioScope::kGlobal)
+            GetForScope(ScenarioScope::kGlobal)
                 .get());
   }
 #else
@@ -163,12 +176,9 @@ bool SchedulingEmbedder::IsPerformanceScenarioReady() {
     // Do not block on performance scenario if user initiated a query.
     return true;
   }
-  return (loading_scenario_ ==
-              blink::performance_scenarios::LoadingScenario::kNoPageLoading ||
-          loading_scenario_ == blink::performance_scenarios::LoadingScenario::
-                                   kBackgroundPageLoading) &&
-         input_scenario_ ==
-             blink::performance_scenarios::InputScenario::kNoInput;
+  return (loading_scenario_ == LoadingScenario::kNoPageLoading ||
+          loading_scenario_ == LoadingScenario::kBackgroundPageLoading) &&
+         input_scenario_ == InputScenario::kNoInput;
 #else
   return true;
 #endif
@@ -202,19 +212,18 @@ bool SchedulingEmbedder::TryCancel(TaskId task_id) {
 
 #if BUILDFLAG(USE_BLINK)
 void SchedulingEmbedder::OnLoadingScenarioChanged(
-    blink::performance_scenarios::ScenarioScope scope,
-    blink::performance_scenarios::LoadingScenario old_scenario,
-    blink::performance_scenarios::LoadingScenario new_scenario) {
+    ScenarioScope scope,
+    LoadingScenario old_scenario,
+    LoadingScenario new_scenario) {
   VLOG(5) << "SchedulingEmbedder using new loading scenario: "
           << static_cast<int>(new_scenario);
   loading_scenario_ = new_scenario;
   SubmitWorkToEmbedder();
 }
 
-void SchedulingEmbedder::OnInputScenarioChanged(
-    blink::performance_scenarios::ScenarioScope scope,
-    blink::performance_scenarios::InputScenario old_scenario,
-    blink::performance_scenarios::InputScenario new_scenario) {
+void SchedulingEmbedder::OnInputScenarioChanged(ScenarioScope scope,
+                                                InputScenario old_scenario,
+                                                InputScenario new_scenario) {
   VLOG(5) << "SchedulingEmbedder using new input scenario: "
           << static_cast<int>(new_scenario);
   input_scenario_ = new_scenario;

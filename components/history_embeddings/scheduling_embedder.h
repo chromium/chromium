@@ -173,10 +173,8 @@ class SchedulingEmbedder
   bool use_performance_scenario_;
 
 #if BUILDFLAG(USE_BLINK)
-  blink::performance_scenarios::LoadingScenario loading_scenario_ =
-      blink::performance_scenarios::LoadingScenario::kNoPageLoading;
-  blink::performance_scenarios::InputScenario input_scenario_ =
-      blink::performance_scenarios::InputScenario::kNoInput;
+  blink::performance_scenarios::LoadingScenario loading_scenario_{};
+  blink::performance_scenarios::InputScenario input_scenario_{};
 
   base::ScopedObservation<
       blink::performance_scenarios::PerformanceScenarioObserverList,
