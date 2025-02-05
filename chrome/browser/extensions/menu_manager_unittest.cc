@@ -689,6 +689,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   params.is_editable = false;
 
   const Extension* extension = AddExtension("test");
+  ExtensionRegistry::Get(profile_.get())->AddEnabled(extension);
   std::unique_ptr<MenuItem> parent = CreateTestItem(extension);
   std::unique_ptr<MenuItem> item = CreateTestItem(extension);
   MenuItem* item_ptr = item.get();

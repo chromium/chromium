@@ -684,7 +684,8 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
 
   // Add the tab info to the argument list.
   // No tab info in a platform app.
-  if (!extension || !extension->is_platform_app()) {
+  // Do not add tab info if not extension (i.e. Controlled Frame).
+  if (extension && !extension->is_platform_app()) {
     // Note: web_contents are null in unit tests :(
     if (web_contents) {
       int frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
