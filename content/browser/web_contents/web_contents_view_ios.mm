@@ -63,6 +63,7 @@ WebContentsViewIOS::WebContentsViewIOS(
   [ui_view_->view_ setScrollEnabled:NO];
   [ui_view_->view_ setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
                                        UIViewAutoresizingFlexibleHeight];
+  ui_view_->view_.backgroundColor = [UIColor lightGrayColor];
 }
 
 WebContentsViewIOS::~WebContentsViewIOS() {}
