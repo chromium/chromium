@@ -937,7 +937,7 @@ TEST_P(RendererPixelTest, SimpleDamageRect) {
 TEST_P(RendererPixelTest, OutputSurfaceClipRect) {
   gfx::Rect rect(device_viewport_size_);
 
-  auto draw_frame = [&](base::FilePath::StringPieceType path, SkColor4f color) {
+  auto draw_frame = [&](base::FilePath::StringViewType path, SkColor4f color) {
     AggregatedRenderPassId id{1};
     auto pass = CreateTestRootRenderPass(id, rect);
 

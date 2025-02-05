@@ -38,7 +38,7 @@ std::optional<std::string> DoSerialize(std::string seed_data) {
 // Returns the file path used to store a seed. If `seed_file_dir` is empty, an
 // empty file path is returned.
 base::FilePath GetFilePath(const base::FilePath& seed_file_dir,
-                           base::FilePath::StringPieceType filename) {
+                           base::FilePath::StringViewType filename) {
   return seed_file_dir.empty() ? base::FilePath()
                                : seed_file_dir.Append(filename);
 }
@@ -88,7 +88,7 @@ void SetUpSeedFileTrial(
 SeedReaderWriter::SeedReaderWriter(
     PrefService* local_state,
     const base::FilePath& seed_file_dir,
-    base::FilePath::StringPieceType seed_filename,
+    base::FilePath::StringViewType seed_filename,
     std::string_view seed_pref,
     version_info::Channel channel,
     const EntropyProviders* entropy_providers,

@@ -41,7 +41,7 @@ namespace {
 #elif BUILDFLAG(IS_LINUX)
 
 constexpr auto kAllowedCallerPrograms =
-    base::MakeFixedFlatSet<base::FilePath::StringPieceType>({
+    base::MakeFixedFlatSet<base::FilePath::StringViewType>({
         "/opt/google/chrome/chrome",
         "/opt/google/chrome-beta/chrome",
         "/opt/google/chrome-canary/chrome",
@@ -68,7 +68,7 @@ constexpr auto kAppsDirectoryEnvVars =
 
 // Relative to the Program Files directory.
 constexpr auto kAllowedCallerPrograms =
-    base::MakeFixedFlatSet<base::FilePath::StringPieceType>({
+    base::MakeFixedFlatSet<base::FilePath::StringViewType>({
         L"Google\\Chrome\\Application\\chrome.exe",
         L"Google\\Chrome Beta\\Application\\chrome.exe",
         L"Google\\Chrome SxS\\Application\\chrome.exe",
@@ -137,7 +137,7 @@ bool IsLaunchedByTrustedProcess() {
     if (!apps_dir_path.IsParent(parent_image_path)) {
       continue;
     }
-    for (const base::FilePath::StringPieceType& allowed_caller_program :
+    for (const base::FilePath::StringViewType& allowed_caller_program :
          kAllowedCallerPrograms) {
       base::FilePath allowed_caller_program_full_path =
           apps_dir_path.Append(allowed_caller_program);

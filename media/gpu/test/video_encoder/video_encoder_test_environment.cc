@@ -406,9 +406,9 @@ base::FilePath VideoEncoderTestEnvironment::OutputFilePath(
     bool svc_enable,
     int spatial_idx,
     int temporal_idx) const {
-  base::FilePath::StringPieceType extension = codec == VideoCodec::kH264
-                                                  ? FILE_PATH_LITERAL("h264")
-                                                  : FILE_PATH_LITERAL("ivf");
+  base::FilePath::StringViewType extension = codec == VideoCodec::kH264
+                                                 ? FILE_PATH_LITERAL("h264")
+                                                 : FILE_PATH_LITERAL("ivf");
   auto output_bitstream_filepath =
       OutputFolder()
           .Append(GetTestOutputFilePath())

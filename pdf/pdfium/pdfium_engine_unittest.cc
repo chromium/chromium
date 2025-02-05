@@ -114,7 +114,7 @@ blink::WebMouseEvent CreateMoveWebMouseEventToPosition(
 }
 
 base::FilePath GetReferenceFilePath(
-    base::FilePath::StringPieceType sub_directory,
+    base::FilePath::StringViewType sub_directory,
     std::string_view test_filename) {
   return base::FilePath(sub_directory).AppendASCII(test_filename);
 }
@@ -257,12 +257,11 @@ class PDFiumEngineTest : public PDFiumTestBase {
   }
 
  private:
-  void DrawSelectionAndCompareImpl(
-      PDFiumEngine& engine,
-      int page_index,
-      base::FilePath::StringPieceType sub_directory,
-      std::string_view expected_png_filename,
-      bool use_platform_suffix) {
+  void DrawSelectionAndCompareImpl(PDFiumEngine& engine,
+                                   int page_index,
+                                   base::FilePath::StringViewType sub_directory,
+                                   std::string_view expected_png_filename,
+                                   bool use_platform_suffix) {
     // Since the GetPageContentsRect() return value may have a non-zero origin,
     // create a rect based solely on its size to draw the selections relative to
     // the origin of the contents rect.

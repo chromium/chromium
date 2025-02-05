@@ -332,8 +332,8 @@ TEST_F(ContentVerifierTest, NormalizeRelativePath) {
 // This macro helps avoid wrapped lines in the test structs.
 #define FPL(x) FILE_PATH_LITERAL(x)
   struct TestData {
-    base::FilePath::StringPieceType input;
-    base::FilePath::StringPieceType expected;
+    base::FilePath::StringViewType input;
+    base::FilePath::StringViewType expected;
   } test_cases[] = {{FPL("foo/bar"), FPL("foo/bar")},
                     {FPL("foo//bar"), FPL("foo/bar")},
                     {FPL("foo/bar/"), FPL("foo/bar/")},

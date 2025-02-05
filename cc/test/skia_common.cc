@@ -269,7 +269,7 @@ scoped_refptr<SkottieWrapper> CreateSkottieFromString(std::string_view json) {
 }
 
 std::string LoadSkottieFileFromTestData(
-    base::FilePath::StringPieceType animation_file_name) {
+    base::FilePath::StringViewType animation_file_name) {
   base::FilePath animation_path;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &animation_path));
   animation_path = animation_path.AppendASCII("cc/test/data/lottie")
@@ -281,7 +281,7 @@ std::string LoadSkottieFileFromTestData(
 }
 
 scoped_refptr<SkottieWrapper> CreateSkottieFromTestDataDir(
-    base::FilePath::StringPieceType animation_file_name) {
+    base::FilePath::StringViewType animation_file_name) {
   return CreateSkottieFromString(
       LoadSkottieFileFromTestData(animation_file_name));
 }

@@ -23,7 +23,7 @@
 namespace client_certificates {
 
 namespace {
-const base::FilePath::StringPieceType kClientCertsDbPath =
+const base::FilePath::StringViewType kClientCertsDbPath =
     FILE_PATH_LITERAL("ClientCertificates");
 
 void OnIdentityFetched(

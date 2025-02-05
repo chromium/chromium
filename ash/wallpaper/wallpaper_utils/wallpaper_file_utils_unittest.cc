@@ -30,11 +30,11 @@ class ResizeAndSaveWallpaperTest : public ::testing::Test {
  protected:
   void SetUp() override { ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir()); }
 
-  base::FilePath CreateFilePath(base::FilePath::StringPieceType file_name) {
+  base::FilePath CreateFilePath(base::FilePath::StringViewType file_name) {
     return scoped_temp_dir_.GetPath().Append(file_name);
   }
 
-  gfx::ImageSkia DecodeImageFile(base::FilePath::StringPieceType file_name) {
+  gfx::ImageSkia DecodeImageFile(base::FilePath::StringViewType file_name) {
     base::RunLoop run_loop;
     gfx::ImageSkia image_out;
     image_util::DecodeImageFile(

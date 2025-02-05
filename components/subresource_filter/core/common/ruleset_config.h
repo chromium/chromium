@@ -18,7 +18,7 @@ namespace subresource_filter {
 // (e.g. be marked extern).
 struct RulesetConfig {
   const std::string_view filter_tag;
-  const base::FilePath::StringPieceType top_level_directory;
+  const base::FilePath::StringViewType top_level_directory;
   const std::string_view uma_tag;
 };
 
