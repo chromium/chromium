@@ -21378,6 +21378,21 @@
             ]
         }
     ],
+    "SeaPenPromptRewrite": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SeaPenPromptRewrite"
+                    ]
+                }
+            ]
+        }
+    ],
     "SeaPenTextInput": [
         {
             "platforms": [
