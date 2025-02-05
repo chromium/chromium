@@ -1454,7 +1454,7 @@ class AggregationServiceStorageSqlMigrationsTest
     sql::Database db(sql::test::kTestTag);
     // Use `db_path()` if none is specified.
     ASSERT_TRUE(db.Open(db_path ? *db_path : this->db_path()));
-    ASSERT_TRUE(db.Execute(contents));
+    ASSERT_TRUE(db.ExecuteScriptForTesting(contents));
   }
 
   std::string GetCurrentSchema() {

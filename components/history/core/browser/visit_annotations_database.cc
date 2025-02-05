@@ -1242,9 +1242,11 @@ bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddSearchMetadata() {
   // Add the `search_normalized_url` and `search_terms` columns to the older
   // versions of the table.
   return GetDB().Execute(
-      "ALTER TABLE content_annotations "
-      "ADD COLUMN search_normalized_url; \n"
-      "ALTER TABLE content_annotations ADD COLUMN search_terms LONGVARCHAR");
+             "ALTER TABLE content_annotations "
+             "ADD COLUMN search_normalized_url") &&
+         GetDB().Execute(
+             "ALTER TABLE content_annotations ADD COLUMN search_terms "
+             "LONGVARCHAR");
 }
 
 bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddAlternativeTitle() {
