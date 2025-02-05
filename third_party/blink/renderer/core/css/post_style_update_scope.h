@@ -60,6 +60,8 @@ class CORE_EXPORT PostStyleUpdateScope {
     // ComputedStyle on the Element.
     const ComputedStyle* GetOldStyle(const Element&) const;
 
+    bool HasOldStyles() const { return !old_styles_.empty(); }
+
    private:
     friend class PostStyleUpdateScope;
     friend class ContainerQueryTest;
