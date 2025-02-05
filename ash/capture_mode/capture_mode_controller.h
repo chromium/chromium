@@ -187,6 +187,9 @@ class ASH_EXPORT CaptureModeController
   // Returns true if the panel is visible.
   bool IsSearchResultsPanelVisible() const;
 
+  // Returns true if the network is currently in an offline or unknown state.
+  bool IsNetworkConnectionOffline() const;
+
   // Returns true if this supports the new behavior provided by
   // `new_entry_type`.
   bool SupportsBehaviorChange(CaptureModeEntryType new_entry_type) const;

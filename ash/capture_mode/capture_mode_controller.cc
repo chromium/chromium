@@ -846,6 +846,10 @@ bool CaptureModeController::IsSearchResultsPanelVisible() const {
          search_results_panel_widget_->IsVisible();
 }
 
+bool CaptureModeController::IsNetworkConnectionOffline() const {
+  return delegate_->IsNetworkConnectionOffline();
+}
+
 bool CaptureModeController::SupportsBehaviorChange(
     CaptureModeEntryType new_entry_type) const {
   // If no active session is running, we always support a new behavior type.

@@ -1426,7 +1426,8 @@ ActionButtonView* CaptureModeSession::AddActionButton(
 }
 
 void CaptureModeSession::AddSmartActionsButton() {
-  if (active_behavior_->CanShowSmartActionsButton()) {
+  if (active_behavior_->CanShowSmartActionsButton() &&
+      !controller_->IsNetworkConnectionOffline()) {
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown);
     // TODO(crbug.com/375967525): Finalize and translate the smart actions
@@ -3301,13 +3302,19 @@ CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
   // Sunfish specifically is enabled to show the Search button.
   if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected() &&
       features::IsSunfishFeatureEnabled()) {
-    RecordSearchButtonShown();
-    capture_mode_util::AddActionButton(
-        base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
-                            weak_ptr_factory_.GetWeakPtr()),
-        u"Search with Lens", &kLensIcon,
-        ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1),
-        ActionButtonViewID::kSearchButton);
+    if (controller_->IsNetworkConnectionOffline()) {
+      // TODO(crbug.com/391713973): Show an error.
+    } else {
+      RecordSearchButtonShown();
+      // TODO(crbug.com/388898754): Finalize and translate the search button
+      // text.
+      capture_mode_util::AddActionButton(
+          base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
+                              weak_ptr_factory_.GetWeakPtr()),
+          u"Search with Lens", &kLensIcon,
+          ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1),
+          ActionButtonViewID::kSearchButton);
+    }
   }
   // TODO: crbug.com/375261308 - Prevent image search when the region stays the
   // same or is within a throttling QPS after a release event.

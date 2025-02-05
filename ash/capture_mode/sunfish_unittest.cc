@@ -2257,6 +2257,28 @@ TEST_F(SunfishTest, SunfishRegionNudgeDismissedForever) {
   EXPECT_FALSE(GetUserNudgeController());
 }
 
+// Tests that the search button is not shown when the network connection is
+// offline.
+TEST_F(SunfishTest, SearchButtonNotShownWhenOffline) {
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  ON_CALL(*test_delegate, IsNetworkConnectionOffline)
+      .WillByDefault(Return(true));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
+
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  EXPECT_FALSE(
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
+}
+
 using SunfishMultiDisplayTest = SunfishTest;
 
 TEST_F(SunfishMultiDisplayTest, SelectNewRegionAndPanelRoot) {
@@ -3284,6 +3306,32 @@ TEST_F(ScannerTest, SmartActionsButtonShownWhenOnDeviceOcrDisabled) {
   EXPECT_THAT(
       session_test_api.GetActionButtons(),
       ElementsAre(ActionButtonIdIs(ActionButtonViewID::kScannerButton)));
+}
+
+// Tests that the smart actions button is not shown when the network connection
+// is offline.
+TEST_F(ScannerTest, SmartActionsButtonNotShownWhenOffline) {
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  ON_CALL(*test_delegate, IsNetworkConnectionOffline)
+      .WillByDefault(Return(true));
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  // Only the copy text button should be shown, no smart actions button.
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(ActionButtonIdIs(ActionButtonViewID::kCopyTextButton)));
 }
 
 TEST_F(ScannerTest, SmartActionsButtonShownForDetectedTextRecordsHistogram) {
