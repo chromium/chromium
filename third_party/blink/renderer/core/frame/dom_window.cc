@@ -316,7 +316,8 @@ DOMWindow* DOMWindow::AnonymousIndexedGetter(uint32_t index) {
   RecordWindowProxyAccessMetrics(
       WebFeature::kWindowProxyCrossOriginAccessIndexedGetter,
       WebFeature::kWindowProxyCrossOriginAccessFromOtherPageIndexedGetter,
-      mojom::blink::WindowProxyAccessType::kAnonymousIndexedGetter);
+      mojom::blink::WindowProxyAccessType::kAnonymousIndexedGetter,
+      WebFeature::kWindowProxyIndexedGetter);
   ReportCoopAccess("indexed");
 
   if (!GetFrame())
@@ -969,9 +970,10 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
 }
 
 void DOMWindow::RecordWindowProxyAccessMetrics(
-    WebFeature property_access,
-    WebFeature property_access_from_other_page,
-    mojom::blink::WindowProxyAccessType access_type) const {
+    WebFeature cross_origin_property_access,
+    WebFeature cross_origin_property_access_from_other_page,
+    mojom::blink::WindowProxyAccessType access_type,
+    std::optional<WebFeature> property_access) const {
   if (!GetFrame())
     return;
 
@@ -1003,6 +1005,10 @@ void DOMWindow::RecordWindowProxyAccessMetrics(
     }
   }
 
+  if (property_access) {
+    UseCounter::Count(accessing_window, *property_access);
+  }
+
   // Note that SecurityOrigin can be null in unit tests.
   if (!GetFrame()->GetSecurityContext()->GetSecurityOrigin() ||
       !accessing_frame->GetSecurityContext()->GetSecurityOrigin() ||
@@ -1012,10 +1018,11 @@ void DOMWindow::RecordWindowProxyAccessMetrics(
               GetFrame()->GetSecurityContext()->GetSecurityOrigin())) {
     return;
   }
-  UseCounter::Count(accessing_window->document(), property_access);
+  UseCounter::Count(accessing_window->document(), cross_origin_property_access);
 
   if (accessing_frame->GetPage() != GetFrame()->GetPage()) {
-    UseCounter::Count(accessing_window, property_access_from_other_page);
+    UseCounter::Count(accessing_window,
+                      cross_origin_property_access_from_other_page);
   }
 }
 

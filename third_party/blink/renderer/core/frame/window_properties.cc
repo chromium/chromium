@@ -57,7 +57,8 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
     window->RecordWindowProxyAccessMetrics(
         WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
         WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter,
-        mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter);
+        mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter,
+        WebFeature::kWindowProxyNamedGetter);
     UseCounter::Count(CurrentExecutionContext(isolate),
                       WebFeature::kNamedAccessOnWindow_ChildBrowsingContext);
 
@@ -101,7 +102,8 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
   window->RecordWindowProxyAccessMetrics(
       WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
       WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter,
-      mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter);
+      mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter,
+      WebFeature::kWindowProxyNamedGetter);
 
   // If we've reached this point, we know that we're accessing an element (or
   // collection of elements) in this window, and that this window is local. Wrap
