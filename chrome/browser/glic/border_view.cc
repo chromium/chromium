@@ -284,8 +284,14 @@ void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
     first_emphasis_frame_ = timestamp;
   }
   if (record_first_ramp_down_frame_) {
-    first_ramp_down_frame_ = timestamp;
     record_first_ramp_down_frame_ = false;
+
+    // Don't show the ramp down if `skip_animation_` is toggled.
+    if (skip_animation_) {
+      CancelAnimation();
+      return;
+    }
+    first_ramp_down_frame_ = timestamp;
   }
 
   base::TimeDelta emphasis_since_first_frame =

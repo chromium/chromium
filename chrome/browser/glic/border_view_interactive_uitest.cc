@@ -641,7 +641,7 @@ class GlicBorderViewPrefersReducedMotionUiTest : public GlicBorderViewUiTest {
 };
 }  // namespace
 
-// Ensures that in prefers-reduced-motion cases, we should immediately show the
+// Ensures that in prefers-reduced-motion cases, we immediately show the
 // static border without any animations.
 IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
                        PrefersReducedMotion) {
@@ -666,6 +666,40 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
 
   border->CancelAnimation();
+  EXPECT_FALSE(border->compositor_for_testing());
+}
+
+// Ensures that in prefers-reduced-motion cases, we immediately cancel the
+// animation without showing a ramp down animation.
+IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest, RampingDown) {
+  ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
+  auto* border = browser()->window()->AsBrowserView()->glic_border();
+  ASSERT_TRUE(border);
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  TesterImpl tester(border, timestamp);
+
+  StartBorderAnimation(browser());
+  tester.WaitForAnimationStart();
+  EXPECT_TRUE(border->compositor_for_testing());
+
+  border->OnAnimationStep(kDummyTimeStamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  timestamp += base::Seconds(2.2);
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // Closing the glic window must start the ramping down process.
+  glic_service(browser())->ClosePanel();
+
+  // Calling `OnAnimationStep()` should cancel the animation immediately.
+  tester.set_next_time_tick(timestamp);
+  border->OnAnimationStep(kDummyTimeStamp);
+  EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_FALSE(border->compositor_for_testing());
 }
 
