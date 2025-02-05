@@ -27,7 +27,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
             TabBrowserControlsConstraintsHelper.class;
 
     private final TabImpl mTab;
-    private final Callback<Integer> mConstraintsChangedCallback;
+    private final Callback<@BrowserControlsState Integer> mConstraintsChangedCallback;
 
     private long mNativeTabBrowserControlsConstraintsHelper; // Lazily initialized in |update|
     private BrowserControlsVisibilityDelegate mVisibilityDelegate;
@@ -61,10 +61,12 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     /**
      * Returns the constraints delegate for a particular tab. The returned supplier will always be
      * associated with that tab, even if it stops being the active tab.
+     *
      * @param tab Tab whose browser controls state is looked into.
      * @return Observable supplier for the current visibility constraints.
      */
-    public static ObservableSupplier<Integer> getObservableConstraints(Tab tab) {
+    public static @Nullable ObservableSupplier<@BrowserControlsState Integer>
+            getObservableConstraints(Tab tab) {
         if (tab == null) {
             return null;
         }
