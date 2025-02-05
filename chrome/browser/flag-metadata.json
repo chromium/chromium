@@ -4281,7 +4281,7 @@
   {
     "name": "event-based-log-upload",
     "owners": [ "iremuguz@google.com", "chromeos-commercial-supportability@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "ewallet-payments",
