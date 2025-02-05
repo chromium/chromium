@@ -47,6 +47,10 @@ class GlicMetrics {
   mojom::WebClientMode input_mode_;
   base::TimeTicks response_started_time_;
 
+  // Cleared in OnGlicWindowClose.
+  int session_responses_ = 0;
+  base::TimeTicks session_start_time_;
+
   // The owner of this class is responsible for maintaining appropriate lifetime
   // for controller_.
   raw_ptr<GlicWindowController> controller_;

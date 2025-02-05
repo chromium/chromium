@@ -26,6 +26,17 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(GlicResponseError) -->
+
+<enum name="GlicMetricsError">
+  <int value="0" label="Response start without input."/>
+  <int value="1" label="Response stop without input."/>
+  <int value="2" label="Response start while hiding or hidden."/>
+  <int value="3" label="Window close without window open."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:Error) -->
+
 <enum name="GlicWebClientMode">
   <int value="0" label="Text"/>
   <int value="1" label="Audio"/>

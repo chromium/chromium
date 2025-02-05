@@ -32,6 +32,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Metrics.Error" enum="GlicMetricsError"
+    expires_after="2026-01-15">
+  <owner>dewittj@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when an unusual sequence of events is seen by glic metrics
+    recorder. Usually replaces a real histogram event.
+  </summary>
+</histogram>
+
 <histogram name="Glic.OsEntrypoint.Settings.Shortcut" enum="BooleanEnabled"
     expires_after="2026-01-15">
   <owner>agale@chromium.org</owner>
@@ -112,8 +123,44 @@ chromium-metrics-reviews@google.com.
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>
+    Recorded when a response starts and was visible. Measures the time from a
+    user's submitted input until a response starts and was visible to the user.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.StartTime.InputMode.Audio" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a response starts and was visible and the input mode was
+    audio. Measures the time from a user's submitted input until a response
+    starts and was visible to the user.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.StartTime.InputMode.Text" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a response starts and was visible and the input mode was text.
     Measures the time from a user's submitted input until a response starts and
     was visible to the user.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.StartTime.InputMode.Unknown" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a response starts and was visible and the input mode was
+    unknown. Measures the time from a user's submitted input until a response
+    starts and was visible to the user.
   </summary>
 </histogram>
 
@@ -125,6 +172,23 @@ chromium-metrics-reviews@google.com.
     Measures the time from a user's submitted input until a response stops.
     There is no guarantee of correlation with Response.StartTime. This exists
     for diagnostic purposes only.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Session.Duration" units="ms" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>Recorded when a session ends. The duration of the session.</summary>
+</histogram>
+
+<histogram name="Glic.Session.ResponseCount" units="count"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a session ends. The number of responses during that session.
   </summary>
 </histogram>
 
