@@ -31,11 +31,13 @@ enum class TestContentSettings {
 }  // namespace
 
 class ExclusiveAccessPermissionPromptInteractiveTest
-    : public InteractiveBrowserTest {
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   ExclusiveAccessPermissionPromptInteractiveTest() {
-    feature_list_.InitAndEnableFeature(
-        permissions::features::kKeyboardLockPrompt);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        permissions::features::kKeyboardLockPrompt,
+        {{"use_pepc_ui", GetParam() ? "true" : "false"}});
   }
 
   void SetUp() override {
@@ -120,9 +122,17 @@ class ExclusiveAccessPermissionPromptInteractiveTest
   ui::ElementIdentifier GetButtonViewId(ContentSetting expected_value) {
     switch (expected_value) {
       case CONTENT_SETTING_ALLOW:
-        return ExclusiveAccessPermissionPromptView::kAlwaysAllowId;
+        if (permissions::feature_params::kKeyboardLockPromptUIStyle.Get()) {
+          return ExclusiveAccessPermissionPromptView::kAlwaysAllowId;
+        } else {
+          return PermissionPromptBubbleBaseView::kAllowButtonElementId;
+        }
       case CONTENT_SETTING_BLOCK:
-        return ExclusiveAccessPermissionPromptView::kNeverAllowId;
+        if (permissions::feature_params::kKeyboardLockPromptUIStyle.Get()) {
+          return ExclusiveAccessPermissionPromptView::kNeverAllowId;
+        } else {
+          return PermissionPromptBubbleBaseView::kBlockButtonElementId;
+        }
       default:
         NOTREACHED();
     }
@@ -163,13 +173,17 @@ class ExclusiveAccessPermissionPromptInteractiveTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExclusiveAccessPermissionPromptInteractiveTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ExclusiveAccessPermissionPromptInteractiveTest,
                        AllowKeyboardLock) {
   TestPermissionPrompt(TestContentSettings::kKeyboardLock,
                        CONTENT_SETTING_ALLOW);
 }
 
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
+IN_PROC_BROWSER_TEST_P(ExclusiveAccessPermissionPromptInteractiveTest,
                        BlockKeyboardLock) {
   TestPermissionPrompt(TestContentSettings::kKeyboardLock,
                        CONTENT_SETTING_BLOCK);

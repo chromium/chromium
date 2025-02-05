@@ -329,5 +329,10 @@ const base::FeatureParam<std::string> kWebKioskBrowserPermissionsAllowlist{
     &permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
     "allowlist_urls", ""};
 
+#if !BUILDFLAG(IS_ANDROID)
+const base::FeatureParam<bool> kKeyboardLockPromptUIStyle{
+    &permissions::features::kKeyboardLockPrompt, "use_pepc_ui", true};
+#endif
+
 }  // namespace feature_params
 }  // namespace permissions
