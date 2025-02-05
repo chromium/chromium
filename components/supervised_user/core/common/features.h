@@ -48,19 +48,17 @@ BASE_DECLARE_FEATURE(kExposedParentalControlNeededForExtensionInstallation);
 bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Enable different web sign in interception behaviour for supervised users:
 //
 // 1. Supervised user signs in to existing signed out Profile: show modal
 //    explaining that supervision features will apply.
 // 2. Supervised user signs in as secondary account in existing signed in
 //    Profile
-//
-// Only affects Linux/Mac/Windows platforms.
 BASE_DECLARE_FEATURE(kCustomProfileStringsForSupervisedUsers);
 
 // Displays a Family Link kite badge on the supervised user avatar in various
 // surfaces.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kShowKiteForSupervisedUsers);
 #endif
 

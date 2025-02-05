@@ -84,9 +84,11 @@ class AvatarToolbarButton : public ToolbarButton {
   // Attempts showing the In-Produce-Help for profile Switching.
   void MaybeShowProfileSwitchIPH();
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Attempts showing the In-Produce-Help when a supervised user signs-in in a
   // profile.
   void MaybeShowSupervisedUserSignInIPH();
+#endif
 
   // Attempts showing the In-Product-Help in a subsequent web sign-in when the
   // explicit browser sign-in preference was remembered.
