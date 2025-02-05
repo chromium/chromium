@@ -376,6 +376,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ExtensionInstallEventRouter",
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ChromeEnterpriseRealTimeUrlLookupService",
+    "ExtensionNavigationRegistry",
     "ExtensionSystem",
     "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
     "FederatedIdentityPermissionContext",
@@ -628,6 +629,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "HeavyAdService",
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     "HidConnectionResourceManager",
+    "ExtensionNavigationRegistry",
 #endif
     "HidDeviceManager",
     "HistoryAPI",

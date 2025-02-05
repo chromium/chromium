@@ -312,6 +312,8 @@ source_set("browser_sources") {
     "extension_icon_manager.h",
     "extension_icon_placeholder.cc",
     "extension_icon_placeholder.h",
+    "extension_navigation_registry.cc",
+    "extension_navigation_registry.h",
     "extension_navigation_throttle.cc",
     "extension_navigation_throttle.h",
     "extension_navigation_ui_data.cc",

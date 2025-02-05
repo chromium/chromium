@@ -18,12 +18,14 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/browser/extension_navigation_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
@@ -297,12 +299,35 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     // Cross-origin-redirects require that the resource is accessible in the
     // "web_accessible_resources" section of the manifest.
     if (!upstream_origin.opaque() && upstream_origin != target_origin) {
-      base::UmaHistogramBoolean(
-          target_extension->manifest_version() < 3
-              ? "Extensions.WAR.XOriginWebAccessible.MV2"
-              : "Extensions.WAR.XOriginWebAccessible.MV3",
+      bool is_accessible =
           WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
-              target_extension, url, target_origin, upstream));
+              target_extension, url, target_origin, upstream);
+
+      base::UmaHistogramBoolean(target_extension->manifest_version() < 3
+                                    ? "Extensions.WAR.XOriginWebAccessible.MV2"
+                                    : "Extensions.WAR.XOriginWebAccessible.MV3",
+                                is_accessible);
+
+      if (!is_accessible &&
+          base::FeatureList::IsEnabled(
+              extensions_features::kExtensionWARForRedirect)) {
+        std::optional<GURL> extension_redirect_recorded =
+            ExtensionNavigationRegistry::Get(browser_context)
+                ->GetAndErase(navigation_handle()->GetNavigationId());
+
+        // Block requests for navigations unaltered by webRequest.
+        if (!extension_redirect_recorded.has_value()) {
+          return content::NavigationThrottle::BLOCK_REQUEST;
+        }
+
+        // Block requests if the extension or url are unexpected.
+        // TODO(crbug.com/40060076): Verify WAR access for the recorded
+        // extension instead of checking for equality with the target extension.
+        auto recorded_url = extension_redirect_recorded.value();
+        if (recorded_url != url) {
+          return content::NavigationThrottle::BLOCK_REQUEST;
+        }
+      }
     }
   }
 
