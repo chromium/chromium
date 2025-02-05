@@ -573,8 +573,14 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsMultipleMediaSessions) {
   ui_.WaitForDialogToContainText(u"Another Artist");
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/394510267): Flaky on mac
+#define MAYBE_ClickingOnItemGoesBackToTab DISABLED_ClickingOnItemGoesBackToTab
+#else
+#define MAYBE_ClickingOnItemGoesBackToTab ClickingOnItemGoesBackToTab
+#endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
-                       ClickingOnItemGoesBackToTab) {
+                       MAYBE_ClickingOnItemGoesBackToTab) {
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();
@@ -967,7 +973,14 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveTranslate) {
       prefs::kLiveTranslateEnabled));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, TargetLanguageDropdown) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/394510267): Flaky on mac
+#define MAYBE_TargetLanguageDropdown DISABLED_TargetLanguageDropdown
+#else
+#define MAYBE_TargetLanguageDropdown TargetLanguageDropdown
+#endif
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
+                       MAYBE_TargetLanguageDropdown) {
   // Live Caption is currently not supported on Win Arm64.
   if (!captions::IsLiveCaptionFeatureSupported()) {
     GTEST_SKIP() << "Live caption feature not supported";
