@@ -208,6 +208,7 @@ public class EmbeddedPermissionPromptTest {
     @MediumTest
     @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
     @Features.DisableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
+    @DisabledTest(message = "crbug.com/394097674")
     public void testAskPromptTextWithoutOneTime() throws Exception {
         String[] requestablePermission =
                 new String[] {
@@ -263,6 +264,7 @@ public class EmbeddedPermissionPromptTest {
         PermissionsAndroidFeatureList.ONE_TIME_PERMISSION,
         PermissionsAndroidFeatureList.PERMISSION_ELEMENT
     })
+    @DisabledTest(message = "crbug.com/394097674")
     public void testPreviouslyDeniedPromptTextWithOneTime() throws Exception {
         String[] requestablePermission =
                 new String[] {
@@ -288,6 +290,7 @@ public class EmbeddedPermissionPromptTest {
     @MediumTest
     @Features.EnableFeatures(PermissionsAndroidFeatureList.PERMISSION_ELEMENT)
     @Features.DisableFeatures(PermissionsAndroidFeatureList.ONE_TIME_PERMISSION)
+    @DisabledTest(message = "crbug.com/394097674")
     public void testPreviouslyDeniedPromptTextWithoutOneTime() throws Exception {
         String[] requestablePermission =
                 new String[] {
