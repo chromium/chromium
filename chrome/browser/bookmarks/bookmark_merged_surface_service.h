@@ -72,6 +72,10 @@ struct BookmarkParentFolder {
   // `node` must not be null.
   bool HasDirectChildNode(const bookmarks::BookmarkNode* node) const;
 
+  // Returns true if this == ancestor, or one of this folder's parents is
+  // ancestor.
+  bool HasAncestor(const BookmarkParentFolder& ancestor) const;
+
  private:
   explicit BookmarkParentFolder(
       std::variant<PermanentFolderType, raw_ptr<const bookmarks::BookmarkNode>>

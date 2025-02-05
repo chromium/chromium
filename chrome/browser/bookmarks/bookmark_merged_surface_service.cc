@@ -171,6 +171,24 @@ bool BookmarkParentFolder::HasDirectChildNode(
   return GetIfPermanentFolderType(node->parent()) == as_permanent_folder();
 }
 
+bool BookmarkParentFolder::HasAncestor(
+    const BookmarkParentFolder& ancestor) const {
+  if (ancestor == *this) {
+    return true;
+  }
+
+  if (as_permanent_folder().has_value()) {
+    // `ancestor` can't be the root node.
+    return false;
+  }
+
+  const BookmarkNode* node = as_non_permanent_folder();
+  CHECK(node);
+  BookmarkParentFolder parent(
+      BookmarkParentFolder::FromFolderNode(node->parent()));
+  return parent.HasAncestor(ancestor);
+}
+
 // BookmarkMergedSurfaceService:
 
 BookmarkMergedSurfaceService::BookmarkMergedSurfaceService(

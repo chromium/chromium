@@ -1466,4 +1466,34 @@ TEST(BookmarkParentFolderTest, HasDirectChildNode) {
   }
 }
 
+TEST(BookmarkParentFolderTest, HasAncestor) {
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      std::make_unique<bookmarks::BookmarkModel>(
+          std::make_unique<bookmarks::TestBookmarkClient>());
+  model->LoadEmptyForTest();
+  AddNodesFromModelString(model.get(), model->bookmark_bar_node(),
+                          "1 2 3 f1:[ 4 5 f2:[ 1 ] ] ");
+
+  const BookmarkNode* f1 = model->bookmark_bar_node()->children()[3].get();
+  const BookmarkParentFolder f1_folder(
+      BookmarkParentFolder::FromFolderNode(f1));
+  EXPECT_TRUE(f1_folder.HasAncestor(BookmarkParentFolder::FromFolderNode(f1)));
+  EXPECT_TRUE(f1_folder.HasAncestor(BookmarkParentFolder::BookmarkBarFolder()));
+  EXPECT_FALSE(f1_folder.HasAncestor(BookmarkParentFolder::OtherFolder()));
+
+  const BookmarkParentFolder f2_folder(
+      BookmarkParentFolder::FromFolderNode(f1->children()[2].get()));
+  EXPECT_FALSE(f1_folder.HasAncestor(f2_folder));
+  EXPECT_TRUE(f2_folder.HasAncestor(f2_folder));
+  EXPECT_TRUE(f2_folder.HasAncestor(BookmarkParentFolder::BookmarkBarFolder()));
+  EXPECT_FALSE(f2_folder.HasAncestor(BookmarkParentFolder::OtherFolder()));
+
+  EXPECT_FALSE(
+      BookmarkParentFolder::BookmarkBarFolder().HasAncestor(f1_folder));
+  EXPECT_TRUE(BookmarkParentFolder::BookmarkBarFolder().HasAncestor(
+      BookmarkParentFolder::BookmarkBarFolder()));
+  EXPECT_FALSE(BookmarkParentFolder::BookmarkBarFolder().HasAncestor(
+      BookmarkParentFolder::OtherFolder()));
+}
+
 }  // namespace
