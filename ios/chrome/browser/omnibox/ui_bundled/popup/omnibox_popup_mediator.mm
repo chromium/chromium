@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
@@ -246,29 +247,20 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   [self updateWithResults:result];
 }
 
-#pragma mark - AutocompleteResultDataSource
-
-- (void)requestResultsWithVisibleSuggestionCount:
-    (NSUInteger)visibleSuggestionCount {
-  // If no suggestions are visible, consider all of them visible.
-  if (visibleSuggestionCount == 0) {
-    visibleSuggestionCount = self.autocompleteResult.size();
-  }
-  NSUInteger visibleSuggestions =
-      MIN(visibleSuggestionCount, self.autocompleteResult.size());
-  if (visibleSuggestions > 0) {
-    // Groups visible suggestions by search vs url. Skip the first suggestion
-    // because it's the omnibox content.
-    [self groupCurrentSuggestionsFrom:1 to:visibleSuggestions];
-  }
-  // Groups hidden suggestions by search vs url.
-  [self groupCurrentSuggestionsFrom:visibleSuggestions
-                                 to:self.autocompleteResult.size()];
-
+- (void)popupController:(OmniboxPopupController*)popupController
+         didSortResults:(const AutocompleteResult&)results {
   NSArray<id<AutocompleteSuggestionGroup>>* groups = [self wrappedMatches];
 
   [self.consumer updateMatches:groups
       preselectedMatchGroupIndex:self.preselectedGroupIndex];
+}
+
+#pragma mark - AutocompleteResultDataSource
+
+- (void)requestResultsWithVisibleSuggestionCount:
+    (NSUInteger)visibleSuggestionCount {
+  [self.popupController
+      requestSuggestionsWithVisibleSuggestionCount:visibleSuggestionCount];
 }
 
 #pragma mark - AutocompleteResultConsumerDelegate
@@ -728,12 +720,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 - (const AutocompleteResult&)autocompleteResult {
   DCHECK(self.autocompleteController);
   return self.autocompleteController->result();
-}
-
-- (void)groupCurrentSuggestionsFrom:(NSUInteger)begin to:(NSUInteger)end {
-  DCHECK(begin <= self.autocompleteResult.size());
-  DCHECK(end <= self.autocompleteResult.size());
-  self.autocompleteController->GroupSuggestionsBySearchVsURL(begin, end);
 }
 
 - (void)callActionTapped {
