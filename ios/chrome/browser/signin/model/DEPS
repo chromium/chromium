@@ -23,7 +23,7 @@ specific_include_rules = {
   "^authentication_service_delegate_impl.cc": [
     "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   ],
-  "^authentication_service.mm": [
+  "^account_widget_updater.mm": [
     "+ios/chrome/browser/widget_kit/model/features.h",
     "+ios/chrome/browser/widget_kit/model/model_swift.h",
   ],

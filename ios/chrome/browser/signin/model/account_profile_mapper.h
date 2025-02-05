@@ -14,6 +14,7 @@
 #import "base/observer_list_types.h"
 #import "base/scoped_observation.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/signin/model/account_widget_updater.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 
 @protocol ChangeProfileCommands;
@@ -182,6 +183,8 @@ class AccountProfileMapper {
   raw_ptr<SystemIdentityManager> system_identity_manager_;
 
   raw_ptr<ProfileManagerIOS> profile_manager_;
+
+  std::unique_ptr<AccountWidgetUpdater> widget_updater_;
 
   std::unique_ptr<Assigner> assigner_;
 

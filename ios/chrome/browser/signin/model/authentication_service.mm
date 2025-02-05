@@ -45,12 +45,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_util.h"
-#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
-
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-#import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
-#endif
 
 using signin::constants::kNoHostedDomainFound;
 
@@ -75,29 +70,6 @@ CoreAccountId SystemIdentityToAccountID(
   GaiaId gaia_id([identity gaiaID]);
   std::string email = base::SysNSStringToUTF8([identity userEmail]);
   return identity_manager->PickAccountIdForAccount(gaia_id, email);
-}
-
-// Updates list of loaded profiles used in widgets.
-// TODO(crbug.com/380847504): Move this logic out of this class.
-void UpdateLoadedAccounts(std::vector<AccountInfo> accounts_on_device) {
-  NSMutableDictionary* accounts = [[NSMutableDictionary alloc] init];
-  for (const AccountInfo& account_info : accounts_on_device) {
-    NSMutableDictionary* account = [[NSMutableDictionary alloc] init];
-    [account setObject:base::SysUTF8ToNSString(account_info.hosted_domain)
-                forKey:app_group::kHostedDomain];
-    [account setObject:base::SysUTF8ToNSString(account_info.email)
-                forKey:app_group::kEmail];
-    // Add the account to the dictionary of accounts.
-    [accounts setObject:account forKey:account_info.gaia.ToNSString()];
-    // TODO(crbug.com/380847504): Save avatar info to disk.
-  }
-
-  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
-  [shared_defaults setObject:accounts forKey:app_group::kAccountsOnDevice];
-
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-  [WidgetTimelinesUpdater reloadAllTimelines];
-#endif
 }
 
 }  // namespace
@@ -785,7 +757,6 @@ void AuthenticationService::ReloadCredentialsFromIdentities() {
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(
           identity_manager_->GetPrimaryAccountId(
               signin::ConsentLevel::kSignin));
-  UpdateLoadedAccounts(identity_manager_->GetAccountsOnDevice());
 }
 
 void AuthenticationService::FirePrimaryAccountRestricted() {
