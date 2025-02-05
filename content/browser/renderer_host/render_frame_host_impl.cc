@@ -135,7 +135,6 @@
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
-#include "content/browser/renderer_host/randomized_confidence_utils.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_owner.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -7999,13 +7998,9 @@ void RenderFrameHostImpl::DraggableRegionsChanged(
 }
 
 void RenderFrameHostImpl::NotifyDocumentInteractive() {
-  if (IsOutermostMainFrame()) {
-    double trigger_rate = GetConfidenceRandomizedTriggerRate();
-    blink::mojom::ConfidenceLevel randomized_confidence =
-        GenerateRandomizedConfidenceLevel(
-            trigger_rate, document_associated_data_->navigation_confidence());
+  if (IsInPrimaryMainFrame()) {
     GetAssociatedLocalMainFrame()->FinalizeNavigationConfidence(
-        trigger_rate, randomized_confidence);
+        0.0, blink::mojom::ConfidenceLevel::kHigh);
   }
 }
 
@@ -15166,8 +15161,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
                navigation_request->GetDocumentToken());
     }
 
-    document_associated_data_->set_navigation_confidence(
-        navigation_request->navigation_confidence());
     document_associated_data_->set_devtools_navigation_token(
         navigation_request->devtools_navigation_token());
 
