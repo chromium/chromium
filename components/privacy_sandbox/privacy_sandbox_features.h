@@ -202,6 +202,10 @@ BASE_DECLARE_FEATURE(kTrackingProtectionUserBypassPwa);
 // Triggers UserBypass logic for Progressive Web Apps on Android
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionUserBypassPwaTrigger);
+
+// Enables wildcard display on the Clank content settings UI.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kDisplayWildcardInContentSettings);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables the notice storage for pref storage.
