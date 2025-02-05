@@ -30,6 +30,7 @@ if (!is_android) {
     }
 
     domatolpm_fuzzer("webidl_fuzzer_grammar") {
+      stabilize_grammar = true
       template_file =
           "//chrome/test/fuzzing/webidl_in_process_fuzzer_grammar/template.js"
       grammars = [ "webidlfuzzer:${target_gen_dir}/webidl.txt" ]
