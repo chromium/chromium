@@ -227,6 +227,7 @@ void RuntimeApplicationServiceImpl::Load(
   cast_web_view_ = CreateCastWebView();
   metrics::CastMetricsHelper::GetInstance()->DidCompleteLoad(
       request.application_config().app_id(), request.cast_session_id());
+  SetApplicationMediaCapabilities();
   runtime_application_->Load(std::move(callback));
 }
 
@@ -418,6 +419,47 @@ void RuntimeApplicationServiceImpl::SetMediaBlocking(
     default:
       NOTREACHED();
   }
+}
+
+void RuntimeApplicationServiceImpl::SetApplicationMediaCapabilities() {
+  const auto* codec_info = FindEntry(feature::kCastCoreBitstreamAudioCodecsInfo,
+                                     config_.extra_features());
+  if (!codec_info || !codec_info->value().has_dictionary()) {
+    LOG(WARNING) << "Missing BitstreamAudioCodecsInfo, failed to add "
+                    "Application Media Capabilities.";
+    return;
+  }
+
+  const auto* codecs =
+      FindEntry(feature::kCastCoreCodecs, codec_info->value().dictionary());
+  if (!codecs) {
+    LOG(WARNING)
+        << "Missing Codecs, failed to add Application Media Capabilities.";
+    return;
+  }
+
+  const auto* spatial_rendering = FindEntry(feature::kCastCoreSpatialRendering,
+                                            codec_info->value().dictionary());
+  if (!spatial_rendering) {
+    LOG(WARNING) << "Missing SpatialRendering, failed to add Application Media "
+                    "Capabilities.";
+    return;
+  }
+
+  BitstreamAudioCodecsInfo new_info{codecs->value().number(),
+                                    spatial_rendering->value().number()};
+
+  LOG(INFO) << "Adding Application Media Capabilities: "
+            << BitstreamAudioCodecsInfoToString(new_info);
+
+  auto* contents = cast_web_view_->cast_web_contents();
+  CHECK(contents);
+
+  InterfaceBundle* bundle = contents->local_interfaces();
+  CHECK(bundle);
+
+  bundle->AddInterface(&app_media_capabilities_);
+  app_media_capabilities_.SetSupportedBitstreamAudioCodecs(new_info);
 }
 
 void RuntimeApplicationServiceImpl::OnStreamingApplicationError(

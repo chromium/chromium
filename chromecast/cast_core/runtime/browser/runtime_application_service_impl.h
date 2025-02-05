@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/task/sequenced_task_runner.h"
+#include "chromecast/browser/application_media_capabilities.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
@@ -88,6 +89,8 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   void SetVisibility(cast::common::Visibility::Type state);
   void SetMediaBlocking(cast::common::MediaState::Type state);
 
+  void SetApplicationMediaCapabilities();
+
   // Called on an error is hit during running of cast mirroring or remoting.
   void OnStreamingApplicationError(cast_receiver::Status status);
 
@@ -141,6 +144,8 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   raw_ref<CastWebService> web_service_;
+
+  shell::ApplicationMediaCapabilities app_media_capabilities_;
 
   // The WebView associated with the window in which the Cast application is
   // displayed.
