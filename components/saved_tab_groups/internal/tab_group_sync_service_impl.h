@@ -208,6 +208,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;
   void SavedTabGroupLocalIdChanged(const base::Uuid& saved_group_id) override;
   void SavedTabGroupModelLoaded() override;
+  void OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType sync_bridge_update_type) override;
 
   // Called to notify the observers that service initialization is complete.
   void NotifyServiceInitialized();
@@ -229,6 +231,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair,
       TriggerSource source);
   void HandleTabGroupsReordered(TriggerSource source);
+
+  void NotifyOnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType sync_bridge_update_type);
 
   // Read and write deleted local group IDs to disk. We add a local ID in
   // response to a group deletion event from sync. We clear that ID only when

@@ -844,6 +844,13 @@ void SavedTabGroupModel::MarkTransitionedToShared(const base::Uuid& group_id) {
   }
 }
 
+void SavedTabGroupModel::OnSyncBridgeUpdateTypeChanged(
+    SyncBridgeUpdateType sync_bridge_update_type) {
+  for (SavedTabGroupModelObserver& observer : observers_) {
+    observer.OnSyncBridgeUpdateTypeChanged(sync_bridge_update_type);
+  }
+}
+
 SavedTabGroup* SavedTabGroupModel::MutableGroupContainingTab(
     const base::Uuid& saved_tab_guid) {
   return const_cast<SavedTabGroup*>(GetGroupContainingTab(saved_tab_guid));

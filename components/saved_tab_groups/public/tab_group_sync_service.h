@@ -128,6 +128,12 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     // (desktop only) The ordering of tab groups in the bookmarks bar UI has
     // changed. Update the UI to reflect the new ordering.
     virtual void OnTabGroupsReordered(TriggerSource source) {}
+
+    // Called to notify of the sync bridge state changes, e.g. whether initial
+    // merge or disable sync are in progress. Invoked only for shared tab group
+    // bridge.
+    virtual void OnSyncBridgeUpdateTypeChanged(
+        SyncBridgeUpdateType sync_bridge_update_type) {}
   };
 
   enum class TabGroupSharingResult {

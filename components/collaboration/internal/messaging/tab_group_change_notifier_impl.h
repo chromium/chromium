@@ -54,6 +54,8 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
   void OnTabGroupLocalIdChanged(
       const base::Uuid& sync_id,
       const std::optional<tab_groups::LocalTabGroupID>& local_id) override;
+  void OnSyncBridgeUpdateTypeChanged(
+      tab_groups::SyncBridgeUpdateType sync_bridge_update_type) override;
 
   // Fetches the current state of the tab group model, and compares it to what
   // was previously known, publishing any changes that are found.
@@ -92,6 +94,13 @@ class TabGroupChangeNotifierImpl : public TabGroupChangeNotifier {
   base::ScopedObservation<tab_groups::TabGroupSyncService,
                           tab_groups::TabGroupSyncService::Observer>
       tab_group_sync_observer_{this};
+
+  // Whether shared tab group sync bridge is undergoing initial merge or disable
+  // sync (which mostly happens during sign-in / sign-out). During this period,
+  // the incoming tab group changes should be ignored which would otherwise
+  // create an avalanche of false notifications.
+  tab_groups::SyncBridgeUpdateType sync_bridge_update_type_ =
+      tab_groups::SyncBridgeUpdateType::kDefaultState;
 
   base::WeakPtrFactory<TabGroupChangeNotifierImpl> weak_ptr_factory_{this};
 };
