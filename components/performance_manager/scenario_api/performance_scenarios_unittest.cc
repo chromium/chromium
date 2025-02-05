@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 
 #include <atomic>
 #include <optional>
@@ -13,7 +13,7 @@
 #include "base/memory/structured_shared_memory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace blink::performance_scenarios {
+namespace performance_scenarios {
 
 namespace {
 
@@ -125,4 +125,4 @@ TEST(PerformanceScenariosTest, SharedAtomicRef) {
 
 }  // namespace
 
-}  // namespace blink::performance_scenarios
+}  // namespace performance_scenarios

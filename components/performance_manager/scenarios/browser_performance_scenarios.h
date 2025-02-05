@@ -8,7 +8,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 
 namespace content {
 class RenderProcessHost;
@@ -21,13 +21,13 @@ class RefCountedScenarioState;
 class ScopedGlobalScenarioMemory;
 
 // Convenience aliases.
-using LoadingScenario = blink::performance_scenarios::LoadingScenario;
-using InputScenario = blink::performance_scenarios::InputScenario;
+using LoadingScenario = performance_scenarios::LoadingScenario;
+using InputScenario = performance_scenarios::InputScenario;
 
 // Functions to manage the browser side of ScenarioState memory regions that
 // communicate state to child processes. The state can be read from any process
 // using functions in
-// //third_party/blink/public/common/performance/performance_scenarios.h.
+// //components/performance_manager/scenario_api/performance_scenarios.h.
 
 // Lets ScopedGlobalScenarioMemory set the global scenario state, or clear it if
 // `state` is nullptr.

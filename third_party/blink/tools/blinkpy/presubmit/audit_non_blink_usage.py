@@ -417,19 +417,14 @@ _CONFIG = [
         ],
     },
     {
+        # Forwarding header importing ::performance_scenarios symbols into
+        # blink::performance_scenarios.
         'paths': [
-            'third_party/blink/common/performance/performance_scenarios.cc',
-            'third_party/blink/common/performance/performance_scenario_observer.cc',
+            'third_party/blink/public/common/performance/performance_scenarios.h',
             'third_party/blink/public/common/performance/performance_scenario_observer.h',
         ],
         'allowed': [
-            # Used in both browser and renderer process so can't use Oilpan.
-            'base::NoDestructor',
-            'base::RefCountedThreadSafe',
-            # ObserverListThreadSafe isn't generally allowed because it doesn't
-            # work with WTF::ThreadSafeRefCounted, so must be allowed here.
-            'base::ObserverListThreadSafe',
-            'base::RemoveObserverPolicy',
+            'performance_scenarios::.+',
         ],
     },
     {

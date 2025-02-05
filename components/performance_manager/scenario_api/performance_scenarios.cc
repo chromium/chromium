@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 
 #include <optional>
 #include <utility>
@@ -14,9 +14,9 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/types/pass_key.h"
-#include "third_party/blink/public/common/performance/performance_scenario_observer.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 
-namespace blink::performance_scenarios {
+namespace performance_scenarios {
 
 namespace {
 
@@ -95,4 +95,4 @@ SharedAtomicRef<InputScenario> GetInputScenario(ScenarioScope scope) {
       mapping, GetScenarioStateFromMapping(mapping.get()).input);
 }
 
-}  // namespace blink::performance_scenarios
+}  // namespace performance_scenarios

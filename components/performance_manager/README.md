@@ -13,20 +13,20 @@ Here’s an overview picture of the intended architecture:
 
 ![Overview Image](doc/overview.png)
 
-- The *Embedder* is responsible for notifying the 
+- The *Embedder* is responsible for notifying the
   [Performance Manager Registry](embedder/performance_manager_registry.h) when
   content entities are created or their relationships change. The Performance Manager
   Registry maintains the structure of the Graph, which is a coarsely abstracted view of the state
   of the browser.
 - Decorators populate the graph nodes with interesting properties and data, such as e.g. the results
   of CPU, memory and battery measurements and so on.
-- Aggregators aggregate data in the graph, possibly across nodes. 
+- Aggregators aggregate data in the graph, possibly across nodes.
   As an example, the memory usage of all frame nodes could be summed up to their associated page
   node, to establish the total memory usage of the page.
 - Resource Management Policies are observers of the graph, and use the graph structure as well as
-  the properties of graph nodes to make policy decisions. 
+  the properties of graph nodes to make policy decisions.
 - Resource Management Mechanisms are invoked by Resource Management Policy to implement policy
-  decisions. 
+  decisions.
   Note that while the mechanisms are depicted in the main thread, they can be hosted anywhere
   necessary or convenient, such as in a renderer process at the far end of a mojo::Remote<>.
 - Content Proxies are a convenience feature to allow easy and safe access from nodes in the graph
@@ -46,7 +46,7 @@ The performance manager exposes a simplified, coarse model of the browser’s
 state as a [Graph](public/graph/graph.h) of [Nodes](public/graph/node.h),
 where the nodes represent such things as:
 1. [Page](public/graph/page_node.h): corresponds to a content::WebContents.
-1. [Frame](public/graph/frame_node.h): corresponds to a frame in a 
+1. [Frame](public/graph/frame_node.h): corresponds to a frame in a
    content::WebContents frame tree.
 1. [Process](public/graph/process_node.h): corresponds to a content::RenderProcessHost or
    other type of process, such as e.g. the Browser or GPU process.
@@ -54,7 +54,7 @@ where the nodes represent such things as:
 
 Nodes in the graph are connected with edges, such that e.g. each frame or worker
 connects to its hosting process.
-Frames are connected in a tree, and all frames in a tree connect to their 
+Frames are connected in a tree, and all frames in a tree connect to their
 corresponding page.
 Other edge types may denote dependencies between nodes, such as e.g. a
 MessagePort connection or the like. Different node types in the graph are
@@ -119,7 +119,7 @@ compute the difference in cumulative CPU usage from the most recent measurement,
 then distribute the difference across the Frame (and/or Worker) nodes associated
 with each Process.
 This would in turn allow summing up the cumulative CPU usage of each Frame and
-Worker node to their associated Page node. This would yield the CPU usage of 
+Worker node to their associated Page node. This would yield the CPU usage of
 the entire Page (content::WebContents).
 
 ## Policies & Mechanisms
@@ -143,3 +143,19 @@ is posted to the main thread where the relevant content proxy (e.g.
 easy and safe to retrieve the content entity on the main thread. Should the
 corresponding content entity have been deleted after the task was posted, the
 content proxy will simply return nullptr.
+
+## Layering
+
+The Performance Manager component sits between content and chrome. By default
+content and layers below can't depend on components/performance_manager, but
+code in performance_manager can depend on those layers.
+
+But several subdirectories are exported with greater visibility. These subdirs
+can be included from other layers, and must not have dependencies on those
+layers or anything below to avoid dependency loops.
+
+- .../public/mojom defines interfaces to communicate with child processes.
+  - visible from `//content` and `//third_party/blink/renderer`
+- .../scenario_api is an API to query current performance characteristics
+  from many layers.
+  - visible from all layers except `//base`.

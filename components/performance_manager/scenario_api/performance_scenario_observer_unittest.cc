@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/performance/performance_scenario_observer.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 
 #include <atomic>
 #include <optional>
@@ -14,11 +14,11 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 
-namespace blink::performance_scenarios {
+namespace performance_scenarios {
 
 namespace {
 
@@ -192,4 +192,4 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
 
 }  // namespace
 
-}  // namespace blink::performance_scenarios
+}  // namespace performance_scenarios

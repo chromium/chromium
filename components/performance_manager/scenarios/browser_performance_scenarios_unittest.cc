@@ -14,30 +14,30 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/performance/performance_scenario_observer.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
 
 namespace {
 
-using blink::performance_scenarios::GetLoadingScenario;
-using blink::performance_scenarios::PerformanceScenarioObserverList;
-using blink::performance_scenarios::ScenarioScope;
+using performance_scenarios::GetLoadingScenario;
+using performance_scenarios::PerformanceScenarioObserverList;
+using performance_scenarios::ScenarioScope;
 using ::testing::_;
 
 // Since the browser process also maps in a read-only view of the global
 // scenario state for querying outside performance_manager, the blink observer
 // is also notified.
 class MockPerformanceScenarioObserver
-    : public blink::performance_scenarios::PerformanceScenarioObserver {
+    : public performance_scenarios::PerformanceScenarioObserver {
  public:
  public:
   MOCK_METHOD(void,
@@ -141,9 +141,8 @@ TEST_F(BrowserPerformanceScenariosTest, SetWithSharedMemory) {
   // Map in the read-only view of `process_region`. Normally this would be done
   // in the renderer process as the "current process" state. The state should
   // now become visible.
-  blink::performance_scenarios::ScopedReadOnlyScenarioMemory
-      process_shared_memory(ScenarioScope::kCurrentProcess,
-                            std::move(process_region));
+  performance_scenarios::ScopedReadOnlyScenarioMemory process_shared_memory(
+      ScenarioScope::kCurrentProcess, std::move(process_region));
   EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kVisiblePageLoading);

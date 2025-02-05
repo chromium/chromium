@@ -21,16 +21,16 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/performance_manager/scenarios/performance_scenario_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-#include "third_party/blink/public/common/performance/performance_scenario_observer.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
 
-using blink::performance_scenarios::ScenarioScope;
+using performance_scenarios::ScenarioScope;
 
 namespace {
 
@@ -202,8 +202,8 @@ void SetGlobalScenarioValue(Scenario scenario) {
   SetScenarioValue(scenario, GetGlobalSharedState());
   // Notify kGlobal observers in the browser process.
   if (auto observers =
-          blink::performance_scenarios::PerformanceScenarioObserverList::
-              GetForScope(ScenarioScope::kGlobal)) {
+          performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+              ScenarioScope::kGlobal)) {
     observers->NotifyIfScenarioChanged();
   }
 }

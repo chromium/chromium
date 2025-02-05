@@ -12,7 +12,7 @@
 #include "base/memory/structured_shared_memory.h"
 #include "base/types/optional_util.h"
 #include "components/performance_manager/graph/node_inline_data.h"
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
@@ -26,7 +26,7 @@ class ProcessNode;
 class RefCountedScenarioState
     : public base::RefCountedThreadSafe<RefCountedScenarioState> {
  public:
-  using ScenarioState = blink::performance_scenarios::ScenarioState;
+  using ScenarioState = performance_scenarios::ScenarioState;
 
   // Creates a new ScenarioState memory region and returns a ref-counted pointer
   // to it, or nullptr if mapping fails.

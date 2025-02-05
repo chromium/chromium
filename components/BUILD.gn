@@ -503,6 +503,7 @@ test("components_unittests") {
       "//components/payments/content/utility:unit_tests",
       "//components/pdf/common:unit_tests",
       "//components/performance_manager:unit_tests",
+      "//components/performance_manager/scenario_api:unit_tests",
       "//components/policy/content:unit_tests",
       "//components/reduce_accept_language/browser:unit_tests",
       "//components/reporting/resources:unit_tests",
