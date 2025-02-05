@@ -10,7 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
@@ -26,8 +25,6 @@ namespace {
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::mojom::SubmissionReadinessState;
-using ToShowVirtualKeyboard =
-    password_manager::PasswordManagerDriver::ToShowVirtualKeyboard;
 using password_manager::PasswordCredentialFillerImpl;
 using password_manager::PasswordFillingParams;
 using testing ::_;
@@ -43,10 +40,6 @@ struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
               (const std::u16string&,
                const std::u16string&,
                base::OnceCallback<void(bool)>),
-              (override));
-  MOCK_METHOD(void,
-              KeyboardReplacingSurfaceClosed,
-              (ToShowVirtualKeyboard),
               (override));
   MOCK_METHOD(void, TriggerFormSubmission, (), (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
@@ -93,8 +86,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
              PrepareFormData({}, /*has_captcha=*/false),
              /*username_field_index=*/0,
              /*password_field_index=*/0,
-             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
-             SubmissionReadinessState::kNoInformation),
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId()),
          SubmissionReadinessState::kError},
         {PasswordFillingParams(
              PrepareFormData({FormFieldFocusabilityType::kNonFocusableInput,
@@ -102,8 +94,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
                              /*has_captcha=*/false),
              /*username_field_index=*/2,
              /*password_field_index=*/2,
-             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
-             SubmissionReadinessState::kNoInformation),
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId()),
          SubmissionReadinessState::kError},
         // There's no password field in this case, so expected
         // SubmissionReadiness is `kNoPasswordField`.
@@ -113,8 +104,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
                              /*has_captcha=*/false),
              /*username_field_index=*/0,
              /*password_field_index=*/2,
-             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
-             SubmissionReadinessState::kNoInformation),
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId()),
          SubmissionReadinessState::kNoPasswordField},
         // There's no username field in this case, so expected
         // SubmissionReadiness is `kNoUsernameField`.
@@ -124,8 +114,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
                              /*has_captcha=*/false),
              /*username_field_index=*/2,
              /*password_field_index=*/0,
-             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
-             SubmissionReadinessState::kNoInformation),
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId()),
          SubmissionReadinessState::kNoUsernameField},
         // There's a focusable field between username and password fields
         {PasswordFillingParams(
@@ -135,8 +124,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
                              /*has_captcha=*/false),
              /*username_field_index=*/0,
              /*password_field_index=*/2,
-             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
-             SubmissionReadinessState::kNoInformation),
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId()),
          SubmissionReadinessState::kFieldBetweenUsernameAndPassword},
         // There's an ignorable field between username and password fields. It's
         // doesn't matter if it's empty.
@@ -147,8 +135,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
                              /*has_captcha=*/false),
              /*username_field_index=*/0,
              /*password_field_index=*/2,
-             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
-             SubmissionReadinessState::kNoInformation),
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId()),
          SubmissionReadinessState::kTwoFields},
         // There's a focusable field after password field.
         {PasswordFillingParams(
@@ -158,8 +145,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
                              /*has_captcha=*/false),
              /*username_field_index=*/0,
              /*password_field_index=*/1,
-             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
-             SubmissionReadinessState::kNoInformation),
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId()),
          SubmissionReadinessState::kFieldAfterPasswordField},
         // There are unfocusable fields other than username and password fields.
         {PasswordFillingParams(
@@ -170,8 +156,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
                              /*has_captcha=*/false),
              /*username_field_index=*/0,
              /*password_field_index=*/2,
-             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
-             SubmissionReadinessState::kNoInformation),
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId()),
          SubmissionReadinessState::kTwoFields},
         // There is a checkbox field after the password field.
         {PasswordFillingParams(
@@ -181,8 +166,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
                              /*has_captcha=*/false),
              /*username_field_index=*/0,
              /*password_field_index=*/1,
-             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
-             SubmissionReadinessState::kNoInformation),
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId()),
          SubmissionReadinessState::kTwoFields},
         // There is a CAPTCHA within the form
         {PasswordFillingParams(
@@ -191,8 +175,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
                              /*has_captcha=*/true),
              /*username_field_index=*/0,
              /*password_field_index=*/1,
-             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
-             SubmissionReadinessState::kNoInformation),
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId()),
          SubmissionReadinessState::kLikelyHasCaptcha},
 };
 
@@ -220,8 +203,7 @@ TEST_F(PasswordCredentialFillerBaseTest, FillingFailed) {
                           /*has_captcha=*/false),
           /*username_field_index=*/0,
           /*password_field_index=*/1,
-          /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
-          SubmissionReadinessState::kNoInformation));
+          /*focused_field_renderer_id_=*/autofill::FieldRendererId()));
 
   ASSERT_EQ(filler.GetSubmissionReadinessState(),
             autofill::mojom::SubmissionReadinessState::kTwoFields);
@@ -238,8 +220,7 @@ TEST_F(PasswordCredentialFillerBaseTest, FillingFailed) {
 TEST_F(PasswordCredentialFillerBaseTest, FillWithNullDriver) {
   PasswordCredentialFillerImpl filler(
       nullptr,
-      PasswordFillingParams(FormData(), 0, 0, autofill::FieldRendererId(),
-                            SubmissionReadinessState::kNoInformation));
+      PasswordFillingParams(FormData(), 0, 0, autofill::FieldRendererId()));
   // Should not crash.
   filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
 }
@@ -255,8 +236,6 @@ class PasswordCredentialFillerV2ParameterTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      password_manager::features::kPasswordSuggestionBottomSheetV2};
 };
 
 TEST_P(PasswordCredentialFillerV2ParameterTest, FillWithUsername) {
@@ -316,13 +295,6 @@ TEST_P(PasswordCredentialFillerV2ParameterTest,
   EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
 
   filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
-}
-
-TEST_P(PasswordCredentialFillerV2ParameterTest, Dismiss) {
-  PasswordCredentialFillerImpl filler = PrepareFiller();
-  EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
-
-  filler.Dismiss(ToShowVirtualKeyboard(false));
 }
 
 TEST_P(PasswordCredentialFillerV2ParameterTest, SubmissionReadiness) {

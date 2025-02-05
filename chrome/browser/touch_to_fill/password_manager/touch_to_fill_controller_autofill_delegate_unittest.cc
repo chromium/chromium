@@ -53,8 +53,6 @@
 
 namespace {
 
-using ToShowVirtualKeyboard =
-    password_manager::PasswordManagerDriver::ToShowVirtualKeyboard;
 using autofill::mojom::SubmissionReadinessState;
 using base::test::RunOnceCallback;
 using device_reauth::MockDeviceAuthenticator;
@@ -708,7 +706,6 @@ TEST_F(TouchToFillControllerAutofillTest, Dismiss) {
        /*cred_man_delegate=*/nullptr);
 
   EXPECT_CALL(client(), MarkSharedCredentialsAsNotified(GURL(kExampleCom)));
-  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(true)));
   touch_to_fill_controller().OnDismiss();
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
@@ -740,7 +737,6 @@ TEST_F(TouchToFillControllerAutofillTest, ManagePasswordsSelected) {
        /*cred_man_delegate=*/nullptr);
 
   EXPECT_CALL(client(), MarkSharedCredentialsAsNotified(GURL(kExampleCom)));
-  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_CALL(client(),
               NavigateToManagePasswordsPage(
                   password_manager::ManagePasswordsReferrer::kTouchToFill));
@@ -808,7 +804,6 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
 
   EXPECT_CALL(webauthn_credentials_delegate(),
               SelectPasskey(base::Base64Encode(credential.credential_id()), _));
-  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword(_, _, _)).Times(0);
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(
@@ -903,9 +898,6 @@ TEST_F(TouchToFillControllerAutofillTest, NoCredManEntryIfNoPasskeys) {
 
 TEST_F(TouchToFillControllerAutofillTest,
        ShouldNotShowTouchToFillForNewPasswordField) {
-  base::test::ScopedFeatureList enabledFeatures(
-      password_manager::features::kPasswordSuggestionBottomSheetV2);
-
   const UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
   MockWebAuthnCredManDelegate cred_man_delegate;
@@ -1017,7 +1009,6 @@ TEST_P(TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest,
            TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
        /*cred_man_delegate=*/nullptr);
 
-  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(true)));
   touch_to_fill_controller().OnDismiss();
 
   uma_recorder.ExpectUniqueSample(

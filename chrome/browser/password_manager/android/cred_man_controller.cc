@@ -14,7 +14,6 @@
 
 namespace password_manager {
 
-using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
 using webauthn::WebAuthnCredManDelegate;
 
 CredManController::CredManController(
@@ -45,7 +44,6 @@ bool CredManController::Show(
           WebAuthnCredManDelegate::CredManEnabledMode::kAllCredMan ||
       cred_man_delegate->HasPasskeys() !=
           WebAuthnCredManDelegate::State::kHasPasskeys) {
-    filler->Dismiss(ToShowVirtualKeyboard(false));
     return false;
   }
   visibility_controller_->SetVisible(std::move(frame_driver));
@@ -62,11 +60,6 @@ bool CredManController::Show(
 void CredManController::Dismiss(bool success) {
   if (visibility_controller_) {
     visibility_controller_->SetShown();
-  }
-  if (filler_) {
-    // If |success|, we do not need to show the keyboard. Request to show the
-    // keyboard for user convenience.
-    filler_->Dismiss(ToShowVirtualKeyboard(!success));
   }
 }
 

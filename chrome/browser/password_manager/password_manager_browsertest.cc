@@ -4307,12 +4307,6 @@ class MockPrerenderPasswordManagerDriver
               ShowPasswordSuggestions,
               (const autofill::PasswordSuggestionRequest&),
               (override));
-#if BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(void,
-              ShowKeyboardReplacingSurface,
-              (autofill::mojom::SubmissionReadinessState, bool),
-              (override));
-#endif
   MOCK_METHOD(void,
               CheckSafeBrowsingReputation,
               (const GURL& form_action, const GURL& frame_url),
@@ -4382,14 +4376,6 @@ class MockPrerenderPasswordManagerDriver
               copy.password_field_index = 0;
               impl_->ShowPasswordSuggestions(copy);
             });
-#if BUILDFLAG(IS_ANDROID)
-    ON_CALL(*this, ShowKeyboardReplacingSurface)
-        .WillByDefault([this](autofill::mojom::SubmissionReadinessState
-                                  submission_readiness) {
-          impl_->ShowKeyboardReplacingSurface(submission_readiness,
-                                              /*is_webauthn=*/false);
-        });
-#endif
     ON_CALL(*this, CheckSafeBrowsingReputation)
         .WillByDefault([this](const GURL& form_action, const GURL& frame_url) {
           impl_->CheckSafeBrowsingReputation(form_action, frame_url);

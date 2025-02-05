@@ -167,14 +167,6 @@ interface PasswordAutofillAgent {
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);
 
-  // Informs that the Keyboard Replacing Surface has been closed.
-  // Indicates whether the virtual keyboard should be shown instead.
-  // TODO(crbug.com/40274966): Remove this API once
-  // PasswordSuggestionBottomSheetV2
-  // is launched.
-  [EnableIf=is_android]
-  KeyboardReplacingSurfaceClosed(bool show_virtual_keyboard);
-
   // Triggers a form submission on the last interacted element.
   [EnableIf=is_android]
   TriggerFormSubmission();

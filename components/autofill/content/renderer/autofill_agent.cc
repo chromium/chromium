@@ -1840,17 +1840,6 @@ void AutofillAgent::BatchSelectOptionChange(FieldRendererId element_id) {
   }
 }
 
-bool AutofillAgent::ShouldSuppressKeyboard(
-    const WebFormControlElement& element) {
-  // Note: Consider supporting other autofill types in the future as well.
-#if BUILDFLAG(IS_ANDROID)
-  if (password_autofill_agent_->ShouldSuppressKeyboard()) {
-    return true;
-  }
-#endif
-  return false;
-}
-
 void AutofillAgent::FormElementReset(const WebFormElement& form) {
   DCHECK(form_util::MaybeWasOwnedByFrame(form, unsafe_render_frame()));
   password_autofill_agent_->InformAboutFormClearing(form);
@@ -1888,13 +1877,6 @@ void AutofillAgent::HandleFocusChangeComplete(
       form_util::IsTextAreaElementOrTextInput(focused_control)) {
     if (focused_node_was_last_clicked) {
       was_last_action_fill_ = false;
-#if BUILDFLAG(IS_ANDROID)
-      if (!base::FeatureList::IsEnabled(
-              password_manager::features::kPasswordSuggestionBottomSheetV2)) {
-        password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-            focused_control);
-      }
-#endif
       ShowSuggestions(
           focused_control,
           AutofillSuggestionTriggerSource::kFormControlElementClicked,

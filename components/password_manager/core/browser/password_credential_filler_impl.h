@@ -25,21 +25,15 @@ class PasswordCredentialFillerImpl final : public PasswordCredentialFiller {
       delete;
   ~PasswordCredentialFillerImpl() override;
 
+  // PasswordCredentialFiller:
   void FillUsernameAndPassword(
       const std::u16string& username,
       const std::u16string& password,
       base::OnceCallback<void(bool)> success_callback) override;
-
   void UpdateTriggerSubmission(bool new_value) override;
-
   bool ShouldTriggerSubmission() const override;
-
   SubmissionReadinessState GetSubmissionReadinessState() const override;
-
   GURL GetFrameUrl() const override;
-
-  void Dismiss(ToShowVirtualKeyboard should_show) override;
-
   base::WeakPtr<PasswordCredentialFiller> AsWeakPtr() override;
 
  private:

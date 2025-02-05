@@ -555,9 +555,7 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
     const password_manager::PasswordFillingParams& password_filling_params,
     bool is_webauthn_form,
     base::OnceCallback<void(bool)> shown_cb) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordSuggestionBottomSheetV2) &&
-      keyboard_replacing_surface_visibility_controller_ &&
+  if (keyboard_replacing_surface_visibility_controller_ &&
       !keyboard_replacing_surface_visibility_controller_->CanBeShown()) {
     std::move(shown_cb).Run(
         keyboard_replacing_surface_visibility_controller_->IsVisible());

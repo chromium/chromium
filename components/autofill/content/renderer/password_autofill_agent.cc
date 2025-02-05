@@ -512,75 +512,6 @@ bool IsWebAuthnForm(base::optional_ref<const FormData> form_data) {
   return form_data &&
          std::ranges::any_of(form_data->fields(), has_webauthn_attribute);
 }
-
-// Returns a prediction whether the form that contains `username_element` and
-// `password_element` will be ready for submission after filling these two
-// elements.
-// TODO(crbug.com/40248146): Consider to reduce `SubmissionReadinessState` to a
-// boolean value (ready or not). The non-binary state is not needed for
-// auto-submission (crbug.com/1283004), but showing TTF proactively
-// (crbug.com/1393043) may need to check whether or not a given form comprises
-// only two fields.
-mojom::SubmissionReadinessState CalculateSubmissionReadiness(
-    const FormData& form_data,
-    const WebInputElement& username_element,
-    WebInputElement password_element) {
-  if (!password_element) {
-    return mojom::SubmissionReadinessState::kNoPasswordField;
-  }
-
-  if (!username_element) {
-    return mojom::SubmissionReadinessState::kNoUsernameField;
-  }
-
-  size_t username_index = GetIndexOfElement(form_data, username_element);
-  size_t password_index = GetIndexOfElement(form_data, password_element);
-  size_t number_of_elements = form_data.fields().size();
-  if (username_index == number_of_elements ||
-      password_index == number_of_elements) {
-    // This is unexpected. `form_data` is supposed to contain username and
-    // password elements.
-    return mojom::SubmissionReadinessState::kError;
-  }
-
-  auto ShouldIgnoreField = [](const FormFieldData& field) {
-    if (!field.IsFocusable())
-      return true;
-    // Don't treat a checkbox (e.g. "remember me") as an input field that may
-    // block a form submission. Note: Don't use `check_status !=
-    // kNotCheckable`, a radio button is considered a "checkable" element too,
-    // but it should block a submission.
-    return field.form_control_type() == mojom::FormControlType::kInputCheckbox;
-  };
-
-  for (size_t i = username_index + 1; i < password_index; ++i) {
-    if (ShouldIgnoreField(form_data.fields()[i])) {
-      continue;
-    }
-    return mojom::SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
-  }
-
-  if (!password_element.IsLastInputElementInForm())
-    return mojom::SubmissionReadinessState::kFieldAfterPasswordField;
-
-  size_t number_of_visible_elements = 0;
-  for (size_t i = 0; i < number_of_elements; ++i) {
-    if (ShouldIgnoreField(form_data.fields()[i])) {
-      continue;
-    }
-
-    if (username_index != i && password_index != i &&
-        form_data.fields()[i].value().empty()) {
-      return mojom::SubmissionReadinessState::kEmptyFields;
-    }
-    number_of_visible_elements++;
-  }
-
-  if (number_of_visible_elements > 2)
-    return mojom::SubmissionReadinessState::kMoreThanTwoFields;
-
-  return mojom::SubmissionReadinessState::kTwoFields;
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 FieldPropertiesFlags GetFieldFlags(AutofillSuggestionTriggerSource source) {
@@ -664,14 +595,6 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
       const PasswordSuggestionRequest& request) override {
     DeferMsg(&mojom::PasswordManagerDriver::ShowPasswordSuggestions, request);
   }
-#if BUILDFLAG(IS_ANDROID)
-  void ShowKeyboardReplacingSurface(
-      mojom::SubmissionReadinessState submission_readiness,
-      bool is_webauthn_form) override {
-    DeferMsg(&mojom::PasswordManagerDriver::ShowKeyboardReplacingSurface,
-             submission_readiness, is_webauthn_form);
-  }
-#endif
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override {
     DeferMsg(&mojom::PasswordManagerDriver::CheckSafeBrowsingReputation,
@@ -1320,58 +1243,6 @@ void PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation(
 #endif
 }
 
-#if BUILDFLAG(IS_ANDROID)
-bool PasswordAutofillAgent::ShouldSuppressKeyboard() {
-  // The keyboard should be suppressed if a keyboard replacing surface is
-  // displayed (e.g. TouchToFill).
-  return keyboard_replacing_surface_state_ ==
-         KeyboardReplacingSurfaceState::kIsShowing;
-}
-
-bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
-    const WebFormControlElement& control_element) {
-  if (keyboard_replacing_surface_state_ !=
-      KeyboardReplacingSurfaceState::kShouldShow) {
-    return false;
-  }
-
-  const WebInputElement input_element =
-      control_element.DynamicTo<WebInputElement>();
-  WebInputElement username_element;
-  WebInputElement password_element;
-  PasswordInfo* password_info = nullptr;
-  if (!input_element || !IsElementEditable(input_element) ||
-      !FindPasswordInfoForElement(input_element, UseFallbackData(false),
-                                  &username_element, &password_element,
-                                  &password_info)) {
-    return false;
-  }
-
-  bool has_amendable_username_element = IsUsernameAmendable(
-      username_element,
-      input_element.FormControlTypeForAutofill() == kInputPassword);
-  bool has_editable_password_element =
-      password_element && IsElementEditable(password_element);
-  CHECK(has_amendable_username_element || has_editable_password_element);
-
-  WebFormElement form = password_element
-                            ? password_element.GetOwningFormForAutofill()
-                            : username_element.GetOwningFormForAutofill();
-  std::optional<FormData> form_data =
-      form ? GetFormDataFromWebForm(form, /*form_cache=*/{})
-           : GetFormDataFromUnownedInputElements(/*form_cache=*/{});
-
-  GetPasswordManagerDriver().ShowKeyboardReplacingSurface(
-      form_data ? CalculateSubmissionReadiness(*form_data, username_element,
-                                               password_element)
-                : mojom::SubmissionReadinessState::kNoInformation,
-      IsWebAuthnForm(form_data));
-
-  keyboard_replacing_surface_state_ = KeyboardReplacingSurfaceState::kIsShowing;
-  return true;
-}
-#endif
-
 bool PasswordAutofillAgent::ShowSuggestions(
     const WebInputElement& element,
     AutofillSuggestionTriggerSource trigger_source,
@@ -1730,29 +1601,6 @@ void PasswordAutofillAgent::InformNoSavedCredentials() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
-    bool show_virtual_keyboard) {
-  keyboard_replacing_surface_state_ = KeyboardReplacingSurfaceState::kWasShown;
-
-  auto focused_input = last_queried_element().DynamicTo<WebInputElement>();
-  if (!focused_input || focused_input.IsReadOnly()) {
-    return;
-  }
-
-  if (show_virtual_keyboard) {
-    render_frame()->ShowVirtualKeyboard();
-
-    // Since a keyboard replacing surface suppresses the Autofill popup,
-    // re-trigger the suggestions in case the virtual keyboard should be shown.
-    // This is limited to the keyboard accessory, as otherwise it would result
-    // in a flickering of the popup, due to showing the keyboard at the same
-    // time.
-    ShowSuggestions(focused_input,
-                    AutofillSuggestionTriggerSource::kFormControlElementClicked,
-                    /*form_cache=*/{});
-  }
-}
-
 void PasswordAutofillAgent::TriggerFormSubmission() {
   // Find the last interacted element to simulate an enter keystroke at.
   WebFormControlElement form_control =
@@ -1875,17 +1723,6 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
     return false;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // Don't call `ShowSuggestionPopup` if a keyboard replacing surface is
-  // currently showing. Since a keyboard replacing surface in spirit is very
-  // similar to a suggestion pop-up, return true so that the AutofillAgent does
-  // not try to show other autofill suggestions instead.
-  if (keyboard_replacing_surface_state_ ==
-      KeyboardReplacingSurfaceState::kIsShowing) {
-    return true;
-  }
-#endif
-
   if (!HasDocumentWithValidFrame(element)) {
     return false;
   }
@@ -2005,10 +1842,6 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   all_autofilled_elements_.clear();
   field_renderer_id_to_submit_ = FieldRendererId();
   suggestion_banned_fields_.clear();
-#if BUILDFLAG(IS_ANDROID)
-  keyboard_replacing_surface_state_ =
-      KeyboardReplacingSurfaceState::kShouldShow;
-#endif
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   page_passwords_analyser_.Reset();
 #endif

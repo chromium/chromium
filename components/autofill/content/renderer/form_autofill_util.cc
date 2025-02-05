@@ -2178,11 +2178,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   // `likely_contains_captcha` is only needed for Android for the autosubmission
   // after filling credentials from TTF bottom sheet.
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordSuggestionBottomSheetV2)) {
-    form.set_likely_contains_captcha(
-        std::ranges::any_of(iframe_elements, IsLikelyCaptchaIframe));
-  }
+  form.set_likely_contains_captcha(
+      std::ranges::any_of(iframe_elements, IsLikelyCaptchaIframe));
 #endif
   return form;
 }

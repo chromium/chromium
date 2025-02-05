@@ -27,7 +27,6 @@ BASE_DECLARE_FEATURE(kNoPasswordSuggestionFiltering);
 BASE_DECLARE_FEATURE(kShowSuggestionsOnAutofocus);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kPasswordSuggestionBottomSheetV2);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
 #endif
 

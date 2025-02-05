@@ -37,7 +37,6 @@ class MockPasswordCredentialFiller final : public PasswordCredentialFiller {
               (),
               (const override));
   MOCK_METHOD(GURL, GetFrameUrl, (), (const override));
-  MOCK_METHOD(void, Dismiss, (ToShowVirtualKeyboard), (override));
 
   base::WeakPtr<PasswordCredentialFiller> AsWeakPtr() override;
 

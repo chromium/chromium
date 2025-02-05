@@ -4937,12 +4937,6 @@ const char kXsurfaceMetricsReportingName[] = "Xsurface Metrics Reporting";
 const char kXsurfaceMetricsReportingDescription[] =
     "Allows metrics reporting state to be passed to Xsurface";
 
-const char kPasswordSuggestionBottomSheetV2Name[] =
-    "Refactored password suggestions bottom sheet";
-const char kPasswordSuggestionBottomSheetV2Description[] =
-    "Enables the refactored version of the password suggestions bottom sheet. "
-    "All the user facing functionality should stay the same.";
-
 #if BUILDFLAG(ENABLE_VR) && BUILDFLAG(ENABLE_OPENXR)
 const char kOpenXRExtendedFeaturesName[] =
     "WebXR OpenXR Runtime Extended Features";
