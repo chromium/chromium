@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// DO NOT MODIFY: This file is automatically synced and modifications will be
+// overwritten. Edit in Google3 instead.
+
 syntax = "proto3";
 
 package chrome.cros.reporting.proto;
