@@ -1141,6 +1141,12 @@ _CONFIG = [
         ]
     },
     {
+        'paths': ['third_party/blink/renderer/core/frame/dom_window.cc'],
+        'allowed': [
+            'base::MakeFixedFlatMap',
+        ],
+    },
+    {
         'paths': [
             'third_party/blink/renderer/core/frame/visual_viewport.cc',
             'third_party/blink/renderer/core/frame/visual_viewport.h'

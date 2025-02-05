@@ -55,10 +55,7 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
   if (child) {
     window->ReportCoopAccess("named");
     window->RecordWindowProxyAccessMetrics(
-        WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
-        WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter,
-        mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter,
-        WebFeature::kWindowProxyNamedGetter);
+        mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter);
     UseCounter::Count(CurrentExecutionContext(isolate),
                       WebFeature::kNamedAccessOnWindow_ChildBrowsingContext);
 
@@ -100,8 +97,6 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
   }
   window->ReportCoopAccess("named");
   window->RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter,
       mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter);
 
   // If we've reached this point, we know that we're accessing an element (or
