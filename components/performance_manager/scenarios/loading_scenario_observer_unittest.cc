@@ -9,11 +9,12 @@
 #include <utility>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "components/performance_manager/embedder/scoped_global_scenario_memory.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/scenarios/performance_scenarios.h"
+#include "components/performance_manager/scenarios/browser_performance_scenarios.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gtest/include/gtest/gtest.h"

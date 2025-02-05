@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/public/scenarios/performance_scenarios.h"
+#include "components/performance_manager/scenarios/browser_performance_scenarios.h"
 
 #include <atomic>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -16,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -208,19 +210,11 @@ void SetGlobalScenarioValue(Scenario scenario) {
 
 }  // namespace
 
-ScopedGlobalScenarioMemory::ScopedGlobalScenarioMemory() {
-  CHECK(!GlobalSharedStatePtr());
-  auto state_ptr = RefCountedScenarioState::Create();
-  if (state_ptr) {
-    state_ptr->EnsureTracingTracks();
-    GlobalSharedStatePtr() = std::move(state_ptr);
-    read_only_mapping_.emplace(ScenarioScope::kGlobal,
-                               GetGlobalSharedScenarioRegion());
-  }
-}
-
-ScopedGlobalScenarioMemory::~ScopedGlobalScenarioMemory() {
-  GlobalSharedStatePtr().reset();
+void SetGlobalSharedScenarioState(
+    base::PassKey<ScopedGlobalScenarioMemory>,
+    scoped_refptr<RefCountedScenarioState> state) {
+  CHECK_NE(state == nullptr, GlobalSharedStatePtr() == nullptr);
+  GlobalSharedStatePtr() = std::move(state);
 }
 
 base::ReadOnlySharedMemoryRegion GetSharedScenarioRegionForProcessNode(

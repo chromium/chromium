@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/public/scenarios/performance_scenarios.h"
+#include "components/performance_manager/scenarios/browser_performance_scenarios.h"
 
 #include <atomic>
 #include <utility>
@@ -10,6 +10,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "components/performance_manager/embedder/scoped_global_scenario_memory.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -56,10 +57,8 @@ class MockPerformanceScenarioObserver
 using StrictMockPerformanceScenarioObserver =
     ::testing::StrictMock<MockPerformanceScenarioObserver>;
 
-class PerformanceScenariosTest : public PerformanceManagerTestHarness {
+class BrowserPerformanceScenariosTest : public PerformanceManagerTestHarness {
  public:
-  PerformanceScenariosTest() = default;
-
   void SetUp() override {
     PerformanceManagerTestHarness::SetUp();
 
@@ -85,7 +84,7 @@ class PerformanceScenariosTest : public PerformanceManagerTestHarness {
   }
 };
 
-TEST_F(PerformanceScenariosTest, SetWithoutSharedMemory) {
+TEST_F(BrowserPerformanceScenariosTest, SetWithoutSharedMemory) {
   // Can't set up the blink scenario observer without mapped memory.
   EXPECT_FALSE(
       PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
@@ -99,7 +98,7 @@ TEST_F(PerformanceScenariosTest, SetWithoutSharedMemory) {
             LoadingScenario::kNoPageLoading);
 }
 
-TEST_F(PerformanceScenariosTest, SetWithSharedMemory) {
+TEST_F(BrowserPerformanceScenariosTest, SetWithSharedMemory) {
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(process());
   StrictMockPerformanceScenarioObserver mock_observer;

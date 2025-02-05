@@ -15,7 +15,7 @@
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/scenarios/performance_scenarios.h"
+#include "components/performance_manager/scenarios/browser_performance_scenarios.h"
 #include "components/performance_manager/scenarios/loading_scenario_data.h"
 #include "third_party/blink/public/common/performance/performance_scenarios.h"
 
