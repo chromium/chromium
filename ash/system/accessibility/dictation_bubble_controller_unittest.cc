@@ -238,7 +238,7 @@ TEST_F(DictationBubbleControllerTest, DictationHintViewClassHasTheRightName) {
   Show(DictationBubbleIconType::kStandby, std::optional<std::u16string>(),
        std::optional<std::vector<DictationBubbleHintType>>());
   EXPECT_TRUE(GetView());
-  EXPECT_STREQ(GetHintView()->GetClassName(), "DictationHintView");
+  EXPECT_EQ(GetHintView()->GetClassName(), "DictationHintView");
 
   HideAndCheckExpectations();
 }

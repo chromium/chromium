@@ -75,8 +75,7 @@ TEST_F(TaskManagerSearchBarViewTest, SetsFocusOnTextfield) {
 
   views::View* focused_field = widget().GetFocusManager()->GetFocusedView();
   ASSERT_NE(focused_field, nullptr);
-  EXPECT_EQ(focused_field->GetClassMetaData()->type_name(),
-            std::string("Textfield"));
+  EXPECT_EQ(focused_field->GetClassName(), "Textfield");
 }
 
 TEST_F(TaskManagerSearchBarViewTest, KeyPressedFromTextfield) {

@@ -630,7 +630,7 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
   if (GetFrameButtonStyle() == FrameButtonStyle::kMdButton) {
     for (views::Button* button :
          {minimize_button_, maximize_button_, restore_button_, close_button_}) {
-      DCHECK_EQ(std::string(views::FrameCaptionButton::kViewClassName),
+      DCHECK_EQ(views::FrameCaptionButton::kViewClassName,
                 button->GetClassName());
       views::FrameCaptionButton* frame_caption_button =
           static_cast<views::FrameCaptionButton*>(button);

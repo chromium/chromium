@@ -1731,8 +1731,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
       ash::GetSavedDeskDialogAcceptButton();
   ASSERT_TRUE(dialog_accept_button);
   // MaterialNext uses PillButton instead of dialog buttons.
-  if (std::string_view(dialog_accept_button->GetClassName()) ==
-      std::string_view(ash::PillButton::kViewClassName)) {
+  if (dialog_accept_button->GetClassName() == ash::PillButton::kViewClassName) {
     ClickView(dialog_accept_button);
   } else {
     // Use a key press to accept the dialog instead of a click as

@@ -267,7 +267,7 @@ class FindBarViewsUiTest : public InteractiveBrowserTest {
                         focused->GetProperty(views::kElementIdentifierKey)) {
                   return id.GetName();
                 }
-                return focused->GetClassName();
+                return std::string(focused->GetClassName());
               }
               return "(none)";
             }),

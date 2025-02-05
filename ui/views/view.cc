@@ -1087,7 +1087,7 @@ View* View::GetSelectedViewForGroup(int group) {
 }
 
 std::string View::GetObjectName() const {
-  return GetClassName();
+  return std::string(GetClassName());
 }
 
 // Coordinate conversion -------------------------------------------------------
@@ -3403,7 +3403,7 @@ void View::CreateLayer(ui::LayerType layer_type) {
 
   SetLayer(std::make_unique<ui::Layer>(layer_type));
   layer()->set_delegate(this);
-  layer()->SetName(GetClassName());
+  layer()->SetName(std::string(GetClassName()));
 
   UpdateParentLayers();
   UpdateLayerVisibility();
@@ -3521,7 +3521,7 @@ void View::LayoutImmediately() {
   TRACE_EVENT("ui", "View::LayoutImmediately", [&](perfetto::EventContext ctx) {
     auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
     auto* data = event->set_view_class_name();
-    data->set_name(GetClassName());
+    data->set_name(std::string(GetClassName()));
   });
   invalidates_during_layout_ = 0;
   ++layouts_since_last_paint_;
@@ -3845,7 +3845,7 @@ void BaseActionViewInterface::ActionItemChangedImpl(
 BEGIN_METADATA_BASE(View)
 ADD_PROPERTY_METADATA(std::unique_ptr<Background>, Background)
 ADD_PROPERTY_METADATA(std::unique_ptr<Border>, Border)
-ADD_READONLY_PROPERTY_METADATA(const char*, ClassName)
+ADD_READONLY_PROPERTY_METADATA(std::string_view, ClassName)
 ADD_PROPERTY_METADATA(bool, Enabled)
 ADD_PROPERTY_METADATA(View::FocusBehavior, FocusBehavior)
 ADD_PROPERTY_METADATA(bool, FlipCanvasOnPaintForRTLUI)

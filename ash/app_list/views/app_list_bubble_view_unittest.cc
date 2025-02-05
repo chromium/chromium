@@ -185,7 +185,7 @@ class AppListBubbleViewTest : public AshTestBase {
         ->IsBubbleShown();
   }
 
-  const char* GetFocusedViewName() {
+  std::string_view GetFocusedViewName() {
     auto* view = GetFocusedView();
     return view ? view->GetClassName() : "none";
   }

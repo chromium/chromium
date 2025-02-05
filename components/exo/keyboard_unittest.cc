@@ -928,15 +928,15 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
   EXPECT_EQ(keyboard.focused_surface_for_testing(), surface.get());
 
   constexpr char kFocusedViewClassName[] = "OverlayNativeViewHost";
-  EXPECT_STREQ(kFocusedViewClassName,
-               widget1->GetFocusManager()->GetFocusedView()->GetClassName());
+  EXPECT_EQ(kFocusedViewClassName,
+            widget1->GetFocusManager()->GetFocusedView()->GetClassName());
 
   // Tabbing should not move the focus away from the overlay.
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
   generator.PressKey(ui::VKEY_TAB, 0);
 
-  EXPECT_STREQ(kFocusedViewClassName,
-               widget1->GetFocusManager()->GetFocusedView()->GetClassName());
+  EXPECT_EQ(kFocusedViewClassName,
+            widget1->GetFocusManager()->GetFocusedView()->GetClassName());
   EXPECT_EQ(keyboard.focused_surface_for_testing(), surface.get());
 
   hold.RunAndReset();

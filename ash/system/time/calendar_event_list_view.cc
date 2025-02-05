@@ -195,12 +195,10 @@ void CalendarEventListView::Layout(PassKey) {
   // to the current or next event. Otherwise `scroll_view_` won't scroll with
   // the focus change.
   if (GetFocusManager() && GetFocusManager()->GetFocusedView()) {
-    const auto focused_view_class_name =
-        std::string_view(GetFocusManager()->GetFocusedView()->GetClassName());
-    if (focused_view_class_name ==
-            std::string_view(CalendarEventListItemView::kViewClassName) ||
-        focused_view_class_name ==
-            std::string_view(PillButton::kViewClassName)) {
+    if (const auto focused_view_class_name =
+            GetFocusManager()->GetFocusedView()->GetClassName();
+        focused_view_class_name == CalendarEventListItemView::kViewClassName ||
+        focused_view_class_name == PillButton::kViewClassName) {
       return;
     }
   }

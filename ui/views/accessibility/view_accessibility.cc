@@ -5,6 +5,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -848,7 +849,7 @@ void ViewAccessibility::OnViewAddedToWidget() {
   // this would be done in the ctor, but due to inheritance and the
   // implementation of `GetClassName`, it would not work. As such, we set it
   // here, since at this point the view object is fully initialized.
-  SetClassName(view_->GetClassName());
+  SetClassName(std::string(view_->GetClassName()));
 }
 
 void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {

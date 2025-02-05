@@ -56,8 +56,7 @@ void NativeFocusWatcher::UpdateFocusedView() {
   gfx::Rect view_bounds = view->GetContentsBounds();
 
   // Workarounds that attempts to pick a better bounds.
-  if (std::string_view(view->GetClassName()) ==
-      std::string_view(views::LabelButton::kViewClassName)) {
+  if (view->GetClassName() == views::LabelButton::kViewClassName) {
     view_bounds = view->GetLocalBounds();
     view_bounds.Inset(2);
   }

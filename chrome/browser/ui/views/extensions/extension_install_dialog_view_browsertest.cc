@@ -762,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogWithWithholdPermissionsUI,
 
   const views::View* const extra_view = delegate_view->GetExtraView();
   EXPECT_TRUE(extra_view);
-  EXPECT_EQ("Checkbox", std::string(extra_view->GetClassName()));
+  EXPECT_EQ("Checkbox", extra_view->GetClassName());
 
   CloseAndWait(delegate_view->GetWidget());
 }

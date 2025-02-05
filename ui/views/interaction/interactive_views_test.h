@@ -549,7 +549,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::NameViewRelative(
           if (!IsViewClass<V>(view)) {
             LOG(ERROR) << "NameView(): Target View is of type "
                        << view->GetClassName() << " but expected "
-                       << V::MetaData()->type_name();
+                       << V::kViewClassName;
             seq->FailForTesting();
             return;
           }
@@ -690,7 +690,7 @@ InteractiveViewsTestApi::NameChildViewByType(ElementSpecifier parent,
                                      base::OwnedRef(index)))
                        .SetDescription(base::StringPrintf(
                            "NameChildViewByType<%s>( \"%s\" %zu )",
-                           V::MetaData()->type_name(), name.data(), index)));
+                           V::kViewClassName, name.data(), index)));
 }
 
 // static
@@ -714,7 +714,7 @@ InteractiveViewsTestApi::NameDescendantViewByType(ElementSpecifier ancestor,
                                           base::OwnedRef(index)))
                        .SetDescription(base::StringPrintf(
                            "NameDescendantViewByType<%s>( \"%s\" %zu )",
-                           V::MetaData()->type_name(), name.data(), index)));
+                           V::kViewClassName, name.data(), index)));
 }
 
 // static

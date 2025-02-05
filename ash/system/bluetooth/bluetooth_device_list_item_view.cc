@@ -284,9 +284,8 @@ void BluetoothDeviceListItemView::UpdateMultipleBatteryView(
   // Remove battery view if it is not a multiple battery view.
   if (!sub_row()->children().empty()) {
     DCHECK(sub_row()->children().size() == 1);
-    if (std::string_view(sub_row()->children().at(0)->GetClassName()) !=
-        std::string_view(
-            BluetoothDeviceListItemMultipleBatteryView::kViewClassName)) {
+    if (sub_row()->children().at(0)->GetClassName() !=
+        BluetoothDeviceListItemMultipleBatteryView::kViewClassName) {
       sub_row()->RemoveAllChildViews();
     }
   }
@@ -312,8 +311,8 @@ void BluetoothDeviceListItemView::UpdateSingleBatteryView(
   // Remove battery view if it is not a single battery view.
   if (!sub_row()->children().empty()) {
     DCHECK(sub_row()->children().size() == 1);
-    if (std::string_view(sub_row()->children().at(0)->GetClassName()) !=
-        std::string_view(BluetoothDeviceListItemBatteryView::kViewClassName)) {
+    if (sub_row()->children().at(0)->GetClassName() !=
+        BluetoothDeviceListItemBatteryView::kViewClassName) {
       sub_row()->RemoveAllChildViews();
     }
   }

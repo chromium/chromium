@@ -144,7 +144,8 @@ void ViewElement::SetBounds(const gfx::Rect& bounds) {
 
 std::vector<std::string> ViewElement::GetAttributes() const {
   // TODO(lgrey): Change name to class after updating tests.
-  return {"class", view_->GetClassName(), "name", view_->GetObjectName()};
+  return {"class", std::string(view_->GetClassName()), "name",
+          view_->GetObjectName()};
 }
 
 std::pair<gfx::NativeWindow, gfx::Rect>

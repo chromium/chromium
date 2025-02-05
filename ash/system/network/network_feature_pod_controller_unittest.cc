@@ -241,8 +241,7 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
     children = quick_settings_view()->detailed_view_container()->children();
 
     ASSERT_EQ(1u, children.size());
-    EXPECT_STREQ("NetworkDetailedNetworkViewImpl",
-                 children.at(0)->GetClassName());
+    EXPECT_EQ("NetworkDetailedNetworkViewImpl", children.at(0)->GetClassName());
   }
 
   void CheckSignalStrengthSubLabel(

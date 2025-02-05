@@ -380,8 +380,8 @@ class NetworkListViewControllerTest : public AshTestBase,
                             size_t index,
                             const std::optional<std::string>& guid) {
     ASSERT_GT(network_list(type)->children().size(), index);
-    EXPECT_STREQ(network_list(type)->children().at(index)->GetClassName(),
-                 kNetworkListNetworkItemView);
+    EXPECT_EQ(network_list(type)->children().at(index)->GetClassName(),
+              kNetworkListNetworkItemView);
 
     const NetworkStatePropertiesPtr& network =
         static_cast<NetworkListNetworkItemView*>(
@@ -395,8 +395,8 @@ class NetworkListViewControllerTest : public AshTestBase,
   }
 
   bool GetNetworkListItemIsEnabled(NetworkType type, size_t index) {
-    EXPECT_STREQ(network_list(type)->children().at(index)->GetClassName(),
-                 kNetworkListNetworkItemView);
+    EXPECT_EQ(network_list(type)->children().at(index)->GetClassName(),
+              kNetworkListNetworkItemView);
 
     NetworkListNetworkItemView* network =
         static_cast<NetworkListNetworkItemView*>(

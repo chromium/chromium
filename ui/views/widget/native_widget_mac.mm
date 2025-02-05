@@ -120,7 +120,7 @@ class NativeWidgetMac::ZoomFocusMonitor : public FocusChangeListener {
       return;
     }
     // Web content handles its own zooming.
-    if (strcmp("WebView", focused_now->GetClassName()) == 0) {
+    if (focused_now->GetClassName() == "WebView") {
       return;
     }
     NSRect rect = NSRectFromCGRect(focused_now->GetBoundsInScreen().ToCGRect());

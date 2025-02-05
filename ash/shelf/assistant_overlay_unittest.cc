@@ -103,7 +103,7 @@ class AssistantOverlayTest : public AshTestBase,
  protected:
   const views::View* GetAssistantOverlay() {
     for (const views::View* child : home_button()->children()) {
-      if (std::string(child->GetClassName()) == kAssistantOverlayClassName) {
+      if (child->GetClassName() == kAssistantOverlayClassName) {
         return child;
       }
     }

@@ -881,12 +881,10 @@ gfx::Rect LoginScreenTestApi::GetShutDownButtonMirroredBounds() {
 
 // static
 std::string LoginScreenTestApi::GetAppsButtonClassName() {
-  views::View* button = GetAppsButton();
-  if (!button) {
-    return "";
+  if (views::View* button = GetAppsButton()) {
+    return std::string(button->GetClassName());
   }
-
-  return button->GetClassName();
+  return {};
 }
 
 // static
