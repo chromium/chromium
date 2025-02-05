@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chromeos/ash/components/metrics/login_event_recorder.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
 
@@ -24,7 +25,8 @@ class WebContents;
 namespace ash {
 
 // BootTimesRecorder is used to record times of boot, login, and logout.
-class BootTimesRecorder : public content::RenderWidgetHostObserver {
+class BootTimesRecorder : public content::RenderWidgetHostObserver,
+                          public session_manager::SessionManagerObserver {
  public:
   BootTimesRecorder();
   BootTimesRecorder(const BootTimesRecorder&) = delete;
@@ -91,6 +93,10 @@ class BootTimesRecorder : public content::RenderWidgetHostObserver {
       content::RenderWidgetHost* widget_host) override;
   void RenderWidgetHostDestroyed(
       content::RenderWidgetHost* widget_host) override;
+
+  // session_manager::SessionManagerObserver:
+  void OnSessionCreationStarted(const AccountId& account_id) override;
+  void OnSessionCreated(const AccountId& account_id) override;
 
  private:
   // Adds optional URL to the marker.

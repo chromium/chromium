@@ -265,4 +265,12 @@ void BootTimesRecorder::RenderWidgetHostDestroyed(
   render_widget_host_observations_.RemoveObservation(widget_host);
 }
 
+void BootTimesRecorder::OnSessionCreationStarted(const AccountId& account_id) {
+  AddLoginTimeMarker("UserLoggedIn-Start", false);
+}
+
+void BootTimesRecorder::OnSessionCreated(const AccountId& account_id) {
+  AddLoginTimeMarker("UserLoggedIn-End", false);
+}
+
 }  // namespace ash

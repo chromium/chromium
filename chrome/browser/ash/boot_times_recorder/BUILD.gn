@@ -22,6 +22,7 @@ static_library("boot_times_recorder") {
     "//chrome/common",
     "//chromeos/ash/components/metrics",
     "//components/prefs",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//content/public/browser",
   ]

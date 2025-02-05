@@ -187,8 +187,11 @@ void SessionManager::CreateSessionInternal(const AccountId& user_account_id,
                                            bool browser_restart,
                                            bool is_child) {
   DCHECK(!HasSessionForAccountId(user_account_id));
+  observers_.Notify(&SessionManagerObserver::OnSessionCreationStarted,
+                    user_account_id);
   sessions_.push_back(std::make_unique<Session>(next_id_++, user_account_id));
   NotifyUserLoggedIn(user_account_id, user_id_hash, browser_restart, is_child);
+  observers_.Notify(&SessionManagerObserver::OnSessionCreated, user_account_id);
 }
 
 }  // namespace session_manager
