@@ -132,6 +132,10 @@ class CORE_EXPORT ElementAnimations final
 
   bool SetCompositedBackgroundColorStatus(CompositedPaintStatus status);
 
+  Animation* PaintWorkletClipPathAnimation() {
+    return clip_path_paint_worklet_candidate_;
+  }
+
   CompositedPaintStatus CompositedClipPathStatus() {
     return static_cast<CompositedPaintStatus>(composited_clip_path_status_);
   }
@@ -162,6 +166,15 @@ class CORE_EXPORT ElementAnimations final
   // CompositedPaintStatus values to ensure that it can hold the value.
   unsigned composited_background_color_status_ : 2;
   unsigned composited_clip_path_status_ : 2;
+
+  // Stores the current candidate for a composited clip-path animation. The
+  // validity of this variable depends on composited_clip_path_status_. If
+  // status is kNoAnimation or kNotComposited, the value will be nullptr. If the
+  // status is kComposited, the value will be guaranteed to be a clip-path
+  // animation that is eligible to be run on compositor. If the value is
+  // kNeedsRepaint, the value is only guaranteed to be an animation on the
+  // property, but may not necessarily be compositable.
+  WeakMember<Animation> clip_path_paint_worklet_candidate_;
 
   FRIEND_TEST_ALL_PREFIXES(StyleEngineTest, PseudoElementBaseComputedStyle);
 };

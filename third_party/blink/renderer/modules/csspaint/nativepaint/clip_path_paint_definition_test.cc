@@ -98,7 +98,7 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
       case CompositedPaintStatus::kNoAnimation:
       case CompositedPaintStatus::kNotComposited:
         // GetAnimationIfCompositable should return nothing in this circumstance
-        EXPECT_EQ(ClipPathClipper::GetCompositableClipPathAnimation(*lo),
+        EXPECT_EQ(ClipPathClipper::GetClipPathAnimation(*lo),
                   nullptr);
         // If a clip path is non-composited or non-existent, then the clip path
         // mask should not be set. If it is, it can cause a crash.
@@ -114,7 +114,7 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
       case CompositedPaintStatus::kComposited:
         // GetAnimationIfCompositable should return the given animation, if it
         // is compositable
-        EXPECT_EQ(ClipPathClipper::GetCompositableClipPathAnimation(*lo),
+        EXPECT_EQ(ClipPathClipper::GetClipPathAnimation(*lo),
                   animation);
         // Composited clip-path animations depend on ClipPathMask() being set
         EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
@@ -396,7 +396,9 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackOnNonCompositableSecondAnimation) {
 
   element->setAttribute(html_names::kClassAttr, AtomicString("animation2"));
 
-  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
       /* needs_repaint= */ true, CompositedPaintStatus::kNotComposited, element,
       animation);
 

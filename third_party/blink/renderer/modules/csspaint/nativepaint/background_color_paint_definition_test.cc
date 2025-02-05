@@ -366,7 +366,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, MultipleAnimationsFallback) {
   EXPECT_TRUE(element->GetElementAnimations());
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 2u);
   EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
-            ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
             ElementAnimations::CompositedPaintStatus::kNotComposited);

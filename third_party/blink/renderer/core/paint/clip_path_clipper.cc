@@ -249,23 +249,22 @@ gfx::RectF CalcLocalReferenceBox(
 
 }  // namespace
 
-Animation* ClipPathClipper::GetCompositableClipPathAnimation(
+Animation* ClipPathClipper::GetClipPathAnimation(
     const LayoutObject& layout_object) {
   ClipPathPaintImageGenerator* generator =
       layout_object.GetFrame()->GetClipPathPaintImageGenerator();
   CHECK(generator);
 
-  const Element* element = To<Element>(layout_object.GetNode());
+  Element* element = To<Element>(layout_object.GetNode());
   Animation* animation = generator->GetAnimationIfCompositable(element);
 
-  if (!animation) {
-    return nullptr;
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  if (animation &&
+      CompositeClipPathStatus(element) == CompositedPaintStatus::kComposited) {
+    CHECK(animation->CheckCanStartAnimationOnCompositor(nullptr) ==
+          CompositorAnimations::kNoFailure);
   }
-
-  if (animation->CheckCanStartAnimationOnCompositor(nullptr) !=
-      CompositorAnimations::kNoFailure) {
-    return nullptr;
-  }
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   return animation;
 }
@@ -287,7 +286,7 @@ bool ClipPathClipper::HasCompositeClipPathAnimation(
       CompositeClipPathStatus(layout_object.GetNode());
   switch (status) {
     case CompositedPaintStatus::kComposited:
-      DCHECK(GetCompositableClipPathAnimation(layout_object));
+      CHECK(GetClipPathAnimation(layout_object));
       return true;
     case CompositedPaintStatus::kNoAnimation:
     case CompositedPaintStatus::kNotComposited:
@@ -360,7 +359,14 @@ void ClipPathClipper::ResolveClipPathStatus(const LayoutObject& layout_object,
     return;
   }
 
-  Animation* animation = GetCompositableClipPathAnimation(layout_object);
+  Animation* animation = GetClipPathAnimation(layout_object);
+
+  if (!animation || animation->CheckCanStartAnimationOnCompositor(nullptr) !=
+                        CompositorAnimations::kNoFailure) {
+    SetCompositeClipPathStatus(layout_object.GetNode(), false);
+    return;
+  }
+
   SetCompositeClipPathStatus(layout_object.GetNode(), animation);
 }
 
@@ -624,7 +630,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
 
     // TODO(crbug.com/393260698): Use cached animation value rather than
     // re-running checks
-    Animation* animation = GetCompositableClipPathAnimation(layout_object);
+    Animation* animation = GetClipPathAnimation(layout_object);
     CHECK(animation) << "Unable to find composited clip path animation";
     animation->OnPaintWorkletImageCreated();
   } else {

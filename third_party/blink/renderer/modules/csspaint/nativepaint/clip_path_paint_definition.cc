@@ -346,8 +346,32 @@ struct DowncastTraits<ClipPathPaintWorkletInput> {
 // static
 Animation* ClipPathPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
-  return GetAnimationForProperty(element, GetCSSPropertyClipPath(),
-                                 ValidateClipPathValue);
+  if (!element->GetElementAnimations()) {
+    return nullptr;
+  }
+
+  Animation* compositable_animation =
+      element->GetElementAnimations()->PaintWorkletClipPathAnimation();
+
+  if (!compositable_animation) {
+    return nullptr;
+  }
+
+  DCHECK(compositable_animation->Affects(*element, GetCSSPropertyClipPath()));
+
+  if (element->GetElementAnimations()->CompositedClipPathStatus() ==
+      ElementAnimations::CompositedPaintStatus::kComposited) {
+    DCHECK(AnimationIsValidForPaintWorklets(compositable_animation, element,
+                                            GetCSSPropertyClipPath(),
+                                            ValidateClipPathValue));
+    return compositable_animation;
+  }
+
+  return AnimationIsValidForPaintWorklets(compositable_animation, element,
+                                          GetCSSPropertyClipPath(),
+                                          ValidateClipPathValue)
+             ? compositable_animation
+             : nullptr;
 }
 
 // static
