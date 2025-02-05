@@ -40,6 +40,19 @@ class AutofillAiManager;
 // in the settings while the client is alive.
 class AutofillAiClient {
  public:
+  // Encapsulates the result of user interaction with the save/update AutofillAi
+  // prompt.
+  struct SavePromptAcceptanceResult {
+    bool prompt_was_accepted = false;
+    bool did_user_interact = false;
+    // TODO(crbug.com/389629676): Delete feedback infrastructure.
+    bool did_thumbs_up_triggered = false;
+    bool did_thumbs_down_triggered = false;
+  };
+
+  using SavePromptAcceptanceCallback =
+      base::OnceCallback<void(SavePromptAcceptanceResult result)>;
+
   // The callback to extract the accessibility tree snapshot.
   using AXTreeCallback =
       base::OnceCallback<void(optimization_guide::proto::AXTreeUpdate)>;
@@ -113,10 +126,8 @@ class AutofillAiClient {
 
   // Shows a bubble asking whether the user wants to save Autofill AI data.
   virtual void ShowSaveAutofillAiBubble(
-      std::unique_ptr<user_annotations::FormAnnotationResponse>
-          form_annotation_response,
-      user_annotations::PromptAcceptanceCallback
-          prompt_acceptance_callback) = 0;
+      autofill::EntityInstance entity,
+      SavePromptAcceptanceCallback save_prompt_acceptance_callback) = 0;
 };
 
 }  // namespace autofill_ai

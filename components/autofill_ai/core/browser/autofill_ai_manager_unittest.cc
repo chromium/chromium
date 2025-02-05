@@ -973,115 +973,51 @@ class AutofillAiManagerImportFormTest
     : public AutofillAiManagerTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  AutofillAiManagerImportFormTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillAi, {{"should_extract_ax_tree_for_forms_annotations",
-                       should_extract_ax_tree() ? "true" : "false"}});
+  AutofillAiManagerImportFormTest() = default;
+
+  std::unique_ptr<autofill::FormStructure> CreateFormStructure(
+      const std::vector<autofill::FieldType>& field_types_predictions) {
+    autofill::test::FormDescription form_description;
+    for (autofill::FieldType field_type : field_types_predictions) {
+      form_description.fields.emplace_back(
+          autofill::test::FieldDescription({.role = field_type}));
+    }
+    auto form_structure = std::make_unique<autofill::FormStructure>(
+        autofill::test::GetFormData(form_description));
+    for (size_t i = 0; i < form_structure->field_count(); i++) {
+      autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+          FieldPrediction prediction;
+      prediction.set_type(form_description.fields[i].role);
+      form_structure->field(i)->set_server_predictions({prediction});
+    }
+    return form_structure;
   }
-
-  bool should_import_form_data() const { return std::get<0>(GetParam()); }
-  bool should_extract_ax_tree() const { return std::get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests that `import_form_callback` is run with added entries if the import was
-// successful.
-TEST_P(AutofillAiManagerImportFormTest,
-       MaybeImportFormRunsCallbackWithAddedEntriesWhenImportWasSuccessful) {
-  user_annotations_service_.AddHostToFormAnnotationsAllowlist(url().host());
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST,
-                  .label = u"First Name",
-                  .value = u"Jane"}}};
-  autofill::FormData form_data = autofill::test::GetFormData(form_description);
-  std::unique_ptr<autofill::FormStructure> eligible_form_structure =
-      std::make_unique<autofill::FormStructure>(form_data);
+TEST_F(AutofillAiManagerImportFormTest, ImportIfSubmittedFormContainsEntity) {
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {autofill::PASSPORT_NAME_TAG, autofill::PASSPORT_NUMBER,
+       autofill::PHONE_HOME_WHOLE_NUMBER});
 
-  test_api(*eligible_form_structure)
-      .PushField()
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-      .set_heuristic_type(autofill::HeuristicSource::kAutofillAiRegexes,
-                          autofill::IMPROVED_PREDICTION);
-#else
-      .set_heuristic_type(autofill::GetActiveHeuristicSource(),
-                          autofill::IMPROVED_PREDICTION);
-#endif
-  if (should_extract_ax_tree()) {
-    EXPECT_CALL(client(), GetAXTree)
-        .WillOnce(
-            RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate{}));
-  } else {
-    EXPECT_CALL(client(), GetAXTree).Times(0);
-  }
-  user_annotations_service_.SetShouldImportFormData(should_import_form_data());
-
-  base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                              bool autofill_ai_shows_bubble)>
+  base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
-  if (should_import_form_data()) {
-    EXPECT_CALL(client(),
-                ShowSaveAutofillAiBubble(
-                    Pointee(Field(&user_annotations::FormAnnotationResponse::
-                                      to_be_upserted_entries,
-                                  Not(IsEmpty()))),
-                    _));
-    EXPECT_CALL(autofill_callback,
-                Run(Pointer(eligible_form_structure.get()), true));
-  } else {
-    EXPECT_CALL(client(), ShowSaveAutofillAiBubble).Times(0);
-    EXPECT_CALL(autofill_callback,
-                Run(Pointer(eligible_form_structure.get()), false));
-  }
-  manager().MaybeImportForm(std::move(eligible_form_structure),
-                            autofill_callback.Get());
+  EXPECT_CALL(client(), ShowSaveAutofillAiBubble);
+  manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
+  const bool autofill_ai_shows_bubble = std::get<1>(autofill_callback.Take());
+  EXPECT_TRUE(autofill_ai_shows_bubble);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    AutofillAiManagerImportFormTest,
-    testing::Combine(/*should_import_form_data=*/testing::Bool(),
-                     /*extract_ax_tree=*/testing::Bool()));
+TEST_F(AutofillAiManagerImportFormTest, DoNotImportIfSubmittedFormDoesNot) {
+  std::unique_ptr<autofill::FormStructure> form =
+      CreateFormStructure({autofill::NAME_FIRST, autofill::NAME_LAST,
+                           autofill::ADDRESS_HOME_LINE1});
 
-// Tests that if the pref is disabled, `import_form_callback` is run with an
-// empty list of entries and nothing is forwarded to the
-// `user_annotations_service_`.
-TEST_F(AutofillAiManagerTest, FormNotImportedWhenPrefDisabled) {
-  user_annotations_service_.AddHostToFormAnnotationsAllowlist(url().host());
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST,
-                  .label = u"First Name",
-                  .value = u"Jane"}}};
-  autofill::FormData form_data = autofill::test::GetFormData(form_description);
-  std::unique_ptr<autofill::FormStructure> eligible_form_structure =
-      std::make_unique<autofill::FormStructure>(form_data);
-
-  test_api(*eligible_form_structure)
-      .PushField()
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-      .set_heuristic_type(autofill::HeuristicSource::kAutofillAiRegexes,
-                          autofill::IMPROVED_PREDICTION);
-#else
-      .set_heuristic_type(autofill::GetActiveHeuristicSource(),
-                          autofill::IMPROVED_PREDICTION);
-#endif
-  user_annotations_service_.SetShouldImportFormData(
-      /*should_import_form_data=*/true);
-
-  base::MockOnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
-                              bool autofill_ai_shows_bubble)>
+  base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
   EXPECT_CALL(client(), ShowSaveAutofillAiBubble).Times(0);
-  EXPECT_CALL(client(), GetAXTree).Times(0);
-  EXPECT_CALL(client(), IsAutofillAiEnabledPref).WillOnce(Return(false));
-  EXPECT_CALL(autofill_callback,
-              Run(Pointer(eligible_form_structure.get()), false))
-      .Times(1);
-  manager().MaybeImportForm(std::move(eligible_form_structure),
-                            autofill_callback.Get());
+  manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
+  const bool autofill_ai_shows_bubble = std::get<1>(autofill_callback.Take());
+  EXPECT_FALSE(autofill_ai_shows_bubble);
 }
 
 // Tests that `import_form_callback` is run with an empty list of entries when

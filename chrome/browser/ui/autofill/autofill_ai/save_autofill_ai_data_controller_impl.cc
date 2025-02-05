@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/data_model/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
+#include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace autofill_ai {
@@ -63,7 +64,8 @@ SaveAutofillAiDataController* SaveAutofillAiDataController::GetOrCreate(
 
 void SaveAutofillAiDataControllerImpl::OfferSave(
     autofill::EntityInstance autofill_ai_data,
-    user_annotations::PromptAcceptanceCallback prompt_acceptance_callback,
+    AutofillAiClient::SavePromptAcceptanceCallback
+        save_prompt_acceptance_callback,
     LearnMoreClickedCallback learn_more_clicked_callback,
     UserFeedbackCallback user_feedback_callback) {
   // Don't show the bubble if it's already visible.
@@ -71,7 +73,7 @@ void SaveAutofillAiDataControllerImpl::OfferSave(
     return;
   }
   autofill_ai_data_ = std::move(autofill_ai_data);
-  prompt_acceptance_callback_ = std::move(prompt_acceptance_callback);
+  save_prompt_acceptance_callback_ = std::move(save_prompt_acceptance_callback);
   learn_more_clicked_callback_ = std::move(learn_more_clicked_callback);
   user_feedback_callback_ = std::move(user_feedback_callback);
   DoShowBubble();
@@ -85,8 +87,8 @@ void SaveAutofillAiDataControllerImpl::OnBubbleClosed(
     SaveAutofillAiDataController::AutofillAiBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
-  if (!prompt_acceptance_callback_.is_null()) {
-    std::move(prompt_acceptance_callback_)
+  if (!save_prompt_acceptance_callback_.is_null()) {
+    std::move(save_prompt_acceptance_callback_)
         .Run({/*prompt_was_accepted=*/closed_reason ==
                   AutofillAiBubbleClosedReason::kAccepted,
               /*did_user_interact=*/

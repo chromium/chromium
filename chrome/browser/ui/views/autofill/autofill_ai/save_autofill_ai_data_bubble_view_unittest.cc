@@ -10,6 +10,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -30,14 +31,14 @@ namespace autofill_ai {
 class MockSaveAutofillAiDataController : public SaveAutofillAiDataController {
  public:
   MockSaveAutofillAiDataController() = default;
-  MOCK_METHOD(
-      void,
-      OfferSave,
-      (autofill::EntityInstance,
-       user_annotations::PromptAcceptanceCallback PromptAcceptanceCallback,
-       LearnMoreClickedCallback,
-       UserFeedbackCallback),
-      (override));
+  MOCK_METHOD(void,
+              OfferSave,
+              (autofill::EntityInstance,
+               AutofillAiClient::SavePromptAcceptanceCallback
+                   save_prompt_acceptance_callback,
+               LearnMoreClickedCallback,
+               UserFeedbackCallback),
+              (override));
   MOCK_METHOD(base::optional_ref<const autofill::EntityInstance>,
               GetAutofillAiData,
               (),

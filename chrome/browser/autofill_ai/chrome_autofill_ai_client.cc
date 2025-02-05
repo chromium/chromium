@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
@@ -52,28 +53,8 @@ using autofill::AttributeInstance;
 using autofill::AttributeType;
 using autofill::AttributeTypeName;
 
-autofill::EntityInstance GetDummyEntity() {
-  std::vector<AttributeInstance> attributes;
-  attributes.emplace_back(AttributeType(AttributeTypeName::kPassportNumber),
-                          "123", AttributeInstance::Context{});
-
-  attributes.emplace_back(AttributeType(AttributeTypeName::kPassportName),
-                          "Jon Doe", AttributeInstance::Context{});
-  attributes.emplace_back(AttributeType(AttributeTypeName::kPassportCountry),
-                          "Italy", AttributeInstance::Context{});
-  attributes.emplace_back(AttributeType(AttributeTypeName::kPassportExpiryDate),
-                          "01/2023", AttributeInstance::Context{});
-
-  attributes.emplace_back(AttributeType(AttributeTypeName::kPassportIssueDate),
-                          "04/2012", AttributeInstance::Context{});
-
-  return autofill::EntityInstance(
-      autofill::EntityType(autofill::EntityTypeName::kPassport),
-      std::move(attributes), base::Uuid::ParseLowercase("123"),
-      std::string("Jonny"), base::Time::Now());
-}
-
 }  // namespace
+
 ChromeAutofillAiClient::ChromeAutofillAiClient(
     content::WebContents* web_contents,
     Profile* profile)
@@ -225,22 +206,18 @@ void ChromeAutofillAiClient::OpenAutofillAiSettings() {
 }
 
 void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
-    std::unique_ptr<user_annotations::FormAnnotationResponse>
-        form_annotation_response,
-    user_annotations::PromptAcceptanceCallback prompt_acceptance_callback) {
+    autofill::EntityInstance entity,
+    SavePromptAcceptanceCallback prompt_acceptance_callback) {
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* controller = autofill_ai::SaveAutofillAiDataController::GetOrCreate(
           &*web_contents_)) {
-    autofill::EntityInstance dummy_entity(GetDummyEntity());
     controller->OfferSave(
-        dummy_entity, std::move(prompt_acceptance_callback),
+        std::move(entity), std::move(prompt_acceptance_callback),
         base::BindRepeating(
             &autofill_ai::AutofillAiManager::UserClickedLearnMore,
             prediction_improvements_manager_.GetWeakPtr()),
-        base::BindRepeating(&autofill_ai::AutofillAiManager::
-                                SaveAutofillAiDataUserFeedbackReceived,
-                            prediction_improvements_manager_.GetWeakPtr(),
-                            form_annotation_response->model_execution_id));
+        // TODO(crbug.com/389629676): Delete feedback infrastructure.
+        base::DoNothing());
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

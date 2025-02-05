@@ -342,9 +342,13 @@ std::vector<autofill::Suggestion> CreateFillingSuggestionsV2(
       form.GetFieldById(field_global_id);
   CHECK(autofill_field);
 
+  std::optional<autofill::FieldType>
+      triggering_field_autofill_ai_type_prediction =
+          autofill_field->GetAutofillAiServerTypePredictions();
+  CHECK(triggering_field_autofill_ai_type_prediction);
   std::optional<AttributeType> triggering_field_attribute_type =
       AttributeType::FromFieldType(
-          autofill_field->GetAutofillAiServerTypePredictions());
+          *triggering_field_autofill_ai_type_prediction);
   // The triggering field should be of `FieldTypeGroup::kAutofillAi`
   // type and therefore mapping it to an `AttributeType` should always
   // return a value.
@@ -374,11 +378,15 @@ std::vector<autofill::Suggestion> CreateFillingSuggestionsV2(
       if (field->section() != autofill_field->section()) {
         continue;
       }
-      autofill::FieldType prediction_for_field_type =
+      std::optional<autofill::FieldType> field_autofill_ai_prediction =
           field->GetAutofillAiServerTypePredictions();
+      if (!field_autofill_ai_prediction) {
+        continue;
+      }
 
       std::optional<AttributeType> field_attribute_type =
-          AttributeType::FromFieldType(prediction_for_field_type);
+          AttributeType::FromFieldType(*field_autofill_ai_prediction);
+      CHECK(field_attribute_type);
       // Only fields that match the triggering field entity should be used to
       // generate suggestions.
       if (!field_attribute_type ||

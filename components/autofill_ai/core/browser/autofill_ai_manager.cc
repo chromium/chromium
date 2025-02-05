@@ -4,6 +4,7 @@
 
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,11 +16,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/entity_instance.h"
+#include "components/autofill/core/browser/data_model/entity_type.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
@@ -33,6 +37,7 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
@@ -52,10 +57,53 @@
 
 namespace autofill_ai {
 
+namespace {
+
 using autofill::LogBuffer;
 using autofill::LoggingScope;
 using autofill::LogMessage;
 using autofill::SuggestionType;
+
+std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
+    const autofill::FormStructure& submitted_form) {
+  std::map<autofill::Section,
+           std::map<autofill::EntityTypeName,
+                    std::vector<autofill::AttributeInstance>>>
+      section_to_entity_types_attributes;
+  for (const std::unique_ptr<autofill::AutofillField>& field :
+       submitted_form.fields()) {
+    std::optional<autofill::FieldType> autofill_ai_server_prediction =
+        field->GetAutofillAiServerTypePredictions();
+    if (!autofill_ai_server_prediction) {
+      continue;
+    }
+    std::optional<autofill::AttributeType> field_attribute_type =
+        autofill::AttributeType::FromFieldType(*autofill_ai_server_prediction);
+    CHECK(field_attribute_type);
+    // TODO(crbug.com/389629676): Save data format.
+    section_to_entity_types_attributes
+        [field->section()][field_attribute_type->entity_type().name()]
+            .emplace_back(*field_attribute_type,
+                          base::UTF16ToUTF8(
+                              field->value(autofill::ValueSemantics::kCurrent)),
+                          autofill::AttributeInstance::Context{});
+  }
+
+  std::vector<autofill::EntityInstance> entities_found_in_form;
+  for (auto& [section, entity_to_attributes] :
+       section_to_entity_types_attributes) {
+    for (auto& [entity_name, attributes] : entity_to_attributes) {
+      entities_found_in_form.emplace_back(
+          autofill::EntityType(entity_name), std::move(attributes),
+          base::Uuid::GenerateRandomV4(), /*nickname=*/std::string(""),
+          base::Time::Now());
+    }
+  }
+
+  return entities_found_in_form;
+}
+
+}  // namespace
 
 AutofillAiManager::AutofillAiManager(
     AutofillAiClient* client,
@@ -141,8 +189,8 @@ bool AutofillAiManager::IsEligibleForAutofillAi(
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWithDataSchema)) {
     // TODO(crbug.com/389629573): If triggering via manual fallback, the check
-    // `field.HasServerPredictionsWithAutofillAiType()` does not apply.
-    return field.HasServerPredictionsWithAutofillAiType() &&
+    // `field.GetAutofillAiServerTypePredictions()` does not apply.
+    return field.GetAutofillAiServerTypePredictions() &&
            client_->IsAutofillAiEnabledPref() && IsUserEligible();
   }
   return false;
@@ -491,105 +539,51 @@ void AutofillAiManager::MaybeImportForm(
     std::unique_ptr<autofill::FormStructure> form,
     base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
                             bool autofill_ai_shows_bubble)> autofill_callback) {
-  user_annotations::ImportFormCallback callback = base::BindOnce(
+  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  if (!entity_manager) {
+    // The import is skipped because the entity data manager service is not
+    // available.
+    LOG_AF(GetCurrentLogManager())
+        << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
+        << "Entity data manager is not available";
+
+    std::move(autofill_callback).Run(std::move(form), false);
+    return;
+  }
+  std::vector<autofill::EntityInstance> entity_instances_from_form =
+      GetPossibleEntitiesFromSubmittedForm(*form);
+  if (entity_instances_from_form.empty()) {
+    std::move(autofill_callback).Run(std::move(form), false);
+    return;
+  }
+
+  entity_manager->LoadEntityInstances(base::BindOnce(
       [](base::WeakPtr<AutofillAiManager> self,
+         std::unique_ptr<autofill::FormStructure> form,
+         std::vector<autofill::EntityInstance> entity_instances_from_form,
          base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
                                  bool autofill_ai_shows_bubble)>
              autofill_callback,
-         std::unique_ptr<autofill::FormStructure> form,
-         std::unique_ptr<user_annotations::FormAnnotationResponse>
-             form_annotation_response,
-         user_annotations::PromptAcceptanceCallback
-             prompt_acceptance_callback) {
-        const bool autofill_ai_shows_bubble =
-            self && form_annotation_response &&
-            !form_annotation_response->to_be_upserted_entries.empty();
-        LOG_AF(self ? self->GetCurrentLogManager() : nullptr)
-            << LoggingScope::kAutofillAi << LogMessage::kAutofillAi << "Form "
-            << form->global_id() << " submission is "
-            << (autofill_ai_shows_bubble ? "" : "not ")
-            << "showing import bubble";
-        if (autofill_ai_shows_bubble) {
-          self->client_->ShowSaveAutofillAiBubble(
-              std::move(form_annotation_response),
-              std::move(prompt_acceptance_callback));
+         std::vector<autofill::EntityInstance> current_entities) {
+        if (!self) {
+          std::move(autofill_callback).Run(std::move(form), false);
+          return;
         }
-        std::move(autofill_callback)
-            .Run(std::move(form), autofill_ai_shows_bubble);
+        // TODO(crbug.com/389629676): Add proper import logic. For now blindly
+        // import the first instance seen in the form. This should however
+        // depend on `current_entities`.
+        self->client_->ShowSaveAutofillAiBubble(
+            std::move(entity_instances_from_form[0]),
+            BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self));
+        std::move(autofill_callback).Run(std::move(form), true);
       },
-      GetWeakPtr(), std::move(autofill_callback));
-
-  user_annotations::UserAnnotationsService* annotation_service =
-      client_->GetUserAnnotationsService();
-
-  // Apply the filter rules to mark potentially sensitive values.
-  FilterSensitiveValues(*form.get());
-
-  bool skip_import = false;
-
-  if (!client_->IsAutofillAiEnabledPref()) {
-    // `autofill::prefs::kAutofillAiEnabled` is disabled.
-    skip_import = true;
-    LOG_AF(GetCurrentLogManager())
-        << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
-        << "Pref is disabled";
-  } else if (!annotation_service) {
-    // The import is skipped because the annotation service is not available.
-    skip_import = true;
-    LOG_AF(GetCurrentLogManager())
-        << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
-        << "Annotation service is not available";
-  } else if (!annotation_service->ShouldAddFormSubmissionForURL(
-                 form->source_url())) {
-    // The import is disabled because the origin criteria is not fulfilled.
-    skip_import = true;
-    LOG_AF(GetCurrentLogManager())
-        << LoggingScope::kAutofillAi << LogMessage::kAutofillAi << "Form "
-        << form->global_id() << " is ineligible due to URL "
-        << form->source_url();
-  }
-
-  if (skip_import) {
-    std::move(callback).Run(std::move(form),
-                            /*form_annotation_response=*/nullptr,
-                            /*prompt_acceptance_callback=*/base::DoNothing());
-    return;
-  }
-  GURL url = kSendTitleURL.Get() ? client_->GetLastCommittedURL()
-                                 : client_->GetLastCommittedOrigin().GetURL();
-
-  if (user_annotations::ShouldExtractAXTreeForFormsAnnotations()) {
-    // TODO(crbug.com/366222226): Ensure the AX tree retrieval is not delayed,
-    // e.g. by async filters added in future.
-    client_->GetAXTree(base::BindOnce(
-        &AutofillAiManager::OnReceivedAXTreeForFormImport,
-        weak_ptr_factory_.GetWeakPtr(), url,
-        kSendTitleURL.Get() ? client_->GetTitle() : std::string(),
-        std::move(form), std::move(callback)));
-  } else {
-    OnReceivedAXTreeForFormImport(
-        url, kSendTitleURL.Get() ? client_->GetTitle() : std::string(),
-        std::move(form), std::move(callback),
-        optimization_guide::proto::AXTreeUpdate());
-  }
+      GetWeakPtr(), std::move(form), std::move(entity_instances_from_form),
+      std::move(autofill_callback)));
 }
 
-void AutofillAiManager::OnReceivedAXTreeForFormImport(
-    const GURL& url,
-    const std::string& title,
-    std::unique_ptr<autofill::FormStructure> form,
-    user_annotations::ImportFormCallback callback,
-    optimization_guide::proto::AXTreeUpdate ax_tree_update) {
-  if (user_annotations::UserAnnotationsService* user_annotations_service =
-          client_->GetUserAnnotationsService()) {
-    user_annotations_service->AddFormSubmission(
-        url, title, std::move(ax_tree_update), std::move(form),
-        std::move(callback));
-    return;
-  }
-  std::move(callback).Run(std::move(form),
-                          /*form_annotation_response=*/nullptr,
-                          base::DoNothing());
+void AutofillAiManager::OnSavePromptAcceptance(
+    AutofillAiClient::SavePromptAcceptanceResult result) {
+  // TODO(crbug.com/389629676): implement
 }
 
 void AutofillAiManager::GetSuggestionsV2(
@@ -628,7 +622,7 @@ void AutofillAiManager::GetSuggestionsV2(
         }
 
         if (is_manual_fallback &&
-            !autofill_field->HasServerPredictionsWithAutofillAiType()) {
+            !autofill_field->GetAutofillAiServerTypePredictions()) {
           // TODO(crbug.com/389629573): Store `form`, `field` and trigger LLM.
           // Once we have LLM responses we need to rebuild the suggestions and
           // reshow the popup, either via `AutofillClient` or exposing the
@@ -637,7 +631,7 @@ void AutofillAiManager::GetSuggestionsV2(
           return;
         }
 
-        CHECK(autofill_field->HasServerPredictionsWithAutofillAiType());
+        CHECK(autofill_field->GetAutofillAiServerTypePredictions());
         std::move(callback).Run(CreateFillingSuggestionsV2(
             *form_structure, field_global_id, entities));
       },
@@ -652,7 +646,7 @@ bool AutofillAiManager::ShouldDisplayIph(
   // 2. The user can access the feature (for example the experiment flag is on).
   // 3. The focused form can trigger the feature.
   return !client_->IsAutofillAiEnabledPref() && IsUserEligible() &&
-         field.HasServerPredictionsWithAutofillAiType();
+         field.GetAutofillAiServerTypePredictions();
 }
 
 void AutofillAiManager::GoToSettings() const {

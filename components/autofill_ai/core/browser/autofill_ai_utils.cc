@@ -18,7 +18,7 @@ using autofill::FieldTypeGroup;
 bool IsFormEligibleForFilling(const autofill::FormStructure& form) {
   return std::ranges::any_of(
       form.fields(), [](const std::unique_ptr<AutofillField>& field) {
-        return field->HasServerPredictionsWithAutofillAiType();
+        return field->GetAutofillAiServerTypePredictions().has_value();
       });
 }
 
