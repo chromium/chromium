@@ -1567,7 +1567,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8391349326751432483">Necessites com a mínim 500 MB lliures per executar una prova de memòria. Per alliberar memòria, tanca pestanyes i aplicacions.</translation>
 <translation id="8395584934117017006">Aquest <ph name="DEVICE_TYPE" /> està gestionat per una empresa</translation>
 <translation id="8398927464629426868">El percentatge al qual s'està carregant o descarregant el dispositiu actualment</translation>
-<translation id="8403988360557588704">Una pintura amb <ph name="ART_FEATURE" /> d'estil <ph name="ART_MOVEMENT" /></translation>
+<translation id="8403988360557588704">Pintura de <ph name="ART_FEATURE" /> d'estil <ph name="ART_MOVEMENT" /></translation>
 <translation id="8410244574650205435">Detectat automàticament</translation>
 <translation id="8420955526972171689">Executa proves i resol els problemes relacionats amb el maquinari</translation>
 <translation id="8422748173858722634">IMEI</translation>

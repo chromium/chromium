@@ -1352,7 +1352,7 @@
 <translation id="3422248202833853650">Закройте другие программы, чтобы освободить память.</translation>
 <translation id="3422472998109090673">Сайт <ph name="HOST_NAME" /> недоступен.</translation>
 <translation id="3423742043356668186">Использовать системные параметры</translation>
-<translation id="3427092606871434483">Разрешать (по умолчанию)</translation>
+<translation id="3427092606871434483">Разрешить (по умолчанию)</translation>
 <translation id="3427342743765426898">&amp;Повторить изменения</translation>
 <translation id="342781501876943858">Chromium рекомендует сбросить пароль, если вы использовали его на других сайтах.</translation>
 <translation id="3428151540071562330">Один или несколько серверных шаблонов URI DnsOverHttpsTemplates недействительны и не будут использоваться.</translation>
@@ -2543,7 +2543,7 @@
 <translation id="5534785731327961487">Выгодно</translation>
 <translation id="5536214594743852365">Показать раздел "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Конверт Chou 2</translation>
-<translation id="5538270463355278784">автоматическое включение полноэкранного режима</translation>
+<translation id="5538270463355278784">автопереход в полноэкранный режим</translation>
 <translation id="5539243836947087108">Плот</translation>
 <translation id="5540224163453853">Не удалось найти указанную статью</translation>
 <translation id="5540969246441091044">Конный спорт</translation>
@@ -4138,7 +4138,7 @@
 <translation id="8378714024927312812">Управляется вашей организацией</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Списание может быть разовым или повторяющимся без каких-либо уведомлений. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
-<translation id="8382097126743287270">Автоматическое включение полноэкранного режима</translation>
+<translation id="8382097126743287270">Автопереход в полноэкранный режим</translation>
 <translation id="838307841291975086">Автомобили с кузовом универсал</translation>
 <translation id="8389532092404711541">Средняя цена: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Кастомные и спортивные транспортные средства</translation>

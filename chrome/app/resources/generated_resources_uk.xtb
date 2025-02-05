@@ -5454,7 +5454,7 @@
 <translation id="482952334869563894">Пристрої USB від постачальника <ph name="VENDOR_ID" /></translation>
 <translation id="4830502475412647084">Установлюється оновлення ОС</translation>
 <translation id="4831226137013573603">вимкнення звуку мікрофона</translation>
-<translation id="483262387981411190">Призупинити або відновити керування за допомогою обличчя</translation>
+<translation id="483262387981411190">Призупинити або відновити керування мімікою</translation>
 <translation id="4833683849865011483">На сервері для друку знайдено 1 принтер</translation>
 <translation id="4835598628985424375">Стиснути губи</translation>
 <translation id="4835677468087803981">Сховати PIN-код</translation>
@@ -5557,7 +5557,7 @@
 <translation id="4892328231620815052">Переглянути свій список читання можна в розділі "Закладки й списки"</translation>
 <translation id="489258173289528622">Що робити, коли пристрій неактивний і не заряджається</translation>
 <translation id="4892811427319351753">Не вдається ввімкнути <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
-<translation id="4892981359753171125">Визначення обличчя</translation>
+<translation id="4892981359753171125">Керування мімікою</translation>
 <translation id="4893073099212494043">Увімкнути передбачення наступного слова</translation>
 <translation id="4893336867552636863">Дані веб-перегляду буде видалено з цього пристрою назавжди.</translation>
 <translation id="4893454800196085005">Хороша – DVD</translation>
@@ -10990,7 +10990,7 @@
 <translation id="8805255531353778052">Дуже значне заощадження</translation>
 <translation id="8805385115381080995">Ви зможете переглядати веб-сторінки швидше, оскільки сайт більш імовірно не проситиме вас підтвердити, що ви реальна людина</translation>
 <translation id="8807588541160250261">Коли немає підключених пристроїв</translation>
-<translation id="8807632654848257479">Стабільна</translation>
+<translation id="8807632654848257479">Стабільно</translation>
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Кіт</translation>
 <translation id="8809147117840417135">Світло-бірюзовий</translation>

@@ -763,7 +763,7 @@
 <translation id="2318594867107319532">上次刷新政策时的时间戳：</translation>
 <translation id="2320564945062300737">面部护理产品</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 个窗口}other{# 个窗口}}</translation>
-<translation id="2328651992442742497">可以使用（默认）</translation>
+<translation id="2328651992442742497">允许（默认）</translation>
 <translation id="2328955282645810595">施工与电动工具</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期时间：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">设置由管理员控制</translation>
@@ -1853,7 +1853,7 @@
 <translation id="425582637250725228">系统可能不会保存您所做的更改。</translation>
 <translation id="4258748452823770588">签名无效</translation>
 <translation id="4261046003697461417">无法为受保护的文档添加注释</translation>
-<translation id="4265872034478892965">您的管理员允许</translation>
+<translation id="4265872034478892965">管理员允许</translation>
 <translation id="4269029136757623689">家用电扇</translation>
 <translation id="4269264543938335308">泳装</translation>
 <translation id="4269599248168651462">服务器证书颁发给了一个非唯一名称。</translation>
@@ -3777,7 +3777,7 @@
 <translation id="7714404809393719981">相纸（半光面）</translation>
 <translation id="7714424966701020172">已选择“填充全名”选项</translation>
 <translation id="7714464543167945231">证书</translation>
-<translation id="7716147886133743102">已被您的管理员阻止</translation>
+<translation id="7716147886133743102">已被管理员禁止</translation>
 <translation id="7716375162095500223">尚未上传，或者已忽略</translation>
 <translation id="7716424297397655342">无法从缓存中加载此网站</translation>
 <translation id="7719791801330803993">照片与视频软件</translation>
@@ -4032,7 +4032,7 @@
 <translation id="8208363704094329105">300 x 400 毫米</translation>
 <translation id="8208629719488976364">系统会将您打印的页面内容和您的打印机相关信息发送到 Google Cloud 或第三方以供分析。例如，这些内容和信息可能会被扫描以确定其是否包含敏感数据，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="8210490490377416373">选择政策名称</translation>
-<translation id="8211406090763984747">连接是安全的</translation>
+<translation id="8211406090763984747">连接安全</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 英寸</translation>
 <translation id="8218327578424803826">分配的位置：</translation>
@@ -4235,7 +4235,7 @@
 <translation id="854892890027593466">C6/C5 信封</translation>
 <translation id="8554010658308662631">加载更多</translation>
 <translation id="8554181323880688938">奢侈品</translation>
-<translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{重置这项权限}other{重置这些权限}}</translation>
+<translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{重置权限}other{重置权限}}</translation>
 <translation id="8555010941760982128">结账时请使用此促销代码</translation>
 <translation id="8556297087315686325">网络监控与管理</translation>
 <translation id="8557066899867184262">银行卡验证码 (CVC) 位于银行卡背面。</translation>

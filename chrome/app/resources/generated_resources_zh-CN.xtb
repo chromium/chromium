@@ -10755,7 +10755,7 @@
 <translation id="867329473311423817">可以管理您的所有显示屏上的窗口</translation>
 <translation id="8673383193459449849">服务器出现问题</translation>
 <translation id="8674903726754070732">很遗憾，您的计算机配置了格式错误的硬件 ID。这导致 Chrome 操作系统无法使用最新的安全修正程序进行更新，以致您的计算机<ph name="BEGIN_BOLD" />很容易遭到恶意攻击<ph name="END_BOLD" />。</translation>
-<translation id="8675657007450883866">网站使用此功能自动进入全屏模式。通常，进入全屏模式需要用户互动。</translation>
+<translation id="8675657007450883866">网站会使用此功能自动进入全屏模式。通常情况下，需要用户进行互动，才能进入全屏模式。</translation>
 <translation id="8675704450909805533">安装程序找不到可安装 <ph name="DEVICE_OS" /> 的有效目的地。</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{视频}other{# 个视频}}</translation>
 <translation id="8676276370198826499">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 注册 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
