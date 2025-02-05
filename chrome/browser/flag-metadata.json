@@ -2420,7 +2420,7 @@
   {
     "name": "enable-asweb-authentication-session",
     "owners": [ "jlebel@chromium.org", "msarda@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "enable-async-real-time-check",
