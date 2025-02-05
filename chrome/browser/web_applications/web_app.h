@@ -57,6 +57,7 @@ enum class WebappInstallSource;
 }
 
 namespace web_app {
+class TabbedModeScopeMatcher;
 
 class WebApp {
  public:
@@ -326,6 +327,10 @@ class WebApp {
   const std::optional<blink::Manifest::TabStrip> tab_strip() const {
     return tab_strip_;
   }
+
+  // Returns the list of patterns to match URLs against for tabbed mode home
+  // tab navigations.
+  const std::vector<TabbedModeScopeMatcher>& GetTabbedModeHomeScope() const;
 
   // Only used on Mac.
   bool always_show_toolbar_in_fullscreen() const {
@@ -620,6 +625,29 @@ class WebApp {
   //  - SetWebAppManifestFields()
   // If the field relates to the app icons, add revert logic for it in:
   // - ManifestUpdateCheckCommand::RevertIdentityChangesIfNeeded()
+
+  // Some data is derived from other fields in this class but can be somewhat
+  // expensive to calculate and/or might not be copyable. That data can be
+  // lazily calculated and stored in this struct. When the WebApp instance is
+  // copied the cached derived data is not copied.
+  struct CachedDerivedData {
+    CachedDerivedData();
+    ~CachedDerivedData();
+    CachedDerivedData(CachedDerivedData&&);
+    CachedDerivedData& operator=(CachedDerivedData&&);
+    CachedDerivedData(const CachedDerivedData&);
+    CachedDerivedData& operator=(const CachedDerivedData&);
+
+    // Lazily initialized list of patterns to match URLs against for tabbed mode
+    // home tab navigations. If a URL matches any pattern in this list, it is
+    // considered within home tab scope.
+    //
+    // An empty list means there is no home tab scope to match against (i.e.
+    // nothing matches), whereas an uninitialized list means it has not yet been
+    // needed.
+    std::optional<std::vector<TabbedModeScopeMatcher>> home_tab_scope;
+  };
+  mutable CachedDerivedData cached_derived_data_;
 };
 
 // For logging and debug purposes.
