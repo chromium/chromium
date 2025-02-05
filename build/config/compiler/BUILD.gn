@@ -1707,9 +1707,6 @@ config("libcxx_module") {
       "-fmodules",
       "-fmodule-map-file=" + modulemap,
       "-fno-implicit-module-maps",
-      "-fbuiltin-module-map",
-      "-fmodules-cache-path=" +
-          rebase_path("$libcxx_module_prefix/module_cache", root_build_dir),
 
       "-Xclang",
       "-fmodules-local-submodule-visibility",  # required for builtins
@@ -1724,6 +1721,21 @@ config("libcxx_module") {
       # unnecessarily using extern "C".
       "-Wno-module-import-in-extern-c",
     ]
+
+    if (use_explicit_libcxx_modules) {
+      cflags_cc += [
+        "-fno-implicit-modules",
+
+        # This is for exception handling mismatch.
+        "-Wno-module-file-config-mismatch",
+      ]
+    } else {
+      cflags_cc += [
+        "-fbuiltin-module-map",
+        "-fmodules-cache-path=" +
+            rebase_path("$libcxx_module_prefix/module_cache", root_build_dir),
+      ]
+    }
   }
 }
 

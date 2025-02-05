@@ -540,10 +540,20 @@ foreach(_target_type,
         ]) {
   template(_target_type) {
     target(_target_type, target_name) {
-      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [ "no_default_deps" ])
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(inputs)) {
         inputs = []
+      }
+      if (!defined(deps)) {
+        deps = []
+      }
+
+      if (!defined(invoker.no_default_deps) || !invoker.no_default_deps) {
+        # This is necessary for Clang modules builds.
+        deps += [ "//buildtools/third_party/libc++:std" ]
       }
 
       # Consumed by the unsafe-buffers plugin during compile.
@@ -622,7 +632,15 @@ foreach(_target_type,
         # //build/config:shared_library_deps
         # (This explicit list is so that grepping for these configs finds where
         # they are used.)
-        deps += [ "//build/config:${_target_type}_deps" ]
+        deps += [
+          "//build/config:${_target_type}_deps",
+
+          # These are necessary for Clang modules builds.
+          "//buildtools/third_party/libc++:_Builtin_limits",
+          "//buildtools/third_party/libc++:_Builtin_stdarg",
+          "//buildtools/third_party/libc++:_Builtin_stddef",
+          "//buildtools/third_party/libc++:std",
+        ]
       }
 
       # On Android, write shared library output file to metadata. We will use

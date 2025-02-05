@@ -45,11 +45,156 @@ config("winver") {
   ]
 }
 
+template("builtin_modules") {
+  # This is a template to build clang builtin's module file.
+  source_set(target_name) {
+    no_default_deps = true
+    if (use_explicit_libcxx_modules) {
+      sources = [ "//third_party/llvm-build/Release+Asserts/lib/clang/20/include/module.modulemap" ]
+    }
+
+    deps = []
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    } else {
+      not_needed(invoker, "*")
+    }
+  }
+}
+
+builtin_modules("_Builtin_float") {
+}
+
+builtin_modules("_Builtin_inttypes") {
+  deps = [ ":_Builtin_stdint" ]
+}
+
+builtin_modules("_Builtin_limits") {
+}
+
+builtin_modules("_Builtin_stdalign") {
+}
+
+builtin_modules("_Builtin_stdarg") {
+}
+
+builtin_modules("_Builtin_stddef") {
+}
+
+builtin_modules("_Builtin_stdint") {
+}
+
+configs_to_add = [
+  ":config",
+  "//build/config/compiler:no_chromium_code",
+  "//build/config/compiler:exceptions",
+  "//build/config/compiler:rtti",
+]
+
+configs_to_remove = [
+  "//build/config/compiler:chromium_code",
+  "//build/config/compiler:no_exceptions",
+  "//build/config/compiler:no_rtti",
+  "//build/config/coverage:default_coverage",
+]
+
+template("libcxx_modules") {
+  # This is a template to build libc++'s module file.
+  source_set(target_name) {
+    no_default_deps = true
+    if (use_explicit_libcxx_modules) {
+      sources = [ "//third_party/libc++/src/include/module.modulemap" ]
+    }
+    deps = []
+
+    configs -= configs_to_remove
+    configs += configs_to_add
+
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    } else {
+      not_needed(invoker, "*")
+    }
+  }
+}
+
+libcxx_modules("std") {
+  deps = [
+    ":_Builtin_limits",
+    ":_Builtin_stdalign",
+    ":_Builtin_stdarg",
+    ":std_config",
+    ":std_core",
+    ":std_ctype_h",
+    ":std_errno_h",
+    ":std_fenv_h",
+    ":std_float_h",
+    ":std_inttypes_h",
+    ":std_math_h",
+    ":std_private_mbstate_t",
+    ":std_string_h",
+    ":std_uchar_h",
+    ":std_wctype_h",
+  ]
+}
+
+libcxx_modules("std_config") {
+}
+
+libcxx_modules("std_core") {
+  deps = [
+    ":_Builtin_stddef",
+    ":_Builtin_stdint",
+  ]
+}
+
+libcxx_modules("std_ctype_h") {
+}
+
+libcxx_modules("std_errno_h") {
+}
+
+libcxx_modules("std_fenv_h") {
+}
+
+libcxx_modules("std_float_h") {
+  deps = [ ":_Builtin_float" ]
+}
+
+libcxx_modules("std_inttypes_h") {
+  deps = [ ":_Builtin_inttypes" ]
+}
+
+libcxx_modules("std_math_h") {
+  deps = [
+    ":_Builtin_limits",
+    ":std_core",
+  ]
+}
+
+libcxx_modules("std_private_mbstate_t") {
+}
+
+libcxx_modules("std_stddef_h") {
+}
+
+libcxx_modules("std_string_h") {
+  deps = [ ":_Builtin_stddef" ]
+}
+
+libcxx_modules("std_uchar_h") {
+  deps = [ ":_Builtin_stddef" ]
+}
+
+libcxx_modules("std_wctype_h") {
+}
+
 if (libcxx_is_shared) {
   _libcxx_target_type = "shared_library"
 } else {
   _libcxx_target_type = "source_set"
 }
+
 target(_libcxx_target_type, "libc++") {
   # Most things that need to depend on libc++ should do so via the implicit
   # 'common_deps' dependency below.  Some targets that package libc++.so may
@@ -108,7 +253,6 @@ target(_libcxx_target_type, "libc++") {
     "//third_party/libc++/src/src/hash.cpp",
     "//third_party/libc++/src/src/ios.cpp",
     "//third_party/libc++/src/src/ios.instantiations.cpp",
-    "//third_party/libc++/src/src/iostream.cpp",
     "//third_party/libc++/src/src/locale.cpp",
     "//third_party/libc++/src/src/memory.cpp",
     "//third_party/libc++/src/src/mutex.cpp",
@@ -134,6 +278,15 @@ target(_libcxx_target_type, "libc++") {
     "//third_party/libc++/src/src/vector.cpp",
     "//third_party/libc++/src/src/verbose_abort.cpp",
   ]
+
+  if (!use_explicit_libcxx_modules) {
+    sources += [
+      # TODO(crbug.com/40440396): Have a separate target for this to avoid
+      # compile errors in explicit modules build due to type mismatch of
+      # std::{cerr,cin,clog,cout} between declaration and definition.
+      "//third_party/libc++/src/src/iostream.cpp",
+    ]
+  }
 
   if (is_apple || (!is_asan && !is_tsan && !is_msan)) {
     # In {a,t,m}san configurations, operator new and operator delete will be
@@ -171,12 +324,10 @@ target(_libcxx_target_type, "libc++") {
       ]
     }
   }
-  configs -= [
-    "//build/config/compiler:chromium_code",
-    "//build/config/compiler:no_exceptions",
-    "//build/config/compiler:no_rtti",
-    "//build/config/coverage:default_coverage",
-  ]
+
+  configs -= configs_to_remove
+  configs += configs_to_add
+
   if (use_libcxx_modules) {
     configs -= [ "//build/config/compiler:libcxx_module" ]
   }
@@ -188,12 +339,6 @@ target(_libcxx_target_type, "libc++") {
       configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
     }
   }
-  configs += [
-    ":config",
-    "//build/config/compiler:no_chromium_code",
-    "//build/config/compiler:exceptions",
-    "//build/config/compiler:rtti",
-  ]
 
   if (libcxx_is_shared && !is_win) {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
@@ -201,6 +346,7 @@ target(_libcxx_target_type, "libc++") {
   }
 
   defines = []
+  cflags = []
 
   if (!libcxx_is_shared && !is_win) {
     if (is_apple && is_clang) {
@@ -209,7 +355,7 @@ target(_libcxx_target_type, "libc++") {
       # specified in the C++ spec 3.7.4p2, which makes them always have default
       # visibility.  This option is needed to force hidden visibility since
       # -fvisibility=hidden doesn't have the desired effect.
-      cflags = [ "-fvisibility-global-new-delete=force-hidden" ]
+      cflags += [ "-fvisibility-global-new-delete=force-hidden" ]
     } else {
       # This resets the visibility to default only for the various
       # flavors of operator new and operator delete.  These symbols
@@ -228,6 +374,22 @@ target(_libcxx_target_type, "libc++") {
   }
 
   deps = [ "//third_party/llvm-libc:llvm-libc-shared" ]
+
+  if (use_explicit_libcxx_modules) {
+    modulemap = rebase_path("//third_party/libc++/src/include/module.modulemap",
+                            root_build_dir)
+    cflags += [
+      "-fmodules",
+      "-fmodule-map-file=" + modulemap,
+    ]
+
+    deps += [
+      ":std",
+      ":std_config",
+      ":std_core",
+      ":std_stddef_h",
+    ]
+  }
 
   if (!is_win) {
     defines += [ "LIBCXX_BUILDING_LIBCXXABI" ]
