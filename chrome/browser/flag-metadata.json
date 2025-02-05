@@ -239,7 +239,7 @@
   {
     "name": "android-tab-declutter-archive-duplicate-tabs",
     "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "animate-suggestions-list-appearance",
