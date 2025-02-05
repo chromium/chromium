@@ -103,8 +103,9 @@ bool EventListener::Equals(const EventListener* other) const {
 
 std::unique_ptr<EventListener> EventListener::Copy() const {
   std::optional<base::Value::Dict> filter_copy;
-  if (filter_)
+  if (filter_) {
     filter_copy = filter_->Clone();
+  }
   return base::WrapUnique(new EventListener(
       event_name_, extension_id_, listener_url_, process_, browser_context_,
       is_for_service_worker_, service_worker_version_id_, worker_thread_id_,
