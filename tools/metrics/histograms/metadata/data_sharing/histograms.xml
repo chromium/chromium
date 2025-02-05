@@ -76,6 +76,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DataSharing.TotalMembersInGroup.AtStartup" units="members"
+    expires_after="2025-09-03">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the number of members in a group. Recorded when the
+    DataSharingService has finished initializing.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
