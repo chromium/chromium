@@ -127,6 +127,8 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "base/apple/foundation_util.h"
+#include "base/files/file_util.h"
 #include "content/browser/gpu/browser_child_process_backgrounded_bridge.h"
 #include "content/browser/gpu/ca_transaction_gpu_coordinator.h"
 #endif
@@ -532,6 +534,25 @@ void BindDiscardableMemoryReceiverOnUI(
           &BindDiscardableMemoryReceiverOnIO, std::move(receiver),
           discardable_memory::DiscardableSharedMemoryManager::Get()));
 }
+
+#if BUILDFLAG(IS_MAC)
+// Create cache directory that's needed for WebNN. WebNN underlying uses Apple's
+// Core ML framework that needs access to this directory. By creating the
+// directory here we don't need to give the GPU process the ability to create
+// directories in the sandbox policy.
+void SetUpCoreMLCacheDir() {
+  base::FilePath cache_dir =
+      base::GetHomeDir()
+          .Append("Library")
+          .Append("Caches")
+          .Append(base::StrCat({base::apple::BaseBundleID(), ".helper"}))
+          .Append("com.apple.e5rt.e5bundlecache");
+  if (!base::CreateDirectory(cache_dir)) {
+    LOG(ERROR) << "Failed to setup cache directory for WebNN, this might "
+                  "affect the performance and accuracy for WebNN.";
+  }
+}
+#endif
 
 }  // anonymous namespace
 
@@ -1217,6 +1238,12 @@ void GpuProcessHost::RunServiceImpl(mojo::GenericPendingReceiver receiver) {
 }
 
 bool GpuProcessHost::LaunchGpuProcess() {
+#if BUILDFLAG(IS_MAC)
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
+      base::BindOnce(&SetUpCoreMLCacheDir));
+#endif
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
 
