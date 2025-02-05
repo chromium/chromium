@@ -37,6 +37,7 @@ int ClientSocketHandle::Init(
     ClientSocketPool::RespectLimits respect_limits,
     CompletionOnceCallback callback,
     const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback,
+    bool fail_if_alias_requires_proxy_override,
     ClientSocketPool* pool,
     const NetLogWithSource& net_log) {
   requesting_source_ = net_log.source();
@@ -51,7 +52,7 @@ int ClientSocketHandle::Init(
   int rv = pool_->RequestSocket(
       group_id, std::move(socket_params), proxy_annotation_tag, priority,
       socket_tag, respect_limits, this, std::move(io_complete_callback),
-      proxy_auth_callback, net_log);
+      proxy_auth_callback, fail_if_alias_requires_proxy_override, net_log);
   if (rv == ERR_IO_PENDING) {
     callback_ = std::move(callback);
   } else {

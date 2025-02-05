@@ -78,6 +78,7 @@ TransportClientSocketPool::Request::Request(
     ClientSocketHandle* handle,
     CompletionOnceCallback callback,
     const ProxyAuthCallback& proxy_auth_callback,
+    bool fail_if_alias_requires_proxy_override,
     RequestPriority priority,
     const SocketTag& socket_tag,
     RespectLimits respect_limits,
@@ -88,6 +89,8 @@ TransportClientSocketPool::Request::Request(
     : handle_(handle),
       callback_(std::move(callback)),
       proxy_auth_callback_(proxy_auth_callback),
+      fail_if_alias_requires_proxy_override_(
+          fail_if_alias_requires_proxy_override),
       priority_(priority),
       respect_limits_(respect_limits),
       flags_(flags),
@@ -253,6 +256,7 @@ int TransportClientSocketPool::RequestSocket(
     ClientSocketHandle* handle,
     CompletionOnceCallback callback,
     const ProxyAuthCallback& proxy_auth_callback,
+    bool fail_if_alias_requires_proxy_override,
     const NetLogWithSource& net_log) {
   CHECK(callback);
   CHECK(handle);
@@ -260,7 +264,8 @@ int TransportClientSocketPool::RequestSocket(
   NetLogTcpClientSocketPoolRequestedSocket(net_log, group_id);
 
   std::unique_ptr<Request> request = std::make_unique<Request>(
-      handle, std::move(callback), proxy_auth_callback, priority, socket_tag,
+      handle, std::move(callback), proxy_auth_callback,
+      fail_if_alias_requires_proxy_override, priority, socket_tag,
       respect_limits, NORMAL, std::move(params), proxy_annotation_tag, net_log);
 
   // Cleanup any timed-out idle sockets.
@@ -302,6 +307,7 @@ int TransportClientSocketPool::RequestSockets(
     scoped_refptr<SocketParams> params,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     int num_sockets,
+    bool fail_if_alias_requires_proxy_override,
     CompletionOnceCallback callback,
     const NetLogWithSource& net_log) {
   // TODO(eroman): Split out the host and port parameters.
@@ -309,9 +315,9 @@ int TransportClientSocketPool::RequestSockets(
                    [&] { return NetLogGroupIdParams(group_id); });
 
   Request request(nullptr /* no handle */, CompletionOnceCallback(),
-                  ProxyAuthCallback(), IDLE, SocketTag(),
-                  RespectLimits::ENABLED, NO_IDLE_SOCKETS, std::move(params),
-                  proxy_annotation_tag, net_log);
+                  ProxyAuthCallback(), fail_if_alias_requires_proxy_override,
+                  IDLE, SocketTag(), RespectLimits::ENABLED, NO_IDLE_SOCKETS,
+                  std::move(params), proxy_annotation_tag, net_log);
 
   // Cleanup any timed-out idle sockets.
   CleanupIdleSockets(false, nullptr /* net_log_reason_utf8 */);

@@ -73,12 +73,14 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
       ClientSocketHandle* handle,
       CompletionOnceCallback callback,
       const ProxyAuthCallback& proxy_auth_callback,
+      bool fail_if_alias_requires_proxy_override,
       const NetLogWithSource& net_log) override;
   int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
+      bool fail_if_alias_requires_proxy_override,
       CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override;
   void SetPriority(const GroupId& group_id,
@@ -158,6 +160,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
         ClientSocketHandle* handle,
         CompletionOnceCallback callback,
         const ProxyAuthCallback& proxy_auth_callback,
+        bool fail_if_alias_requires_proxy_override,
         const NetLogWithSource& net_log);
     StalledRequest(StalledRequest&& other);
     ~StalledRequest();
@@ -169,6 +172,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     const raw_ptr<ClientSocketHandle> handle;
     CompletionOnceCallback callback;
     ProxyAuthCallback proxy_auth_callback;
+    bool fail_if_alias_requires_proxy_override;
     const NetLogWithSource net_log;
   };
 
