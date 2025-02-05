@@ -921,14 +921,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "block-insecure-private-network-requests",
-    "owners": [
-      "estark@chromium.org",
-      "chrome-secure-web-and-net@chromium.org"
-    ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "block-root-window-accessible-name-change-event",
     "owners": [
       "dmangal@microsoft.com"
@@ -7141,31 +7133,6 @@
       "chrstne@google.com",
       "koilos@google.com"
     ],
-    "expiry_milestone": 136
-  },
-  {
-    "name": "private-network-access-ignore-navigation-errors",
-    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
-    "expiry_milestone": 136
-  },
-  {
-    "name": "private-network-access-ignore-worker-errors",
-    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
-    "expiry_milestone": 136
-  },
-  {
-    "name": "private-network-access-permission-prompt",
-    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
-    "expiry_milestone": 136
-  },
-  {
-    "name": "private-network-access-preflight-short-timeout",
-    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
-    "expiry_milestone": 136
-  },
-  {
-    "name": "private-network-access-respect-preflight-results",
-    "owners": [ "estark@chromium.org", "chrome-secure-web-and-net@chromium.org" ],
     "expiry_milestone": 136
   },
   {

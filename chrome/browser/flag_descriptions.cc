@@ -1532,13 +1532,6 @@ const char kEnableWindowsGamingInputDataFetcherDescription[] =
     "Enable Windows.Gaming.Input by default to provide game controller "
     "support on Windows 10 desktop.";
 
-const char kBlockInsecurePrivateNetworkRequestsName[] =
-    "Block insecure private network requests.";
-const char kBlockInsecurePrivateNetworkRequestsDescription[] =
-    "Prevents non-secure contexts from making subresource requests to "
-    "more-private IP addresses. See also: "
-    "https://developer.chrome.com/blog/private-network-access-update/";
-
 const char kPipDoubleTapToResizeName[] =
     "Enable double-tap to resize PiP windows";
 const char kPipDoubleTapToResizeDescription[] =
@@ -1551,51 +1544,6 @@ const char kPipTuckDescription[] = "Enables window tucking for PiP windows. ";
 const char kPrivacyGuideAiSettingsName[] = "AI settings in Privacy Guide";
 const char kPrivacyGuideAiSettingsDescription[] =
     "Enables the AI settings linkout in the Privacy Guide completion card.";
-
-const char kPrivateNetworkAccessRespectPreflightResultsName[] =
-    "Respect the result of Private Network Access preflights";
-const char kPrivateNetworkAccessRespectPreflightResultsDescription[] =
-    "Enables sending Private Network Access preflights ahead of requests to "
-    "more-private IP addresses. These preflight requests must succeed in order "
-    "for the request to proceed. See also: "
-    "https://developer.chrome.com/blog/private-network-access-preflight/";
-
-const char kPrivateNetworkAccessPreflightShortTimeoutName[] =
-    "Reduce waiting time for Private Network Access preflights response";
-const char kPrivateNetworkAccessPreflightShortTimeoutDescription[] =
-    "Reduce the waiting time for Private Network Access preflights to 200 "
-    "milliseconds. The default timeout period for requests is 5 minutes. "
-    "See also: "
-    "https://developer.chrome.com/blog/private-network-access-preflight/";
-
-const char kPrivateNetworkAccessPermissionPromptName[] =
-    "Enable Permission Prompt for Private Network Access";
-const char kPrivateNetworkAccessPermissionPromptDescription[] =
-    "Enable Permission Prompt for HTTPS public websites accessing HTTP "
-    "more-private devices. Require to set a fetch option `targetAddressSpace` "
-    "on the request to relax mixed content check. "
-    "See also: "
-    "https://developer.chrome.com/blog/"
-    "private-network-access-update-2023-02-02/";
-
-const char kPrivateNetworkAccessIgnoreWorkerErrorsName[] =
-    "Ignore Private Network Access errors for worker-related requests";
-const char kPrivateNetworkAccessIgnoreWorkerErrorsDescription[] =
-    "Ignore Private Network Access errors for worker-related requests, "
-    "including worker script fetches, and fetches initiated in a worker. "
-    "Instead of blocking the requests, the errors will be shown as an issue in "
-    "DevTools. See "
-    "also: https://developer.chrome.com/blog/private-network-access-update/ "
-    "and https://developer.chrome.com/blog/private-network-access-preflight/";
-
-const char kPrivateNetworkAccessIgnoreNavigationErrorsName[] =
-    "Ignore Private Network Access errors for navigation-related requests";
-const char kPrivateNetworkAccessIgnoreNavigationErrorsDescription[] =
-    "Ignore Private Network Access errors for navigation-related requests, "
-    "including iframes and popups. Instead of blocking the requests, the errors"
-    "will be shown as an issue in DevTools. See also: "
-    "https://developer.chrome.com/blog/private-network-access-update/ "
-    "and https://developer.chrome.com/blog/private-network-access-preflight/";
 
 const char kDeprecateAltClickName[] =
     "Enable Alt+Click deprecation notifications";
