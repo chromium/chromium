@@ -24,7 +24,8 @@ void AwPrefetchManager::StartBrowserPrefetchRequest(
 
   browser_context_->StartBrowserPrefetchRequest(
       url, javascript_enabled, std::move(no_vary_search_hint),
-      additional_headers, std::move(request_status_listener));
+      additional_headers, std::move(request_status_listener),
+      base::Seconds(ttl_in_sec_));
 }
 
 void AwPrefetchManager::UpdatePrefetchConfiguration(int ttl_in_sec,

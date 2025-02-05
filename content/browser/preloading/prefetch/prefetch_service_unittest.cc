@@ -460,10 +460,11 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       const GURL& url,
       std::optional<net::HttpNoVarySearchData> no_vary_search_data,
       const net::HttpRequestHeaders& additional_headers,
-      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener) {
+      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
+      base::TimeDelta ttl_in_sec = base::Seconds(/* 10 minutes */ 60 * 10)) {
     browser_context()->StartBrowserPrefetchRequest(
         url, true, no_vary_search_data, additional_headers,
-        std::move(request_status_listener));
+        std::move(request_status_listener), ttl_in_sec);
   }
 
   int RequestCount() { return test_url_loader_factory_.NumPending(); }
