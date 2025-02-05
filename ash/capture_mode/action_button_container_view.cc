@@ -69,7 +69,7 @@ constexpr auto kErrorViewLeadingIconRightPadding = 4;
 constexpr auto kErrorViewTryAgainLinkPadding = gfx::Insets::TLBR(0, 8, 0, 4);
 
 // The horizontal distance between action buttons in a row.
-constexpr int kActionButtonSpacing = 10;
+constexpr int kActionButtonSpacing = 6;
 
 // The animation duration for fading out old action buttons after the smart
 // actions button is pressed.
@@ -202,6 +202,7 @@ ActionButtonContainerView::ActionButtonContainerView() {
           // updated when `action_button_row_` bounds are updated.
           .SetPaintToLayer()
           .Build());
+  action_button_row_->layer()->SetFillsBoundsOpaquely(false);
 }
 
 ActionButtonContainerView::~ActionButtonContainerView() = default;
