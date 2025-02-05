@@ -40,33 +40,4 @@
   }
 }
 
-#pragma mark - OmniboxPopup event
-
-- (void)requestResultsWithVisibleSuggestionCount:
-    (NSUInteger)visibleSuggestionCount {
-  if (!_autocompleteController) {
-    return;
-  }
-  size_t resultSize = _autocompleteController->result().size();
-  // If no suggestions are visible, consider all of them visible.
-  if (visibleSuggestionCount == 0) {
-    visibleSuggestionCount = resultSize;
-  }
-  NSUInteger visibleSuggestions = MIN(visibleSuggestionCount, resultSize);
-  if (visibleSuggestions > 0) {
-    // Groups visible suggestions by search vs url. Skip the first suggestion
-    // because it's the omnibox content.
-    _autocompleteController->GroupSuggestionsBySearchVsURL(1,
-                                                           visibleSuggestions);
-  }
-  // Groups hidden suggestions by search vs url.
-  if (visibleSuggestions < resultSize) {
-    _autocompleteController->GroupSuggestionsBySearchVsURL(visibleSuggestions,
-                                                           resultSize);
-  }
-
-  [self.omniboxPopupController
-      updateWithSortedResults:_autocompleteController->result()];
-}
-
 @end

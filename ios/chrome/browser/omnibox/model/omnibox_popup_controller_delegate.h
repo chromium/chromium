@@ -19,12 +19,6 @@ class AutocompleteResult;
 - (void)popupController:(OmniboxPopupController*)popupController
        didUpdateResults:(const AutocompleteResult&)results;
 
-/// Notifies the delegate of the new sorted suggestions.
-/// TODO(crbug.com/390410111): Change to AutocompleteSuggestion after moving the
-/// wrapping to the controller.
-- (void)popupController:(OmniboxPopupController*)popupController
-         didSortResults:(const AutocompleteResult&)results;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POPUP_CONTROLLER_DELEGATE_H_

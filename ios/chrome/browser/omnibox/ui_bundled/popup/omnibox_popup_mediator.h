@@ -27,7 +27,6 @@
 @protocol CarouselItemConsumer;
 class FaviconLoader;
 @class OmniboxPedalAnnotator;
-@class OmniboxPopupController;
 @class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
 @class SceneState;
@@ -83,9 +82,6 @@ class OmniboxPopupMediatorDelegate {
                                             CarouselItemMenuProvider,
                                             ImageRetriever,
                                             FaviconRetriever>
-
-/// Controller of the omnibox popup.
-@property(nonatomic, weak) OmniboxPopupController* popupController;
 
 @property(nonatomic, readonly, assign) FaviconLoader* faviconLoader;
 
