@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/mojom/base/time.mojom.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
@@ -118,9 +119,28 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
     std::move(cb).Run(time);
   }
 
+  void AddStringWrapper(
+      mojo::PendingRemote<mojom::StringWrapper> string_wrapper) override {
+    string_wrapper_list_.push_back(
+        mojo::Remote<mojom::StringWrapper>(std::move(string_wrapper)));
+  }
+
+  void GetStringWrapperList(GetStringWrapperListCallback cb) override {
+    std::vector<mojo::PendingRemote<mojom::StringWrapper>> string_wrapper_list;
+    for (auto& string_wrapper : string_wrapper_list_) {
+      mojo::PendingRemote<mojom::StringWrapper> cloned_string_wrapper;
+      string_wrapper->Clone(
+          cloned_string_wrapper.InitWithNewPipeAndPassReceiver());
+      string_wrapper_list.emplace_back(std::move(cloned_string_wrapper));
+    }
+
+    std::move(cb).Run(std::move(string_wrapper_list));
+  }
+
  private:
   mojo::Receiver<mojom::WebUITsMojoTestCache> receiver_;
   std::map<GURL, std::string> cache_;
+  std::vector<mojo::Remote<mojom::StringWrapper>> string_wrapper_list_;
 };
 
 // WebUIController that sets up mojo bindings.
@@ -248,6 +268,30 @@ class TestWebUIControllerFactory : public WebUIControllerFactory {
       registered_controllers_;
 };
 
+class StringWrapperImpl : public mojom::StringWrapper {
+ public:
+  StringWrapperImpl() = default;
+
+  // mojom::StringWrapper
+  void PutString(const std::string& item) override { item_ = item; }
+
+  void GetString(GetStringCallback cb) override { std::move(cb).Run(item_); }
+
+  void Clone(
+      mojo::PendingReceiver<mojom::StringWrapper> clone_receiver) override {
+    receivers_.Add(this, std::move(clone_receiver));
+  }
+
+  static void Create(mojo::PendingReceiver<mojom::StringWrapper> receiver) {
+    mojo::MakeSelfOwnedReceiver(std::make_unique<StringWrapperImpl>(),
+                                std::move(receiver));
+  }
+
+ private:
+  std::string item_;
+  mojo::ReceiverSet<mojom::StringWrapper> receivers_;
+};
+
 class TestWebUIContentBrowserClient
     : public ContentBrowserTestContentBrowserClient {
  public:
@@ -262,6 +306,15 @@ class TestWebUIContentBrowserClient
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
     RegisterWebUIControllerInterfaceBinder<mojom::WebUITsMojoTestCache,
                                            CacheTestWebUIController>(map);
+
+    map->Add<content::mojom::StringWrapper>(
+        base::BindRepeating(&TestWebUIContentBrowserClient::BindStringWrapper));
+  }
+
+  static void BindStringWrapper(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<mojom::StringWrapper> receiver) {
+    StringWrapperImpl::Create(std::move(receiver));
   }
 };
 

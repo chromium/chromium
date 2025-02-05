@@ -4,6 +4,7 @@
 
 import {StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
 import {OptionalNumericsStruct, TestEnum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
+import {StringWrapper} from './web_ui_ts_test_types.test-mojom-webui.js';
 
 const TEST_DATA: Array<{url: string, contents: string}> = [
   { url: 'https://google.com/', contents: 'i am in fact feeling lucky' },
@@ -35,10 +36,13 @@ async function doTest(): Promise<boolean> {
   const cache = WebUITsMojoTestCache.getRemote();
   for (const entry of TEST_DATA) {
     cache.put({ url: entry.url }, entry.contents);
+    let stringWrapper = StringWrapper.getRemote();
+    stringWrapper.putString(entry.contents);
+    cache.addStringWrapper(stringWrapper);
   }
 
   const {items} = await cache.getAll();
-  if (items.length != TEST_DATA.length) {
+  if (items.length !== TEST_DATA.length) {
     return false;
   }
 
@@ -52,6 +56,23 @@ async function doTest(): Promise<boolean> {
       return false;
     }
     if (entries[entry.url] != entry.contents) {
+      return false;
+    }
+  }
+
+  const {stringWrapperList} = await cache.getStringWrapperList();
+  if (stringWrapperList.length !== TEST_DATA.length) {
+    return false;
+  }
+
+  let stringsInList = [];
+  for (const stringWrapper of stringWrapperList) {
+    let {item} = await stringWrapper.getString();
+    stringsInList.push(item);
+  }
+
+  for (const entry of TEST_DATA) {
+    if (!stringsInList.includes(entry.contents)) {
       return false;
     }
   }

@@ -1602,6 +1602,38 @@ def MethodPassesInterfaces(method):
   return _AnyMethodParameterRecursive(method, IsInterfaceKind)
 
 
+def MethodNeedsRemoteKind(method, kind_to_check, visited_kinds=None):
+
+  def needs_remote_import(reference_kind):
+    return (
+        (IsInterfaceKind(reference_kind) or IsPendingRemoteKind(reference_kind)
+         or IsPendingAssociatedRemoteKind(reference_kind))
+        # if types are compared directly, it will fail
+        # but the nested reference_kind.kind matches the top level
+        # kind_to_check.
+        and kind_to_check == reference_kind.kind)
+
+  return _AnyMethodParameterRecursive(method,
+                                      needs_remote_import,
+                                      visited_kinds=visited_kinds)
+
+
+def MethodNeedsReceiverKind(method, kind_to_check, visited_kinds=None):
+
+  def needs_receiver_import(reference_kind):
+    return (
+        (IsPendingReceiverKind(reference_kind)
+         or IsPendingAssociatedReceiverKind(reference_kind))
+        # if types are compared directly, it will fail
+        # but the nested reference_kind.kind matches the top level
+        # kind_to_check
+        and kind_to_check == reference_kind.kind)
+
+  return _AnyMethodParameterRecursive(method,
+                                      needs_receiver_import,
+                                      visited_kinds=visited_kinds)
+
+
 def GetSyncMethodOrdinals(interface):
   return [method.ordinal for method in interface.methods if method.sync]
 

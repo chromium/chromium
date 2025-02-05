@@ -424,6 +424,15 @@ class Generator(generator.Generator):
       qualifier += kind.parent_kind.name + '.'
     return (qualifier + kind.name).replace('.', '_')
 
+  # In a mojom file, there will be a list of imports
+  #
+  # For each of the files listed in the imports, each type of mojo
+  # abstraction will be evaluated against all the method parameters
+  # and mojo abstractions in the mojom file to assess if the type
+  # should be imported.
+  #
+  # Any matching imports should be added to the top of the typescript
+  # file
   def _GetImportsForKind(self, kind):
     qualified_name = self._GetNameInJsModule(kind)
 
@@ -435,41 +444,44 @@ class Generator(generator.Generator):
 
       return ImportInfo(name + suffix, qualified_name + suffix)
 
+    # This will evaluate to see if any of the interfaces in the imports
+    # are used in any method parameters of the interfaces of the mojom
+    # file.
+    #
+    # If it finds the interface as a remote and/or a receiver, it will
+    # update the relevant key in the dictionary
+    def find_interface_imports(kind_to_check, interfaces):
+      imported_receiver = False
+      imported_remote = False
+      visited_remotes = set()
+      visited_receivers = set()
+      for interface in interfaces:
+        for method in interface.methods:
+          if imported_remote and imported_receiver:
+            return (imported_remote, imported_receiver)
+          if not imported_remote:
+            imported_remote = mojom.MethodNeedsRemoteKind(
+                method, kind_to_check, visited_remotes)
+          if not imported_receiver:
+            imported_receiver = mojom.MethodNeedsReceiverKind(
+                method, kind_to_check, visited_receivers)
+      return (imported_remote, imported_receiver)
+
     if (mojom.IsEnumKind(kind) or mojom.IsStructKind(kind)
         or mojom.IsUnionKind(kind)):
       return [make_import(kind.name), make_import(kind.name, 'Spec')]
     if mojom.IsInterfaceKind(kind):
-      # Collect referenced kinds that may refer to an interface Remote or
-      # PendingReceiver.
-      referenced_kinds = []
-      for interface in self.module.interfaces:
-        for method in interface.methods:
-          referenced_kinds.extend(method.parameters or [])
-          referenced_kinds.extend(method.response_parameters or [])
-
-      # Determine whether Remote and/or PendingReceiver are referenced.
+      # Typescript will output an error if types are included
+      # that are not used or are double included. Only include
+      # what is needed!
       imports = []
-      imported_receiver = False
-      imported_remote = False
+      (imported_remote,
+       imported_receiver) = find_interface_imports(kind, self.module.interfaces)
 
-      for referenced_kind in referenced_kinds:
-        # Early return if both references have already been found.
-        if imported_remote and imported_receiver:
-          return imports
-        if (not imported_remote
-            and (mojom.IsInterfaceKind(referenced_kind.kind)
-                 or mojom.IsPendingRemoteKind(referenced_kind.kind)
-                 or mojom.IsPendingAssociatedRemoteKind(referenced_kind.kind))
-            and referenced_kind.kind.kind == kind):
-          imported_remote = True
-          imports.append(make_import(kind.name, 'Remote'))
-          continue
-        if (not imported_receiver
-            and (mojom.IsPendingReceiverKind(referenced_kind.kind)
-                 or mojom.IsPendingAssociatedReceiverKind(referenced_kind.kind))
-            and referenced_kind.kind.kind == kind):
-          imported_receiver = True
-          imports.append(make_import(kind.name, 'PendingReceiver'))
+      if imported_receiver:
+        imports.append(make_import(kind.name, 'PendingReceiver'))
+      if imported_remote:
+        imports.append(make_import(kind.name, 'Remote'))
       return imports
 
     assert False, kind.name
