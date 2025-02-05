@@ -36,11 +36,12 @@ public class MessageUtils {
 
     /** Returns the sync id of the group, or null. */
     public static @Nullable String extractSyncTabGroupId(@Nullable InstantMessage message) {
-        return message == null
-                        || message.attribution == null
-                        || message.attribution.tabGroupMetadata == null
-                ? null
-                : message.attribution.tabGroupMetadata.syncTabGroupId;
+        return message == null ? null : extractSyncTabGroupId(message.attribution);
+    }
+
+    /** Returns the sync id of the group, or null. */
+    public static @Nullable String extractSyncTabGroupId(@Nullable PersistentMessage message) {
+        return message == null ? null : extractSyncTabGroupId(message.attribution);
     }
 
     /** Returns the given name or the empty string. */
@@ -60,11 +61,18 @@ public class MessageUtils {
 
     /** Returns the tab group title or the empty string. */
     public static String extractTabGroupTitle(@Nullable InstantMessage message) {
-        return message == null
-                        || message.attribution == null
-                        || message.attribution.tabGroupMetadata == null
+        return message == null ? "" : extractTabGroupTitle(message.attribution);
+    }
+
+    /** Returns the tab group title or the empty string. */
+    public static String extractTabGroupTitle(@Nullable PersistentMessage message) {
+        return message == null ? "" : extractTabGroupTitle(message.attribution);
+    }
+
+    private static String extractTabGroupTitle(@Nullable MessageAttribution attribution) {
+        return attribution == null || attribution.tabGroupMetadata == null
                 ? ""
-                : message.attribution.tabGroupMetadata.lastKnownTitle;
+                : attribution.tabGroupMetadata.lastKnownTitle;
     }
 
     private static @Nullable Token extractTabGroupId(@Nullable MessageAttribution attribution) {
@@ -102,8 +110,20 @@ public class MessageUtils {
                 : message.attribution.tabMetadata.lastKnownUrl;
     }
 
+    private static @Nullable String extractSyncTabGroupId(
+            @Nullable MessageAttribution attribution) {
+        return attribution == null || attribution.tabGroupMetadata == null
+                ? null
+                : attribution.tabGroupMetadata.syncTabGroupId;
+    }
+
     /** Returns the message id or null. */
     public static @Nullable String extractMessageId(@Nullable InstantMessage message) {
+        return message == null || message.attribution == null ? null : message.attribution.id;
+    }
+
+    /** Returns the message id or null. */
+    public static @Nullable String extractMessageId(@Nullable PersistentMessage message) {
         return message == null || message.attribution == null ? null : message.attribution.id;
     }
 }
