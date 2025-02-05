@@ -58,28 +58,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Backend.TransactionCommitError"
-    enum="SqliteLoggedResultCode" expires_after="2025-02-04">
-  <owner>asully@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1456716</component>
-  <summary>
-    The exact database error encountered when committing a transaction, if it
-    failed.
-  </summary>
-</histogram>
-
-<histogram name="History.Backend.TransactionCommitSuccess"
-    enum="BooleanSuccess" expires_after="2025-02-04">
-  <owner>asully@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1456716</component>
-  <summary>
-    Recorded after attempting to commit a singleton transaction within
-    HistoryBackend. Records whether it was successfully committed or not.
-  </summary>
-</histogram>
-
 <histogram name="History.BrowsingDataLifetime.Duration.BrowserShutdownDeletion"
     units="ms" expires_after="2025-07-01">
   <owner>ydago@chromium.org</owner>
