@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/android/ui_android_features.h"
 #include "ui/gl/gl_features.h"
+#include "ui/gl/gl_switches.h"
 
 namespace internal {
 
@@ -298,4 +299,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
 
   // Disable Topics on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kBrowsingTopics);
+
+  // Sharing ANGLE's Vulkan queue is not supported on WebView.
+  aw_feature_overrides.DisableFeature(::features::kVulkanFromANGLE);
 }
