@@ -203,8 +203,7 @@ def _process_build_gradle(template_path, output_path, dependency_version_map,
       dependency_version_map: An "dependency_group:dependency_name"->dependency_version mapping.
       androidx_repository_url: URL of the maven repository.
     """
-    version_re = re.compile(
-        r'\s*\w+ompile(?:Latest)?\s+[\'"]([^:]+:[^:]+):(.+?)[\'"]')
+    version_re = re.compile(r'\s*\w+ompile\s+[\'"]([^:]+:[^:]+):(.+?)[\'"]')
     template_text = pathlib.Path(template_path).read_text()
     deps_with_custom_versions = set()
     sb = []
@@ -217,11 +216,14 @@ def _process_build_gradle(template_path, output_path, dependency_version_map,
                 new_version = dependency_version_map.get(name)
                 if new_version is None:
                     raise Exception(f'Version for {name} not found.')
-                line = line.replace(version, '+')
+                line = line.replace(version, new_version)
             else:
                 deps_with_custom_versions.add(name)
         elif line.strip() == '{{version_overrides}}':
             sb.append('versionOverrideMap = [:]\n')
+            for name, version in sorted(dependency_version_map.items()):
+                if name not in deps_with_custom_versions:
+                    sb.append(f"versionOverrideMap['{name}'] = '{version}'\n")
             deps_with_custom_versions = None
             continue
 

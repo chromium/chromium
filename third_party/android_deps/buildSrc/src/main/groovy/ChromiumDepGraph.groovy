@@ -320,11 +320,9 @@ class ChromiumDepGraph {
         Map<String, List<ResolvedArtifact>> resolvedArtifacts = [:]
         String[] configNames = [
             'compile',
-            'compileLatest',
             'buildCompile',
             'testCompile',
             'androidTestCompile',
-            'androidTestCompileLatest',
             'buildCompileNoDeps'
         ]
         for (Project project : projects) {
@@ -349,30 +347,38 @@ class ChromiumDepGraph {
         resolvedArtifacts['testCompile'].each { artifact ->
             String id = makeModuleId(artifact)
             DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name} (${id})"
+            assert dep : "No dependency collected for artifact ${artifact.name}"
             dep.testOnly = true
         }
 
-        (resolvedArtifacts['androidTestCompile'] + resolvedArtifacts['androidTestCompileLatest']).each { artifact ->
-            String id = makeModuleId(artifact)
-            DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name} (${id})"
+        resolvedArtifacts['androidTestCompile'].each { artifact ->
+            DependencyDescription dep = dependencies.get(makeModuleId(artifact))
+            assert dep : "No dependency collected for artifact ${artifact.name} (${makeModuleId(artifact)})"
             dep.supportsAndroid = true
             dep.testOnly = true
         }
 
-        (resolvedArtifacts['buildCompile'] + resolvedArtifacts['buildCompileNoDeps']).each { artifact ->
+        resolvedArtifacts['buildCompile'].each { artifact ->
             String id = makeModuleId(artifact)
             DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name} (${id})"
+            assert dep : "No dependency collected for artifact ${artifact.name}"
             dep.usedInBuild = true
             dep.testOnly = false
         }
 
-        (resolvedArtifacts['compile'] + resolvedArtifacts['compileLatest']).each { artifact ->
+        resolvedArtifacts['buildCompileNoDeps'].each { artifact ->
             String id = makeModuleId(artifact)
             DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name} (${id})"
+            assert dep : "No dependency collected for artifact ${artifact.name}"
+            dep.usedInBuild = true
+            dep.testOnly = false
+        }
+
+        List<ResolvedArtifact> compileResolvedArtifacts = resolvedArtifacts['compile']
+        compileResolvedArtifacts.each { artifact ->
+            String id = makeModuleId(artifact)
+            DependencyDescription dep = dependencies.get(id)
+            assert dep : "No dependency collected for artifact ${artifact.name}"
             dep.supportsAndroid = true
             dep.testOnly = false
             dep.isShipped = true
@@ -775,8 +781,8 @@ class ChromiumDepGraph {
 
     // Checks if currentVersion is lower than versionInQuestion.
     private boolean isVersionLower(String currentVersion, String versionInQuestion) {
-        List verA = currentVersion.tokenize('.-')
-        List verB = versionInQuestion.tokenize('.-')
+        List verA = currentVersion.tokenize('.')
+        List verB = versionInQuestion.tokenize('.')
         int commonIndices = Math.min(verA.size(), verB.size())
         for (int i = 0; i < commonIndices; ++i) {
             // toInteger could fail as some versions are 2.11.alpha-06.

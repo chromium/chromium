@@ -35,9 +35,6 @@ class ChromiumPlugin implements Plugin<Project> {
             /** Main type of configuration, use it for libraries that the APK depends on. */
             compile
 
-            /** Same as compile, but uses the latest versions of androidx deps. */
-            compileLatest
-
             /**
              * Dedicated com_google_guava_listenablefuture configuration so that other libraries do not affect the
              * resolved listenablefuture version.
@@ -55,9 +52,6 @@ class ChromiumPlugin implements Plugin<Project> {
 
             /** Libraries that are used for testing only and support android. */
             androidTestCompile
-
-            /** Same as androidTestCompile, but uses the latest versions of androidx deps. */
-            androidTestCompileLatest
         }
 
         project.dependencies.attributesSchema {
@@ -67,23 +61,20 @@ class ChromiumPlugin implements Plugin<Project> {
         }
 
         project.configurations.all {
+            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                if (project.ext.has('versionOverrideMap') && project.ext.versionOverrideMap) {
+                    String module = "${details.requested.group}:${details.requested.name}"
+                    String version = project.ext.versionOverrideMap[module]
+                    if (version != null) {
+                        details.useVersion version
+                    }
+                }
+            }
             attributes {
                 attribute(Attribute.of("org.gradle.category", String), "library")
                 attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
                 attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
                         project.objects.named(TargetJvmEnvironment, TargetJvmEnvironment.ANDROID))
-            }
-        }
-
-        project.configurations.compileLatest {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                overrideVersionIfNecessary(details)
-            }
-        }
-
-        project.configurations.androidTestCompileLatest {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                overrideVersionIfNecessary(details)
             }
         }
 
@@ -102,21 +93,11 @@ class ChromiumPlugin implements Plugin<Project> {
                 attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling, Bundling.EXTERNAL))
             }
         }
-
         project.configurations.buildCompileNoDeps {
             // transitive false means do not also pull in the deps of these deps.
             transitive = false
         }
 
-    }
-
-    private static void overrideVersionIfNecessary(DependencyResolveDetails details) {
-        String module = "${details.requested.group}:${details.requested.name}"
-        String version = details.requested.version
-        if (module.startsWith('androidx') && version != '+' && !version.contains('-SNAPSHOT')) {
-            println("Overriding version of $module from $version to +")
-            details.useVersion '+'
-        }
     }
 
 }
