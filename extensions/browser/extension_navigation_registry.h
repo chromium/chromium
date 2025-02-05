@@ -45,10 +45,15 @@ class ExtensionNavigationRegistry : public BrowserContextKeyedAPI {
   // Return metadata if it exists and remove it from memory.
   std::optional<GURL> GetAndErase(int64_t navigation_handle_id);
 
+  // Determine if the server redirect is allowed to succeed. This is not
+  // idempotent because it erases the corresponding record on the first call, so
+  // this should only be called once for a given stage in the navigation.
+  bool CanRedirectSucceed(int64_t navigation_id, const GURL& url);
+
+ private:
   // Determine whether the feature is enabled.
   bool IsEnabled();
 
- private:
   // BrowserContextKeyedAPIFactory or BrowserContextKeyedAPI related.
   friend class BrowserContextKeyedAPIFactory<ExtensionNavigationRegistry>;
   static const char* service_name() { return "ExtensionNavigationRegistry"; }

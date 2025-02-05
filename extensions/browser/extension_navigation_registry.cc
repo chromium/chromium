@@ -4,6 +4,7 @@
 
 #include "extensions/browser/extension_navigation_registry.h"
 
+#include <cstdint>
 #include <optional>
 
 #include "base/feature_list.h"
@@ -74,6 +75,30 @@ std::optional<GURL> ExtensionNavigationRegistry::GetAndErase(
 bool ExtensionNavigationRegistry::IsEnabled() {
   return base::FeatureList::IsEnabled(
       extensions_features::kExtensionWARForRedirect);
+}
+
+bool ExtensionNavigationRegistry::CanRedirectSucceed(int64_t navigation_id,
+                                                     const GURL& url) {
+  if (!IsEnabled()) {
+    return true;
+  }
+
+  std::optional<GURL> extension_redirect_recorded = GetAndErase(navigation_id);
+
+  // Block requests for navigations unaltered by webRequest.
+  if (!extension_redirect_recorded.has_value()) {
+    return false;
+  }
+
+  // Block requests if the extension or url are unexpected.
+  // TODO(crbug.com/40060076): Verify WAR access for the recorded extension
+  // instead of checking for equality with the target extension.
+  auto recorded_url = extension_redirect_recorded.value();
+  if (recorded_url != url) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace extensions

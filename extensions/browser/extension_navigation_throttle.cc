@@ -12,6 +12,7 @@
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
@@ -308,25 +309,11 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
                                     : "Extensions.WAR.XOriginWebAccessible.MV3",
                                 is_accessible);
 
-      if (!is_accessible &&
-          base::FeatureList::IsEnabled(
-              extensions_features::kExtensionWARForRedirect)) {
-        std::optional<GURL> extension_redirect_recorded =
-            ExtensionNavigationRegistry::Get(browser_context)
-                ->GetAndErase(navigation_handle()->GetNavigationId());
-
-        // Block requests for navigations unaltered by webRequest.
-        if (!extension_redirect_recorded.has_value()) {
-          return content::NavigationThrottle::BLOCK_REQUEST;
-        }
-
-        // Block requests if the extension or url are unexpected.
-        // TODO(crbug.com/40060076): Verify WAR access for the recorded
-        // extension instead of checking for equality with the target extension.
-        auto recorded_url = extension_redirect_recorded.value();
-        if (recorded_url != url) {
-          return content::NavigationThrottle::BLOCK_REQUEST;
-        }
+      bool can_redirect_succeed =
+          ExtensionNavigationRegistry::Get(browser_context)
+              ->CanRedirectSucceed(navigation_handle()->GetNavigationId(), url);
+      if (!is_accessible && !can_redirect_succeed) {
+        return content::NavigationThrottle::BLOCK_REQUEST;
       }
     }
   }
