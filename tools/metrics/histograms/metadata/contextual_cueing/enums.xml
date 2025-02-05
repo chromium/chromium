@@ -56,6 +56,10 @@ chromium-metrics-reviews@google.com.
     The page was eligible for the nudge, but too many nudges have been shown to
     the user recently.
   </int>
+  <int value="8" label="Too many nudges shown to the user, for the domain">
+    The page was eligible for the nudge, but too many nudges have been shown to
+    the user recently for the domain.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeDecision) -->

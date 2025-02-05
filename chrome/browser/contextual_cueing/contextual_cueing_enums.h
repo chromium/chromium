@@ -28,9 +28,12 @@ enum class NudgeDecision {
   // The page was eligible for the nudge, but too many nudges have been shown to
   // the user recently.
   kTooManyNudgesShownToTheUser = 7,
+  // The page was eligible for the nudge, but too many nudges have been shown to
+  // the user recently for the domain.
+  kTooManyNudgesShownToTheUserForDomain = 8,
 
   // New values above this line.
-  kMaxValue = kTooManyNudgesShownToTheUser,
+  kMaxValue = kTooManyNudgesShownToTheUserForDomain,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:NudgeDecision)
 
