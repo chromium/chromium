@@ -3111,7 +3111,6 @@ test("content_unittests") {
     "//content/browser/indexed_db:unit_tests",
     "//content/browser/notifications:notification_proto",
     "//content/browser/private_aggregation:for_content_tests",
-    "//content/browser/private_aggregation/proto:private_aggregation_budgets_proto",
     "//content/browser/tpcd_heuristics:unit_tests",
     "//content/browser/tracing/trace_report:mojo_bindings",
     "//content/child:for_content_tests",
