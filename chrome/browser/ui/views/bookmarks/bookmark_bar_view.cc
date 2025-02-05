@@ -1321,9 +1321,9 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
         chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
   }
 
-  button_drag_utils::SetDragImage(node->url(), node->GetTitle(),
-                                  icon.Rasterize(GetColorProvider()), &press_pt,
-                                  data);
+  button_drag_utils::SetDragImage(
+      node->url(), node->GetTitle(), icon.Rasterize(GetColorProvider()),
+      &press_pt, data, BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING);
   WriteBookmarkDragData(node, data);
 }
 
