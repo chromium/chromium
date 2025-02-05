@@ -112,8 +112,18 @@ void XrSessionCoordinator::RequestXrSession(
 }
 
 void XrSessionCoordinator::EndSession() {
+  // A default constructed callback is null.
+  EndSession(device::JavaShutdownCallback());
+}
+
+void XrSessionCoordinator::EndSession(
+    device::JavaShutdownCallback shutdown_callback) {
   DVLOG(1) << __func__;
   JNIEnv* env = AttachCurrentThread();
+
+  if (shutdown_callback) {
+    java_shutdown_callback_ = std::move(shutdown_callback);
+  }
 
   Java_XrSessionCoordinator_endSession(env, j_xr_session_coordinator_);
 }

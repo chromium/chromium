@@ -141,8 +141,14 @@ bool OpenXrPlatformHelperWindows::IsApiAvailable() {
 }
 
 bool OpenXrPlatformHelperWindows::Initialize() {
-  // Nothing to do;
+  // Nothing to do.
   return true;
+}
+
+void OpenXrPlatformHelperWindows::PrepareForSessionShutdown(
+    base::OnceClosure shutdown_ready_callback) {
+  // Nothing to do.
+  std::move(shutdown_ready_callback).Run();
 }
 
 XrResult OpenXrPlatformHelperWindows::CreateInstance(XrInstance* instance,

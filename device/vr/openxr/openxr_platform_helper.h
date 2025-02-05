@@ -86,6 +86,15 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // that require additional information via this mechanism will fail creation.
   XrResult CreateInstance(XrInstance* instance);
 
+  // Run any platform-specific shutdown that has to happen before the OpenXr
+  // session can be ended. E.g. On Android, if there is a separate activity, it
+  // needs to be destroyed before the session is shutdown so that the system
+  // rendering takes over.
+  // If a `shutdown_callback` was previously passed in, it will not be run, in
+  // favor of this callback.
+  virtual void PrepareForSessionShutdown(
+      base::OnceClosure shutdown_ready_callback) = 0;
+
   void CreateInstanceWithCreateInfo(
       std::optional<OpenXrCreateInfo> create_info,
       CreateInstanceCallback instance_ready_callback,

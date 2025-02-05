@@ -118,6 +118,10 @@ OpenXrDevice::~OpenXrDevice() {
   if (request_session_callback_) {
     std::move(request_session_callback_).Run(nullptr);
   }
+
+  if (shutdown_request_callback_) {
+    std::move(shutdown_request_callback_).Run();
+  }
 }
 
 void OpenXrDevice::RequestSession(
@@ -241,6 +245,10 @@ void OpenXrDevice::ForceEndSession(ExitXrPresentReason reason) {
   if (instance_ != XR_NULL_HANDLE) {
     platform_helper_->DestroyInstance(instance_);
   }
+
+  if (shutdown_request_callback_) {
+    std::move(shutdown_request_callback_).Run();
+  }
 }
 
 void OpenXrDevice::OnPresentingControllerMojoConnectionError() {
@@ -249,8 +257,16 @@ void OpenXrDevice::OnPresentingControllerMojoConnectionError() {
 
 void OpenXrDevice::ShutdownSession(
     mojom::XRRuntime::ShutdownSessionCallback callback) {
-  ForceEndSession(ExitXrPresentReason::kBrowserShutdown);
-  std::move(callback).Run();
+  DVLOG(1) << __func__;
+  if (!HasExclusiveSession()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  shutdown_request_callback_ = std::move(callback);
+  platform_helper_->PrepareForSessionShutdown(base::BindOnce(
+      &OpenXrDevice::ForceEndSession, weak_ptr_factory_.GetWeakPtr(),
+      ExitXrPresentReason::kBrowserShutdown));
 }
 
 void OpenXrDevice::SetFrameDataRestricted(bool restricted) {

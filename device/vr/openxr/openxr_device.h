@@ -59,6 +59,8 @@ class DEVICE_VR_EXPORT OpenXrDevice : public VRDeviceBase,
   std::unique_ptr<OpenXrExtensionHelper> extension_helper_;
   std::unique_ptr<OpenXrRenderLoop> render_loop_;
 
+  mojom::XRRuntime::ShutdownSessionCallback shutdown_request_callback_;
+
   mojo::Receiver<mojom::XRSessionController> exclusive_controller_receiver_{
       this};
 
