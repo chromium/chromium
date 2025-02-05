@@ -1718,10 +1718,14 @@ TEST_F(InlineNodeTest, FontFeaturesInitial) {
   )HTML");
   const auto is_initial = [this](const char* id) {
     const auto* layout_object = GetLayoutObjectByElementId(id);
-    FontFeatures features;
-    features.Initialize(
-        layout_object->StyleRef().GetFont().GetFontDescription());
-    return features.IsInitial();
+    Vector<FontFeatureRange, FontFeatureRange::kInitialSize> features;
+    FontFeatureRange::FromFontDescription(
+        layout_object->StyleRef().GetFont().GetFontDescription(), features);
+    if (FontFeatureRange::IsInitial(features)) {
+      EXPECT_EQ(features.size(), FontFeatureRange::kInitialSize);
+      return true;
+    }
+    return false;
   };
   EXPECT_TRUE(is_initial("initial"));
   EXPECT_FALSE(is_initial("no-kern"));

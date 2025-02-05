@@ -35,8 +35,8 @@ static_assert(offsetof(FontFeatureRange, start) ==
               offsetof(hb_feature_t, start));
 static_assert(offsetof(FontFeatureRange, end) == offsetof(hb_feature_t, end));
 
-bool FontFeatures::IsInitial() const {
-  return size() == 1 && (*this)[0] == kChws;
+bool FontFeatureRange::IsInitial(base::span<const FontFeatureRange> features) {
+  return features.size() == 1 && features[0] == kChws;
 }
 
 const hb_feature_t* FontFeatures::ToHarfBuzzData() const {
@@ -51,8 +51,11 @@ std::optional<uint32_t> FontFeatures::FindValueForTesting(uint32_t tag) const {
   return std::nullopt;
 }
 
-void FontFeatures::Initialize(const FontDescription& description) {
-  DCHECK(IsEmpty());
+template <wtf_size_t InlineCapacity>
+void FontFeatureRange::FromFontDescription(
+    const FontDescription& description,
+    Vector<FontFeatureRange, InlineCapacity>& features) {
+  DCHECK(features.empty());
   const bool is_horizontal = !description.IsVerticalAnyUpright();
 
   constexpr FontFeatureRange no_kern{{{'k', 'e', 'r', 'n'}}};
@@ -62,7 +65,7 @@ void FontFeatures::Initialize(const FontDescription& description) {
       // kern/vkrn are enabled by default in HarfBuzz
       break;
     case FontDescription::kNoneKerning:
-      Append(is_horizontal ? no_kern : no_vkrn);
+      features.push_back(is_horizontal ? no_kern : no_vkrn);
       break;
     case FontDescription::kAutoKerning:
       break;
@@ -81,27 +84,27 @@ void FontFeatures::Initialize(const FontDescription& description) {
     auto common = description.CommonLigaturesState();
     if (letter_spacing ||
         (common == disabled || (common == normal && default_is_off))) {
-      Append(no_liga);
-      Append(no_clig);
+      features.push_back(no_liga);
+      features.push_back(no_clig);
     }
     // dlig is off by default in HarfBuzz
     constexpr FontFeatureRange dlig{{{'d', 'l', 'i', 'g'}, 1}};
     auto discretionary = description.DiscretionaryLigaturesState();
     if (!letter_spacing && discretionary == enabled) {
-      Append(dlig);
+      features.push_back(dlig);
     }
     // hlig is off by default in HarfBuzz
     constexpr FontFeatureRange hlig{{{'h', 'l', 'i', 'g'}, 1}};
     auto historical = description.HistoricalLigaturesState();
     if (!letter_spacing && historical == enabled) {
-      Append(hlig);
+      features.push_back(hlig);
     }
     // calt is on by default in HarfBuzz
     constexpr FontFeatureRange no_calt{{{'c', 'a', 'l', 't'}}};
     auto contextual = description.ContextualLigaturesState();
     if (letter_spacing ||
         (contextual == disabled || (contextual == normal && default_is_off))) {
-      Append(no_calt);
+      features.push_back(no_calt);
     }
   }
 
@@ -110,13 +113,13 @@ void FontFeatures::Initialize(const FontDescription& description) {
   static constexpr FontFeatureRange qwid{{{'q', 'w', 'i', 'd'}, 1}};
   switch (description.WidthVariant()) {
     case kHalfWidth:
-      Append(hwid);
+      features.push_back(hwid);
       break;
     case kThirdWidth:
-      Append(twid);
+      features.push_back(twid);
       break;
     case kQuarterWidth:
-      Append(qwid);
+      features.push_back(qwid);
       break;
     case kRegularWidth:
       break;
@@ -135,22 +138,22 @@ void FontFeatures::Initialize(const FontDescription& description) {
       case FontVariantEastAsian::kNormalForm:
         break;
       case FontVariantEastAsian::kJis78:
-        Append(jp78);
+        features.push_back(jp78);
         break;
       case FontVariantEastAsian::kJis83:
-        Append(jp83);
+        features.push_back(jp83);
         break;
       case FontVariantEastAsian::kJis90:
-        Append(jp90);
+        features.push_back(jp90);
         break;
       case FontVariantEastAsian::kJis04:
-        Append(jp04);
+        features.push_back(jp04);
         break;
       case FontVariantEastAsian::kSimplified:
-        Append(smpl);
+        features.push_back(smpl);
         break;
       case FontVariantEastAsian::kTraditional:
-        Append(trad);
+        features.push_back(trad);
         break;
       default:
         NOTREACHED();
@@ -161,57 +164,57 @@ void FontFeatures::Initialize(const FontDescription& description) {
       case FontVariantEastAsian::kNormalWidth:
         break;
       case FontVariantEastAsian::kFullWidth:
-        Append(fwid);
+        features.push_back(fwid);
         break;
       case FontVariantEastAsian::kProportionalWidth:
-        Append(pwid);
+        features.push_back(pwid);
         break;
       default:
         NOTREACHED();
     }
     static constexpr FontFeatureRange ruby{{{'r', 'u', 'b', 'y'}, 1}};
     if (east_asian.Ruby())
-      Append(ruby);
+      features.push_back(ruby);
   }
 
   // font-variant-numeric:
   static constexpr FontFeatureRange lnum{{{'l', 'n', 'u', 'm'}, 1}};
   if (description.VariantNumeric().NumericFigureValue() ==
       FontVariantNumeric::kLiningNums)
-    Append(lnum);
+    features.push_back(lnum);
 
   static constexpr FontFeatureRange onum{{{'o', 'n', 'u', 'm'}, 1}};
   if (description.VariantNumeric().NumericFigureValue() ==
       FontVariantNumeric::kOldstyleNums)
-    Append(onum);
+    features.push_back(onum);
 
   static constexpr FontFeatureRange pnum{{{'p', 'n', 'u', 'm'}, 1}};
   if (description.VariantNumeric().NumericSpacingValue() ==
       FontVariantNumeric::kProportionalNums)
-    Append(pnum);
+    features.push_back(pnum);
   static constexpr FontFeatureRange tnum{{{'t', 'n', 'u', 'm'}, 1}};
   if (description.VariantNumeric().NumericSpacingValue() ==
       FontVariantNumeric::kTabularNums)
-    Append(tnum);
+    features.push_back(tnum);
 
   static constexpr FontFeatureRange afrc{{{'a', 'f', 'r', 'c'}, 1}};
   if (description.VariantNumeric().NumericFractionValue() ==
       FontVariantNumeric::kStackedFractions)
-    Append(afrc);
+    features.push_back(afrc);
   static constexpr FontFeatureRange frac{{{'f', 'r', 'a', 'c'}, 1}};
   if (description.VariantNumeric().NumericFractionValue() ==
       FontVariantNumeric::kDiagonalFractions)
-    Append(frac);
+    features.push_back(frac);
 
   static constexpr FontFeatureRange ordn{{{'o', 'r', 'd', 'n'}, 1}};
   if (description.VariantNumeric().OrdinalValue() ==
       FontVariantNumeric::kOrdinalOn)
-    Append(ordn);
+    features.push_back(ordn);
 
   static constexpr FontFeatureRange zero{{{'z', 'e', 'r', 'o'}, 1}};
   if (description.VariantNumeric().SlashedZeroValue() ==
       FontVariantNumeric::kSlashedZeroOn)
-    Append(zero);
+    features.push_back(zero);
 
   const FontFeatureTag chws_or_vchw = is_horizontal
                                           ? FontFeatureTag{'c', 'h', 'w', 's'}
@@ -232,7 +235,7 @@ void FontFeatures::Initialize(const FontDescription& description) {
     for (const FontFeature& setting : *settings) {
       const FontFeatureRange feature{
           {setting.Tag(), static_cast<uint32_t>(setting.Value())}};
-      Append(feature);
+      features.push_back(feature);
 
       // `chws` should not be appended if other glyph-width GPOS feature exists.
       if (default_enable_chws &&
@@ -244,18 +247,29 @@ void FontFeatures::Initialize(const FontDescription& description) {
   }
 
   if (default_enable_chws)
-    Append({{chws_or_vchw, 1}});
+    features.push_back(FontFeatureRange{{chws_or_vchw, 1}});
 
   const FontDescription::FontVariantPosition variant_position =
       description.VariantPosition();
   if (variant_position == FontDescription::kSubVariantPosition) {
     constexpr FontFeatureRange feature{{{'s', 'u', 'b', 's'}, 1}};
-    Append(feature);
+    features.push_back(feature);
   }
   if (variant_position == FontDescription::kSuperVariantPosition) {
     constexpr FontFeatureRange feature{{{'s', 'u', 'p', 's'}, 1}};
-    Append(feature);
+    features.push_back(feature);
   }
 }
+
+void FontFeatures::Initialize(const FontDescription& description) {
+  FontFeatureRange::FromFontDescription(description, features_);
+}
+
+//
+// Explicitly instantiate template functions.
+//
+template PLATFORM_EXPORT void FontFeatureRange::FromFontDescription(
+    const FontDescription&,
+    Vector<FontFeatureRange, FontFeatureRange::kInitialSize>&);
 
 }  // namespace blink

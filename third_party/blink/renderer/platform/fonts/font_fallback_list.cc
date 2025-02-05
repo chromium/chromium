@@ -223,16 +223,16 @@ void FontFallbackList::ComputeFontFeatures(
     const FontDescription& font_description) {
   DCHECK(!is_font_features_computed_);
   is_font_features_computed_ = true;
-  font_features_.Initialize(font_description);
+  FontFeatureRange::FromFontDescription(font_description, font_features_);
   has_non_initial_font_features_ =
-      !font_features_.IsInitial() ||
+      !FontFeatureRange::IsInitial(font_features_) ||
       // Features for `font-variant-alternates` is set in `GetFontData`.
       font_description.GetFontVariantAlternates() ||
       // Features for `font-variant-caps` is set while shaping.
       font_description.VariantCaps() != FontDescription::kCapsNormal;
 }
 
-const FontFeatures& FontFallbackList::GetFontFeatures(
+base::span<const FontFeatureRange> FontFallbackList::GetFontFeatures(
     const FontDescription& font_description) {
   if (!is_font_features_computed_) [[unlikely]] {
     ComputeFontFeatures(font_description);
