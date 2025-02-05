@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_SYSTEM_IMPL_H_
-#define CHROME_BROWSER_EXTENSIONS_EXTENSION_SYSTEM_IMPL_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_SYSTEM_H_
+#define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_SYSTEM_H_
 
 #include <string>
 
@@ -17,10 +17,14 @@
 class Profile;
 
 #if BUILDFLAG(IS_CHROMEOS)
+namespace extensions {
+class ExtensionsPermissionsTracker;
+}  // namespace extensions
+
 namespace chromeos {
 class DeviceLocalAccountManagementPolicyProvider;
 class SigninScreenPolicyProvider;
-}
+}  // namespace chromeos
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace value_store {
@@ -30,39 +34,38 @@ class ValueStoreFactoryImpl;
 
 namespace extensions {
 
-class ExtensionSystemSharedFactory;
+class ChromeExtensionSystemSharedFactory;
 class UninstallPingSender;
 class InstallGate;
-class ExtensionsPermissionsTracker;
 
 // The ExtensionSystem for ProfileImpl and OffTheRecordProfileImpl.
 // Implementation details: non-shared services are owned by
-// ExtensionSystemImpl, a KeyedService with separate incognito
+// ChromeExtensionSystem, a KeyedService with separate incognito
 // instances. A private Shared class (also a KeyedService,
 // but with a shared instance for incognito) keeps the common services.
-class ExtensionSystemImpl : public ExtensionSystem {
+class ChromeExtensionSystem : public ExtensionSystem {
  public:
   using InstallUpdateCallback = ExtensionSystem::InstallUpdateCallback;
 
-  explicit ExtensionSystemImpl(Profile* profile);
+  explicit ChromeExtensionSystem(Profile* profile);
 
-  ExtensionSystemImpl(const ExtensionSystemImpl&) = delete;
-  ExtensionSystemImpl& operator=(const ExtensionSystemImpl&) = delete;
+  ChromeExtensionSystem(const ChromeExtensionSystem&) = delete;
+  ChromeExtensionSystem& operator=(const ChromeExtensionSystem&) = delete;
 
-  ~ExtensionSystemImpl() override;
+  ~ChromeExtensionSystem() override;
 
   // KeyedService implementation.
   void Shutdown() override;
 
   void InitForRegularProfile(bool extensions_enabled) override;
 
-  ExtensionService* extension_service() override;  // shared
-  ManagementPolicy* management_policy() override;  // shared
+  ExtensionService* extension_service() override;           // shared
+  ManagementPolicy* management_policy() override;           // shared
   ServiceWorkerManager* service_worker_manager() override;  // shared
   UserScriptManager* user_script_manager() override;        // shared
-  StateStore* state_store() override;                              // shared
-  StateStore* rules_store() override;                              // shared
-  StateStore* dynamic_user_scripts_store() override;               // shared
+  StateStore* state_store() override;                       // shared
+  StateStore* rules_store() override;                       // shared
+  StateStore* dynamic_user_scripts_store() override;        // shared
   scoped_refptr<value_store::ValueStoreFactory> store_factory()
       override;                            // shared
   QuotaService* quota_service() override;  // shared
@@ -84,7 +87,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
                                         bool install_immediately) override;
 
  private:
-  friend class ExtensionSystemSharedFactory;
+  friend class ChromeExtensionSystemSharedFactory;
 
   // Owns the Extension-related systems that have a single instance
   // shared between normal and incognito profiles.
@@ -162,4 +165,4 @@ class ExtensionSystemImpl : public ExtensionSystem {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_SYSTEM_IMPL_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_SYSTEM_H_

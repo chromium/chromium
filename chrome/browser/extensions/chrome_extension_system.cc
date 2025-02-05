@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_system_impl.h"
+#include "chrome/browser/extensions/chrome_extension_system.h"
 
 #include <algorithm>
 #include <memory>
@@ -21,13 +21,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_app_sorting.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_garbage_collector.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/shared_module_service.h"
@@ -95,14 +95,14 @@ UninstallPingSender::FilterResult ShouldSendUninstallPing(
 }  // namespace
 
 //
-// ExtensionSystemImpl::Shared
+// ChromeExtensionSystem::Shared
 //
 
-ExtensionSystemImpl::Shared::Shared(Profile* profile) : profile_(profile) {}
+ChromeExtensionSystem::Shared::Shared(Profile* profile) : profile_(profile) {}
 
-ExtensionSystemImpl::Shared::~Shared() = default;
+ChromeExtensionSystem::Shared::~Shared() = default;
 
-void ExtensionSystemImpl::Shared::InitPrefs() {
+void ChromeExtensionSystem::Shared::InitPrefs() {
   store_factory_ = base::MakeRefCounted<value_store::ValueStoreFactoryImpl>(
       profile_->GetPath());
 
@@ -137,7 +137,7 @@ void ExtensionSystemImpl::Shared::InitPrefs() {
 #endif
 }
 
-void ExtensionSystemImpl::Shared::RegisterManagementPolicyProviders() {
+void ChromeExtensionSystem::Shared::RegisterManagementPolicyProviders() {
   management_policy_->RegisterProviders(
       ExtensionManagementFactory::GetForBrowserContext(profile_)
           ->GetProviders());
@@ -163,7 +163,7 @@ void ExtensionSystemImpl::Shared::RegisterManagementPolicyProviders() {
   management_policy_->RegisterProvider(InstallVerifier::Get(profile_));
 }
 
-void ExtensionSystemImpl::Shared::InitInstallGates() {
+void ChromeExtensionSystem::Shared::InitInstallGates() {
   update_install_gate_ = std::make_unique<UpdateInstallGate>(profile_);
   extension_service_->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForIdle, update_install_gate_.get());
@@ -181,8 +181,8 @@ void ExtensionSystemImpl::Shared::InitInstallGates() {
 #endif
 }
 
-void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
-  TRACE_EVENT0("browser,startup", "ExtensionSystemImpl::Shared::Init");
+void ChromeExtensionSystem::Shared::Init(bool extensions_enabled) {
+  TRACE_EVENT0("browser,startup", "ChromeExtensionSystem::Shared::Init");
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
 
@@ -286,7 +286,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
       profile_, std::make_unique<ExtensionsInternalsSource>(profile_));
 }
 
-void ExtensionSystemImpl::Shared::Shutdown() {
+void ChromeExtensionSystem::Shared::Shutdown() {
   if (content_verifier_.get()) {
     content_verifier_->Shutdown();
   }
@@ -295,69 +295,71 @@ void ExtensionSystemImpl::Shared::Shutdown() {
   }
 }
 
-ServiceWorkerManager* ExtensionSystemImpl::Shared::service_worker_manager() {
+ServiceWorkerManager* ChromeExtensionSystem::Shared::service_worker_manager() {
   return service_worker_manager_.get();
 }
 
-StateStore* ExtensionSystemImpl::Shared::state_store() {
+StateStore* ChromeExtensionSystem::Shared::state_store() {
   return state_store_.get();
 }
 
-StateStore* ExtensionSystemImpl::Shared::rules_store() {
+StateStore* ChromeExtensionSystem::Shared::rules_store() {
   return rules_store_.get();
 }
 
-StateStore* ExtensionSystemImpl::Shared::dynamic_user_scripts_store() {
+StateStore* ChromeExtensionSystem::Shared::dynamic_user_scripts_store() {
   return dynamic_user_scripts_store_.get();
 }
 
 scoped_refptr<value_store::ValueStoreFactory>
-ExtensionSystemImpl::Shared::store_factory() const {
+ChromeExtensionSystem::Shared::store_factory() const {
   return store_factory_;
 }
 
-ExtensionService* ExtensionSystemImpl::Shared::extension_service() {
+ExtensionService* ChromeExtensionSystem::Shared::extension_service() {
   return extension_service_.get();
 }
 
-ManagementPolicy* ExtensionSystemImpl::Shared::management_policy() {
+ManagementPolicy* ChromeExtensionSystem::Shared::management_policy() {
   return management_policy_.get();
 }
 
-UserScriptManager* ExtensionSystemImpl::Shared::user_script_manager() {
+UserScriptManager* ChromeExtensionSystem::Shared::user_script_manager() {
   return user_script_manager_.get();
 }
 
-QuotaService* ExtensionSystemImpl::Shared::quota_service() {
+QuotaService* ChromeExtensionSystem::Shared::quota_service() {
   return quota_service_.get();
 }
 
-AppSorting* ExtensionSystemImpl::Shared::app_sorting() {
+AppSorting* ChromeExtensionSystem::Shared::app_sorting() {
   return app_sorting_.get();
 }
 
-ContentVerifier* ExtensionSystemImpl::Shared::content_verifier() {
+ContentVerifier* ChromeExtensionSystem::Shared::content_verifier() {
   return content_verifier_.get();
 }
 
 //
-// ExtensionSystemImpl
+// ChromeExtensionSystem
 //
 
-ExtensionSystemImpl::ExtensionSystemImpl(Profile* profile) : profile_(profile) {
-  shared_ = ExtensionSystemSharedFactory::GetForBrowserContext(profile);
+ChromeExtensionSystem::ChromeExtensionSystem(Profile* profile)
+    : profile_(profile) {
+  shared_ = ChromeExtensionSystemSharedFactory::GetForBrowserContext(profile);
 
   if (!profile->IsOffTheRecord()) {
     shared_->InitPrefs();
   }
 }
 
-ExtensionSystemImpl::~ExtensionSystemImpl() = default;
+ChromeExtensionSystem::~ChromeExtensionSystem() = default;
 
-void ExtensionSystemImpl::Shutdown() {}
+void ChromeExtensionSystem::Shutdown() {}
 
-void ExtensionSystemImpl::InitForRegularProfile(bool extensions_enabled) {
-  TRACE_EVENT0("browser,startup", "ExtensionSystemImpl::InitForRegularProfile");
+void ChromeExtensionSystem::InitForRegularProfile(bool extensions_enabled) {
+  TRACE_EVENT0("browser,startup",
+               "ChromeExtensionSystem::InitForRegularProfile");
 
   if (user_script_manager() || extension_service()) {
     return;  // Already initialized.
@@ -366,66 +368,66 @@ void ExtensionSystemImpl::InitForRegularProfile(bool extensions_enabled) {
   shared_->Init(extensions_enabled);
 }
 
-ExtensionService* ExtensionSystemImpl::extension_service() {
+ExtensionService* ChromeExtensionSystem::extension_service() {
   return shared_->extension_service();
 }
 
-ManagementPolicy* ExtensionSystemImpl::management_policy() {
+ManagementPolicy* ChromeExtensionSystem::management_policy() {
   return shared_->management_policy();
 }
 
-ServiceWorkerManager* ExtensionSystemImpl::service_worker_manager() {
+ServiceWorkerManager* ChromeExtensionSystem::service_worker_manager() {
   return shared_->service_worker_manager();
 }
 
-UserScriptManager* ExtensionSystemImpl::user_script_manager() {
+UserScriptManager* ChromeExtensionSystem::user_script_manager() {
   return shared_->user_script_manager();
 }
 
-StateStore* ExtensionSystemImpl::state_store() {
+StateStore* ChromeExtensionSystem::state_store() {
   return shared_->state_store();
 }
 
-StateStore* ExtensionSystemImpl::rules_store() {
+StateStore* ChromeExtensionSystem::rules_store() {
   return shared_->rules_store();
 }
 
-StateStore* ExtensionSystemImpl::dynamic_user_scripts_store() {
+StateStore* ChromeExtensionSystem::dynamic_user_scripts_store() {
   return shared_->dynamic_user_scripts_store();
 }
 
 scoped_refptr<value_store::ValueStoreFactory>
-ExtensionSystemImpl::store_factory() {
+ChromeExtensionSystem::store_factory() {
   return shared_->store_factory();
 }
 
-const base::OneShotEvent& ExtensionSystemImpl::ready() const {
+const base::OneShotEvent& ChromeExtensionSystem::ready() const {
   return shared_->ready();
 }
 
-bool ExtensionSystemImpl::is_ready() const {
+bool ChromeExtensionSystem::is_ready() const {
   return shared_->is_ready();
 }
 
-QuotaService* ExtensionSystemImpl::quota_service() {
+QuotaService* ChromeExtensionSystem::quota_service() {
   return shared_->quota_service();
 }
 
-AppSorting* ExtensionSystemImpl::app_sorting() {
+AppSorting* ChromeExtensionSystem::app_sorting() {
   return shared_->app_sorting();
 }
 
-ContentVerifier* ExtensionSystemImpl::content_verifier() {
+ContentVerifier* ChromeExtensionSystem::content_verifier() {
   return shared_->content_verifier();
 }
 
-std::unique_ptr<ExtensionSet> ExtensionSystemImpl::GetDependentExtensions(
+std::unique_ptr<ExtensionSet> ChromeExtensionSystem::GetDependentExtensions(
     const Extension* extension) {
   return extension_service()->shared_module_service()->GetDependentExtensions(
       extension);
 }
 
-void ExtensionSystemImpl::InstallUpdate(
+void ChromeExtensionSystem::InstallUpdate(
     const std::string& extension_id,
     const std::string& public_key,
     const base::FilePath& unpacked_dir,
@@ -444,14 +446,14 @@ void ExtensionSystemImpl::InstallUpdate(
                                             unpacked_dir);
 }
 
-void ExtensionSystemImpl::PerformActionBasedOnOmahaAttributes(
+void ChromeExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
     const base::Value::Dict& attributes) {
   extension_service()->PerformActionBasedOnOmahaAttributes(extension_id,
                                                            attributes);
 }
 
-bool ExtensionSystemImpl::FinishDelayedInstallationIfReady(
+bool ChromeExtensionSystem::FinishDelayedInstallationIfReady(
     const std::string& extension_id,
     bool install_immediately) {
   ExtensionService* service = extension_service();

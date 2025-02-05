@@ -14,8 +14,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/permissions/permissions_helpers.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
@@ -77,7 +77,7 @@ class PermissionsUpdaterShutdownNotifierFactory
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "PermissionsUpdaterShutdownFactory") {
     DependsOn(EventRouterFactory::GetInstance());
-    DependsOn(ExtensionSystemFactory::GetInstance());
+    DependsOn(ChromeExtensionSystemFactory::GetInstance());
   }
   ~PermissionsUpdaterShutdownNotifierFactory() override = default;
 };

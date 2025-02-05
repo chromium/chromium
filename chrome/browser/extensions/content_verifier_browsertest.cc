@@ -107,8 +107,8 @@ class ContentVerifierTest : public ExtensionBrowserTest {
   ~ContentVerifierTest() override = default;
 
   void SetUp() override {
-    // Override content verification mode before ExtensionSystemImpl initializes
-    // ChromeContentVerifierDelegate.
+    // Override content verification mode before ChromeExtensionSystem
+    // initializes ChromeContentVerifierDelegate.
     ChromeContentVerifierDelegate::SetDefaultModeForTesting(
         ChromeContentVerifierDelegate::VerifyInfo::Mode::ENFORCE);
     ON_CALL(update_service_, StartUpdateCheck)

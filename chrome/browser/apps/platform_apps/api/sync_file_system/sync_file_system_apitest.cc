@@ -83,8 +83,8 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest,
 
     // Override factory to inject a mock RemoteFileSyncService.
     // Must happen after the browser process is created because instantiating
-    // the factory will instantiate ExtensionSystemFactory which depends on
-    // ExtensionsBrowserClient setup in BrowserProcessImpl.
+    // the factory will instantiate ChromeExtensionSystemFactory which depends
+    // on ExtensionsBrowserClient setup in BrowserProcessImpl.
     SyncFileSystemServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindLambdaForTesting([this](content::BrowserContext* context)

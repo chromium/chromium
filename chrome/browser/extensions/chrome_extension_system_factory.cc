@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 
 #include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -23,23 +23,24 @@
 
 namespace extensions {
 
-// ExtensionSystemSharedFactory
+// ChromeExtensionSystemSharedFactory
 
 // static
-ExtensionSystemImpl::Shared*
-ExtensionSystemSharedFactory::GetForBrowserContext(
+ChromeExtensionSystem::Shared*
+ChromeExtensionSystemSharedFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<ExtensionSystemImpl::Shared*>(
+  return static_cast<ChromeExtensionSystem::Shared*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
 // static
-ExtensionSystemSharedFactory* ExtensionSystemSharedFactory::GetInstance() {
-  static base::NoDestructor<ExtensionSystemSharedFactory> instance;
+ChromeExtensionSystemSharedFactory*
+ChromeExtensionSystemSharedFactory::GetInstance() {
+  static base::NoDestructor<ChromeExtensionSystemSharedFactory> instance;
   return instance.get();
 }
 
-ExtensionSystemSharedFactory::ExtensionSystemSharedFactory()
+ChromeExtensionSystemSharedFactory::ChromeExtensionSystemSharedFactory()
     : ProfileKeyedServiceFactory(
           "ExtensionSystemShared",
           ProfileSelections::Builder()
@@ -70,47 +71,50 @@ ExtensionSystemSharedFactory::ExtensionSystemSharedFactory()
   DependsOn(ExtensionHostRegistry::GetFactory());
 }
 
-ExtensionSystemSharedFactory::~ExtensionSystemSharedFactory() = default;
+ChromeExtensionSystemSharedFactory::~ChromeExtensionSystemSharedFactory() =
+    default;
 
 std::unique_ptr<KeyedService>
-ExtensionSystemSharedFactory::BuildServiceInstanceForBrowserContext(
+ChromeExtensionSystemSharedFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<ExtensionSystemImpl::Shared>(
+  return std::make_unique<ChromeExtensionSystem::Shared>(
       static_cast<Profile*>(context));
 }
 
-// ExtensionSystemFactory
+// ChromeExtensionSystemFactory
 
 // static
-ExtensionSystem* ExtensionSystemFactory::GetForBrowserContext(
+ExtensionSystem* ChromeExtensionSystemFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   return static_cast<ExtensionSystem*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
 // static
-ExtensionSystemFactory* ExtensionSystemFactory::GetInstance() {
-  static base::NoDestructor<ExtensionSystemFactory> instance;
+ChromeExtensionSystemFactory* ChromeExtensionSystemFactory::GetInstance() {
+  static base::NoDestructor<ChromeExtensionSystemFactory> instance;
   return instance.get();
 }
 
-ExtensionSystemFactory::ExtensionSystemFactory()
+ChromeExtensionSystemFactory::ChromeExtensionSystemFactory()
     : ExtensionSystemProvider("ExtensionSystem",
                               BrowserContextDependencyManager::GetInstance()) {
   DCHECK(ExtensionsBrowserClient::Get())
-      << "ExtensionSystemFactory must be initialized after BrowserProcess";
-  DependsOn(ExtensionSystemSharedFactory::GetInstance());
+      << "ChromeExtensionSystemFactory must be initialized after "
+         "BrowserProcess";
+  DependsOn(ChromeExtensionSystemSharedFactory::GetInstance());
 }
 
-ExtensionSystemFactory::~ExtensionSystemFactory() = default;
+ChromeExtensionSystemFactory::~ChromeExtensionSystemFactory() = default;
 
 std::unique_ptr<KeyedService>
-ExtensionSystemFactory::BuildServiceInstanceForBrowserContext(
+ChromeExtensionSystemFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<ExtensionSystemImpl>(static_cast<Profile*>(context));
+  return std::make_unique<ChromeExtensionSystem>(
+      static_cast<Profile*>(context));
 }
 
-content::BrowserContext* ExtensionSystemFactory::GetBrowserContextToUse(
+content::BrowserContext* ChromeExtensionSystemFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return ProfileSelections::Builder()
       .WithRegular(ProfileSelection::kOwnInstance)
@@ -124,7 +128,7 @@ content::BrowserContext* ExtensionSystemFactory::GetBrowserContextToUse(
       .ApplyProfileSelection(Profile::FromBrowserContext(context));
 }
 
-bool ExtensionSystemFactory::ServiceIsCreatedWithBrowserContext() const {
+bool ChromeExtensionSystemFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 

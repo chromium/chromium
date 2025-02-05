@@ -60,7 +60,8 @@ ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context,
       renderer_helper_(
           RendererStartupHelperFactory::GetForBrowserContext(browser_context)) {
   // ExtensionRegistrar is created by ExtensionSystem via ExtensionService, and
-  // ExtensionSystemFactory depends on ProcessManager, so this should be safe.
+  // ChromeExtensionSystemFactory depends on ProcessManager, so this should be
+  // safe.
   auto* process_manager = ProcessManager::Get(browser_context_);
   DCHECK(process_manager);
   process_manager_observation_.Observe(process_manager);

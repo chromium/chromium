@@ -24,7 +24,7 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/extensions/file_system_provider",
   "+chrome/browser/extensions/chrome_app_icon_loader.h",
-  "+chrome/browser/extensions/extension_system_factory.h",
+  "+chrome/browser/extensions/chrome_extension_system_factory.h",
   "+chrome/browser/extensions/window_controller_list.h",
   "+chrome/browser/notifications",
   "+chrome/browser/profiles",

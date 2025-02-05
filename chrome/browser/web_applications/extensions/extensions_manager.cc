@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -101,7 +101,7 @@ ExtensionsManager::RegisterGarbageCollectionInstallGate() {
 }
 
 KeyedServiceBaseFactory* ExtensionsManager::GetExtensionSystemSharedFactory() {
-  return extensions::ExtensionSystemSharedFactory::GetInstance();
+  return extensions::ChromeExtensionSystemSharedFactory::GetInstance();
 }
 
 }  // namespace web_app

@@ -26,8 +26,8 @@ bool IsAllowlistedForManagedGuestSession(const std::string& extension_id);
 // managed-guest session to decide whether the permissions of the extensions
 // should trigger the full warning on the login screen or not. The result is
 // saved in the local state perf, and the login screen warning of the managed
-// guest session is updated accordingly. ExtensionSystemImpl owns this class and
-// outlives it.
+// guest session is updated accordingly. ChromeExtensionSystem owns this class
+// and outlives it.
 class ExtensionsPermissionsTracker : public ExtensionRegistryObserver {
  public:
   ExtensionsPermissionsTracker(ExtensionRegistry* registry,
