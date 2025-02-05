@@ -34991,6 +34991,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.MyAccount">
+  <obsolete>Deprecated 02/2025 after sync-the-feature deprecation</obsolete>
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@google.com</owner>
   <owner>msarda@chromium.org</owner>
