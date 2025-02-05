@@ -95,12 +95,12 @@ std::string AIPrototypingServiceImpl::OnServerModelExecuteResponse(
     if (!parsed->output().empty()) {
       response = parsed->output();
     } else {
-      response = "Empty server response.";
+      return "Empty server response.";
     }
   } else {
-    response =
-        base::StringPrintf("Server model execution error: %d",
-                           static_cast<int>(result.response.error().error()));
+    return base::StrCat({"Server model execution error: ",
+                         service_->ResponseForErrorCode(static_cast<int>(
+                             result.response.error().error()))});
   }
 
   return response;

@@ -58,18 +58,30 @@ std::string TabOrganizationServiceImpl::OnGroupTabsResponse(
     optimization_guide::OptimizationGuideModelExecutionResult result) {
   std::string response = "";
 
+  if (!result.response.has_value()) {
+    return base::StrCat({"Server model execution error: ",
+                         service_->ResponseForErrorCode(static_cast<int>(
+                             result.response.error().error()))});
+  }
+
+  auto tab_organization_response = optimization_guide::ParsedAnyMetadata<
+      optimization_guide::proto::TabOrganizationResponse>(
+      result.response.value());
+
+  if (tab_organization_response->tab_groups().empty()) {
+    return "No grouped tabs returned.";
+  }
+
+  const google::protobuf::RepeatedPtrField<optimization_guide::proto::TabGroup>&
+      tab_groups = tab_organization_response->tab_groups();
+
   // The model doesn't necessarily group every tab, so track the tabs that have
   // been grouped in order to later list the ungrouped tabs.
   NSMutableSet<NSNumber*>* groupedTabIdentifiers = [NSMutableSet set];
 
-  auto parsed = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::TabOrganizationResponse>(
-      result.response.value());
-
   // For each tab group, print its name and the information of each tab within
   // it.
-  for (const optimization_guide::proto::TabGroup& tab_group :
-       parsed->tab_groups()) {
+  for (const optimization_guide::proto::TabGroup& tab_group : tab_groups) {
     response +=
         base::StringPrintf("Group name: %s\n", tab_group.label().c_str());
 
