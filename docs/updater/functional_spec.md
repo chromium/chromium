@@ -1535,8 +1535,11 @@ in the order they are returned in the update response.
 
 The integrity of the payload is verified.
 
-There is no download cache. Payloads are re-downloaded for applications which
-fail to install.
+Downloads are cached in the `crx_cache` subdirectory of the program's install
+location. The cache contains at most one item per app ID, in a file named
+`A_F` where A is the app ID and F is the
+[differential update fingerprint](protocol_4.md#differential-updates) of the
+download.
 
 ### Install location
 On Windows for system-scope updaters, the install location for both 32-bit and
