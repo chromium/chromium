@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1444443021901415601">Chrome havaitsee viimeaikaiseen selaushistoriaasi perustuvia kiinnostavia aiheita.</translation>
-<translation id="2252052615723281030">Tämä asetus auttaa pitämään IP-osoitteen yksityisenä, kun olet kirjautuneena Chromeen. Jos Chrome epäilee, että sivusto saattaa seurata sinua, osa liikenteestä voidaan lähettää yksityisten palvelimien kautta.</translation>
 <translation id="235789365079050412">Googlen tietosuojakäytäntö</translation>
 <translation id="2793385791865768072">Chromium havaitsee viimeaikaiseen selaushistoriaasi perustuvia kiinnostavia aiheita.</translation>
 <translation id="2979365474350987274">Kolmannen osapuolen evästeitä on rajoitettu</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Kolmannen osapuolen evästeitä rajoitettu</translation>
 <translation id="6371812158043974664">Tämä asetus auttaa pitämään IP-osoitteen yksityisenä, kun olet kirjautuneena sisään Chromiumiin. Jos Chromium epäilee, että sivusto saattaa seurata sinua, osa liikenteestä voidaan lähettää yksityisten palvelimien kautta. Lue lisää siitä, miten <ph name="LINK_BEGIN" />IP-suojaus toimii<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Lue <ph name="BEGIN_LINK1" />tietosuojakäytännöstä<ph name="LINK_END1" />, miten Google suojaa dataasi.</translation>
-<translation id="7040031291654706261">Lue lisää <ph name="BEGIN_LINK" />IP-suojauksesta<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Tarkista mainosaiheasetus</translation>
 </translationbundle>

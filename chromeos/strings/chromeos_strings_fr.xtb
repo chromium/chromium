@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Code incorrect.</translation>
 <translation id="382043424867370667">Fond d'écran Coucher de soleil</translation>
 <translation id="3824259034819781947">Joindre des fichiers</translation>
-<translation id="3836587210832263413">N'activez que les extensions que vous jugez fiables</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
 <translation id="3845880861638660475">Appuyez sur <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Échap<ph name="ESC_SHORTCUT_END" /> pour fermer la boîte de dialogue.</translation>
 <translation id="3848280697030027394">assombrissement du clavier</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Gérez vos imprimantes dans leurs paramètres</translation>
 <translation id="6292095526077353682">Pendant le chargement, afficher l'économiseur d'écran</translation>
 <translation id="629550705077076970">diminution de la luminosité du clavier</translation>
-<translation id="6301193653204230066">Elle désactive les extensions du navigateur Chrome et rétablit les paramètres réseau ainsi que d'autres paramètres par défaut sécurisés.
-          Vos onglets, fichiers, cookies et historique ne seront pas modifiés.</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="631063167932043783">Appli Explorer</translation>
 <translation id="6318437367327684789">indéfiniment</translation>
@@ -1774,6 +1771,8 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="951780398843003443">comparer les voix sur l'ensemble de l'enregistrement pour que la transcription reflète ce que dit chaque intervenant, et quand.</translation>
 <translation id="952992212772159698">Désactivé</translation>
 <translation id="95718197892796296">argile</translation>
+<translation id="959792926760890141">Elle désactive les extensions du navigateur Chrome et rétablit les paramètres réseau ainsi que d'autres paramètres par défaut sécurisés.
+          Votre moteur de recherche par défaut sera réinitialisé, mais vos onglets, vos fichiers, vos cookies et votre historique ne seront pas modifiés.</translation>
 <translation id="960719561871045870">Code de l'opérateur</translation>
 <translation id="965918541715156800">jaune et bleu canard</translation>
 <translation id="966787709310836684">menu</translation>

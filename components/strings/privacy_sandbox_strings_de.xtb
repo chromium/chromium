@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1444443021901415601">Chrome merkt sich auf Grundlage deines aktuellen Browserverlaufs, welche Themen dich interessieren</translation>
-<translation id="2252052615723281030">Diese Einstellung kann helfen, deine IP‑Adresse geheim zu halten, wenn du in Chrome angemeldet bist. Stellt Chrome fest, dass du möglicherweise von einer Website getrackt wirst, kann ein Teil deines Traffics durch einen Datenschutzserver geleitet werden.</translation>
 <translation id="235789365079050412">Datenschutzerklärung von Google</translation>
 <translation id="2793385791865768072">Chromium merkt sich auf Grundlage deines aktuellen Browserverlaufs, welche Themen dich interessieren</translation>
 <translation id="2979365474350987274">Drittanbieter-Cookies sind eingeschränkt</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Drittanbieter-Cookies eingeschränkt</translation>
 <translation id="6371812158043974664">Diese Einstellung kann helfen, deine IP‑Adresse geheim zu halten, wenn du in Chromium angemeldet bist. Stellt Chromium fest, dass du möglicherweise von einer Website getrackt wirst, kann ein Teil deines Traffics durch einen Datenschutzserver geleitet werden. <ph name="LINK_BEGIN" />Weitere Informationen zur Funktionsweise des IP‑Schutzes<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Weitere Informationen dazu, wie Google zum Schutz deiner Daten beiträgt, findest du <ph name="BEGIN_LINK1" />in unserer Datenschutzerklärung<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261"><ph name="BEGIN_LINK" />Informationen zur Funktionsweise des IP‑Schutzes<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Einstellung für Werbethemen prüfen</translation>
 </translationbundle>

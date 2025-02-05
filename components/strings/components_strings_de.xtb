@@ -1871,6 +1871,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4269264543938335308">Schwimmbekleidung</translation>
 <translation id="4269599248168651462">Das Serverzertifikat wird für einen nicht eindeutigen Namen ausgestellt.</translation>
 <translation id="4270541775497538019">Stapelfach 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 Rezensionen ansehen. Die durchschnittliche Bewertung beträgt <ph name="STARS" /> Sterne.}=1{1 Rezension ansehen. Die durchschnittliche Bewertung beträgt <ph name="STARS" /> Sterne.}other{Alle # Rezensionen ansehen. Die durchschnittliche Bewertung beträgt <ph name="STARS" /> Sterne.}}</translation>
 <translation id="4271652479722040953">Wenn Erweiterungen zu Chrome hinzugefügt werden, werden relevante Daten zu diesen Erweiterungen zur Analyse an Dritte gesendet und können für deinen Administrator sichtbar sei. Die Daten umfassen Informationen zu den Erweiterungen wie Name, Installationszeit, Installationsquelle sowie Aktivitäten, die mit diesen Erweiterungen verknüpft sind (z. B. das Wechseln von Tabs, das Kontaktieren von Websites oder der Zugriff auf Cookies). Diese Daten werden für Erweiterungen erhoben, die aus dem Chrome Web Store und von Quellen außerhalb des Stores stammen.</translation>
 <translation id="4275830172053184480">Gerät neu starten</translation>
 <translation id="4276974990916607331">Nein danke</translation>
@@ -2950,6 +2951,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6224281071334553713">Edelsteine und Schmuck</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um die Bedienungshilfen in den Chrome-Einstellungen zu personalisieren</translation>
 <translation id="6228346913624365233">Luxusfahrzeuge</translation>
+<translation id="6228836011612806720">Händlerrezensionen. Die durchschnittliche Bewertung beträgt <ph name="STARS" /> Sterne.</translation>
 <translation id="6229196330202833460">Film- und TV-Streaming</translation>
 <translation id="6234122620015464377">Nach jedem Dokument zuschneiden</translation>
 <translation id="6234310016144827337">Verbindung prüfen und noch einmal versuchen</translation>

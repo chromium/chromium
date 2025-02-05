@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="1444443021901415601">Chrome note les sujets d'intérêt en fonction de votre historique de navigation récent</translation>
-<translation id="2252052615723281030">Lorsque vous êtes connecté à Chrome, ce paramètre permet de préserver la confidentialité de votre adresse IP. Si Chrome soupçonne un site de vous suivre, une partie de votre trafic peut être envoyée par l'intermédiaire de serveurs de confidentialité.</translation>
 <translation id="235789365079050412">Politique de confidentialité de Google</translation>
 <translation id="2793385791865768072">Chromium note les sujets d'intérêt en fonction de votre historique de navigation récent</translation>
 <translation id="2979365474350987274">Les témoins tiers sont limités</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Témoins tiers limités</translation>
 <translation id="6371812158043974664">Lorsque vous êtes connecté à Chromium, ce paramètre permet de préserver la confidentialité de votre adresse IP. Si Chromium soupçonne un site de vous suivre, une partie de votre trafic peut être envoyée par l'intermédiaire de serveurs de confidentialité. En savoir plus sur le <ph name="LINK_BEGIN" />fonctionnement de la protection de l'adresse IP<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Apprenez-en plus sur la façon dont Google protège vos données en consultant sa <ph name="BEGIN_LINK1" />politique de confidentialité<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261">Découvrir <ph name="BEGIN_LINK" />comment fonctionne la protection de l'adresse IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Vérifiez les paramètres de vos sujets d'annonces</translation>
 </translationbundle>

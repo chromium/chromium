@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1444443021901415601">Chrome identifica temas de interés basándose en tu historial de navegación reciente</translation>
-<translation id="2252052615723281030">Cuando accedes a Chrome, este parámetro de configuración ayuda a mantener la privacidad de tu dirección IP. Si Chrome sospecha que un sitio puede estar rastreándote, es posible que alguna parte de tu tráfico se envíe a través de servidores de privacidad.</translation>
 <translation id="235789365079050412">Política de Privacidad de Google</translation>
 <translation id="2793385791865768072">Chromium identifica temas de interés basándose en tu historial de navegación reciente.</translation>
 <translation id="2979365474350987274">Las cookies de terceros están limitadas</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Se limitaron las cookies de terceros</translation>
 <translation id="6371812158043974664">Cuando accedes a Chromium, esta configuración ayuda a mantener la privacidad de tu dirección IP. Si Chromium sospecha que un sitio puede estar rastreándote, es posible que alguna parte de tu tráfico se envíe a través de servidores de privacidad. Obtén más información sobre <ph name="LINK_BEGIN" />cómo funciona IP Protection<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Obtén más información en nuestra <ph name="BEGIN_LINK1" />Política de Privacidad<ph name="LINK_END1" /> sobre el modo en que Google protege tus datos.</translation>
-<translation id="7040031291654706261">Consulta <ph name="BEGIN_LINK" />cómo funciona IP Protection<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Revisa la configuración de temas de anuncios</translation>
 </translationbundle>

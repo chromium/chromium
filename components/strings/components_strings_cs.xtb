@@ -1869,6 +1869,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4269264543938335308">Plavky a koupací oblečení</translation>
 <translation id="4269599248168651462">Certifikát serveru je vydán na jméno, které není jedinečné.</translation>
 <translation id="4270541775497538019">Stohovač 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Zobrazit 0 recenzí. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}=1{Zobrazit 1 recenzi. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}few{Zobrazit všechny # recenze. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}many{Zobrazit všech # recenze. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}other{Zobrazit všech # recenzí. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}}</translation>
 <translation id="4271652479722040953">Když jsou do Chromu přidána rozšíření, odesílají se o nich relevantní data třetím stranám k analýze a tato data může vidět také váš administrátor. Tato data zahrnují informace o rozšířeních, jako jsou název, čas instalace a zdroj instalace, a také s nimi spojené aktivity (jako je změna karet, kontaktování webů nebo přístup k souborům cookie). Tato data se shromažďují pro rozšíření nainstalovaná z Internetového obchodu Chrome i pro rozšíření nainstalovaná odjinud.</translation>
 <translation id="4275830172053184480">Restartovat zařízení</translation>
 <translation id="4276974990916607331">Ne, díky</translation>
@@ -2947,6 +2948,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6224281071334553713">Klenoty a šperky</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter si v nastavení Chromu můžete přizpůsobit nástroje pro usnadnění přístupu</translation>
 <translation id="6228346913624365233">Luxusní vozy</translation>
+<translation id="6228836011612806720">Recenze obchodů. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.</translation>
 <translation id="6229196330202833460">Streamování filmů a televize</translation>
 <translation id="6234122620015464377">Oříznout za každým dokumentem</translation>
 <translation id="6234310016144827337">Zkontrolujte připojení a zkuste to znovu</translation>

@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1384959399684842514">Na-pause ang pag-download</translation>
 <translation id="1396327438254055134">Payagan ang site na gumamit ng V8 optimizer.</translation>
+<translation id="1409338233051621926">I-tap ang Mga App at pagkatapos ay i-tap ang Mga default na app</translation>
 <translation id="1415402041810619267">Naputol ang URL</translation>
 <translation id="1415855080660575082">Hayaang i-share ng Chrome ang iyong mga kamakailang tab gamit ang device mo para makita ang mga ito sa listahan ng app at mga resulta ng paghahanap ng iyong device. Puwede mo itong i-on o i-off sa mga setting ng Chrome.</translation>
 <translation id="1448064542941920355">Bawasan ang pag-zoom</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Huwag ilapat ang madilim na tema sa mga site</translation>
 <translation id="2606760465469169465">Awtomatikong pag-verify</translation>
 <translation id="2621115761605608342">Payagan ang JavaScript para sa isang partikular na site.</translation>
+<translation id="2626708220538466178">Isinara ang bottom sheet ng default browser</translation>
 <translation id="2653659639078652383">Isumite</translation>
 <translation id="2677748264148917807">Umalis</translation>
 <translation id="2682367912565197520">I-delete ang naka-save na level ng pag-zoom</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">I-mute ang mga site na nagpe-play ng tunog</translation>
 <translation id="3602290021589620013">I-preview</translation>
 <translation id="3628308229821498208">Mga iminumungkahing paghahanap</translation>
+<translation id="3658847490588580244">Bottom sheet ng default browser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}one{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}other{<ph name="RWS_MEMBERS_COUNT" /> na site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}}</translation>
 <translation id="3697164069658504920">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga USB device. Kapag naka-off, hindi makakagamit ng mga USB device ang mga site.</translation>
 <translation id="3707034683772193706">Puwedeng mag-save ng kaunting impormasyon sa Chrome ang isang site na binibisita mo, para lang ma-validate na hindi ka bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">I-delete at i-reset</translation>
 <translation id="4645575059429386691">Pinamamahalaan ng iyong magulang</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
+<translation id="4672315773691449562">I-tap ang Browser app at pagkatapos ay i-tap ang Chrome</translation>
 <translation id="4676059169848868271">Para payagan ang <ph name="APP_NAME" /> na gamitin ang pag-track sa kamay, i-on din ang pag-track sa kamay sa <ph name="BEGIN_LINK" />mga setting ng system<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Mga motion o light sensor</translation>
 <translation id="4755971844837804407">Kapag naka-on, puwedeng magpakita sa iyo ng anumang ad ang mga site. Kapag naka-off, hindi makakapagpakita ang mga site ng mga nakakasagabal o mapanlinlang na ad.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Pinapayagan (inirerekomenda)</translation>
 <translation id="8609465669617005112">Ilipat sa itaas</translation>
 <translation id="8617611086246832542">Kapag naka-on, ipinapakita ang desktop view ng mga website. Kapag naka-off, ipinapakita ang mobile view ng mga website.</translation>
+<translation id="8670078035093027626">Binuksan nang buo ang bottom sheet ng default browser</translation>
 <translation id="8676316391139423634">Kapag naka-on, puwedeng magtanong ang mga site na i-track ang iyong mga kamay. Kapag naka-off, hindi mata-track ng mga site ang iyong mga kamay.</translation>
 <translation id="8676374126336081632">I-clear ang input</translation>
 <translation id="8681886425883659911">Bina-block ang mga ad sa mga site na kilalang nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad</translation>

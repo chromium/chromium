@@ -25,6 +25,7 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Ďalšie informácie<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Bola zoskupená <ph name="TABS_COUNT_ONE" /> karta</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
+<translation id="1909810060368225529">Upozornenie: Zmeny tejto zdieľanej skupiny kariet vidia všetci. Zdieľané skupiny kariet môžu meniť všetci.</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Uložiť <ph name="TABS_COUNT_ONE" /> vybranú kartu ako záložku}few{Uložiť <ph name="TABS_COUNT_MANY" /> vybrané karty ako záložky}many{Bookmark <ph name="TABS_COUNT_MANY" /> selected tabs}other{Uložiť <ph name="TABS_COUNT_MANY" /> vybraných kariet ako záložky}}</translation>
 <translation id="2118649612461486615">Informácie o obchode</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zavreté karty a skupiny môžete znova otvoriť v sekciách Nedávne karty a Skupiny kariet. Karta inkognito nebude k dispozícii.}few{Zavreté karty a skupiny môžete znova otvoriť v sekciách Nedávne karty a Skupiny kariet. # karty inkognito nebudú k dispozícii.}many{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your # Incognito tabs won't be available.}other{Zavreté karty a skupiny môžete znova otvoriť v sekciách Nedávne karty a Skupiny kariet. # kariet inkognito nebude k dispozícii.}}</translation>
@@ -126,11 +127,13 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="6381032505162537930">Tu nájdete svoje skupiny kariet</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Zrušiť zoskupenie <ph name="TABS_COUNT_ONE" /> vybranej karty}few{Zrušiť zoskupenie <ph name="TABS_COUNT_MANY" /> vybraných kariet}many{Ungroup <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zrušiť zoskupenie <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
+<translation id="6499296376514955580">Upozornenie na zmeny zdieľanej skupiny kariet bolo zavreté</translation>
 <translation id="6527303717912515753">Zdieľať</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Po 1 dni}few{Po <ph name="DAY_COUNT_MANY" /> dňoch}many{Po <ph name="DAY_COUNT_MANY" /> dňa}other{Po <ph name="DAY_COUNT_MANY" /> dňoch}}</translation>
 <translation id="6549021453810473782">Zobraziť informácie o obchode</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Presunúť kartu doľava</translation>
+<translation id="6589356853295569750">Upozornenie na zmeny zdieľanej skupiny kariet je otvorené na celú výšku</translation>
 <translation id="6590332670428149473">Otvorte ponuku akcií zdieľanej skupiny kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Ukázať</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> karta bola zmenená}few{<ph name="MANY_CHANGED" /> karty boli zmenené}many{<ph name="MANY_CHANGED" /> tabs changed}other{<ph name="MANY_CHANGED" /> kariet bolo zmenených}}</translation>
@@ -157,6 +160,7 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Zdieľať <ph name="TABS_COUNT_ONE" /> vybranú kartu}few{Zdieľať <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Share <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zdieľať <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="7773714564112603605">Odstráni sa karta aj skupina</translation>
 <translation id="7792771145871471484">Prezrieť návrhy.</translation>
+<translation id="7792860826279960128">Upozornenie na zmeny zdieľanej skupiny kariet je otvorené na polovičnú výšku</translation>
 <translation id="7825973332242257878">Skupiny kariet</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Zoskupiť <ph name="TABS_COUNT_ONE" /> vybranú kartu}few{Zoskupiť <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Group <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zoskupiť <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="7853202427316060426">Aktivita</translation>

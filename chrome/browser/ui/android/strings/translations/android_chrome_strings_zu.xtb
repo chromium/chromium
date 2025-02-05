@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Amaphasiwedi kuwo wonke amadivayisi akho</translation>
 <translation id="1082920045291562218">Ukwabelana ngeshidi lempendulo yesifinyezo kuvaliwe</translation>
 <translation id="1087176310396019910">Okungase kube ugaxekile</translation>
+<translation id="1087799850623149508">Ungathinta uphinde ubambe ukuze uthathe ibha lekheli liye ekugcineni</translation>
 <translation id="1089606299949659462">Ukubuyekeza kuqedile!</translation>
 <translation id="1094555143448724771">Ukuze ubone amathebhu ukusuka kwamanye amadivayisi akho, vumelanisa amathebhu akho nomlando.</translation>
 <translation id="1095761715416917775">Qinisekisa ukuthi ungahlala ufinyelela kudatha yakho yokuvumelanisa</translation>
@@ -131,6 +132,7 @@ Ukuze uthole amasethingi angeziwe asebenzisa idatha ukuthuthukisa ukuzizwisa kwa
 <translation id="1513858653616922153">Susa iphasiwedi</translation>
 <translation id="1521774566618522728">Iyasebenza namhlanje</translation>
 <translation id="153446405401665083">Uhlobo olusha lweChrome luyatholakala</translation>
+<translation id="1540012742443808215">Okwamanje ibha yekheli ingaphezulu</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{ibhukhimakhi e-1 ilondolozwe kule divayisi kuphela. Ukuze uyisebenzise kwamanye amadivayisi akho, ilondoloze kuGoogle Account yakho, <ph name="ACCOUNT_EMAIL" />.}one{amabhukhimakhi angu-# alondolozwa kuphela kule divayisi. Ukuze uwasebenzise kwamanye amadivayisi akho, walondoloze kuGoogle Account yakho, <ph name="ACCOUNT_EMAIL" />.}other{amabhukhimakhi angu-# alondolozwa kuphela kule divayisi. Ukuze uwasebenzise kwamanye amadivayisi akho, walondoloze kuGoogle Account yakho, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Izindlela zokukhokha kanye namakheli ngeke kubethelwe. Umlando wokubhrawuza ovela kuChrome ngeke uvumelanise.
 Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. Umshwana wokungena awuthunyelwa noma ulondolozwe yiGoogle. Uma ukhohlwa umushwana wakho wokungena noma ufuna ukushintsha le sethingi, <ph name="BEGIN_LINK" />sula idatha yeChrome ku-akhawunti yakho<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="6459045781120991510">Izinhlolovo</translation>
 <translation id="6461962085415701688">Ayikwazanga ukuvula ifayela</translation>
 <translation id="6464977750820128603">Ungabona amasayithi owavakashelayo ku-Chrome uphinde usethe izibali zesikhathi zawo.\n\nI-Google ithola ulwazi olumayelana namasayithi owasethela izibali sikhathi nokuthi uwavakashela izikhathi ezinde kangakanani. Lolu lwazi lusetshenziselwa ukwenza i-Digital Wellbeing ibe ngcono.</translation>
+<translation id="6468703991511753953">Okwamanje ibha yekheli ingezansi</translation>
 <translation id="6470181189905173055">Amakhasi owavule ku-Chrome ngenkathi usebenzisa okuthi <ph name="APP_LABEL" /> azovela lapha.</translation>
 <translation id="6473086018775716761">Uhlu lwezinketho zokwabelana luvulwe ukuphakama okuhhafu.</translation>
 <translation id="6475951671322991020">Landa ividiyo</translation>

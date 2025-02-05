@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN nije važeći.</translation>
 <translation id="382043424867370667">Pozadina s pogledom na zalazak sunca</translation>
 <translation id="3824259034819781947">Priloži datoteke</translation>
-<translation id="3836587210832263413">Uključite samo proširenja koja smatrate pouzdanima</translation>
 <translation id="3838338534323494292">Nova zaporka</translation>
 <translation id="3845880861638660475">Pritisnite <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> i <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> da biste zatvorili dijaloški okvir.</translation>
 <translation id="3848280697030027394">tamna tipkovnica</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Upravljajte pisačima u postavkama pisača</translation>
 <translation id="6292095526077353682">Tijekom punjenja prikaži čuvar zaslona</translation>
 <translation id="629550705077076970">zatamnjenje tipkovnice</translation>
-<translation id="6301193653204230066">Sigurnosno vraćanje na zadano isključuje proširenja preglednika Chrome i vraća mrežne i druge postavke na sigurne zadane postavke.
-          Vaše kartice, datoteke, kolačići i povijest neće se promijeniti.</translation>
 <translation id="6302401976930124515">Otkazan je test <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Aplikacija Istražite</translation>
 <translation id="6318437367327684789">zauvijek</translation>
@@ -1774,6 +1771,8 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="951780398843003443">usporedio glasove na cijeloj snimci da bi se u prijepisu naznačilo što je svaki govornik izgovorio i kada.</translation>
 <translation id="952992212772159698">Nije aktivirano</translation>
 <translation id="95718197892796296">gline</translation>
+<translation id="959792926760890141">Sigurnosno vraćanje na zadano isključuje proširenja preglednika Chrome i vraća mrežne i druge postavke na sigurne zadane postavke.
+          Vaša će se zadana tražilica vratiti na zadano, ali vaše kartice, datoteke, kolačići i povijest neće se promijeniti.</translation>
 <translation id="960719561871045870">Kôd operatera</translation>
 <translation id="965918541715156800">žute i tirkiznoplave boje</translation>
 <translation id="966787709310836684">izbornik</translation>

@@ -1234,6 +1234,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3194737229810486521"><ph name="URL" /> želi trajno shraniti podatke v vaši napravi</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> v strežniku <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Lahko zahteva, da izve, kdaj aktivno uporabljate napravo.</translation>
+<translation id="3201482403106004262">Prišlo je do napake z anketo.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati, kateri podatki se sinhronizirajo v Chromovih nastavitvah.</translation>
 <translation id="3203025201812691413">Polje za URL ne sme biti prazno</translation>
 <translation id="320323717674993345">Prekliči plačilo</translation>
@@ -1873,6 +1874,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4269264543938335308">Kopalke</translation>
 <translation id="4269599248168651462">Potrdilo strežnika je izdano za ime, ki ni enolično.</translation>
 <translation id="4270541775497538019">Zlagalnik 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Ogled 0 mnenj. Povprečna ocena v zvezdicah: <ph name="STARS" />.}=1{Ogled 1 mnenja. Povprečna ocena v zvezdicah: <ph name="STARS" />.}one{Ogled vseh toliko mnenj: #. Povprečna ocena v zvezdicah: <ph name="STARS" />.}two{Ogled vseh toliko mnenj: #. Povprečna ocena v zvezdicah: <ph name="STARS" />.}few{Ogled vseh toliko mnenj: #. Povprečna ocena v zvezdicah: <ph name="STARS" />.}other{Ogled vseh toliko mnenj: #. Povprečna ocena v zvezdicah: <ph name="STARS" />.}}</translation>
 <translation id="4271652479722040953">Ko so razširitve dodane v Chrome, se ustrezni podatki o teh razširitvah pošljejo tretjim osebam v analizo in so morda vidni skrbniku. Podatki vključujejo informacije o razširitvah, kot so ime, čas namestitve, vir namestitve in dejavnost, povezana s temi razširitvami (na primer spreminjanje zavihkov, stik s spletnimi mesti ali dostop do piškotkov). Ti podatki se zbirajo za razširitve, nameščene iz Spletne trgovine Chrome, in za razširitve, nameščene zunaj trgovine.</translation>
 <translation id="4275830172053184480">Znova zaženite napravo.</translation>
 <translation id="4276974990916607331">Ne, hvala</translation>
@@ -2952,6 +2954,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6224281071334553713">Draguljarstvo in zlatarstvo</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite osebno prilagoditi orodja za ljudi s posebnimi potrebami v Chromovih nastavitvah.</translation>
 <translation id="6228346913624365233">Luksuzna vozila</translation>
+<translation id="6228836011612806720">Mnenja o trgovini. Povprečna ocena je toliko zvezdic: <ph name="STARS" />.</translation>
 <translation id="6229196330202833460">Pretočno predvajanje filmov in TV-vsebine</translation>
 <translation id="6234122620015464377">Obrezovanje po vsakem dokumentu</translation>
 <translation id="6234310016144827337">Preverite povezavo in poskusite znova.</translation>
@@ -4621,6 +4624,7 @@ Dodatne podrobnosti:
 <translation id="9192361865877479444">Metal (Matte)</translation>
 <translation id="9192947025498305328">Čistilna kozmetika</translation>
 <translation id="9199905725844810519">Tiskanje je blokirano</translation>
+<translation id="9201904868909900493">Odpiranje ankete …</translation>
 <translation id="9204089334327209740">Ko je nalaganje končano, lahko datoteke spreminjate v storitvi <ph name="CLOUD_PROVIDER" />. Lokalna shramba, vključno z datotekami v smetnjaku, bo samodejno odstranjena.</translation>
 <translation id="9205078245616868884">Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite začeti sinhronizacijo.</translation>
 <translation id="920643408853370361">Potovalno zavarovanje</translation>

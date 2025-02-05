@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
 <translation id="1396327438254055134">Dozvolite sajtu da koristi V8 optimizator.</translation>
+<translation id="1409338233051621926">Dodirnite Aplikacije, pa Podrazumevane aplikacije</translation>
 <translation id="1415402041810619267">URL je skraćen</translation>
 <translation id="1415855080660575082">Dozvolite Chrome-u da deli nedavne kartice sa uređajem da biste ih videli na listi aplikacija i u rezultatima pretrage uređaja. To možete da uključite ili isključite u Chrome podešavanjima.</translation>
 <translation id="1448064542941920355">Smanjite zumiranje</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Tamna tema se ne primenjuje za sajtove</translation>
 <translation id="2606760465469169465">Automatska verifikacija</translation>
 <translation id="2621115761605608342">Dozvolite JavaScript za određeni sajt.</translation>
+<translation id="2626708220538466178">Donja tabela podrazumevanog pregledača je zatvorena</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2677748264148917807">Zatvori</translation>
 <translation id="2682367912565197520">Izbriši sačuvani nivo zumiranja</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Isključi zvuk sajtova koji puštaju zvuk</translation>
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3628308229821498208">Predložene pretrage</translation>
+<translation id="3658847490588580244">Donja tabela podrazumevanog pregledača</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> sajta u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> sajtova u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}}</translation>
 <translation id="3697164069658504920">Kada je uključeno, sajtovi mogu da traže da koriste USB uređaje. Kada je isključeno, sajtovi ne mogu da koriste USB uređaje.</translation>
 <translation id="3707034683772193706">Sajt koji posećujete može da sačuva malu količinu informacija u Chrome-u, uglavnom da bi potvrdio da niste bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Izbriši i resetuj</translation>
 <translation id="4645575059429386691">Ovim upravlja tvoj roditelj</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
+<translation id="4672315773691449562">Dodirnite aplikaciju Pregledač, pa Chrome</translation>
 <translation id="4676059169848868271">Da biste dozvolili da <ph name="APP_NAME" /> koristi praćenje ruku, uključite i praćenje ruku u <ph name="BEGIN_LINK" />podešavanjima sistema<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Senzori za pokret ili svetlo</translation>
 <translation id="4755971844837804407">Kada je uključeno, sajtovi mogu da vam prikažu bilo koji oglas. Kada je isključeno, sajtovi ne mogu da prikazuju oglase koji ometaju ili obmanjujuće oglase.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
 <translation id="8609465669617005112">Premesti nagore</translation>
 <translation id="8617611086246832542">Kada je uključeno, vidi se prikaz veb-sajtova za računare. Kada je isključeno, vidi se prikaz veb-sajtova za mobilne uređaje.</translation>
+<translation id="8670078035093027626">Donja tabela podrazumevanog pregledača je otvorena na celom ekranu</translation>
 <translation id="8676316391139423634">Kada je uključeno, sajtovi mogu da traže da prate ruke. Kada je isključeno, sajtovi ne mogu da vam prate ruke.</translation>
 <translation id="8676374126336081632">Obriši unos</translation>
 <translation id="8681886425883659911">Oglasi su blokirani na sajtovima za koje je poznato da prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase</translation>

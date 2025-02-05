@@ -1873,6 +1873,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4269264543938335308">Mayolar</translation>
 <translation id="4269599248168651462">Sunucu sertifikası, benzersiz olmayan bir ada verilmiş.</translation>
 <translation id="4270541775497538019">Yığınlayıcı 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 yorumu göster. Ortalama puan <ph name="STARS" /> yıldız.}=1{1 yorumu göster. Ortalama puan <ph name="STARS" /> yıldız.}other{# yorumun tümünü göster. Ortalama puan <ph name="STARS" /> yıldız.}}</translation>
 <translation id="4271652479722040953">Chrome'a eklenen uzantılarla ilgili veriler analiz edilmek üzere üçüncü taraflara gönderilir ve yöneticiniz tarafından görülebilir. Ad, yükleme zamanı, yükleme kaynağı gibi uzantılarla ilgili bilgilerin yanı sıra uzantılarla ilişkili etkinlikler (ör. sekme değiştirme, web siteleriyle iletişime geçme veya çerezlere erişme) bu veriler arasında yer alır. Bu veriler hem Chrome Web Mağazası'ndan hem de mağaza dışından yüklenen uzantılar için toplanır.</translation>
 <translation id="4275830172053184480">Cihazınızı yeniden başlatın</translation>
 <translation id="4276974990916607331">Hayır, teşekkürler</translation>
@@ -2952,6 +2953,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6224281071334553713">Mücevher ve Takılar</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="6228346913624365233">Lüks Araçlar</translation>
+<translation id="6228836011612806720">Mağaza yorumları. Ortalama puan <ph name="STARS" /> yıldız.</translation>
 <translation id="6229196330202833460">Film ve TV Akışı</translation>
 <translation id="6234122620015464377">Her dokümandan sonra kırp</translation>
 <translation id="6234310016144827337">Bağlantınızı kontrol edip tekrar deneyin</translation>

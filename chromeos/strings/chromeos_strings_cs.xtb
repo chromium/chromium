@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="382043424867370667">Tapeta se západem slunce</translation>
 <translation id="3824259034819781947">Připojit soubory</translation>
-<translation id="3836587210832263413">Zapněte jen rozšíření, kterým důvěřujete</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="3845880861638660475">Dialogové okno zavřete stisknutím kombinace kláves <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">ztmavení klávesnice</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Spravujte své tiskárny v nastavení tiskáren</translation>
 <translation id="6292095526077353682">Doba zobrazení spořiče obrazovky při nabíjení</translation>
 <translation id="629550705077076970">stmívání klávesnice</translation>
-<translation id="6301193653204230066">Bezpečnostní reset vypne rozšíření prohlížeče Chrome a resetuje síťová a další nastavení na bezpečné výchozí hodnoty.
-          Vaše karty, soubory, soubory cookie a historie se nezmění.</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> byl zrušen</translation>
 <translation id="631063167932043783">Prozkoumat aplikaci</translation>
 <translation id="6318437367327684789">navždy</translation>
@@ -1774,6 +1771,8 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="951780398843003443">Porovnejte hlasy v nahrávce, aby přepis uváděl, co řekl kdo a kdy</translation>
 <translation id="952992212772159698">Není aktivováno</translation>
 <translation id="95718197892796296">jíl</translation>
+<translation id="959792926760890141">Bezpečnostní reset vypne rozšíření prohlížeče Chrome a resetuje síťová a další nastavení na bezpečné výchozí hodnoty.
+          Váš výchozí vyhledávač bude resetován, ale vaše karty, soubory, soubory cookie a historie se nezmění.</translation>
 <translation id="960719561871045870">Kód operátora</translation>
 <translation id="965918541715156800">žlutá a šedozelená</translation>
 <translation id="966787709310836684">nabídka</translation>

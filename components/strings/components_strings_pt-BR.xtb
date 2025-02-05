@@ -1234,6 +1234,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3194737229810486521"><ph name="URL" /> quer armazenar permanentemente os dados no seu dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> em <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedir para saber quando você está usando o dispositivo ativamente</translation>
+<translation id="3201482403106004262">Ocorreu um erro com a pesquisa.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e "Enter" para gerenciar quais informações são sincronizadas nas configurações do Chrome</translation>
 <translation id="3203025201812691413">O URL não pode ficar em branco</translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
@@ -2347,6 +2348,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5143309888746105072">O Chromium impede que os sites usem cookies de terceiros para rastrear você durante a navegação.
             <ph name="NEW_LINE" />Se os recursos do site não estiverem funcionando, <ph name="START_LINK" />permita cookies de terceiros temporariamente<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Você concedeu esta permissão ao site: <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
 <translation id="5146995429444047494">As notificações de <ph name="ORIGIN" /> estão bloqueadas</translation>
 <translation id="514704532284964975"><ph name="URL" /> quer ver e mudar informações em dispositivos NFC que você toca com seu smartphone</translation>
@@ -4404,6 +4406,7 @@ Mais detalhes:
 <translation id="8792621596287649091">Você pode perder o acesso à sua conta de <ph name="ORG_NAME" /> ou ter sua identidade roubada. O Chromium recomenda que sua senha seja alterada agora.</translation>
 <translation id="8792626944327216835">microfone</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ativou os Chrome Enterprise Connectors no seu navegador. Esses conectores têm acesso a alguns dos seus dados.</translation>
+<translation id="8796062699363039080">Configurações do <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Padrão</translation>
 <translation id="8800034312320686233">Site indisponível?</translation>
 <translation id="8805819170075074995">Entrada "<ph name="LANGUAGE_ID" />": entrada ignorada porque também foi incluída na política SpellcheckLanguage.</translation>
@@ -4625,6 +4628,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9192361865877479444">Metal (fosco)</translation>
 <translation id="9192947025498305328">Beleza consciente</translation>
 <translation id="9199905725844810519">A impressão foi bloqueada</translation>
+<translation id="9201904868909900493">Abrindo a pesquisa…</translation>
 <translation id="9204089334327209740">Depois que o upload for concluído, você poderá modificar seus arquivos no <ph name="CLOUD_PROVIDER" />. O armazenamento local, incluindo os arquivos na lixeira, será removido automaticamente.</translation>
 <translation id="9205078245616868884">Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
 <translation id="920643408853370361">Seguro de viagem</translation>

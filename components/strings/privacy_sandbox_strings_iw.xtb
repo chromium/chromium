@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1444443021901415601">‫Chrome מזהה נושאים שמעניינים אותך על סמך היסטוריית הגלישה שלך מהזמן האחרון</translation>
-<translation id="2252052615723281030">אחרי כניסה לחשבון ב-Chrome, כתובת ה-IP נשמרת בפרטיות בזכות ההגדרה הזו. אם ב-Chrome עולה חשד שאתר מסוים עוקב אחריך, יכול להיות שחלקים מתנועת הגלישה שלך יישלחו דרך שרתי פרטיות.</translation>
 <translation id="235789365079050412">מדיניות הפרטיות של Google</translation>
 <translation id="2793385791865768072">‫Chromium מזהה נושאים שמעניינים אותך על סמך היסטוריית הגלישה שלך מהזמן האחרון</translation>
 <translation id="2979365474350987274">יש הגבלה על קובצי Cookie של צד שלישי</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">קובצי Cookie של צד שלישי הוגבלו</translation>
 <translation id="6371812158043974664">אחרי כניסה לחשבון ב-Chromium, כתובת ה-IP נשמרת בפרטיות בזכות ההגדרה הזו. אם ב-Chromium עולה חשד שאתר מסוים עוקב אחריך, יכול להיות שחלקים מתנועת הגלישה שלך יישלחו דרך שרתי פרטיות. <ph name="LINK_BEGIN" />כאן מוסבר בפירוט איך פועלת ההגנה על כתובת ה-IP<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">ב<ph name="BEGIN_LINK1" />מדיניות הפרטיות<ph name="LINK_END1" /> שלנו מפורט מידע נוסף על האופן שבו Google מגינה על הנתונים שלך.</translation>
-<translation id="7040031291654706261"><ph name="BEGIN_LINK" />איך פועלת ההגנה על כתובת ה-IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">בדיקת ההגדרה של נושאי המודעות</translation>
 </translationbundle>

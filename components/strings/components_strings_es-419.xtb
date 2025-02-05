@@ -1874,6 +1874,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4269264543938335308">Trajes de baño</translation>
 <translation id="4269599248168651462">El certificado del servidor se emite con un nombre que no es único.</translation>
 <translation id="4270541775497538019">Apilador 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Ver 0 opiniones. La calificación promedio es de <ph name="STARS" /> estrellas.}=1{Ver 1 opinión. La calificación promedio es de <ph name="STARS" /> estrellas.}other{Ver # opiniones. La calificación promedio es de <ph name="STARS" /> estrellas.}}</translation>
 <translation id="4271652479722040953">Cuando se agregan extensiones a Chrome, se envían datos pertinentes sobre ellas a terceros para su análisis, y es posible que tu administrador pueda verlos. Los datos incluyen información sobre las extensiones, como el nombre, la hora de instalación, la fuente de la instalación y la actividad asociada a estas extensiones (como cambiar de pestaña, comunicarse con sitios web o acceder a cookies). Estos datos se recopilan para las extensiones instaladas desde Chrome Web Store y las extensiones que no pertenecen a la tienda.</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4276974990916607331">No, gracias</translation>
@@ -2953,6 +2954,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6224281071334553713">Piedras preciosas y joyas</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar tus herramientas de accesibilidad en la configuración de Chrome</translation>
 <translation id="6228346913624365233">Vehículos de lujo</translation>
+<translation id="6228836011612806720">Opiniones sobre la tienda. La calificación promedio es de <ph name="STARS" /> estrellas.</translation>
 <translation id="6229196330202833460">Transmisión de películas y TV</translation>
 <translation id="6234122620015464377">Cortar después de cada documento</translation>
 <translation id="6234310016144827337">Comprueba la conexión y vuelve a intentarlo</translation>

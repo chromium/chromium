@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1384959399684842514">Download dijeda</translation>
 <translation id="1396327438254055134">Izinkan situs menggunakan pengoptimal V8.</translation>
+<translation id="1409338233051621926">Ketuk Aplikasi, lalu ketuk Aplikasi default</translation>
 <translation id="1415402041810619267">URL dipotong</translation>
 <translation id="1415855080660575082">Izinkan Chrome membagikan tab terbaru ke perangkat Anda agar Anda dapat melihatnya di daftar aplikasi dan hasil penelusuran perangkat. Anda dapat mengaktifkan atau menonaktifkannya di setelan Chrome.</translation>
 <translation id="1448064542941920355">Kurangi zoom</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Jangan terapkan tema gelap ke situs</translation>
 <translation id="2606760465469169465">Verifikasi otomatis</translation>
 <translation id="2621115761605608342">Izinkan JavaScript untuk situs tertentu.</translation>
+<translation id="2626708220538466178">Sheet bawah browser default ditutup</translation>
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2677748264148917807">Keluar</translation>
 <translation id="2682367912565197520">Hapus tingkat zoom tersimpan</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Nonaktifkan suara situs yang memutar suara</translation>
 <translation id="3602290021589620013">Pratinjau</translation>
 <translation id="3628308229821498208">Penelusuran yang disarankan</translation>
+<translation id="3658847490588580244">Sheet bawah browser default</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> situs di grup situs <ph name="RWS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}other{<ph name="RWS_MEMBERS_COUNT" /> situs di grup situs <ph name="RWS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}}</translation>
 <translation id="3697164069658504920">Jika diaktifkan, situs dapat meminta untuk menggunakan perangkat USB. Jika dinonaktifkan, situs tidak dapat menggunakan perangkat USB.</translation>
 <translation id="3707034683772193706">Situs yang Anda buka dapat menyimpan info dalam jumlah kecil dengan Chrome, terutama untuk memvalidasi bahwa Anda bukan bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Hapus &amp; reset</translation>
 <translation id="4645575059429386691">Dikelola oleh orang tua Anda</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
+<translation id="4672315773691449562">Ketuk Aplikasi browser, lalu ketuk Chrome</translation>
 <translation id="4676059169848868271">Untuk mengizinkan <ph name="APP_NAME" /> menggunakan pelacakan tangan, aktifkan juga pelacakan tangan di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Sensor gerakan atau cahaya</translation>
 <translation id="4755971844837804407">Jika diaktifkan, situs dapat menampilkan iklan apa pun kepada Anda. Jika dinonaktifkan, situs tidak dapat menampilkan iklan yang mengganggu atau menyesatkan.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Diizinkan (disarankan)</translation>
 <translation id="8609465669617005112">Berpindah ke atas</translation>
 <translation id="8617611086246832542">Jika diaktifkan, tampilan desktop situs akan ditampilkan. Jika dinonaktifkan, tampilan seluler situs akan ditampilkan.</translation>
+<translation id="8670078035093027626">Sheet bawah browser default terbuka sepenuhnya</translation>
 <translation id="8676316391139423634">Jika diaktifkan, situs dapat meminta untuk melacak tangan Anda. Jika dinonaktifkan, situs tidak dapat melacak tangan Anda.</translation>
 <translation id="8676374126336081632">Hapus masukan</translation>
 <translation id="8681886425883659911">Iklan diblokir di situs yang dikenal menampilkan iklan yang mengganggu atau menyesatkan</translation>

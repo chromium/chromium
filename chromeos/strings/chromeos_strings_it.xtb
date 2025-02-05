@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN non valido.</translation>
 <translation id="382043424867370667">Sfondo Tramonto</translation>
 <translation id="3824259034819781947">Allega file</translation>
-<translation id="3836587210832263413">Attiva solo le estensioni che ritieni affidabili</translation>
 <translation id="3838338534323494292">Nuova password</translation>
 <translation id="3845880861638660475">Premi <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> per chiudere la finestra di dialogo.</translation>
 <translation id="3848280697030027394">Scurire la tastiera</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Gestisci le stampanti nelle impostazioni delle stampanti</translation>
 <translation id="6292095526077353682">Durante la ricarica, mostra il salvaschermo per</translation>
 <translation id="629550705077076970">Oscuramento della tastiera</translation>
-<translation id="6301193653204230066">La reimpostazione di sicurezza disattiva le estensioni del browser Chrome e ripristina le impostazioni di rete e di altro tipo sicure.
-          Le schede, i file, i cookie e la cronologia non subiranno modifiche.</translation>
 <translation id="6302401976930124515">Il test <ph name="TEST_NAME" /> è stato annullato</translation>
 <translation id="631063167932043783">App Esplora</translation>
 <translation id="6318437367327684789">per sempre</translation>
@@ -1774,6 +1771,8 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="951780398843003443">Confronta le voci dell'intera registrazione in modo che la trascrizione riporti correttamente ciò che ha detto ogni persona e quando</translation>
 <translation id="952992212772159698">Non attivo</translation>
 <translation id="95718197892796296">argilla</translation>
+<translation id="959792926760890141">La reimpostazione di sicurezza disattiva le estensioni del browser Chrome e ripristina le impostazioni di rete e di altro tipo sicure.
+          Il motore di ricerca predefinito verrà reimpostato, ma le schede, i file, i cookie e la cronologia non subiranno modifiche.</translation>
 <translation id="960719561871045870">Codice operatore</translation>
 <translation id="965918541715156800">giallo e verde acqua</translation>
 <translation id="966787709310836684">menu</translation>

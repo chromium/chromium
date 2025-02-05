@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1444443021901415601">Chrome 會根據你最近瀏覽的網站，記錄感興趣的主題</translation>
-<translation id="2252052615723281030">登入 Chrome 後，可以使用這項設定避免 IP 位址外洩。如果 Chrome 認為某個網站可能會追蹤使用者，就會透過隱私權伺服器送出部分流量。</translation>
 <translation id="235789365079050412">Google 隱私權政策</translation>
 <translation id="2793385791865768072">Chromium 會根據你最近瀏覽的網站，記錄感興趣的主題</translation>
 <translation id="2979365474350987274">已限制第三方 Cookie</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6371812158043974664">登入 Chromium 後，就能使用這項設定確保 IP 位址不外洩。如果 Chromium 認為某個網站可能會追蹤使用者，就會透過隱私權伺服器送出部分流量。進一步瞭解 <ph name="LINK_BEGIN" />IP 保護機制的運作方式<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">想進一步瞭解 Google 如何保護你的資料，請參閱《<ph name="BEGIN_LINK1" />隱私權政策<ph name="LINK_END1" />》。</translation>
-<translation id="7040031291654706261">瞭解 <ph name="BEGIN_LINK" />IP 保護機制的運作方式<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">查看廣告主題設定</translation>
 </translationbundle>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1444443021901415601">Chrome はユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します</translation>
-<translation id="2252052615723281030">Chrome にログインしている間は、この設定により IP アドレスの秘匿性が守られます。サイトによるトラッキングの可能性が Chrome で検出された場合は、一部のトラフィックがプライバシー サーバーを経由して送信されることがあります。</translation>
 <translation id="235789365079050412">Google プライバシー ポリシー</translation>
 <translation id="2793385791865768072">Chromium はユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します</translation>
 <translation id="2979365474350987274">サードパーティ Cookie が制限されています</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">サードパーティ Cookie が制限されています</translation>
 <translation id="6371812158043974664">Chromium にログイン中は、この設定により IP アドレスの秘匿性が守られます。サイトによるトラッキングの可能性が Chromium で検出された場合は、一部のトラフィックがプライバシー サーバーを通じて送信されることがあります。詳しくは、<ph name="LINK_BEGIN" />IP 保護の仕組み<ph name="LINK_END" />に関する記事をご覧ください、</translation>
 <translation id="6398358690696005758">Google によるユーザーデータの保護について詳しくは、<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="LINK_END1" />をご覧ください。</translation>
-<translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP 保護の仕組み<ph name="END_LINK" />について</translation>
 <translation id="7475768947023614021">広告のトピックの設定を確認してください</translation>
 </translationbundle>

@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
 <translation id="382043424867370667">Achtergrond Zonsondergang</translation>
 <translation id="3824259034819781947">Bestanden bijvoegen</translation>
-<translation id="3836587210832263413">Zet alleen extensies aan die je vertrouwt</translation>
 <translation id="3838338534323494292">Nieuw wachtwoord</translation>
 <translation id="3845880861638660475">Druk op <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> om het dialoogvenster te sluiten.</translation>
 <translation id="3848280697030027394">toetsenbord donkerder maken</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Beheer je printers in de printerinstellingen</translation>
 <translation id="6292095526077353682">Screensaver tonen tijdens opladen voor</translation>
 <translation id="629550705077076970">toetsenbord dimmen</translation>
-<translation id="6301193653204230066">De beveiligingsreset zet Chrome-browserextensies uit en zet netwerk- en andere instellingen terug naar veilige standaardwaarden.
-          Je tabbladen, bestanden, cookies en geschiedenis worden niet gewijzigd.</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> is geannuleerd</translation>
 <translation id="631063167932043783">App verkennen</translation>
 <translation id="6318437367327684789">oneindig</translation>
@@ -1774,6 +1771,8 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="951780398843003443">De stemmen in de hele opname vergelijken zodat het transcript aangeeft wat elke spreker heeft gezegd en wanneer</translation>
 <translation id="952992212772159698">Niet geactiveerd</translation>
 <translation id="95718197892796296">klei</translation>
+<translation id="959792926760890141">De beveiligingsreset zet Chrome-browserextensies uit en zet netwerk- en andere instellingen terug naar veilige standaardwaarden.
+          Je standaardzoekmachine wordt gereset, maar je tabbladen, bestanden, cookies en geschiedenis worden niet gewijzigd.</translation>
 <translation id="960719561871045870">Operatorcode</translation>
 <translation id="965918541715156800">geel en groenblauw</translation>
 <translation id="966787709310836684">menu</translation>

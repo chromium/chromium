@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Kodi PIN i pavlefshëm</translation>
 <translation id="382043424867370667">Imazhi i sfondit për perëndimin e diellit</translation>
 <translation id="3824259034819781947">Bashkëngjit skedarët</translation>
-<translation id="3836587210832263413">Aktivizo vetëm shtesat që u beson</translation>
 <translation id="3838338534323494292">Fjalëkalimi i ri</translation>
 <translation id="3845880861638660475">Shtyp <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> për ta mbyllur dialogun.</translation>
 <translation id="3848280697030027394">errëso tastierën</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Menaxho printerët e tu te cilësimet e printerëve</translation>
 <translation id="6292095526077353682">Gjatë karikimit, shfaq mbrojtësin e ekranit për:</translation>
 <translation id="629550705077076970">zbehja e tastierës</translation>
-<translation id="6301193653204230066">Rivendosja e sigurisë çaktivizon shtesat e shfletuesit Chrome dhe rivendos rrjetin dhe cilësimet e tjera në parazgjedhjet e sigurta.
-          Skedat, skedarët, kukit dhe historiku yt nuk do të ndryshohen.</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
 <translation id="631063167932043783">Aplikacioni "Eksploro"</translation>
 <translation id="6318437367327684789">përgjithmonë</translation>
@@ -1774,6 +1771,8 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="951780398843003443">Të krahasojë zërat gjatë të gjithë regjistrimit që transkripti të pasqyrojë atë që ka thënë dhe kur e ka thënë çdo folës</translation>
 <translation id="952992212772159698">Nuk është aktivizuar</translation>
 <translation id="95718197892796296">argjilë</translation>
+<translation id="959792926760890141">Rivendosja e sigurisë çaktivizon shtesat e shfletuesit Chrome dhe rivendos rrjetin dhe cilësimet e tjera në parazgjedhjet e sigurta.
+          Motori i parazgjedhur i kërkimit do të rivendoset, por skedat, skedarët, kukit dhe historiku yt nuk do të ndryshohen.</translation>
 <translation id="960719561871045870">Kodi i operatorit</translation>
 <translation id="965918541715156800">e verdhë dhe gurkali</translation>
 <translation id="966787709310836684">meny</translation>

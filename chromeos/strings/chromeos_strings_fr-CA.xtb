@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">NIP erroné.</translation>
 <translation id="382043424867370667">Fond d'écran Coucher de soleil</translation>
 <translation id="3824259034819781947">Joindre des fichiers</translation>
-<translation id="3836587210832263413">Activez uniquement les extensions auxquelles vous faites confiance</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
 <translation id="3845880861638660475">Appuyez sur <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> plus <ph name="ESC_SHORTCUT_START" />Échapp.<ph name="ESC_SHORTCUT_END" /> pour fermer la boîte de dialogue.</translation>
 <translation id="3848280697030027394">assombrir le clavier</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Gérez vos imprimantes dans les paramètres d'impression</translation>
 <translation id="6292095526077353682">Pendant le chargement, affichez l'écran de veille pour la période suivante :</translation>
 <translation id="629550705077076970">assombrissement du clavier</translation>
-<translation id="6301193653204230066">La réinitialisation de sécurité désactive les extensions du navigateur Chrome et réinitialise les paramètres réseau et d'autres paramètres à Sécurisé par défaut.
-          Vos onglets, vos fichiers, vos témoins et votre historique ne seront pas modifiés.</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="631063167932043783">Application Explorer</translation>
 <translation id="6318437367327684789">indéfiniment</translation>
@@ -1774,6 +1771,8 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="951780398843003443">Comparer les voix tout au long de l'enregistrement afin que la transcription reflète ce que chaque locuteur a dit et à quel moment</translation>
 <translation id="952992212772159698">Désactivé</translation>
 <translation id="95718197892796296">argile</translation>
+<translation id="959792926760890141">La réinitialisation de sécurité désactive les extensions du navigateur Chrome et réinitialise les paramètres réseau et d'autres paramètres à Sécurisé par défaut.
+          Votre moteur de recherche par défaut sera réinitialisé, mais vos onglets, vos fichiers, vos témoins et votre historique ne seront pas modifiés.</translation>
 <translation id="960719561871045870">Code de l'opérateur</translation>
 <translation id="965918541715156800">jaune et sarcelle</translation>
 <translation id="966787709310836684">menu</translation>

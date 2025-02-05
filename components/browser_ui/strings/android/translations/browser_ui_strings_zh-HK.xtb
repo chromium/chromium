@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1396327438254055134">允許網站使用 V8 優化工具。</translation>
+<translation id="1409338233051621926">㩒一下 [應用程式] 同 [預設應用程式]</translation>
 <translation id="1415402041810619267">縮短咗網址</translation>
 <translation id="1415855080660575082">讓 Chrome 與你的裝置分享最近使用的分頁，並在裝置應用程式清單和搜尋結果中顯示。你可以在 Chrome 設定中開啟或關閉此功能。</translation>
 <translation id="1448064542941920355">縮小</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">不要為網站套用深色主題背景</translation>
 <translation id="2606760465469169465">自動驗證</translation>
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
+<translation id="2626708220538466178">預設瀏覽器頁底面板閂咗</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2682367912565197520">刪除已儲存的縮放等級</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">將播放音效的網站設為靜音</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
+<translation id="3658847490588580244">預設瀏覽器頁底面板</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 網站群組的 <ph name="RWS_MEMBERS_COUNT" /> 個網站可查看你在群組中的活動}other{<ph name="RWS_OWNER" /> 網站群組的 <ph name="RWS_MEMBERS_COUNT" /> 個網站可查看你在群組中的活動}}</translation>
 <translation id="3697164069658504920">開咗之後，網站可以要求使用 USB 裝置。閂咗之後，網站唔可以使用 USB 裝置。</translation>
 <translation id="3707034683772193706">您瀏覽的網站可將少量資料儲存至 Chrome，主要用來證明您不是機器人</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">刪除並重設</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
+<translation id="4672315773691449562">㩒一下 [瀏覽器應用程式] 同 [Chrome]</translation>
 <translation id="4676059169848868271">如要允許「<ph name="APP_NAME" />」追蹤手勢，請同時在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中開啟手勢追蹤功能。</translation>
 <translation id="4751476147751820511">動態或光線感應器</translation>
 <translation id="4755971844837804407">開咗之後，網站可以向你顯示任何廣告。閂咗之後，網站唔可以顯示滋擾性或者誤導廣告。</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">允許 (建議)</translation>
 <translation id="8609465669617005112">向上移</translation>
 <translation id="8617611086246832542">開咗之後，系統會用桌面電腦檢視模式顯示網站。閂咗之後，系統會用流動裝置檢視模式顯示網站。</translation>
+<translation id="8670078035093027626">預設瀏覽器頁底面板宜家顯示喺成個畫面</translation>
 <translation id="8676316391139423634">開啟後，網站可以要求追蹤你的手部動作。關閉後，網站便不能追蹤你的手部動作。</translation>
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的滋擾性或誤導廣告。</translation>

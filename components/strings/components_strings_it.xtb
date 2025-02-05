@@ -1231,6 +1231,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3194737229810486521"><ph name="URL" /> vuole memorizzare in modo definitivo i dati sul dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> su <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Può chiedere di sapere quando stai utilizzando attivamente questo dispositivo</translation>
+<translation id="3201482403106004262">Si è verificato un errore con il sondaggio.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
 <translation id="3203025201812691413">L'URL non può essere vuoto</translation>
 <translation id="320323717674993345">Annulla pagamento</translation>
@@ -2344,6 +2345,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5138227688689900538">Mostra meno</translation>
 <translation id="5143309888746105072">Chromium impedisce ai siti di utilizzare i cookie di terze parti per monitorare la tua navigazione.
             <ph name="NEW_LINE" />Se le funzionalità del sito non funzionano <ph name="START_LINK" />prova a consentire temporaneamente i cookie di terze parti<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Hai consentito l'autorizzazione di accesso a <ph name="PERMISSION" /> per questo sito</translation>
 <translation id="5145883236150621069">Codice di errore presente nella risposta del criterio</translation>
 <translation id="5146995429444047494">Le notifiche per il sito <ph name="ORIGIN" /> sono bloccate</translation>
 <translation id="514704532284964975"><ph name="URL" /> vuole vedere e modificare informazioni su dispositivi NFC che avvicini al telefono</translation>
@@ -4400,6 +4402,7 @@ Ulteriori dettagli:
 <translation id="8792621596287649091">Potresti non riuscire più ad accedere al tuo account <ph name="ORG_NAME" /> o subire un furto d'identità. Chromium ti consiglia di cambiare subito la password.</translation>
 <translation id="8792626944327216835">microfono</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ha attivato Chrome Enterprise Connectors sul tuo browser. Questi connettori hanno accesso ad alcuni dei tuoi dati.</translation>
+<translation id="8796062699363039080">Impostazioni di <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8800034312320686233">Il sito non funziona?</translation>
 <translation id="8805819170075074995">Voce "<ph name="LANGUAGE_ID" />": voce ignorata perché è inclusa anche nella norma SpellcheckLanguage.</translation>
@@ -4619,6 +4622,7 @@ Ulteriori dettagli:
 <translation id="9192361865877479444">Metallo (opaco)</translation>
 <translation id="9192947025498305328">Prodotti di bellezza ecosostenibili</translation>
 <translation id="9199905725844810519">La stampa è bloccata</translation>
+<translation id="9201904868909900493">Apertura del sondaggio in corso…</translation>
 <translation id="9204089334327209740">Al termine del caricamento, puoi modificare i file in <ph name="CLOUD_PROVIDER" />. Lo spazio di archiviazione locale, inclusi i file nel cestino, verrà rimosso automaticamente.</translation>
 <translation id="9205078245616868884">I tuoi dati vengono criptati con la tua passphrase di sincronizzazione. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="920643408853370361">Assicurazione per viaggi</translation>

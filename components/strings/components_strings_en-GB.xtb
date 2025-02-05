@@ -1873,6 +1873,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4269264543938335308">Swimwear</translation>
 <translation id="4269599248168651462">The server certificate is issued to a non-unique name.</translation>
 <translation id="4270541775497538019">Stacker 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{View 0 reviews. Average rating is <ph name="STARS" /> stars.}=1{View 1 review. Average rating is <ph name="STARS" /> stars.}other{View all # reviews. Average rating is <ph name="STARS" /> stars.}}</translation>
 <translation id="4271652479722040953">When extensions are added to Chrome, relevant data about these extensions is sent to third parties for analysis and may be visible to your administrator. The data includes information about the extensions such as its name, install time, source of install as well as activity associated with these extensions (like changing tabs, contacting websites or accessing cookies). This data is collected for extensions installed from the Chrome Web Store as well as off-store extensions.</translation>
 <translation id="4275830172053184480">Restart your device</translation>
 <translation id="4276974990916607331">No thanks</translation>
@@ -2346,6 +2347,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5138227688689900538">Show less</translation>
 <translation id="5143309888746105072">Chromium blocks sites from using third-party cookies to track you as you browse.
             <ph name="NEW_LINE" />If site features aren’t working <ph name="START_LINK" />try temporarily allowing third-party cookies<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">You have allowed <ph name="PERMISSION" /> for this site</translation>
 <translation id="5145883236150621069">Error code present in the policy response</translation>
 <translation id="5146995429444047494">Notifications for <ph name="ORIGIN" /> are blocked</translation>
 <translation id="514704532284964975"><ph name="URL" /> wants to see and change information on NFC devices that you tap with your phone</translation>
@@ -2952,6 +2954,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6224281071334553713">Gems and Jewellery</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to personalise your accessibility tools in Chrome settings</translation>
 <translation id="6228346913624365233">Luxury vehicles</translation>
+<translation id="6228836011612806720">Shop reviews. Average rating is <ph name="STARS" /> stars.</translation>
 <translation id="6229196330202833460">Film and TV Streaming</translation>
 <translation id="6234122620015464377">Trim after each document</translation>
 <translation id="6234310016144827337">Check your connection and try again</translation>
@@ -4401,6 +4404,7 @@ Additional details:
 <translation id="8792621596287649091">You could lose access to your <ph name="ORG_NAME" /> account or experience identity theft. Chromium recommends changing your password now.</translation>
 <translation id="8792626944327216835">microphone</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> has turned on Chrome Enterprise Connectors on your browser. These connectors have access to some of your data.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> settings</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8800034312320686233">Site not working?</translation>
 <translation id="8805819170075074995">List entry '<ph name="LANGUAGE_ID" />': entry ignored because it is also included in the SpellcheckLanguage policy.</translation>

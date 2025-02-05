@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1444443021901415601">Chrome relève les thèmes qui vous intéressent grâce à votre historique de navigation</translation>
-<translation id="2252052615723281030">Lorsque vous êtes connecté à Chrome, ce paramètre contribue à préserver la confidentialité de votre adresse IP. Si Chrome soupçonne un site de vous suivre, une partie de votre trafic peut être envoyée via des serveurs de confidentialité.</translation>
 <translation id="235789365079050412">Règles de confidentialité de Google</translation>
 <translation id="2793385791865768072">Chromium se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent</translation>
 <translation id="2979365474350987274">Les cookies tiers sont limités</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Cookies tiers limités</translation>
 <translation id="6371812158043974664">Lorsque vous êtes connecté à Chromium, ce paramètre contribue à préserver la confidentialité de votre adresse IP. Si Chromium soupçonne un site de vous suivre, une partie de votre trafic peut être envoyée via des serveurs de confidentialité. Découvrez <ph name="LINK_BEGIN" />comment fonctionne la protection de l'IP<ph name="LINK_END" />.</translation>
 <translation id="6398358690696005758">Pour savoir comment Google protège vos données, lisez nos <ph name="BEGIN_LINK1" />Règles de confidentialité<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261">Découvrez <ph name="BEGIN_LINK" />comment fonctionne la protection de l'IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Vérifier le paramètre "Thèmes des annonces"</translation>
 </translationbundle>

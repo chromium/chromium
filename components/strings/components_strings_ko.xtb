@@ -1234,6 +1234,7 @@
 <translation id="3194737229810486521"><ph name="URL" />에서 내 기기에 데이터를 영구 저장하려고 합니다</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />의 <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">사용자가 현재 이 기기를 사용 중인지 확인을 요청할 수 있음</translation>
+<translation id="3201482403106004262">설문조사에 오류가 발생했습니다.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정에서 내가 동기화하는 정보 관리</translation>
 <translation id="3203025201812691413">URL은 비워둘 수 없습니다.</translation>
 <translation id="320323717674993345">결제 취소</translation>
@@ -1873,6 +1874,7 @@
 <translation id="4269264543938335308">수영복</translation>
 <translation id="4269599248168651462">서버 인증서가 고유하지 않은 이름으로 발급됩니다.</translation>
 <translation id="4270541775497538019">스태커 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{리뷰 0개 보기. 평균 평점은 별 <ph name="STARS" />개입니다.}=1{리뷰 1개 보기. 평균 평점은 별 <ph name="STARS" />개입니다.}other{리뷰 #개 모두 보기. 평균 평점은 별 <ph name="STARS" />개입니다.}}</translation>
 <translation id="4271652479722040953">Chrome에 확장 프로그램이 추가되면 확장 프로그램에 관한 관련 데이터가 분석을 위해 서드 파티로 전송되며, 관리자에게 표시될 수 있습니다. 이 데이터에는 이름, 설치 시간, 설치 소스와 같은 확장 프로그램 관련 정보와 탭 변경, 웹사이트 연결, 쿠키 액세스 등 확장 프로그램 관련 활동이 포함됩니다. Chrome 웹 스토어에서 설치한 확장 프로그램과 스토어 외부 확장 프로그램의 데이터가 수집됩니다.</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
 <translation id="4276974990916607331">나중에</translation>
@@ -2346,6 +2348,7 @@
 <translation id="5138227688689900538">간략히</translation>
 <translation id="5143309888746105072">Chromium에서는 사이트가 서드 파티 쿠키를 사용하여 사용자의 탐색 활동을 추적하지 못하도록 사이트를 차단합니다.
             <ph name="NEW_LINE" />사이트 기능이 작동하지 않으면 <ph name="START_LINK" />일시적으로 서드 파티 쿠키를 허용<ph name="END_LINK" />해 보세요.</translation>
+<translation id="5144613843429436866">이 사이트에 <ph name="PERMISSION" /> 권한을 허용했습니다.</translation>
 <translation id="5145883236150621069">정책 응답에 오류 코드가 포함되어 있음</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> 알림이 차단됨</translation>
 <translation id="514704532284964975"><ph name="URL" />에서 휴대전화로 탭하는 NFC 기기의 정보를 보고 변경하려고 합니다.</translation>
@@ -2952,6 +2955,7 @@
 <translation id="6224281071334553713">보석 및 귀금속</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 접근성 도구를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="6228346913624365233">고급 승용차</translation>
+<translation id="6228836011612806720">매장 리뷰입니다. 평균 평점은 별 <ph name="STARS" />개입니다.</translation>
 <translation id="6229196330202833460">영화 및 TV 스트리밍</translation>
 <translation id="6234122620015464377">각 문서 뒤에 트림</translation>
 <translation id="6234310016144827337">연결 상태를 확인한 후 다시 시도하세요.</translation>
@@ -4400,6 +4404,7 @@
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> 계정에 액세스할 수 없게 되거나 신원 도용이 발생할 수도 있습니다. 따라서 지금 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="8792626944327216835">마이크</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" />에서 브라우저에 Chrome Enterprise 커넥터를 사용 설정했습니다. 커넥터가 내 데이터 중 일부에 액세스할 수 있습니다.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> 설정</translation>
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8800034312320686233">사이트가 작동하지 않나요?</translation>
 <translation id="8805819170075074995">목록 항목 '<ph name="LANGUAGE_ID" />': SpellcheckLanguage 정책에도 포함되었기 때문에 항목이 무시되었습니다.</translation>
@@ -4619,6 +4624,7 @@
 <translation id="9192361865877479444">금속(매트)</translation>
 <translation id="9192947025498305328">클린 뷰티</translation>
 <translation id="9199905725844810519">인쇄가 차단됨</translation>
+<translation id="9201904868909900493">설문조사 여는 중…</translation>
 <translation id="9204089334327209740">업로드가 완료되면 <ph name="CLOUD_PROVIDER" />에서 파일을 수정할 수 있습니다. 휴지통에 있는 파일을 포함한 로컬 저장용량이 자동으로 삭제됩니다.</translation>
 <translation id="9205078245616868884">동기화 암호로 데이터가 암호화되어 있습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="920643408853370361">여행자 보험</translation>

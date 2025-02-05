@@ -412,7 +412,7 @@
 <translation id="2872961005593481000">වසන්න</translation>
 <translation id="2873483161362553159">බ්‍රව්සර සංචාලනය</translation>
 <translation id="2874939134665556319">පෙර ඛණ්ඩය</translation>
-<translation id="2875812231449496375">මෙම බිතුපත සමග හොඳම ප්‍රතිඵල සඳහා මෙය ක්‍රියාත්මක කරන්න. ඔබට ඕනෑම වේලාවක දී මෙම සැකසීම ක්‍රියා විරහිත කළ හැක.</translation>
+<translation id="2875812231449496375">මෙම වෝල්පේපරය සමඟ හොඳම ප්‍රතිඵල සඳහා මෙය ක්‍රියාත්මක කරන්න. ඔබට ඕනෑම වේලාවක දී මෙම සැකසීම ක්‍රියා විරහිත කළ හැක.</translation>
 <translation id="2878387241690264070">තත්පර <ph name="NUM_SECONDS" />ක් තුළ <ph name="RATE" /> විසර්ජනය වේ.</translation>
 <translation id="2880569433548999039">වලාකුළු ප්‍රවාහ තිර සුරැකුම</translation>
 <translation id="2882230315487799269">AI විමසුම අභිරුචිකරණය කරන්න</translation>
@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">වලංගු නොවන PIN.</translation>
 <translation id="382043424867370667">හිරු බැස යන වෝල්පේපරය</translation>
 <translation id="3824259034819781947">ගොනු අමුණන්න</translation>
-<translation id="3836587210832263413">ඔබ විශ්වාස කරන දිගු පමණක් ක්‍රියාත්මක කරන්න</translation>
 <translation id="3838338534323494292">නව මුරපදය</translation>
 <translation id="3845880861638660475">සංවාදය වැසීමට <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> ඔබන්න.</translation>
 <translation id="3848280697030027394">යතුරු පුවරුව අඳුරු කිරීම</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">මුද්‍රක සැකසීම් තුළ ඔබේ මුද්‍රක කළමනාකරණය කරන්න</translation>
 <translation id="6292095526077353682">ආරෝපණය කරන අතරේ, මේ සඳහා තිර සුරැකුම පෙන්වන්න</translation>
 <translation id="629550705077076970">යතුරු පුවරුව අඳුරු වීම</translation>
-<translation id="6301193653204230066">සුරක්ෂිත යළි සැකසීම Chrome බ්‍රවුසර දිගු ක්‍රියාවිරහිත කරන අතර ජාලය සහ අනෙකුත් සැකසීම් සුරක්ෂිත පෙරනිමියට යළි සකසයි.
-          ඔබේ පටිති, ගොනු, කුකී සහ ඉතිහාසය වෙනස් නොවේ.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> පරීක්ෂණය අවලංගු කර ඇත</translation>
 <translation id="631063167932043783">යෙදුම ගවේෂණය කරන්න</translation>
 <translation id="6318437367327684789">සදහටම</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">එක් එක් කථිකයා පැවසූ දේ සහ කවදා ද යන්න පිටපත පිළිබිඹු කරන පරිදි පටිගත කිරීම පුරාම හඬ සසඳන්න</translation>
 <translation id="952992212772159698">සක්‍රීය කර නොමැත</translation>
 <translation id="95718197892796296">මැටි</translation>
+<translation id="959792926760890141">සුරක්ෂිත යළි සැකසීම Chrome බ්‍රවුසර දිගු ක්‍රියා විරහිත කරන අතර ජාලය සහ අනෙකුත් සැකසීම් සුරක්ෂිත පෙරනිමියට යළි සකසයි.
+          ඔබේ පෙරනිමි සෙවුම් යන්ත්‍රය යළි පිහිටුවනු ඇත, නමුත් ඔබබේ පටිති, ගොනු, කුකීස් සහ ඉතිහාසය වෙනස් නොවනු ඇත.</translation>
 <translation id="960719561871045870">වාහක කේතය</translation>
 <translation id="965918541715156800">කහ සහ හරිත නිල</translation>
 <translation id="966787709310836684">මෙනුව</translation>

@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" />개의 탭 그룹화됨</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
+<translation id="1909810060368225529">알림: 이 공유 탭 그룹의 변경사항은 모든 사용자에게 표시됩니다. 모든 사용자가 공유 탭 그룹을 변경할 수 있습니다</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{선택된 탭 <ph name="TABS_COUNT_ONE" />개 북마크}other{선택된 탭 <ph name="TABS_COUNT_MANY" />개 북마크}}</translation>
 <translation id="2118649612461486615">매장 정보</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{닫은 탭 및 그룹은 최근 탭 섹션과 탭 그룹 섹션에서 다시 열 수 있습니다. 시크릿 탭은 확인할 수 없습니다.}other{닫은 탭 및 그룹은 최근 탭 섹션과 탭 그룹 섹션에서 다시 열 수 있습니다. 시크릿 탭 #개는 확인할 수 없습니다.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">여기에서 탭 그룹을 확인할 수 있습니다</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 그룹 해제}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 그룹 해제}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
+<translation id="6499296376514955580">공유 탭 그룹 변경사항의 알림이 닫힘</translation>
 <translation id="6527303717912515753">공유</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1일 후}other{<ph name="DAY_COUNT_MANY" />일 후}}</translation>
 <translation id="6549021453810473782">매장 정보 보기</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">탭을 왼쪽으로 이동</translation>
+<translation id="6589356853295569750">공유 탭 그룹 변경사항의 알림이 전체 높이로 열림</translation>
 <translation id="6590332670428149473">공유 탭 그룹 <ph name="TITLE_OF_GROUP" />(색상: <ph name="COLOR_NAME" />)의 탭 그룹 작업 메뉴 열기</translation>
 <translation id="6615455863669487791">보기</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{탭 <ph name="ONE_CHANGED" />개 변경됨}other{탭 <ph name="MANY_CHANGED" />개 변경됨}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 공유}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 공유}}</translation>
 <translation id="7773714564112603605">탭 삭제 및 그룹 삭제</translation>
 <translation id="7792771145871471484">추천을 검토합니다.</translation>
+<translation id="7792860826279960128">공유 탭 그룹 변경사항의 알림이 절반 높이로 열림</translation>
 <translation id="7825973332242257878">탭 그룹</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 그룹화}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 그룹화}}</translation>
 <translation id="7853202427316060426">활동</translation>

@@ -1874,6 +1874,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4269264543938335308">Roba de bany</translation>
 <translation id="4269599248168651462">El certificat de servidor s'emet a un nom que no és únic.</translation>
 <translation id="4270541775497538019">Apiladora 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Mostra 0 ressenyes. Puntuació mitjana en estrelles: <ph name="STARS" />.}=1{Mostra 1 ressenya. Puntuació mitjana en estrelles: <ph name="STARS" />.}other{Mostra les # ressenyes. Puntuació mitjana en estrelles: <ph name="STARS" />.}}</translation>
 <translation id="4271652479722040953">Quan s'afegeixen extensions a Chrome, les dades rellevants sobre aquestes extensions s'envien a tercers perquè les analitzin i és possible que el teu administrador les vegi. Les dades inclouen informació sobre les extensions, com ara el nom, l'hora d'instal·lació i la font d'instal·lació, així com l'activitat associada a aquestes extensions (per exemple, canviar de pestanya, contactar amb llocs web o accedir a les galetes). Aquestes dades es recullen per a les extensions instal·lades des de Chrome Web Store i fora de la botiga.</translation>
 <translation id="4275830172053184480">Reinici del dispositiu</translation>
 <translation id="4276974990916607331">No, gràcies</translation>
@@ -2953,6 +2954,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6224281071334553713">Pedres precioses i joies</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar les eines d'accessibilitat a la configuració de Chrome</translation>
 <translation id="6228346913624365233">Vehicles de luxe</translation>
+<translation id="6228836011612806720">Ressenyes de la botiga. Puntuació mitjana en estrelles: <ph name="STARS" />.</translation>
 <translation id="6229196330202833460">Serveis d'estríming de programes de televisió i pel·lícules</translation>
 <translation id="6234122620015464377">Retalla després de cada document</translation>
 <translation id="6234310016144827337">Comprova la connexió i torna-ho a provar</translation>

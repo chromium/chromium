@@ -519,7 +519,7 @@
 <translation id="3486220673238053218">аныктама</translation>
 <translation id="3487866404496702283">Mahi функциясы тууралуу пикир</translation>
 <translation id="3488065109653206955">Жарым-жартылай жандырылган</translation>
-<translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> түстөр менен <ph name="OFFICE_STYLE" /> кеңсе</translation>
+<translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> түстөгү <ph name="OFFICE_STYLE" /> кеңсе</translation>
 <translation id="3493187369049186498">Дайын-даректерди Chromebook эсептеп турат. Бул провайдердин маалыматынан айырмаланышы мүмкүн.</translation>
 <translation id="349570724365779960">Мектеп куралдары окуучулар менен байланыштырылган</translation>
 <translation id="3502426834823382181">бардык колдонмолорду көрүү</translation>
@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN код жараксыз.</translation>
 <translation id="382043424867370667">Күндүн батышы тушкагазы</translation>
 <translation id="3824259034819781947">Файлдарды тиркөө</translation>
-<translation id="3836587210832263413">Ишенимдүү кеңейтүүлөрдү гана күйгүзүңүз</translation>
 <translation id="3838338534323494292">Жаңы сырсөз</translation>
 <translation id="3845880861638660475">Диалогду жабуу үчүн <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> баскычтарын бирге басыңыз.</translation>
 <translation id="3848280697030027394">баскычтопту караңгылатуу</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Принтерлерди алардын параметрлеринен тескеңиз</translation>
 <translation id="6292095526077353682">Кубатталып жатканда көшөгөнү көрсөтүү</translation>
 <translation id="629550705077076970">баскычтопту күңүрт кылуу</translation>
-<translation id="6301193653204230066">Коопсуздукту баштапкы абалга келтирүү Chrome серепчисинин кеңейтүүлөрүн өчүрүп, тармакты жана башка параметрлерди кайра коёт.
-          Өтмөктөр, файлдар, cookie файлдары жана таржымал өзгөрбөйт.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> сыноосу жокко чыгарылды</translation>
 <translation id="631063167932043783">Мүмкүнчүлүктөр колдонмосу</translation>
 <translation id="6318437367327684789">ар дайым</translation>
@@ -1585,7 +1582,7 @@
 <translation id="8391349326751432483">Эстутумду сыноо үчүн кеминде 500 Мб бош орун керек. Эстутумда орун бошотуу үчүн өтмөктөр менен колдонмолорду жабыңыз.</translation>
 <translation id="8395584934117017006">Бул <ph name="DEVICE_TYPE" /> түзмөгүн ишкана башкарат</translation>
 <translation id="8398927464629426868">Түзмөк кубатталган же кубатталышы токтотулган деңгээл</translation>
-<translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> стилинде тартылган <ph name="ART_FEATURE" /> сүрөтү</translation>
+<translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> стилиндеги <ph name="ART_FEATURE" /> сүрөтү</translation>
 <translation id="8410244574650205435">Автоматтык түрдө аныкталат</translation>
 <translation id="8420955526972171689">Аппараттык камсыздоону сынап, бузулууларды аныктап оңдоо</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">Ар бир маектеш качан жана эмне дегенин транскрипцияда чагылдыруу үчүн жаздыруудагы үндөрдү салыштыруу</translation>
 <translation id="952992212772159698">Жандырылган эмес</translation>
 <translation id="95718197892796296">чопо</translation>
+<translation id="959792926760890141">Коопсуздукту баштапкы абалга келтирүү Chrome серепчисинин кеңейтүүлөрүн өчүрүп, тармакты жана башка параметрлерди баштапкы абалга келтирет.
+          Демейки издөө куралы баштапкы абалга келтирилет, бирок өтмөктөр, файлдар, cookie файлдары жана таржымал өзгөрбөйт.</translation>
 <translation id="960719561871045870">Оператордун коду</translation>
 <translation id="965918541715156800">сары жана көгүш жашыл</translation>
 <translation id="966787709310836684">меню</translation>

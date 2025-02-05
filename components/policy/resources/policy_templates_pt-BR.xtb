@@ -4900,6 +4900,19 @@ Esta política não vai ter efeito se for ativada, deixada vazia ou não for def
 <translation id="4534500438517478692">Nome de restrição Android:</translation>
 <translation id="4541530620466526913">Contas locais de dispositivo</translation>
 <translation id="4542255783284620926">Bloqueia a adição de uma conta gerenciada como secundária no ChromeOS (na sessão)</translation>
+<translation id="4543338637126011529">A definição da política especifica uma lista de Apps Isolados da Web (AIWs) que são instalados sem interação do usuário.
+      AIWs são aplicativos que têm propriedades de segurança úteis indisponíveis para páginas da Web normais. Eles são incluídos em um Pacote assinado da Web. A chave pública do Pacote assinado da Web é usada para criar o ID do pacote que identifica o AIW.
+      Até agora, essa política funciona apenas para a Sessão de visitante gerenciada.
+
+      Cada item da lista da política é um objeto com dois campos obrigatórios: o manifesto de atualização <ph name="URL_LABEL" /> e o ID do pacote do App Isolado da Web.
+
+      Cada item também pode incluir estes campos opcionais:
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />: o nome do canal de atualização/lançamento do AIW. Se a política for deixada sem definição, "default" (padrão) será usado.
+
+        * <ph name="PINNED_VERSION_OPTION" />:  uma versão específica a ser instalada. O sistema tentará instalar essa versão se ela estiver disponível no canal de atualização especificado. Por padrão, fixar um AIW em uma versão específica impede a atualização para versões mais recentes. Para liberar a versão, remova este campo.
+
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />: permite a instalação de versões mais antigas do AIW. Para isso, o campo "pinned_version" precisa ser definido. Se ele não for informado ou for definido como <ph name="FALSE" />, o downgrade será desativado para esse AIW.</translation>
 <translation id="4543502256674577024">Configurações de atualização do dispositivo</translation>
 <translation id="454585952814397564">Usar a prioridade normal para o processo de áudio</translation>
 <translation id="4546641664653711266">Esta é uma política temporária que será removida na versão M127.

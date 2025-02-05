@@ -47,6 +47,7 @@
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1190609913194133056">Центр уведомлений</translation>
 <translation id="1201402288615127009">Далее</translation>
+<translation id="1202892408424955784">Отслеживаемые товары</translation>
 <translation id="1204075260022434100">{count,plural, =1{Закладка сохранена в папке "{title}" в вашем аккаунте {email}.}one{{count} закладка сохранена в папке "{title}" в вашем аккаунте {email}.}few{{count} закладки сохранено в папке "{title}" в вашем аккаунте {email}.}many{{count} закладок сохранено в папке "{title}" в вашем аккаунте {email}.}other{{count} закладки сохранено в папке "{title}" в вашем аккаунте {email}.}}</translation>
 <translation id="120431140543679678">Подписаться</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -357,6 +358,7 @@
 <translation id="2468132863574325555">Диск</translation>
 <translation id="2468444275314013497">Ваш браузер в безопасности</translation>
 <translation id="2473876017985765807">Вы уже сохранили пароль для сайта <ph name="WEBSITE" />.</translation>
+<translation id="247430852844518481">Вы можете создать напоминание, чтобы посетить эту страницу позже</translation>
 <translation id="2479148705183875116">Открыть настройки</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2484459871750294497">Как включить эту функцию?</translation>
@@ -521,6 +523,7 @@
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245429137663807393">Если вы также отправляете отчеты об использовании Chrome, в них включаются URL посещенных вами страниц.</translation>
 <translation id="3245744387817103524">Не удалось сохранить изменения.</translation>
+<translation id="3254806613790954367">Последняя открытая вкладка с любого из ваших устройств</translation>
 <translation id="3272527697863656322">Отмена</translation>
 <translation id="3273510436356991673">Настройка главного экрана</translation>
 <translation id="3277021493514034324">Адрес сайта скопирован</translation>
@@ -624,6 +627,7 @@
 <translation id="3810973564298564668">Управление</translation>
 <translation id="381219490185664296">Расформировать группу вкладок?</translation>
 <translation id="3812308602011798782">Отзывы</translation>
+<translation id="3813175908845379029">Подсказки по работе в браузере</translation>
 <translation id="3815668647912194650">Вы сможете пользоваться ей в дальнейшем и добавлять вкладки. Если группа больше не нужна, выйдите из нее.</translation>
 <translation id="3818045793209708987">Эта посылка больше не отслеживается</translation>
 <translation id="3819183753496523827">Нет подключения к интернету. Проверьте соединение и повторите попытку.</translation>
@@ -665,6 +669,7 @@
 <translation id="398604237578616937">Вы вошли как <ph name="USER_EMAIL" />. Открыть меню аккаунта.</translation>
 <translation id="3986739045730058129">Перейти на вкладку</translation>
 <translation id="3992684624889376114">Об этой странице</translation>
+<translation id="3993594519743675442">Скрыть "Создать напоминание"</translation>
 <translation id="3994422733891749358">Выберите уведомления, которые вы хотите получать</translation>
 <translation id="3994522032746736727">Войти как <ph name="EMAIL" /></translation>
 <translation id="3994911892367422121">ОК</translation>
@@ -685,6 +690,7 @@
 <translation id="4054572406751135230">Следите за новостями и обновлениями другого контента.</translation>
 <translation id="4070132839822635162">Не входить</translation>
 <translation id="4094361089640885693">Отслеживайте цены и узнавайте об их изменении.</translation>
+<translation id="4099756562043439968">Создать напоминание</translation>
 <translation id="4108998448622696017">Обнаруживает опасные события и предупреждает о них.</translation>
 <translation id="4111985840824673503">Отметить все как прочитанные</translation>
 <translation id="411254640334432676">Ошибка при скачивании</translation>
@@ -813,6 +819,7 @@
 <translation id="4632655012900268062">Настроить карточки</translation>
 <translation id="4634124774493850572">Использовать пароль</translation>
 <translation id="4636930964841734540">Информация</translation>
+<translation id="4641425577292284174">Текущие настройки безопасности и рекомендации о том, как ее повысить</translation>
 <translation id="4642472735733036929">Отслеживание цен приостановлено.</translation>
 <translation id="4645575059429386691">Управляется твоим родителем</translation>
 <translation id="4647758699119474035">Вы вошли как <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ошибка в аккаунте Google. Открыть меню аккаунта.</translation>
@@ -827,8 +834,8 @@
 <translation id="467189612236587057">Позвонить в компанию</translation>
 <translation id="4682496302933121474">Перевести эту страницу?</translation>
 <translation id="4682686630151240767">1. Откройте настройки устройства iPhone.</translation>
-<translation id="4684427112815847243">Синхронизировать все</translation>
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
+<translation id="4709570498586527752">Быстрый доступ к нужным функциям</translation>
 <translation id="4717844083556844785">Открыто в режиме инкогнито</translation>
 <translation id="4719927025381752090">Предлагать перевод</translation>
 <translation id="4720530280568305198">В результате вашего выбора открылась новая вкладка.</translation>
@@ -1084,6 +1091,7 @@
 <translation id="5779117921996157216">{count,plural, =1{Раскрыт {count} пароль. Безопасность данных под угрозой. Устраните проблему, чтобы защитить себя.}one{Раскрыт {count} пароль. Безопасность данных под угрозой. Устраните проблему, чтобы защитить себя.}few{Раскрыто {count} пароля. Безопасность данных под угрозой. Устраните проблему, чтобы защитить себя.}many{Раскрыто {count} паролей. Безопасность данных под угрозой. Устраните проблему, чтобы защитить себя.}other{Раскрыто {count} пароля. Безопасность данных под угрозой. Устраните проблему, чтобы защитить себя.}}</translation>
 <translation id="5791632441210678828">Кнопка "Сортировать" для ленты новостей.</translation>
 <translation id="5803566855766646066">Удалить новую карту?</translation>
+<translation id="5804012843049740908">Советы о том, как использовать все возможности Chrome</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5817176759448082654">Проверка паролей</translation>
 <translation id="5819208479324046259">Устройством управляет <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -1149,6 +1157,7 @@
 <translation id="6096965253650248286">Найдено: <ph name="COUNT" /></translation>
 <translation id="6100617279104942061">Вы вошли как <ph name="USER_EMAIL" />. Открывает настройки.</translation>
 <translation id="6103540626693881831">Шифрование на устройстве</translation>
+<translation id="611361228753138223">Сайты, которые вы недавно посещали на этом устройстве</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122831415929794347">Отключить Безопасный просмотр?</translation>
 <translation id="6123514585040403489">Вкладки будут закрыты</translation>
@@ -1201,7 +1210,6 @@
 <translation id="6295751040240588413">Недопустимое название карты</translation>
 <translation id="629730747756840877">Аккаунт</translation>
 <translation id="6301104306974789820">Получать уведомления об изменении цены</translation>
-<translation id="6303969859164067831">Выйти из аккаунта и отключить синхронизацию</translation>
 <translation id="6310451064941005489">Настройки паролей</translation>
 <translation id="6316141353357700666">Выберите пароль из списка.</translation>
 <translation id="6321526113093607004">Добавить в закладки</translation>
@@ -1313,7 +1321,6 @@
 
 В режиме инкогнито сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например для показа персонализированной рекламы.</translation>
 <translation id="6672697278890207089">Введите кодовую фразу</translation>
-<translation id="6674571176963658787">Чтобы начать синхронизацию, введите кодовую фразу.</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6680416467695217368">Настройка меню</translation>
 <translation id="6681586159478273915">Голосовой поиск</translation>
@@ -1512,6 +1519,7 @@
 <translation id="7605594153474022051">Ошибка синхронизации</translation>
 <translation id="760667371114328991">Отключить уведомления проверки безопасности</translation>
 <translation id="7612619742409846846">Вы вошли в аккаунт</translation>
+<translation id="7612849887607288481">Открыть меню (прототип от ИИ)</translation>
 <translation id="7620522820075868385">Отмена</translation>
 <translation id="7638584964844754484">Неверная кодовая фраза</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Раскрытые пароли}=1{{COUNT} раскрытый пароль}one{{COUNT} раскрытый пароль}few{{COUNT} раскрытых пароля}many{{COUNT} раскрытых паролей}other{{COUNT} раскрытого пароля}}</translation>
@@ -1587,7 +1595,6 @@
 <translation id="7933880123415105005">Поиск в <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Страница добавлена в список для чтения в вашем аккаунте ({email}).}one{{count} страница добавлена в список для чтения в вашем аккаунте ({email}).}few{{count} страницы добавлено в список для чтения в вашем аккаунте ({email}).}many{{count} страниц добавлено в список для чтения в вашем аккаунте ({email}).}other{{count} страницы добавлено в список для чтения в вашем аккаунте ({email}).}}</translation>
-<translation id="7944772052836377867">Подтвердите личность для синхронизации</translation>
 <translation id="7947953824732555851">Принять и войти</translation>
 <translation id="7958575506592576831">Сведения о надежности страницы</translation>
 <translation id="7961015016161918242">Нет</translation>
@@ -1812,7 +1819,6 @@
 <translation id="8831944931153286232">Добавить в список для чтения</translation>
 <translation id="8837654851594567190">Сортировать по издателю</translation>
 <translation id="8840513115188359703">Вы останетесь в аккаунте Google.</translation>
-<translation id="8843129975935593190">Ваша организация разрешила синхронизировать только некоторые данные.</translation>
 <translation id="8848286253339013170">Сохраняем изображение в Google Фото в аккаунте <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Скрытые</translation>
 <translation id="8855242995793521265">Не приводит к заметному замедлению работы браузера или устройства.</translation>
@@ -1826,6 +1832,7 @@
 <translation id="8879604564928138696">Чтобы попробовать, нажмите дважды</translation>
 <translation id="8879952635974818770">Персонализированный контент</translation>
 <translation id="8887595428614802520">Закрыть все вкладки и группы</translation>
+<translation id="8891031436559779793">Если на одном из сайтов цена снизится, вы получите оповещение</translation>
 <translation id="8893208530912252670">Видео</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей интернета)</translation>
 <translation id="890565330728586731">Назад</translation>

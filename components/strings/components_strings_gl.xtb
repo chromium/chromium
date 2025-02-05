@@ -1873,6 +1873,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4269264543938335308">Roupa de baño</translation>
 <translation id="4269599248168651462">O certificado do servidor emítese para un nome que non é exclusivo.</translation>
 <translation id="4270541775497538019">Amontoador 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Ver 0 recensións. A valoración media é de <ph name="STARS" /> estrelas.}=1{Ver 1 recensión. A valoración media é de <ph name="STARS" /> estrela.}other{Ver as # recensións. A valoración media é de <ph name="STARS" /> estrelas.}}</translation>
 <translation id="4271652479722040953">Cando se engaden extensións a Chrome, envíanse datos relevantes sobre elas a terceiros para a súa análise. É posible que a persoa administradora poida velos. Os devanditos datos inclúen información sobre as extensións, como o nome, a hora de instalación, a fonte da instalación e a actividade asociada a elas (por exemplo, cambiar de pestana, contactar con sitios web ou acceder ás cookies), e recompílanse tanto para as extensións instaladas desde Chrome Web Store como para as que non pertenzan á tenda.</translation>
 <translation id="4275830172053184480">Reinicia o dispositivo</translation>
 <translation id="4276974990916607331">Non, grazas</translation>
@@ -2952,6 +2953,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6224281071334553713">Xemas e xoias</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar as ferramentas de accesibilidade na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="6228346913624365233">Vehículos de luxo</translation>
+<translation id="6228836011612806720">Recensións sobre a tenda. A valoración media é de <ph name="STARS" /> estrelas.</translation>
 <translation id="6229196330202833460">Reprodución en tempo real de películas e programas de televisión</translation>
 <translation id="6234122620015464377">Recorte despois de cada documento</translation>
 <translation id="6234310016144827337">Comproba a túa conexión e téntao de novo</translation>

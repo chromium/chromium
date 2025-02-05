@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1444443021901415601">Chrome pren nota dels temes d'interès basant-se en el teu historial de navegació recent</translation>
-<translation id="2252052615723281030">Si tens la sessió iniciada a Chrome, aquesta opció de configuració t'ajudarà a mantenir l'adreça IP privada. En cas que Chrome sospiti que un lloc web podria estar fent un seguiment de la teva activitat, és possible que part del teu trànsit s'enviï a través de servidors de privadesa.</translation>
 <translation id="235789365079050412">Política de privadesa de Google</translation>
 <translation id="2793385791865768072">Chromium pren nota dels temes d'interès basant-se en el teu historial de navegació recent</translation>
 <translation id="2979365474350987274">Les galetes de tercers estan limitades</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Galetes de tercers limitades</translation>
 <translation id="6371812158043974664">Si tens la sessió iniciada a Chromium, aquesta opció de configuració t'ajudarà a mantenir l'adreça IP privada. En cas que Chromium sospiti que un lloc web podria estar fent un seguiment de la teva activitat, és possible que part del teu trànsit s'enviï a través de servidors de privadesa. Més informació sobre <ph name="LINK_BEGIN" />com funciona la protecció d'IP<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Per obtenir més informació sobre com Google protegeix les teves dades, consulta la nostra <ph name="BEGIN_LINK1" />política de privadesa<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261">Obtén informació sobre <ph name="BEGIN_LINK" />com funciona la protecció d'IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Revisa l'opció de configuració dels temes d'anunci</translation>
 </translationbundle>

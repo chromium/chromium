@@ -1231,6 +1231,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vraagt toestemming om gegevens permanent op je apparaat op te slaan</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> op <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Kan vragen of deze site mag weten wanneer je dit apparaat actief gebruikt</translation>
+<translation id="3201482403106004262">Er is een fout opgetreden in de enquête.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om de informatie die je synchroniseert te beheren in de Chrome-instellingen</translation>
 <translation id="3203025201812691413">De URL mag niet leeg zijn</translation>
 <translation id="320323717674993345">Betaling annuleren</translation>
@@ -1867,6 +1868,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4269264543938335308">Zwemkleding</translation>
 <translation id="4269599248168651462">Het servercertificaat is uitgegeven aan een niet-unieke naam.</translation>
 <translation id="4270541775497538019">Stapeleenheid 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 reviews bekijken. De gemiddelde beoordeling is <ph name="STARS" /> sterren.}=1{1 review bekijken. De gemiddelde beoordeling is <ph name="STARS" /> sterren.}other{Alle # reviews bekijken. De gemiddelde beoordeling is <ph name="STARS" /> sterren.}}</translation>
 <translation id="4271652479722040953">Als er extensies aan Chrome worden toegevoegd, worden relevante gegevens over deze extensies naar derden gestuurd voor analyse en zijn ze mogelijk zichtbaar voor je beheerder. De gegevens bevatten informatie over de extensies, zoals de naam, installatietijd en installatiebron, en activiteit die is gekoppeld aan deze extensies (zoals tabbladen wijzigen, contact opnemen met websites of toegang krijgen tot cookies). Deze gegevens worden verzameld voor extensies die zijn geïnstalleerd via de Chrome Web Store en voor extensies die niet via de Chrome Web Store zijn geïnstalleerd.</translation>
 <translation id="4275830172053184480">Je apparaat opnieuw opstarten</translation>
 <translation id="4276974990916607331">Nee, bedankt</translation>
@@ -2340,6 +2342,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5138227688689900538">Minder bekijken</translation>
 <translation id="5143309888746105072">Chromium voorkomt dat sites cookies van derden gebruiken om je te volgen terwijl je browst.
             <ph name="NEW_LINE" />Als sitefuncties niet werken, <ph name="START_LINK" />kun je cookies van derden tijdelijk toestaan<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Je hebt <ph name="PERMISSION" /> toegestaan voor deze site</translation>
 <translation id="5145883236150621069">Foutcode aanwezig in de beleidsreactie</translation>
 <translation id="5146995429444047494">Meldingen voor <ph name="ORIGIN" /> zijn geblokkeerd</translation>
 <translation id="514704532284964975"><ph name="URL" /> wil informatie zien en wijzigen op NFC-apparaten waarop je met je telefoon tikt</translation>
@@ -2945,6 +2948,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6224281071334553713">Juwelen en sieraden</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om je toegankelijkheidstools te personaliseren in de Chrome-instellingen</translation>
 <translation id="6228346913624365233">Luxe voertuigen</translation>
+<translation id="6228836011612806720">Winkelreviews. De gemiddelde beoordeling is <ph name="STARS" /> sterren.</translation>
 <translation id="6229196330202833460">Films en tv streamen</translation>
 <translation id="6234122620015464377">Bijsnijden na elk document</translation>
 <translation id="6234310016144827337">Check de verbinding en probeer het opnieuw</translation>
@@ -4394,6 +4398,7 @@ Aanvullende informatie:
 <translation id="8792621596287649091">Je kunt de toegang tot je account van <ph name="ORG_NAME" /> kwijtraken of slachtoffer worden van identiteitsdiefstal. Chromium raadt je aan je wachtwoord nu te wijzigen.</translation>
 <translation id="8792626944327216835">microfoon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> heeft Chrome Enterprise Connectors voor je browser aangezet. Deze connectors hebben toegang tot sommige van je gegevens.</translation>
+<translation id="8796062699363039080">Instellingen voor <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Standaard</translation>
 <translation id="8800034312320686233">Werkt de site niet?</translation>
 <translation id="8805819170075074995">Lijstitem '<ph name="LANGUAGE_ID" />': Item is genegeerd omdat dit ook is opgenomen in het beleid SpellcheckLanguage.</translation>
@@ -4613,6 +4618,7 @@ Aanvullende informatie:
 <translation id="9192361865877479444">Metaal (mat)</translation>
 <translation id="9192947025498305328">Natuurlijke cosmetica</translation>
 <translation id="9199905725844810519">Afdrukken is geblokkeerd</translation>
+<translation id="9201904868909900493">Enquête openen...</translation>
 <translation id="9204089334327209740">Nadat de upload is afgerond, kun je je bestanden aanpassen in <ph name="CLOUD_PROVIDER" />. Lokale opslag, inclusief bestanden in de prullenbak, wordt automatisch verwijderd.</translation>
 <translation id="9205078245616868884">Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="920643408853370361">Reisverzekeringen</translation>

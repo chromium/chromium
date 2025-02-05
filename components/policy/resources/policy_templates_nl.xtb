@@ -4691,6 +4691,19 @@ Dit beleid heeft geen effect als je het toepast, leeg laat of niet instelt.</tra
 <translation id="4534500438517478692">Naam Android-beperking:</translation>
 <translation id="4541530620466526913">Lokale accounts op apparaat</translation>
 <translation id="4542255783284620926">Toevoeging blokkeren van een beheerd account als secundair account in Chrome OS (in sessie)</translation>
+<translation id="4543338637126011529">Als je het beleid instelt, geef je een lijst aan met geïsoleerde web-apps (GWA's) die op de achtergrond worden geïnstalleerd.
+      GWA's zijn apps met nuttige beveiligingseigenschappen die niet beschikbaar zijn op normale webpagina's. Ze worden verpakt in een ondertekende webbundel. De openbare sleutel van de ondertekende webbundel wordt gebruikt om de webbundel-ID te maken waarmee de GWA wordt geïdentificeerd.
+      Dit beleid werkt tot nu toe alleen voor beheerde gastsessies.
+
+      Elk lijstitem van het beleid is een object met 2 verplichte velden: het updatemanifest <ph name="URL_LABEL" /> en de webbundel-ID van de geïsoleerde web-app.
+
+Elk item kan ook deze optionele velden bevatten:
+
+* <ph name="UPDATE_CHANNEL_OPTION" />: De naam van het release-/updatekanaal van de GWA. Als je dit beleid niet instelt, wordt 'default' gebruikt.
+
+        * <ph name="PINNED_VERSION_OPTION" />: Een specifieke versie om te installeren. Het systeem probeert deze versie te installeren als die beschikbaar is op het aangegeven updatekanaal. Als je een GWA vastzet op een specifieke versie, wordt standaard voorkomen dat deze wordt geüpdatet naar een hogere versie dan die versie. Verwijder dit veld om de versie los te maken.
+
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />: Hiermee kun je oudere versies van de GWA installeren. Hiervoor moet het veld 'pinned_version' worden ingesteld. Als je dit beleid niet instelt of instelt op <ph name="FALSE" />, is downgraden voor die GWA niet mogelijk.</translation>
 <translation id="4543502256674577024">Update-instellingen voor apparaat</translation>
 <translation id="454585952814397564">Normale prioriteit gebruiken voor audioproces</translation>
 <translation id="4546641664653711266">Dit is een tijdelijk beleid dat wordt verwijderd in M127.

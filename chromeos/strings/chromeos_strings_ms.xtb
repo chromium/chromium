@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="382043424867370667">Hiasan latar matahari terbenam</translation>
 <translation id="3824259034819781947">Lampirkan fail</translation>
-<translation id="3836587210832263413">Hidupkan sambungan yang anda percayai sahaja</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
 <translation id="3845880861638660475">Tekan <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> untuk menutup dialog.</translation>
 <translation id="3848280697030027394">menggelapkan papan kekunci</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Urus pencetak anda dalam tetapan pencetak</translation>
 <translation id="6292095526077353682">Semasa pengecasan, paparkan penyelamat skrin selama</translation>
 <translation id="629550705077076970">pemalapan papan kekunci</translation>
-<translation id="6301193653204230066">Penetapan semula keselamatan akan mematikan sambungan penyemak imbas Chrome dan menetapkan semula rangkaian dan tetapan lain kepada lalai selamat.
-          Tab, fail, kuki dan sejarah anda tidak akan diubah.</translation>
 <translation id="6302401976930124515">Ujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="631063167932043783">Teroka apl</translation>
 <translation id="6318437367327684789">selamanya</translation>
@@ -1343,7 +1340,7 @@
 <translation id="7233782086689993269">Pintasan telah dipulihkan</translation>
 <translation id="725133483556299729">Pilih e-mel</translation>
 <translation id="7255187042098209569">merah jambu dan ungu</translation>
-<translation id="7271000785316964275">klasikisme</translation>
+<translation id="7271000785316964275">klasisis</translation>
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
 <translation id="7271932918253517778">Pintasan dengan kekunci baris atas perlu menyertakan kekunci <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -1774,6 +1771,8 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="951780398843003443">Bandingkan suara sepanjang rakaman supaya transkrip menggambarkan perkara yang setiap penutur katakan dan masa penutur berkata</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
 <translation id="95718197892796296">tanah liat</translation>
+<translation id="959792926760890141">Penetapan semula keselamatan akan mematikan sambungan penyemak imbas Chrome dan menetapkan semula rangkaian dan tetapan lain kepada lalai selamat.
+          Enjin carian lalai anda akan ditetapkan semula tetapi tab, fail, kuki dan sejarah anda tidak akan diubah.</translation>
 <translation id="960719561871045870">Kod operator</translation>
 <translation id="965918541715156800">kuning dan hijau kebiruan</translation>
 <translation id="966787709310836684">menu</translation>

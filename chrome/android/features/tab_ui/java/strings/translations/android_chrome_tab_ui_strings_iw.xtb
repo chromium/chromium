@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />מידע נוסף<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) מקובצת</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}one{<ph name="TABS_COUNT_MANY" /> כרטיסיות}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
+<translation id="1909810060368225529">כדאי לשים לב: השינויים שמבוצעים בקבוצת הכרטיסיות המשותפת הזו גלויים לכולם. כולם יכולים לבצע שינויים בקבוצות הכרטיסיות ששיתפת</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{הוספת הכרטיסייה (<ph name="TABS_COUNT_ONE" />) שנבחרה לסימניות}one{הוספת <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו לסימניות}two{הוספת <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו לסימניות}other{הוספת <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו לסימניות}}</translation>
 <translation id="2118649612461486615">פרטי החנות</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. הכרטיסייה הפרטית לא תהיה זמינה.}one{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}two{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}other{אפשר לפתוח מחדש את הכרטיסיות והקבוצות שסגרת בקטע 'כרטיסיות אחרונות' ובקטע 'קבוצות של כרטיסיות'. ‫# הכרטיסיות הפרטיות לא יהיו זמינות.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">קבוצות הכרטיסיות יופיעו כאן</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ביטול הקיבוץ של הכרטיסייה (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}two{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}other{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}one{<ph name="TABS_COUNT_MANY" /> כרטיסיות}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
+<translation id="6499296376514955580">ההודעה על השינויים בקבוצת הכרטיסיות המשותפת נסגרה</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{אחרי יום אחד}one{אחרי <ph name="DAY_COUNT_MANY" /> ימים}two{אחרי <ph name="DAY_COUNT_MANY" /> ימים}other{אחרי <ph name="DAY_COUNT_MANY" /> ימים}}</translation>
 <translation id="6549021453810473782">הצגת פרטי החנות</translation>
 <translation id="6557858706263317126">‫+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">העברת הכרטיסייה ימינה</translation>
+<translation id="6589356853295569750">ההודעה על השינויים בקבוצת הכרטיסיות המשותפת נפתחה בגובה מלא</translation>
 <translation id="6590332670428149473">פתיחה של תפריט הפעולות בקבוצת הכרטיסיות המשותפת <ph name="TITLE_OF_GROUP" />, בצבע <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">איך עושים את זה?</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{כרטיסייה אחת (<ph name="ONE_CHANGED" />) התעדכנה}one{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו}two{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו}other{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{שיתוף הכרטיסייה (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{שיתוף <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}two{שיתוף <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}other{שיתוף <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}}</translation>
 <translation id="7773714564112603605">הסרת הכרטיסייה ומחיקת הקבוצה</translation>
 <translation id="7792771145871471484">עיון בהצעות.</translation>
+<translation id="7792860826279960128">הודעה על שינויים בקבוצת הכרטיסיות המשותפת בחצי מהגובה</translation>
 <translation id="7825973332242257878">קבוצות של כרטיסיות</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{קיבוץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}two{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>
 <translation id="7853202427316060426">פעילות</translation>

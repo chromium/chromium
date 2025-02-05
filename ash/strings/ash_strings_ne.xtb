@@ -427,7 +427,7 @@
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> हाल्नुहोस्</translation>
 <translation id="2475982808118771221">त्रुटि भयो</translation>
 <translation id="2478076885740497414">एप स्थापना गर्नुहोस्</translation>
-<translation id="2482878487686419369">सूचनाहरू</translation>
+<translation id="2482878487686419369">नोटिफिकेसनहरू</translation>
 <translation id="2484513351006226581">किबोर्डको लेआउट स्विच गर्न <ph name="KEYBOARD_SHORTCUT" /> मा थिच्नुहोस्।</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> को प्रिभ्यू। सक्रिय डेस्क।</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" को रिजोल्युसन बदलेर <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) बनाइएको छ। पुष्टि गरिएन भने अबको <ph name="TIMEOUT_SECONDS" /> मा यसअघिका सेटिङ रिस्टोर गरिने छन्।</translation>
@@ -1699,7 +1699,7 @@
 <translation id="6622679827379792051">आफ्नो फोनमा भएका एपहरू हेर्ने सुविधा सेटअप गर्नुहोस्</translation>
 <translation id="662279009180869175">स्प्लिट स्क्रिनको आकार बदल्न लेफ्ट तथा राइट एरो प्रयोग गर्नुहोस्</translation>
 <translation id="6624493541160101248">हालको डेस्क: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" /> वटामध्ये <ph name="DESK_INDEX" /> औँ डेस्क।</translation>
-<translation id="6625718907317144388">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> र अन्य एपसम्बन्धी सूचनाहरू लुकाइएका छन्</translation>
+<translation id="6625718907317144388">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> र अन्य एपसम्बन्धी नोटिफिकेसनहरू लुकाइएका छन्</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="662830937908749204">फोकस सारेर अर्को पेनमा लैजानुहोस्</translation>
 <translation id="6637729079642709226">समय परिवर्तन गर्नुहोस्</translation>
@@ -2382,6 +2382,7 @@
 <translation id="8956420987536947088">आफूले यसअघि खोलेका विन्डो तथा एपहरू खोल्नुहोस्</translation>
 <translation id="8959380109429710384">तपाईंले फुल स्क्रिन म्याग्निफायर अन/अफ गर्ने किबोर्ड सर्टकट थिच्नुभयो। जुम इन गरिएका बेला यताउता सार्न Ctrl + Alt + एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="8964525410783593407">१ घण्टा</translation>
+<translation id="8970887620466824814">कुनै समस्या आयो।</translation>
 <translation id="8973885907461690937">मेनु जनाउने आइकनमा फोकस गर्नुहोस्</translation>
 <translation id="8980862970816311842">एप ग्रिडमा कुनै एपको आइकन फोल्डर भित्र/बाहिर सार्नुहोस्</translation>
 <translation id="8982906748181120328">नजिकैका यन्त्रमा फेला पर्ने</translation>

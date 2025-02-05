@@ -25,6 +25,7 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Meer informatie<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tabblad gegroepeerd</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
+<translation id="1909810060368225529">Opmerking: Wijzigingen in deze gedeelde tabbladgroep zijn zichtbaar voor iedereen. Iedereen kan wijzigingen aanbrengen in je gedeelde tabbladgroepen.</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad bookmarken}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen bookmarken}}</translation>
 <translation id="2118649612461486615">Winkelinformatie</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen. Je incognitotabblad is niet beschikbaar.}other{Je kunt je gesloten tabbladen en groepen opnieuw openen via het gedeelte Recente tabbladen en het gedeelte Tabbladgroepen. Je # incognitotabbladen zijn niet beschikbaar.}}</translation>
@@ -126,11 +127,13 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="6381032505162537930">Hier vind je je tabbladgroepen</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Groepering van <ph name="TABS_COUNT_ONE" /> geselecteerd tabblad opheffen}other{Groepering van <ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen opheffen}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
+<translation id="6499296376514955580">Kennisgeving over wijzigingen in gedeelde tabbladgroepen gesloten</translation>
 <translation id="6527303717912515753">Delen</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Na 1 dag}other{Na <ph name="DAY_COUNT_MANY" /> dagen}}</translation>
 <translation id="6549021453810473782">Winkelinformatie bekijken</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Tabblad naar links verplaatsen</translation>
+<translation id="6589356853295569750">Kennisgeving over wijzigingen in gedeelde tabbladgroepen is op volledige hoogte geopend</translation>
 <translation id="6590332670428149473">Het actiemenu van de tabbladgroep openen voor de gedeelde tabbladgroep <ph name="TITLE_OF_GROUP" />, kleur <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Tonen</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tabblad gewijzigd}other{<ph name="MANY_CHANGED" /> tabbladen gewijzigd}}</translation>
@@ -157,6 +160,7 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad delen}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen delen}}</translation>
 <translation id="7773714564112603605">Tabblad verwijderen en groep verwijderen</translation>
 <translation id="7792771145871471484">Bekijk de suggesties.</translation>
+<translation id="7792860826279960128">Kennisgeving over wijzigingen in gedeelde tabbladgroepen is op halve hoogte geopend</translation>
 <translation id="7825973332242257878">Tabbladgroepen</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad groeperen}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen groeperen}}</translation>
 <translation id="7853202427316060426">Activiteit</translation>

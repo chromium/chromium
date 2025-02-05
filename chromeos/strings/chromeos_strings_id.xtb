@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN tidak valid.</translation>
 <translation id="382043424867370667">Wallpaper Matahari terbenam</translation>
 <translation id="3824259034819781947">Lampirkan file</translation>
-<translation id="3836587210832263413">Hanya aktifkan ekstensi yang Anda percayai</translation>
 <translation id="3838338534323494292">Sandi baru</translation>
 <translation id="3845880861638660475">Tekan <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> untuk menutup dialog.</translation>
 <translation id="3848280697030027394">gelapkan keyboard</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Kelola printer Anda di setelan printer</translation>
 <translation id="6292095526077353682">Saat mengisi daya, tampilkan screensaver selama</translation>
 <translation id="629550705077076970">peredupan keyboard</translation>
-<translation id="6301193653204230066">Reset keamanan akan menonaktifkan ekstensi browser Chrome dan mereset jaringan serta setelan lainnya ke setelan default yang aman.
-          Tab, file, cookie, dan histori Anda tidak akan diubah.</translation>
 <translation id="6302401976930124515">Pengujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="631063167932043783">Aplikasi Jelajahi</translation>
 <translation id="6318437367327684789">selamanya</translation>
@@ -1774,6 +1771,8 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="951780398843003443">Membandingkan suara di sepanjang rekaman sehingga transkrip dapat menunjukkan ucapan setiap pembicara beserta waktunya</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
 <translation id="95718197892796296">tanah liat</translation>
+<translation id="959792926760890141">Reset keamanan akan menonaktifkan ekstensi browser Chrome dan mereset jaringan serta setelan lainnya ke setelan default yang aman.
+          Mesin telusur default akan direset, tetapi tab, file, cookie, dan histori Anda tidak akan diubah.</translation>
 <translation id="960719561871045870">Kode operator</translation>
 <translation id="965918541715156800">kuning dan hijau kebiruan</translation>
 <translation id="966787709310836684">menu</translation>

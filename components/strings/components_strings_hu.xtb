@@ -1164,6 +1164,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3076865167425975822">Operációs rendszer</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">A Google használhatja a kosarait személyre szabott kedvezmények keresésére</translation>
+<translation id="3086269988715347183">Ön korábban nem hagyta jóvá a következőt: <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Megfigyelik az Ön interneten végzett tevékenységeit</translation>
 <translation id="3087734570205094154">Alja</translation>
 <translation id="3090667236485488075">Üveg</translation>
@@ -1236,6 +1237,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3203025201812691413">Az URL mezője nem maradhat üresen.</translation>
 <translation id="320323717674993345">Fizetés visszavonása</translation>
 <translation id="3203366800380907218">Az internetről</translation>
+<translation id="3207830513221832868">A(z) <ph name="BLOCKED_URL" /> felnőtteknek szóló tartalmat tartalmazhat</translation>
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
 <translation id="3208701679386778924">Küldjön jelentést, hogy segítse a ChromeOS további verzióinak fejlesztését.</translation>
 <translation id="3209034400446768650">Az oldal díjat számíthat fel</translation>
@@ -1870,6 +1872,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4269264543938335308">Úszóruházat</translation>
 <translation id="4269599248168651462">A szervertanúsítvány nem egyedi névre van kiállítva.</translation>
 <translation id="4270541775497538019">6. kötegelő</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 vélemény megtekintése. Az átlagos értékelés <ph name="STARS" /> csillag.}=1{1 vélemény megtekintése. Az átlagos értékelés <ph name="STARS" /> csillag.}other{Az összes (#) vélemény megtekintése. Az átlagos értékelés <ph name="STARS" /> csillag.}}</translation>
 <translation id="4271652479722040953">Amikor bővítményeket ad hozzá a Chrome-hoz, a böngésző elemzés céljából harmadik feleknek továbbítja az adott bővítményekkel kapcsolatos vonatkozó adatokat, amelyeket a rendszergazda is láthat. Az adatok közé tartoznak a bővítményekre vonatkozó információk, például a bővítmények neve, a telepítés ideje, a telepítés forrása, valamint az ezekkel a bővítményekkel kapcsolatos tevékenységek (például lapváltás, webhelyekkel való kapcsolatfelvétel vagy cookie-khoz való hozzáférés). Ezeket az adatokat a Chrome Webáruházból telepített bővítményekre, valamint a webáruházon kívülről telepített bővítményekre vonatkozóan is gyűjti a rendszer.</translation>
 <translation id="4275830172053184480">Indítsa újra az eszközt</translation>
 <translation id="4276974990916607331">Nem</translation>
@@ -2949,6 +2952,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6224281071334553713">Drágakövek és ékszerek</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a kisegítő eszközöknek a Chrome beállításaiban való személyre szabásához.</translation>
 <translation id="6228346913624365233">Luxusjárművek</translation>
+<translation id="6228836011612806720">Vélemények az üzletről. Az átlagos értékelés <ph name="STARS" /> csillag.</translation>
 <translation id="6229196330202833460">Film- és TV-streaming</translation>
 <translation id="6234122620015464377">Vágás minden dokumentum után</translation>
 <translation id="6234310016144827337">Ellenőrizze a kapcsolatot, majd próbálkozzon újra.</translation>
@@ -2966,6 +2970,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6254436959401408446">Nincs elég memória az oldal megnyitásához</translation>
 <translation id="625463612687472648">Engedélyezés leállítása</translation>
 <translation id="6259156558325130047">&amp;Átrendezés újra</translation>
+<translation id="6259282549512536479">Ön korábban letiltotta a következőt: <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> könyvjelzők</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
 <translation id="6264485186158353794">Vissza a biztonsághoz</translation>

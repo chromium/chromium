@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Недійсний PIN-код.</translation>
 <translation id="382043424867370667">Фоновий малюнок "Захід сонця"</translation>
 <translation id="3824259034819781947">Вкласти файли</translation>
-<translation id="3836587210832263413">Вмикайте лише надійні розширення</translation>
 <translation id="3838338534323494292">Новий пароль</translation>
 <translation id="3845880861638660475">Щоб закрити вікно, натисніть комбінацію клавіш <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">зробити клавіатуру темнішою</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Керуйте принтерами в налаштуваннях принтера</translation>
 <translation id="6292095526077353682">Показувати заставку під час заряджання пристрою</translation>
 <translation id="629550705077076970">зменшення яскравості клавіатури</translation>
-<translation id="6301193653204230066">Ця функція вимикає розширення вебпереглядача Chrome і відновлює мережеві й інші налаштування за умовчанням.
-          Файли, вкладки, файли cookie й історія не зміняться.</translation>
 <translation id="6302401976930124515">Тест "<ph name="TEST_NAME" />" скасовано</translation>
 <translation id="631063167932043783">Додаток Можливості</translation>
 <translation id="6318437367327684789">завжди</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">порівнювати голоси протягом запису, щоб текстова версія відображала, що саме й коли сказав кожний мовець.</translation>
 <translation id="952992212772159698">Не активовано</translation>
 <translation id="95718197892796296">глини</translation>
+<translation id="959792926760890141">Ця функція вимикає розширення вебпереглядача Chrome і відновлює мережеві й інші налаштування за умовчанням.
+          Пошукову систему за умовчанням буде скинуто, однак ваші вкладки, файли, історія і файли cookie не зміняться.</translation>
 <translation id="960719561871045870">Код оператора</translation>
 <translation id="965918541715156800">жовтого й ціанового</translation>
 <translation id="966787709310836684">меню</translation>

@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1384959399684842514">Nedladdningen har pausats</translation>
 <translation id="1396327438254055134">Tillåt att webbplatsen använder V8-optimeraren.</translation>
+<translation id="1409338233051621926">Tryck på Appar och sedan på Standardappar</translation>
 <translation id="1415402041810619267">Webbadressen har trunkerats</translation>
 <translation id="1415855080660575082">Tillåt att Chrome delar dina senaste flikar med enheten så att du kan se dem i enhetens applista och sökresultat. Du kan aktivera eller inaktivera detta i Chrome-inställningarna.</translation>
 <translation id="1448064542941920355">Minska zoom</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Använd inte mörkt tema på webbplatser</translation>
 <translation id="2606760465469169465">Verifiera automatiskt</translation>
 <translation id="2621115761605608342">Tillåt JavaScript på en specifik webbplats.</translation>
+<translation id="2626708220538466178">Ark på nedre delen av standardwebbläsaren har stängts</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2682367912565197520">Ta bort sparad zoomnivå</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Stäng av ljudet på webbplatser</translation>
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3628308229821498208">Föreslagna sökningar</translation>
+<translation id="3658847490588580244">Ark på nedre delen av standardwebbläsaren</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> webbplats i gruppen med webbplatser som tillhör <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{<ph name="RWS_MEMBERS_COUNT" /> webbplatser i gruppen med webbplatser som tillhör <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
 <translation id="3697164069658504920">När detta är aktiverat kan webbplatser be om att få använda USB-enheter. När detta är inaktiverat får webbplatser inte använda USB-enheter.</translation>
 <translation id="3707034683772193706">En webbplats du besöker kan spara mycket information med Chrome, främst för att kontrollera att du inte är en bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Radera och återställ</translation>
 <translation id="4645575059429386691">Hanteras av din förälder</translation>
 <translation id="4670064810192446073">Virtuell verklighet</translation>
+<translation id="4672315773691449562">Tryck på webbläsarappen och sedan på Chrome</translation>
 <translation id="4676059169848868271">Om du vill att <ph name="APP_NAME" /> ska använda handspårning måste du även aktivera handspårning i <ph name="BEGIN_LINK" />systeminställningarna<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Rörelse- eller ljussensorer</translation>
 <translation id="4755971844837804407">När detta är aktiverat kan webbplatser visa alla annonser för dig. När detta är inaktiverat får webbplatser inte visa påträngande eller vilseledande annonser.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Tillåten (rekommenderas)</translation>
 <translation id="8609465669617005112">Flytta upp</translation>
 <translation id="8617611086246832542">När detta är aktiverat visas datorvyn för webbplatser. När detta är inaktiverat visas mobilvyn för webbplatser.</translation>
+<translation id="8670078035093027626">Ark på nedre delen av standardwebbläsaren har öppnats på hela skärmen</translation>
 <translation id="8676316391139423634">När detta är aktiverat kan webbplatser be om att få spåra dina händer. När detta är inaktiverat får webbplatser inte spåra dina händer.</translation>
 <translation id="8676374126336081632">Radera inmatning</translation>
 <translation id="8681886425883659911">Annonser blockeras på webbplatser som är kända för att visa påträngande eller vilseledande annonser</translation>

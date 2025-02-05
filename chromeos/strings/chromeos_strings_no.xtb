@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Ugyldig PIN-kode</translation>
 <translation id="382043424867370667">Bakgrunn: Solnedgang</translation>
 <translation id="3824259034819781947">Legg ved filer</translation>
-<translation id="3836587210832263413">Slå bare på utvidelser du stoler på</translation>
 <translation id="3838338534323494292">Nytt passord</translation>
 <translation id="3845880861638660475">Trykk på <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> for å lukke dialogboksen.</translation>
 <translation id="3848280697030027394">tastatur gjør mørkere</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Administrer skriverne dine i skriverinnstillingene</translation>
 <translation id="6292095526077353682">Under lading: Vis skjermsparer</translation>
 <translation id="629550705077076970">tastaturdimming</translation>
-<translation id="6301193653204230066">Sikkerhetstilbakestilling slår av Chrome-nettleserutvidelser og tilbakestiller nettverksinnstillinger og andre innstillinger til trygge standardverdier.
-          Faner, filer, informasjonskapsler og loggen din blir ikke endret.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />testen er avbrutt</translation>
 <translation id="631063167932043783">Utforsk-appen</translation>
 <translation id="6318437367327684789">for alltid</translation>
@@ -1774,6 +1771,8 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="951780398843003443">sammenligne stemmene i opptaket, slik at transkripsjonen gjenspeiler hva hver enkelt person sier, og når</translation>
 <translation id="952992212772159698">Ikke aktivert</translation>
 <translation id="95718197892796296">leire</translation>
+<translation id="959792926760890141">Sikkerhetstilbakestilling slår av Chrome-nettleserutvidelser og tilbakestiller nettverksinnstillinger og andre innstillinger til trygge standardverdier.
+          Standardsøkemotoren din blir tilbakestilt, men faner, filer, informasjonskapsler og loggen blir ikke endret.</translation>
 <translation id="960719561871045870">Operatørkode</translation>
 <translation id="965918541715156800">gul og blågrønn</translation>
 <translation id="966787709310836684">meny</translation>

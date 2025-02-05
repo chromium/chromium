@@ -4713,6 +4713,19 @@ Esta política no tendrá efecto si se habilita, se deja vacía o no se define.<
 <translation id="4534500438517478692">Nombre de restricción de Android:</translation>
 <translation id="4541530620466526913">Cuentas locales del dispositivo</translation>
 <translation id="4542255783284620926">Bloquear la adición de una cuenta gestionada como cuenta secundaria en ChromeOS (con la sesión iniciada)</translation>
+<translation id="4543338637126011529">Si se establece esta política, se especificará una lista de aplicaciones web aisladas (IWAs) que se instalarán de forma silenciosa.
+      Las IWAs son aplicaciones que tienen propiedades de seguridad útiles que no están disponibles en las páginas web normales. Cada IWA está empaquetada en un paquete web firmado. La clave pública de cada paquete web firmado se usa para crear el ID del paquete web que identifica a la IWA correspondiente.
+      De momento, esta política solo se puede aplicar a las sesiones de invitado gestionadas.
+
+      Cada elemento de la lista de esta política es un objeto con dos campos obligatorios: el archivo de manifiesto de actualización <ph name="URL_LABEL" /> y el ID del paquete web de la aplicación web aislada.
+
+      Cada elemento también puede tener estos campos opcionales:
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />: el nombre de canal de actualización o lanzamiento de la IWA. Si no se establece, se usará el valor predeterminado.
+
+        * <ph name="PINNED_VERSION_OPTION" />: una versión específica que instalar. El sistema intentará instalar esta versión si está disponible en el canal de actualización especificado. De forma predeterminada, si fijas una IWA a una versión específica, no se podrá actualizar a una versión posterior. Para desfijarla, quita este campo.
+
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />: permite instalar versiones anteriores de la IWA. Para ello, debes definir el campo "pinned_version". Si no se define o se le asigna el valor <ph name="FALSE" />, se inhabilitará la opción de cambiar a una versión inferior de esa IWA.</translation>
 <translation id="4543502256674577024">Configuración de actualización de dispositivos</translation>
 <translation id="454585952814397564">Utiliza la prioridad normal para el proceso de audio</translation>
 <translation id="4546641664653711266">Esta es una política temporal que se eliminará en la versión M127.

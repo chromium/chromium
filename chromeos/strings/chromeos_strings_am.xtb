@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">ልክ ያልኾነ ፒን።</translation>
 <translation id="382043424867370667">የፀሐይ መግባት ልጣፍ</translation>
 <translation id="3824259034819781947">ፋይሎችን ያያይዙ</translation>
-<translation id="3836587210832263413">የሚያምኗቸውን ቅጥያዎች ብቻ ያብሩ</translation>
 <translation id="3838338534323494292">አዲስ የይለፍ ቃል</translation>
 <translation id="3845880861638660475">መገናኛውን ለመዝጋት <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> እና <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />ን ይጫኑ።</translation>
 <translation id="3848280697030027394">የቁልፍ ሰሌዳ ጠቆር ማለት</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">በአታሚ ቅንብሮች ውስጥ የእርስዎን አታሚዎች ያስተዳድሩ</translation>
 <translation id="6292095526077353682">ኃይል እየሞላ ሳለ፣ ማያ ገፅ ቆጣቢ አሳይ ለ</translation>
 <translation id="629550705077076970">የቁልፍ ሰሌዛ መፍዘዝ</translation>
-<translation id="6301193653204230066">የደህንነት ዳግም አስጀምር የChrome አሳሽ ቅጥያዎችን ያጠፋል እና የአውታረ መረብ እና ሌሎች ቅንብሮችን ወደ ደህንነታቸው የተጠበቀ ነባሪዎች ዳግም ያስጀምራቸዋል።
-          የእርስዎ ትሮች፣ ፋይሎች፣ ኩኪዎች እና ታሪክ አይለወጡም።</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ሙከራ ተሰርዟል</translation>
 <translation id="631063167932043783">መተግበሪያን አስስ</translation>
 <translation id="6318437367327684789">ለዘለዓለም</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">ጽሁፍ ግልባጩ እያንዳንዱ ተናጋር ምን እና መቼ እንደተናገረ እንዲያንጸባርቅ በቅጂው ላይ ድምፆችን ያነጻጽሩ</translation>
 <translation id="952992212772159698">አልገበረም</translation>
 <translation id="95718197892796296">ሸክላ</translation>
+<translation id="959792926760890141">የደህንነት ዳግም አስጀምር የChrome አሳሽ ቅጥያዎችን ያጠፋል እና የአውታረ መረብ እና ሌሎች ቅንብሮችን ወደ ደህንነታቸው የተጠበቀ ነባሪዎች ዳግም ያስጀምራቸዋል።
+          የእርስዎ ነባሪ የፍለጋ ፕሮግራም ዳግም ይጀመራል ነገር ግን የእርስዎ ትሮች፣ ፋይሎች፣ ኩኪዎች እና ታሪክ አይለወጡም።</translation>
 <translation id="960719561871045870">የከዋኝ ኮድ</translation>
 <translation id="965918541715156800">ቢጫ እና ቲል</translation>
 <translation id="966787709310836684">ምናሌ</translation>

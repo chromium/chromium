@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1444443021901415601">Chrome mban shënim temat e interesit bazuar në historikun më të fundit të shfletimit</translation>
-<translation id="2252052615723281030">Kur je i identifikuar në Chrome, ky cilësim ndihmon për ta mbajtur private adresën tënde IP. Nëse Chrome dyshon se një sajt mund të jetë duke të të gjurmuar, një pjesë e trafikut tënd mund të dërgohet nëpërmjet serverëve privatë.</translation>
 <translation id="235789365079050412">Politika e privatësisë e Google</translation>
 <translation id="2793385791865768072">Chromium mban shënim temat e interesit bazuar në historikun më të fundit të shfletimit</translation>
 <translation id="2979365474350987274">Kukit e palëve të treta janë të kufizuara</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Kukit e palëve të treta janë të kufizuara</translation>
 <translation id="6371812158043974664">Kur je i identifikuar në Chromium, ky cilësim ndihmon për ta mbajtur private adresën tënde IP. Nëse Chromium dyshon se një sajt mund të jetë duke të të gjurmuar, një pjesë e trafikut tënd mund të dërgohet nëpërmjet serverëve privatë. Mëso më shumë <ph name="LINK_BEGIN" />se si funksionon "Mbrojtja e IP-së"<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Mëso më shumë se si i mbron Google të dhënat e tua në <ph name="BEGIN_LINK1" />Politikën tonë të privatësisë<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261">Mëso <ph name="BEGIN_LINK" />se si funksionon "Mbrojtja e IP-së"<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Rishiko cilësimin e temave të reklamave</translation>
 </translationbundle>

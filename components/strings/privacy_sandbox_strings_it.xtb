@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1444443021901415601">Chrome rileva argomenti di interesse in base alla tua cronologia di navigazione recente</translation>
-<translation id="2252052615723281030">Quando hai eseguito l'accesso a Chrome, questa impostazione consente di mantenere privato il tuo indirizzo IP. Se Chrome sospetta che un sito potrebbe monitorarti, una parte del tuo traffico potrebbe essere inviata tramite server di tutela della privacy.</translation>
 <translation id="235789365079050412">Norme sulla privacy di Google</translation>
 <translation id="2793385791865768072">Chromium rileva argomenti di interesse in base alla tua cronologia di navigazione recente</translation>
 <translation id="2979365474350987274">I cookie di terze parti sono limitati</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Cookie di terze parti limitati</translation>
 <translation id="6371812158043974664">Quando hai eseguito l'accesso a Chromium, questa impostazione consente di mantenere privato il tuo indirizzo IP. Se Chromium sospetta che un sito potrebbe monitorarti, una parte del tuo traffico potrebbe essere inviata tramite server di tutela della privacy. Scopri di più su <ph name="LINK_BEGIN" />come funziona la protezione IP<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Scopri di più su come Google protegge i tuoi dati nelle nostre <ph name="BEGIN_LINK1" />Norme sulla privacy<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261">Scopri <ph name="BEGIN_LINK" />come funziona la protezione IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Rivedi l'impostazione degli argomenti degli annunci</translation>
 </translationbundle>

@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">‫<ph name="TABS_COUNT_ONE" /> برگه گروه‌بندی شد</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
+<translation id="1909810060368225529">توجه: تغییرات این «گروه برگه» هم‌رسانی‌شده برای همه نمایان است. همه می‌توانند در گروه‌های برگه هم‌رسانی‌شده شما تغییراتی ایجاد کنند</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{نشانک‌گذاری <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
 <translation id="2118649612461486615">اطلاعات فروشگاه</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. «برگه ناشناس» دردسترس نخواهد بود.}one{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. ‫# «برگه ناشناس» دردسترس نخواهد بود.}other{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. ‫# «برگه ناشناس» دردسترس نخواهد بود.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">گروه‌های برگه‌تان را اینجا خواهید دید</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{لغو گروه‌بندی <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
+<translation id="6499296376514955580">اعلان درباره تغییرات «گروه برگه هم‌رسانی‌شده» بسته شده است</translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{پس‌از ۱ روز}one{پس‌از <ph name="DAY_COUNT_MANY" /> روز}other{پس‌از <ph name="DAY_COUNT_MANY" /> روز}}</translation>
 <translation id="6549021453810473782">مشاهده اطلاعات فروشگاه</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">انتقال برگه به راست</translation>
+<translation id="6589356853295569750">اعلان درباره تغییرات «گروه برگه هم‌رسانی‌شده» به‌صورت کامل باز شده است</translation>
 <translation id="6590332670428149473">باز کردن منوِ کنش‌های گروه برگه برای گروه برگه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده، به‌رنگ <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">نشانم داده شود</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{‫<ph name="ONE_CHANGED" /> برگه تغییر کرد}one{‫<ph name="MANY_CHANGED" /> برگه تغییر کرد}other{‫<ph name="MANY_CHANGED" /> برگه تغییر کرد}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{هم‌رسانی <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{هم‌رسانی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{هم‌رسانی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
 <translation id="7773714564112603605">برداشتن برگه و حذف گروه</translation>
 <translation id="7792771145871471484">پیشنهاد‌ها مرور شود.</translation>
+<translation id="7792860826279960128">اعلان درباره تغییرات «گروه برگه هم‌رسانی‌شده» به‌صورت نیمه باز شده است</translation>
 <translation id="7825973332242257878">گروه برگه</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{گروه‌بندی <ph name="TABS_COUNT_ONE" /> برگه انتخابی}one{گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخابی}other{گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخابی}}</translation>
 <translation id="7853202427316060426">فعالیت</translation>

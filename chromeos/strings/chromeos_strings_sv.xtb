@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
 <translation id="382043424867370667">Bakgrund med solnedgång</translation>
 <translation id="3824259034819781947">Bifoga filer</translation>
-<translation id="3836587210832263413">Aktivera endast tillägg som du litar på</translation>
 <translation id="3838338534323494292">Nytt lösenord</translation>
 <translation id="3845880861638660475">Tryck på <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> för att stänga dialogrutan.</translation>
 <translation id="3848280697030027394">mörkare tangentbord</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Hantera dina skrivare i skrivarinställningarna</translation>
 <translation id="6292095526077353682">Skärmsläckarens visningstid vid laddning:</translation>
 <translation id="629550705077076970">tona ned tangentbordet</translation>
-<translation id="6301193653204230066">Säkerhetsåterställning inaktiverar tillägg i webbläsaren Chrome och återställer nätverk och andra inställningar till säkra standardinställningar.
-          Dina flikar, filer, cookies och din historik ändras inte.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testet har avbrutits</translation>
 <translation id="631063167932043783">Appen Utforska</translation>
 <translation id="6318437367327684789">för alltid</translation>
@@ -1774,6 +1771,8 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="951780398843003443">Jämför röster i hela inspelningen så att transkriptionen återspeglar vad varje talare sa och när</translation>
 <translation id="952992212772159698">Inte aktiverat</translation>
 <translation id="95718197892796296">lera</translation>
+<translation id="959792926760890141">Säkerhetsåterställning inaktiverar tillägg i webbläsaren Chrome och återställer nätverk och andra inställningar till säkra standardinställningar.
+          Din standardsökmotor återställs, men dina flikar, filer, cookies och historik ändras inte.</translation>
 <translation id="960719561871045870">Operatörskod</translation>
 <translation id="965918541715156800">gult och blågrönt</translation>
 <translation id="966787709310836684">meny</translation>

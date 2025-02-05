@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="382043424867370667">Tapeta so západom slnka</translation>
 <translation id="3824259034819781947">Priložiť súbory</translation>
-<translation id="3836587210832263413">Zapnite iba rozšírenia, ktorým dôverujete</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="3845880861638660475">Stlačením klávesov <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> zatvorte dialógové okno.</translation>
 <translation id="3848280697030027394">stmavenie klávesnice</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Spravujte tlačiarne v ich nastaveniach</translation>
 <translation id="6292095526077353682">Zobrazovať počas nabíjania šetrič obrazovky pre zariadenie</translation>
 <translation id="629550705077076970">stmavenie farieb klávesnice</translation>
-<translation id="6301193653204230066">Bezpečnostný reset vypne rozšírenia prehliadača Chrome a resetuje sieť a ďalšie nastavenia na bezpečné predvolené hodnoty.
-          Vaše karty, súbory (aj cookie) a história sa nezmenia.</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> bol zrušený</translation>
 <translation id="631063167932043783">Preskúmať aplikáciu</translation>
 <translation id="6318437367327684789">na neurčito</translation>
@@ -1774,6 +1771,8 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="951780398843003443">porovnať hlasy v nahrávke, aby prepis zodpovedal tomu, čo a kedy každý hovoriaci povedal.</translation>
 <translation id="952992212772159698">Neaktivované</translation>
 <translation id="95718197892796296">hlina</translation>
+<translation id="959792926760890141">Bezpečnostný reset vypne rozšírenia prehliadača Chrome a resetuje sieť a ďalšie nastavenia na bezpečné predvolené hodnoty.
+          Predvolený vyhľadávač bude resetovaný, ale karty, súbory (aj cookie) a história zostanú nezmenené.</translation>
 <translation id="960719561871045870">Kód operátora</translation>
 <translation id="965918541715156800">žltá a modrozelená</translation>
 <translation id="966787709310836684">ponuka</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1444443021901415601">તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસના આધારે Chrome રુચિઓ સંબંધિત વિષયો નોંધે છે</translation>
-<translation id="2252052615723281030">જ્યારે તમે Chromeમાં સાઇન ઇન કરેલું હોય, ત્યારે આ સેટિંગ તમારા IP ઍડ્રેસને ખાનગી રાખવામાં સહાય કરે છે. જો Chromeને શંકા હોય કે કોઈ સાઇટ કદાચ તમને ટ્રૅક કરી રહી છે, તો તમારો અમુક ટ્રાફિક પ્રાઇવસી સર્વર મારફતે મોકલવામાં આવી શકે છે.</translation>
 <translation id="235789365079050412">Google પ્રાઇવસી પૉલિસી</translation>
 <translation id="2793385791865768072">તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસના આધારે Chromium રુચિઓ સંબંધિત વિષયો નોંધે છે</translation>
 <translation id="2979365474350987274">ત્રીજા પક્ષની કુકી મર્યાદિત છે</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">ત્રીજા પક્ષની કુકી મર્યાદિત છે</translation>
 <translation id="6371812158043974664">જ્યારે તમે Chromiumમાં સાઇન ઇન કરેલું હોય, ત્યારે આ સેટિંગ તમારા IP ઍડ્રેસને ખાનગી રાખવામાં સહાય કરે છે. જો Chromiumને શંકા હોય કે કોઈ સાઇટ કદાચ તમને ટ્રૅક કરી રહી છે, તો તમારો અમુક ટ્રાફિક પ્રાઇવસી સર્વર મારફતે મોકલવામાં આવી શકે છે. <ph name="LINK_BEGIN" />IP સંરક્ષણની કામ કરવાની રીત<ph name="LINK_END" /> વિશે વધુ જાણો</translation>
 <translation id="6398358690696005758">તમારા ડેટાનું રક્ષણ કરવાની Googleની રીત વિશે અમારી <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="LINK_END1" />માં વધુ જાણો.</translation>
-<translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP સંરક્ષણની કામ કરવાની રીત<ph name="END_LINK" /> જાણો</translation>
 <translation id="7475768947023614021">જાહેરાતના વિષયો સંબંધિત તમારા સેટિંગનો રિવ્યૂ કરો</translation>
 </translationbundle>

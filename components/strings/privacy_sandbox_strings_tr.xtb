@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1444443021901415601">Chrome, son tarama geçmişinize göre ilgi alanlarınızı not eder.</translation>
-<translation id="2252052615723281030">Chrome'da oturum açtığınızda bu ayar IP adresinizin gizli kalmasına yardımcı olur. Chrome bir sitenin sizi izlediğinden şüpheleniyorsa trafiğinizin bir kısmı gizlilik sunucuları aracılığıyla gönderilebilir.</translation>
 <translation id="235789365079050412">Google Gizlilik Politikası</translation>
 <translation id="2793385791865768072">Chrome, son tarama geçmişinize göre ilgi alanlarınızı not eder</translation>
 <translation id="2979365474350987274">Üçüncü taraf çerezleri sınırlı</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Üçüncü taraf çerezleri sınırlı</translation>
 <translation id="6371812158043974664">Chromium'da oturum açtığınızda bu ayar IP adresinizin gizli kalmasına yardımcı olur. Chromium bir sitenin sizi izlediğinden şüpheleniyorsa trafiğinizin bir kısmı gizlilik sunucuları aracılığıyla gönderilebilir. <ph name="LINK_BEGIN" />IP korumasının işleyiş şekli<ph name="LINK_END" /> hakkında daha fazla bilgi edinin.</translation>
 <translation id="6398358690696005758">Google'ın verilerinizi nasıl koruduğu hakkında daha fazla bilgiyi <ph name="BEGIN_LINK1" />Gizlilik Politikamızda<ph name="LINK_END1" /> bulabilirsiniz.</translation>
-<translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP korumasının nasıl çalıştığını<ph name="END_LINK" /> öğrenin</translation>
 <translation id="7475768947023614021">Reklam konuları ayarınızı inceleyin</translation>
 </translationbundle>

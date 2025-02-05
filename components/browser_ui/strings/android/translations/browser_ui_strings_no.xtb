@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1384959399684842514">Nedlastingen er satt på pause</translation>
 <translation id="1396327438254055134">Tillat nettstedet å bruke V8-optimalisering.</translation>
+<translation id="1409338233051621926">Trykk på Apper og deretter på Standardapper</translation>
 <translation id="1415402041810619267">Nettadressen er avkortet</translation>
 <translation id="1415855080660575082">La Chrome dele de nylige fanene dine med enheten din, slik at du kan se dem på applisten og i søkeresultater på enheten. Du kan slå dette på eller av i Chrome-innstillingene.</translation>
 <translation id="1448064542941920355">Zoom ut</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Ikke bruk mørkt tema på nettsteder</translation>
 <translation id="2606760465469169465">Automatisk bekreftelse</translation>
 <translation id="2621115761605608342">Tillat JavaScript for et bestemt nettsted.</translation>
+<translation id="2626708220538466178">Feltet nederst for standardnettleser er lukket</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2677748264148917807">Gå ut</translation>
 <translation id="2682367912565197520">Slett det lagrede zoomnivået</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Kutt lyden for nettsteder som spiller av lyd</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3628308229821498208">Foreslåtte søk</translation>
+<translation id="3658847490588580244">Felt nederst for standardnettleser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> nettsted i gruppen til <ph name="RWS_OWNER" /> som kan se aktiviteten din i gruppen}other{<ph name="RWS_MEMBERS_COUNT" /> nettsteder i gruppen til <ph name="RWS_OWNER" /> som kan se aktiviteten din i gruppen}}</translation>
 <translation id="3697164069658504920">Når dette er på, kan nettsteder be om å få bruke USB-enheter. Når dette er av, kan ikke nettsteder bruke USB-enheter.</translation>
 <translation id="3707034683772193706">Nettsteder du besøker, kan lagre litt informasjon i Chrome – hovedsakelig for å bekrefte at du ikke er en robot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Slett og tilbakestill</translation>
 <translation id="4645575059429386691">Administreres av foreldrene dine</translation>
 <translation id="4670064810192446073">Virtuell virkelighet</translation>
+<translation id="4672315773691449562">Trykk på Nettleserapp og deretter på Chrome</translation>
 <translation id="4676059169848868271">For å la <ph name="APP_NAME" /> bruke håndsporing, slå på håndsporing i <ph name="BEGIN_LINK" />systeminnstillingene<ph name="END_LINK" /> også.</translation>
 <translation id="4751476147751820511">Bevegelses- eller lyssensorer</translation>
 <translation id="4755971844837804407">Når dette er på, kan nettsteder vise deg alle slags annonser. Når dette er av, kan ikke nettsteder vise forstyrrende eller villedende annonser.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Tillatt (anbefales)</translation>
 <translation id="8609465669617005112">Flytt opp</translation>
 <translation id="8617611086246832542">Når dette er på, vises datamaskinvisningen av nettsteder. Når dette er av, vises mobilvisningen av nettsteder.</translation>
+<translation id="8670078035093027626">Feltet nederst for standardnettleser er åpnet i full høyde</translation>
 <translation id="8676316391139423634">Når dette er på, kan nettsteder be om å få spore hendene dine. Når dette er av, kan ikke nettsteder spore hendene dine.</translation>
 <translation id="8676374126336081632">Slett teksten</translation>
 <translation id="8681886425883659911">Annonser blokkeres på nettsteder som er kjent for å vise forstyrrende eller villedende annonser</translation>

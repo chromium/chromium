@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1444443021901415601">Chrome stelt interessante onderwerpen vast op basis van je recente browsegeschiedenis.</translation>
-<translation id="2252052615723281030">Wanneer je bent ingelogd bij Chrome, kan deze instelling je IP-adres privé houden. Als Chrome vermoedt dat een site jou volgt, kan een deel van je verkeer worden verstuurd via privacyservers.</translation>
 <translation id="235789365079050412">Privacybeleid van Google</translation>
 <translation id="2793385791865768072">Chromium stelt interessante onderwerpen vast op basis van je recente browsegeschiedenis.</translation>
 <translation id="2979365474350987274">Cookies van derden zijn beperkt</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Cookies van derden beperkt</translation>
 <translation id="6371812158043974664">Wanneer je bent ingelogd bij Chromium, kan deze instelling je IP-adres privé houden. Als Chromium vermoedt dat een site jou volgt, kan een deel van je verkeer worden verstuurd via privacyservers. Meer informatie over <ph name="LINK_BEGIN" />hoe IP-beveiliging werkt<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Neem ons <ph name="BEGIN_LINK1" />Privacybeleid<ph name="LINK_END1" /> door voor meer informatie over hoe Google je gegevens beschermt.</translation>
-<translation id="7040031291654706261">Meer informatie over <ph name="BEGIN_LINK" />hoe IP-beveiliging werkt<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Je instelling voor advertentieonderwerpen checken</translation>
 </translationbundle>

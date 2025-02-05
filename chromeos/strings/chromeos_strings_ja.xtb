@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">無効な PIN です。</translation>
 <translation id="382043424867370667">「日の入り」の壁紙</translation>
 <translation id="3824259034819781947">ファイルを添付</translation>
-<translation id="3836587210832263413">信頼できる拡張機能のみ有効にしてください</translation>
 <translation id="3838338534323494292">新しいパスワード</translation>
 <translation id="3845880861638660475"><ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> キーを押してダイアログを閉じます。</translation>
 <translation id="3848280697030027394">キーボードを暗く</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">プリンタ設定でプリンタを管理</translation>
 <translation id="6292095526077353682">充電時にスクリーン セーバーを表示する時間:</translation>
 <translation id="629550705077076970">キーボードを薄暗くする</translation>
-<translation id="6301193653204230066">セーフティ リセットでは、Chrome ブラウザの拡張機能を無効にして、ネットワークなどの設定を安全なデフォルトにリセットします。
-          タブ、ファイル、Cookie、履歴は変更されません。</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> テストがキャンセルされました</translation>
 <translation id="631063167932043783">アプリについてもっと知る</translation>
 <translation id="6318437367327684789">ずっと</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">録音全体で音声を比較し、それぞれのスピーカーが話したタイミングと内容を文字起こしに反映させる</translation>
 <translation id="952992212772159698">無効</translation>
 <translation id="95718197892796296">粘土</translation>
+<translation id="959792926760890141">セーフティ リセットでは、Chrome ブラウザの拡張機能を無効にして、ネットワークなどの設定を安全なデフォルトにリセットします。
+          デフォルトの検索エンジンはリセットされますが、タブ、ファイル、Cookie、履歴は変更されません。</translation>
 <translation id="960719561871045870">事業者コード</translation>
 <translation id="965918541715156800">黄色とティール</translation>
 <translation id="966787709310836684">メニュー</translation>

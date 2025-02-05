@@ -47,6 +47,7 @@
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1190609913194133056">Paziņojumu centrs</translation>
 <translation id="1201402288615127009">Tālāk</translation>
+<translation id="1202892408424955784">Izsekotie produkti</translation>
 <translation id="1204075260022434100">{count,plural, =1{Grāmatzīme ir saglabāta mapē “{title}” jūsu kontā ({email}).}zero{{count} grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}one{{count} grāmatzīme ir saglabāta mapē “{title}” jūsu kontā ({email}).}other{{count} grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}}</translation>
 <translation id="120431140543679678">Sekot</translation>
 <translation id="1207493287814084192">17:30</translation>
@@ -257,6 +258,7 @@
 <translation id="20485545164632846">jauns vienums</translation>
 <translation id="2049727122989709386">Vēl <ph name="COUNT" /> kontos tiek izmantota tā pati parole.</translation>
 <translation id="2059166748188874810">Pašvaldība</translation>
+<translation id="2060114494785549741">Dzēst pēc viena mēneša</translation>
 <translation id="20638360198452347">Mērvienību veidu atlasītājs</translation>
 <translation id="2067852168641682340">Katru reizi saglabāt šajā kontā</translation>
 <translation id="2074119687904553223">{count,plural, =1{1 cilne}zero{{count} cilņu}one{{count} cilne}other{{count} cilnes}}</translation>
@@ -288,6 +290,7 @@
 <translation id="2202084845446535117">Nav e-pasta kontu</translation>
 <translation id="2214453882118345682">Iepērcieties, tulkojiet un identificējiet redzamo saturu, izmantojot kameru.</translation>
 <translation id="2220529011494928058">Ziņot par problēmu</translation>
+<translation id="2220887224562128152">Kad ir ieplānota kāda faila dzēšana, to vairs nevar atkopt.</translation>
 <translation id="2223461067862937305">Izveidot kvadrātkodu</translation>
 <translation id="2229345671837147090">Attālo ciļņu režģis</translation>
 <translation id="2230173723195178503">Tīmekļa lapa ielādēta</translation>
@@ -342,6 +345,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="2394659309569789395">Tomēr atvērt vietni</translation>
 <translation id="2403129868389095715">Nevar piegādāt</translation>
 <translation id="2410754283952462441">Konta izvēle</translation>
+<translation id="2422174748424038845">Ja izdzēsīsiet šo grupu, visi uzreiz zaudēs piekļuvi ciļņu grupai “<ph name="GROUP_NAME" />” un tā tiks izdzēsta no visām ierīcēm.</translation>
 <translation id="2424805048070062787">Turpināšana šajā cilnē</translation>
 <translation id="2426805022920575512">Izvēlēties citu kontu</translation>
 <translation id="243275146591958220">Atcelt lejupielādi</translation>
@@ -477,6 +481,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="3059270601560379555">Jauns meklējums</translation>
 <translation id="3064547930554042309">Lejupielāžu pārvaldība</translation>
 <translation id="3072279342064724558">Parole jau pastāv</translation>
+<translation id="3074862506644936708">Iespējot automātisku dzēšanu</translation>
 <translation id="3076846064362030967">Jūs netiksiet izrakstīts no sava Google konta. Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK" />arī cita veida darbības<ph name="END_LINK" />. Jebkurā laikā varat tās izdzēst.
 
 
@@ -620,6 +625,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3810973564298564668">Pārvaldīt</translation>
 <translation id="381219490185664296">Vai atcelt grupēšanu ciļņu grupā?</translation>
 <translation id="3812308602011798782">Atsauksmes</translation>
+<translation id="3815668647912194650">Varat paturēt šo grupu, lai tai vēlāk pievienotu cilnes, vai pamest to, ja vairs nevēlaties tai piekļūt.</translation>
 <translation id="3818045793209708987">Šī sūtījuma izsekošana ir apturēta</translation>
 <translation id="3819183753496523827">Esat bezsaistē. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 maksājuma veids}zero{# maksājumu veidu}one{# maksājumu veids}other{# maksājumu veidi}}</translation>
@@ -660,6 +666,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="398604237578616937">Esat pierakstījies kā <ph name="USER_EMAIL" />. Atvērt konta izvēlni.</translation>
 <translation id="3986739045730058129">Pāriet uz cilni</translation>
 <translation id="3992684624889376114">Par šo lapu</translation>
+<translation id="3993594519743675442">Paslēpt iespēju “Iestatīt atgādinājumu”</translation>
 <translation id="3994422733891749358">Izvēlieties, kurus paziņojumus saņemt</translation>
 <translation id="3994522032746736727">Pierakstīties ar kontu <ph name="EMAIL" /></translation>
 <translation id="3994911892367422121">LABI</translation>
@@ -680,6 +687,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4054572406751135230">Sekojiet līdzi ziņām, sporta notikumiem un citam saturam.</translation>
 <translation id="4070132839822635162">Nepierakstīties</translation>
 <translation id="4094361089640885693">Ērti izsekojiet cenas un iegūstiet cenu ieskatus.</translation>
+<translation id="4099756562043439968">Iestatīt atgādinājumu</translation>
 <translation id="4108998448622696017">Kad atgadās bīstami notikumi, tie tiek noteikti un jūs saņemat brīdinājumus.</translation>
 <translation id="4111985840824673503">Atzīmēt visu kā izlasītu</translation>
 <translation id="411254640334432676">Lejupielāde neizdevās.</translation>
@@ -822,7 +830,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="467189612236587057">Sazināties ar uzņēmumu, sākot tālruņa zvanu</translation>
 <translation id="4682496302933121474">Vai tulkot lapu?</translation>
 <translation id="4682686630151240767">1. iPhone tālrunī atveriet sadaļu Settings (Iestatījumi).</translation>
-<translation id="4684427112815847243">Sinhronizēt visu</translation>
 <translation id="4699172675775169585">Kešatmiņā ievietotie attēli un faili</translation>
 <translation id="4717844083556844785">Šajā tīmekļa lapā esat inkognito režīmā</translation>
 <translation id="4719927025381752090">Piedāvāt tulkot</translation>
@@ -1192,10 +1199,10 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6284652193729350524">Piedāvāt tulkot šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Sekošana kanālam <ph name="CHANNEL_NAME" /> ir pārtraukta.</translation>
 <translation id="6293101329759844770">Lai ieslēgtu drošo pārlūkošanu, atveriet sadaļu <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" /> un pieskarieties vienumam Droša pārlūkošana.</translation>
+<translation id="6295434468271563378">Lejupielāžu automātiska dzēšana</translation>
 <translation id="6295751040240588413">Nederīgs kredītkartes apzīmējums</translation>
 <translation id="629730747756840877">Konts</translation>
 <translation id="6301104306974789820">Saņemt cenu izsekošanas paziņojumus</translation>
-<translation id="6303969859164067831">Izrakstīties un izslēgt sinhronizēšanu</translation>
 <translation id="6310451064941005489">Paroles iespējas</translation>
 <translation id="6316141353357700666">Parādītajā sarakstā izvēlieties paroli, kuru vēlaties izmantot.</translation>
 <translation id="6321526113093607004">Pievienot grāmatzīmēm</translation>
@@ -1307,7 +1314,6 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 
 Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, reklāmu personalizēšanai.</translation>
 <translation id="6672697278890207089">Ievadiet savu ieejas frāzi</translation>
-<translation id="6674571176963658787">Lai sāktu sinhronizāciju, ievadiet savu ieejas frāzi</translation>
 <translation id="667999046851023355">Dokuments</translation>
 <translation id="6680416467695217368">Pielāgot izvēlni</translation>
 <translation id="6681586159478273915">Meklēšana ar balsi</translation>
@@ -1453,6 +1459,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="741204030948306876">Jā, piekrītu</translation>
 <translation id="7417689656810783109">Pārdēvēt grupu</translation>
 <translation id="7419565702166471774">Vienmēr izmantot drošus savienojumus</translation>
+<translation id="742001653298797675">Lai ietaupītu vietu tālrunī un aizsargātu konfidencialitāti, ieplānojiet visa lejupielādētā satura dzēšanu pēc mēneša.</translation>
 <translation id="7425053386765766120">Maksājuma veida pievienošana…</translation>
 <translation id="7425346204213733349">Grāmatzīmju, vēstures, paroļu un citu iestatījumu izmaiņas vairs netiks sinhronizētas ar jūsu Google kontu. Tomēr esošie dati joprojām tiks glabāti jūsu Google kontā.</translation>
 <translation id="742664698522525515">Vai paturēt grupu?</translation>
@@ -1580,7 +1587,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7933880123415105005">Meklēt: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7941578031639087549">{count,plural, =1{Lapa tika pievienota lasīšanas sarakstam jūsu kontā ({email})}zero{{count} lapas tika pievienotas lasīšanas sarakstam jūsu kontā ({email})}one{{count} lapa tika pievienota lasīšanas sarakstam jūsu kontā ({email})}other{{count} lapas tika pievienota lasīšanas sarakstam jūsu kontā ({email})}}</translation>
-<translation id="7944772052836377867">Sinhronizēšanai nepieciešams apstiprināt jūsu identitāti</translation>
 <translation id="7947953824732555851">Pieņemt un pierakst.</translation>
 <translation id="7958575506592576831">Lapas drošības informācija</translation>
 <translation id="7961015016161918242">Nekad</translation>
@@ -1762,6 +1768,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8680786875305615692">Palīdziet uzlabot drošību tīmeklī visiem lietotājiem</translation>
 <translation id="8680787084697685621">Konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="8683563711222071415">Pārvietot adresi uz kontu</translation>
+<translation id="8690752723634292147">Apstipriniet dzēšanu</translation>
 <translation id="8692689525339542358">Iegūstiet aizsardzību pret bīstamām vietnēm, lejupielādēm un paplašinājumiem.</translation>
 <translation id="8694281486652655615">Tiks rādīts šis vienums</translation>
 <translation id="8696297579102085705">Nosūtīt uz jūsu ierīci</translation>
@@ -1804,7 +1811,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8831944931153286232">Pievienošana lasīšanas sarakstam</translation>
 <translation id="8837654851594567190">Kārtot pēc izdevēja</translation>
 <translation id="8840513115188359703">Jūs netiksiet izrakstīts no sava Google konta.</translation>
-<translation id="8843129975935593190">Jūsu organizācija ierobežo to, kādu saturu varat sinhronizēt.</translation>
 <translation id="8848286253339013170">Notiek attēla saglabāšana pakalpojuma “Google fotoattēli” kontā <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Paslēpta</translation>
 <translation id="8855242995793521265">Šī funkcija īpaši nepalēnina jūsu pārlūkprogrammas vai ierīces darbību.</translation>
@@ -1818,6 +1824,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8879604564928138696">Lai izmēģinātu, veiciet dubultskārienu</translation>
 <translation id="8879952635974818770">Personalizēts saturs</translation>
 <translation id="8887595428614802520">Aizvērt visas cilnes un grupas</translation>
+<translation id="8891031436559779793">Jūs saņemsiet paziņojumu, ja kādā vietnē tiks konstatēts cenas kritums.</translation>
 <translation id="8893208530912252670">Videoklipi</translation>
 <translation id="8898822736010347272">Tiek nosūtīti dažu apmeklēto lapu vietrāži URL, ierobežota sistēmas informācija un noteiktu lapu saturs Google serveriem, lai palīdzētu atklāt jaunus apdraudējumus un aizsargāt visus tīmekļa lietotājus.</translation>
 <translation id="890565330728586731">Atpakaļ</translation>

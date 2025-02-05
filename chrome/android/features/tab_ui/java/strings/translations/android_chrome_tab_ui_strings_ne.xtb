@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ट्याब समूहबद्ध गरिएको छ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब}other{<ph name="TABS_COUNT_MANY" /> ट्याबहरू}}</translation>
+<translation id="1909810060368225529">सूचना: यो साझा ट्याब समूहमा गरिएका परिवर्तनहरू सबैले देख्छन्। तपाईंका साझा ट्याब समूहहरूमा सबै जना परिवर्तनहरू गर्न सक्छन्</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब बुकमार्क गर्नुहोस्}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब बुकमार्क गर्नुहोस्}}</translation>
 <translation id="2118649612461486615">स्टोरसम्बन्धी जानकारी</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{तपाईंका बन्द गरिएका ट्याब र समूहहरू "हालसालैका ट्याबहरू" खण्ड र "ट्याब समूहहरू" खण्डमा गई फेरि खोल्न सकिन्छ। तपाईंको इन्कोग्निटो ट्याब उपलब्ध हुने छैन।}other{तपाईंका बन्द गरिएका ट्याब र समूहहरू "हालसालैका ट्याबहरू" खण्ड र "ट्याब समूहहरू" खण्डमा गई फेरि खोल्न सकिन्छ। तपाईंका # वटा इन्कोग्निटो ट्याब उपलब्ध हुने छैनन्।}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">तपाईं आफ्ना ट्याब समूहहरू यहाँ भेट्टाउनु हुने छ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> वटा ट्याब समूहबाट हटाउनुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब समूहबाट हटाउनुहोस्}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> वटा ट्याब}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब}}</translation>
+<translation id="6499296376514955580">साझा ट्याब समूहमा गरिने परिवर्तनसम्बन्धी सूचना बन्द गरिएको छ</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{१ दिनपछि}other{<ph name="DAY_COUNT_MANY" /> दिनपछि}}</translation>
 <translation id="6549021453810473782">स्टोरसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ट्याब सारेर बायाँतिर लैजानुहोस्</translation>
+<translation id="6589356853295569750">साझा ट्याब समूहमा गरिने परिवर्तनसम्बन्धी सूचना पूरा स्क्रिनमा खोलिएको छ</translation>
 <translation id="6590332670428149473"><ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> नामक साझा ट्याब समूहको एक्सन मेनु खोल्नुहोस्।</translation>
 <translation id="6615455863669487791">मलाई देखाउनुहोस्</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> वटा ट्याब परिवर्तन गरियो}other{<ph name="MANY_CHANGED" /> वटा ट्याब परिवर्तन गरिए}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> वटा ट्याब सेयर गर्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब सेयर गर्नुहोस्}}</translation>
 <translation id="7773714564112603605">ट्याब हटाउनुहोस् र समूह मेटाउनुहोस्</translation>
 <translation id="7792771145871471484">सुझावहरूको समीक्षा गर्नुहोस्।</translation>
+<translation id="7792860826279960128">साझा ट्याब समूहमा गरिने परिवर्तनसम्बन्धी सूचना आधा स्क्रिनमा खोलिएको छ</translation>
 <translation id="7825973332242257878">ट्याब समूहहरू</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब कुनै समूहमा थप्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> ट्याबहरू कुनै समूहमा थप्नुहोस्}}</translation>
 <translation id="7853202427316060426">गतिविधि</translation>

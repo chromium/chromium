@@ -25,6 +25,7 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Matuto pa<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab ang naigrupo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
+<translation id="1909810060368225529">Paunawa: Nakikita ng lahat ang mga pagbabago sa naka-share na Grupo ng Tab na ito. Makakagawa ang lahat ng mga pagbabago sa iyong mga naka-share na grupo ng tab</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{I-bookmark ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{I-bookmark ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{I-bookmark ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="2118649612461486615">Impormasyon ng store</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong tab na Incognito.}one{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # tab na Incognito.}other{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # na tab na Incognito.}}</translation>
@@ -126,11 +127,13 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="6381032505162537930">Makikita mo dito ang iyong mga grupo ng tab</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{I-ungroup ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{I-ungroup ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{I-ungroup ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
+<translation id="6499296376514955580">Isinara ang abiso tungkol sa mga pagbabago sa Naka-share na Grupo ng Tab</translation>
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Pagkalipas ng 1 araw}one{Pagkalipas ng <ph name="DAY_COUNT_MANY" /> araw}other{Pagkalipas ng <ph name="DAY_COUNT_MANY" /> na araw}}</translation>
 <translation id="6549021453810473782">Tingnan ang impormasyon ng store</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Ilipat ang tab sa kaliwa</translation>
+<translation id="6589356853295569750">Binuksan nang buo ang abiso tungkol sa mga pagbabago sa Naka-share na Grupo ng Tab</translation>
 <translation id="6590332670428149473">Buksan ang menu ng aksyon ng grupo ng tab para sa naka-share na grupo ng tab na <ph name="TITLE_OF_GROUP" />, na kulay <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Ipakita sa akin</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Binago ang <ph name="ONE_CHANGED" /> tab}one{Binago ang <ph name="MANY_CHANGED" /> tab}other{Binago ang <ph name="MANY_CHANGED" /> na tab}}</translation>
@@ -157,6 +160,7 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Ibahagi ang <ph name="TABS_COUNT_ONE" /> piniling tab}one{Ibahagi ang <ph name="TABS_COUNT_MANY" /> piniling tab}other{Ibahagi ang <ph name="TABS_COUNT_MANY" /> na piniling tab}}</translation>
 <translation id="7773714564112603605">Alisin ang tab at i-delete ang grupo</translation>
 <translation id="7792771145871471484">Suriin ang mga suhestyon.</translation>
+<translation id="7792860826279960128">Binuksan ang abiso tungkol sa mga pagbabago sa Naka-share na Grupo ng Tab nang kalahati ang taas</translation>
 <translation id="7825973332242257878">Mga grupo ng tab</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Igrupo ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{Igrupo ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{Igrupo ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="7853202427316060426">Aktibidad</translation>

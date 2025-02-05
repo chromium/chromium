@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1396327438254055134">允許網站使用 V8 最佳化工具。</translation>
+<translation id="1409338233051621926">依序輕觸「應用程式」和「預設應用程式」</translation>
 <translation id="1415402041810619267">已截斷網址</translation>
 <translation id="1415855080660575082">允許 Chrome 將最近開啟的分頁分享給裝置，讓這些資訊顯示在裝置的應用程式清單和搜尋結果。你可以前往 Chrome 設定頁面開啟或關閉這項功能。</translation>
 <translation id="1448064542941920355">縮小</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">不要對網站套用深色主題</translation>
 <translation id="2606760465469169465">自動驗證</translation>
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
+<translation id="2626708220538466178">預設瀏覽器底部功能表已關閉</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2682367912565197520">刪除已儲存的縮放比例</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">將播放音訊的網站設為靜音</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
+<translation id="3658847490588580244">預設瀏覽器底部功能表</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}other{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}}</translation>
 <translation id="3697164069658504920">如果啟用，網站就可以要求使用 USB 裝置。如果停用，網站將無法使用 USB 裝置。</translation>
 <translation id="3707034683772193706">你造訪的網站可將少量資訊儲存在 Chrome，主要用來證明你不是機器人</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">刪除並重設</translation>
 <translation id="4645575059429386691">這個瀏覽器是由家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
+<translation id="4672315773691449562">依序輕觸「瀏覽器應用程式」和「Chrome」</translation>
 <translation id="4676059169848868271">如要讓 <ph name="APP_NAME" /> 使用手勢追蹤功能，請一併在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中開啟手勢追蹤。</translation>
 <translation id="4751476147751820511">動作或光源感應器</translation>
 <translation id="4755971844837804407">如果啟用，網站就可以向你顯示任何廣告。如果停用，網站將無法顯示誤導性或侵入式廣告。</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">已允許 (建議)</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8617611086246832542">如果啟用，系統將顯示網站的電腦檢視畫面。如果停用，系統將顯示網站的行動裝置檢視畫面。</translation>
+<translation id="8670078035093027626">預設瀏覽器底部功能表已開啟，並顯示在整個畫面</translation>
 <translation id="8676316391139423634">開啟後，網站可以要求追蹤你的手勢。如果關閉，網站就無法追蹤你的手勢。</translation>
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的侵入式廣告或誤導性廣告</translation>

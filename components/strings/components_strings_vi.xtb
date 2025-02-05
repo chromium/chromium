@@ -1873,6 +1873,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4269264543938335308">Đồ bơi</translation>
 <translation id="4269599248168651462">Chứng chỉ máy chủ này được cấp cho một tên không phải là duy nhất.</translation>
 <translation id="4270541775497538019">Khay xếp chồng 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Xem 0 bài đánh giá. Điểm xếp hạng trung bình là <ph name="STARS" /> sao.}=1{Xem 1 bài đánh giá. Điểm xếp hạng trung bình là <ph name="STARS" /> sao.}other{Xem tất cả # bài đánh giá. Điểm xếp hạng trung bình là <ph name="STARS" /> sao.}}</translation>
 <translation id="4271652479722040953">Khi bạn thêm tiện ích vào Chrome, dữ liệu liên quan về những tiện ích này sẽ được gửi cho bên thứ ba để phân tích và quản trị viên của bạn có thể thấy dữ liệu này. Dữ liệu này bao gồm thông tin về các tiện ích như tên, thời gian cài đặt, nguồn cài đặt cũng như hoạt động liên quan đến các tiện ích này (chẳng hạn như thay đổi thẻ, liên hệ với trang web hoặc truy cập vào cookie). Dữ liệu này được thu thập cho các tiện ích được cài đặt từ Cửa hàng Chrome trực tuyến cũng như các tiện ích được cài đặt từ bên ngoài cửa hàng.</translation>
 <translation id="4275830172053184480">Khởi động lại thiết bị của bạn</translation>
 <translation id="4276974990916607331">Không, cảm ơn</translation>
@@ -2952,6 +2953,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6224281071334553713">Đá quý và đồ trang sức</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để cá nhân hoá các công cụ hỗ trợ tiếp cận của bạn trong phần Cài đặt của Chrome</translation>
 <translation id="6228346913624365233">Xe hạng sang</translation>
+<translation id="6228836011612806720">Bài đánh giá cửa hàng. Điểm xếp hạng trung bình là <ph name="STARS" /> sao.</translation>
 <translation id="6229196330202833460">Truyền trực tuyến phim và truyền hình</translation>
 <translation id="6234122620015464377">Cắt bỏ sau mỗi tài liệu</translation>
 <translation id="6234310016144827337">Hãy kiểm tra kết nối của bạn và thử lại</translation>
