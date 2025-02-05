@@ -2829,11 +2829,15 @@ void TabStripModel::InsertTabAtIndexImpl(
     bool active) {
   tabs::TabModel* const tab_ptr = tab_model.get();
 
-  TabStripSelectionChange selection(GetActiveTab(), selection_model_);
+  tabs::TabInterface* old_active_tab = GetActiveTab();
   contents_data_->AddTabRecursive(std::move(tab_model), index, group, pin);
 
   // Update selection model and send the notification.
   selection_model_.IncrementFrom(index);
+
+  // Start computing selection change after updating the indices in
+  // `selection_model_`.
+  TabStripSelectionChange selection(old_active_tab, selection_model_);
   if (active) {
     ui::ListSelectionModel new_model = selection_model_;
     new_model.SetSelectedIndex(index);
