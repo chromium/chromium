@@ -1238,8 +1238,8 @@ const CGFloat kSymbolSize = 18;
     case WebStateListChange::Type::kGroupVisualDataUpdate:
     case WebStateListChange::Type::kGroupMove:
     case WebStateListChange::Type::kGroupDelete:
-      // This can happen on iPad if tab-groups-in-grid and tab-groups-on-ipad
-      // are enabled, but not modern-tab-strip.
+      // This can happen on iPad if tab-groups-on-ipad is enabled, but not
+      // modern-tab-strip.
       base::debug::DumpWithoutCrashing();
       break;
   }

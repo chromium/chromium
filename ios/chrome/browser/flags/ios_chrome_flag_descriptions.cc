@@ -1189,8 +1189,8 @@ const char kTabGroupIndicatorDescription[] =
 
 const char kTabGroupSyncName[] = "Enable Tab Group Sync";
 const char kTabGroupSyncDescription[] =
-    "When enabled, if tab-groups-in-grid is enabled, tab groups are synced "
-    "between syncing devices.";
+    "When enabled, tab groups are synced between syncing devices. Requires "
+    "#tab-groups-on-ipad and #modern-tab-strip to also be enabled on iPad.";
 
 const char kStartSurfaceName[] = "Start Surface";
 const char kStartSurfaceDescription[] =
@@ -1238,8 +1238,8 @@ const char kTabGridNewTransitionsDescription[] =
 
 const char kTabGroupsIPadName[] = "Enable Tab Groups on iPad";
 const char kTabGroupsIPadDescription[] =
-    "When enabled, if tab-groups-in-grid is enabled, tab group can be created "
-    "on iPad.";
+    "When enabled, tab groups can be created and edited on iPad. Requires "
+    "#modern-tab-strip to also be enabled on iPad.";
 
 const char kInactiveTabsIPadName[] = "Enable inactive tabs";
 const char kInactiveTabsIPadDescription[] =
