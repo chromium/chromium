@@ -73893,7 +73893,7 @@
       ]
      ],
      "anchor-scroll-composited-scrolling-006.html": [
-      "8a53ae24e5b5a203a875219263c12ef40d5c9c56",
+      "5cf17919e8ddd2c3870c32cfc1649376fe11c525",
       [
        null,
        [
@@ -144604,6 +144604,19 @@
         }
        ]
       ],
+      "linear-gradient-relative-currentcolor-stop.html": [
+       "901b0894e158c503a46b172345eb3106336336ac",
+       [
+        null,
+        [
+         [
+          "/css/css-images/reference/100x100-blue-green.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "oklab-gradient.html": [
        "338a0c9d3bcf80739f2f2e80b404d8dac7ba464f",
        [
@@ -171570,7 +171583,7 @@
       ]
      ],
      "scroll-buttons-disabled-snapping.html": [
-      "8f6206a31c29ac05810c786532f4a7a96ea954df",
+      "cad3b39c69991a89fbdaa5018d1fa2d503f53275",
       [
        null,
        [
@@ -328251,7 +328264,7 @@
         []
        ],
        "corner-shape-valid-expected.txt": [
-        "317b0afdbd0fdbb9a337cde6da4fa5ccb9715cda",
+        "88cac038c4b27b6203ac5de85a43c4261387d2eb",
         []
        ],
        "corners-computed-expected.txt": [
@@ -350275,7 +350288,7 @@
       []
      ],
      "scroll-buttons-disabled-snapping-ref.html": [
-      "7603e0ce1c6db7a39ce356405fcf88dc804f3b27",
+      "f62359f9c3ef1ea0107492709d5f8e6526e0e2a3",
       []
      ],
      "scroll-buttons-disabled-vertical-ltr-ref.html": [
@@ -369800,6 +369813,10 @@
       "4964b7f132c560a67dd3bb4974106d6803ff9e9a",
       []
      ],
+     "scroll-offsets-fractional-zoom-expected.txt": [
+      "cea4e0df622b8e62f10bd339b5a5a2627a6b43ea",
+      []
+     ],
      "scrollTop-display-change-ref.html": [
       "9f1259787bbb33e8f8be6d8fc415738bffee6590",
       []
@@ -387870,7 +387887,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "860fa36bcce0c25a8ad434b00f4fe2185266da89",
+       "d1bafced0e2151654a77217e51fd909fb3a4c83b",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -387995,7 +388012,7 @@
         []
        ],
        "filters.yaml": [
-        "1ded0610e1f2aebe3cf6c815497755d1a7fef6fe",
+        "356285fe4ab330dc4c2a8c6fe1a0464aa5c0f180",
         []
        ],
        "layers.yaml": [
@@ -440923,11 +440940,83 @@
       }
      ]
     ],
-    "idbversionchangeevent.htm": [
-     "9ea7e6d491426c414d5a6f138c67f6a4689a8a7e",
+    "idbversionchangeevent.any.js": [
+     "506e011dca30e8d480da128319dd3f2ed463538d",
      [
-      null,
-      {}
+      "IndexedDB/idbversionchangeevent.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBVersionChangeEvent"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbversionchangeevent.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBVersionChangeEvent"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbversionchangeevent.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBVersionChangeEvent"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbversionchangeevent.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBVersionChangeEvent"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idlharness.any.js": [
@@ -441029,27 +441118,311 @@
       }
      ]
     ],
-    "index_sort_order.htm": [
-     "5af8e6f865ea316362eb69b102033bcbd7fa8161",
+    "index_sort_order.any.js": [
+     "8d98d6c88342aaa645d8a6667f644851227bf7b8",
      [
-      null,
-      {}
+      "IndexedDB/index_sort_order.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         " IDBIndex Key sort order"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/index_sort_order.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         " IDBIndex Key sort order"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/index_sort_order.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         " IDBIndex Key sort order"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/index_sort_order.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         " IDBIndex Key sort order"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "interleaved-cursors-large.html": [
-     "9e17f9e11249a68eb846a3d0474785cda7010bf6",
+    "interleaved-cursors-large.any.js": [
+     "cb79569b20747213e49f7fffdcf0c1fb15a35155",
      [
-      null,
+      "IndexedDB/interleaved-cursors-large.any.html",
       {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Interleaved iteration of multiple cursors"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/interleaved-cursors-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/interleaved-cursors-large.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Interleaved iteration of multiple cursors"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/interleaved-cursors-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/interleaved-cursors-large.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Interleaved iteration of multiple cursors"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/interleaved-cursors-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/interleaved-cursors-large.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Interleaved iteration of multiple cursors"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/interleaved-cursors-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
        "timeout": "long"
       }
      ]
     ],
-    "interleaved-cursors-small.html": [
-     "2751113f5f73ea2607b3e8d6fd13254d95cb1711",
+    "interleaved-cursors-small.any.js": [
+     "452f7c62f541aa211ecc8c83ee5532599ebac0ad",
      [
-      null,
+      "IndexedDB/interleaved-cursors-small.any.html",
       {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Interleaved iteration of multiple cursors"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/interleaved-cursors-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/interleaved-cursors-small.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Interleaved iteration of multiple cursors"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/interleaved-cursors-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/interleaved-cursors-small.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Interleaved iteration of multiple cursors"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/interleaved-cursors-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/interleaved-cursors-small.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Interleaved iteration of multiple cursors"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "script",
+         "resources/interleaved-cursors-common.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
        "timeout": "long"
       }
      ]
@@ -441544,27 +441917,261 @@
       }
      ]
     ],
-    "large-requests-abort.html": [
-     "38c73ff40694f2473e1db7dfa8df0792a89b1bb5",
+    "large-requests-abort.any.js": [
+     "c9728e8a9e8ee4a219d08a8deb92e051ac385db0",
      [
-      null,
+      "IndexedDB/large-requests-abort.any.html",
       {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: transactions with large request results are aborted correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/large-requests-abort.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: transactions with large request results are aborted correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/large-requests-abort.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: transactions with large request results are aborted correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/large-requests-abort.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: transactions with large request results are aborted correctly"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
        "timeout": "long"
       }
      ]
     ],
-    "list_ordering.htm": [
-     "a3c36de38918400cdee469747739d38c088ff270",
+    "list_ordering.any.js": [
+     "e5cbacfcfb202c64cf83826a1f9bdad0fcbad627",
      [
-      null,
-      {}
+      "IndexedDB/list_ordering.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "ObjectStoreNames and indexNames ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/list_ordering.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "ObjectStoreNames and indexNames ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/list_ordering.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "ObjectStoreNames and indexNames ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/list_ordering.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "ObjectStoreNames and indexNames ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
-    "name-scopes.html": [
-     "d92f706e0a7bc3f120c4fac5330d81dd6acb6ed6",
+    "name-scopes.any.js": [
+     "59afb890d6e3ae4eab65400df2fb57ef023fe841",
      [
-      null,
-      {}
+      "IndexedDB/name-scopes.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: scoping for database / object store / index names, and index keys"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/name-scopes.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: scoping for database / object store / index names, and index keys"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/name-scopes.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: scoping for database / object store / index names, and index keys"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/name-scopes.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: scoping for database / object store / index names, and index keys"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
      ]
     ],
     "nested-cloning-basic.any.js": [
@@ -442027,25 +442634,259 @@
       }
      ]
     ],
-    "objectstore_keyorder.htm": [
-     "f3f5ae76e7c5d18b33db37689d5e41b1b4bac796",
+    "objectstore_keyorder.any.js": [
+     "e8ee3d1e88e29b7ed0594d92fb2428ff35f30818",
      [
-      null,
-      {}
-     ]
-    ],
-    "open-request-queue.html": [
-     "b4371f2a2eeb18940984c5a597f532031c3c2501",
-     [
-      null,
-      {}
-     ]
-    ],
-    "parallel-cursors-upgrade.html": [
-     "99ea65d9d60d2c8d4d6429b3d51693e98f22a5f6",
-     [
-      null,
+      "IndexedDB/objectstore_keyorder.any.html",
       {
+       "script_metadata": [
+        [
+         "title",
+         "IDBObjectStore key sort order"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/objectstore_keyorder.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBObjectStore key sort order"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/objectstore_keyorder.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBObjectStore key sort order"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/objectstore_keyorder.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBObjectStore key sort order"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "open-request-queue.any.js": [
+     "69b53a29b0c9ac51bcf3dd21b4240c506bfd513c",
+     [
+      "IndexedDB/open-request-queue.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: open and delete request queues"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/open-request-queue.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: open and delete request queues"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/open-request-queue.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: open and delete request queues"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/open-request-queue.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: open and delete request queues"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "parallel-cursors-upgrade.any.js": [
+     "d938ef05dc565d49d6eee123decfa4a06d596566",
+     [
+      "IndexedDB/parallel-cursors-upgrade.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Parallel iteration of cursors in upgradeneeded"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/parallel-cursors-upgrade.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Parallel iteration of cursors in upgradeneeded"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/parallel-cursors-upgrade.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Parallel iteration of cursors in upgradeneeded"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/parallel-cursors-upgrade.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: Parallel iteration of cursors in upgradeneeded"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
        "timeout": "long"
       }
      ]
@@ -442780,11 +443621,83 @@
       }
      ]
     ],
-    "string-list-ordering.htm": [
-     "ddbbc3036fb0ade4ec2b9da1a219f1c5c689446e",
+    "string-list-ordering.any.js": [
+     "ab88bc5503cd37feaf480d293c2b0ccdea70eb5a",
      [
-      null,
-      {}
+      "IndexedDB/string-list-ordering.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB string list ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/string-list-ordering.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB string list ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/string-list-ordering.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB string list ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/string-list-ordering.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB string list ordering"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "structured-clone-transaction-state.any.js": [
@@ -445027,11 +445940,83 @@
       }
      ]
     ],
-    "value_recursive.htm": [
-     "29325a59094d485182f9ddc422435ce54a55a71c",
+    "value_recursive.any.js": [
+     "9be6404adf3953b02d6aba85e534268c5e66e974",
      [
-      null,
-      {}
+      "IndexedDB/value_recursive.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: recursive value"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/value_recursive.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: recursive value"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/value_recursive.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: recursive value"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/value_recursive.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB: recursive value"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "worker-termination-aborts-upgrade.window.js": [
@@ -445052,11 +446037,101 @@
       }
      ]
     ],
-    "writer-starvation.htm": [
-     "e382139b87da2c380472c6526d24b0bc1ddea014",
+    "writer-starvation.any.js": [
+     "a116e4f52f29482e0243fcfaee92425b4b84a07d",
      [
-      null,
+      "IndexedDB/writer-starvation.any.html",
       {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB writer starvation test"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/writer-starvation.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB writer starvation test"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/writer-starvation.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB writer starvation test"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "IndexedDB/writer-starvation.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB writer starvation test"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
        "timeout": "long"
       }
      ]
@@ -479602,21 +480677,21 @@
       ]
      ],
      "anchor-getComputedStyle-001.html": [
-      "6d77cf9a9d4cc34f5b2c787502f0d7753ff41c94",
+      "7c2cbbb67955db11eef9874744d333e07bc45172",
       [
        null,
        {}
       ]
      ],
      "anchor-getComputedStyle-002.html": [
-      "a3e00d50485a35fd4227d034a88b744be5734b5c",
+      "23ac69ee759ff9dfa59c6f2040dd05791e661743",
       [
        null,
        {}
       ]
      ],
      "anchor-getComputedStyle-003.html": [
-      "d23558aef5bdc742af1b2a61f9a94dd36b86d640",
+      "cce88dd842135f10b3f9b9d50f4704e88466174f",
       [
        null,
        {}
@@ -480015,7 +481090,7 @@
       ]
      ],
      "anchor-scroll-004.html": [
-      "e21507acb64bfbd94802b5188cadc9e0f2fce890",
+      "f551d3ba337c9d10f5737fb9f03609b680fc8510",
       [
        null,
        {}
@@ -480197,42 +481272,49 @@
       ]
      ],
      "anchor-transition-001.html": [
-      "e69a38820518289b769864fd6c85b30c0df3ce12",
+      "a7db94169afc0a6f66b51e2a264b037b6edd0958",
       [
        null,
        {}
       ]
      ],
      "anchor-transition-002.html": [
-      "b0fddc4943a8665ead1ea5844774b77735e27486",
+      "a5cbb675b3d975b1f384ef011685e51641cff4a8",
       [
        null,
        {}
       ]
      ],
      "anchor-transition-003.html": [
-      "e7624575da56a47983f1a3aa17de3fb89a0e057f",
+      "29b459cb495bf04a9672bf026f7fc835ab430c98",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-transition-004.html": [
+      "18adabcc680a5434a227073d9d10bccc8e621e85",
       [
        null,
        {}
       ]
      ],
      "anchor-transition-attr.html": [
-      "50f1154532e63b0cb527e4499c701b584eb04dda",
+      "540ab893efc0166b2b1befaf80c58917d27e0571",
       [
        null,
        {}
       ]
      ],
      "anchor-transition-default.html": [
-      "1bee0cbbe4cd469ec28f77eb18ee0b9b4c6dcc43",
+      "e5576e6ad3489c321c34ae23e82730604d5315ed",
       [
        null,
        {}
       ]
      ],
      "anchor-transition-eval.html": [
-      "cf65742b2dc4e762118b51a5a07592c0cf912c73",
+      "ef4cccc27945b7d443782fcba8033f8a6a33bea4",
       [
        null,
        {}
@@ -480246,7 +481328,7 @@
       ]
      ],
      "anchor-transition-name.html": [
-      "ea7b403e6120ee31796e5f6e1c8e1cc3f9cb9514",
+      "8dae70ccdcc5089177c8f9c68f61d410dedefc3d",
       [
        null,
        {}
@@ -480439,7 +481521,7 @@
       ]
      ],
      "position-anchor-003.html": [
-      "6117027e22029cdef83e9c01190af1fbb90c75ac",
+      "e3640795e5fa2cc3aa510295113672ea70a3308e",
       [
        null,
        {}
@@ -482863,14 +483945,14 @@
         ]
        ],
        "corner-shape-invalid.html": [
-        "51f8e05700a04aaa774f789816b78be49652d59a",
+        "1495f8347b814b9cc21da4576ecc8ccc238e88dc",
         [
          null,
          {}
         ]
        ],
        "corner-shape-valid.html": [
-        "62ee2630aced6f88381aacdd12f87c68e7a46008",
+        "e3ba9a056fc113d1439dab58b7cbe82ea18413ea",
         [
          null,
          {}
@@ -490826,27 +491908,6 @@
     "css-gaps": {
      "tentative": {
       "parsing": {
-       "column-rule-break-computed.html": [
-        "32ce8f3f1eab8c3aabd7c664f1972c497c41fc9f",
-        [
-         null,
-         {}
-        ]
-       ],
-       "column-rule-break-invalid.html": [
-        "e2590c3d7138182cb92f747a6bf104ba79e2696c",
-        [
-         null,
-         {}
-        ]
-       ],
-       "column-rule-break-valid.html": [
-        "a33f2a83af89fea928fc49cea746b91206668dc7",
-        [
-         null,
-         {}
-        ]
-       ],
        "gap-decorations-color-computed.html": [
         "31b311a0ab4b07b905eb7f22fa292bbd78cabe3d",
         [
@@ -490905,6 +491966,27 @@
        ],
        "gap-decorations-width-valid.html": [
         "db9e1521ba714deb3d347dc07333ecf6b0312db8",
+        [
+         null,
+         {}
+        ]
+       ],
+       "rule-break-computed.html": [
+        "d62bc50a478ed5581a7fe9639a0effb1ccb1832d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "rule-break-invalid.html": [
+        "a6eb68a1644ba848d86e7f92d0c8d121d0280403",
+        [
+         null,
+         {}
+        ]
+       ],
+       "rule-break-valid.html": [
+        "02f338806196110a12cd8c4a1b36d04b88a6905a",
         [
          null,
          {}
@@ -501832,6 +502914,17 @@
        {}
       ]
      ],
+     "snap-after-initial-layout": {
+      "initial-snap-matches-scroll.html": [
+       "510aef56599486dd87dcdbd0a6e14db187aaf7a4",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ]
+     },
      "snap-after-relayout": {
       "adding-only-snap-area.html": [
        "53141707bb307dd13f13aee6d78ec67dffaa6576",
@@ -518602,6 +519695,13 @@
        {}
       ]
      ],
+     "scroll-offsets-fractional-zoom.html": [
+      "7dc3fd0fad1eef79247d1c477506a4ae231671ef",
+      [
+       null,
+       {}
+      ]
+     ],
      "scroll-overflow-clip-quirks-001.html": [
       "ae70083ac32af4e89dc15d6dca9192c827f36ac3",
       [
@@ -527724,7 +528824,7 @@
        ]
       ],
       "observable-constructor.any.js": [
-       "109ed284db0445163bd4979172f4cb523855eb66",
+       "ea79a82c65fc4bf3482f75c37f971b48ffb15f7b",
        [
         "dom/observable/tentative/observable-constructor.any.html",
         {}
@@ -527844,7 +528944,7 @@
        ]
       ],
       "observable-from.any.js": [
-       "e204ece52da34f0db25c63d2871c46095ecc8a85",
+       "f32ce2dd4829f34def27a28cefe3e41ae8fe1720",
        [
         "dom/observable/tentative/observable-from.any.html",
         {}
@@ -527939,7 +529039,7 @@
        ]
       ],
       "observable-takeUntil.any.js": [
-       "f2e99b8cbec88eeda799e46d695e888143f9cbf6",
+       "c71f92e276a0f0bb6fbc1753eaad2a1bc21f92d3",
        [
         "dom/observable/tentative/observable-takeUntil.any.html",
         {}
@@ -528996,15 +530096,6 @@
        {
         "testdriver": true,
         "timeout": "long"
-       }
-      ]
-     ],
-     "copy-elements-with-css-vars.tentative.html": [
-      "d903d5a0017fefb56d2333cd529e05001b2d6f30",
-      [
-       null,
-       {
-        "testdriver": true
        }
       ]
      ],
@@ -632547,13 +633638,6 @@
           {}
          ]
         ],
-        "option-img-alt-text.tentative.html": [
-         "0d47b7fe4826cff7d6598d53df1971091f8dd009",
-         [
-          null,
-          {}
-         ]
-        ],
         "select-accessibility-minimum-target-size.tentative.html": [
          "3155849a5863bf1fd205630317bc7319097c765d",
          [
@@ -639226,7 +640310,7 @@
      "the-button-element": {
       "command-and-commandfor": {
        "button-event-dispatch.tentative.html": [
-        "74148caa2107d3e99acc4f9223c19eaad9de4ec1",
+        "54216fdcdeb961070ac638072cafcd324d7dcd3b",
         [
          null,
          {
