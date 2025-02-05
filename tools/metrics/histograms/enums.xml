@@ -8975,7 +8975,6 @@ from previous Chrome versions.
   <int value="-2037390759"
       label="IncognitoBrandConsistencyForAndroid:disabled"/>
   <int value="-2037280696" label="EcheSWASendStartSignaling:disabled"/>
-  <int value="-2036781592" label="ProfilePickerGlicTesting:disabled"/>
   <int value="-2036629516" label="SideSearchStatePerTab:enabled"/>
   <int value="-2036355481" label="ProbabilisticProactiveDiscarding:disabled"/>
   <int value="-2036268747" label="OmniboxExpandedLayout:disabled"/>
@@ -9354,7 +9353,6 @@ from previous Chrome versions.
   <int value="-1896394207" label="PasswordChange:disabled"/>
   <int value="-1895719323" label="VrBrowsingTabsView:enabled"/>
   <int value="-1895050832" label="GlobalMediaControlsCastStartStop:disabled"/>
-  <int value="-1894738662" label="ProfilePickerGlicTesting:enabled"/>
   <int value="-1894699049" label="AudioFocusEnforcement:disabled"/>
   <int value="-1894576813" label="WebBluetoothBondOnDemand:enabled"/>
   <int value="-1894289914" label="IncognitoScreenshot:disabled"/>

@@ -4724,9 +4724,6 @@ extern const char kProfilesReorderingName[];
 extern const char kProfilesReorderingDescription[];
 #endif
 
-extern const char kProfilePickerGlicTesting[];
-extern const char kProfilePickerGlicTestingDescription[];
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 extern const char kBatchUploadDesktopName[];
 extern const char kBatchUploadDesktopDescription[];

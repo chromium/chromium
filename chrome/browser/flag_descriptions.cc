@@ -8017,10 +8017,6 @@ const char kProfilesReorderingDescription[] =
     "persisted.";
 #endif
 
-const char kProfilePickerGlicTesting[] = "Profile Picker Glic Testing";
-const char kProfilePickerGlicTestingDescription[] =
-    "Allows testing the Glic version of the Profile Picker.";
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kBatchUploadDesktopName[] = "Batch Upload Desktop";
 const char kBatchUploadDesktopDescription[] =
