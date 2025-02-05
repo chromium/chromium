@@ -3029,7 +3029,7 @@ using UserFeedbackDataCallback =
   id<BookmarksCommands> bookmarksCommandsHandler = HandlerForProtocol(
       self.currentInterface.browser->GetCommandDispatcher(), BookmarksCommands);
 
-  [bookmarksCommandsHandler bulkCreateBookmarksWithURLs:URLs];
+  [bookmarksCommandsHandler addBookmarks:URLs];
 }
 
 - (void)addReadingListItems:(NSArray<NSURL*>*)URLs {

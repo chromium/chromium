@@ -503,11 +503,11 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
   // is not exposed as a kMenu, but as a kMenuBar for most platforms and a
   // kNone on the Mac. See MenuScrollViewContainer::GetAccessibleNodeData.
   if (!GetMenuItem()->GetParentMenuItem()) {
-    GetScrollViewContainer()->NotifyAccessibilityEvent(
+    GetScrollViewContainer()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kMenuStart, true);
   }
   // Fire kMenuPopupStart for each menu/submenu that is shown.
-  NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupStart, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuPopupStart, true);
 
   GetMenuItem()->UpdateAccessibleExpandedCollapsedState();
 
@@ -544,13 +544,13 @@ void SubmenuView::Hide() {
     // remove its focus override before AXPlatformNodeAuraLinux needs to access
     // the previously-focused node while handling kMenuPopupEnd.
     if (!GetMenuItem()->GetParentMenuItem()) {
-      GetScrollViewContainer()->NotifyAccessibilityEvent(
+      GetScrollViewContainer()->NotifyAccessibilityEventDeprecated(
           ax::mojom::Event::kMenuEnd, true);
       GetViewAccessibility().EndPopupFocusOverride();
     }
     // Fire these kMenuPopupEnd for each menu/submenu that closes/hides.
     if (host_->IsVisible()) {
-      NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupEnd, true);
+      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuPopupEnd, true);
     }
 
     host_->HideMenuHost();

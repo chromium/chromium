@@ -522,67 +522,66 @@ class ProxyResolverV8::Context {
     v8_this_.Reset(isolate_, v8::External::New(isolate_, this));
     v8::Local<v8::External> v8_this =
         v8::Local<v8::External>::New(isolate_, v8_this_);
-    v8::Local<v8::ObjectTemplate> global_template =
-        v8::ObjectTemplate::New(isolate_);
 
-    // Attach the javascript bindings.
-    v8::Local<v8::FunctionTemplate> alert_template =
-        v8::FunctionTemplate::New(isolate_, &AlertCallback, v8_this);
-    alert_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "alert"),
-                         alert_template);
-
-    v8::Local<v8::FunctionTemplate> my_ip_address_template =
-        v8::FunctionTemplate::New(isolate_, &MyIpAddressCallback, v8_this);
-    my_ip_address_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "myIpAddress"),
-                         my_ip_address_template);
-
-    v8::Local<v8::FunctionTemplate> dns_resolve_template =
-        v8::FunctionTemplate::New(isolate_, &DnsResolveCallback, v8_this);
-    dns_resolve_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "dnsResolve"),
-                         dns_resolve_template);
-
-    v8::Local<v8::FunctionTemplate> is_plain_host_name_template =
-        v8::FunctionTemplate::New(isolate_, &IsPlainHostNameCallback, v8_this);
-    is_plain_host_name_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "isPlainHostName"),
-                         is_plain_host_name_template);
-
-    // Microsoft's PAC extensions:
-
-    v8::Local<v8::FunctionTemplate> dns_resolve_ex_template =
-        v8::FunctionTemplate::New(isolate_, &DnsResolveExCallback, v8_this);
-    dns_resolve_ex_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "dnsResolveEx"),
-                         dns_resolve_ex_template);
-
-    v8::Local<v8::FunctionTemplate> my_ip_address_ex_template =
-        v8::FunctionTemplate::New(isolate_, &MyIpAddressExCallback, v8_this);
-    my_ip_address_ex_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "myIpAddressEx"),
-                         my_ip_address_ex_template);
-
-    v8::Local<v8::FunctionTemplate> sort_ip_address_list_template =
-        v8::FunctionTemplate::New(isolate_, &SortIpAddressListCallback,
-                                  v8_this);
-    sort_ip_address_list_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "sortIpAddressList"),
-                         sort_ip_address_list_template);
-
-    v8::Local<v8::FunctionTemplate> is_in_net_ex_template =
-        v8::FunctionTemplate::New(isolate_, &IsInNetExCallback, v8_this);
-    is_in_net_ex_template->RemovePrototype();
-    global_template->Set(ASCIILiteralToV8String(isolate_, "isInNetEx"),
-                         is_in_net_ex_template);
-
-    v8_context_.Reset(isolate_,
-                      v8::Context::New(isolate_, nullptr, global_template));
+    v8_context_.Reset(isolate_, v8::Context::New(isolate_));
 
     v8::Local<v8::Context> context =
         v8::Local<v8::Context>::New(isolate_, v8_context_);
     v8::Context::Scope ctx(context);
+    v8::Local<v8::Object> global = context->Global();
+
+    // Attach the javascript bindings.
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "alert"),
+              v8::Function::New(context, &AlertCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "myIpAddress"),
+              v8::Function::New(context, &MyIpAddressCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "dnsResolve"),
+              v8::Function::New(context, &DnsResolveCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "isPlainHostName"),
+              v8::Function::New(context, &IsPlainHostNameCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+
+    // Microsoft's PAC extensions:
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "dnsResolveEx"),
+              v8::Function::New(context, &DnsResolveExCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "myIpAddressEx"),
+              v8::Function::New(context, &MyIpAddressExCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "sortIpAddressList"),
+              v8::Function::New(context, &SortIpAddressListCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
+    global
+        ->Set(context, ASCIILiteralToV8String(isolate_, "isInNetEx"),
+              v8::Function::New(context, &IsInNetExCallback, v8_this, 0,
+                                v8::ConstructorBehavior::kThrow)
+                  .ToLocalChecked())
+        .Check();
 
     // Add the PAC utility functions to the environment.
     // (This script should never fail, as it is a string literal!)

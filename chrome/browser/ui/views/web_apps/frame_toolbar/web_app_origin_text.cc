@@ -121,7 +121,7 @@ void WebAppOriginText::StartFadeAnimation() {
 
   label_layer->GetAnimator()->StartAnimation(opacity_sequence.release());
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kValueChanged, true);
 }
 
 void WebAppOriginText::OnLayerAnimationEnded(

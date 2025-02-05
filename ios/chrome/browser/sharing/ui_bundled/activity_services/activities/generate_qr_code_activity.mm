@@ -62,8 +62,8 @@ NSString* const kGenerateQrCodeActivityType =
 - (void)performActivity {
   [self activityDidFinish:YES];
   [self.handler
-      generateQRCode:[[GenerateQRCodeCommand alloc] initWithURL:_activityURL
-                                                          title:self.title]];
+      showQRCode:[[GenerateQRCodeCommand alloc] initWithURL:_activityURL
+                                                      title:self.title]];
 }
 
 @end

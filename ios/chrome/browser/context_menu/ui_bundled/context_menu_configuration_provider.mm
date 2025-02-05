@@ -853,7 +853,8 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                                               completion:nil];
 }
 
-// Calls the shareURLFromContextMenu with the given command.
+// Calls the `-showShareSheetForURL:` command with the given
+// `ActivityServiceShareURLCommand` command.
 - (void)shareURLFromContextMenu:(const GURL&)URLToShare
                        URLTitle:(NSString*)URLTitle
                          params:(web::ContextMenuParams)params {
@@ -867,7 +868,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                                     title:URLTitle
                                                sourceView:params.view
                                                sourceRect:sourceRect];
-  [handler shareURLFromContextMenu:command];
+  [handler showShareSheetForURL:command];
 }
 
 // Informs the delegate that a new tab has been opened in the background.

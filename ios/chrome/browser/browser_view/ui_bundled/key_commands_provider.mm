@@ -389,8 +389,7 @@ using base::UserMetricsAction;
 
   NSString* title = tab_util::GetTabTitle(currentWebState);
   [_bookmarksHandler
-      createOrEditBookmarkWithURL:[[URLWithTitle alloc] initWithURL:URL
-                                                              title:title]];
+      addOrEditBookmark:[[URLWithTitle alloc] initWithURL:URL title:title]];
 }
 
 - (void)keyCommand_reload {

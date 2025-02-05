@@ -132,7 +132,7 @@ void AppMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
 
   // No |widget_owner_| in tests.
   if (widget_owner_ && widget_owner_->GetRootView()) {
-    widget_owner_->GetRootView()->NotifyAccessibilityEvent(
+    widget_owner_->GetRootView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kMenuEnd,
         /*send_native_event=*/true);
   }

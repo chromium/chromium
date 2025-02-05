@@ -116,7 +116,7 @@ void NetworkTrayView::UpdateConnectionStatus(bool notify_a11y) {
   GetViewAccessibility().SetName(accessible_name);
   if (notify_a11y && !accessible_name.empty() &&
       accessible_name != prev_accessible_name) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   }
 
   if (!accessible_description_.empty()) {

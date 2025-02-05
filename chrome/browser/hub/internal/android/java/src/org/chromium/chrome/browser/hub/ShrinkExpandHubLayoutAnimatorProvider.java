@@ -266,14 +266,22 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         if (mAnimatorSupplier.hasValue()) return;
 
         assert mAnimationDataSupplier.hasValue();
+        ShrinkExpandAnimationData animationData = mAnimationDataSupplier.get();
 
         @Nullable View toolbarView = mHubContainerView.findViewById(R.id.hub_toolbar);
         RecordHistogram.recordBooleanHistogram(
                 "Android.Hub.ToolbarPresentOnAnimation", toolbarView != null);
 
         boolean isShrink = mAnimationType == HubLayoutAnimationType.SHRINK_TAB;
-        float initialAlpha = isShrink ? 0.0f : 1.0f;
-        float finalAlpha = isShrink ? 1.0f : 0.0f;
+        float initialAlpha;
+        float finalAlpha;
+        if (animationData.isTopToolbar()) {
+            initialAlpha = isShrink ? 0.0f : 1.0f;
+            finalAlpha = isShrink ? 1.0f : 0.0f;
+        } else {
+            initialAlpha = 1.0f;
+            finalAlpha = 1.0f;
+        }
         final @Nullable ObjectAnimator fadeAnimator;
         if (toolbarView != null) {
             fadeAnimator =
@@ -294,7 +302,6 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                         ? HubUtils.getSearchBoxHeight(
                                 mHubContainerView, R.id.hub_toolbar, R.id.toolbar_action_container)
                         : 0;
-        ShrinkExpandAnimationData animationData = mAnimationDataSupplier.get();
         Rect initialRect = animationData.getInitialRect();
         Rect finalRect = animationData.getFinalRect();
         mShrinkExpandAnimator =

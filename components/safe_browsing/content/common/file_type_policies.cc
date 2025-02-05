@@ -206,7 +206,7 @@ base::FilePath::StringType FileTypePolicies::GetFileExtension(
     const base::FilePath& file) {
   // Remove trailing space and period characters from the extension.
   base::FilePath::StringType file_basename = file.BaseName().value();
-  base::FilePath::StringPieceType trimmed_filename = base::TrimString(
+  base::FilePath::StringViewType trimmed_filename = base::TrimString(
       file_basename, FILE_PATH_LITERAL(". "), base::TRIM_TRAILING);
   return base::FilePath(trimmed_filename).FinalExtension();
 }

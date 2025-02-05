@@ -193,8 +193,9 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     if (guest) {
       const Extension* hosted_app =
           registry->enabled_extensions().GetHostedAppByURL(url);
-      if (hosted_app && hosted_app->id() == kWebStoreAppId)
+      if (hosted_app && hosted_app->id() == kWebStoreAppId) {
         return content::NavigationThrottle::BLOCK_REQUEST;
+      }
       // Also apply the same blocking if the URL maps to the new webstore
       // domain. Note: We can't use the extension_urls::IsWebstoreDomain check
       // here, as the webstore hosted app is associated with a specific path and

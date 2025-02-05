@@ -499,14 +499,31 @@ TEST_F(ResizeShadowAndCursorTest, ResizeShadowTypeChange) {
   Shell::Get()->resize_shadow_controller()->HideShadow(window());
 }
 
-// Tests that resize shadow matches window rounded corners.
-TEST_F(ResizeShadowAndCursorTest, ResizeShadowMatchesWindowRoundness) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {chromeos::features::kRoundedWindows,
-       chromeos::features::kFeatureManagementRoundedWindows},
-      /*disabled_features=*/{});
+class ResizeShadowWithRoundedWindowsTest : public ResizeShadowAndCursorTest {
+ public:
+  ResizeShadowWithRoundedWindowsTest() = default;
 
+  ResizeShadowWithRoundedWindowsTest(
+      const ResizeShadowWithRoundedWindowsTest&) = delete;
+  ResizeShadowWithRoundedWindowsTest& operator=(
+      const ResizeShadowWithRoundedWindowsTest&) = delete;
+
+  ~ResizeShadowWithRoundedWindowsTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kRoundedWindows,
+         chromeos::features::kFeatureManagementRoundedWindows},
+        /*disabled_features=*/{});
+    ResizeShadowAndCursorTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that resize shadow matches window rounded corners.
+TEST_F(ResizeShadowWithRoundedWindowsTest, ResizeShadowMatchesWindowRoundness) {
   ASSERT_FALSE(GetShadow());
   WindowState* window_state = WindowState::Get(window());
   ASSERT_TRUE(window_state->IsNormalStateType());

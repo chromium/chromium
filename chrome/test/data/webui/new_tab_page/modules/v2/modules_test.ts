@@ -761,31 +761,10 @@ suite('NewTabPageModulesModulesV2Test', () => {
   });
 
   suite('DynamicLoading', () => {
-    function getModulesPromise(
-        descriptors: ModuleDescriptor[],
-        instanceCount: number = 1): Promise<Module[]> {
-      const modules: Module[] = descriptors.map(descriptor => {
-        return {
-          descriptor: descriptor,
-          elements: Array(instanceCount).fill(0).map(_ => createElement()),
-        } as Module;
-      });
-
-      const modulesPromise = new Promise<Module[]>((resolve, _) => {
-        callbackRouterRemote.$.flushForTesting().then(() => {
-          resolve(modules);
-        });
-      });
-
-      return modulesPromise;
-    }
-
-    function getModulePromise(
-        descriptor: ModuleDescriptor,
-        instanceCount: number = 1): Promise<Module> {
+    function getModulePromise(descriptor: ModuleDescriptor): Promise<Module> {
       const module: Module = {
         descriptor: descriptor,
-        elements: Array(instanceCount).fill(0).map(_ => createElement()),
+        elements: [createElement()],
       } as Module;
 
       const modulePromise = new Promise<Module>((resolve, _) => {
@@ -798,11 +777,14 @@ suite('NewTabPageModulesModulesV2Test', () => {
     }
 
     suite('Reloadable', () => {
-      suiteSetup(() => {
+      setup(() => {
         loadTimeData.overrideValues({
           modulesReloadable: true,
           waitToLoadModules: false,
         });
+
+        handler.setResultFor(
+            'getModulesOrder', Promise.resolve({moduleIds: []}));
       });
 
       test('loads module container with newly enabled module', async () => {
@@ -821,9 +803,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
             modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
         assertEquals(0, moduleWrappers.length);
         // Mock required data for loading foo module.
-        const fooModulePromise = getModulesPromise([fooDescriptor]);
-        moduleRegistry.setResultFor(
-            'initializeModulesHavingIds', fooModulePromise);
+        const fooModulePromise = getModulePromise(fooDescriptor);
+        moduleRegistry.setResultFor('initializeModuleById', fooModulePromise);
 
         // Act - Remove foo module from disabled modules list.
         callbackRouterRemote.setDisabledModules(false, []);
@@ -837,13 +818,54 @@ suite('NewTabPageModulesModulesV2Test', () => {
         assertEquals(
             fooDescriptor.id,
             (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
-        assertEquals(1, metrics.count('NewTabPage.Modules.LoadedModulesCount'));
-        assertEquals(
-            1, metrics.count('NewTabPage.Modules.LoadedModulesCount', 0));
         assertEquals(
             1, metrics.count('NewTabPage.Modules.ReloadedModulesCount'));
         assertEquals(
             1, metrics.count('NewTabPage.Modules.ReloadedModulesCount', 1));
+      });
+
+      test('enabling module while container is being loaded', async () => {
+        // Arrange.
+        loadTimeData.overrideValues({
+          // Prevent initial module loading to ensure module enabling during
+          // container load is tested.
+          waitToLoadModules: true,
+        });
+        const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+        const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+        const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
+        // Initial state: foo and bar enabled, baz disabled.
+        const enabledDescriptors = [fooDescriptor, barDescriptor];
+        const modulesElement = await createModulesElementFromDescriptors(
+            enabledDescriptors, /*instanceCount=*/ 1, [bazDescriptor]);
+        handler.setResultFor('getModulesIdNames', {
+          data: enabledDescriptors,
+        });
+        const bazReloadPromise = getModulePromise(bazDescriptor);
+        moduleRegistry.setResultFor('initializeModuleById', bazReloadPromise);
+
+        // Act - Start module load, then enable baz by clearing the disabled
+        // modules list.
+        callbackRouterRemote.setModulesLoadable();
+        callbackRouterRemote.setDisabledModules(false, []);
+        callbackRouterRemote.$.flushForTesting();
+
+        await bazReloadPromise;
+        await waitAfterNextRender(modulesElement);
+
+        // Assert.
+        const moduleWrappers =
+            modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+        assertEquals(3, moduleWrappers.length);
+        assertEquals(
+            fooDescriptor.id,
+            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(
+            barDescriptor.id,
+            (moduleWrappers[1] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(
+            bazDescriptor.id,
+            (moduleWrappers[2] as ModuleWrapperElement).module.descriptor.id);
       });
 
       test('reloads module container after initial load', async () => {
@@ -863,6 +885,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
         assertEquals(
             fooDescriptor.id,
             (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(1, metrics.count('NewTabPage.Modules.LoadedModulesCount'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.LoadedModulesCount', 1));
         assertEquals(0, metrics.count('NewTabPage.Modules.LoadedWith'));
         assertEquals(0, metrics.count('NewTabPage.Modules.ReloadedWith'));
 
@@ -892,6 +917,11 @@ suite('NewTabPageModulesModulesV2Test', () => {
         assertEquals(
             fooDescriptor.id,
             (moduleWrappers[1] as ModuleWrapperElement).module.descriptor.id);
+        assertEquals(1, metrics.count('NewTabPage.Modules.LoadedModulesCount'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.ReloadedModulesCount'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.ReloadedModulesCount', 2));
         assertEquals(1, metrics.count('NewTabPage.Modules.ReloadedWith.foo'));
         assertEquals(
             1, metrics.count('NewTabPage.Modules.ReloadedWith.foo', 'bar'));

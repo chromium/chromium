@@ -10,6 +10,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
+#include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -64,8 +65,30 @@ void DCompPresenter::Destroy() {
   // that if DWM.exe crashes, the Chromium window will become black until
   // the next Commit.
   layer_tree_.reset();
-  if (auto* dcomp_device = GetDirectCompositionDevice())
-    dcomp_device->Commit();
+  if (auto* dcomp_device = GetDirectCompositionDevice()) {
+    HRESULT hr = dcomp_device->Commit();
+    if (FAILED(hr)) {
+      // The `HRESULT` returned from the `Commit` call.
+      static auto* const hr_crash_key = base::debug::AllocateCrashKeyString(
+          "DCompPresenter-destroy-fail-hr", base::debug::CrashKeySize::Size32);
+      // The time since the creation of the process.
+      static auto* const uptime_crash_key = base::debug::AllocateCrashKeyString(
+          "DCompPresenter-destroy-fail-time",
+          base::debug::CrashKeySize::Size64);
+
+      base::debug::SetCrashKeyString(hr_crash_key,
+                                     base::StringPrintf("0x%08x", hr));
+
+      const base::TimeDelta uptime =
+          base::Time::Now() - base::Process::Current().CreationTime();
+      base::debug::SetCrashKeyString(
+          uptime_crash_key,
+          base::StringPrintf("%d hours, %d min, %lld sec, %lld ms",
+                             uptime.InHours(), uptime.InMinutes() % 60,
+                             uptime.InSeconds() % 60ll,
+                             uptime.InMilliseconds() % 1000ll));
+    }
+  }
 }
 
 bool DCompPresenter::Resize(const gfx::Size& size,

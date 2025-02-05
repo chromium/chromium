@@ -225,7 +225,9 @@ void TabStripModelObserver::TabBlockedStateChanged(WebContents* contents,
                                                    int index) {}
 
 void TabStripModelObserver::TabGroupedStateChanged(
-    std::optional<tab_groups::TabGroupId> group,
+    TabStripModel* tab_strip_model,
+    std::optional<tab_groups::TabGroupId> old_group,
+    std::optional<tab_groups::TabGroupId> new_group,
     tabs::TabInterface* tab,
     int index) {}
 

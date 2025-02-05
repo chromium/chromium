@@ -442,7 +442,7 @@ TEST_P(DateTrayTest, DontActivateBubbleIfShownByTap) {
     EXPECT_TRUE(
         GetGlanceableTrayBubble()->GetCalendarView()->Contains(focused_view));
   }
-  EXPECT_STREQ("CalendarDateCellView", focused_view->GetClassName());
+  EXPECT_EQ("CalendarDateCellView", focused_view->GetClassName());
 }
 
 TEST_P(DateTrayTest, ActivateBubbleIfShownByKeyboard) {
@@ -477,7 +477,7 @@ TEST_P(DateTrayTest, ActivateBubbleIfShownByKeyboard) {
     EXPECT_TRUE(
         GetGlanceableTrayBubble()->GetCalendarView()->Contains(focused_view));
   }
-  EXPECT_STREQ("CalendarDateCellView", focused_view->GetClassName());
+  EXPECT_EQ("CalendarDateCellView", focused_view->GetClassName());
 }
 
 // Tests the behavior when clicking on different areas.
@@ -632,11 +632,11 @@ TEST_P(DateTrayTest, RendersClassroomBubblesForActiveRoles) {
   // Both calendar and the `TimeManagementContainer` should be rendered in
   // `GlanceableTrayBubbleView`.
   EXPECT_EQ(GetGlanceableTrayBubble()->GetBubbleView()->children().size(), 2u);
-  EXPECT_STREQ("TimeManagementContainer", GetGlanceableTrayBubble()
-                                              ->GetBubbleView()
-                                              ->children()
-                                              .at(0)
-                                              ->GetClassName());
+  EXPECT_EQ("TimeManagementContainer", GetGlanceableTrayBubble()
+                                           ->GetBubbleView()
+                                           ->children()
+                                           .at(0)
+                                           ->GetClassName());
 }
 
 TEST_P(DateTrayTest, AccessibleName) {

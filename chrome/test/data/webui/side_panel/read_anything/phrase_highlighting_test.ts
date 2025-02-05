@@ -4,17 +4,15 @@
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy, MetricsBrowserProxyImpl, ReadAnythingLogger} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MetricsBrowserProxyImpl, ReadAnythingLogger} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {stubAnimationFrame} from './common.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('PhraseHighlighting', () => {
   let app: AppElement;
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let metrics: TestMetricsBrowserProxy;
 
   // root htmlTag='#document' id=1
@@ -59,8 +57,7 @@ suite('PhraseHighlighting', () => {
   };
 
   setup(() => {
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to

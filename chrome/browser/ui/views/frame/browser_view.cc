@@ -312,6 +312,10 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/grit/chrome_unscaled_resources.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -1191,6 +1195,7 @@ BrowserView::~BrowserView() {
   find_bar_host_view_ = nullptr;
   download_shelf_ = nullptr;
   infobar_container_ = nullptr;
+  multi_contents_view_ = nullptr;
   contents_web_view_ = nullptr;
   devtools_web_view_ = nullptr;
   contents_scrim_view_ = nullptr;
@@ -1943,7 +1948,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       if (focus_helper &&
           focus_helper->GetStoredFocus() != contents_web_view_) {
         GetWidget()->UpdateAccessibleNameForRootView();
-        GetWidget()->GetRootView()->NotifyAccessibilityEvent(
+        GetWidget()->GetRootView()->NotifyAccessibilityEventDeprecated(
             ax::mojom::Event::kFocusContext, true);
       }
     }
@@ -4205,6 +4210,11 @@ ui::ImageModel BrowserView::GetWindowIcon() {
   if (override_window_icon_resource_id >= 0) {
     return ui::ImageModel::FromImage(
         rb.GetImageNamed(override_window_icon_resource_id));
+  }
+#elif BUILDFLAG(IS_LINUX)
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  if (browser_->is_type_normal()) {
+    return ui::ImageModel::FromImage(rb.GetImageNamed(IDR_PRODUCT_LOGO_256));
   }
 #endif
 

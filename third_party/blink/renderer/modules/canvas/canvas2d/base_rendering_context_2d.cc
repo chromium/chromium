@@ -3858,23 +3858,14 @@ bool BaseRenderingContext2D::IsAccelerated() const {
 
 V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
   // Query the canvas and return its actual texture format.
-  std::optional<V8GPUTextureFormat> format;
   if (const CanvasRenderingContextHost* host =
           GetCanvasRenderingContextHost()) {
-    format = FromDawnEnum(AsDawnType(host->GetRenderingContextSkColorType()));
+    return FromDawnEnum(AsDawnType(host->GetRenderingContextSkColorType()));
   }
 
   // If that did not work (e.g., the canvas host does not yet exist), we can
   // return the preferred canvas format.
-  if (!format.has_value()) {
-    format = FromDawnEnum(GPU::preferred_canvas_format());
-  }
-
-  // If the preferred canvas format cannot be represented as a GPUTextureFormat,
-  // something is wrong; we need to investigate.
-  CHECK(format.has_value()) << "GPU::preferred_canvas_format() returned an "
-                               "unrecognized texture format";
-  return *format;
+  return FromDawnEnum(GPU::preferred_canvas_format());
 }
 
 GPUTexture* BaseRenderingContext2D::transferToGPUTexture(

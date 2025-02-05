@@ -84,6 +84,16 @@ bool AccountChecker::IsSyncTypeEnabled(syncer::UserSelectableType type) {
          sync_service_->GetUserSettings()->GetSelectedTypes().Has(type);
 }
 
+bool AccountChecker::IsSyncAvailable() {
+  return sync_service_ &&
+         sync_service_->GetTransportState() !=
+             syncer::SyncService::TransportState::DISABLED &&
+         sync_service_->GetTransportState() !=
+             syncer::SyncService::TransportState::PAUSED &&
+         sync_service_->GetTransportState() !=
+             syncer::SyncService::TransportState::PENDING_DESIRED_CONFIGURATION;
+}
+
 bool AccountChecker::IsAnonymizedUrlDataCollectionEnabled() {
   return pref_service_ &&
          unified_consent::UrlKeyedDataCollectionConsentHelper::

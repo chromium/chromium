@@ -323,6 +323,7 @@ blink_core_tests_dom = [
   "range_test.cc",
   "scripted_animation_controller_test.cc",
   "scroll_button_pseudo_element_test.cc",
+  "scroll_marker_pseudo_element_test.cc",
   "shadow_including_tree_order_traversal_test.cc",
   "slot_assignment_test.cc",
   "space_split_string_test.cc",

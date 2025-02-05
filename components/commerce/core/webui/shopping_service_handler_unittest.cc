@@ -883,6 +883,38 @@ TEST_F(ShoppingServiceHandlerTest,
   run_loop.Run();
 }
 
+TEST_F(ShoppingServiceHandlerTest,
+       TestGetProductSpecificationsFeatureState_AllowedButSyncInactive) {
+  features_.InitWithFeaturesAndParameters({}, {{kProductSpecifications}});
+  ON_CALL(*account_checker_, IsSyncTypeEnabled)
+      .WillByDefault(testing::Return(true));
+  account_checker_->SetSignedIn(true);
+  account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+  account_checker_->SetSyncAvailable(false);
+  SetTabCompareEnterprisePolicyPref(pref_service_.get(), 2);
+
+  // Zero sets. Management mode is false.
+  std::vector<ProductSpecificationsSet> sets;
+  ON_CALL(*product_spec_service_, GetAllProductSpecifications())
+      .WillByDefault(testing::Return(std::move(sets)));
+
+  base::RunLoop run_loop;
+  handler_->GetProductSpecificationsFeatureState(
+      base::BindOnce(
+          [](shopping_service::mojom::ProductSpecificationsFeatureStatePtr
+                 state) {
+            ASSERT_FALSE(state->can_load_full_page_ui);
+            ASSERT_FALSE(state->is_syncing_tab_compare);
+            ASSERT_FALSE(state->can_manage_sets);
+            ASSERT_FALSE(state->can_fetch_data);
+            ASSERT_FALSE(state->is_allowed_for_enterprise);
+            ASSERT_FALSE(state->is_quality_logging_allowed);
+          })
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+}
+
 TEST_F(ShoppingServiceHandlerTest, TestProductInfoPriceSummary_ShowRange) {
   std::optional<commerce::ProductInfo> info =
       BuildProductInfoWithPriceSummary(150000000, 100000000, 200000000);

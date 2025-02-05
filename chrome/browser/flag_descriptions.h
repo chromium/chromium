@@ -126,11 +126,6 @@ extern const char kAuxiliarySearchDonationDescription[];
 extern const char kBackgroundResourceFetchName[];
 extern const char kBackgroundResourceFetchDescription[];
 
-extern const char
-    kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsName[];
-extern const char
-    kBlinkSchedulerDiscreteInputMatchesResponsivenessMetricsDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kBookmarksTreeViewName[];
 extern const char kBookmarksTreeViewDescription[];
@@ -188,9 +183,6 @@ extern const char kCopyImageFilenameToClipboardName[];
 extern const char kCopyImageFilenameToClipboardDescription[];
 
 #if BUILDFLAG(IS_CHROMEOS)
-extern const char kCoralFeatureKeyName[];
-extern const char kCoralFeatureKeyDescription[];
-
 extern const char kCrosSwitcherName[];
 extern const char kCrosSwitcherDescription[];
 #endif  // IS_CHROMEOS
@@ -429,9 +421,6 @@ extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[];
 
 extern const char kAutofillEnableVerveCardSupportName[];
 extern const char kAutofillEnableVerveCardSupportDescription[];
-
-extern const char kAutofillEnableVirtualCardMetadataName[];
-extern const char kAutofillEnableVirtualCardMetadataDescription[];
 
 extern const char kAutofillImprovedLabelsName[];
 extern const char kAutofillImprovedLabelsDescription[];
@@ -812,9 +801,6 @@ extern const char kEnableNetworkLoggingToFileDescription[];
 extern const char kEnableWindowsGamingInputDataFetcherName[];
 extern const char kEnableWindowsGamingInputDataFetcherDescription[];
 
-extern const char kBlockInsecurePrivateNetworkRequestsName[];
-extern const char kBlockInsecurePrivateNetworkRequestsDescription[];
-
 extern const char kPipDoubleTapToResizeName[];
 extern const char kPipDoubleTapToResizeDescription[];
 
@@ -823,24 +809,6 @@ extern const char kPipTuckDescription[];
 
 extern const char kPrivacyGuideAiSettingsName[];
 extern const char kPrivacyGuideAiSettingsDescription[];
-
-extern const char kPrivateNetworkAccessSendPreflightsName[];
-extern const char kPrivateNetworkAccessSendPreflightsDescription[];
-
-extern const char kPrivateNetworkAccessRespectPreflightResultsName[];
-extern const char kPrivateNetworkAccessRespectPreflightResultsDescription[];
-
-extern const char kPrivateNetworkAccessPreflightShortTimeoutName[];
-extern const char kPrivateNetworkAccessPreflightShortTimeoutDescription[];
-
-extern const char kPrivateNetworkAccessPermissionPromptName[];
-extern const char kPrivateNetworkAccessPermissionPromptDescription[];
-
-extern const char kPrivateNetworkAccessIgnoreWorkerErrorsName[];
-extern const char kPrivateNetworkAccessIgnoreWorkerErrorsDescription[];
-
-extern const char kPrivateNetworkAccessIgnoreNavigationErrorsName[];
-extern const char kPrivateNetworkAccessIgnoreNavigationErrorsDescription[];
 
 extern const char kDeprecateAltClickName[];
 extern const char kDeprecateAltClickDescription[];

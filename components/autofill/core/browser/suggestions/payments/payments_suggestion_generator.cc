@@ -124,9 +124,7 @@ bool ShouldSplitCardNameAndLastFourDigits() {
 #if BUILDFLAG(IS_IOS)
   return false;
 #else
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableVirtualCardMetadata) &&
-         base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
+  return base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
 #endif
 }
 
@@ -485,72 +483,70 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
       IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
   const std::u16string& virtual_card_disabled_label = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE);
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableVirtualCardMetadata)) {
-    suggestion.minor_text.value = suggestion.main_text.value;
-    if (suggestion.IsAcceptable()) {
-      suggestion.main_text.value = virtual_card_label;
-    } else {
-      suggestion.main_text.value = virtual_card_disabled_label;
-    }
+#if BUILDFLAG(IS_IOS)
+  suggestion.minor_text.value = suggestion.main_text.value;
+  if (suggestion.IsAcceptable()) {
+    suggestion.main_text.value = virtual_card_label;
   } else {
-#if BUILDFLAG(IS_ANDROID)
-    // The keyboard accessory chips can only accommodate 2 strings which are
-    // displayed on a single row. The minor_text and the labels are
-    // concatenated, so we have: String 1 = main_text, String 2 = minor_text +
-    // labels.
-    // There is a limit on the size of the keyboard accessory chips. When the
-    // suggestion content exceeds this limit, the card name or the cardholder
-    // name can be truncated, the last 4 digits should never be truncated.
-    // Contents in the main_text are automatically truncated from the right end
-    // on the Android side when the size limit is exceeded, so the card name and
-    // the cardholder name is appended to the main_text.
-    // Here we modify the `Suggestion` members to make it suitable for showing
-    // on the keyboard accessory.
-    // Card number field:
-    // Before: main_text = card name, minor_text = last 4 digits, labels =
-    // expiration date.
-    // After: main_text = virtual card label + card name, minor_text = last 4
-    // digits, labels = null.
-    // Cardholder name field:
-    // Before: main_text = cardholder name, minor_text = null, labels = last 4
-    // digits.
-    // After: main_text = virtual card label + cardholder name, minor_text =
-    // null, labels = last 4 digits.
-    if (ShouldSplitCardNameAndLastFourDigits()) {
-      suggestion.main_text.value =
-          base::StrCat({virtual_card_label, u"  ", suggestion.main_text.value});
-    } else {
-      suggestion.minor_text.value = suggestion.main_text.value;
-      suggestion.main_text.value = virtual_card_label;
-    }
-    if (trigger_field_type == CREDIT_CARD_NUMBER) {
-      // The expiration date is not shown for the card number field, so it is
-      // removed.
-      suggestion.labels = {};
-    }
-#else   // Desktop/Android dropdown.
-    if (trigger_field_type == CREDIT_CARD_NUMBER) {
-      // Reset the labels as we only show benefit and virtual card label to
-      // conserve space.
-      suggestion.labels = {};
-      std::optional<Suggestion::Text> benefit_label =
-          GetCreditCardBenefitSuggestionLabel(credit_card, client);
-      if (benefit_label && client.GetPersonalDataManager()
-                               .payments_data_manager()
-                               .IsCardEligibleForBenefits(credit_card)) {
-        suggestion.labels.push_back({*benefit_label});
-      }
-    }
-    if (suggestion.IsAcceptable()) {
-      suggestion.labels.push_back(
-          std::vector<Suggestion::Text>{Suggestion::Text(virtual_card_label)});
-    } else {
-      suggestion.labels.push_back(std::vector<Suggestion::Text>{
-          Suggestion::Text(virtual_card_disabled_label)});
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
+    suggestion.main_text.value = virtual_card_disabled_label;
   }
+
+#elif BUILDFLAG(IS_ANDROID)
+  // The keyboard accessory chips can only accommodate 2 strings which are
+  // displayed on a single row. The minor_text and the labels are
+  // concatenated, so we have: String 1 = main_text, String 2 = minor_text +
+  // labels.
+  // There is a limit on the size of the keyboard accessory chips. When the
+  // suggestion content exceeds this limit, the card name or the cardholder
+  // name can be truncated, the last 4 digits should never be truncated.
+  // Contents in the main_text are automatically truncated from the right end
+  // on the Android side when the size limit is exceeded, so the card name and
+  // the cardholder name is appended to the main_text.
+  // Here we modify the `Suggestion` members to make it suitable for showing
+  // on the keyboard accessory.
+  // Card number field:
+  // Before: main_text = card name, minor_text = last 4 digits, labels =
+  // expiration date.
+  // After: main_text = virtual card label + card name, minor_text = last 4
+  // digits, labels = null.
+  // Cardholder name field:
+  // Before: main_text = cardholder name, minor_text = null, labels = last 4
+  // digits.
+  // After: main_text = virtual card label + cardholder name, minor_text =
+  // null, labels = last 4 digits.
+  if (ShouldSplitCardNameAndLastFourDigits()) {
+    suggestion.main_text.value =
+        base::StrCat({virtual_card_label, u"  ", suggestion.main_text.value});
+  } else {
+    suggestion.minor_text.value = suggestion.main_text.value;
+    suggestion.main_text.value = virtual_card_label;
+  }
+  if (trigger_field_type == CREDIT_CARD_NUMBER) {
+    // The expiration date is not shown for the card number field, so it is
+    // removed.
+    suggestion.labels = {};
+  }
+#else   // Desktop dropdown.
+  if (trigger_field_type == CREDIT_CARD_NUMBER) {
+    // Reset the labels as we only show benefit and virtual card label to
+    // conserve space.
+    suggestion.labels = {};
+    std::optional<Suggestion::Text> benefit_label =
+        GetCreditCardBenefitSuggestionLabel(credit_card, client);
+    if (benefit_label && client.GetPersonalDataManager()
+                             .payments_data_manager()
+                             .IsCardEligibleForBenefits(credit_card)) {
+      suggestion.labels.push_back({*benefit_label});
+    }
+  }
+  if (suggestion.IsAcceptable()) {
+    suggestion.labels.push_back(
+        std::vector<Suggestion::Text>{Suggestion::Text(virtual_card_label)});
+  } else {
+    suggestion.labels.push_back(std::vector<Suggestion::Text>{
+        Suggestion::Text(virtual_card_disabled_label)});
+  }
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 // Set the URL for the card art image to be shown in the `suggestion`.
@@ -1658,5 +1654,4 @@ void FilterCardsToSuggestForCvcFields(
                   });
   }
 }
-
 }  // namespace autofill

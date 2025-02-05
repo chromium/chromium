@@ -1021,6 +1021,20 @@ D3DImageBacking::GetDCompTextureAvailabilityFenceForCurrentFrame() const {
       /*d3d11_signal_device=*/nullptr, std::move(d3d11_fence), fence_value);
 }
 
+#if DCHECK_IS_ON()
+void D3DImageBacking::CheckDCompTextureIsAvailableIfNoReaders() const {
+  AutoLock auto_lock(this);
+
+  if (num_readers_ == 0) {
+    // Sanity check that we can get the availability fence, meaning that the
+    // texture is either immediately available or soon-to-be available. We
+    // should not cache this since the eventual wait may be one or more frames
+    // later and the fence becomes invalidated by DComp commit.
+    std::ignore = GetDCompTextureAvailabilityFenceForCurrentFrame();
+  }
+}
+#endif
+
 std::unique_ptr<DawnBufferRepresentation> D3DImageBacking::ProduceDawnBuffer(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,

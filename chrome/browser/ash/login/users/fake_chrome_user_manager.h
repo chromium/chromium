@@ -81,9 +81,6 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
   void SwitchToLastActiveUser() override;
   void OnSessionStarted() override;
   bool IsKnownUser(const AccountId& account_id) const override;
-  const user_manager::User* FindUser(
-      const AccountId& account_id) const override;
-  user_manager::User* FindUserAndModify(const AccountId& account_id) override;
   const user_manager::User* GetActiveUser() const override;
   user_manager::User* GetActiveUser() override;
   const user_manager::User* GetPrimaryUser() const override;

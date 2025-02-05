@@ -19,7 +19,8 @@ namespace page_actions {
 PageActionContainerView::PageActionContainerView(
     const std::vector<actions::ActionItem*>& action_items,
     const PageActionViewParams& params)
-    : between_icon_spacing_(params.between_icon_spacing) {
+    : between_icon_spacing_(params.between_icon_spacing),
+      should_bridge_containers_(params.should_bridge_containers) {
   SetBetweenChildSpacing(between_icon_spacing_);
 
   // Right align to clip the leftmost items first when not enough space.
@@ -54,6 +55,9 @@ PageActionView* PageActionContainerView::GetPageActionView(
 }
 
 void PageActionContainerView::SetContainerInsideBorderInsets() {
+  if (!should_bridge_containers_) {
+    return;
+  }
   const bool at_least_one_visible = std::any_of(
       page_action_views_.begin(), page_action_views_.end(),
       [](const auto& id_to_view) { return id_to_view.second->GetVisible(); });

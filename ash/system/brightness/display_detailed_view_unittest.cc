@@ -60,14 +60,13 @@ TEST_F(DisplayDetailedViewTest, ScrollContentChildren) {
   views::View* tile_container = GetTileContainer(&detailed_view);
   ASSERT_TRUE(tile_container);
   ASSERT_EQ(tile_container->children().size(), 2u);
-  EXPECT_STREQ(tile_container->children()[0]->GetClassName(), "FeatureTile");
-  EXPECT_STREQ(tile_container->children()[1]->GetClassName(), "FeatureTile");
+  EXPECT_EQ(tile_container->children()[0]->GetClassName(), "FeatureTile");
+  EXPECT_EQ(tile_container->children()[1]->GetClassName(), "FeatureTile");
 
   // The second children of scroll content is the `UnifiedBrightnessView`.
   views::View* unified_brightness_view =
       scroll_content->GetViewByID(VIEW_ID_QS_DISPLAY_BRIGHTNESS_SLIDER);
-  EXPECT_STREQ(unified_brightness_view->GetClassName(),
-               "UnifiedBrightnessView");
+  EXPECT_EQ(unified_brightness_view->GetClassName(), "UnifiedBrightnessView");
 }
 
 TEST_F(DisplayDetailedViewTest, FeatureTileVisibility) {

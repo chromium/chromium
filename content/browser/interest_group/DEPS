@@ -23,6 +23,9 @@ specific_include_rules = {
     # auction_worklet service.
     "+content/services/auction_worklet",
   ],
+  ".*_fuzztest.cc": [
+    "+third_party/fuzztest/src/fuzztest/fuzztest.h",
+  ],
   # Test utilities can use gtest.
   ".*_test_util.(cc|h)": [
     "+third_party/googletest/src/googletest/include/gtest/gtest.h",

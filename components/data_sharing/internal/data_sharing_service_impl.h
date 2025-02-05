@@ -157,6 +157,8 @@ class DataSharingServiceImpl : public DataSharingService,
   void OnMemberRemoved(const GroupId& group_id,
                        const GaiaId& member_gaia_id,
                        const base::Time& event_time) override;
+  void OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType sync_bridge_update_type) override;
 
   CollaborationGroupSyncBridge* GetCollaborationGroupSyncBridgeForTesting();
 

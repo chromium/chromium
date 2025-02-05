@@ -507,8 +507,8 @@ TEST_P(UnifiedSystemTrayTest, CalendarAcceleratorFocusesDateCell) {
   auto* focus_manager =
       GetUnifiedSystemTrayBubble()->GetBubbleWidget()->GetFocusManager();
   EXPECT_TRUE(focus_manager->GetFocusedView());
-  EXPECT_STREQ(focus_manager->GetFocusedView()->GetClassName(),
-               "CalendarDateCellView");
+  EXPECT_EQ(focus_manager->GetFocusedView()->GetClassName(),
+            "CalendarDateCellView");
 }
 
 // Tests that using functional keys to change brightness/volume when the

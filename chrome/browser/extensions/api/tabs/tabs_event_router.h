@@ -70,7 +70,9 @@ class TabsEventRouter : public TabStripModelObserver,
   void TabPinnedStateChanged(TabStripModel* tab_strip_model,
                              content::WebContents* contents,
                              int index) override;
-  void TabGroupedStateChanged(std::optional<tab_groups::TabGroupId> group,
+  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
+                              std::optional<tab_groups::TabGroupId> old_group,
+                              std::optional<tab_groups::TabGroupId> new_group,
                               tabs::TabInterface* tab,
                               int index) override;
 

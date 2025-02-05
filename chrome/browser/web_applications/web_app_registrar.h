@@ -438,6 +438,10 @@ class WebAppRegistrar {
   std::optional<GURL> GetAppPinnedHomeTabUrl(
       const webapps::AppId& app_id) const;
 
+  // Returns true if the given `url` is in scope for the home tab for the given
+  // app, if it has tabbed mode enabled.
+  bool IsUrlInHomeTabScope(const GURL& url, const webapps::AppId& app_id) const;
+
   // Returns the current WebAppOsIntegrationState stored in the web_app DB.
   std::optional<proto::WebAppOsIntegrationState>
   GetAppCurrentOsIntegrationState(const webapps::AppId& app_id) const;

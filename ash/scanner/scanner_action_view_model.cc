@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -65,18 +64,17 @@ std::u16string ScannerActionViewModel::GetText() const {
 }
 
 const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
-  // TODO(b/378002546): Replace these icons with finalized icons when ready.
   switch (unpopulated_action_.action_case()) {
     case manta::proto::ScannerAction::kNewEvent:
-      return kGlanceablesCalendarTodayIcon;
+      return kScannerCalendarIcon;
     case manta::proto::ScannerAction::kNewContact:
-      return kShelfAddPersonButtonIcon;
+      return kScannerNewContactIcon;
     case manta::proto::ScannerAction::kNewGoogleDoc:
-      return chromeos::kFiletypeGdocIcon;
+      return kScannerDocIcon;
     case manta::proto::ScannerAction::kNewGoogleSheet:
-      return chromeos::kFiletypeGsheetIcon;
+      return kScannerSheetIcon;
     case manta::proto::ScannerAction::kCopyToClipboard:
-      return kClipboardIcon;
+      return kScannerClipboardIcon;
     case manta::proto::ScannerAction::ACTION_NOT_SET:
       // This should only be possible if `unpopulated_action_` has been
       // previously moved.

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "ui/views/accessibility/ax_view_obj_wrapper.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -61,8 +62,8 @@ bool AXVirtualViewWrapper::HandleAccessibleAction(
 }
 
 std::string AXVirtualViewWrapper::ToString() const {
-  std::string description = "Virtual view child of ";
-  return description + virtual_view_->GetOwnerView()->GetClassName();
+  return base::StrCat({"Virtual view child of ",
+                       virtual_view_->GetOwnerView()->GetClassName()});
 }
 
 }  // namespace views

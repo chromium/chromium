@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import static org.chromium.base.test.transit.Condition.whether;
-import static org.chromium.base.test.transit.LogicalElement.uiThreadLogicalElement;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import androidx.annotation.Nullable;
@@ -40,6 +39,7 @@ import org.chromium.chrome.browser.hub.R;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabModelSelectorCondition;
 
@@ -98,12 +98,9 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
             }
         }
 
-        elements.declareLogicalElement(
-                uiThreadLogicalElement(
-                        "LayoutManager is showing TAB_SWITCHER (Hub)",
-                        this::isHubLayoutShowing,
-                        mActivityElement));
         elements.declareEnterCondition(new HubLayoutNotInTransition());
+        elements.declareEnterCondition(
+                new LayoutTypeVisibleCondition(mActivityElement, LayoutType.TAB_SWITCHER));
     }
 
     /** Returns the {@link Condition} that acts as {@link Supplier<TabModelSelector>}. */
@@ -162,10 +159,6 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
     /** Convenience method to select the Incognito Tab Switcher pane. */
     public IncognitoTabSwitcherStation selectIncognitoTabList() {
         return selectPane(PaneId.INCOGNITO_TAB_SWITCHER, IncognitoTabSwitcherStation.class);
-    }
-
-    private ConditionStatus isHubLayoutShowing(ChromeTabbedActivity activity) {
-        return whether(activity.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
     }
 
     private void clickPaneSwitcherForPaneWithContentDescription(String contentDescription) {

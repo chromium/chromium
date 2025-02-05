@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 
 #include <numeric>
+#include <optional>
 #include <unordered_set>
 
 #include "base/functional/bind.h"
@@ -751,6 +752,28 @@ bool SavedTabGroupUtils::IsOwnerOfSharedTabGroup(Profile* profile,
           data_sharing::GroupId(collaboration_id.value().value()));
 
   return data_sharing::MemberRole::kOwner == member_role;
+}
+
+// static
+std::vector<data_sharing::GroupMember>
+SavedTabGroupUtils::GetMembersOfSharedTabGroup(
+    Profile* profile,
+    const tab_groups::CollaborationId& collaboration_id) {
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  if (!collaboration_service) {
+    return {};
+  }
+
+  const std::optional<data_sharing::GroupData> group_data =
+      collaboration_service->GetGroupData(
+          data_sharing::GroupId(collaboration_id.value()));
+
+  if (!group_data.has_value()) {
+    return {};
+  }
+
+  return group_data->members;
 }
 
 // static

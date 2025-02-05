@@ -52,6 +52,26 @@ def to_snake_case(name):
   return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name, sys.maxsize).lower()
 
 
+def GetProtoId(name):
+  # We reserve ids [0,15]
+  # Protobuf implementation reserves [19000,19999]
+  # Max proto id is 2^29-1
+  # 32-bit fnv-1a
+  fnv = 2166136261
+  for c in name:
+    fnv = fnv ^ ord(c)
+    fnv = (fnv * 16777619) & 0xffffffff
+  # xor-fold to 29-bits
+  fnv = (fnv >> 29) ^ (fnv & 0x1fffffff)
+  # now use a modulo to reduce to [0,2^29-1 - 1016]
+  fnv = fnv % 536869895
+  # now we move out the disallowed ranges
+  fnv = fnv + 15
+  if fnv >= 19000:
+    fnv += 1000
+  return fnv
+
+
 DOMATO_INT_TYPE_TO_CPP_INT_TYPE = {
     'int': 'int',
     'int32': 'int32_t',
@@ -374,11 +394,12 @@ class DomatoBuilder:
     msg: ProtoMessage
     func: CppFunctionHandler
 
-  def __init__(self, g: grammar.Grammar):
+  def __init__(self, g: grammar.Grammar, stabilize_grammar=False):
     self.handlers: typing.Dict[str, DomatoBuilder.Entry] = {}
     self.backrefs: typing.Dict[str,
                                typing.List[str]] = collections.defaultdict(list)
     self.grammar = g
+    self.stabilize_grammar = stabilize_grammar
     if self.grammar._root and self.grammar._root != 'root':
       self.root = self.grammar._root
     else:
@@ -534,10 +555,20 @@ class DomatoBuilder:
       should_continue |= self._remove_unlinked_nodes()
       should_continue |= self._merge_proto_messages()
       should_continue |= self._merge_oneofs()
-      should_continue |= self._split_oneofs()
+    if self.stabilize_grammar:
+      self._hash_line_proto_ids()
     self._oneofs_reorderer()
     self._oneof_message_renamer()
     self._message_renamer()
+
+  def _hash_line_proto_ids(self):
+    if 'line' not in self.handlers:
+      return
+    rules = self.grammar._creators['line']
+    for (rule, field) in zip(rules, self.handlers['line'].msg.fields):
+      concat = ''.join(p['text'] if p['type'] == 'text' else p['tagname']
+                       for p in rule['parts'])
+      field.proto_id = GetProtoId(concat)
 
   def _add(self, message: ProtoMessage,
            handler: CppProtoMessageFunctionHandler):
@@ -773,7 +804,8 @@ class DomatoBuilder:
         continue
       cases = {}
       for proto_id, field in enumerate(entry.msg.fields, start=1):
-        field.proto_id = proto_id
+        if entry.msg.name != 'line':
+          field.proto_id = proto_id
         exprs = entry.func.cases.pop(field.name)
         field.name = to_proto_field_name(f'field_{proto_id}')
         new_contents = []
@@ -1287,6 +1319,13 @@ def main():
                       '--generated-dir',
                       required=True,
                       help='The path to the target gen directory.')
+  parser.add_argument('-s',
+                      '--stabilize-grammar',
+                      required=False,
+                      default=False,
+                      action='store_true',
+                      help='Whether we should stabilize the proto generation.'
+                      'Grammars should not have duplicate lines')
 
   args = parser.parse_args()
   g = grammar.Grammar()
@@ -1295,7 +1334,7 @@ def main():
   template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                               'templates')
   environment = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
-  builder = DomatoBuilder(g)
+  builder = DomatoBuilder(g, args.stabilize_grammar)
   builder.parse_grammar()
   builder.simplify()
   files = builder.split_files(f'{args.file_format}_sub', file_num=12)

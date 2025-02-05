@@ -466,6 +466,11 @@ export class ProductSpecificationsElement extends CrLitElement {
         this.appState_ === AppState.TABLE_EMPTY;
   }
 
+  protected isHeaderEnabled_() {
+    return !this.loadingState_.loading && this.appState_ !== AppState.ERROR &&
+        this.appState_ !== AppState.SYNC_SCREEN;
+  }
+
   protected canShowFooter_(
       showTableDataUnavailableContainer: boolean, appState: AppState) {
     return !(

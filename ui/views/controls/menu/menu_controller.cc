@@ -1655,9 +1655,11 @@ void MenuController::SetSelection(MenuItemView* menu_item,
     // submenu.
     if (menu_item->GetParentMenuItem() &&
         menu_item->GetParentMenuItem()->GetSubmenu()) {
-      menu_item->GetParentMenuItem()->GetSubmenu()->NotifyAccessibilityEvent(
-          ax::mojom::Event::kSelectedChildrenChanged,
-          /*send_native_event=*/true);
+      menu_item->GetParentMenuItem()
+          ->GetSubmenu()
+          ->NotifyAccessibilityEventDeprecated(
+              ax::mojom::Event::kSelectedChildrenChanged,
+              /*send_native_event=*/true);
     }
   }
 }
@@ -3604,7 +3606,8 @@ void MenuController::SetHotTrackedButton(Button* new_hot_button) {
   if (hot_button_) {
     hot_button_->GetViewAccessibility().SetPopupFocusOverride();
     hot_button_->SetHotTracked(true);
-    hot_button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+    hot_button_->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelection, true);
   }
 }
 

@@ -939,6 +939,25 @@ void LensOverlayController::SetSidePanelIsLoadingResults(bool is_loading) {
 
 void LensOverlayController::SetSidePanelNewTabUrl(const GURL& url) {
   side_panel_new_tab_url_ = lens::RemoveSidePanelURLParameters(url);
+  side_panel_coordinator_->UpdateNewTabButtonState();
+}
+
+GURL LensOverlayController::GetSidePanelNewTabUrl() {
+  if (side_panel_new_tab_url_.is_empty()) {
+    return GURL();
+  }
+  // Disable open in new tab for contextual queries.
+  std::string param_value;
+  net::GetValueForKeyInQuery(side_panel_new_tab_url_,
+                             kVisualInputTypeQueryParameterKey, &param_value);
+  if (!param_value.empty()) {
+    return GURL();
+  }
+
+  // Each new tab needs its own unique vsrid.
+  return net::AppendOrReplaceQueryParameter(
+      side_panel_new_tab_url_, kLensRequestQueryParameter,
+      lens_overlay_query_controller_->GetVsridForNewTab());
 }
 
 void LensOverlayController::MaybeSetSidePanelShowErrorPage(
@@ -3005,24 +3024,6 @@ void LensOverlayController::HandleThumbnailCreated(
   SetSearchboxThumbnail(selected_region_thumbnail_uri_);
 }
 
-void LensOverlayController::OpenInNewTabRequestedByEvent(int event_flags) {
-  if (side_panel_new_tab_url_.is_empty()) {
-    return;
-  }
-
-  // Each new tab needs its own unique vsrid.
-  GURL url_with_new_vsrid = net::AppendOrReplaceQueryParameter(
-      side_panel_new_tab_url_, kLensRequestQueryParameter,
-      lens_overlay_query_controller_->GetVsridForNewTab());
-
-  content::OpenURLParams params(url_with_new_vsrid, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-                                /*is_renderer_initiated=*/false);
-  tab_->GetBrowserWindowInterface()->OpenURL(params,
-                                             /*navigation_handle_callback=*/{});
-}
-
 void LensOverlayController::SetSearchboxThumbnail(
     const std::string& thumbnail_uri) {
   if (side_panel_searchbox_handler_ &&
@@ -3033,17 +3034,6 @@ void LensOverlayController::SetSearchboxThumbnail(
     // thumbnail as pending to send it to the searchbox on bind.
     pending_thumbnail_uri_ = thumbnail_uri;
   }
-}
-
-bool LensOverlayController::ShouldEnableOpenInNewTab() {
-  if (side_panel_new_tab_url_.is_empty()) {
-    return false;
-  }
-  // Disable open in new tab for contextual queries.
-  std::string param_value = "";
-  net::GetValueForKeyInQuery(side_panel_new_tab_url_,
-                             kVisualInputTypeQueryParameterKey, &param_value);
-  return param_value.empty();
 }
 
 void LensOverlayController::RecordTimeToFirstInteraction(

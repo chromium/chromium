@@ -45,10 +45,6 @@
 #include "chromeos/startup/startup.h"  // nogncheck
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_trial.h"
-#endif
-
 #if BUILDFLAG(IS_LINUX)
 #include "base/nix/xdg_util.h"
 #include "ui/base/ui_base_features.h"
@@ -129,10 +125,6 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
         kBackgroundThreadPoolTrial, group_name);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  DefaultBrowserPromptTrial::EnsureStickToDefaultBrowserPromptCohort();
-#endif
 }
 
 #if BUILDFLAG(IS_LINUX)

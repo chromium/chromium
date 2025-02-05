@@ -427,7 +427,7 @@ crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAcceler
 
 # Fails with hung renderer
 crbug.com/1372149 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] Pixel_WebGLFloat [ Failure ]
-crbug.com/40241618 [ android android-sm-s911u1 no-passthrough renderer-skia-vulkan ] Pixel_WebGLFloat [ Failure ]
+crbug.com/40241618 [ android android-sm-s911u1 no-passthrough ] Pixel_WebGLFloat [ Failure ]
 
 # Flaky failures vulkan queue submission, causing dchecks on CQ
 # finder:disable-narrowing

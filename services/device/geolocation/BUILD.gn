@@ -17,8 +17,6 @@ source_set("geolocation") {
   ]
 
   sources = [
-    "geolocation_config.cc",
-    "geolocation_config.h",
     "geolocation_context.cc",
     "geolocation_context.h",
     "geolocation_impl.cc",

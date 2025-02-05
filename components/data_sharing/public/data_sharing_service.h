@@ -108,6 +108,12 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     virtual void OnGroupMemberRemoved(const GroupId& group_id,
                                       const GaiaId& member_gaia_id,
                                       const base::Time& event_time) {}
+
+    // Called to notify of the sync bridge state changes, e.g. whether initial
+    // merge or disable sync are in progress. Interested consumers can choose
+    // to ignore incoming sync events during this duration.
+    virtual void OnSyncBridgeUpdateTypeChanged(
+        SyncBridgeUpdateType sync_bridge_update_type) {}
   };
 
   using GroupDataOrFailureOutcome =

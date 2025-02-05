@@ -530,7 +530,7 @@ void QuickAnswersView::OnFocus() {
   if (wants_focus != this) {
     wants_focus->RequestFocus();
   } else {
-    NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
   }
 }
 

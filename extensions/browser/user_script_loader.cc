@@ -60,8 +60,9 @@ const char kNoScriptChangesErrorMsg[] =
 bool AreScriptsUnique(const UserScriptList& scripts) {
   std::set<std::string> script_ids;
   for (const std::unique_ptr<UserScript>& script : scripts) {
-    if (script_ids.count(script->id()))
+    if (script_ids.count(script->id())) {
       return false;
+    }
     script_ids.insert(script->id());
   }
   return true;
@@ -91,8 +92,9 @@ bool GetDeclarationValue(std::string_view line,
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 bool CanExecuteScriptEverywhere(BrowserContext* browser_context,
                                 const mojom::HostID& host_id) {
-  if (host_id.type == mojom::HostID::HostType::kWebUi)
+  if (host_id.type == mojom::HostID::HostType::kWebUi) {
     return true;
+  }
 
   const Extension* extension = ExtensionRegistry::Get(browser_context)
                                    ->enabled_extensions()
@@ -134,17 +136,20 @@ bool UserScriptLoader::ParseMetadataHeader(std::string_view script_text,
     line_end = script_text.find('\n', line_start);
 
     // Handle the case where there is no trailing newline in the file.
-    if (line_end == std::string::npos)
+    if (line_end == std::string::npos) {
       line_end = script_text.length() - 1;
+    }
 
     line = script_text.substr(line_start, line_end - line_start);
 
     if (!in_metadata) {
-      if (base::StartsWith(line, kUserScriptBegin))
+      if (base::StartsWith(line, kUserScriptBegin)) {
         in_metadata = true;
+      }
     } else {
-      if (base::StartsWith(line, kUserScriptEng))
+      if (base::StartsWith(line, kUserScriptEng)) {
         break;
+      }
 
       std::string value;
       if (GetDeclarationValue(line, kIncludeDeclaration, &value)) {
@@ -162,29 +167,33 @@ bool UserScriptLoader::ParseMetadataHeader(std::string_view script_text,
         script->set_name(value);
       } else if (GetDeclarationValue(line, kVersionDeclaration, &value)) {
         base::Version version(value);
-        if (version.IsValid())
+        if (version.IsValid()) {
           script->set_version(version.GetString());
+        }
       } else if (GetDeclarationValue(line, kDescriptionDeclaration, &value)) {
         script->set_description(value);
       } else if (GetDeclarationValue(line, kMatchDeclaration, &value)) {
         URLPattern pattern(UserScript::ValidUserScriptSchemes());
-        if (URLPattern::ParseResult::kSuccess != pattern.Parse(value))
+        if (URLPattern::ParseResult::kSuccess != pattern.Parse(value)) {
           return false;
+        }
         script->add_url_pattern(pattern);
       } else if (GetDeclarationValue(line, kExcludeMatchDeclaration, &value)) {
         URLPattern exclude(UserScript::ValidUserScriptSchemes());
-        if (URLPattern::ParseResult::kSuccess != exclude.Parse(value))
+        if (URLPattern::ParseResult::kSuccess != exclude.Parse(value)) {
           return false;
+        }
         script->add_exclude_url_pattern(exclude);
       } else if (GetDeclarationValue(line, kRunAtDeclaration, &value)) {
-        if (value == kRunAtDocumentStartValue)
+        if (value == kRunAtDocumentStartValue) {
           script->set_run_location(mojom::RunLocation::kDocumentStart);
-        else if (value == kRunAtDocumentEndValue)
+        } else if (value == kRunAtDocumentEndValue) {
           script->set_run_location(mojom::RunLocation::kDocumentEnd);
-        else if (value == kRunAtDocumentIdleValue)
+        } else if (value == kRunAtDocumentIdleValue) {
           script->set_run_location(mojom::RunLocation::kDocumentIdle);
-        else
+        } else {
           return false;
+        }
       }
 
       // TODO(aa): Handle more types of metadata.
@@ -195,8 +204,9 @@ bool UserScriptLoader::ParseMetadataHeader(std::string_view script_text,
 
   // If no patterns were specified, default to @include *. This is what
   // Greasemonkey does.
-  if (script->globs().empty() && script->url_patterns().is_empty())
+  if (script->globs().empty() && script->url_patterns().is_empty()) {
     script->add_glob("*");
+  }
 
   return true;
 }
@@ -237,8 +247,9 @@ void UserScriptLoader::AddScripts(UserScriptList scripts,
   for (std::unique_ptr<UserScript>& user_script : scripts) {
     const std::string& id = user_script->id();
     removed_script_ids_.erase(id);
-    if (added_scripts_map_.count(id) == 0)
+    if (added_scripts_map_.count(id) == 0) {
       added_scripts_map_[id] = std::move(user_script);
+    }
   }
 
   AttemptLoad(std::move(callback));
@@ -386,8 +397,9 @@ base::ReadOnlySharedMemoryRegion UserScriptLoader::Serialize(
   // Create the shared memory object.
   base::MappedReadOnlyRegion shared_memory =
       base::ReadOnlySharedMemoryRegion::Create(pickle.size());
-  if (!shared_memory.IsValid())
+  if (!shared_memory.IsValid()) {
     return {};
+  }
 
   // Copy the pickle to shared memory.
   memcpy(shared_memory.mapping.memory(), pickle.data(), pickle.size());
@@ -403,8 +415,9 @@ void UserScriptLoader::RemoveObserver(Observer* observer) {
 }
 
 void UserScriptLoader::StartLoadForTesting(ScriptsLoadedCallback callback) {
-  if (!callback.is_null())
+  if (!callback.is_null()) {
     queued_load_callbacks_.push_back(std::move(callback));
+  }
   if (is_loading()) {
     queued_load_ = true;
   } else {
@@ -415,8 +428,9 @@ void UserScriptLoader::StartLoadForTesting(ScriptsLoadedCallback callback) {
 void UserScriptLoader::SetReady(bool ready) {
   bool was_ready = ready_;
   ready_ = ready;
-  if (ready_ && !was_ready)
+  if (ready_ && !was_ready) {
     AttemptLoad(UserScriptLoader::ScriptsLoadedCallback());
+  }
 }
 
 void UserScriptLoader::OnScriptsLoaded(

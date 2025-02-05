@@ -307,7 +307,7 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
   focus_ring_->DeprecatedLayoutImmediately();
   focus_ring_->SchedulePaint();
 
-  view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+  view->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, true);
 
   magnifier_utils::MaybeUpdateActiveMagnifierFocus(
       view->GetBoundsInScreen().CenterPoint());
@@ -342,7 +342,8 @@ bool CaptureModeSessionFocusCycler::HighlightableView::ClickView() {
                                       ui::VKEY_RETURN, ui::EF_NONE))) {
     handled = true;
     if (weak_ptr) {
-      view->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+      view->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kStateChanged, true);
     }
   }
 
@@ -1043,8 +1044,8 @@ void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
         auto& view_a11y = contents_view->GetViewAccessibility();
         view_a11y.SetPreviousFocus(previous);
         view_a11y.SetNextFocus(next);
-        contents_view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged,
-                                                true);
+        contents_view->NotifyAccessibilityEventDeprecated(
+            ax::mojom::Event::kTreeChanged, true);
       };
 
   // If there is only one widget left, clear the focus overrides so that they

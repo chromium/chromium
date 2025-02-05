@@ -24,6 +24,9 @@ specific_include_rules = {
   "dom_timer_test\.cc": [
     "+base/test/scoped_command_line.h",
   ],
+  "dom_window\.cc" : [
+    "+base/containers/fixed_flat_map.h"
+  ],
   "frame_view\.cc": [
     "+ui/gfx/transform.h"
   ],

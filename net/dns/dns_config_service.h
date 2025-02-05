@@ -111,7 +111,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
    public:
     // `service` is expected to own the created reader and thus stay valid for
     // the lifetime of the created reader.
-    HostsReader(base::FilePath::StringPieceType hosts_file_path,
+    HostsReader(base::FilePath::StringViewType hosts_file_path,
                 DnsConfigService& service);
     ~HostsReader() override;
 
@@ -162,7 +162,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // triggering refreshes. Will trigger refreshes synchronously on nullopt.
   // Useful for platforms where multiple changes may be made and detected before
   // the config is stabilized and ready to be read.
-  explicit DnsConfigService(base::FilePath::StringPieceType hosts_file_path,
+  explicit DnsConfigService(base::FilePath::StringViewType hosts_file_path,
                             std::optional<base::TimeDelta> config_change_delay =
                                 base::Milliseconds(50));
 

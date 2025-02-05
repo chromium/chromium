@@ -19,6 +19,7 @@ public class ShrinkExpandAnimationData {
     private final @Nullable Size mThumbnailSize;
     private final int[] mInitialCornerRadii;
     private final int[] mFinalCornerRadii;
+    private final boolean mIsTopToolbar;
     private final boolean mUseFallbackAnimation;
 
     /**
@@ -34,12 +35,15 @@ public class ShrinkExpandAnimationData {
      */
     public static ShrinkExpandAnimationData createHubNewTabAnimationData(
             Rect initialRect, Rect finalRect, int cornerRadius, boolean useFallbackAnimation) {
+        // We can assume the top toolbar exists for this animation as either we will cover the hub
+        // toolbar with the animation (incognito) or the new tab has a dedicated top toolbar.
         return new ShrinkExpandAnimationData(
                 initialRect,
                 finalRect,
                 new int[] {0, cornerRadius, cornerRadius, cornerRadius},
                 new int[] {0, cornerRadius, cornerRadius, cornerRadius},
                 /* thumbnailSize= */ null,
+                /* isTopToolbar= */ true,
                 useFallbackAnimation);
     }
 
@@ -59,6 +63,7 @@ public class ShrinkExpandAnimationData {
      *     corners.
      * @param thumbnailSize The size of a thumbnail. This is used if the {@code initialRect} is
      *     clipped at the top to make the animation of the image smooth.
+     * @param isTopToolbar Whether the top toolbar will be shown behind the shrink.
      * @param useFallbackAnimation Whether the fallback animation should be used. If this is true
      *     the fallback animation is forced. Useful when something happened while preparing this
      *     data that suggests the shrink or expand animation can no longer proceed.
@@ -71,6 +76,7 @@ public class ShrinkExpandAnimationData {
             int finalTopCornerRadius,
             int finalBottomCornerRadius,
             @Nullable Size thumbnailSize,
+            boolean isTopToolbar,
             boolean useFallbackAnimation) {
         return new ShrinkExpandAnimationData(
                 initialRect,
@@ -88,6 +94,7 @@ public class ShrinkExpandAnimationData {
                     finalBottomCornerRadius
                 },
                 thumbnailSize,
+                isTopToolbar,
                 useFallbackAnimation);
     }
 
@@ -99,6 +106,7 @@ public class ShrinkExpandAnimationData {
      *     values will be scaled by {@code scaleFactor}.
      * @param thumbnailSize The size of a thumbnail. This is used if the {@code initialRect} is
      *     clipped at the top to make the animation of the image smooth.
+     * @param isTopToolbar Whether the top toolbar will be shown behind the shrink.
      * @param useFallbackAnimation Whether the fallback animation should be used. If this is true
      *     the fallback animation is forced. Useful when something happened while preparing this
      *     data that suggests the shrink or expand animation can no longer proceed.
@@ -112,6 +120,7 @@ public class ShrinkExpandAnimationData {
             int[] initialCornerRadii,
             int[] finalCornerRadii,
             @Nullable Size thumbnailSize,
+            boolean isTopToolbar,
             boolean useFallbackAnimation) {
         assert initialCornerRadii.length == 4 && finalCornerRadii.length == 4
                 : "Corner Radii should be equal to 4";
@@ -126,6 +135,7 @@ public class ShrinkExpandAnimationData {
         mInitialCornerRadii = initialCornerRadii;
         mFinalCornerRadii = finalCornerRadii;
         mThumbnailSize = thumbnailSize;
+        mIsTopToolbar = isTopToolbar;
         mUseFallbackAnimation = useFallbackAnimation;
     }
 
@@ -152,6 +162,11 @@ public class ShrinkExpandAnimationData {
     /** Returns the thumbnail size. */
     public @Nullable Size getThumbnailSize() {
         return mThumbnailSize;
+    }
+
+    /** Whether the top toolbar will be shown behind the animation. */
+    public boolean isTopToolbar() {
+        return mIsTopToolbar;
     }
 
     /** Returns whether to use the fallback animation. */

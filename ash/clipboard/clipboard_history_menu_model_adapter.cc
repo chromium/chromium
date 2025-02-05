@@ -718,8 +718,9 @@ void ClipboardHistoryMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
   views::View* focused_view =
       active_widget->GetFocusManager()->GetFocusedView();
   if (focused_view) {
-    focused_view->NotifyAccessibilityEvent(ax::mojom::Event::kMenuEnd,
-                                           /*send_native_event=*/true);
+    focused_view->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kMenuEnd,
+        /*send_native_event=*/true);
   }
 }
 

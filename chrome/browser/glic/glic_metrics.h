@@ -17,17 +17,29 @@ class GlicWindowController;
 // convenience.
 class GlicMetrics {
  public:
-  explicit GlicMetrics(GlicWindowController* window_controller);
+  GlicMetrics();
   GlicMetrics(const GlicMetrics&) = delete;
   GlicMetrics& operator=(const GlicMetrics&) = delete;
   ~GlicMetrics();
 
-  // See glic.mojom for details.
+  // See glic.mojom for details. These are events from the web client. The
+  // lifetime of the web client is scoped to that of the window, so if these
+  // methods are called then controller_ is guaranteed to exist.
   void OnUserInputSubmitted(mojom::WebClientMode mode);
   void OnResponseStarted();
   void OnResponseStopped();
   void OnSessionTerminated();
   void OnResponseRated(bool positive);
+
+  // Public API called by other glic classes.
+  // Called when the glic window starts to open.
+  void OnGlicWindowOpen();
+  // Called when the glic window finishes closing.
+  void OnGlicWindowClose();
+
+  // Must be called immediately after constructor before any calls from
+  // glic.mojom.
+  void SetWindowController(GlicWindowController* controller);
 
  private:
   // These members are cleared in OnResponseStopped.
@@ -35,8 +47,13 @@ class GlicMetrics {
   mojom::WebClientMode input_mode_;
   base::TimeTicks response_started_time_;
 
-  // Guaranteed to outlive `this`.
-  raw_ptr<GlicWindowController> window_controller_;
+  // Cleared in OnGlicWindowClose.
+  int session_responses_ = 0;
+  base::TimeTicks session_start_time_;
+
+  // The owner of this class is responsible for maintaining appropriate lifetime
+  // for controller_.
+  raw_ptr<GlicWindowController> controller_;
 };
 
 }  // namespace glic

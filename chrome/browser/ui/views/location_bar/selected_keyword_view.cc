@@ -162,7 +162,8 @@ void SelectedKeywordView::SetKeyword(const std::u16string& keyword) {
   // class is calculating the preferred size. It will be updated again during
   // layout, taking into account how much space has actually been allotted.
   SetLabelForCurrentWidth();
-  NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kLiveRegionChanged,
+                                     true);
 }
 
 const std::u16string& SelectedKeywordView::GetKeyword() const {

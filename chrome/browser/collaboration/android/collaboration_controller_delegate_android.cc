@@ -5,6 +5,7 @@
 #include "chrome/browser/collaboration/android/collaboration_controller_delegate_android.h"
 
 #include "base/android/jni_string.h"
+#include "base/debug/dump_without_crashing.h"
 #include "components/collaboration/public/android/conversion_utils.h"
 #include "components/data_sharing/public/android/conversion_utils.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
@@ -92,6 +93,9 @@ CollaborationControllerDelegateAndroid::CollaborationControllerDelegateAndroid(
 CollaborationControllerDelegateAndroid::
     ~CollaborationControllerDelegateAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
+  if (!on_flow_finished_called_) {
+    base::debug::DumpWithoutCrashing();
+  }
   Java_CollaborationControllerDelegateImpl_clearNativePtr(env, java_obj_);
 }
 
@@ -216,6 +220,7 @@ void CollaborationControllerDelegateAndroid::PromoteCurrentScreen() {
 }
 
 void CollaborationControllerDelegateAndroid::OnFlowFinished() {
+  on_flow_finished_called_ = true;
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_onFlowFinished(env, java_obj_);
 }

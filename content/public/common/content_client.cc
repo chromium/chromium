@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/common/origin_util.h"
-#include "content/public/common/user_agent.h"
 #include "ui/gfx/image/image.h"
 
 namespace content {

@@ -1574,7 +1574,7 @@ void DeskBarViewBase::OnDeskReordered(int old_index, int new_index) {
   // Update the order of child views.
   auto* reordered_view = mini_views_[new_index].get();
   reordered_view->parent()->ReorderChildView(reordered_view, new_index);
-  reordered_view->parent()->NotifyAccessibilityEvent(
+  reordered_view->parent()->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kTreeChanged, true);
 
   // Update the desk indices in the shortcut views.

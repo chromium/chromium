@@ -5,12 +5,16 @@
 #include "chrome/browser/glic/glic_fre_controller.h"
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -71,10 +75,17 @@ void GlicFreController::ShowFreDialog(Profile* profile, Browser* browser) {
 void GlicFreController::AcceptFre(Profile* profile) {
   // Update FRE related preferences.
   profile->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
-  // TODO(stluong): Update this for additional channels as support is added.
-  if (chrome::GetChannel() == version_info::Channel::CANARY) {
-    g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
-                                                 true);
+
+  // Enable the launcher if it is still disabled by default and the browser
+  // is default or is on the stable channel.
+  bool is_enabled_default = false;
+  const bool is_launcher_enabled =
+      GlicLauncherConfiguration::IsEnabled(&is_enabled_default);
+  if (is_enabled_default && !is_launcher_enabled) {
+    base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
+        ->StartCheckIsDefault(
+            base::BindOnce(&GlicFreController::OnCheckIsDefaultBrowserFinished,
+                           chrome::GetChannel()));
   }
 
   DismissFre();
@@ -95,4 +106,30 @@ void GlicFreController::DismissFre() {
   }
 }
 
+content::WebContents* GlicFreController::GetWebContents() {
+  if (!fre_view_) {
+    return nullptr;
+  }
+  return fre_view_->web_contents();
+}
+
+// static
+void GlicFreController::OnCheckIsDefaultBrowserFinished(
+    version_info::Channel channel,
+    shell_integration::DefaultWebClientState state) {
+  // Don't do anything because a different channel is the default browser
+  if (state ==
+      shell_integration::DefaultWebClientState::OTHER_MODE_IS_DEFAULT) {
+    return;
+  }
+
+  // Enables the launcher if the current browser is the default or
+  // is on the stable channel.
+  if (g_browser_process &&
+      (state == shell_integration::DefaultWebClientState::IS_DEFAULT ||
+       channel == version_info::Channel::STABLE)) {
+    g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                                 true);
+  }
+}
 }  // namespace glic

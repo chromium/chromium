@@ -2378,6 +2378,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"refactor-toolbar-ui", flag_descriptions::kRefactorToolbarUIName,
      flag_descriptions::kRefactorToolbarUIDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kRefactorToolbarUI)},
+    {"lens-gesture-text-selection-disabled",
+     flag_descriptions::kLensGestureTextSelectionDisabledName,
+     flag_descriptions::kLensGestureTextSelectionDisabledDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensGestureTextSelectionDisabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

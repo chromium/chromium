@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "third_party/blink/public/common/performance/performance_scenarios.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 
 namespace performance_manager {
 
@@ -16,7 +16,7 @@ namespace performance_manager {
 // one of these on startup that lasts for the lifetime of the browser.
 // Performance Manager will update the state, which can be read from any process
 // using functions in
-// //third_party/blink/public/common/performance/performance_scenarios.h.
+// //components/performance_manager/scenario_api/performance_scenarios.h.
 class ScopedGlobalScenarioMemory {
  public:
   ScopedGlobalScenarioMemory();
@@ -28,9 +28,9 @@ class ScopedGlobalScenarioMemory {
 
  private:
   // The browser process also maps in the global scenario memory read-only. The
-  // //third_party/blink/public/common/performance/performance_scenarios.h query
-  // functions will read from this for ScenarioScope::kGlobal.
-  std::optional<blink::performance_scenarios::ScopedReadOnlyScenarioMemory>
+  // //components/performance_manager/scenario_api/performance_scenarios.h
+  // query functions will read from this for ScenarioScope::kGlobal.
+  std::optional<performance_scenarios::ScopedReadOnlyScenarioMemory>
       read_only_mapping_;
 };
 

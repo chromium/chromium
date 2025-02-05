@@ -10,14 +10,16 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/proto/features/permissions_ai.pb.h"
+#include "components/permissions/request_type.h"
 
 namespace permissions {
 
 namespace {
-using PermissionsAiRequest = optimization_guide::proto::PermissionsAiRequest;
-using PermissionsAiResponse = optimization_guide::proto::PermissionsAiResponse;
 using ::optimization_guide::ModelBasedCapabilityKey;
 using ::optimization_guide::SessionConfigParams;
+using ::optimization_guide::proto::PermissionsAiRequest;
+using ::optimization_guide::proto::PermissionsAiResponse;
+using ::optimization_guide::proto::PermissionType;
 
 constexpr ModelBasedCapabilityKey kFeatureKey =
     ModelBasedCapabilityKey::kPermissionsAi;
@@ -72,6 +74,17 @@ void LogOnDeviceModelFetchTime(base::TimeTicks model_download_start_time) {
   base::UmaHistogramLongTimes(
       "Permissions.AIv1.FetchTime",
       base::TimeTicks::Now() - model_download_start_time);
+}
+
+PermissionType GetPermissionType(permissions::RequestType request_type) {
+  switch (request_type) {
+    case permissions::RequestType::kNotifications:
+      return PermissionType::PERMISSION_TYPE_NOTIFICATIONS;
+    case permissions::RequestType::kGeolocation:
+      return PermissionType::PERMISSION_TYPE_GEOLOCATION;
+    default:
+      return PermissionType::PERMISSION_TYPE_NOT_SPECIFIED;
+  }
 }
 
 }  // namespace
@@ -205,6 +218,7 @@ bool GenAiModelHandler::IsOnDeviceModelAvailable() {
 
 void GenAiModelHandler::InquireGenAiOnDeviceModel(
     std::string rendered_text,
+    permissions::RequestType request_type,
     base::OnceCallback<void(std::optional<PermissionsAiResponse>)> callback) {
   // Close off the previous session if session's model execution from a previous
   // call into InquireOnDeviceModel is still happening.
@@ -229,6 +243,7 @@ void GenAiModelHandler::InquireGenAiOnDeviceModel(
 
   PermissionsAiRequest request;
   request.set_rendered_text(std::move(rendered_text));
+  request.set_permission_type(GetPermissionType(request_type));
 
   inquire_on_device_model_callback_ = std::move(callback);
   session_execution_start_time_ = base::TimeTicks::Now();

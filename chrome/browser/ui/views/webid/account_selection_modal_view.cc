@@ -456,7 +456,7 @@ void AccountSelectionModalView::ShowVerifyingSheet(
   for (const auto& child : account_chooser_->children()) {
     // If one of the immediate children is HoverButton, this is a single account
     // chooser.
-    if (std::string(child->GetClassName()) == "HoverButton") {
+    if (child->GetClassName() == "HoverButton") {
       is_single_account_chooser = true;
       AccountHoverButton* button = static_cast<AccountHoverButton*>(child);
       if (button->HasBeenClicked()) {
@@ -477,7 +477,7 @@ void AccountSelectionModalView::ShowVerifyingSheet(
     views::View* wrapper = account_chooser_->children()[0];
     views::View* contents = wrapper->children()[0];
     for (const auto& child : contents->children()) {
-      if (std::string(child->GetClassName()) == "HoverButton") {
+      if (child->GetClassName() == "HoverButton") {
         AccountHoverButton* button = static_cast<AccountHoverButton*>(child);
         if (button->HasBeenClicked()) {
           has_spinner_ = true;

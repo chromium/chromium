@@ -79,7 +79,8 @@ content::WebContents* AddWebContents(
     const GURL& target_url,
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
-    NavigateParams::WindowAction window_action) {
+    NavigateParams::WindowAction window_action,
+    bool user_gesture) {
   // No code for this yet.
   DCHECK(disposition != WindowOpenDisposition::SAVE_TO_DISK);
   // Can't create a new contents for the current tab - invalid case.
@@ -95,6 +96,7 @@ content::WebContents* AddWebContents(
   // was created without a user gesture, we have to set |user_gesture| to true,
   // so it gets correctly focused.
   params.user_gesture = true;
+  params.original_user_gesture = user_gesture;
 
   ConfigureTabGroupForNavigation(&params);
 

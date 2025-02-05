@@ -82,33 +82,6 @@ export const MODULE_CUSTOMIZE_ELEMENT_ID =
     'NewTabPageUI::kModulesCustomizeIPHAnchorElement';
 
 /**
- * Computes the IDs of modules that have been newly enabled.
- *
- * This function compares the current and previous lists of disabled module IDs
- * to identify modules that are now enabled. It then filters out modules that
- * already have template instances, ensuring that only truly newly enabled
- * modules are returned.
- *
- * @param newDisabledIds The latest list of disabled module IDs.
- * @param prevDisabledIds The previous list of disabled module IDs.
- * @param templateInstances A list of existing template instances.
- * @returns An array of module IDs that are newly enabled and do not yet have
- *     template instances.
- */
-function computeNewlyEnabledModuleIds(
-    newDisabledIds: string[], prevDisabledIds: string[],
-    templateInstances: TemplateInstanceBase[]): string[] {
-  const enabledIds = prevDisabledIds.filter(id => !newDisabledIds.includes(id));
-  const newlyEnabledModuleIds = enabledIds.filter((enabledId) => {
-    return !templateInstances.some(
-        (templateInstance) =>
-            (templateInstance as unknown as ItemTemplateInstance)
-                .item.descriptor.id === enabledId);
-  });
-  return newlyEnabledModuleIds;
-}
-
-/**
  * Creates template instances for a list of modules.
  *
  * @param modules The modules for which to create template instances.
@@ -174,7 +147,8 @@ export class ModulesV2Element extends AppElementBase {
   private setModulesLoadableListenerId_: number|null = null;
   private containerObserver_: MutationObserver|null = null;
   private templateInstances_: TemplateInstanceBase[] = [];
-  private modulesLoaded_: boolean = false;
+  private modulesLoadInitiated_: boolean = false;
+  private moduleLoadPromise_: Promise<void>|null = null;
   // TODO(crbug.com/385174675): Remove |modulesReloadable_| flag when safe.
   // Otherwise, when Microsoft modules are enabled ToT, the current behavior
   // gated by |modulesReloadable_| should become the default module loading
@@ -182,6 +156,7 @@ export class ModulesV2Element extends AppElementBase {
   private modulesReloadable_: boolean =
       loadTimeData.getBoolean('modulesReloadable');
   private moduleWrapperConstructor_: ModuleWrapperConstructor|null = null;
+  private needsReload_: boolean = false;
   private newlyEnabledModuleIds_: string[] = [];
 
   private callbackRouter_: PageCallbackRouter;
@@ -201,7 +176,7 @@ export class ModulesV2Element extends AppElementBase {
     this.setDisabledModulesListenerId_ =
         this.callbackRouter_.setDisabledModules.addListener(
             (all: boolean, ids: string[]) => {
-              if (this.modulesReloadable_) {
+              if (this.modulesReloadable_ && this.modulesLoadInitiated_) {
                 this.handleModuleEnablement_(this.disabledModules_.ids, ids);
               }
 
@@ -213,7 +188,7 @@ export class ModulesV2Element extends AppElementBase {
         this.callbackRouter_.setModulesLoadable.addListener(() => {
           if (this.waitToLoadModules_) {
             this.waitToLoadModules_ = false;
-            this.loadModules_(/*onNtpLoad=*/ true);
+            this.moduleLoadPromise_ = this.loadModules_();
           }
         });
 
@@ -298,7 +273,7 @@ export class ModulesV2Element extends AppElementBase {
     if (this.waitToLoadModules_) {
       this.handler_.updateModulesLoadable();
     } else {
-      this.loadModules_(/*onNtpLoad=*/ true);
+      this.moduleLoadPromise_ = this.loadModules_();
     }
   }
 
@@ -310,11 +285,8 @@ export class ModulesV2Element extends AppElementBase {
   }
 
   /**
-   * Manages the loading and reloading of modules within the container based on
+   * Manages the reloading of modules within the container based on
    * updates to the disabled modules list.
-   *
-   * If no modules have been shown to the user yet, |loadModules_()| is
-   * called to populate the container.
    *
    * Subsequent calls handle potential reloads. Newly enabled modules are
    * queued and loaded individually. The user does not see these modules until
@@ -328,14 +300,12 @@ export class ModulesV2Element extends AppElementBase {
    */
   private async handleModuleEnablement_(
       prevDisabledIds: string[], newDisabledIds: string[]): Promise<void> {
-    const onNtpLoad = !this.modulesLoaded_;
-    if (onNtpLoad || this.templateInstances_.length === 0) {
-      this.loadModules_(onNtpLoad);
-      return;
+    if (this.moduleLoadPromise_) {
+      await this.moduleLoadPromise_;
     }
 
-    const newlyEnabledModuleIds = computeNewlyEnabledModuleIds(
-        newDisabledIds, prevDisabledIds, this.templateInstances_);
+    const newlyEnabledModuleIds =
+        prevDisabledIds.filter(id => !newDisabledIds.includes(id));
     this.newlyEnabledModuleIds_ =
         this.newlyEnabledModuleIds_.concat(newlyEnabledModuleIds);
 
@@ -345,10 +315,18 @@ export class ModulesV2Element extends AppElementBase {
 
     // Load modules one by one until the queue is empty.
     while (this.newlyEnabledModuleIds_.length > 0) {
-      await this.addTemplateInstance_(this.newlyEnabledModuleIds_[0]);
-      this.newlyEnabledModuleIds_.shift();
-      if (this.newlyEnabledModuleIds_.length === 0) {
+      const id = this.newlyEnabledModuleIds_.shift() as string;
+      const hasExistingInstance = this.templateInstances_.some(
+          (templateInstance) =>
+              (templateInstance as unknown as ItemTemplateInstance)
+                  .item.descriptor.id === id);
+      if (!hasExistingInstance) {
+        await this.addTemplateInstance_(id);
+        this.needsReload_ = true;
+      }
+      if (this.newlyEnabledModuleIds_.length === 0 && this.needsReload_) {
         await this.reloadModules_();
+        this.needsReload_ = false;
       } else {
         // More modules to load; the next call to this function will continue
         // the process.
@@ -362,14 +340,13 @@ export class ModulesV2Element extends AppElementBase {
    * This method uses |this.moduleRegistry_| to determine which modules to load
    * and is called only when the container is empty.
    *
-   * @param onNtpLoad `true` if the modules are being loaded during initial NTP
-   *     load, `false` if they're being loaded later in the NTP's lifecycle.
    */
-  private async loadModules_(onNtpLoad: boolean): Promise<void> {
+  private async loadModules_(): Promise<void> {
     if (this.waitToLoadModules_) {
       return;
     }
 
+    this.modulesLoadInitiated_ = true;
     const modulesIdNames = (await this.handler_.getModulesIdNames()).data;
     const modules = await this.moduleRegistry_.initializeModulesHavingIds(
         modulesIdNames.map((m: ModuleIdName) => m.id),
@@ -406,11 +383,9 @@ export class ModulesV2Element extends AppElementBase {
             ...this.templateInstances_.map(t => t.children[0] as HTMLElement));
       }
 
-      if (!this.modulesLoaded_) {
-        this.onInitialLoadDone_(modules, modulesIdNames);
-      } else if (!onNtpLoad) {
-        this.onReloadDone_();
-      }
+      this.recordInitialLoadMetrics_(modules, modulesIdNames);
+      this.dispatchEvent(new Event('modules-loaded'));
+
 
       if (this.templateInstances_.length > 0) {
         this.registerHelpBubble(
@@ -429,6 +404,8 @@ export class ModulesV2Element extends AppElementBase {
         }, 1000);
       }
     }
+
+    this.moduleLoadPromise_ = null;
   }
 
   private initModuleWrapperConstructor_() {
@@ -441,17 +418,8 @@ export class ModulesV2Element extends AppElementBase {
                                          TemplateInstanceBase & HTMLElement;
   }
 
-  /**
-   * Records initial load metrics and dispatches the `modules-loaded` event.
-   * @param modules The list of loaded `Module` objects.
-   * @param modulesIdNames The list of `ModuleIdName` objects, each containing
-   *     the ID and name of an available NTP module (regardless of
-   *     enabled/disabled state).
-   */
-  private onInitialLoadDone_(
+  private recordInitialLoadMetrics_(
       modules: Module[], modulesIdNames: ModuleIdName[]) {
-    this.modulesLoaded_ = true;
-
     chrome.metricsPrivate.recordSmallCount(
         'NewTabPage.Modules.LoadedModulesCount', modules.length);
     modulesIdNames.forEach(({id}) => {
@@ -467,17 +435,6 @@ export class ModulesV2Element extends AppElementBase {
     this.recordModuleLoadedWithModules_(/*onNtpLoad=*/ true);
 
     this.dispatchEvent(new Event('modules-loaded'));
-  }
-
-  /**
-   * Records metrics for module container loads occurring after the initial
-   * load.
-   */
-  private onReloadDone_() {
-    chrome.metricsPrivate.recordSmallCount(
-        'NewTabPage.Modules.ReloadedModulesCount',
-        this.templateInstances_.length);
-    this.recordModuleLoadedWithModules_(/*onNtpLoad=*/ false);
   }
 
   private recordModuleLoadedWithModules_(onNtpLoad: boolean) {
@@ -540,7 +497,10 @@ export class ModulesV2Element extends AppElementBase {
     this.$.container.replaceChildren(
         ...this.templateInstances_.map(t => t.children[0] as HTMLElement));
 
-    this.onReloadDone_();
+    chrome.metricsPrivate.recordSmallCount(
+        'NewTabPage.Modules.ReloadedModulesCount',
+        this.templateInstances_.length);
+    this.recordModuleLoadedWithModules_(/*onNtpLoad=*/ false);
   }
 
   private forwardHostProp_(property: string, value: any) {

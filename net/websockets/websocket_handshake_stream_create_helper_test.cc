@@ -177,7 +177,9 @@ class MockClientSocketHandleFactory {
         scoped_refptr<ClientSocketPool::SocketParams>(),
         std::nullopt /* proxy_annotation_tag */, MEDIUM, SocketTag(),
         ClientSocketPool::RespectLimits::ENABLED, CompletionOnceCallback(),
-        ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+        ClientSocketPool::ProxyAuthCallback(),
+        /*fail_if_alias_requires_proxy_override=*/false, &pool_,
+        NetLogWithSource());
     return socket_handle;
   }
 

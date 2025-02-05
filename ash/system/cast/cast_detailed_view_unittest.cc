@@ -101,7 +101,7 @@ TEST_F(CastDetailedViewTest, ViewsCreatedForCastDevices) {
 
   for (views::View* view : GetDeviceViews()) {
     // Device views are children of the rounded container.
-    EXPECT_STREQ(view->parent()->GetClassName(), "RoundedContainer");
+    EXPECT_EQ(view->parent()->GetClassName(), "RoundedContainer");
 
     // Device views don't have a "stop casting" button by default.
     ASSERT_TRUE(views::IsViewClass<HoverHighlightView>(view));

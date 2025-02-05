@@ -1720,8 +1720,8 @@ void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
     if (target_index == current_item_index &&
         old_relative_position != drag_view_relative_to_ideal_bounds_) {
       AnimateToIdealBounds();
-      NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                               true /* send_native_event */);
+      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                         true /* send_native_event */);
     }
   }
 
@@ -2470,8 +2470,8 @@ void ShelfView::ShelfItemMoved(int start_index, int target_index) {
 
   // Reorder the child view to be in the same order as in the |view_model_|.
   ReorderChildView(view_model_->view_at(target_index), target_index);
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                           true /* send_native_event */);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                     true /* send_native_event */);
 
   AnimateToIdealBounds();
 }

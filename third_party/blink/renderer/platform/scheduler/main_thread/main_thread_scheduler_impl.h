@@ -92,9 +92,19 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       public RenderWidgetSignals::Observer,
       public base::trace_event::TraceLog::AsyncEnabledStateObserver {
  public:
-  // Duration before rendering is considered starved by render-blocking tasks,
-  // which is a safeguard against pathological cases for render-blocking image
-  // prioritization.
+  // Duration after which rendering is considered starved, in which case the
+  // compositor task queues will have an increased priority until the next
+  // BeginMainFrame. This excludes `UseCase::kCompositorGesture` (see
+  // `kThreadedScrollPreventRenderingStarvation). Note that the elevated
+  // priority is lower than that of render-blocking tasks, and a separate higher
+  // threshold is used to prevent starvation by those tasks (see
+  // `kRenderBlockingStarvationThreshold`).
+  static constexpr base::TimeDelta kDefaultRenderingStarvationThreshold =
+      base::Milliseconds(100);
+
+  // Duration after which rendering is considered starved by render-blocking
+  // tasks, which is a safeguard against pathological cases for render-blocking
+  // loading task prioritization.
   static constexpr base::TimeDelta kRenderBlockingStarvationThreshold =
       base::Milliseconds(500);
 
@@ -146,11 +156,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // std::nullopt.
     std::optional<features::TaskDeferralPolicy>
         discrete_input_task_deferral_policy;
-
-    // If we haven't run BeginMainFrame in this many milliseconds, give the next
-    // BeginMainFrame task elevated priority.
-    base::TimeDelta prioritize_compositing_after_delay_pre_fcp;
-    base::TimeDelta prioritize_compositing_after_delay_post_fcp;
   };
 
   static const char* RAILModeToString(RAILMode rail_mode);
@@ -378,7 +383,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   scoped_refptr<MainThreadTaskQueue> ControlTaskQueue();
   scoped_refptr<MainThreadTaskQueue> DefaultTaskQueue();
-  scoped_refptr<MainThreadTaskQueue> CompositorTaskQueue();
   scoped_refptr<MainThreadTaskQueue> V8TaskQueue();
 
   // `current_use_case` will be overwritten by the next call to UpdatePolicy.

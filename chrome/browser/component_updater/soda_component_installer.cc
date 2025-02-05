@@ -251,7 +251,6 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
 void RegisterSodaLanguageComponent(
     ComponentUpdateService* cus,
     const std::string& language,
-    PrefService* global_prefs,
     OnSodaLanguagePackComponentReadyCallback on_ready_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -259,7 +258,7 @@ void RegisterSodaLanguageComponent(
     std::optional<speech::SodaLanguagePackComponentConfig> config =
         speech::GetLanguageComponentConfig(language);
     if (config) {
-      RegisterSodaLanguagePackComponent(config.value(), cus, global_prefs,
+      RegisterSodaLanguagePackComponent(config.value(), cus,
                                         std::move(on_ready_callback));
     }
   }

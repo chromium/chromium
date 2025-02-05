@@ -23,7 +23,6 @@
 #include "services/device/public/mojom/device_service.mojom.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
-#include "services/device/public/mojom/geolocation_config.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
@@ -168,8 +167,6 @@ class DeviceService : public mojom::DeviceService {
   // mojom::DeviceService implementation:
   void BindFingerprint(
       mojo::PendingReceiver<mojom::Fingerprint> receiver) override;
-  void BindGeolocationConfig(
-      mojo::PendingReceiver<mojom::GeolocationConfig> receiver) override;
   void BindGeolocationContext(
       mojo::PendingReceiver<mojom::GeolocationContext> receiver) override;
   void BindGeolocationControl(

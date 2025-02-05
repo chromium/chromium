@@ -20,6 +20,7 @@
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/message_box.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
@@ -88,6 +89,10 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
       case DialogStyle::kEnterprise:
         return chromeos::kEnterpriseIcon;
     }
+  }
+
+  const ui::ImageModel GetDialogIcon() const {
+    return ui::ImageModel::FromVectorIcon(GetIcon());
   }
 
   std::unique_ptr<MessageBox> message_box_;
@@ -171,12 +176,24 @@ void It2MeConfirmationDialogChromeOS::OnConfirmationNotificationResult(
 
 void It2MeConfirmationDialogChromeOS::ShowConfirmationDialog(
     const std::string& remote_user_email) {
-  // TODO(b:390164552): Implement modal logic using MessageBox.
+  message_box_ = std::make_unique<MessageBox>(
+      /*title=*/GetTitle(),
+      /*message_label=*/FormatMessage(remote_user_email, style_),
+      /*ok_button_label=*/GetConfirmButtonLabel(),
+      /*cancel_button_label=*/GetDeclineButtonLabel(),
+      /*icon=*/GetDialogIcon(),
+      /*callback=*/
+      base::BindOnce(
+          &It2MeConfirmationDialogChromeOS::OnConfirmationDialogResult,
+          base::Unretained(this)));
+
+  message_box_->Show();
 }
 
 void It2MeConfirmationDialogChromeOS::OnConfirmationDialogResult(
     MessageBox::Result result) {
-  // TODO(b:390164552): Implement handling MessageBox callback.
+  std::move(callback_).Run(result == MessageBox::Result::OK ? Result::OK
+                                                            : Result::CANCEL);
 }
 
 std::unique_ptr<It2MeConfirmationDialog>

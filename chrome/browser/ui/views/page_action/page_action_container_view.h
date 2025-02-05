@@ -53,7 +53,13 @@ class PageActionContainerView : public views::BoxLayoutView {
   std::list<base::CallbackListSubscription>
       page_action_views_visible_subscriptions_;
 
-  const int between_icon_spacing_ = 0;
+  const int between_icon_spacing_;
+
+  // If set to true, `PageActionContainer` will insert a right inset to ensure
+  // consistent spacing between migrated and legacy page action icons.
+  // TODO(crbug.com/384969003): After the page actions migration, this right
+  // spacing will no longer be needed.
+  const bool should_bridge_containers_;
 };
 
 }  // namespace page_actions

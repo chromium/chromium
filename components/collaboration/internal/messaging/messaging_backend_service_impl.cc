@@ -1378,6 +1378,23 @@ MessagingBackendServiceImpl::ConvertMessageToPersistentMessages(
     const std::optional<PersistentNotificationType>& type,
     bool allow_dirty_tab_group_message) {
   std::vector<PersistentMessage> persistent_messages;
+  std::optional<tab_groups::SavedTabGroup> tab_group =
+      GetTabGroupFromMessage(message);
+
+  // Special case: First handle if it's of type DIRTY_TAB_GROUP_REMOVED.
+  bool has_tab_group_removed =
+      message.dirty() & static_cast<int>(DirtyType::kTabGroupRemoved);
+  bool looking_for_tab_group_removed =
+      lookup_dirty_type == DirtyType::kAll ||
+      lookup_dirty_type == DirtyType::kTabGroupRemoved;
+  if (has_tab_group_removed && looking_for_tab_group_removed) {
+    persistent_messages.push_back(CreatePersistentMessage(
+        message, tab_group, std::nullopt,
+        PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED));
+    return persistent_messages;
+  }
+
+  // Rest of the persistent messages must be related to tabs.
   if (GetMessageCategory(message) != MessageCategory::kTab) {
     return persistent_messages;
   }
@@ -1389,11 +1406,6 @@ MessagingBackendServiceImpl::ConvertMessageToPersistentMessages(
   bool has_dirty_dot = message.dirty() & static_cast<int>(DirtyType::kDot);
   bool looking_for_dirty_dot = lookup_dirty_type == DirtyType::kAll ||
                                lookup_dirty_type == DirtyType::kDot;
-  bool has_tab_group_removed =
-      message.dirty() & static_cast<int>(DirtyType::kTabGroupRemoved);
-  bool looking_for_tab_group_removed =
-      lookup_dirty_type == DirtyType::kAll ||
-      lookup_dirty_type == DirtyType::kTabGroupRemoved;
   bool add_dirty_tab_messages =
       !type || *type == PersistentNotificationType::DIRTY_TAB;
   bool add_dirty_tab_group_messages =
@@ -1406,9 +1418,6 @@ MessagingBackendServiceImpl::ConvertMessageToPersistentMessages(
                DirtyType::kDot)
            .empty();
 
-  std::optional<tab_groups::SavedTabGroup> tab_group =
-      GetTabGroupFromMessage(message);
-
   if (has_dirty_chip && looking_for_dirty_chip) {
     persistent_messages.push_back(CreatePersistentMessage(
         message, tab_group, std::nullopt, PersistentNotificationType::CHIP));
@@ -1419,12 +1428,6 @@ MessagingBackendServiceImpl::ConvertMessageToPersistentMessages(
       persistent_messages.push_back(
           CreatePersistentMessage(message, tab_group, std::nullopt,
                                   PersistentNotificationType::DIRTY_TAB));
-    }
-
-    if (has_tab_group_removed && looking_for_tab_group_removed) {
-      persistent_messages.push_back(CreatePersistentMessage(
-          message, tab_group, std::nullopt,
-          PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED));
     }
 
     if (add_dirty_tab_group_messages && has_dirty_tab_messages_in_group) {

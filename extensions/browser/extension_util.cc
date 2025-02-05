@@ -51,8 +51,9 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
-  if (extension->id() != extension_misc::kSigninProfileTestExtensionId)
+  if (extension->id() != extension_misc::kSigninProfileTestExtensionId) {
     return false;
+  }
   base::SysInfo::CrashIfChromeOSNonTestImage();
   return true;
 }
@@ -72,17 +73,21 @@ bool IsIncognitoEnabled(const ExtensionId& extension_id,
       ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
           extension_id);
   if (extension) {
-    if (!CanBeIncognitoEnabled(extension))
+    if (!CanBeIncognitoEnabled(extension)) {
       return false;
+    }
     // If this is an existing component extension we always allow it to
     // work in incognito mode.
-    if (Manifest::IsComponentLocation(extension->location()))
+    if (Manifest::IsComponentLocation(extension->location())) {
       return true;
-    if (extension->is_login_screen_extension())
+    }
+    if (extension->is_login_screen_extension()) {
       return true;
+    }
 #if BUILDFLAG(IS_CHROMEOS)
-    if (IsSigninProfileTestExtensionOnTestImage(extension))
+    if (IsSigninProfileTestExtensionOnTestImage(extension)) {
       return true;
+    }
 #endif
   }
 #if BUILDFLAG(IS_CHROMEOS)
@@ -180,8 +185,9 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
                            base::FilePath* file_path) {
   // Check that the URL is recognized by the extension system.
   const Extension* extension = extensions->GetExtensionOrAppByURL(file_url);
-  if (!extension)
+  if (!extension) {
     return false;
+  }
 
   // This is a short-cut which avoids calling a blocking file operation
   // (GetFilePath()), so that this can be called on the non blocking threads. It
@@ -206,11 +212,13 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
     SharedModuleInfo::ParseImportedPath(path, &new_extension_id,
                                         &new_relative_path);
     const Extension* new_extension = extensions->GetByID(new_extension_id);
-    if (!new_extension)
+    if (!new_extension) {
       return false;
+    }
 
-    if (!SharedModuleInfo::ImportsExtensionById(extension, new_extension_id))
+    if (!SharedModuleInfo::ImportsExtensionById(extension, new_extension_id)) {
       return false;
+    }
 
     resource = new_extension->GetResource(new_relative_path);
   } else {
@@ -218,13 +226,15 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
     resource = extension->GetResource(path);
   }
 
-  if (resource.empty())
+  if (resource.empty()) {
     return false;
+  }
 
   // GetFilePath is a blocking function call.
   const base::FilePath resource_file_path = resource.GetFilePath();
-  if (resource_file_path.empty())
+  if (resource_file_path.empty()) {
     return false;
+  }
 
   *file_path = resource_file_path;
   return true;
@@ -270,8 +280,9 @@ int GetBrowserContextId(content::BrowserContext* context) {
 bool IsExtensionVisibleToContext(const Extension& extension,
                                  content::BrowserContext* browser_context) {
   // Renderers don't need to know about themes.
-  if (extension.is_theme())
+  if (extension.is_theme()) {
     return false;
+  }
 
   // Only extensions enabled in incognito mode should be loaded in an incognito
   // renderer. However extensions which can't be enabled in the incognito mode
@@ -308,20 +319,23 @@ const gfx::ImageSkia& GetDefaultExtensionIcon() {
 ExtensionId GetExtensionIdForSiteInstance(
     content::SiteInstance& site_instance) {
   // <webview> guests always store the ExtensionId in the partition domain.
-  if (site_instance.IsGuest())
+  if (site_instance.IsGuest()) {
     return site_instance.GetStoragePartitionConfig().partition_domain();
+  }
 
   // This works for both apps and extensions because the site has been
   // normalized to the extension URL for hosted apps.
   const GURL& site_url = site_instance.GetSiteURL();
-  if (!site_url.SchemeIs(kExtensionScheme))
+  if (!site_url.SchemeIs(kExtensionScheme)) {
     return ExtensionId();
+  }
 
   // Navigating to a disabled (or uninstalled or not-yet-installed) extension
   // will set the site URL to chrome-extension://invalid.
   ExtensionId maybe_extension_id = site_url.host();
-  if (maybe_extension_id == "invalid")
+  if (maybe_extension_id == "invalid") {
     return ExtensionId();
+  }
 
   // Otherwise,`site_url.host()` should always be a valid extension id.  In
   // particular, navigations should never commit a URL that uses a dynamic,
@@ -335,8 +349,9 @@ ExtensionId GetExtensionIdForSiteInstance(
 std::string GetExtensionIdFromFrame(
     content::RenderFrameHost* render_frame_host) {
   const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();
-  if (!site.SchemeIs(kExtensionScheme))
+  if (!site.SchemeIs(kExtensionScheme)) {
     return std::string();
+  }
 
   return site.host();
 }

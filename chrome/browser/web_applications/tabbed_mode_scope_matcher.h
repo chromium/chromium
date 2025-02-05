@@ -27,7 +27,7 @@ class TabbedModeScopeMatcher {
   TabbedModeScopeMatcher(const TabbedModeScopeMatcher&) = delete;
   TabbedModeScopeMatcher& operator=(const TabbedModeScopeMatcher&) = delete;
 
-  bool Match(const GURL& url);
+  bool Match(const GURL& url) const;
 
  private:
   // A compiled RE2::Set to match protocol members, or nullopt if there is no

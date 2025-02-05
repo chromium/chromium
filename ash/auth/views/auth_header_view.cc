@@ -141,8 +141,9 @@ void AuthHeaderView::SetErrorTitle(const std::u16string& error_str) {
   title_label_->SetEnabledColorId(kTitleErrorColorId);
   NotifyTitleChanged(error_str);
   title_label_->GetViewAccessibility().SetName(error_str);
-  title_label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
-                                         /*send_native_event=*/true);
+  title_label_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kTextChanged,
+      /*send_native_event=*/true);
   title_label_->GetViewAccessibility().AnnounceText(error_str);
 }
 

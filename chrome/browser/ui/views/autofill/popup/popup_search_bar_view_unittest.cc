@@ -77,8 +77,7 @@ TEST_F(PopupSearchBarViewTest, SetsFocusOnTextfield) {
 
   views::View* focused_field = widget().GetFocusManager()->GetFocusedView();
   ASSERT_NE(focused_field, nullptr);
-  EXPECT_EQ(focused_field->GetClassMetaData()->type_name(),
-            std::string("Textfield"));
+  EXPECT_EQ(focused_field->GetClassName(), "Textfield");
 }
 
 TEST_F(PopupSearchBarViewTest, OnFocusLostCalled) {

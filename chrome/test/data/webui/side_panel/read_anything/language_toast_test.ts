@@ -20,6 +20,7 @@ suite('LanguageToast', () => {
   }
 
   setup(() => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     toast = document.createElement('language-toast');
     document.body.appendChild(toast);

@@ -106,8 +106,10 @@ bool IsProductSpecificationsQualityLoggingAllowed(PrefService* prefs) {
 }
 
 bool IsSyncingProductSpecifications(AccountChecker* account_checker) {
-  return account_checker && account_checker->IsSyncTypeEnabled(
-                                syncer::UserSelectableType::kProductComparison);
+  return account_checker &&
+         account_checker->IsSyncTypeEnabled(
+             syncer::UserSelectableType::kProductComparison) &&
+         account_checker->IsSyncAvailable();
 }
 
 bool CanLoadProductSpecificationsFullPageUi(AccountChecker* account_checker) {

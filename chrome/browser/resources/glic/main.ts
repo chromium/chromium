@@ -15,6 +15,14 @@ import {GlicAppController} from './glic_app_controller.js';
 
 const appController = new GlicAppController();
 
+declare global {
+  interface Window {
+    // For testing access.
+    appController: GlicAppController;
+  }
+}
+window.appController = appController;
+
 window.addEventListener('load', () => {
   // Allow WebUI close buttons to close the window.
   const buttons = document.querySelectorAll('.close-button');

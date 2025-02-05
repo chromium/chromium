@@ -95,27 +95,15 @@ TEST_F(PageActionContainerViewTest, NonEmptyViewWithNoVisiblePageAction) {
             page_action_container->GetInsideBorderInsets());
 }
 
-TEST_F(PageActionContainerViewTest, NonEmptyViewWithVisiblePageAction) {
-  actions::ActionItem* action_item1 = actions::ActionManager::Get().AddAction(
-      actions::ActionItem::Builder()
-          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowIcon,
-                                                   ui::kColorSysPrimary,
-                                                   /*icon_size=*/16))
-          .SetVisible(false)
-          .SetActionId(0)
-          .Build());
-  actions::ActionItem* action_item2 = actions::ActionManager::Get().AddAction(
-      actions::ActionItem::Builder()
-          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowIcon,
-                                                   ui::kColorSysPrimary,
-                                                   /*icon_size=*/16))
-          .SetVisible(true)
-          .SetActionId(1)
-          .Build());
+TEST_F(PageActionContainerViewTest,
+       NonEmptyViewWithVisiblePageActionWithBridging) {
+  auto action_item1 =
+      actions::ActionItem::Builder().SetVisible(false).SetActionId(0).Build();
 
+  PageActionViewParams params = DefaultViewParams();
+  params.should_bridge_containers = true;
   auto page_action_container = std::make_unique<PageActionContainerView>(
-      std::vector<actions::ActionItem*>{action_item1, action_item2},
-      DefaultViewParams());
+      std::vector<actions::ActionItem*>{action_item1.get()}, params);
 
   // Because no model exist, no page action will be visible.
   EXPECT_EQ(gfx::Insets().set_right(0),
@@ -127,5 +115,21 @@ TEST_F(PageActionContainerViewTest, NonEmptyViewWithVisiblePageAction) {
             page_action_container->GetInsideBorderInsets());
 }
 
+TEST_F(PageActionContainerViewTest,
+       NonEmptyViewWithVisiblePageActionWithoutBridging) {
+  auto action_item1 =
+      actions::ActionItem::Builder().SetVisible(false).SetActionId(0).Build();
+
+  PageActionViewParams params = DefaultViewParams();
+  params.should_bridge_containers = false;
+  auto page_action_container = std::make_unique<PageActionContainerView>(
+      std::vector<actions::ActionItem*>{action_item1.get()}, params);
+
+  EXPECT_EQ(gfx::Insets(), page_action_container->GetInsideBorderInsets());
+
+  page_action_container->GetPageActionView(0)->SetVisible(true);
+
+  EXPECT_EQ(gfx::Insets(), page_action_container->GetInsideBorderInsets());
+}
 }  // namespace
 }  // namespace page_actions

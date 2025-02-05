@@ -384,14 +384,16 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     // hide this API complexity from clients.
     GetA11ySelectionDelegate().NotifyAXSelection(*this);
     GetViewAccessibility().SetIsSelected(true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+    NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;
   } else if (new_cell == CellType::kContent) {
     controller_->SelectSuggestion(line_number_);
     content_view_->UpdateStyle(/*selected=*/highlight_on_select_);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
     content_view_->GetViewAccessibility().SetIsSelected(true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+    NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;
   } else {
     // Set the selected cell to none in case an invalid choice was made (e.g.

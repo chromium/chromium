@@ -3497,8 +3497,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
 }
 
 // Home tab can't be detached.
-// TODO(crbug.com/40245163): Enable this test for Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/40245163): Enable this test for Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CantDragHomeTab DISABLED_CantDragHomeTab
 #else
 #define MAYBE_CantDragHomeTab CantDragHomeTab

@@ -68,7 +68,7 @@ using ::testing::Return;
 using ::testing::SetArgReferee;
 using ::testing::StrictMock;
 
-base::File OpenTestFile(base::FilePath::StringPieceType file_name) {
+base::File OpenTestFile(base::FilePath::StringViewType file_name) {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path))
     return base::File();

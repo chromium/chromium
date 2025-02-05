@@ -361,7 +361,8 @@ void QuickInsertSearchResultsView::UpdateAccessibleName() {
     return;
   }
   GetViewAccessibility().SetName(std::move(accessible_name));
-  NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kLiveRegionChanged,
+                                     true);
 }
 
 BEGIN_METADATA(QuickInsertSearchResultsView)

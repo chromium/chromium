@@ -567,7 +567,7 @@ void ZoomBubbleView::UpdateZoomPercent() {
   label_->SetText(base::FormatPercent(
       zoom::ZoomController::FromWebContents(web_contents())->GetZoomPercent()));
   label_->GetViewAccessibility().SetName(GetAccessibleWindowTitle());
-  label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 
   // Disable buttons at min, max and default
   auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents());

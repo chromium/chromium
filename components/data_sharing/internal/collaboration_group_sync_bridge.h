@@ -39,6 +39,8 @@ class CollaborationGroupSyncBridge : public syncer::DataTypeSyncBridge {
         const std::vector<GroupId>& updated_group_ids,
         const std::vector<GroupId>& deleted_group_ids) = 0;
     virtual void OnCollaborationGroupSyncDataLoaded() = 0;
+    virtual void OnSyncBridgeUpdateTypeChanged(
+        SyncBridgeUpdateType sync_bridge_update_type) = 0;
   };
 
   CollaborationGroupSyncBridge(

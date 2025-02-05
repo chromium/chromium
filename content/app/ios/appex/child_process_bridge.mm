@@ -57,6 +57,18 @@ extern "C" IOS_INIT_EXPORT void ChildProcessHandleNewConnection(
       g_argv[i] = strdup(xpc_array_get_string(args_array, i));
     }
 
+    // Setup stdout/stderr.
+    int fd = xpc_dictionary_dup_fd(msg, "stdout");
+    if (fd != -1) {
+      dup2(fd, STDOUT_FILENO);
+      close(fd);
+    }
+    fd = xpc_dictionary_dup_fd(msg, "stderr");
+    if (fd != -1) {
+      dup2(fd, STDERR_FILENO);
+      close(fd);
+    }
+
     mach_port_t port = xpc_dictionary_copy_mach_send(msg, "port");
     base::apple::ScopedMachSendRight server_port(port);
     bool res =

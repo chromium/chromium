@@ -495,7 +495,8 @@ void OmniboxPopupViewViews::OnGestureEvent(ui::GestureEvent* event) {
 void OmniboxPopupViewViews::FireAXEventsForNewActiveDescendant(
     View* descendant_view) {
   // Selected children changed is fired on the popup.
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelectedChildrenChanged,
+                                     true);
 }
 
 void OmniboxPopupViewViews::OnWidgetBoundsChanged(views::Widget* widget,

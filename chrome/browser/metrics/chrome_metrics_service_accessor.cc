@@ -78,9 +78,9 @@ void ChromeMetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(
 
 #if BUILDFLAG(ENABLE_PPAPI)
 // static
-void ChromeMetricsServiceAccessor::BindMetricsServiceReceiver(
-    mojo::PendingReceiver<chrome::mojom::MetricsService> receiver) {
-  class Thunk : public chrome::mojom::MetricsService {
+void ChromeMetricsServiceAccessor::BindPpapiMetricsServiceReceiver(
+    mojo::PendingReceiver<chrome::mojom::PpapiMetricsService> receiver) {
+  class Thunk : public chrome::mojom::PpapiMetricsService {
    public:
     void IsMetricsAndCrashReportingEnabled(
         base::OnceCallback<void(bool)> callback) override {

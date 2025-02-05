@@ -79,7 +79,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   // 'transform' has been applied but without zoom-adjustment).
   gfx::RectF viewport_;
 
-  // Override of LayoutBox::frame_rect_.location_.
+  // Override of LayoutBox::frame_location_.
   // A physical fragment for <foreignObject> doesn't have the owner
   // PhysicalFragmentLink.
   LayoutPoint overridden_location_;

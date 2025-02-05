@@ -692,8 +692,8 @@ void ChromeContentBrowserClient::BindHostReceiverForRenderer(
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 #if BUILDFLAG(ENABLE_PPAPI)
-  if (auto host_receiver = receiver.As<chrome::mojom::MetricsService>()) {
-    ChromeMetricsServiceAccessor::BindMetricsServiceReceiver(
+  if (auto host_receiver = receiver.As<chrome::mojom::PpapiMetricsService>()) {
+    ChromeMetricsServiceAccessor::BindPpapiMetricsServiceReceiver(
         std::move(host_receiver));
   }
 #endif  // BUILDFLAG(ENABLE_PPAPI)

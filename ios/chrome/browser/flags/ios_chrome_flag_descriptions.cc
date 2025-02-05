@@ -705,6 +705,11 @@ const char kLensFiltersAblationModeEnabledName[] =
 const char kLensFiltersAblationModeEnabledDescription[] =
     "Enables the filters ablation mode.";
 
+const char kLensGestureTextSelectionDisabledName[] =
+    "Disable Lens gesture text selection";
+const char kLensGestureTextSelectionDisabledDescription[] =
+    "When disabled, turns off gesture text selection.";
+
 const char kLensInkMultiSampleModeDisabledName[] =
     "Disable Lens Ink multi-sample mode";
 const char kLensInkMultiSampleModeDisabledDescription[] =

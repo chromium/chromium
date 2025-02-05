@@ -603,8 +603,8 @@ TEST_F(CalendarViewTest, HeaderFocusing) {
 
   auto* focus_manager = calendar_view()->GetFocusManager();
   // Todays DateCellView should be focused on open.
-  EXPECT_STREQ(focus_manager->GetFocusedView()->GetClassName(),
-               "CalendarDateCellView");
+  EXPECT_EQ(focus_manager->GetFocusedView()->GetClassName(),
+            "CalendarDateCellView");
   EXPECT_EQ(
       static_cast<const views::LabelButton*>(focus_manager->GetFocusedView())
           ->GetText(),
@@ -884,7 +884,7 @@ TEST_F(CalendarViewTest, FocusAfterClosingEventListView) {
             close_button());
 
   PressEnter();
-  EXPECT_STREQ(
+  EXPECT_EQ(
       calendar_view()->GetFocusManager()->GetFocusedView()->GetClassName(),
       "CalendarDateCellView");
 }
@@ -1378,7 +1378,6 @@ TEST_F(CalendarViewTest, AdminDisabledTest) {
 
   auto* focus_manager = calendar_view()->GetFocusManager();
   // Todays `DateCellView` should be focused on open.
-  ASSERT_TRUE(focus_manager->GetFocusedView()->GetClassName());
   ASSERT_TRUE(focus_manager->GetFocusedView());
 
   // Moves to the next focusable view - managed icon button.

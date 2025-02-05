@@ -103,8 +103,9 @@ bool EventListener::Equals(const EventListener* other) const {
 
 std::unique_ptr<EventListener> EventListener::Copy() const {
   std::optional<base::Value::Dict> filter_copy;
-  if (filter_)
+  if (filter_) {
     filter_copy = filter_->Clone();
+  }
   return base::WrapUnique(new EventListener(
       event_name_, extension_id_, listener_url_, process_, browser_context_,
       is_for_service_worker_, service_worker_version_id_, worker_thread_id_,
@@ -157,8 +158,9 @@ EventListenerMap::EventListenerMap(Delegate* delegate)
 EventListenerMap::~EventListenerMap() = default;
 
 bool EventListenerMap::AddListener(std::unique_ptr<EventListener> listener) {
-  if (HasListener(listener.get()))
+  if (HasListener(listener.get())) {
     return false;
+  }
   if (listener->filter()) {
     std::unique_ptr<EventMatcher> matcher(
         ParseEventMatcher(*listener->filter()));
@@ -185,8 +187,9 @@ std::unique_ptr<EventMatcher> EventListenerMap::ParseEventMatcher(
 
 bool EventListenerMap::RemoveListener(const EventListener* listener) {
   auto listener_itr = listeners_.find(listener->event_name());
-  if (listener_itr == listeners_.end())
+  if (listener_itr == listeners_.end()) {
     return false;
+  }
   ListenerList& listeners = listener_itr->second;
   for (auto& it : listeners) {
     if (it->Equals(listener)) {
@@ -194,8 +197,9 @@ bool EventListenerMap::RemoveListener(const EventListener* listener) {
       // Popping from the back should be cheaper than erase(it).
       std::swap(it, listeners.back());
       listeners.pop_back();
-      if (listeners.empty())
+      if (listeners.empty()) {
         listeners_.erase(listener_itr);
+      }
       delegate_->OnListenerRemoved(listener);
       return true;
     }
@@ -213,12 +217,14 @@ bool EventListenerMap::HasListenerForExtension(
     const ExtensionId& extension_id,
     const std::string& event_name) const {
   auto it = listeners_.find(event_name);
-  if (it == listeners_.end())
+  if (it == listeners_.end()) {
     return false;
+  }
 
   for (const auto& listener_to_search : it->second) {
-    if (listener_to_search->extension_id() == extension_id)
+    if (listener_to_search->extension_id() == extension_id) {
       return true;
+    }
   }
   return false;
 }
@@ -226,24 +232,28 @@ bool EventListenerMap::HasListenerForExtension(
 bool EventListenerMap::HasListenerForURL(const GURL& url,
                                          const std::string& event_name) const {
   auto it = listeners_.find(event_name);
-  if (it == listeners_.end())
+  if (it == listeners_.end()) {
     return false;
+  }
 
   for (const auto& listener_to_search : it->second) {
-    if (url::IsSameOriginWith(listener_to_search->listener_url(), url))
+    if (url::IsSameOriginWith(listener_to_search->listener_url(), url)) {
       return true;
+    }
   }
   return false;
 }
 
 bool EventListenerMap::HasListener(const EventListener* listener) const {
   auto it = listeners_.find(listener->event_name());
-  if (it == listeners_.end())
+  if (it == listeners_.end()) {
     return false;
+  }
 
   for (const auto& listener_to_search : it->second) {
-    if (listener_to_search->Equals(listener))
+    if (listener_to_search->Equals(listener)) {
       return true;
+    }
   }
   return false;
 }
@@ -323,11 +333,13 @@ void EventListenerMap::LoadFilteredLazyListeners(
     const base::Value::Dict& filtered) {
   for (const auto item : filtered) {
     // We skip entries if they are malformed.
-    if (!item.second.is_list())
+    if (!item.second.is_list()) {
       continue;
+    }
     for (const base::Value& filter_value : item.second.GetList()) {
-      if (!filter_value.is_dict())
+      if (!filter_value.is_dict()) {
         continue;
+      }
       const base::Value::Dict& filter = filter_value.GetDict();
       AddListener(EventListener::CreateLazyListener(
           item.first, extension_id, browser_context, is_for_service_worker,
@@ -376,10 +388,11 @@ void EventListenerMap::RemoveListenersForProcess(
     }
     // Check if we removed all the listeners from the list. If so,
     // remove the list entry entirely.
-    if (listener_list.empty())
+    if (listener_list.empty()) {
       it = listeners_.erase(it);
-    else
+    } else {
       ++it;
+    }
   }
 }
 
@@ -411,13 +424,15 @@ void EventListenerMap::RemoveListenersForExtensionImpl(
 
 void EventListenerMap::CleanupListener(EventListener* listener) {
   // If the listener doesn't have a filter then we have nothing to clean up.
-  if (listener->matcher_id() == -1)
+  if (listener->matcher_id() == -1) {
     return;
+  }
   // If we're removing the final listener for an event, we can remove the
   // entry from |filtered_events_|, as well.
   auto iter = listeners_.find(listener->event_name());
-  if (iter->second.size() == 1)
+  if (iter->second.size() == 1) {
     filtered_events_.erase(iter->first);
+  }
   event_filter_.RemoveEventMatcher(listener->matcher_id());
   CHECK_EQ(1u, listeners_by_matcher_id_.erase(listener->matcher_id()));
 }

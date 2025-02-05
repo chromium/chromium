@@ -69,6 +69,9 @@ class MockDataSharingChangeNotifierObserver
                const GaiaId& member_gaia_id,
                const base::Time& event_time),
               (override));
+  MOCK_METHOD(void,
+              OnSyncBridgeUpdateTypeChanged,
+              (data_sharing::SyncBridgeUpdateType));
 };
 
 class DataSharingChangeNotifierImplTest : public testing::Test {
@@ -234,6 +237,78 @@ TEST_F(DataSharingChangeNotifierImplTest,
 
   // Process any startup changes and make the notifier ready.
   std::move(flush_callback).Run();
+}
+
+TEST_F(DataSharingChangeNotifierImplTest,
+       TestPublishDoesnotHappenDuringInitialMerge) {
+  DataSharingChangeNotifier::FlushCallback flush_callback =
+      InitializeNotifier(/*data_sharing_service_initialized=*/false);
+  EXPECT_CALL(*notifier_observer_, OnDataSharingChangeNotifierInitialized());
+  dss_observer_->OnGroupDataModelLoaded();
+  // Make the notifier ready.
+  std::move(flush_callback).Run();
+
+  data_sharing::GroupId group_id = data_sharing::GroupId("group_id");
+  data_sharing::GroupData group = data_sharing::GroupData();
+  group.group_token.group_id = group_id;
+  GaiaId gaia_id = GaiaId("abc");
+
+  // Lookups need to work while publishing.
+  EXPECT_CALL(*data_sharing_service_, ReadGroup(group_id))
+      .WillRepeatedly(testing::Return(std::nullopt));
+  EXPECT_CALL(*data_sharing_service_, GetPossiblyRemovedGroup(group_id))
+      .WillRepeatedly(
+          testing::Return(std::make_optional<data_sharing::GroupData>(group)));
+
+  // By default, observers should receive sync events.
+  EXPECT_CALL(*notifier_observer_, OnGroupAdded(_, _, _)).Times(1);
+  dss_observer_->OnGroupAdded(group, base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupRemoved(_, _, _)).Times(1);
+  dss_observer_->OnGroupRemoved(group_id, base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupMemberAdded(_, _, _)).Times(1);
+  dss_observer_->OnGroupMemberAdded(group_id, GaiaId(), base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupMemberRemoved(_, _, _)).Times(1);
+  dss_observer_->OnGroupMemberRemoved(group_id, GaiaId(), base::Time());
+  testing::Mock::VerifyAndClearExpectations(dss_observer_);
+
+  // Mimic sign-in. Observers should not receive sync events during this time.
+  dss_observer_->OnSyncBridgeUpdateTypeChanged(
+      data_sharing::SyncBridgeUpdateType::kInitialMerge);
+  EXPECT_CALL(*notifier_observer_, OnGroupAdded(_, _, _)).Times(0);
+  dss_observer_->OnGroupAdded(group, base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupRemoved(_, _, _)).Times(0);
+  dss_observer_->OnGroupRemoved(group_id, base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupMemberAdded(_, _, _)).Times(0);
+  dss_observer_->OnGroupMemberAdded(group_id, GaiaId(), base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupMemberRemoved(_, _, _)).Times(0);
+  dss_observer_->OnGroupMemberRemoved(group_id, GaiaId(), base::Time());
+  testing::Mock::VerifyAndClearExpectations(dss_observer_);
+
+  // Mimic signed-in state. Observers should receive sync events during this
+  // time.
+  dss_observer_->OnSyncBridgeUpdateTypeChanged(
+      data_sharing::SyncBridgeUpdateType::kDefaultState);
+  EXPECT_CALL(*notifier_observer_, OnGroupAdded(_, _, _)).Times(1);
+  dss_observer_->OnGroupAdded(group, base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupRemoved(_, _, _)).Times(1);
+  dss_observer_->OnGroupRemoved(group_id, base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupMemberAdded(_, _, _)).Times(1);
+  dss_observer_->OnGroupMemberAdded(group_id, GaiaId(), base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupMemberRemoved(_, _, _)).Times(1);
+  dss_observer_->OnGroupMemberRemoved(group_id, GaiaId(), base::Time());
+  testing::Mock::VerifyAndClearExpectations(dss_observer_);
+
+  // Mimic sign-out. Observers should not receive sync events during this time.
+  dss_observer_->OnSyncBridgeUpdateTypeChanged(
+      data_sharing::SyncBridgeUpdateType::kDisableSync);
+  EXPECT_CALL(*notifier_observer_, OnGroupAdded(_, _, _)).Times(0);
+  dss_observer_->OnGroupAdded(group, base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupRemoved(_, _, _)).Times(0);
+  dss_observer_->OnGroupRemoved(group_id, base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupMemberAdded(_, _, _)).Times(0);
+  dss_observer_->OnGroupMemberAdded(group_id, GaiaId(), base::Time());
+  EXPECT_CALL(*notifier_observer_, OnGroupMemberRemoved(_, _, _)).Times(0);
+  dss_observer_->OnGroupMemberRemoved(group_id, GaiaId(), base::Time());
 }
 
 }  // namespace collaboration::messaging

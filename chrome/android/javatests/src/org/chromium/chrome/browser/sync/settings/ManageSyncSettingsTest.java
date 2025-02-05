@@ -561,6 +561,7 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @DisabledTest(message = "https://crbug.com/394583571")
     @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
     public void
             testSyncHistoryAndTabsToggle_typeManagedByCustodian_historyOptInEntryPointsEnabled() {

@@ -302,7 +302,8 @@ class TestingWidgetDelegateView : public WidgetDelegateView {
   explicit TestingWidgetDelegateView(base::RunLoop* run_loop)
       : run_loop_(run_loop) {}
   ~TestingWidgetDelegateView() override {
-    NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                       false);
     run_loop_->QuitWhenIdle();
   }
   TestingWidgetDelegateView(const TestingWidgetDelegateView&) = delete;

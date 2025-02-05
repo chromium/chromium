@@ -145,6 +145,7 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
         socks_params, /*proxy_annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+        /*fail_if_alias_requires_proxy_override=*/false,
         network_session_->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                                         ProxyChain::Direct()),
         NetLogWithSource());

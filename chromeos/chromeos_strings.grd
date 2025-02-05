@@ -3560,8 +3560,11 @@
         </message>
 
         <!-- Freeform prompts -->
-        <message name="IDS_SEA_PEN_FREEFORM_WALLPAPER_TEMPLATES_LABEL" desc="Label for the Wallpaper AI templates feature.">
-          AI Wallpapers
+        <message name="IDS_SEA_PEN_FREEFORM_WALLPAPER_LABEL" desc="Label for the Wallpaper AI freeform feature.">
+          Create your own
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATES_WALLPAPER_LABEL" desc="Label for the Wallpaper AI templates feature.">
+          Choose a theme
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_PROMPTS_LABEL" desc="Label for a list of sample prompts, used to help users write prompts to generate AI images.">
           Sample prompts

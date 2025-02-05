@@ -445,7 +445,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
   void CheckMismatchIdp(views::View* idp_row,
                         const std::u16string& expected_idp) {
-    ASSERT_STREQ("HoverButton", idp_row->GetClassName());
+    ASSERT_EQ("HoverButton", idp_row->GetClassName());
     HoverButton* idp_button = static_cast<HoverButton*>(idp_row);
     ASSERT_TRUE(idp_button);
     EXPECT_EQ(GetHoverButtonTitle(idp_button), u"Sign in to " + expected_idp);
@@ -1218,10 +1218,10 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, HoverChangesIdpCircle) {
   std::vector<raw_ptr<views::View, VectorExperimental>> icon_children =
       icon_view->children();
   ASSERT_EQ(icon_children.size(), 2u);
-  EXPECT_STREQ(icon_children[1]->GetClassName(), "BoxLayoutView");
+  EXPECT_EQ(icon_children[1]->GetClassName(), "BoxLayoutView");
   ASSERT_EQ(icon_children[1]->children().size(), 1u);
-  EXPECT_STREQ(icon_children[1]->children()[0]->GetClassName(),
-               "BrandIconImageView");
+  EXPECT_EQ(icon_children[1]->children()[0]->GetClassName(),
+            "BrandIconImageView");
   auto* brand_icon_image_view =
       static_cast<BrandIconImageView*>(icon_children[1]->children()[0]);
   auto* color_provider = account_row->GetColorProvider();

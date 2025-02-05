@@ -183,8 +183,6 @@ class KeyboardAccessoryViewBinder {
             // windows to show more information in a chip before truncating.
             if (containsIbanInfo(item.getSuggestion())
                     || (ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA)
-                            && ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.AUTOFILL_ENABLE_CARD_PRODUCT_NAME)
                             && containsCreditCardInfo(item.getSuggestion()))) {
                 int windowWidth =

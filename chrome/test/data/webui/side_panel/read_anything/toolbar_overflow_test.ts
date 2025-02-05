@@ -4,23 +4,19 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {moreOptionsClass} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 // TODO: b/40275871 - Add more tests.
 suite('ToolbarOverflow', () => {
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let toolbar: ReadAnythingToolbarElement;
 
   setup(() => {
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;

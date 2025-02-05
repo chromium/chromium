@@ -6678,45 +6678,6 @@ const FeatureEntry kFeatureEntries[] = {
          ash::features::kUseMlServiceForNonLongformHandwritingOnAllBoards)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"block-insecure-private-network-requests",
-     flag_descriptions::kBlockInsecurePrivateNetworkRequestsName,
-     flag_descriptions::kBlockInsecurePrivateNetworkRequestsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kBlockInsecurePrivateNetworkRequests)},
-
-    {"private-network-access-respect-preflight-results",
-     flag_descriptions::kPrivateNetworkAccessRespectPreflightResultsName,
-     flag_descriptions::kPrivateNetworkAccessRespectPreflightResultsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         features::kPrivateNetworkAccessRespectPreflightResults)},
-
-    {"private-network-access-preflight-short-timeout",
-     flag_descriptions::kPrivateNetworkAccessPreflightShortTimeoutName,
-     flag_descriptions::kPrivateNetworkAccessPreflightShortTimeoutDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         network::features::kPrivateNetworkAccessPreflightShortTimeout)},
-
-    {"private-network-access-permission-prompt",
-     flag_descriptions::kPrivateNetworkAccessPermissionPromptName,
-     flag_descriptions::kPrivateNetworkAccessPermissionPromptDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         network::features::kPrivateNetworkAccessPermissionPrompt)},
-
-    {"private-network-access-ignore-worker-errors",
-     flag_descriptions::kPrivateNetworkAccessIgnoreWorkerErrorsName,
-     flag_descriptions::kPrivateNetworkAccessIgnoreWorkerErrorsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kPrivateNetworkAccessForWorkersWarningOnly)},
-
-    {"private-network-access-ignore-navigation-errors",
-     flag_descriptions::kPrivateNetworkAccessIgnoreNavigationErrorsName,
-     flag_descriptions::kPrivateNetworkAccessIgnoreNavigationErrorsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         features::kPrivateNetworkAccessForNavigationsWarningOnly)},
-
     {"mbi-mode", flag_descriptions::kMBIModeName,
      flag_descriptions::kMBIModeDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kMBIMode,
@@ -9437,12 +9398,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kEnableExternalKeyboardsInDiagnostics)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"autofill-enable-virtual-card-metadata",
-     flag_descriptions::kAutofillEnableVirtualCardMetadataName,
-     flag_descriptions::kAutofillEnableVirtualCardMetadataDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableVirtualCardMetadata)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"pwa-restore-backend", flag_descriptions::kPwaRestoreBackendName,
      flag_descriptions::kPwaRestoreBackendDescription, kOsAndroid,
@@ -10257,10 +10212,6 @@ const FeatureEntry kFeatureEntries[] = {
          permissions::features::kShowRelatedWebsiteSetsPermissionGrants)},
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"coral-feature-key", flag_descriptions::kCoralFeatureKeyName,
-     flag_descriptions::kCoralFeatureKeyDescription, kOsCrOS,
-     STRING_VALUE_TYPE(ash::switches::kCoralFeatureKey, "")},
-
     {"cros-switcher", flag_descriptions::kCrosSwitcherName,
      flag_descriptions::kCrosSwitcherDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCrosSwitcher)},

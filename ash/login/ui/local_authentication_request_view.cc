@@ -414,8 +414,8 @@ void LocalAuthenticationRequestView::OnAuthComplete(
         LocalAuthenticationRequestViewState::kError, default_title_,
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD));
     ClearInput();
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                             true /*send_native_event*/);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                       true /*send_native_event*/);
     SetInputEnabled(true);
   } else {
     LocalAuthenticationRequestWidget::Get()->Close(true /* success */,

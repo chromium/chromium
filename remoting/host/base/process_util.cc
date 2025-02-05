@@ -74,7 +74,7 @@ base::FilePath GetProcessImagePath(base::ProcessId pid) {
   }
   DCHECK_GT(size, 0u);
   DCHECK_LT(size, buffer.size());
-  return base::FilePath(base::FilePath::StringPieceType(buffer.data(), size));
+  return base::FilePath(base::FilePath::StringViewType(buffer.data(), size));
 #else
   NOTIMPLEMENTED();
   return base::FilePath();

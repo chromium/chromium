@@ -661,7 +661,8 @@ void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
       // virtual view.
       alert_virtual_view_->GetCustomData().role = ax::mojom::Role::kAlert;
       alert_virtual_view_->GetCustomData().SetNameChecked(label);
-      alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert);
+      alert_virtual_view_->NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kAlert);
     }
     label()->SetVisible(true);
     ShowAnimation();
@@ -672,7 +673,8 @@ void IconLabelBubbleView::AnimateOut() {
   if (label()->GetVisible()) {
     label()->SetVisible(false);
     alert_virtual_view_->GetCustomData().AddState(ax::mojom::State::kInvisible);
-    alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kHide);
+    alert_virtual_view_->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kHide);
     HideAnimation();
   }
 }

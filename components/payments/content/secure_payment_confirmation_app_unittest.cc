@@ -19,6 +19,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
+#include "components/payments/content/browser_binding/passkey_browser_binder.h"
+#include "components/payments/content/mock_payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/method_strings.h"
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
@@ -40,11 +42,14 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Optional;
 using ::testing::Property;
+using ::testing::Return;
+using ::testing::SaveArg;
 
 #if BUILDFLAG(IS_ANDROID)
 static constexpr char kAlgorithmIdentifier = 1;
@@ -148,7 +153,7 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
       web_contents_, "effective_rp.example", payment_instrument_label_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
-      /*browser_bound_key_id=*/std::nullopt,
+      /*passkey_browser_binder=*/nullptr,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/SkBitmap(),
@@ -246,16 +251,27 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
   FakeBrowserBoundKey browser_bound_key(public_key_as_cose_key, signature,
                                         GetParam().algorithm_identifier,
                                         client_data_json);
+  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
+      base::MakeRefCounted<MockPaymentManifestWebDataService>();
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
-      browser_bound_key_id,
+      std::make_unique<PasskeyBrowserBinder>(MakeFakeBrowserBoundKeyStore(),
+                                             mock_service),
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(GetParam().credential_parameters), std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/SkBitmap(),
       /*issuer_label=*/u"", /*issuer_icon=*/SkBitmap());
-  app.SetBrowserBoundKeyStoreForTesting(MakeFakeBrowserBoundKeyStore());
-  browser_bound_key_store_->PutFakeKey(browser_bound_key_id, browser_bound_key);
+  browser_bound_key_store_->PutFakeKey(
+      browser_bound_key_id,
+      FakeBrowserBoundKey(public_key_as_cose_key, signature,
+                          GetParam().algorithm_identifier, client_data_json));
+  WebDataServiceConsumer* web_data_service_consumer = nullptr;
+  WebDataServiceBase::Handle web_data_service_handle = 1234;
+  EXPECT_CALL(*mock_service, GetBrowserBoundKey(Eq(credential_id),
+                                                Eq("effective_rp.example"), _))
+      .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
+                      Return(web_data_service_handle)));
 
   EXPECT_CALL(
       *mock_authenticator,
@@ -282,6 +298,14 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
                                     /*dom_exception_details=*/nullptr);
           });
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+
+  // Simulate the retrieval of an existing browser bound key.
+  ASSERT_TRUE(web_data_service_consumer);
+  web_data_service_consumer->OnWebDataServiceRequestDone(
+      web_data_service_handle,
+      std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
+          WDResultType::BROWSER_BOUND_KEY, browser_bound_key_id));
+
   ASSERT_TRUE(on_instrument_details_ready_called_);
   mojom::PaymentResponsePtr payment_response =
       app.SetAppSpecificResponseFields(mojom::PaymentResponse::New());
@@ -312,7 +336,7 @@ TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
       web_contents_, "effective_rp.example", payment_instrument_label_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
-      /*browser_bound_key_id=*/std::nullopt,
+      /*passkey_browser_binder=*/nullptr,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/SkBitmap(),

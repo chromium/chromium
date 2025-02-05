@@ -772,8 +772,7 @@ TEST_F(KeyCommandsProviderTest, AddToBookmarks_AddURL) {
   id addCommand = [OCMArg checkWithBlock:^BOOL(URLWithTitle* URL) {
     return URL.URL == url;
   }];
-  OCMExpect(
-      [provider_.bookmarksHandler createOrEditBookmarkWithURL:addCommand]);
+  OCMExpect([provider_.bookmarksHandler addOrEditBookmark:addCommand]);
   web::FakeWebState* web_state = InsertNewWebState(0);
   web_state->SetCurrentURL(url);
 

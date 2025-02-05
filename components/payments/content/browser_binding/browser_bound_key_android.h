@@ -18,7 +18,7 @@ class BrowserBoundKeyAndroid : public BrowserBoundKey {
   explicit BrowserBoundKeyAndroid(jni_zero::ScopedJavaLocalRef<jobject> impl);
   ~BrowserBoundKeyAndroid() override;
   std::vector<uint8_t> Sign(const std::vector<uint8_t>& client_data) override;
-  std::vector<uint8_t> GetPublicKeyAsCoseKey() override;
+  std::vector<uint8_t> GetPublicKeyAsCoseKey() const override;
 
  private:
   jni_zero::ScopedJavaGlobalRef<jobject> impl_;

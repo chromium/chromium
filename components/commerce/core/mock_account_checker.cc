@@ -19,6 +19,7 @@ MockAccountChecker::MockAccountChecker()
   SetAnonymizedUrlDataCollectionEnabled(true);
   SetIsSubjectToParentalControls(false);
   SetCanUseModelExecutionFeatures(true);
+  SetSyncAvailable(true);
   // Default pref service can be overwritten by SetPrefs below.
   default_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
   RegisterCommercePrefs(default_pref_service_->registry());
@@ -33,6 +34,10 @@ void MockAccountChecker::SetSignedIn(bool signed_in) {
 
 void MockAccountChecker::SetAllSyncTypesEnabled(bool enabled) {
   ON_CALL(*this, IsSyncTypeEnabled).WillByDefault(testing::Return(enabled));
+}
+
+void MockAccountChecker::SetSyncAvailable(bool available) {
+  ON_CALL(*this, IsSyncAvailable).WillByDefault(testing::Return(available));
 }
 
 void MockAccountChecker::SetAnonymizedUrlDataCollectionEnabled(bool enabled) {

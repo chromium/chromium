@@ -24,7 +24,7 @@
 namespace {
 
 bool IsDesktopMediaTabList(views::View* view) {
-  return !strcmp(view->GetClassName(), "DesktopMediaTabList");
+  return view->GetClassName() == "DesktopMediaTabList";
 }
 
 }  // namespace

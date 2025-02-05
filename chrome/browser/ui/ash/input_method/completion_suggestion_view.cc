@@ -176,7 +176,7 @@ void CompletionSuggestionView::SetHighlighted(bool highlighted) {
 
   highlighted_ = highlighted;
   if (highlighted) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelection, false);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection, false);
     // TODO(crbug/1099044): Use System Color for button highlight.
     SetBackground(views::CreateSolidBackground(
         ResolveSemanticColor(kButtonHighlightColor)));

@@ -116,11 +116,11 @@ void Clean(UpdaterScope scope) {
     EXPECT_TRUE(base::DeletePathRecursively(*keystone_path));
   }
 
-  std::optional<base::FilePath> cache_path = GetCacheBaseDirectory(scope);
-  EXPECT_TRUE(cache_path);
-  if (cache_path) {
-    EXPECT_TRUE(base::DeletePathRecursively(*cache_path));
-  }
+  // TODO(crbug.com/394302692): Delete after CIPD updater versions are M136+.
+  EXPECT_TRUE(base::DeletePathRecursively(
+      base::FilePath("/Library/Caches/")
+          .AppendASCII(MAC_BUNDLE_IDENTIFIER_STRING)));
+
   EXPECT_TRUE(RemoveWakeJobFromLaunchd(scope));
 
   // Also clean up any other versions of the updater that are around.
@@ -156,14 +156,6 @@ void ExpectClean(UpdaterScope scope) {
 
   // Files must not exist on the file system.
   EXPECT_FALSE(base::PathExists(*GetWakeTaskPlistPath(scope)));
-
-  // Caches must have been removed. On Mac, this is separate from other
-  // updater directories, so we can reliably remove it completely.
-  std::optional<base::FilePath> cache_path = GetCacheBaseDirectory(scope);
-  EXPECT_TRUE(cache_path);
-  if (cache_path) {
-    EXPECT_FALSE(base::PathExists(*cache_path));
-  }
 
   std::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);

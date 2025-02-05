@@ -1,0 +1,72 @@
+This is a testharness.js-based test.
+Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] scrollLeft after scrollTo(1, 2) with 'zoom: 0.75'
+  assert_equals: scrollLeft should be 1 expected 1 but got 0
+[FAIL] scrollTop after scrollTo(1, 2) with 'zoom: 0.75'
+  assert_equals: scrollTop should be 2 expected 2 but got 1.3333333730697632
+[FAIL] scrollLeft after scrollTo(13, 61) with 'zoom: 0.75'
+  assert_equals: scrollLeft should be 13 expected 13 but got 12
+[FAIL] scrollTop after scrollTo(13, 61) with 'zoom: 0.75'
+  assert_equals: scrollTop should be 61 expected 61 but got 60
+[FAIL] scrollLeft after scrollTo(75, 100) with 'zoom: 0.75'
+  assert_equals: scrollLeft should be 75 expected 75 but got 74.66666412353516
+[FAIL] scrollLeft after scrollTo(1, 2) with 'zoom: 0.9'
+  assert_equals: scrollLeft should be 1 expected 1 but got 0
+[FAIL] scrollTop after scrollTo(1, 2) with 'zoom: 0.9'
+  assert_equals: scrollTop should be 2 expected 2 but got 1.1111111640930176
+[FAIL] scrollLeft after scrollTo(13, 61) with 'zoom: 0.9'
+  assert_equals: scrollLeft should be 13 expected 13 but got 12.222222328186035
+[FAIL] scrollTop after scrollTo(13, 61) with 'zoom: 0.9'
+  assert_equals: scrollTop should be 61 expected 61 but got 60
+[FAIL] scrollLeft after scrollTo(75, 100) with 'zoom: 0.9'
+  assert_equals: scrollLeft should be 75 expected 75 but got 74.44444274902344
+[FAIL] scrollLeft after scrollTo(1, 2) with 'zoom: 1.13'
+  assert_equals: scrollLeft should be 1 expected 1 but got 0.8849557638168335
+[FAIL] scrollTop after scrollTo(1, 2) with 'zoom: 1.13'
+  assert_equals: scrollTop should be 2 expected 2 but got 1.769911527633667
+[FAIL] scrollLeft after scrollTo(13, 61) with 'zoom: 1.13'
+  assert_equals: scrollLeft should be 13 expected 13 but got 12.38938045501709
+[FAIL] scrollTop after scrollTo(13, 61) with 'zoom: 1.13'
+  assert_equals: scrollTop should be 61 expected 61 but got 60.1769905090332
+[FAIL] scrollLeft after scrollTo(75, 100) with 'zoom: 1.13'
+  assert_equals: scrollLeft should be 75 expected 75 but got 74.3362808227539
+[FAIL] scrollLeft after scrollTo(1, 2) with 'zoom: 1.25'
+  assert_equals: scrollLeft should be 1 expected 1 but got 0.800000011920929
+[FAIL] scrollTop after scrollTo(1, 2) with 'zoom: 1.25'
+  assert_equals: scrollTop should be 2 expected 2 but got 1.600000023841858
+[FAIL] scrollLeft after scrollTo(13, 61) with 'zoom: 1.25'
+  assert_equals: scrollLeft should be 13 expected 13 but got 12.800000190734863
+[FAIL] scrollTop after scrollTo(13, 61) with 'zoom: 1.25'
+  assert_equals: scrollTop should be 61 expected 61 but got 60.79999923706055
+[FAIL] scrollLeft after scrollTo(75, 100) with 'zoom: 1.25'
+  assert_equals: scrollLeft should be 75 expected 75 but got 74.4000015258789
+[FAIL] scrollLeft after scrollTo(1, 2) with 'zoom: 1.5'
+  assert_equals: scrollLeft should be 1 expected 1 but got 0.6666666865348816
+[FAIL] scrollLeft after scrollTo(13, 61) with 'zoom: 1.5'
+  assert_equals: scrollLeft should be 13 expected 13 but got 12.666666984558105
+[FAIL] scrollTop after scrollTo(13, 61) with 'zoom: 1.5'
+  assert_equals: scrollTop should be 61 expected 61 but got 60.66666793823242
+[FAIL] scrollLeft after scrollTo(75, 100) with 'zoom: 1.5'
+  assert_equals: scrollLeft should be 75 expected 75 but got 74.66666412353516
+[FAIL] scrollLeft after scrollTo(1, 2) with 'zoom: 1.9'
+  assert_equals: scrollLeft should be 1 expected 1 but got 0.5263158082962036
+[FAIL] scrollTop after scrollTo(1, 2) with 'zoom: 1.9'
+  assert_equals: scrollTop should be 2 expected 2 but got 1.5789474248886108
+[FAIL] scrollLeft after scrollTo(13, 61) with 'zoom: 1.9'
+  assert_equals: scrollLeft should be 13 expected 13 but got 12.631579399108887
+[FAIL] scrollTop after scrollTo(13, 61) with 'zoom: 1.9'
+  assert_equals: scrollTop should be 61 expected 61 but got 60.52631759643555
+[FAIL] scrollLeft after scrollTo(75, 100) with 'zoom: 1.9'
+  assert_equals: scrollLeft should be 75 expected 75 but got 74.7368392944336
+[FAIL] scrollLeft after scrollTo(1, 2) with 'zoom: 3.33'
+  assert_equals: scrollLeft should be 1 expected 1 but got 0.9009009003639221
+[FAIL] scrollTop after scrollTo(1, 2) with 'zoom: 3.33'
+  assert_equals: scrollTop should be 2 expected 2 but got 1.8018018007278442
+[FAIL] scrollLeft after scrollTo(13, 61) with 'zoom: 3.33'
+  assert_equals: scrollLeft should be 13 expected 13 but got 12.91291332244873
+[FAIL] scrollTop after scrollTo(13, 61) with 'zoom: 3.33'
+  assert_equals: scrollTop should be 61 expected 61 but got 60.96096420288086
+[FAIL] scrollLeft after scrollTo(75, 100) with 'zoom: 3.33'
+  assert_equals: scrollLeft should be 75 expected 75 but got 74.7747802734375
+Harness: the test ran to completion.
+

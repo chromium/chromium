@@ -49,7 +49,9 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -58,6 +60,8 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivity;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -378,6 +382,76 @@ public class IdentityDiscControllerTest {
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button),
                 "identity_disc_signed_in");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+    public void testIdentityDisc_signedIn_unoPhase2FollowUpEnabled_noIdentityError(
+            boolean nightModeEnabled) throws IOException {
+        // Sign-in and wait for the user profile image to appear.
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        String expectedContentDescription =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string
+                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
+                                TestAccounts.ACCOUNT1.getFullName(),
+                                TestAccounts.ACCOUNT1.getEmail());
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        withContentDescription(expectedContentDescription)));
+
+        // Test the profile image shown in signed-in state to ensure the image is not tinted
+        // accidentally.
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button),
+                "identity_disc_signed_in_no_identity_error");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+    public void testIdentityDisc_signedIn_unoPhase2FollowUpEnabled_identityErrorExist(
+            boolean nightModeEnabled) throws IOException {
+        // Fake an identity error.
+        FakeSyncServiceImpl fakeSyncService =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+        fakeSyncService.setRequiresClientUpgrade(true);
+
+        // Sign-in and wait for the user profile image to appear.
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        String expectedContentDescription =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string
+                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
+                                TestAccounts.ACCOUNT1.getFullName(),
+                                TestAccounts.ACCOUNT1.getEmail());
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        withContentDescription(expectedContentDescription)));
+
+        // Test the profile image shown with an error badge in signed-in state when an identity
+        // error exist.
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button),
+                "identity_disc_signed_in_identity_error_exist");
     }
 
     private void leaveNtp() {

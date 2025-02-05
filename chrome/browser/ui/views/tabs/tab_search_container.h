@@ -93,7 +93,6 @@ class TabSearchContainer : public views::View,
     TabStripNudgeButton* button() { return button_; }
 
    private:
-    base::TimeDelta GetAnimationDuration(base::TimeDelta duration);
     void ShowOpacityAnimation();
     void Show();
     raw_ptr<TabStripNudgeButton> button_;

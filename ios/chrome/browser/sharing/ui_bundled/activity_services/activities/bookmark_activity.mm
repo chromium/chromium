@@ -95,9 +95,9 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
   // presented by the bookmark command below.
   [self activityDidFinish:YES];
 
-  [self.handler createOrEditBookmarkWithURL:[[URLWithTitle alloc]
-                                                initWithURL:self.URL
-                                                      title:self.title]];
+  [self.handler
+      addOrEditBookmark:[[URLWithTitle alloc] initWithURL:self.URL
+                                                    title:self.title]];
 }
 
 #pragma mark - Private

@@ -4723,6 +4723,24 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
   EXPECT_TRUE(cc);
   EXPECT_EQ(too_long_domain, cc->DomainWithoutDot());
   EXPECT_TRUE(status.IsInclude());
+
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("file://52.251.94.56/:"), "A", "B", "888888888", "/foo",
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
+  EXPECT_FALSE(cc);
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
+
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://52.251.94.56/"), "A", "B", "251", "/foo", base::Time(),
+      base::Time(), base::Time(), false /*secure*/, false /*httponly*/,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      std::nullopt /*partition_key*/, &status);
+  EXPECT_FALSE(cc);
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
 }
 
 // Regression test for https://crbug.com/362535230.

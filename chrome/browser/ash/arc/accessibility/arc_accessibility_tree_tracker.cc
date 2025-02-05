@@ -100,7 +100,7 @@ void UpdateTreeIdOfNotificationSurface(const std::string& notification_key,
   if (surface->IsAttached()) {
     // Dispatch ax::mojom::Event::kChildrenChanged to force AXNodeData of the
     // notification updated.
-    surface->GetAttachedHost()->NotifyAccessibilityEvent(
+    surface->GetAttachedHost()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kChildrenChanged, false);
   }
 }
@@ -679,7 +679,7 @@ void ArcAccessibilityTreeTracker::OnNotificationSurfaceAdded(
   // 1. ax_tree_id is set to the surface
   // 2. the surface is attached to the content view
   if (surface->IsAttached()) {
-    surface->GetAttachedHost()->NotifyAccessibilityEvent(
+    surface->GetAttachedHost()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kChildrenChanged, false);
   }
 }

@@ -101,8 +101,8 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
   children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
                    std::move(view));
   if (GetOwnerView()) {
-    GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                             true);
+    GetOwnerView()->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kChildrenChanged, true);
   }
 }
 
@@ -127,8 +127,8 @@ void AXVirtualView::ReorderChildView(AXVirtualView* view, size_t index) {
   children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
                    std::move(child));
 
-  GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                           true);
+  GetOwnerView()->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kChildrenChanged, true);
 }
 
 std::unique_ptr<AXVirtualView> AXVirtualView::RemoveFromParentView() {
@@ -171,8 +171,8 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
     if (focus_changed) {
       GetOwnerView()->GetViewAccessibility().OverrideFocus(nullptr);
     }
-    GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                             true);
+    GetOwnerView()->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kChildrenChanged, true);
   }
 
   return child;
@@ -213,7 +213,8 @@ gfx::NativeViewAccessible AXVirtualView::GetNativeObject() const {
   return ax_platform_node_->GetNativeViewAccessible();
 }
 
-void AXVirtualView::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
+void AXVirtualView::NotifyAccessibilityEventDeprecated(
+    ax::mojom::Event event_type) {
   DCHECK(ax_platform_node_);
   if (event_type == ax::mojom::Event::kAlert) {
     CHECK(ui::IsAlert(GetRole()))

@@ -136,8 +136,8 @@ void AppsCollectionSectionView::UpdateAppsForCollection() {
 
   SetVisible(!apps.empty());
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                           /*send_native_event=*/true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                     /*send_native_event=*/true);
   PreferredSizeChanged();
 }
 

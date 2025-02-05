@@ -24,7 +24,6 @@ source_set("data_source") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_promo/ui_bundled/resources:animation_files",
-    "//ios/chrome/browser/price_insights/model:feature",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/common/ui/colors",

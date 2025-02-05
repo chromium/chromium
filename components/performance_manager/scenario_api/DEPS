@@ -1,0 +1,9 @@
+# Removes the rules inherited from //components/performance_manager.
+# This query library is usable from any layer, so can only depend on a narrow
+# list of components to avoid circular dependencies.
+noparent = True
+
+include_rules = [
+  "+base",
+  "+testing",
+]

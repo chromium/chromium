@@ -179,6 +179,9 @@ class OptimizationGuideService
       optimization_guide::proto::OptimizationType optimization_type,
       const std::optional<optimization_guide::OptimizationMetadata>& metadata);
 
+  // Returns an error message describing a given error code.
+  std::string ResponseForErrorCode(int error_code);
+
  private:
   friend class OptimizationGuideServiceTest;
   friend class OptimizationGuideTabHelper;

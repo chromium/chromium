@@ -563,6 +563,15 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.8.0 -> 1.9.0"
 notes = "Reviewed in https://crrev.com/c/6072366."
 
+[[audits.bytes]]
+who = "Liza Burakova <liza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.9.0 -> 1.10.0"
+notes = """
+Reviewed in https://crrev.com/c/6235725. Very large change in buf_impl.rs 
+as well but no unsafe changes there specifically. 
+"""
+
 [[audits.calendrical_calculations]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]

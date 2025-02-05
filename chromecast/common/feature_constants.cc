@@ -37,5 +37,10 @@ const char kCastCoreLogJsConsoleMessages[] = "cast_core_log_js_console_messages"
 const char kCastCoreTurnOnScreen[] = "cast_core_turn_on_screen";
 const char kCastCoreKeepScreenOn[] = "cast_core_keep_screen_on";
 
+const char kCastCoreBitstreamAudioCodecsInfo[] =
+    "cast_core_bitstream_audio_codecs_info";
+const char kCastCoreCodecs[] = "cast_core_codecs";
+const char kCastCoreSpatialRendering[] = "cast_core_spatial_rendering";
+
 }  // namespace feature
 }  // namespace chromecast

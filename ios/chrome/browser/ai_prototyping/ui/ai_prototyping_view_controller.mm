@@ -71,6 +71,7 @@
   for (UIViewController<AIPrototypingViewControllerProtocol>* viewController in
            _menuPages) {
     if (viewController.feature == feature) {
+      [viewController enableSubmitButtons];
       [viewController updateResponseField:result];
       break;
     }

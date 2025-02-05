@@ -27,7 +27,6 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 // has been or is being read out loud.
 suite('UpdateContentSelectionWithHighlights', () => {
   let app: AppElement;
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let fakeTree: FakeTree;
 
   const textNodeIds = [3, 5, 7, 9];
@@ -39,9 +38,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
   ];
 
   setup(() => {
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 

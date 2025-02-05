@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabModelRemover.TabModelRemoverFlowHandler;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -68,12 +69,15 @@ public class TabRemoverImplUnitTest {
     @Mock private TabRemover mMockTabRemover;
     @Mock private TabModelActionListener mListener;
     @Mock private Callback<Integer> mOnResult;
+    @Mock private Callback<MaybeBlockingResult> mOnMaybeBlockingResult;
     @Mock private DataSharingService mDataSharingService;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Callback<TabClosureParams> mTabClosureCallback;
+    @Mock private Runnable mFinishBlocking;
 
     @Captor private ArgumentCaptor<TabModelRemoverFlowHandler> mHandlerCaptor;
     @Captor private ArgumentCaptor<Callback<Integer>> mOnResultCaptor;
+    @Captor private ArgumentCaptor<Callback<MaybeBlockingResult>> mOnMaybeBlockingResultCaptor;
 
     private MockTabModel mTabModel;
     private TabRemoverImpl mTabRemoverImpl;
@@ -310,17 +314,20 @@ public class TabRemoverImplUnitTest {
         Tab placeholderTab = mTabModel.addTab(/* id= */ 1);
         handler.onPlaceholderTabsCreated(List.of(placeholderTab));
 
-        handler.showCollaborationKeepDialog(MemberRole.OWNER, TITLE, mOnResult);
+        handler.showCollaborationKeepDialog(MemberRole.OWNER, TITLE, mOnMaybeBlockingResult);
         verify(mListener)
                 .willPerformActionOrShowDialog(
                         DialogType.COLLABORATION, /* willSkipDialog= */ false);
         verify(mActionConfirmationManager)
-                .processCollaborationOwnerRemoveLastTab(eq(TITLE), mOnResultCaptor.capture());
-        mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
+                .processCollaborationOwnerRemoveLastTab(
+                        eq(TITLE), mOnMaybeBlockingResultCaptor.capture());
+        var maybeBlockingResult =
+                new MaybeBlockingResult(ActionConfirmationResult.CONFIRMATION_POSITIVE, null);
+        mOnMaybeBlockingResultCaptor.getValue().onResult(maybeBlockingResult);
         verify(mListener)
                 .onConfirmationDialogResult(
                         DialogType.COLLABORATION, ActionConfirmationResult.CONFIRMATION_POSITIVE);
-        verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
+        verify(mOnMaybeBlockingResult).onResult(maybeBlockingResult);
 
         handler.performAction();
         verify(mTabGroupModelFilter).closeTabs(any(TabClosureParams.class));
@@ -356,17 +363,21 @@ public class TabRemoverImplUnitTest {
         Tab placeholderTab = mTabModel.addTab(/* id= */ 1);
         handler.onPlaceholderTabsCreated(List.of(placeholderTab));
 
-        handler.showCollaborationKeepDialog(MemberRole.MEMBER, TITLE, mOnResult);
+        handler.showCollaborationKeepDialog(MemberRole.MEMBER, TITLE, mOnMaybeBlockingResult);
         verify(mListener)
                 .willPerformActionOrShowDialog(
                         DialogType.COLLABORATION, /* willSkipDialog= */ false);
         verify(mActionConfirmationManager)
-                .processCollaborationMemberRemoveLastTab(eq(TITLE), mOnResultCaptor.capture());
-        mOnResultCaptor.getValue().onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+                .processCollaborationMemberRemoveLastTab(
+                        eq(TITLE), mOnMaybeBlockingResultCaptor.capture());
+        var maybeBlockingResult =
+                new MaybeBlockingResult(
+                        ActionConfirmationResult.CONFIRMATION_NEGATIVE, mFinishBlocking);
+        mOnMaybeBlockingResultCaptor.getValue().onResult(maybeBlockingResult);
         verify(mListener)
                 .onConfirmationDialogResult(
                         DialogType.COLLABORATION, ActionConfirmationResult.CONFIRMATION_NEGATIVE);
-        verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+        verify(mOnMaybeBlockingResult).onResult(maybeBlockingResult);
 
         handler.performAction();
         verify(mTabGroupModelFilter).closeTabs(any(TabClosureParams.class));

@@ -68,8 +68,8 @@ void SwitchAccessBackButtonBubbleController::ShowBackButton(
   back_button_view_->SetFocusRing(show_focus_ring);
   bubble_view_->ChangeAnchorRect(AdjustAnchorRect(anchor));
   widget_->Show();
-  bubble_view_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                         true);
+  bubble_view_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kChildrenChanged, true);
 }
 
 void SwitchAccessBackButtonBubbleController::HideFocusRing() {
@@ -80,8 +80,8 @@ void SwitchAccessBackButtonBubbleController::Hide() {
   if (widget_)
     widget_->Hide();
   if (bubble_view_)
-    bubble_view_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                           true);
+    bubble_view_->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kChildrenChanged, true);
 }
 
 void SwitchAccessBackButtonBubbleController::BubbleViewDestroyed() {

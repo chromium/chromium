@@ -165,7 +165,7 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
         # error and use the default value to filter them out instead of failing
         # the tests.
         # TODO(crbug.com/40935291): Revise the default value for errors.
-        monitors.average(file, key).record(results.get(key, -128))
+        monitors.average(file, 'video_perf', key).record(results.get(key, -128))
 
     record('smoothness')
     record('freezing')

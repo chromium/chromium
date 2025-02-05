@@ -201,4 +201,24 @@ suite('HeaderTest', () => {
             /*inNewTab=*/ false,
             productSpecsProxy.getArgs('showComparePage')[0]);
       });
+
+  test(
+      'menu button and subtitle input are unavailable when disabled',
+      async () => {
+        header.disabled = true;
+        await microtasksFinished();
+
+        // Menu button is disabled.
+        assertTrue(header.$.menuButton.disabled);
+
+        const subtitle = $$(header, '#subtitle');
+        assertTrue(!!subtitle);
+        subtitle.click();
+        await microtasksFinished();
+
+        // Header input does not appear when disabled.
+        const input =
+            header.shadowRoot!.querySelector<CrInputElement>('#input');
+        assertFalse(!!input);
+      });
 });

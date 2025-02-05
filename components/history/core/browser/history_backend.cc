@@ -3384,7 +3384,7 @@ void HistoryBackend::BeginSingletonTransaction() {
     // at about 1 failure per million, almost exclusively on Windows. Previous
     // analysis showed SQLITE_BUSY to be the main cause, which could suggest
     // some other process (could be malware) trying to read Chrome history.
-    // See https://crbug.com/1377512 for more discussion.
+    // See https://crbug.com/40874369 for more discussion.
     //
     // In any case, failing here is not a big deal, because Chrome will try to
     // start another transaction again at the next commit interval. Clear out
@@ -3408,18 +3408,13 @@ void HistoryBackend::CommitSingletonTransactionIfItExists() {
       << "Someone opened multiple transactions.";
 
   bool success = singleton_transaction_->Commit();
-  UMA_HISTOGRAM_BOOLEAN("History.Backend.TransactionCommitSuccess", success);
   if (success) {
     DCHECK_EQ(db_->transaction_nesting(), 0)
         << "Someone left a transaction open.";
-  } else {
-    // The long-running transaction fails to commit about 1 per 100,000 times.
-    // The crash reports are again predominantly on Windows. The exact breakdown
-    // is less clear here compared to BEGIN, but some logs show "no transaction
-    // is active" and some show SQLITE_BUSY. Maybe this UMA will reveal things.
-    sql::UmaHistogramSqliteResult("History.Backend.TransactionCommitError",
-                                  diagnostics_.reported_sqlite_error_code);
   }
+  // The long-running transaction fails to commit about 1 per 100,000 times.
+  // The crash reports are again predominantly on Windows. More discussion in
+  // https://crbug.com/40874369 and https://crbug.com/385734240#comment4.
   singleton_transaction_.reset();
 }
 

@@ -35,6 +35,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/contains.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -936,8 +937,7 @@ TEST_F(FocusModeDetailedViewTest,
 
   ASSERT_TRUE(hover_highlight_view);
   ASSERT_TRUE(right_view);
-  ASSERT_TRUE(std::string(right_view->GetClassName()).find("Button") !=
-              std::string::npos);
+  ASSERT_TRUE(base::Contains(right_view->GetClassName(), "Button"));
 
   hover_highlight_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kClick);

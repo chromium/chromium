@@ -145,19 +145,6 @@ public class ApiCompatibilityUtils {
     }
 
     /**
-     * Sets the mode {@link ActivityOptions#MODE_BACKGROUND_ACTIVITY_START_ALLOWED} to the given
-     * {@link ActivityOptions}. The options can be used to send {@link PendingIntent} passed to
-     * Chrome from a backgrounded app. TODO(crbug.com/366220935): Remove this.
-     *
-     * @param options {@ActivityOptions} to set the required mode to.
-     */
-    public static void setActivityOptionsBackgroundActivityStartMode(ActivityOptions options) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
-        options.setPendingIntentBackgroundActivityStartMode(
-                ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);
-    }
-
-    /**
      * Sets the mode {@link ActivityOptions#MODE_BACKGROUND_ACTIVITY_START_ALLOW_ALWAYS} to the
      * given {@link ActivityOptions}. The options can be used to send {@link PendingIntent} passed
      * to Chrome from a backgrounded app.

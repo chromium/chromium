@@ -209,6 +209,14 @@ class TabContainerImpl : public TabContainer,
   // Private getter to retrieve the visible rect of the scroll container.
   std::optional<gfx::Rect> GetVisibleContentRect();
 
+  // Uses `bounds_animator_` to animate `view` to `target`. Use this rather than
+  // calling `bounds_animator_.AnimateViewTo()` directly so animations correctly
+  // track changes in rich animation enable state.
+  void AnimateViewTo(
+      View* view,
+      const gfx::Rect& target,
+      std::unique_ptr<gfx::AnimationDelegate> delegate = nullptr);
+
   // Animates and scrolls the tab container from the start_edge to the
   // target_edge. If the target_edge is beyond the tab strip it will be clamped
   // bounds of the tabstrip.

@@ -266,7 +266,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kBrowserDataBackwardMigrationForUser[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kBrowserDataBackwardMigrationMode[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCoralFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMantisFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceBrowserDataBackwardMigration[];

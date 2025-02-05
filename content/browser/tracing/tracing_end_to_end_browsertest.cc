@@ -18,6 +18,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
+#include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
 
@@ -88,6 +89,17 @@ perfetto::protos::gen::TraceConfig TraceConfigWithMetadata(
   auto* data_source = perfetto_config.add_data_sources();
   auto* source_config = data_source->mutable_config();
   source_config->set_name("org.chromium.trace_metadata");
+
+  return perfetto_config;
+}
+
+perfetto::protos::gen::TraceConfig TraceConfigWithSamplerProfiler() {
+  auto perfetto_config = base::test::DefaultTraceConfig(
+      "-*,disabled-by-default-cpu_profiler", false);
+
+  auto* data_source = perfetto_config.add_data_sources();
+  auto* source_config = data_source->mutable_config();
+  source_config->set_name("org.chromium.sampler_profiler");
 
   return perfetto_config;
 }
@@ -334,6 +346,69 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
       result.value(),
       ::testing::ElementsAre(std::vector<std::string>{"has_other_processes"},
                              std::vector<std::string>{"1"}));
+}
+
+namespace {
+
+class FakeUnwinder : public base::Unwinder {
+ public:
+  bool CanUnwindFrom(const base::Frame& current_frame) const override {
+    return true;
+  }
+
+  base::UnwindResult TryUnwind(base::UnwinderStateCapture* capture_state,
+                               base::RegisterContext* thread_context,
+                               uintptr_t stack_top,
+                               std::vector<base::Frame>* stack) override {
+    return base::UnwindResult::kCompleted;
+  }
+};
+
+// Note that this is relevant only for Android, since TracingSamplingProfiler
+// ignores any provided unwinder factory for non-Android platforms:
+// https://source.chromium.org/chromium/chromium/src/+/main:services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.cc;l=905-908;drc=70d839a3b8bcf1ef43c42a54a4b27f14ee149750
+base::StackSamplingProfiler::UnwindersFactory MakeFakeUnwinder() {
+  return base::BindOnce([] {
+    auto fake_unwinder = std::make_unique<FakeUnwinder>();
+    std::vector<std::unique_ptr<base::Unwinder>> unwinders;
+    unwinders.push_back(std::move(fake_unwinder));
+    return unwinders;
+  });
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, CpuProfiler) {
+  // In the browser process, the tracing sampler profiler gets constructed by
+  // the chrome/ layer, so we need to do the same manually for testing purposes.
+  std::unique_ptr<tracing::TracingSamplerProfiler> tracing_sampler_profiler;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    tracing_sampler_profiler =
+        tracing::TracingSamplerProfiler::CreateOnMainThread(
+            base::BindRepeating(&MakeFakeUnwinder));
+  }
+
+  // There won't be any samples if stack unwinding isn't supported.
+  if (!tracing::TracingSamplerProfiler::IsStackUnwindingSupportedForTesting()) {
+    GTEST_SKIP() << "Stack unwinding not supported on this platform";
+  }
+
+  base::RunLoop wait_for_sample;
+  tracing_sampler_profiler->SetSampleCallbackForTesting(
+      wait_for_sample.QuitClosure());
+
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace(TraceConfigWithSamplerProfiler());
+
+  wait_for_sample.Run();
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  auto result = ttp.RunQuery("SELECT * FROM cpu_profile_stack_sample");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_GT(result.value().size(), 1U);
 }
 
 IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,

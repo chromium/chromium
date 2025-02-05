@@ -250,6 +250,11 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   // |proxy_auth_callback| will be invoked each time an auth challenge is seen
   // while establishing a tunnel. It will be invoked asynchronously, once for
   // each auth challenge seen.
+  //
+  // `fail_if_alias_requires_proxy_override` indicates that a request should
+  // fail with net error `ERR_PROXY_REQUIRED` if
+  // ProxyDelegate::ShouldOverrideProxyResolution returns true for resolved DNS
+  // records.
   virtual int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
@@ -260,6 +265,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       ClientSocketHandle* handle,
       CompletionOnceCallback callback,
       const ProxyAuthCallback& proxy_auth_callback,
+      bool fail_if_alias_requires_proxy_override,
       const NetLogWithSource& net_log) = 0;
 
   // RequestSockets is used to request that |num_sockets| be connected in the
@@ -279,6 +285,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       scoped_refptr<SocketParams> params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       int num_sockets,
+      bool fail_if_alias_requires_proxy_override,
       CompletionOnceCallback callback,
       const NetLogWithSource& net_log) = 0;
 

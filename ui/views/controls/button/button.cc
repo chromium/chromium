@@ -384,7 +384,7 @@ void Button::SetHotTracked(bool is_hot_tracked) {
   }
 
   if (is_hot_tracked) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kHover, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kHover, true);
   }
 }
 

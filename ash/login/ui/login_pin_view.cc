@@ -541,11 +541,11 @@ LoginPinView::LoginPinView(Style keyboard_style,
 LoginPinView::~LoginPinView() = default;
 
 void LoginPinView::NotifyAccessibilityLocationChanged() {
-  this->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
-                                 false /*send_native_event*/);
+  this->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kLocationChanged,
+                                           false /*send_native_event*/);
   for (NonAccessibleView* row : rows_) {
-    row->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
-                                  false /*send_native_event*/);
+    row->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kLocationChanged,
+                                            false /*send_native_event*/);
   }
 }
 

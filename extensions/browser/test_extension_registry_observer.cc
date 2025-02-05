@@ -18,8 +18,9 @@ class TestExtensionRegistryObserver::Waiter {
   Waiter& operator=(const Waiter&) = delete;
 
   scoped_refptr<const Extension> Wait() {
-    if (!observed_)
+    if (!observed_) {
       run_loop_.Run();
+    }
     return extension_;
   }
 
@@ -97,53 +98,60 @@ void TestExtensionRegistryObserver::OnExtensionWillBeInstalled(
     const Extension* extension,
     bool is_update,
     const std::string& old_name) {
-  if (extension_id_.empty() || extension->id() == extension_id_)
+  if (extension_id_.empty() || extension->id() == extension_id_) {
     will_be_installed_waiter_->OnObserved(extension);
+  }
 }
 
 void TestExtensionRegistryObserver::OnExtensionInstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     bool is_update) {
-  if (extension_id_.empty() || extension->id() == extension_id_)
+  if (extension_id_.empty() || extension->id() == extension_id_) {
     installed_waiter_->OnObserved(extension);
+  }
 }
 
 void TestExtensionRegistryObserver::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  if (extension_id_.empty() || extension->id() == extension_id_)
+  if (extension_id_.empty() || extension->id() == extension_id_) {
     uninstalled_waiter_->OnObserved(extension);
+  }
 }
 
 void TestExtensionRegistryObserver::OnExtensionUninstallationDenied(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  if (extension_id_.empty() || extension->id() == extension_id_)
+  if (extension_id_.empty() || extension->id() == extension_id_) {
     uninstallation_denied_waiter_->OnObserved(extension);
+  }
 }
 
 void TestExtensionRegistryObserver::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  if (extension_id_.empty() || extension->id() == extension_id_)
+  if (extension_id_.empty() || extension->id() == extension_id_) {
     loaded_waiter_->OnObserved(extension);
+  }
 }
 
 void TestExtensionRegistryObserver::OnExtensionReady(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  if (extension_id_.empty() || extension->id() == extension_id_)
+  if (extension_id_.empty() || extension->id() == extension_id_) {
     ready_waiter_->OnObserved(extension);
+  }
 }
 
 void TestExtensionRegistryObserver::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  if (extension_id_.empty() || extension->id() == extension_id_)
+  if (extension_id_.empty() || extension->id() == extension_id_) {
     unloaded_waiter_->OnObserved(extension);
+  }
 }
 
 scoped_refptr<const Extension> TestExtensionRegistryObserver::Wait(

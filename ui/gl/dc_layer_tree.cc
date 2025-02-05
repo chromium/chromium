@@ -492,7 +492,15 @@ void DCLayerTree::GetSwapChainVisualInfoForTesting(size_t index,
 }
 
 DCLayerTree::VisualTree::VisualSubtree::VisualSubtree() = default;
-DCLayerTree::VisualTree::VisualSubtree::~VisualSubtree() = default;
+DCLayerTree::VisualTree::VisualSubtree::~VisualSubtree() {
+  if (content_visual_) {
+    // Explicitly null out the `content_visual_`'s content to ensure there are
+    // no unexpected references to e.g. `IDCompositionTexture`, in case there
+    // are lingering references to `content_visual_`.
+    HRESULT hr = content_visual_->SetContent(nullptr);
+    CHECK_EQ(S_OK, hr);
+  }
+}
 
 bool DCLayerTree::VisualTree::VisualSubtree::Update(
     IDCompositionDevice3* dcomp_device,

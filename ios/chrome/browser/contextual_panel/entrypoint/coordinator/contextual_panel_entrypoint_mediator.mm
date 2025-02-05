@@ -460,15 +460,15 @@
       [self.delegate helpAnchorUsingBottomOmnibox:isBottomOmnibox];
 
   BOOL shown = [_entrypointHelpHandler
-      maybeShowContextualPanelEntrypointIPHWithConfig:config
-                                          anchorPoint:anchorPoint
-                                      isBottomOmnibox:isBottomOmnibox];
+      showContextualPanelEntrypointIPHWithConfig:config
+                                     anchorPoint:anchorPoint
+                                 isBottomOmnibox:isBottomOmnibox];
 
   return shown;
 }
 
 - (void)dismissEntrypointIPHAnimated:(BOOL)animated {
-  [_entrypointHelpHandler dismissContextualPanelEntrypointIPHAnimated:animated];
+  [_entrypointHelpHandler dismissContextualPanelEntrypointIPH:animated];
   [self.consumer setEntrypointColored:NO];
 }
 

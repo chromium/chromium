@@ -11,10 +11,10 @@ import static org.junit.Assert.assertTrue;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
+import androidx.preference.Preference;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
@@ -48,7 +48,7 @@ public class AddressBarSettingsFragmentUnitTest {
     private AddressBarSettingsFragment mSettings;
     private RadioButtonWithDescription mTopButton;
     private RadioButtonWithDescription mBottomButton;
-    private TextView mDescription;
+    private Preference mAddressBarTitle;
     private ImageView mToolbarPositionImage;
 
     @Before
@@ -88,7 +88,8 @@ public class AddressBarSettingsFragmentUnitTest {
                                 AddressBarSettingsFragment.PREF_ADDRESS_BAR_PREFERENCE);
         mTopButton = (RadioButtonWithDescription) addressBarPreference.getTopRadioButton();
         mBottomButton = (RadioButtonWithDescription) addressBarPreference.getBottomRadioButton();
-        mDescription = addressBarPreference.getDescription();
+        mAddressBarTitle =
+                mSettings.findPreference(AddressBarSettingsFragment.PREF_ADDRESS_BAR_TITLE);
 
         AddressBarHeaderPreference addressBarHeaderPreference =
                 (AddressBarHeaderPreference)
@@ -105,7 +106,7 @@ public class AddressBarSettingsFragmentUnitTest {
         launchFragment();
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_description),
-                mDescription.getText());
+                mAddressBarTitle.getSummary());
         assertTrue(mTopButton.isChecked());
         assertFalse(mBottomButton.isChecked());
         assertTrue(mToolbarPositionImage.isSelected());
@@ -158,6 +159,6 @@ public class AddressBarSettingsFragmentUnitTest {
         launchFragment();
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_description_foldable),
-                mDescription.getText());
+                mAddressBarTitle.getSummary());
     }
 }

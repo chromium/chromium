@@ -494,7 +494,7 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
     GetViewAccessibility().SetChildTreeID(rfh ? rfh->GetAXTreeID()
                                               : ui::AXTreeIDUnknown());
   }
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
 }
 
 std::unique_ptr<content::WebContents> WebView::CreateWebContents(

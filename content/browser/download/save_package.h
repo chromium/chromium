@@ -159,8 +159,8 @@ class CONTENT_EXPORT SavePackage final
       std::unordered_map<SaveItemId, std::unique_ptr<SaveItem>>;
 
   using FileNameSet = std::set<base::FilePath::StringType,
-                               bool (*)(base::FilePath::StringPieceType,
-                                        base::FilePath::StringPieceType)>;
+                               bool (*)(base::FilePath::StringViewType,
+                                        base::FilePath::StringViewType)>;
 
   using FileNameCountMap =
       std::unordered_map<base::FilePath::StringType, uint32_t>;

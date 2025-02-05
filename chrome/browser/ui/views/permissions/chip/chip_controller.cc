@@ -47,18 +47,7 @@
 namespace {
 
 constexpr auto kConfirmationDisplayDuration = base::Seconds(4);
-constexpr auto kCollapseDelay = base::Seconds(12);
-constexpr auto kDismissDelay = base::Seconds(6);
-// Abusive origins do not support expand animation, hence the dismiss timer
-// should be longer.
-constexpr auto kDismissDelayForAbusiveOrigins = kDismissDelay * 3;
 
-constexpr auto kLHSIndicatorCollapseAnimationDuration = base::Milliseconds(250);
-
-base::TimeDelta GetAnimationDuration(base::TimeDelta duration) {
-  return gfx::Animation::ShouldRenderRichAnimation() ? duration
-                                                     : base::TimeDelta();
-}
 }  // namespace
 
 class BubbleButtonController : public views::ButtonController {
@@ -315,7 +304,7 @@ void ChipController::ShowPermissionUi(
   if (permission_dashboard_controller_ &&
       permission_dashboard_controller_->SuppressVerboseIndicator()) {
     delay_prompt_timer_.Start(
-        FROM_HERE, kLHSIndicatorCollapseAnimationDuration,
+        FROM_HERE, base::Milliseconds(250),
         base::BindOnce(&ChipController::ShowPermissionPrompt,
                        weak_factory_.GetWeakPtr(), delegate));
     return;
@@ -496,7 +485,8 @@ void ChipController::CollapseConfirmation() {
   is_confirmation_showing_ = false;
   is_waiting_for_confirmation_collapse_ = true;
   GetLocationBarView()->ResetConfirmationChipShownTime();
-  chip_->AnimateCollapse(GetAnimationDuration(base::Milliseconds(75)));
+  chip_->AnimateCollapse(
+      gfx::Animation::RichAnimationDuration(base::Milliseconds(75)));
 }
 
 bool ChipController::should_expand_for_testing() {
@@ -506,7 +496,8 @@ bool ChipController::should_expand_for_testing() {
 
 void ChipController::AnimateExpand() {
   chip_->ResetAnimation();
-  chip_->AnimateExpand(GetAnimationDuration(base::Milliseconds(350)));
+  chip_->AnimateExpand(
+      gfx::Animation::RichAnimationDuration(base::Milliseconds(350)));
   chip_->SetVisible(true);
   if (permission_dashboard_view_) {
     permission_dashboard_view_->SetVisible(true);
@@ -525,7 +516,8 @@ void ChipController::HandleConfirmation(
     is_confirmation_showing_ = true;
 
     if (chip_->GetVisible()) {
-      chip_->AnimateToFit(GetAnimationDuration(base::Milliseconds(200)));
+      chip_->AnimateToFit(
+          gfx::Animation::RichAnimationDuration(base::Milliseconds(200)));
     } else {
       // No request chip was shown, always expand independently of what contents
       // were stored in the previous chip.
@@ -559,7 +551,8 @@ void ChipController::CollapsePrompt(bool allow_restart) {
     SyncChipWithModel();
 
     if (!chip_->is_fully_collapsed()) {
-      chip_->AnimateCollapse(GetAnimationDuration(base::Milliseconds(250)));
+      chip_->AnimateCollapse(
+          gfx::Animation::RichAnimationDuration(base::Milliseconds(250)));
     }
 
     StartDismissTimer();
@@ -771,7 +764,7 @@ void ChipController::SyncChipWithModel() {
 }
 
 void ChipController::StartCollapseTimer() {
-  collapse_timer_.Start(FROM_HERE, kCollapseDelay,
+  collapse_timer_.Start(FROM_HERE, base::Seconds(12),
                         base::BindOnce(&ChipController::CollapsePrompt,
                                        weak_factory_.GetWeakPtr(),
                                        /*allow_restart=*/true));
@@ -784,8 +777,10 @@ void ChipController::StartDismissTimer() {
 
   dismiss_timer_.Start(FROM_HERE,
                        permission_prompt_model_->ShouldExpand()
-                           ? kDismissDelay
-                           : kDismissDelayForAbusiveOrigins,
+                           ? base::Seconds(6)
+                           // Abusive origins do not support expand animation,
+                           // hence the dismiss timer should be longer.
+                           : base::Seconds(18),
                        this, &ChipController::OnPromptExpired);
 }
 

@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
+#include "chrome/browser/web_applications/tabbed_mode_scope_matcher.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -322,6 +323,17 @@ base::Value RelatedApplicationsToDebugValue(
   return base::Value(std::move(related_applications_json));
 }
 }  // namespace
+
+WebApp::CachedDerivedData::CachedDerivedData() = default;
+WebApp::CachedDerivedData::~CachedDerivedData() = default;
+WebApp::CachedDerivedData::CachedDerivedData(CachedDerivedData&&) = default;
+WebApp::CachedDerivedData& WebApp::CachedDerivedData::operator=(
+    CachedDerivedData&&) = default;
+WebApp::CachedDerivedData::CachedDerivedData(const CachedDerivedData&) {}
+WebApp::CachedDerivedData& WebApp::CachedDerivedData::operator=(
+    const CachedDerivedData&) {
+  return *this;
+}
 
 WebApp::WebApp(const webapps::AppId& app_id)
     : app_id_(app_id),
@@ -745,6 +757,7 @@ void WebApp::SetWebAppManagementExternalConfigMap(
 
 void WebApp::SetTabStrip(std::optional<blink::Manifest::TabStrip> tab_strip) {
   tab_strip_ = std::move(tab_strip);
+  cached_derived_data_.home_tab_scope.reset();
 }
 
 void WebApp::SetCurrentOsIntegrationStates(
@@ -894,6 +907,22 @@ base::Value::Dict WebApp::ExternalManagementConfig::AsDebugValue() const {
   root.Set("additional_policy_ids", std::move(policy_ids));
   root.Set("is_placeholder", is_placeholder);
   return root;
+}
+
+const std::vector<TabbedModeScopeMatcher>& WebApp::GetTabbedModeHomeScope()
+    const {
+  if (!cached_derived_data_.home_tab_scope.has_value()) {
+    cached_derived_data_.home_tab_scope.emplace();
+    if (tab_strip_.has_value()) {
+      if (const auto* params = absl::get_if<blink::Manifest::HomeTabParams>(
+              &tab_strip_->home_tab)) {
+        for (auto& pattern : params->scope_patterns) {
+          cached_derived_data_.home_tab_scope->emplace_back(pattern);
+        }
+      }
+    }
+  }
+  return *cached_derived_data_.home_tab_scope;
 }
 
 const std::optional<GeneratedIconFix>& WebApp::generated_icon_fix() const {

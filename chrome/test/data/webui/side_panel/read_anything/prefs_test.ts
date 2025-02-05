@@ -16,13 +16,12 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 // TODO: b/40927698 - Add more tests.
 suite('PrefsTest', () => {
   let app: AppElement;
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let speechSynthesis: FakeSpeechSynthesis;
 
   setup(() => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;

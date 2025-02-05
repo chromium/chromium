@@ -5,12 +5,22 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_FRE_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_GLIC_FRE_CONTROLLER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/shell_integration.h"
 
 class Browser;
 class Profile;
 namespace views {
 class Widget;
+}
+
+namespace content {
+class WebContents;
+}
+
+namespace version_info {
+enum class Channel;
 }
 
 namespace glic {
@@ -41,7 +51,16 @@ class GlicFreController {
   // Closes the FRE modal dialog.
   void DismissFre();
 
+  // Returns the WebContents from the dialog view.
+  content::WebContents* GetWebContents();
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(GlicFreControllerTest,
+                           UpdateLauncherOnFreCompletion);
+  static void OnCheckIsDefaultBrowserFinished(
+      version_info::Channel channel,
+      shell_integration::DefaultWebClientState state);
+
   std::unique_ptr<views::Widget> fre_widget_;
   raw_ptr<GlicFreDialogView> fre_view_;
 };

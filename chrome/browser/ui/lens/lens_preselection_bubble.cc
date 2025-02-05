@@ -126,7 +126,7 @@ void LensPreselectionBubble::Init() {
     exit_button_->SetProperty(views::kElementIdentifierKey,
                               kLensPreselectionBubbleExitButtonElementId);
   }
-  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 }
 
 void LensPreselectionBubble::SetLabelText(int string_id) {

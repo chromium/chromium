@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
@@ -12,17 +11,14 @@ import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted:
 
 import {getItemsInMenu, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('RateSelection', () => {
   let toolbar: ReadAnythingToolbarElement;
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let rateButton: CrIconButtonElement;
   let rateEmitted: boolean;
 
   setup(() => {
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;

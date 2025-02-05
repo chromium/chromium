@@ -273,13 +273,13 @@ class SecurePaymentConfirmationServiceCredentialTest
                   SecurePaymentConfirmationServiceDeleter>
   CreateSecurePaymentConfirmationServiceWithBrowserBoundKeyStore() {
     auto spc_service = CreateSecurePaymentConfirmationService();
-    spc_service->SetBrowserBoundKeyStoreForTesting(
-        CreateFakeBrowserBoundKeyStore());
-    spc_service->SetRandomBytesAsVectorForTesting(
-        base::BindLambdaForTesting([this](size_t length) {
-          EXPECT_EQ(length, 32u);
-          return fake_browser_bound_key_id_;
-        }));
+    auto passkey_browser_binder = std::make_unique<PasskeyBrowserBinder>(
+        CreateFakeBrowserBoundKeyStore(), mock_web_data_service_);
+    passkey_browser_binder->SetRandomBytesAsVectorCallbackForTesting(
+        base::BindLambdaForTesting(
+            [this](size_t length) { return fake_browser_bound_key_id_; }));
+    spc_service->SetPasskeyBrowserBinderForTesting(
+        std::move(passkey_browser_binder));
     return spc_service;
   }
 

@@ -151,7 +151,6 @@ void ExpectMostlyClean(std::optional<base::FilePath> path) {
 void ExpectClean(UpdaterScope scope) {
   ExpectCleanProcesses();
   ExpectMostlyClean(GetInstallDirectory(scope));
-  ExpectMostlyClean(GetCacheBaseDirectory(scope));
   EXPECT_FALSE(SystemdUnitsInstalled(scope));
   ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
 }

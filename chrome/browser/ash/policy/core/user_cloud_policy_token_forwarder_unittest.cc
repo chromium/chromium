@@ -143,7 +143,6 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
         ->MakePrimaryAccountAvailable(kEmail, signin::ConsentLevel::kSignin);
 
     auto* user_manager = GetFakeUserManager();
-    user_manager->AddUser(account_id);
     user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, false /* is_affiliated */, user_type, profile);
     user_manager->SwitchActiveUser(account_id);

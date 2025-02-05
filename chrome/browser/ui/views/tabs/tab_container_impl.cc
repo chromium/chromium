@@ -104,10 +104,6 @@ TabContainerImpl::TabContainerImpl(
                               base::Unretained(this)))) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  if (!gfx::Animation::ShouldRenderRichAnimation()) {
-    bounds_animator_.SetAnimationDuration(base::TimeDelta());
-  }
-
   bounds_animator_.AddObserver(this);
 
   overall_bounds_view_->SetVisible(false);
@@ -640,9 +636,7 @@ void TabContainerImpl::AnimateToIdealBounds() {
     AnimateTabSlotViewTo(header, target_bounds);
   }
 
-  const gfx::Rect overall_target_bounds = gfx::Rect(GetIdealTrailingX(), 0);
-  bounds_animator_.AnimateViewTo(base::to_address(overall_bounds_view_),
-                                 overall_target_bounds);
+  AnimateViewTo(&*overall_bounds_view_, gfx::Rect(GetIdealTrailingX(), 0));
 
   // Because the preferred size of the tabstrip depends on the IsAnimating()
   // condition, but starting an animation doesn't necessarily invalidate the
@@ -1140,6 +1134,15 @@ std::optional<gfx::Rect> TabContainerImpl::GetVisibleContentRect() {
   return scroll_container->GetVisibleRect();
 }
 
+void TabContainerImpl::AnimateViewTo(
+    View* view,
+    const gfx::Rect& target,
+    std::unique_ptr<gfx::AnimationDelegate> delegate) {
+  bounds_animator_.SetAnimationDuration(
+      gfx::Animation::RichAnimationDuration(base::Milliseconds(200)));
+  bounds_animator_.AnimateViewTo(view, target, std::move(delegate));
+}
+
 void TabContainerImpl::AnimateScrollToShowXCoordinate(const int start_edge,
                                                       const int target_edge) {
   if (tab_scrolling_animation_) {
@@ -1150,8 +1153,8 @@ void TabContainerImpl::AnimateScrollToShowXCoordinate(const int start_edge,
   gfx::Rect target_rect(target_edge, 0, 0, 0);
 
   tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
-      scroll_contents_view_, bounds_animator_.container(),
-      bounds_animator_.GetAnimationDuration(), start_rect, target_rect);
+      scroll_contents_view_, bounds_animator_.container(), start_rect,
+      target_rect);
   tab_scrolling_animation_->Start();
 }
 
@@ -1170,7 +1173,7 @@ void TabContainerImpl::AnimateTabSlotViewTo(TabSlotView* tab_slot_view,
     return;
   }
 
-  bounds_animator_.AnimateViewTo(
+  AnimateViewTo(
       tab_slot_view, target_bounds,
       std::make_unique<TabSlotAnimationDelegate>(this, tab_slot_view));
 }
@@ -1293,8 +1296,8 @@ void TabContainerImpl::StartRemoveTabAnimation(Tab* tab,
   // currently being closed to reflect the new ideal bounds, or else change from
   // removing one tab at a time to animating the removal of all tabs at once.
 
-  bounds_animator_.AnimateViewTo(
-      tab, target_bounds, std::make_unique<RemoveTabDelegate>(this, tab));
+  AnimateViewTo(tab, target_bounds,
+                std::make_unique<RemoveTabDelegate>(this, tab));
 }
 
 gfx::Rect TabContainerImpl::GetTargetBoundsForClosingTab(

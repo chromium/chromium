@@ -936,7 +936,7 @@ void ArcNotificationContentView::OnNotificationSurfaceAdded(
   // updated. As order of OnNotificationSurfaceAdded call is not guaranteed, we
   // are dispatching the event in both ArcNotificationContentView and
   // ArcAccessibilityHelperBridge.
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
 }
 
 void ArcNotificationContentView::OnNotificationSurfaceRemoved(

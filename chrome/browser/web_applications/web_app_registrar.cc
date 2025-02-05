@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
+#include "chrome/browser/web_applications/tabbed_mode_scope_matcher.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -573,6 +574,40 @@ std::optional<GURL> WebAppRegistrar::GetAppPinnedHomeTabUrl(
   }
   // Apps with home_tab set to 'auto' will not have a home tab.
   return std::nullopt;
+}
+
+bool WebAppRegistrar::IsUrlInHomeTabScope(const GURL& url,
+                                          const webapps::AppId& app_id) const {
+  if (!IsTabbedWindowModeEnabled(app_id)) {
+    return false;
+  }
+
+  if (!IsUrlInAppScope(url, app_id)) {
+    return false;
+  }
+
+  // Retrieve the start URL for the app. Start URL is always in home tab scope.
+  // TODO(b/330640982): rename GetAppPinnedHomeTabUrl() to something more
+  // sensible.
+  std::optional<GURL> pinned_home_url = GetAppPinnedHomeTabUrl(app_id);
+  if (!pinned_home_url) {
+    return false;
+  }
+
+  // We ignore hash ref when deciding what should be opened as the home tab.
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  if (url.ReplaceComponents(replacements) ==
+      pinned_home_url.value().ReplaceComponents(replacements)) {
+    return true;
+  }
+
+  for (auto& matcher : GetAppById(app_id)->GetTabbedModeHomeScope()) {
+    if (matcher.Match(url)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::optional<proto::WebAppOsIntegrationState>

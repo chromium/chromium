@@ -1407,7 +1407,8 @@ void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
     // on the tab. Nevertheless, JAWS needs the event to be fired regardless,
     // as per https://crbug.com/41450089.
     tab_at(selected_tabs_.active().value())
-        ->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+        ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection,
+                                             true);
   }
 
   UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);

@@ -313,13 +313,15 @@ ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
 
   // Ensure widgets are represented in accessibility.
   if (shelf->hotseat_widget()) {
-    shelf->hotseat_widget()->GetRootView()->NotifyAccessibilityEvent(
+    shelf->hotseat_widget()->GetRootView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kChildrenChanged, true);
   }
 
   if (shelf->GetStatusAreaWidget()) {
-    shelf->GetStatusAreaWidget()->GetRootView()->NotifyAccessibilityEvent(
-        ax::mojom::Event::kChildrenChanged, true);
+    shelf->GetStatusAreaWidget()
+        ->GetRootView()
+        ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                             true);
   }
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);

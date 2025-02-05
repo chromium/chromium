@@ -777,6 +777,7 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
       ClientSocketHandle* handle,
       CompletionOnceCallback callback,
       const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback,
+      bool fail_if_alias_requires_proxy_override,
       const NetLogWithSource& net_log) override {
     last_group_id_ = group_id;
     socket_requested_ = true;

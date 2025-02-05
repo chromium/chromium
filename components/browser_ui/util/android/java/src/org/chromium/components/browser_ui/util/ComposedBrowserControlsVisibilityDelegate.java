@@ -19,7 +19,7 @@ import java.util.List;
 @NullMarked
 public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate {
     private final List<BrowserControlsVisibilityDelegate> mDelegates;
-    private final Callback<Integer> mConstraintsUpdatedCallback;
+    private final Callback<@BrowserControlsState Integer> mConstraintsUpdatedCallback;
 
     private boolean mSetDisabled;
 
@@ -54,7 +54,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public @Nullable Integer addObserver(Callback<Integer> obs) {
+    public @Nullable @BrowserControlsState Integer addObserver(Callback<Integer> obs) {
         if (!hasObservers()) {
             for (int i = 0; i < mDelegates.size(); i++) {
                 mDelegates.get(i).addObserver(mConstraintsUpdatedCallback);
@@ -66,7 +66,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public void removeObserver(Callback<Integer> obs) {
+    public void removeObserver(Callback<@BrowserControlsState Integer> obs) {
         super.removeObserver(obs);
         if (!hasObservers()) {
             // One of the delegates can be activity-scoped and live longer than e.g. a tab-scoped
@@ -79,7 +79,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public @Nullable Integer get() {
+    public @Nullable @BrowserControlsState Integer get() {
         // When there are no observers, we don't actively update the set() value and calculate a
         // fresh value on demand.
         if (!hasObservers()) {
@@ -89,7 +89,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public void set(Integer value) {
+    public void set(@BrowserControlsState Integer value) {
         // Allow set(...) to only be called via the super constructor.  After initial construction,
         // no client should be allowed to update the value through anything other than the
         // attached delegates.

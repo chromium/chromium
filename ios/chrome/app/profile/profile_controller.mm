@@ -160,7 +160,7 @@ void FlushCookieStoreOnIOThread(
 // storage paths (regulard and off-the-record).
 void PurgeDataForSessions(std::set<std::string> session_ids,
                           std::array<base::FilePath, 2> storage_paths) {
-  const std::array<base::FilePath::StringPieceType, 3> directories = {
+  const std::array<base::FilePath::StringViewType, 3> directories = {
       kLegacySessionsDirname,
       kSessionRestorationDirname,
       FILE_PATH_LITERAL("Snapshots"),

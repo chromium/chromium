@@ -224,8 +224,8 @@ TEST_F(LinkToTextMediatorTest, ShouldNotOfferLinkToTextNotHTML) {
   EXPECT_FALSE([mediator_ shouldOfferLinkToText]);
 }
 
-// Tests that the shareHighlight command is triggered with the right parameters
-// when the view is not zoomed in.
+// Tests that the `-showShareSheetForHighlight:` command is triggered with the
+// right parameters when the view is not zoomed in.
 TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
   base::HistogramTester histogram_tester;
 
@@ -240,8 +240,8 @@ TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
   __block BOOL callback_invoked = NO;
 
   [[mocked_activity_service_commands_ expect]
-      shareHighlight:[OCMArg checkWithBlock:^BOOL(
-                                 ShareHighlightCommand* command) {
+      showShareSheetForHighlight:[OCMArg checkWithBlock:^BOOL(
+                                             ShareHighlightCommand* command) {
         EXPECT_TRUE(kTestHighlightURL == command.URL);
         EXPECT_EQ(kTestQuote, base::SysNSStringToUTF8(command.selectedText));
         EXPECT_EQ(fake_view_, command.sourceView);
@@ -269,8 +269,8 @@ TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
       "SharedHighlights.LinkGenerated.TimeToGenerate", 1);
 }
 
-// Tests that the shareHighlight command is triggered with the right parameters
-// when the current view is zoomed in.
+// Tests that the `-showShareSheetForHighlight:` command is triggered with the
+// right parameters when the current view is zoomed in.
 TEST_F(LinkToTextMediatorTest,
        HandleLinkToTextSelectionTriggersCommandWithZoom) {
   base::HistogramTester histogram_tester;
@@ -286,8 +286,8 @@ TEST_F(LinkToTextMediatorTest,
   __block BOOL callback_invoked = NO;
 
   [[mocked_activity_service_commands_ expect]
-      shareHighlight:[OCMArg checkWithBlock:^BOOL(
-                                 ShareHighlightCommand* command) {
+      showShareSheetForHighlight:[OCMArg checkWithBlock:^BOOL(
+                                             ShareHighlightCommand* command) {
         EXPECT_TRUE(kTestHighlightURL == command.URL);
         EXPECT_EQ(kTestQuote, base::SysNSStringToUTF8(command.selectedText));
         EXPECT_EQ(fake_view_, command.sourceView);
@@ -540,8 +540,8 @@ TEST_F(LinkToTextMediatorTest, WithHttpsAndCanonicalUrl) {
   __block BOOL callback_invoked = NO;
 
   [[mocked_activity_service_commands_ expect]
-      shareHighlight:[OCMArg checkWithBlock:^BOOL(
-                                 ShareHighlightCommand* command) {
+      showShareSheetForHighlight:[OCMArg checkWithBlock:^BOOL(
+                                             ShareHighlightCommand* command) {
         EXPECT_TRUE(command.URL.is_valid());
         EXPECT_TRUE(GURL(canonical_url).EqualsIgnoringRef(command.URL));
         callback_invoked = YES;
@@ -578,8 +578,8 @@ TEST_F(LinkToTextMediatorTest, NotHttpsAndCanonicalUrl) {
   __block BOOL callback_invoked = NO;
 
   [[mocked_activity_service_commands_ expect]
-      shareHighlight:[OCMArg checkWithBlock:^BOOL(
-                                 ShareHighlightCommand* command) {
+      showShareSheetForHighlight:[OCMArg checkWithBlock:^BOOL(
+                                             ShareHighlightCommand* command) {
         EXPECT_TRUE(command.URL.is_valid());
         EXPECT_TRUE(new_base_url.EqualsIgnoringRef(command.URL));
         callback_invoked = YES;

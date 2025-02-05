@@ -218,6 +218,11 @@ found in the LICENSE file.
             android:layout_height="match_parent"
             android:clipChildren="false" />
 
+        <ViewStub
+            android:id="@+id/loading_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 
     <!-- This empty view is used as the anchor for custom menu -->

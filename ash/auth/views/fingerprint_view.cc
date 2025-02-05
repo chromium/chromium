@@ -199,8 +199,8 @@ void FingerprintView::SetState(FingerprintState state) {
   state_ = state;
   DisplayCurrentState();
   if (NeedA11yAlertFromState()) {
-    label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                     /*send_native_event=*/true);
+    label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                               /*send_native_event=*/true);
   }
 }
 

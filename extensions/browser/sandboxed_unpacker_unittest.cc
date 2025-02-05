@@ -126,10 +126,12 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
 
  private:
   ~MockSandboxedUnpackerClient() override {
-    if (deleted_tracker_)
+    if (deleted_tracker_) {
       *deleted_tracker_ = true;
-    if (quit_closure_)
+    }
+    if (quit_closure_) {
       std::move(quit_closure_).Run();
+    }
   }
 
   void ShouldComputeHashesForOffWebstoreExtension(

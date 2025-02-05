@@ -147,7 +147,7 @@ class GlicKeyedService : public KeyedService {
   bool IsActiveWebContents(content::WebContents* contents);
 
   void TryPreload();
-  void ReloadWebview();
+  void Reload();
 
   GlicProfileManager* GetProfileManagerForTesting() { return profile_manager_; }
 
@@ -167,6 +167,7 @@ class GlicKeyedService : public KeyedService {
   raw_ptr<Profile> profile_;
 
   GlicProfileConfiguration configuration_;
+  std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<GlicWindowController> window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
@@ -175,7 +176,6 @@ class GlicKeyedService : public KeyedService {
   // instances of `GlicCookieSynchronizer` to handle the two different webviews
   // as they require different storage partitions.
   GlicCookieSynchronizer fre_cookie_synchronizer_;
-  std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<AuthController> auth_controller_;
   // Unowned
   raw_ptr<GlicProfileManager> profile_manager_;

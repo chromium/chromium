@@ -9,6 +9,8 @@
 
 #include "ui/display/util/display_util.h"
 
+#include <vector>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_test_util.h"
@@ -212,7 +214,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
       .fWY = 0.329102f};
   skcms_Matrix3x3 expected_hpz32x_toXYZ50_matrix;
   expected_hpz32x_primaries.toXYZD50(&expected_hpz32x_toXYZ50_matrix);
-  std::vector<uint8_t> hpz32x_edid(kHPz32x, kHPz32x + std::size(kHPz32x) - 1);
+  std::vector<uint8_t> hpz32x_edid(std::begin(kHPz32x), std::end(kHPz32x) - 1);
   const gfx::ColorSpace expected_hpz32x_color_space =
       gfx::ColorSpace::CreateCustom(
           expected_hpz32x_toXYZ50_matrix,
@@ -237,7 +239,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                                                               .fWY = 0.329102f};
   skcms_Matrix3x3 expected_samus_toXYZ50_matrix;
   expected_samus_primaries.toXYZD50(&expected_samus_toXYZ50_matrix);
-  std::vector<uint8_t> samus_edid(kSamus, kSamus + std::size(kSamus) - 1);
+  std::vector<uint8_t> samus_edid(std::begin(kSamus), std::end(kSamus) - 1);
   const gfx::ColorSpace expected_samus_color_space =
       gfx::ColorSpace::CreateCustom(
           expected_samus_toXYZ50_matrix,
@@ -266,7 +268,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
       gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::CUSTOM,
       gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL,
       /*custom_primary_matrix=*/nullptr, &eve_transfer);
-  std::vector<uint8_t> eve_edid(kEve, kEve + std::size(kEve) - 1);
+  std::vector<uint8_t> eve_edid(std::begin(kEve), std::end(kEve) - 1);
   EXPECT_EQ(expected_eve_color_space.ToString(),
             GetColorSpaceFromEdid(display::EdidParser(std::move(eve_edid)))
                 .ToString());
@@ -287,7 +289,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                                                             .fWY = 0.32910f};
   skcms_Matrix3x3 expected_hdr_toXYZ50_matrix;
   expected_hdr_primaries.toXYZD50(&expected_hdr_toXYZ50_matrix);
-  std::vector<uint8_t> hdr_edid(kHDR, kHDR + std::size(kHDR) - 1);
+  std::vector<uint8_t> hdr_edid(std::begin(kHDR), std::end(kHDR) - 1);
   const gfx::ColorSpace expected_hdr_color_space =
       gfx::ColorSpace::CreateCustom(expected_hdr_toXYZ50_matrix,
                                     gfx::ColorSpace::TransferID::PQ);
@@ -302,8 +304,8 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
       4);
 
   // Test with gamma marked as non-existent.
-  std::vector<uint8_t> no_gamma_edid(
-      kEdidWithNoGamma, kEdidWithNoGamma + std::size(kEdidWithNoGamma) - 1);
+  std::vector<uint8_t> no_gamma_edid(std::begin(kEdidWithNoGamma),
+                                     std::end(kEdidWithNoGamma) - 1);
   const gfx::ColorSpace no_gamma_color_space =
       GetColorSpaceFromEdid(display::EdidParser(std::move(no_gamma_edid)));
   EXPECT_FALSE(no_gamma_color_space.IsValid());
@@ -326,8 +328,8 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                                                            .fWY = 0.3290};
   skcms_Matrix3x3 expected_p3_to_XYZ50_matrix;
   expected_p3_primaries.toXYZD50(&expected_p3_to_XYZ50_matrix);
-  std::vector<uint8_t> p3_edid(kScreeboP3,
-                               kScreeboP3 + std::size(kScreeboP3) - 1);
+  std::vector<uint8_t> p3_edid(std::begin(kScreeboP3),
+                               std::end(kScreeboP3) - 1);
   const gfx::ColorSpace expected_p3_color_space = gfx::ColorSpace::CreateCustom(
       expected_p3_to_XYZ50_matrix, gfx::ColorSpace::TransferID::PQ);
   EXPECT_TRUE(expected_p3_color_space.IsWide());
@@ -337,7 +339,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                 .ToString());
 
   // Test with a display that has only DCI-P3 in its Colorimetry Data Block.
-  std::vector<uint8_t> p3_cdb_edid(kCDBP3, kCDBP3 + std::size(kCDBP3) - 1);
+  std::vector<uint8_t> p3_cdb_edid(std::begin(kCDBP3), std::end(kCDBP3) - 1);
   EXPECT_EQ(
       gfx::ColorSpace::CreateDisplayP3D65().ToString(),
       GetColorSpaceFromEdid(display::EdidParser(std::move(p3_cdb_edid), true))
@@ -355,8 +357,8 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
           EdidColorSpaceChecksOutcome::kErrorPrimariesAreaTooSmall),
       1);
 
-  std::vector<uint8_t> invalid_edid(kInvalidEdid,
-                                    kInvalidEdid + std::size(kInvalidEdid) - 1);
+  std::vector<uint8_t> invalid_edid(std::begin(kInvalidEdid),
+                                    std::end(kInvalidEdid) - 1);
   const gfx::ColorSpace invalid_color_space =
       GetColorSpaceFromEdid(display::EdidParser(std::move(invalid_edid)));
   EXPECT_FALSE(invalid_color_space.IsValid());
@@ -366,7 +368,7 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
           EdidColorSpaceChecksOutcome::kErrorPrimariesAreaTooSmall),
       2);
 
-  std::vector<uint8_t> sst210_edid(kSST210, kSST210 + std::size(kSST210) - 1);
+  std::vector<uint8_t> sst210_edid(std::begin(kSST210), std::end(kSST210) - 1);
   const gfx::ColorSpace sst210_color_space =
       GetColorSpaceFromEdid(display::EdidParser(std::move(sst210_edid)));
   EXPECT_FALSE(sst210_color_space.IsValid()) << sst210_color_space.ToString();
@@ -376,8 +378,8 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
           EdidColorSpaceChecksOutcome::kErrorBadCoordinates),
       1);
 
-  std::vector<uint8_t> sst210_edid_2(
-      kSST210Corrected, kSST210Corrected + std::size(kSST210Corrected) - 1);
+  std::vector<uint8_t> sst210_edid_2(std::begin(kSST210Corrected),
+                                     std::end(kSST210Corrected) - 1);
   const gfx::ColorSpace sst210_color_space_2 =
       GetColorSpaceFromEdid(display::EdidParser(std::move(sst210_edid_2)));
   EXPECT_FALSE(sst210_color_space_2.IsValid())
@@ -388,9 +390,8 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
           EdidColorSpaceChecksOutcome::kErrorPrimariesAreaTooSmall),
       3);
 
-  std::vector<uint8_t> broken_blue_edid(
-      kBrokenBluePrimaries,
-      kBrokenBluePrimaries + std::size(kBrokenBluePrimaries) - 1);
+  std::vector<uint8_t> broken_blue_edid(std::begin(kBrokenBluePrimaries),
+                                        std::end(kBrokenBluePrimaries) - 1);
   const gfx::ColorSpace broken_blue_color_space =
       GetColorSpaceFromEdid(display::EdidParser(std::move(broken_blue_edid)));
   EXPECT_FALSE(broken_blue_color_space.IsValid())
@@ -405,8 +406,8 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
 }
 
 TEST(DisplayUtilTest, GetAudioPassthroughFromEdid) {
-  std::vector<uint8_t> audio_edid(kDTSAudio,
-                                  kDTSAudio + std::size(kDTSAudio) - 1);
+  std::vector<uint8_t> audio_edid(std::begin(kDTSAudio),
+                                  std::end(kDTSAudio) - 1);
   EXPECT_EQ(display::EdidParser(std::move(audio_edid)).audio_formats(),
             display::EdidParser::kAudioBitstreamPcmLinear |
                 display::EdidParser::kAudioBitstreamDts |

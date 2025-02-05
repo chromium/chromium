@@ -2081,6 +2081,7 @@ int MockTransportClientSocketPool::RequestSocket(
     ClientSocketHandle* handle,
     CompletionOnceCallback callback,
     const ProxyAuthCallback& on_auth_callback,
+    bool fail_if_alias_requires_proxy_override,
     const NetLogWithSource& net_log) {
   last_request_priority_ = priority;
   std::unique_ptr<StreamSocket> socket =

@@ -53,13 +53,6 @@ class MockGeolocationObserver : public GeolocationObserver {
   MOCK_METHOD1(OnLocationUpdate, void(const mojom::GeopositionResult& result));
 };
 
-class AsyncMockGeolocationObserver : public MockGeolocationObserver {
- public:
-  void OnLocationUpdate(const mojom::GeopositionResult& result) override {
-    MockGeolocationObserver::OnLocationUpdate(result);
-  }
-};
-
 class MockGeolocationCallbackWrapper {
  public:
   MOCK_METHOD1(Callback, void(const mojom::GeopositionResult& result));
@@ -178,7 +171,7 @@ class GeolocationProviderTest : public testing::Test {
 
  private:
   // Called on provider thread.
-  void GetProvidersStarted();
+  bool GetProvidersStarted();
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   std::unique_ptr<FakeGeolocationSystemPermissionManager>
@@ -214,20 +207,20 @@ bool GeolocationProviderTest::ProvidersStarted() {
   DCHECK(provider()->IsRunning());
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  base::RunLoop run_loop;
-  provider()->task_runner()->PostTaskAndReply(
+  TestFuture<bool> future;
+  provider()->task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GeolocationProviderTest::GetProvidersStarted,
                      base::Unretained(this)),
-      run_loop.QuitClosure());
-  run_loop.Run();
-  return is_started_;
+      future.GetCallback());
+  return future.Get();
 }
 
-void GeolocationProviderTest::GetProvidersStarted() {
+bool GeolocationProviderTest::GetProvidersStarted() {
   DCHECK(provider()->task_runner()->BelongsToCurrentThread());
   is_started_ = location_provider_manager()->state() !=
                 mojom::GeolocationDiagnostics::ProviderState::kStopped;
+  return is_started_;
 }
 
 void GeolocationProviderTest::SendMockLocation(
@@ -269,25 +262,27 @@ TEST_F(GeolocationProviderTest, StalePositionNotSent) {
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
 
   {
-    base::RunLoop run_loop;
+    TestFuture<mojom::GeopositionResultPtr> future1;
 
-    AsyncMockGeolocationObserver first_observer;
+    MockGeolocationObserver first_observer;
     GeolocationProviderImpl::LocationUpdateCallback first_callback =
         base::BindRepeating(&MockGeolocationObserver::OnLocationUpdate,
                             base::Unretained(&first_observer));
     EXPECT_CALL(first_observer,
                 OnLocationUpdate(GeopositionResultEq(*position_result1_)))
-        .WillOnce([&run_loop]() { run_loop.Quit(); });
+        .WillOnce([&](const mojom::GeopositionResult& result) {
+          future1.SetValue(result.Clone());
+        });
+
     base::CallbackListSubscription subscription =
         provider()->AddLocationUpdateCallback(first_callback, false);
     SendMockLocation(*position_result1_);
-    run_loop.Run();
+    EXPECT_EQ(future1.Get()->get_position(), position_result1_->get_position());
     subscription = {};
   }
 
   {
-    base::RunLoop run_loop;
-    AsyncMockGeolocationObserver second_observer;
+    MockGeolocationObserver second_observer;
     // After adding a second observer, check that no unexpected position update
     // is sent.
     EXPECT_CALL(second_observer, OnLocationUpdate(testing::_)).Times(0);
@@ -296,14 +291,17 @@ TEST_F(GeolocationProviderTest, StalePositionNotSent) {
                             base::Unretained(&second_observer));
     base::CallbackListSubscription subscription2 =
         provider()->AddLocationUpdateCallback(second_callback, false);
-    run_loop.RunUntilIdle();
+    base::RunLoop().RunUntilIdle();
 
     // The second observer should receive the new position now.
+    TestFuture<mojom::GeopositionResultPtr> future2;
     EXPECT_CALL(second_observer,
                 OnLocationUpdate(GeopositionResultEq(*position_result2_)))
-        .WillOnce([&run_loop]() { run_loop.Quit(); });
+        .WillOnce([&](const mojom::GeopositionResult& result) {
+          future2.SetValue(result.Clone());
+        });
     SendMockLocation(*position_result2_);
-    run_loop.Run();
+    EXPECT_EQ(future2.Get()->get_position(), position_result2_->get_position());
     subscription2 = {};
   }
 

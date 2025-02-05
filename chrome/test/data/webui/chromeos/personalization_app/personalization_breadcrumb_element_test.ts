@@ -445,7 +445,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
         assertBreadcrumbs(breadcrumbContainer, [
           breadcrumbElement.i18n('wallpaperLabel'),
-          breadcrumbElement.i18n('seaPenFreeformWallpaperTemplatesLabel'),
+          breadcrumbElement.i18n('seaPenTemplatesWallpaperLabel'),
         ]);
       });
 
@@ -501,7 +501,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
         assertBreadcrumbs(breadcrumbContainer, [
           breadcrumbElement.i18n('wallpaperLabel'),
-          breadcrumbElement.i18n('seaPenFreeformWallpaperTemplatesLabel'),
+          breadcrumbElement.i18n('seaPenTemplatesWallpaperLabel'),
           'Airbrushed',
         ]);
 
@@ -537,7 +537,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
-      breadcrumbElement.i18n('seaPenLabel'),
+      breadcrumbElement.i18n('seaPenFreeformWallpaperLabel'),
     ]);
   });
 

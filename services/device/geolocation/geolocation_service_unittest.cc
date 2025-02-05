@@ -21,20 +21,12 @@
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
 #include "services/device/public/mojom/geolocation_client_id.mojom.h"
-#include "services/device/public/mojom/geolocation_config.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
 
 namespace device {
 
 namespace {
-
-void CheckBoolReturnValue(base::OnceClosure quit_closure,
-                          bool expect,
-                          bool result) {
-  EXPECT_EQ(expect, result);
-  std::move(quit_closure).Run();
-}
 
 class GeolocationServiceUnitTest : public DeviceServiceTestBase {
  public:
@@ -91,17 +83,11 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  void BindGeolocationConfig() {
-    device_service()->BindGeolocationConfig(
-        geolocation_config_.BindNewPipeAndPassReceiver());
-  }
-
   scoped_refptr<MockWifiDataProvider> wifi_data_provider_;
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
   mojo::Remote<mojom::GeolocationControl> geolocation_control_;
   mojo::Remote<mojom::GeolocationContext> geolocation_context_;
   mojo::Remote<mojom::Geolocation> geolocation_;
-  mojo::Remote<mojom::GeolocationConfig> geolocation_config_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -136,26 +122,6 @@ TEST_F(GeolocationServiceUnitTest, UrlWithApiKey) {
   test_url_loader_factory_.SetInterceptor(base::NullCallback());
 }
 #endif
-
-// TODO(crbug.com/41430104): Flaky on Chrome OS / Fails often on *San.
-// TODO(crbug.com/41479143): Also flaky on other platforms.
-TEST_F(GeolocationServiceUnitTest, DISABLED_GeolocationConfig) {
-  BindGeolocationConfig();
-  {
-    base::RunLoop run_loop;
-    geolocation_config_->IsHighAccuracyLocationBeingCaptured(
-        base::BindOnce(&CheckBoolReturnValue, run_loop.QuitClosure(), false));
-    run_loop.Run();
-  }
-
-  geolocation_->SetHighAccuracyHint(/*high_accuracy=*/true);
-  {
-    base::RunLoop run_loop;
-    geolocation_config_->IsHighAccuracyLocationBeingCaptured(
-        base::BindOnce(&CheckBoolReturnValue, run_loop.QuitClosure(), true));
-    run_loop.Run();
-  }
-}
 
 }  // namespace
 

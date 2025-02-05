@@ -120,7 +120,7 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
 
   const char* GetViewClassName() const;
   gfx::NativeViewAccessible GetNativeObject() const;
-  void NotifyAccessibilityEvent(ax::mojom::Event event_type);
+  void NotifyAccessibilityEventDeprecated(ax::mojom::Event event_type);
   // Allows clients to modify the AXNodeData for this virtual view. This should
   // be used for attributes that are relatively stable and do not change
   // dynamically.
@@ -179,7 +179,7 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   // virtual view. Returns true on success, but note that the success/failure is
   // not propagated to the client that requested the action, since the
   // request is sometimes asynchronous. The right way to send a response is
-  // via NotifyAccessibilityEvent().
+  // via NotifyAccessibilityEventDeprecated().
   virtual bool HandleAccessibleAction(const ui::AXActionData& action_data);
 
   // Prune/Unprune all descendant virtual views from the tree. As of right now,

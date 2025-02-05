@@ -220,8 +220,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
       reset_state_.Start(FROM_HERE, kResetToDefaultIconDelay,
                          base::BindOnce(&FingerprintView::DisplayCurrentState,
                                         base::Unretained(this)));
-      label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                       true /*send_native_event*/);
+      label_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                 true /*send_native_event*/);
     }
   }
 
@@ -371,8 +371,8 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
     SetEnabledColorId(kColorAshTextColorAlert);
     is_showing_error_ = true;
     GetViewAccessibility().SetName(error_text);
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                             true /*send_native_event*/);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                       true /*send_native_event*/);
   }
 
  private:

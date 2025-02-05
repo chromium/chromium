@@ -7101,6 +7101,25 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ContextualCueing.NudgeDecision">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    Recorded when a decision to nudge an optimization type was made for the page
+    load.
+  </summary>
+  <metric name="NudgeDecision" enum="ContextualCueingNudgeDecision">
+    <summary>
+      The nudge decision made for optimization type for the page load.
+    </summary>
+  </metric>
+  <metric name="OptimizationType" enum="OptimizationType">
+    <summary>
+      The optimization type a nudge decision was made for.
+    </summary>
+  </metric>
+</event>
+
 <event name="Conversions.ClientBounce">
   <owner>linnan@google.com</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

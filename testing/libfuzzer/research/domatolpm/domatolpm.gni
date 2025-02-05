@@ -68,6 +68,9 @@ template("domatolpm") {
       "-d",
       rebase_path(_target_gen_dir, root_gen_dir),
     ]
+    if (defined(invoker.stabilize_grammar) && invoker.stabilize_grammar) {
+      args += [ "-s" ]
+    }
     inputs = [
       "//testing/libfuzzer/research/domatolpm/templates/domatolpm.cc.tmpl",
       "//testing/libfuzzer/research/domatolpm/templates/domatolpm.h.tmpl",
@@ -115,6 +118,9 @@ template("domatolpm_fuzzer") {
       grammar_name = _grammars[0]
       if (defined(invoker.deps)) {
         deps = invoker.deps
+      }
+      if (defined(invoker.stabilize_grammar)) {
+        stabilize_grammar = invoker.stabilize_grammar
       }
     }
   }

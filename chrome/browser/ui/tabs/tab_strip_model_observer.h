@@ -394,9 +394,12 @@ class TabStripModelObserver {
   virtual void TabBlockedStateChanged(content::WebContents* contents,
                                       int index);
 
-  // Called when the tab at |index| is added to the group with id |group|.
+  // Called when the tab at `index` is added to the group with id `new_group` or
+  // removed from a group with id `old_group`.
   virtual void TabGroupedStateChanged(
-      std::optional<tab_groups::TabGroupId> group,
+      TabStripModel* tab_strip_model,
+      std::optional<tab_groups::TabGroupId> old_group,
+      std::optional<tab_groups::TabGroupId> new_group,
       tabs::TabInterface* tab,
       int index);
 

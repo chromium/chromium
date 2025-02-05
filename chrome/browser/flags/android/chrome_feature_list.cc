@@ -89,7 +89,6 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableRankingFormulaAddressProfiles,
     &autofill::features::kAutofillEnableRankingFormulaCreditCards,
-    &autofill::features::kAutofillEnableVirtualCardMetadata,
     &autofill::features::kAutofillEnableCardBenefitsForAmericanExpress,
     &autofill::features::kAutofillEnableCardProductName,
     &autofill::features::kAutofillEnablePaymentSettingsCardPromoAndScanCard,
@@ -377,6 +376,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &plus_addresses::features::kPlusAddressAndroidOpenGmsCoreManagementPage,
     &privacy_sandbox::kAlwaysBlock3pcsIncognito,
     &privacy_sandbox::kActUserBypassUx,
+    &privacy_sandbox::kDisplayWildcardInContentSettings,
     &privacy_sandbox::kFingerprintingProtectionUx,
     &privacy_sandbox::kIpProtectionV1,
     &privacy_sandbox::kIpProtectionUx,
@@ -843,7 +843,7 @@ BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive,
 
 BASE_FEATURE(kGroupNewTabWithParent,
              "GroupNewTabWithParent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHistoryPaneAndroid,
              "HistoryPaneAndroid",

@@ -76,7 +76,7 @@
     id<PromosManagerCommands> promosManagerHandler =
         HandlerForProtocol(self.dispatcher, PromosManagerCommands);
 
-    [promosManagerHandler maybeDisplayPromo];
+    [promosManagerHandler showPromo];
   }
 }
 

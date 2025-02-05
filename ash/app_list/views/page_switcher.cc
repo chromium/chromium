@@ -71,7 +71,7 @@ class PageSwitcherButton : public IconButton {
     selected_ = selected;
     SchedulePaint();
     if (selected)
-      NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   }
 
   // IconButton:

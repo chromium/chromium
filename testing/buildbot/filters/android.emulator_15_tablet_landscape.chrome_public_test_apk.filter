@@ -11,3 +11,6 @@
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchRelatedSearchesTest.testRelatedSearchesInBar
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchRelatedSearchesTest.testRelatedSearchesInBarWithDefaultQuery_Ellipsize
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchRelatedSearchesTest.testRelatedSearchesInBarForDefinitionCard
+
+# crbug.com/394606261
+-org.chromium.chrome.browser.compositor.overlays.strip.TabStripGroupContextMenuTest.*

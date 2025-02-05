@@ -1271,6 +1271,7 @@ if (is_chromeos && is_chromeos_device) {
   }
 }
 
+# Tests that are included in both browser_tests and android_browsertests.
 source_set("platform_browser_tests") {
   testonly = true
 
@@ -1423,6 +1424,8 @@ source_set("platform_browser_tests") {
   }
 
   if (enable_extensions_core) {
+    sources +=
+        [ "../browser/extensions/api/system_network/system_network_apitest.cc" ]
     deps += [ "//extensions:test_support" ]
   }
 }
@@ -5447,7 +5450,6 @@ if (!is_android) {
 
     if (is_win || is_mac || is_linux) {
       sources += [
-        "../browser/ui/startup/default_browser_prompt/default_browser_prompt_browsertest.cc",
         "../browser/ui/startup/first_run_service_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_dice_sign_in_provider_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_glic_flow_controller_browsertest.cc",
@@ -8770,7 +8772,6 @@ test("unit_tests") {
       "../browser/extensions/activity_log/fullstream_ui_policy_unittest.cc",
       "../browser/extensions/api/activity_log_private/activity_log_private_api_unittest.cc",
       "../browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api_unittest.cc",
-      "../browser/extensions/api/bookmarks/bookmark_api_helpers_unittest.cc",
       "../browser/extensions/api/bookmarks/bookmarks_api_unittest.cc",
       "../browser/extensions/api/browsing_data/browsing_data_unittest.cc",
       "../browser/extensions/api/chrome_extensions_api_client_unittest.cc",
@@ -8860,6 +8861,7 @@ test("unit_tests") {
       "../browser/extensions/blocklist_extension_prefs_unittest.cc",
       "../browser/extensions/blocklist_state_fetcher_unittest.cc",
       "../browser/extensions/blocklist_states_interaction_unittest.cc",
+      "../browser/extensions/bookmarks/bookmarks_helpers_unittest.cc",
       "../browser/extensions/chrome_app_icon_unittest.cc",
       "../browser/extensions/chrome_app_sorting_unittest.cc",
       "../browser/extensions/chrome_component_extension_resource_manager_unittest.cc",

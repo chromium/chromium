@@ -46,6 +46,9 @@
 
 namespace {
 
+using ModelExecutionError = optimization_guide::
+    OptimizationGuideModelExecutionError::ModelExecutionError;
+
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 using ::optimization_guide::OnDeviceModelComponentStateManager;
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
@@ -346,7 +349,39 @@ void OptimizationGuideService::OnBrowsingDataRemoved() {
   hints_manager_->ClearFetchedHints();
 }
 
+std::string OptimizationGuideService::ResponseForErrorCode(int error_code) {
+  ModelExecutionError model_execution_error =
+      static_cast<ModelExecutionError>(error_code);
+  switch (model_execution_error) {
+    case ModelExecutionError::kUnknown:
+      return "Unknown error (error code 0)";
+    case ModelExecutionError::kInvalidRequest:
+      return "Invalid request (error code 1)";
+    case ModelExecutionError::kRequestThrottled:
+      return "Request throttled (error code 2)";
+    case ModelExecutionError::kPermissionDenied:
+      return "Permission denied (error code 3)";
+    case ModelExecutionError::kGenericFailure:
+      return "Generic failure (error code 4)";
+    case ModelExecutionError::kRetryableError:
+      return "Retryable error in server (error code 5)";
+    case ModelExecutionError::kNonRetryableError:
+      return "Non-retryable error in server (error code 6)";
+    case ModelExecutionError::kUnsupportedLanguage:
+      return "Unsupported language (error code 7)";
+    case ModelExecutionError::kFiltered:
+      return "Request was filtered (error code 8)";
+    case ModelExecutionError::kDisabled:
+      return "Response was disabled (error code 9)";
+    case ModelExecutionError::kCancelled:
+      return "Response was cancelled (error code 10)";
+    case ModelExecutionError::kResponseLowQuality:
+      return "Low quality response (error code 11)";
+  }
+}
+
 #pragma mark - optimization_guide::OptimizationGuideModelProvider implementation
+
 void OptimizationGuideService::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     const std::optional<optimization_guide::proto::Any>& model_metadata,

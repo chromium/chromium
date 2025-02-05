@@ -19,15 +19,14 @@ enum class Error {
   kResponseStartWithoutInput = 0,
   kResponseStopWithoutInput = 1,
   kResponseStartWhileHidingOrHidden = 2,
-  kMaxValue = kResponseStartWhileHidingOrHidden,
+  kWindowCloseWithoutWindowOpen = 3,
+  kMaxValue = kWindowCloseWithoutWindowOpen,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:GlicResponseError)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseError)
 
 }  // namespace
 
-GlicMetrics::GlicMetrics(GlicWindowController* window_controller)
-    : window_controller_(window_controller) {}
-
+GlicMetrics::GlicMetrics() = default;
 GlicMetrics::~GlicMetrics() = default;
 
 void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
@@ -41,13 +40,13 @@ void GlicMetrics::OnResponseStarted() {
 
   // It doesn't make sense to record response start without input submission.
   if (input_submitted_time_.is_null()) {
-    base::UmaHistogramEnumeration("Glic.Response.Error",
+    base::UmaHistogramEnumeration("Glic.Metrics.Error",
                                   Error::kResponseStartWithoutInput);
     return;
   }
 
-  if (!window_controller_->IsShowing()) {
-    base::UmaHistogramEnumeration("Glic.Response.Error",
+  if (!controller_->IsShowing()) {
+    base::UmaHistogramEnumeration("Glic.Metrics.Error",
                                   Error::kResponseStartWhileHidingOrHidden);
     return;
   }
@@ -55,10 +54,28 @@ void GlicMetrics::OnResponseStarted() {
   response_started_time_ = base::TimeTicks::Now();
   base::UmaHistogramMediumTimes("Glic.Response.StartTime",
                                 response_started_time_ - input_submitted_time_);
+  switch (input_mode_) {
+    case mojom::WebClientMode::kUnknown:
+      base::UmaHistogramMediumTimes(
+          "Glic.Response.StartTime.InputMode.Unknown",
+          response_started_time_ - input_submitted_time_);
+      break;
+    case mojom::WebClientMode::kText:
+      base::UmaHistogramMediumTimes(
+          "Glic.Response.StartTime.InputMode.Text",
+          response_started_time_ - input_submitted_time_);
+      break;
+    case mojom::WebClientMode::kAudio:
+      base::UmaHistogramMediumTimes(
+          "Glic.Response.StartTime.InputMode.Audio",
+          response_started_time_ - input_submitted_time_);
+      break;
+  }
   base::RecordAction(base::UserMetricsAction("GlicResponse"));
+  ++session_responses_;
 
   // More details metrics.
-  bool attached = window_controller_->IsAttached();
+  bool attached = controller_->IsAttached();
   base::UmaHistogramBoolean("Glic.Response.Attached", attached);
 }
 
@@ -66,7 +83,7 @@ void GlicMetrics::OnResponseStopped() {
   base::RecordAction(base::UserMetricsAction("GlicResponseStop"));
 
   if (input_submitted_time_.is_null()) {
-    base::UmaHistogramEnumeration("Glic.Response.Error",
+    base::UmaHistogramEnumeration("Glic.Metrics.Error",
                                   Error::kResponseStopWithoutInput);
   } else {
     base::TimeTicks now = base::TimeTicks::Now();
@@ -80,11 +97,37 @@ void GlicMetrics::OnResponseStopped() {
 }
 
 void GlicMetrics::OnSessionTerminated() {
-  base::RecordAction(base::UserMetricsAction("GlicSessionEnd"));
+  base::RecordAction(base::UserMetricsAction("GlicWebClientSessionEnd"));
 }
 
 void GlicMetrics::OnResponseRated(bool positive) {
   base::UmaHistogramBoolean("Glic.Response.Rated", positive);
+}
+
+void GlicMetrics::OnGlicWindowOpen() {
+  base::RecordAction(base::UserMetricsAction("GlicSessionBegin"));
+  session_start_time_ = base::TimeTicks::Now();
+}
+
+void GlicMetrics::OnGlicWindowClose() {
+  base::RecordAction(base::UserMetricsAction("GlicSessionEnd"));
+  base::UmaHistogramCounts1000("Glic.Session.ResponseCount",
+                               session_responses_);
+  if (session_start_time_.is_null()) {
+    base::UmaHistogramEnumeration("Glic.Metrics.Error",
+                                  Error::kWindowCloseWithoutWindowOpen);
+  } else {
+    base::TimeDelta open_time = base::TimeTicks() - session_start_time_;
+    base::UmaHistogramCustomTimes("Glic.Session.Duration", open_time,
+                                  /*min=*/base::Seconds(1),
+                                  /*max=*/base::Days(10), /*buckets=*/50);
+  }
+  session_responses_ = 0;
+  session_start_time_ = base::TimeTicks();
+}
+
+void GlicMetrics::SetWindowController(GlicWindowController* controller) {
+  controller_ = controller;
 }
 
 }  // namespace glic

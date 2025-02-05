@@ -139,7 +139,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
         continue;
       }
 
-      root_view->NotifyAccessibilityEvent(
+      root_view->NotifyAccessibilityEventDeprecated(
           ax::mojom::Event::kWindowVisibilityChanged, true);
     }
   }

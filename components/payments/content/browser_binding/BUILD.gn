@@ -1,6 +1,9 @@
 source_set("browser_binding") {
   visibility = [ "//components/payments/content/*" ]
-  public_deps = [ ":interface" ]
+  public_deps = [
+    ":interface",
+    ":passkey_browser_binder",
+  ]
   if (is_android) {
     deps = [ ":android" ]
   }
@@ -12,6 +15,38 @@ source_set("interface") {
     "browser_bound_key_store.h",
   ]
   public_deps = [ "//device/fido" ]
+}
+
+source_set("passkey_browser_binder") {
+  visibility = [ "//components/payments/content/*" ]
+  sources = [
+    "passkey_browser_binder.cc",
+    "passkey_browser_binder.h",
+  ]
+  public_deps = [ ":interface" ]
+  deps = [
+    "//base",
+    "//components/payments/content:utils",
+    "//components/webdata/common",
+  ]
+}
+
+source_set("passkey_browser_binder_unittests") {
+  testonly = true
+  visibility = [ "//components/payments/*" ]
+  sources = [ "passkey_browser_binder_unittest.cc" ]
+  deps = [
+    ":fake_browser_bound_key_store",
+    ":interface",
+    ":passkey_browser_binder",
+    "//base",
+    "//base/test:test_support",
+    "//components/payments/content:test_support",
+    "//content/test:test_support",
+    "//device/fido",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
 
 if (is_android) {

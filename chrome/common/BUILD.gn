@@ -732,7 +732,7 @@ mojom("mojo_bindings") {
   }
 
   if (enable_ppapi) {
-    sources += [ "metrics.mojom" ]
+    sources += [ "ppapi_metrics.mojom" ]
   }
 
   public_deps = [

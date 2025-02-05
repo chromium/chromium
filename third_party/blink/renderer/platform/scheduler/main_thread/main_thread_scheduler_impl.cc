@@ -82,8 +82,6 @@ const double kShortIdlePeriodDurationPercentile = 50;
 // which main thread compositing can be considered fast.
 const double kFastCompositingIdleTimeThreshold = .2;
 
-constexpr int kDefaultPrioritizeCompositingAfterDelayMs = 100;
-
 const char* AudioPlayingStateToString(bool is_audio_playing) {
   if (is_audio_playing) {
     return "playing";
@@ -456,27 +454,16 @@ MainThreadSchedulerImpl::AnyThread::AnyThread(
           &main_thread_scheduler_impl->tracing_controller_,
           YesNoStateToString) {}
 
-MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
-  mbi_override_task_runner_handle =
-      base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle);
-
-  compositor_gesture_rendering_starvation_threshold =
-      GetThreadedScrollRenderingStarvationThreshold();
-
-  if (base::FeatureList::IsEnabled(features::kDeferRendererTasksAfterInput)) {
-    discrete_input_task_deferral_policy =
-        features::kTaskDeferralPolicyParam.Get();
-  }
-
-  prioritize_compositing_after_delay_pre_fcp =
-      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-          kPrioritizeCompositingAfterDelayTrials, "PreFCP",
-          kDefaultPrioritizeCompositingAfterDelayMs));
-  prioritize_compositing_after_delay_post_fcp =
-      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-          kPrioritizeCompositingAfterDelayTrials, "PostFCP",
-          kDefaultPrioritizeCompositingAfterDelayMs));
-}
+MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings()
+    : mbi_override_task_runner_handle(
+          base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle)),
+      compositor_gesture_rendering_starvation_threshold(
+          GetThreadedScrollRenderingStarvationThreshold()),
+      discrete_input_task_deferral_policy(
+          base::FeatureList::IsEnabled(features::kDeferRendererTasksAfterInput)
+              ? std::optional<features::TaskDeferralPolicy>(
+                    features::kTaskDeferralPolicyParam.Get())
+              : std::nullopt) {}
 
 MainThreadSchedulerImpl::AnyThread::~AnyThread() = default;
 
@@ -1250,12 +1237,7 @@ void MainThreadSchedulerImpl::DidHandleInputEventOnMainThread(
     }
   }
 
-  bool is_discrete =
-      base::FeatureList::IsEnabled(
-          features::kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics)
-          ? WebInputEvent::IsWebInteractionEvent(web_input_event.GetType())
-          : !PendingUserInput::IsContinuousEventType(web_input_event.GetType());
-  if (is_discrete) {
+  if (WebInputEvent::IsWebInteractionEvent(web_input_event.GetType())) {
     main_thread_only().is_current_task_discrete_input = true;
     main_thread_only().is_frame_requested_after_discrete_input =
         frame_requested;
@@ -2582,21 +2564,11 @@ void MainThreadSchedulerImpl::UpdateRenderingPrioritizationStateOnTaskCompleted(
       main_thread_only().main_frame_prioritization_state =
           RenderingPrioritizationState::kRenderingStarvedByRenderBlocking;
     } else {
-      base::TimeDelta threshold;
-      switch (current_use_case()) {
-        case UseCase::kCompositorGesture:
-          threshold = scheduling_settings_
-                          .compositor_gesture_rendering_starvation_threshold;
-          break;
-        case UseCase::kEarlyLoading:
-          threshold =
-              scheduling_settings_.prioritize_compositing_after_delay_pre_fcp;
-          break;
-        default:
-          threshold =
-              scheduling_settings_.prioritize_compositing_after_delay_post_fcp;
-          break;
-      }
+      base::TimeDelta threshold =
+          current_use_case() == UseCase::kCompositorGesture
+              ? scheduling_settings_
+                    .compositor_gesture_rendering_starvation_threshold
+              : kDefaultRenderingStarvationThreshold;
       if (task_timing.end_time() - main_thread_only().last_frame_time >=
           threshold) {
         main_thread_only().main_frame_prioritization_state =

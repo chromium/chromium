@@ -3273,7 +3273,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
             browser_context_, false);
         if (glic_service) {
-          glic_service->ReloadWebview();
+          glic_service->Reload();
         }
       }
 #endif  // BUILDFLAG(ENABLE_GLIC)

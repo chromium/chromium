@@ -263,7 +263,7 @@ void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
   if (updated_fields.previous_accessible_name) {
     GetViewAccessibility().SetName(item_->GetAccessibleName(),
                                    ax::mojom::NameFrom::kAttribute);
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTextChanged, true);
   }
 
   // Primary action.

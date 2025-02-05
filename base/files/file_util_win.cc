@@ -651,7 +651,7 @@ File CreateAndOpenTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
       GetLongPathName(temp_name.value().c_str(), long_temp_name, MAX_PATH);
   if (long_name_len != 0 && long_name_len <= MAX_PATH) {
     *temp_file =
-        FilePath(FilePath::StringPieceType(long_temp_name, long_name_len));
+        FilePath(FilePath::StringViewType(long_temp_name, long_name_len));
   } else {
     // GetLongPathName() failed, but we still have a temporary file.
     *temp_file = std::move(temp_name);
@@ -664,7 +664,7 @@ bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
   return CreateAndOpenTemporaryFileInDir(dir, temp_file).IsValid();
 }
 
-FilePath FormatTemporaryFileName(FilePath::StringPieceType identifier) {
+FilePath FormatTemporaryFileName(FilePath::StringViewType identifier) {
   return FilePath(StrCat({identifier, FILE_PATH_LITERAL(".tmp")}));
 }
 
@@ -678,7 +678,7 @@ ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
 }
 
 bool CreateTemporaryDirInDir(const FilePath& base_dir,
-                             FilePath::StringPieceType prefix,
+                             FilePath::StringViewType prefix,
                              FilePath* new_dir) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
@@ -820,7 +820,7 @@ bool NormalizeFilePath(const FilePath& path, FilePath* real_path) {
   // with the volume device path and existing code expects we return a path
   // starting 'X:\' so we need to call DevicePathToDriveLetterPath.
   if (!DevicePathToDriveLetterPath(
-          FilePath(FilePath::StringPieceType(native_file_path, used_wchars)),
+          FilePath(FilePath::StringViewType(native_file_path, used_wchars)),
           real_path)) {
     return false;
   }
@@ -1092,7 +1092,7 @@ bool GetCurrentDirectory(FilePath* dir) {
   // TODO(evanm): the old behavior of this function was to always strip the
   // trailing slash.  We duplicate this here, but it shouldn't be necessary
   // when everyone is using the appropriate FilePath APIs.
-  *dir = FilePath(FilePath::StringPieceType(system_buffer))
+  *dir = FilePath(FilePath::StringViewType(system_buffer))
              .StripTrailingSeparators();
   return true;
 }

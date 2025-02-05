@@ -1474,7 +1474,7 @@ TEST_F(IntegrationTest, MetainstallerSendPing) {
       &test_server, kUpdaterAppId,
       {
           .event_type = update_client::protocol_request::kEventInstall,
-          .result = 1,
+          .result = 0,
           .error_code = 73118,  // ExitCode::INVALID_OPTION
           .extra_code1 = 0,
       }));
@@ -4690,7 +4690,7 @@ TEST_F(IntegrationTest, ExpectPingAndErrorUIWhenGetSetupLockFails) {
 
   const update_client::UpdateClient::PingParams ping_params{
       .event_type = update_client::protocol_request::kEventInstall,
-      .result = 1,
+      .result = 0,
       .error_code = kErrorFailedToLockSetupMutex,
   };
   ASSERT_NO_FATAL_FAILURE(

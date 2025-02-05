@@ -250,7 +250,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
       case Paths.SEA_PEN_COLLECTION:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         if (isSeaPenTextInputEnabled()) {
-          breadcrumbs.push(this.i18n('seaPenFreeformWallpaperTemplatesLabel'));
+          breadcrumbs.push(this.i18n('seaPenTemplatesWallpaperLabel'));
         } else {
           breadcrumbs.push(this.i18n('seaPenLabel'));
         }
@@ -258,7 +258,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
       case Paths.SEA_PEN_RESULTS:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         if (isSeaPenTextInputEnabled()) {
-          breadcrumbs.push(this.i18n('seaPenFreeformWallpaperTemplatesLabel'));
+          breadcrumbs.push(this.i18n('seaPenTemplatesWallpaperLabel'));
         } else {
           breadcrumbs.push(this.i18n('seaPenLabel'));
         }
@@ -272,7 +272,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         break;
       case Paths.SEA_PEN_FREEFORM:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
-        breadcrumbs.push(this.i18n('seaPenLabel'));
+        breadcrumbs.push(this.i18n('seaPenFreeformWallpaperLabel'));
         break;
       case Paths.USER:
         breadcrumbs.push(this.i18n('avatarLabel'));

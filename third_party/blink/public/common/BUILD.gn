@@ -355,6 +355,7 @@ source_set("headers") {
     "//base",
     "//cc",
     "//components/content_settings/core/common",
+    "//components/performance_manager/scenario_api",
     "//components/shared_highlighting/core/common",
     "//components/viz/common",
     "//gpu/command_buffer/common",

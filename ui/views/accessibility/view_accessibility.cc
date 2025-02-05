@@ -5,6 +5,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -177,8 +178,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     data->SetName(GetCachedName());
   }
 
-  view_->GetAccessibleNodeData(data);
-
   DCHECK(!data->HasChildTreeID()) << "Please annotate child tree ids using "
                                      "ViewAccessibility::SetChildTreeID.";
 
@@ -228,7 +227,7 @@ void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
 
   if (view_->HasFocus()) {
     if (focused_virtual_child_) {
-      focused_virtual_child_->NotifyAccessibilityEvent(
+      focused_virtual_child_->NotifyAccessibilityEventDeprecated(
           ax::mojom::Event::kFocus);
     } else {
       NotifyEvent(ax::mojom::Event::kFocus, true);
@@ -416,10 +415,6 @@ void ViewAccessibility::SetName(std::u16string name,
                                 ax::mojom::NameFrom name_from) {
   RETURN_IF_UNAVAILABLE();
 
-  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
-  // platform accessibility API is used.
-  InitializeRoleIfNeeded();
-
   // Allow subclasses to adjust the name.
   view_->AdjustAccessibleName(name, name_from);
 
@@ -481,29 +476,10 @@ void ViewAccessibility::SetName(const std::u16string& name) {
 
 void ViewAccessibility::SetName(View& naming_view) {
   DCHECK_NE(view_, &naming_view);
-  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
-  // platform accessibility API is used.
-  InitializeRoleIfNeeded();
 
-  // TODO(crbug.com/325137417): This is a temporary workaround to avoid the
-  // DCHECK below in the scenario where the View's accessible name is being set
-  // through either the GetAccessibleNodeData override pipeline or the
-  // SetAccessibleName pipeline, which would make the call to `GetCachedName`
-  // return an empty string. (this is the case for `Label` view). Once these are
-  // migrated we can remove this `if`, otherwise we must retrieve the name from
-  // there if needed.
-  if (naming_view.GetViewAccessibility().GetCachedName().empty()) {
-    ui::AXNodeData label_data;
-    const_cast<View&>(naming_view).GetAccessibleNodeData(&label_data);
-    const std::string& name =
-        label_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
-    DCHECK(!name.empty());
-    SetName(name, ax::mojom::NameFrom::kRelatedElement);
-  } else {
-    std::u16string name = naming_view.GetViewAccessibility().GetCachedName();
-    DCHECK(!name.empty());
-    SetName(name, ax::mojom::NameFrom::kRelatedElement);
-  }
+  std::u16string name = naming_view.GetViewAccessibility().GetCachedName();
+  DCHECK(!name.empty());
+  SetName(name, ax::mojom::NameFrom::kRelatedElement);
 
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
                             {naming_view.GetViewAccessibility().GetUniqueId()});
@@ -797,9 +773,6 @@ void ViewAccessibility::RemoveDescription() {
 void ViewAccessibility::SetDescription(
     const std::string& description,
     const ax::mojom::DescriptionFrom description_from) {
-  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
-  // platform accessibility API is used.
-  InitializeRoleIfNeeded();
   if (description.empty() &&
       description_from !=
           ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty) {
@@ -825,9 +798,6 @@ void ViewAccessibility::SetDescription(
 
 void ViewAccessibility::SetDescription(View& describing_view) {
   DCHECK_NE(view_, &describing_view);
-  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
-  // platform accessibility API is used.
-  InitializeRoleIfNeeded();
 
   std::u16string name = describing_view.GetViewAccessibility().GetCachedName();
   DCHECK(!name.empty())
@@ -879,7 +849,7 @@ void ViewAccessibility::OnViewAddedToWidget() {
   // this would be done in the ctor, but due to inheritance and the
   // implementation of `GetClassName`, it would not work. As such, we set it
   // here, since at this point the view object is fully initialized.
-  SetClassName(view_->GetClassName());
+  SetClassName(std::string(view_->GetClassName()));
 }
 
 void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {
@@ -1157,8 +1127,8 @@ void ViewAccessibility::OnViewHasNewAncestor(const View* new_ancestor) {
   // parent, rather than the `new_ancestor`, which in subsequent recursive calls
   // could be a root of an entire tree that is getting reparented. This is
   // because if at some point during the recursion, the parent is invisible, it
-  // should affect its descendants, even if `new_ancestor` is not. For example, if
-  // we have a tree like this:
+  // should affect its descendants, even if `new_ancestor` is not. For example,
+  // if we have a tree like this:
   // A (visible)
   //   B (invisible)
   // and then a separate tree:
@@ -1348,26 +1318,6 @@ void ViewAccessibility::CompleteCacheInitializationRecursive() {
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().CompleteCacheInitializationRecursive();
   }
-}
-
-void ViewAccessibility::InitializeRoleIfNeeded() {
-  RETURN_IF_UNAVAILABLE();
-  if (data_.role != ax::mojom::Role::kUnknown) {
-    return;
-  }
-
-  // TODO(crbug.com/325137417): We should initialize the id and class name
-  // attributes right here, but cannot do it at the moment because there are
-  // setters called from views' constructors. Once all constructors are cleared
-  // from accessibility setters (the initial state should be set from
-  // `View::GetAccessibleNodeData`), add those missing attributes.
-  ui::AXNodeData data;
-  view_->GetAccessibleNodeData(&data);
-
-  data_.role = data.role;
-
-  UpdateIgnoredState();
-  UpdateInvisibleState();
 }
 
 void ViewAccessibility::OnWidgetClosing(Widget* widget) {

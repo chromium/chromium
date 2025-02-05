@@ -60,6 +60,7 @@ suite('ReadAloudHighlight', () => {
   }
 
   setup(() => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to

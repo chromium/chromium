@@ -253,23 +253,17 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     LocationChanged();
   }
 
-  // The ancestor box that this object's Location and PhysicalLocation are
-  // relative to.
+  // The ancestor box that this object's PhysicalLocation is relative to.
   virtual LayoutBox* LocationContainer() const;
 
   // Note that those functions have their origin at this box's CSS border box.
-  // As such their location doesn't account for 'top'/'left'. About its
-  // coordinate space, it can be treated as in either physical coordinates
-  // or "physical coordinates in flipped block-flow direction", and
-  // FlipForWritingMode() will do nothing on it.
+  // As such their location doesn't account for 'top'/'left'.
   PhysicalRect PhysicalBorderBoxRect() const {
     NOT_DESTROYED();
     return PhysicalRect(PhysicalOffset(), Size());
   }
 
   // Client rect and padding box rect are the same concept.
-  // TODO(crbug.com/877518): Some callers of this method may actually want
-  // "physical coordinates in flipped block-flow direction".
   DISABLE_CFI_PERF PhysicalRect PhysicalPaddingBoxRect() const {
     NOT_DESTROYED();
     return PhysicalRect(ClientLeft(), ClientTop(), ClientWidth(),
@@ -278,15 +272,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // The content area of the box (excludes padding - and intrinsic padding for
   // table cells, etc... - and scrollbars and border).
-  // TODO(crbug.com/877518): Some callers of this method may actually want
-  // "physical coordinates in flipped block-flow direction".
   DISABLE_CFI_PERF PhysicalRect PhysicalContentBoxRect() const {
     NOT_DESTROYED();
     return PhysicalRect(ContentLeft(), ContentTop(), ContentWidth(),
                         ContentHeight());
   }
-  // TODO(crbug.com/877518): Some callers of this method may actually want
-  // "physical coordinates in flipped block-flow direction".
   PhysicalOffset PhysicalContentBoxOffset() const {
     NOT_DESTROYED();
     return PhysicalOffset(ContentLeft(), ContentTop());
@@ -300,8 +290,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   gfx::QuadF AbsoluteContentQuad(MapCoordinatesFlags = 0) const;
 
   // The enclosing rectangle of the background with given opacity requirement.
-  // TODO(crbug.com/877518): Some callers of this method may actually want
-  // "physical coordinates in flipped block-flow direction".
   PhysicalRect PhysicalBackgroundRect(BackgroundRectType) const;
 
   // This returns the content area of the box (excluding padding and border).
@@ -898,14 +886,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // this container. This ignores TextDirection.
   WritingModeConverter CreateWritingModeConverter() const;
 
-  // Passing |flipped_blocks_container| causes flipped-block flipping w.r.t.
+  // Passing |location_container| causes flipped-block flipping w.r.t.
   // that container, or LocationContainer() otherwise.
   PhysicalOffset PhysicalLocation(
-      const LayoutBox* flipped_blocks_container = nullptr) const {
+      const LayoutBox* location_container = nullptr) const {
     NOT_DESTROYED();
-    return PhysicalLocationInternal(flipped_blocks_container
-                                        ? flipped_blocks_container
-                                        : LocationContainer());
+    return PhysicalLocationInternal(location_container ? location_container
+                                                       : LocationContainer());
   }
 
   bool HasSelfVisualOverflow() const {

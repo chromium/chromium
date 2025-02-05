@@ -5,11 +5,13 @@
 #ifndef REMOTING_HOST_CHROMEOS_MESSAGE_BOX_H_
 #define REMOTING_HOST_CHROMEOS_MESSAGE_BOX_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 
 namespace gfx {
@@ -34,6 +36,7 @@ class MessageBox {
              const std::u16string& message_label,
              const std::u16string& ok_label,
              const std::u16string& cancel_label,
+             const std::optional<ui::ImageModel> icon,
              ResultCallback result_callback);
 
   MessageBox(const MessageBox&) = delete;

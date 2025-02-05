@@ -423,37 +423,37 @@ wheel: <
   version: "version:2.0.1"
 >
 
-wheel <
+wheel: <
   name: "infra/python/wheels/pytest-py3"
   version: "version:7.3.1"
 >
 
-wheel <
+wheel: <
   name: "infra/python/wheels/pytest-asyncio-py3"
   version: "version:0.19.0"
 >
 
-wheel <
-  name: "infra/python/wheels/attrs-py2_py3"
-  version: "version:21.4.0"
+wheel: <
+  name: "infra/python/wheels/attrs-py3"
+  version: "version:24.2.0"
 >
 
-wheel <
+wheel: <
   name: "infra/python/wheels/more-itertools-py2_py3"
   version: "version:4.1.0"
 >
 
-wheel <
+wheel: <
   name: "infra/python/wheels/pluggy-py3"
   version: "version:0.13.1"
 >
 
-wheel <
+wheel: <
   name: "infra/python/wheels/py-py2_py3"
   version: "version:1.10.0"
 >
 
-wheel <
+wheel: <
   name: "infra/python/wheels/funcsigs-py2_py3"
   version: "version:1.0.2"
 >

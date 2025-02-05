@@ -103,9 +103,6 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
 #if BUILDFLAG(IS_CHROMEOS)
       set_chromeos_user_(true),
 #endif
-      // TODO(crbug.com/40261741): Move this ScopedCurrentChannel down into
-      // tests that specifically require it.
-      current_channel_(version_info::Channel::UNKNOWN),
       override_prompt_for_external_extensions_(
           FeatureSwitch::prompt_for_external_extensions(),
           false),

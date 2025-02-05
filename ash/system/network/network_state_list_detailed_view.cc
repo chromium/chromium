@@ -392,7 +392,8 @@ void NetworkStateListDetailedView::ToggleInfoBubble() {
 
   info_bubble_ = new InfoBubble(tri_view(), CreateNetworkInfoView(), this);
   views::BubbleDialogDelegateView::CreateBubble(info_bubble_)->Show();
-  info_bubble_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, false);
+  info_bubble_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                                   false);
 }
 
 bool NetworkStateListDetailedView::ResetInfoBubble() {

@@ -294,7 +294,8 @@ void FixedLengthCodeInput::InsertDigit(int value) {
   bool was_last_field = IsLastFieldActive();
   ResetTextValueForA11y();
   FocusNextField();
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTextSelectionChanged,
+                                     true);
   on_input_change_.Run(was_last_field, GetCode().has_value());
 }
 
@@ -313,7 +314,8 @@ void FixedLengthCodeInput::Backspace() {
   ActiveField()->SetText(std::u16string());
   ResetTextValueForA11y();
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTextSelectionChanged,
+                                     true);
   on_input_change_.Run(IsLastFieldActive(), false /*complete*/);
 }
 
@@ -427,12 +429,14 @@ bool FixedLengthCodeInput::HandleKeyEvent(views::Textfield* sender,
     InsertDigit(key_code - ui::VKEY_NUMPAD0);
   } else if (key_code == ui::VKEY_LEFT && arrow_navigation_allowed_) {
     FocusPreviousField();
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTextSelectionChanged,
+                                       true);
   } else if (key_code == ui::VKEY_RIGHT && arrow_navigation_allowed_) {
     // Do not allow to leave empty field when moving focus with arrow key.
     if (!ActiveInput().empty()) {
       FocusNextField();
-      NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+      NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kTextSelectionChanged, true);
     }
   } else if (key_code == ui::VKEY_BACK) {
     Backspace();
@@ -467,7 +471,8 @@ void FixedLengthCodeInput::ContentsChanged(views::Textfield* sender,
   bool was_last_field = IsLastFieldActive();
   ResetTextValueForA11y();
   FocusNextField();
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kTextSelectionChanged,
+                                     true);
   on_input_change_.Run(was_last_field, GetCode().has_value());
 }
 
@@ -483,7 +488,8 @@ bool FixedLengthCodeInput::HandleMouseEvent(views::Textfield* sender,
     if (input_fields_[i] == sender) {
       active_input_index_ = i;
       RequestFocus();
-      NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+      NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kTextSelectionChanged, true);
       break;
     }
   }
@@ -503,7 +509,8 @@ bool FixedLengthCodeInput::HandleGestureEvent(
     if (input_fields_[i] == sender) {
       active_input_index_ = i;
       RequestFocus();
-      NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
+      NotifyAccessibilityEventDeprecated(
+          ax::mojom::Event::kTextSelectionChanged, true);
       break;
     }
   }

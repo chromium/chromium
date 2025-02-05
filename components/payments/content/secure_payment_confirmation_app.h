@@ -12,8 +12,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "components/payments/content/browser_binding/browser_bound_key.h"
-#include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/secure_payment_confirmation_controller.h"
 #include "content/public/browser/global_routing_id.h"
@@ -35,6 +33,8 @@ class WebContents;
 
 namespace payments {
 
+class BrowserBoundKey;
+class PasskeyBrowserBinder;
 class PaymentRequestSpec;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -57,7 +57,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
       const std::u16string& payment_instrument_label,
       std::unique_ptr<SkBitmap> payment_instrument_icon,
       std::vector<uint8_t> credential_id,
-      std::optional<std::vector<uint8_t>> browser_bound_key_id,
+      std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder,
       const url::Origin& merchant_origin,
       base::WeakPtr<PaymentRequestSpec> spec,
       mojom::SecurePaymentConfirmationRequestPtr request,
@@ -107,15 +107,13 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   std::u16string issuer_label() const { return issuer_label_; }
   SkBitmap issuer_icon() const { return issuer_icon_; }
 
-  void SetBrowserBoundKeyStoreForTesting(
-      std::unique_ptr<BrowserBoundKeyStore> key_store);
-
-#if BUILDFLAG(IS_ANDROID)
-  const std::optional<std::vector<uint8_t>>& GetBrowserBoundKeyIdForTesting()
-      const;
-#endif  // BUILDFLAG(IS_ANDROID)
+  PasskeyBrowserBinder* GetPasskeyBrowserBinderForTesting();
 
  private:
+  void OnGetBrowserBoundKey(
+      base::WeakPtr<Delegate> delegate,
+      blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+      std::unique_ptr<BrowserBoundKey> browser_bound_key);
   void OnGetAssertion(
       base::WeakPtr<Delegate> delegate,
       blink::mojom::AuthenticatorStatus status,
@@ -130,12 +128,11 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   const std::u16string payment_instrument_label_;
   const std::unique_ptr<SkBitmap> payment_instrument_icon_;
   const std::vector<uint8_t> credential_id_;
-  const std::optional<std::vector<uint8_t>> browser_bound_key_id_;
   const url::Origin merchant_origin_;
   const base::WeakPtr<PaymentRequestSpec> spec_;
   const mojom::SecurePaymentConfirmationRequestPtr request_;
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;
-  std::unique_ptr<BrowserBoundKeyStore> browser_bound_key_store_;
+  std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder_;
   std::unique_ptr<BrowserBoundKey> browser_bound_key_;
   std::string challenge_;
   blink::mojom::GetAssertionAuthenticatorResponsePtr response_;

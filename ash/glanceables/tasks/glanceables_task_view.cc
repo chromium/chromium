@@ -437,7 +437,8 @@ GlanceablesTaskView::GlanceablesTaskView(
         base::JoinString(details, u", "));
   }
   check_button_->GetViewAccessibility().SetDescription(a11y_description);
-  check_button_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+  check_button_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kTextChanged, true);
 }
 
 GlanceablesTaskView::~GlanceablesTaskView() = default;

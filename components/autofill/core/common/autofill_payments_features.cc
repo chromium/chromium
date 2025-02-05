@@ -214,15 +214,6 @@ BASE_FEATURE(kAutofillEnableVerveCardSupport,
              "AutofillEnableVerveCardSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, Chrome will show metadata along with other card information
-// when the virtual card is presented to users.
-BASE_FEATURE(kAutofillEnableVirtualCardMetadata,
-             "AutofillEnableVirtualCardMetadata",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 
 // When enabled, the "Show cards from your Google Account" Autofill suggestion

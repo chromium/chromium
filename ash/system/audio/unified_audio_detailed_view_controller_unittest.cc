@@ -276,8 +276,8 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
         slider_button->GetViewAccessibility().IsAccessibilityFocusable());
 
     slider->RequestFocus();
-    EXPECT_STREQ(slider->GetFocusManager()->GetFocusedView()->GetClassName(),
-                 "QuickSettingsSlider");
+    EXPECT_EQ(slider->GetFocusManager()->GetFocusedView()->GetClassName(),
+              "QuickSettingsSlider");
     // Check the accessibility role of QuickSettingsSlider.
     ui::AXNodeData node_data;
     slider->GetFocusManager()

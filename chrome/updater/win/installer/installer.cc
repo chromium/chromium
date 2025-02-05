@@ -141,7 +141,7 @@ void SendPing(int exit_code, int extra_code) {
                         {
                             .event_type =
                                 update_client::protocol_request::kEventInstall,
-                            .result = 1,
+                            .result = 0,
                             .error_code = exit_code,
                             .extra_code1 = extra_code,
                         },

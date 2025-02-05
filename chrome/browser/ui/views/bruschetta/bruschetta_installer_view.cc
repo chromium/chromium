@@ -303,7 +303,8 @@ bool BruschettaInstallerView::Accept() {
     RemoveChildViewT(radio_button_container_.get());
     radio_button_container_ = nullptr;
     radio_buttons_.clear();
-    NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged,
+                                       true);
   }
 
   observation_.Reset();
@@ -503,12 +504,12 @@ void BruschettaInstallerView::OnStateUpdated() {
   if (progress_bar_visible) {
     progress_bar_->GetViewAccessibility().SetDescription(
         *secondary_message_label_);
-    progress_bar_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
-                                            true);
+    progress_bar_->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kTextChanged, true);
   }
 
   DialogModelChanged();
-  primary_message_label_->NotifyAccessibilityEvent(
+  primary_message_label_->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kLiveRegionChanged,
       /* send_native_event = */ true);
 }
@@ -526,14 +527,14 @@ void BruschettaInstallerView::OnColorModeChanged(bool dark_mode_enabled) {
 void BruschettaInstallerView::SetPrimaryMessageLabel() {
   primary_message_label_->SetText(GetPrimaryMessage());
   primary_message_label_->SetVisible(true);
-  primary_message_label_->NotifyAccessibilityEvent(
+  primary_message_label_->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kTextChanged, true);
 }
 
 void BruschettaInstallerView::SetSecondaryMessageLabel() {
   secondary_message_label_->SetText(GetSecondaryMessage());
   secondary_message_label_->SetVisible(true);
-  secondary_message_label_->NotifyAccessibilityEvent(
+  secondary_message_label_->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kTextChanged, true);
 }
 

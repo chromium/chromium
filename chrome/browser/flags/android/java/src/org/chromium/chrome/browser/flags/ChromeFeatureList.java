@@ -213,8 +213,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableSyncingOfPixBankAccounts";
     public static final String AUTOFILL_ENABLE_VERVE_CARD_SUPPORT =
             "AutofillEnableVerveCardSupport";
-    public static final String AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA =
-            "AutofillEnableVirtualCardMetadata";
     public static final String AUTOFILL_DEEP_LINK_AUTOFILL_OPTIONS =
             "AutofillDeepLinkAutofillOptions";
     public static final String AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID =
@@ -320,6 +318,8 @@ public abstract class ChromeFeatureList {
     public static final String DISABLE_INSTANCE_LIMIT = "DisableInstanceLimit";
     public static final String DISABLE_LIST_TAB_SWITCHER = "DisableListTabSwitcher";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
+    public static final String DISPLAY_WILDCARD_CONTENT_SETTINGS =
+            "DisplayWildcardInContentSettings";
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
     public static final String DRAW_KEY_NATIVE_EDGE_TO_EDGE = "DrawKeyNativeEdgeToEdge";
     public static final String DYNAMIC_SAFE_AREA_INSETS = "DynamicSafeAreaInsets";

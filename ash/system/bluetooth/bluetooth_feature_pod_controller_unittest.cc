@@ -137,7 +137,7 @@ class BluetoothFeaturePodControllerTest
     const views::View::Views& children = container->children();
     if (is_showing) {
       EXPECT_EQ(1u, children.size());
-      EXPECT_STREQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
+      EXPECT_EQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
       return;
     }
     EXPECT_EQ(0u, children.size());

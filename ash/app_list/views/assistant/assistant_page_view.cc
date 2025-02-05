@@ -385,7 +385,7 @@ void AssistantPageView::OnUiVisibilityChanged(
       assistant_view_delegate_->IsTabletMode() ||
       AssistantState::Get()->launch_with_mic_open().value_or(false);
   if (!assistant::util::IsVoiceEntryPoint(entry_point.value(), prefer_voice)) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
   }
 }
 

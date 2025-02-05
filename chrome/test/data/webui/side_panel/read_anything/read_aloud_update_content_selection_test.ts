@@ -3,18 +3,15 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {waitForPlayFromSelection} from './common.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('ReadAloud_UpdateContentSelection', () => {
   let app: AppElement;
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
 
   // root htmlTag='#document' id=1
   // ++paragraph htmlTag='p' id=2
@@ -82,8 +79,7 @@ suite('ReadAloud_UpdateContentSelection', () => {
   };
 
   setup(() => {
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to

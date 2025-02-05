@@ -85,8 +85,9 @@ class ASH_EXPORT CalendarUpNextView : public views::View {
   // pressed.
   std::unique_ptr<gfx::LinearAnimation> scrolling_animation_;
 
-  // Bounds animator used in the `scrolling_animation_` class.
-  views::BoundsAnimator bounds_animator_;
+  // Animation container used in the `scrolling_animation_` class.
+  scoped_refptr<gfx::AnimationContainer> animation_container_ =
+      base::MakeRefCounted<gfx::AnimationContainer>();
 
   // Callback subscriptions.
   base::CallbackListSubscription on_contents_scrolled_subscription_;

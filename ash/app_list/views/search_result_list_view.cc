@@ -285,7 +285,7 @@ int SearchResultListView::DoUpdate() {
   }
 
   std::vector<SearchResult*> displayed_results = UpdateResultViews();
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
 
   auto* notifier = view_delegate()->GetNotifier();
 

@@ -2560,6 +2560,7 @@ test("content_unittests") {
     "../browser/interest_group/auction_url_loader_factory_proxy_unittest.cc",
     "../browser/interest_group/auction_worklet_manager_unittest.cc",
     "../browser/interest_group/bidding_and_auction_response_unittest.cc",
+    "../browser/interest_group/bidding_and_auction_serializer_fuzztest.cc",
     "../browser/interest_group/bidding_and_auction_serializer_unittest.cc",
     "../browser/interest_group/bidding_and_auction_server_key_fetcher_unittest.cc",
     "../browser/interest_group/header_direct_from_seller_signals_unittest.cc",
@@ -2943,6 +2944,10 @@ test("content_unittests") {
     "test_render_frame_host_unittest.cc",
   ]
 
+  fuzztests = [
+    "BiddingAndAuctionSerializerTargetSizeEstimator.DoesNotCrashForAnyInput",
+  ]
+
   if (is_mac) {
     sources += [
       "../browser/child_process_task_port_provider_mac_unittest.cc",
@@ -3111,7 +3116,6 @@ test("content_unittests") {
     "//content/browser/indexed_db:unit_tests",
     "//content/browser/notifications:notification_proto",
     "//content/browser/private_aggregation:for_content_tests",
-    "//content/browser/private_aggregation/proto:private_aggregation_budgets_proto",
     "//content/browser/tpcd_heuristics:unit_tests",
     "//content/browser/tracing/trace_report:mojo_bindings",
     "//content/child:for_content_tests",

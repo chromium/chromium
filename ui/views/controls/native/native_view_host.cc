@@ -234,7 +234,7 @@ void NativeViewHost::OnFocus() {
   if (native_view_) {
     native_wrapper_->SetFocus();
   }
-  NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
 }
 
 gfx::NativeViewAccessible NativeViewHost::GetNativeViewAccessible() {

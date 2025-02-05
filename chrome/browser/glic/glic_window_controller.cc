@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_resize_animation.h"
@@ -301,6 +302,13 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
   Browser* new_attached_browser =
       bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
 
+  if (!fre_controller_) {
+    // It can be the case that the fre_controller_ is torn down (eg, this
+    // happens when it is closed via the context menu). Recreate the
+    // controller here, if needed.
+    fre_controller_ = std::make_unique<GlicFreController>();
+  }
+
   // Show the FRE if not yet completed, and if we have a browser to use.
   if (fre_controller_->ShouldShowFreDialog(profile_)) {
     if (!fre_controller_->CanShowFreDialog(new_attached_browser)) {
@@ -402,6 +410,7 @@ void GlicWindowController::Show(Browser* browser) {
   // unset.
   CHECK(!attached_browser_);
   state_ = State::kOpenAnimation;
+  glic_service_->metrics()->OnGlicWindowOpen();
 
   show_start_time_ = base::TimeTicks::Now();
 
@@ -609,6 +618,13 @@ content::WebContents* GlicWindowController::GetWebContents() {
     return nullptr;
   }
   return contents_->web_contents();
+}
+
+content::WebContents* GlicWindowController::GetFreWebContents() {
+  if (!fre_controller_) {
+    return nullptr;
+  }
+  return fre_controller_->GetWebContents();
 }
 
 gfx::Point GlicWindowController::GetTopRightPositionForAttachedGlicWindow(
@@ -850,6 +866,7 @@ void GlicWindowController::CloseFinish(bool reopen_detached) {
     return;
   }
 
+  glic_service_->metrics()->OnGlicWindowClose();
   base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState2",
                                 webui_state_);
 
@@ -1161,7 +1178,10 @@ void GlicWindowController::Preload() {
   }
 }
 
-void GlicWindowController::ReloadWebview() {
+void GlicWindowController::Reload() {
+  if (GetFreWebContents()) {
+    GetFreWebContents()->ReloadFocusedFrame();
+  }
   if (contents_) {
     contents_->web_contents()->ReloadFocusedFrame();
   }

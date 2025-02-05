@@ -28,21 +28,6 @@
 
 namespace {
 
-// A duration of the expand animation. In other words, how long does it take to
-// expand the chip.
-constexpr auto kExpandAnimationDuration = base::Milliseconds(350);
-// A duration of the collapse animation. In other words, how long does it take
-// to collapse/shrink the chip.
-constexpr auto kCollapseAnimationDuration = base::Milliseconds(250);
-// A delay for the verbose state. In other words the delay that is used between
-// expand and collapse animations.
-constexpr auto kCollapseDelay = base::Seconds(4);
-
-base::TimeDelta GetAnimationDuration(base::TimeDelta duration) {
-  return gfx::Animation::ShouldRenderRichAnimation() ? duration
-                                                     : base::TimeDelta();
-}
-
 // This method updates indicators' visibility set in
 // `PageSpecificContentSettings`.
 void UpdateIndicatorsVisibilityFlags(LocationBarView* location_bar) {
@@ -264,7 +249,7 @@ bool PermissionDashboardController::Update(
                   kMediaStream)) {
         indicator_chip->ResetAnimation();
         indicator_chip->AnimateExpand(
-            GetAnimationDuration(kExpandAnimationDuration));
+            gfx::Animation::RichAnimationDuration(base::Milliseconds(350)));
       }
     }
   }
@@ -356,7 +341,7 @@ void PermissionDashboardController::StartCollapseTimer() {
     return;
   }
 
-  collapse_timer_.Start(FROM_HERE, kCollapseDelay,
+  collapse_timer_.Start(FROM_HERE, base::Seconds(4),
                         base::BindOnce(&PermissionDashboardController::Collapse,
                                        weak_factory_.GetWeakPtr(),
                                        /*hide=*/false));
@@ -368,7 +353,7 @@ void PermissionDashboardController::Collapse(bool hide) {
   }
   if (!permission_dashboard_view_->GetIndicatorChip()->is_animating()) {
     permission_dashboard_view_->GetIndicatorChip()->AnimateCollapse(
-        GetAnimationDuration(kCollapseAnimationDuration));
+        gfx::Animation::RichAnimationDuration(base::Milliseconds(250)));
   }
 }
 

@@ -842,8 +842,12 @@ HRESULT GenerateSampleFromVideoFrame(
     DWORD buffer_alignment,
     IMFSample** sample_out) {
   // A shared image sample cannot be created synchronously.  Use
-  // GenerateSampleFromSharedImageVideoFrame
-  CHECK(!frame->HasSharedImage());
+  // GenerateSampleFromSharedImageVideoFrame. Note that this is not true for
+  // mappable shared image since it has a GpuMemoryBufferHandle. So skipping the
+  // CHECK when frame has a mappable buffer.
+  if (!frame->HasMappableGpuBuffer()) {
+    CHECK(!frame->HasSharedImage());
+  }
 
   HRESULT hr;
   Microsoft::WRL::ComPtr<IMFSample> sample;

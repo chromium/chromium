@@ -141,8 +141,7 @@ class SuppressBubbleSettingRow : public views::View,
         views::ViewTargeterDelegate::TargetForRect(root, rect);
     // Links should operate as expected, but all other gestures on this view
     // should be forwarded to the checkbox.
-    if (std::string_view(target->GetClassName()) ==
-        std::string_view(views::LinkFragment::kViewClassName)) {
+    if (target->GetClassName() == views::LinkFragment::kViewClassName) {
       return target;
     }
 

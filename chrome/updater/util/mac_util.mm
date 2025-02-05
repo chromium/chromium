@@ -285,16 +285,6 @@ std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
               : std::nullopt;
 }
 
-std::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope) {
-  base::FilePath caches_path;
-  if (!base::apple::GetLocalDirectory(NSCachesDirectory, &caches_path)) {
-    VLOG(1) << "Could not get Caches path";
-    return std::nullopt;
-  }
-  return std::optional<base::FilePath>(
-      caches_path.AppendASCII(MAC_BUNDLE_IDENTIFIER_STRING));
-}
-
 std::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope) {
   std::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
   return install_dir

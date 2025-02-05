@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -238,9 +239,11 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         IntentPickerBubbleView::kViewClassName);
-    GetIntentPickerIcon()->ExecuteForTesting();
+    PageActionIconView* intent_picker = GetIntentPickerIcon();
+    ASSERT_NE(intent_picker, nullptr);
+    intent_picker->ExecuteForTesting();
     waiter.WaitIfNeededAndGet();
-    ASSERT_TRUE(intent_picker_bubble());
+    ASSERT_NE(intent_picker_bubble(), nullptr);
     EXPECT_TRUE(intent_picker_bubble()->GetVisible());
   }
 
@@ -701,6 +704,23 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_NO_FATAL_FAILURE(CheckStayInChrome());
 }
 
+class IntentPickerBubbleViewBrowserTestChromeOSParameterized
+    : public IntentPickerBubbleViewBrowserTestChromeOS,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
+ public:
+  IntentPickerBubbleViewBrowserTestChromeOSParameterized()
+      : IntentPickerBubbleViewBrowserTestChromeOS() {
+    // TODO(crbug.com/40236806): Run relevant tests against the updated UI.
+    feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()),
+        {apps::features::kLinkCapturingUiUpdate});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Test that remember this choice checkbox works for open ARC app option.
 //
 // TODO(crbug.com/40863954): Fix timeouts under MSAN.
@@ -709,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 #else
 #define MAYBE_RememberOpenARCApp RememberOpenARCApp
 #endif
-IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
+IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTestChromeOSParameterized,
                        MAYBE_RememberOpenARCApp) {
   GURL test_url(InScopeAppUrl());
   std::string app_name = "test_name";
@@ -742,3 +762,10 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ui_test_utils::NavigateToURL(&params);
   ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IntentPickerBubbleViewBrowserTestChromeOSParameterized,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
+    apps::test::LinkCapturingVersionToString);

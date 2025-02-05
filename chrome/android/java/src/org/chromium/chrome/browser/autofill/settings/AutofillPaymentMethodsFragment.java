@@ -257,9 +257,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             card_pref.setTitle(card.getCardLabel());
 
             // Show virtual card enabled status for enrolled cards, expiration date otherwise.
-            if (card.getVirtualCardEnrollmentState() == VirtualCardEnrollmentState.ENROLLED
-                    && ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA)) {
+            if (card.getVirtualCardEnrollmentState() == VirtualCardEnrollmentState.ENROLLED) {
                 card_pref.setSummary(R.string.autofill_virtual_card_enrolled_text);
             } else {
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE)
@@ -286,12 +284,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         this::showLocalCardEditPageAfterAuthenticationIfRequired);
             } else {
                 card_pref.setFragment(AutofillServerCardEditor.class.getName());
-                if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA)) {
-                    card_pref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
-                } else {
-                    card_pref.setWidgetLayoutResource(R.layout.autofill_server_data_text_label);
-                }
+                card_pref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
             }
 
             Bundle args = card_pref.getExtras();

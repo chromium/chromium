@@ -251,10 +251,7 @@ TEST_F(EditAddressProfileViewTest, GetInitiallyFocusedView) {
   dialog->ShowForWebContents(test_web_contents());
 
   EXPECT_NE(dialog->GetInitiallyFocusedView(), nullptr);
-  EXPECT_EQ(
-      std::string(
-          dialog->GetInitiallyFocusedView()->GetClassMetaData()->type_name()),
-      "Combobox");
+  EXPECT_EQ(dialog->GetInitiallyFocusedView()->GetClassName(), "Combobox");
 }
 
 }  // namespace autofill

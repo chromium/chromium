@@ -250,6 +250,7 @@ if (is_win || is_mac || is_linux) {
         "app/app_net_worker.cc",
         "app/app_net_worker.h",
         "app/app_server_posix_mac.cc",
+        "cleanup_task_mac.mm",
         "installer_mac.cc",
         "ipc/ipc_security_mac.cc",
         "mac/install_from_archive.h",
@@ -1060,6 +1061,7 @@ if (is_win || is_mac || is_linux) {
     if (is_mac) {
       sources += [
         "app/app_net_worker_unittest.cc",
+        "cleanup_task_mac_unittest.mm",
         "mac/keystone/ksadmin_unittest.cc",
         "mac/privileged_helper/privileged_helper_unittests.mm",
         "mac/setup/keystone_unittest.mm",

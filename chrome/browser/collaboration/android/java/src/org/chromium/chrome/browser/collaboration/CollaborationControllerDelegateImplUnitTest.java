@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.data_sharing.GroupToken;
@@ -71,6 +72,7 @@ public class CollaborationControllerDelegateImplUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Callback<Boolean> mCloseScreenCallback;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
 
     @Mock
     private CollaborationControllerDelegateImpl.Natives
@@ -104,7 +106,11 @@ public class CollaborationControllerDelegateImplUnitTest {
                         mActivity,
                         type,
                         mDataSharingTabManager,
-                        mSigninAndHistorySyncActivityLauncher);
+                        mSigninAndHistorySyncActivityLauncher,
+                        mLoadingFullscreenCoordinator);
+        if (type == FlowType.JOIN) {
+            verify(mLoadingFullscreenCoordinator).startLoading(any());
+        }
     }
 
     @Test
@@ -188,6 +194,7 @@ public class CollaborationControllerDelegateImplUnitTest {
         verify(mDataSharingTabManager).onCollaborationDelegateFlowFinished();
         // Exit callback should be deleted.
         verify(mCollaborationControllerDelegateImplNativeMock).deleteExitCallback(eq(exitCallback));
+        verify(mLoadingFullscreenCoordinator).closeLoadingScreen();
     }
 
     @Test
@@ -353,6 +360,7 @@ public class CollaborationControllerDelegateImplUnitTest {
         String message = "message";
 
         mCollaborationControllerDelegateImpl.showError(title, message, resultCallback);
+        verify(mLoadingFullscreenCoordinator).closeLoadingScreen();
 
         ArgumentCaptor<PropertyModel> propertyModelCaptor =
                 ArgumentCaptor.forClass(PropertyModel.class);

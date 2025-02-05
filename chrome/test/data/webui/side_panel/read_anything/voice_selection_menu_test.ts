@@ -61,6 +61,7 @@ suite('VoiceSelectionMenu', () => {
   }
 
   setup(async () => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     voiceSelectionMenu = document.createElement('voice-selection-menu');
     document.body.appendChild(voiceSelectionMenu);

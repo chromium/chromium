@@ -797,9 +797,6 @@ const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 const char kBrowserDataBackwardMigrationForUser[] =
     "browser-data-backward-migration-for-user";
 
-// Supply secret key for Coral feature.
-const char kCoralFeatureKey[] = "coral-feature-key";
-
 // Supply secret key for Mantis feature.
 const char kMantisFeatureKey[] = "mantis-feature-key";
 

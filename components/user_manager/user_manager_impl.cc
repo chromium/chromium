@@ -693,18 +693,22 @@ bool UserManagerImpl::IsKnownUser(const AccountId& account_id) const {
 
 const User* UserManagerImpl::FindUser(const AccountId& account_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (active_user_ && active_user_->GetAccountId() == account_id) {
-    return active_user_;
+  for (auto& user : user_storage_) {
+    if (user->GetAccountId() == account_id) {
+      return user.get();
+    }
   }
-  return FindUserInList(account_id);
+  return nullptr;
 }
 
 User* UserManagerImpl::FindUserAndModify(const AccountId& account_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (active_user_ && active_user_->GetAccountId() == account_id) {
-    return active_user_;
+  for (auto& user : user_storage_) {
+    if (user->GetAccountId() == account_id) {
+      return user.get();
+    }
   }
-  return FindUserInListAndModify(account_id);
+  return nullptr;
 }
 
 const User* UserManagerImpl::GetActiveUser() const {

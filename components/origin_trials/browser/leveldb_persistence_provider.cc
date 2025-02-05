@@ -52,7 +52,7 @@ bool HasFirstPartyPartition(
   return false;
 }
 
-const base::FilePath::StringPieceType kPersistentTrialTokenDbPath =
+const base::FilePath::StringViewType kPersistentTrialTokenDbPath =
     FILE_PATH_LITERAL("PersistentOriginTrials");
 
 std::unique_ptr<LevelDbPersistenceProvider::DbLoadResult> BuildMapFromDb(

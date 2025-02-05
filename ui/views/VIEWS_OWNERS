@@ -10,6 +10,7 @@ chromium-ui-views-reviews@google.com
 # preferentially suggest the review alias above.
 dayeung@chromium.org    #{LAST_RESORT_SUGGESTION}
 dfried@chromium.org     #{LAST_RESORT_SUGGESTION}
+dpranke@google.com      #{LAST_RESORT_SUGGESTION}
 ellyjones@chromium.org  #{LAST_RESORT_SUGGESTION}
 kerenzhu@chromium.org   #{LAST_RESORT_SUGGESTION}
 kylixrd@chromium.org    #{LAST_RESORT_SUGGESTION}

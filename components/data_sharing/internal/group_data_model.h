@@ -52,6 +52,8 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
     virtual void OnMemberRemoved(const GroupId& group_id,
                                  const GaiaId& member_gaia_id,
                                  const base::Time& event_time) = 0;
+    virtual void OnSyncBridgeUpdateTypeChanged(
+        SyncBridgeUpdateType sync_bridge_update_type) = 0;
   };
 
   // `collaboration_group_sync_bridge` and `sdk_delegate` must not be null and
@@ -89,6 +91,8 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
                        const std::vector<GroupId>& updated_group_ids,
                        const std::vector<GroupId>& deleted_group_ids) override;
   void OnCollaborationGroupSyncDataLoaded() override;
+  void OnSyncBridgeUpdateTypeChanged(
+      SyncBridgeUpdateType sync_bridge_update_type) override;
 
   GroupDataStore& GetGroupDataStoreForTesting();
   void SetGroupDataStoreLoadedCallbackForTesting(

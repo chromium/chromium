@@ -1444,7 +1444,8 @@ void PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
   }
   if (view_to_focus) {
     NotifyAXSelection(*view_to_focus);
-    view_to_focus->NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+    view_to_focus->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus,
+                                                      true);
   }
 }
 

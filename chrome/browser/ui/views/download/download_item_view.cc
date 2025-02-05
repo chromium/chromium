@@ -981,7 +981,8 @@ std::u16string DownloadItemView::GetInProgressAccessibleAlertText() const {
 }
 
 void DownloadItemView::AnnounceAccessibleAlert() {
-  accessible_alert_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  accessible_alert_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kAlert, true);
   announce_accessible_alert_soon_ = false;
 }
 

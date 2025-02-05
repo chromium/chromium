@@ -269,7 +269,7 @@ int SearchResultImageListView::DoUpdate() {
                                    notifier_results);
   }
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
   return num_results;
 }
 

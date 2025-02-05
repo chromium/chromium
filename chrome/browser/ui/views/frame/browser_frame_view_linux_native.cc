@@ -102,8 +102,7 @@ void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {
       views::Button::ButtonState button_state =
           static_cast<views::Button::ButtonState>(state);
       views::Button* button = GetButtonFromDisplayType(type);
-      DCHECK_EQ(std::string(views::ImageButton::kViewClassName),
-                button->GetClassName());
+      DCHECK_EQ(views::ImageButton::kViewClassName, button->GetClassName());
       static_cast<views::ImageButton*>(button)->SetImageModel(
           button_state,
           ui::ImageModel::FromImageSkia(nav_button_provider_->GetImage(

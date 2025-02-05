@@ -44,7 +44,7 @@ std::vector<uint8_t> FakeBrowserBoundKey::Sign(
   return {};
 }
 
-std::vector<uint8_t> FakeBrowserBoundKey::GetPublicKeyAsCoseKey() {
+std::vector<uint8_t> FakeBrowserBoundKey::GetPublicKeyAsCoseKey() const {
   return public_key_as_cose_key_;
 }
 

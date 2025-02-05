@@ -38,12 +38,16 @@ export class HeaderElement extends CrLitElement {
 
   static override get properties() {
     return {
-      isPageTitleClickable: {
+      // Whether the menu button and subtitle input are disabled.
+      disabled: {
         type: Boolean,
         reflect: true,
       },
 
-      menuButtonDisabled: {type: Boolean},
+      isPageTitleClickable: {
+        type: Boolean,
+        reflect: true,
+      },
 
       subtitle: {
         type: String,
@@ -59,8 +63,8 @@ export class HeaderElement extends CrLitElement {
     };
   }
 
+  disabled: boolean = false;
   isPageTitleClickable: boolean = false;
-  menuButtonDisabled: boolean = false;
   subtitle: string|null = null;
 
   protected showingMenu_: boolean = false;
@@ -87,6 +91,10 @@ export class HeaderElement extends CrLitElement {
   }
 
   protected async onRenaming_() {
+    if (this.disabled) {
+      return;
+    }
+
     this.showingInput_ = true;
     await this.updateComplete;
     this.input_?.focus();

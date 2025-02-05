@@ -48,6 +48,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/url_formatter/elide_url.h"
@@ -275,6 +276,69 @@ NotificationTempFiles WriteNotificationResourceFiles(
   return result;
 }
 
+template <typename... Args, typename... Rets>
+void CallMethod(dbus::ObjectProxy* proxy,
+                const std::string& interface,
+                const std::string& method,
+                base::OnceCallback<void(bool, Rets...)> callback,
+                const Args&... args) {
+  dbus::MethodCall dbus_call(interface, method);
+  dbus::MessageWriter writer(&dbus_call);
+  (args.Write(&writer), ...);
+  proxy->CallMethod(
+      &dbus_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(
+          [](const std::string& interface, const std::string& method,
+             base::OnceCallback<void(bool, Rets...)> cb,
+             dbus::Response* response) {
+            dbus::MessageReader reader(response);
+            bool success = true;
+            std::tuple<Rets...> rets;
+            std::apply(
+                [&](auto&&... args) {
+                  ((success = success && args.Read(&reader)), ...);
+                },
+                rets);
+            if (reader.HasMoreData()) {
+              LOG(ERROR) << interface << "." << method
+                         << ": Failed to read all response parameters.";
+              success = false;
+            }
+            std::apply(
+                [&](auto&&... args) {
+                  std::move(cb).Run(success, std::move(args)...);
+                },
+                std::move(rets));
+          },
+          interface, method, std::move(callback)));
+}
+
+template <typename... Ts>
+void ConnectToSignal(
+    dbus::ObjectProxy* proxy,
+    const std::string& interface,
+    const std::string& signal_name,
+    base::RepeatingCallback<void(Ts...)> signal_callback,
+    dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
+  proxy->ConnectToSignal(
+      interface, signal_name,
+      base::BindRepeating(
+          [](const std::string& interface, const std::string& signal_name,
+             base::RepeatingCallback<void(Ts...)> cb, dbus::Signal* signal) {
+            dbus::MessageReader reader(signal);
+            DbusParameters<Ts...> params;
+            if (!params.Read(&reader)) {
+              LOG(ERROR) << interface << "." << signal_name
+                         << ": Failed to read signal parameters.";
+              return;
+            }
+            std::apply([&](auto&&... args) { cb.Run(std::move(args)...); },
+                       params.value());
+          },
+          interface, signal_name, std::move(signal_callback)),
+      std::move(on_connected_callback));
+}
+
 }  // namespace
 
 // static
@@ -485,25 +549,25 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         bus_->GetObjectProxy(kFreedesktopNotificationsName,
                              dbus::ObjectPath(kFreedesktopNotificationsPath));
 
-    dbus::MethodCall get_capabilities_call(kFreedesktopNotificationsName,
-                                           kMethodGetCapabilities);
-    notification_proxy_->CallMethod(
-        &get_capabilities_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+    CallMethod(
+        notification_proxy_, kFreedesktopNotificationsName,
+        kMethodGetCapabilities,
         base::BindOnce(
             &NotificationPlatformBridgeLinuxImpl::OnGetCapabilitiesResponse,
             weak_factory_.GetWeakPtr()));
   }
 
-  void OnGetCapabilitiesResponse(dbus::Response* response) {
+  void OnGetCapabilitiesResponse(bool success,
+                                 DbusArray<DbusString> capabilities) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (response) {
-      dbus::MessageReader reader(response);
-      std::vector<std::string> caps;
-      if (reader.PopArrayOfStrings(&caps)) {
-        for (const std::string& capability : caps) {
-          capabilities_.insert(capability);
-        }
-      }
+    if (!success) {
+      OnConnectionInitializationFinished(
+          ConnectionInitializationStatusCode::MISSING_REQUIRED_CAPABILITIES);
+      return;
+    }
+
+    for (auto& item : capabilities.value()) {
+      capabilities_.insert(item.value());
     }
     if (!base::Contains(capabilities_, kCapabilityBody) ||
         !base::Contains(capabilities_, kCapabilityActions)) {
@@ -514,24 +578,23 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     body_images_supported_ =
         base::Contains(capabilities_, kCapabilityBodyImages);
 
-    dbus::MethodCall get_server_information_call(kFreedesktopNotificationsName,
-                                                 "GetServerInformation");
-    notification_proxy_->CallMethod(
-        &get_server_information_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+    CallMethod(
+        notification_proxy_, kFreedesktopNotificationsName,
+        "GetServerInformation",
         base::BindOnce(
             &NotificationPlatformBridgeLinuxImpl::OnGetServerInfoResponse,
             weak_factory_.GetWeakPtr()));
   }
 
-  void OnGetServerInfoResponse(dbus::Response* response) {
+  void OnGetServerInfoResponse(bool success,
+                               DbusString server_name,
+                               DbusString vendor,
+                               DbusString server_version,
+                               DbusString spec_version) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (response) {
-      dbus::MessageReader reader(response);
-      reader.PopString(&server_name_);
-      std::string server_version;
-      reader.PopString(&server_version);  // Vendor
-      reader.PopString(&server_version);  // Server version
-      server_version_ = base::Version(server_version);
+    if (success) {
+      server_name_ = server_name.value();
+      server_version_ = base::Version(server_version.value());
     }
 
     connected_signals_barrier_ = base::BarrierClosure(
@@ -539,29 +602,37 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
                               OnConnectionInitializationFinished,
                           weak_factory_.GetWeakPtr(),
                           ConnectionInitializationStatusCode::SUCCESS));
-    notification_proxy_->ConnectToSignal(
-        kFreedesktopNotificationsName, kSignalActivationToken,
+
+    ConnectToSignal(
+        notification_proxy_, kFreedesktopNotificationsName,
+        kSignalActivationToken,
         base::BindRepeating(
             &NotificationPlatformBridgeLinuxImpl::OnActivationToken,
             weak_factory_.GetWeakPtr()),
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
-    notification_proxy_->ConnectToSignal(
-        kFreedesktopNotificationsName, kSignalActionInvoked,
+
+    ConnectToSignal(
+        notification_proxy_, kFreedesktopNotificationsName,
+        kSignalActionInvoked,
         base::BindRepeating(
             &NotificationPlatformBridgeLinuxImpl::OnActionInvoked,
             weak_factory_.GetWeakPtr()),
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
-    notification_proxy_->ConnectToSignal(
-        kFreedesktopNotificationsName, kSignalNotificationClosed,
+
+    ConnectToSignal(
+        notification_proxy_, kFreedesktopNotificationsName,
+        kSignalNotificationClosed,
         base::BindRepeating(
             &NotificationPlatformBridgeLinuxImpl::OnNotificationClosed,
             weak_factory_.GetWeakPtr()),
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
-    notification_proxy_->ConnectToSignal(
-        kFreedesktopNotificationsName, kSignalNotificationReplied,
+
+    ConnectToSignal(
+        notification_proxy_, kFreedesktopNotificationsName,
+        kSignalNotificationReplied,
         base::BindRepeating(
             &NotificationPlatformBridgeLinuxImpl::OnNotificationReplied,
             weak_factory_.GetWeakPtr()),
@@ -586,21 +657,14 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
     data->files = std::move(files);
 
-    dbus::MethodCall notify_call(kFreedesktopNotificationsName, kMethodNotify);
-    dbus::MessageWriter writer(&notify_call);
+    DbusString app_name(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME));
 
-    // app_name
-    writer.AppendString(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME));
-
-    writer.AppendUint32(dbus_id);
-
-    // app_icon
-    writer.AppendString(
+    DbusString app_icon(
         data->files.has_logo
             ? "file://" + data->files.dir_path.Append("logo.png").value()
             : "");
 
-    writer.AppendString(
+    DbusString summary(
         base::UTF16ToUTF8(CreateNotificationTitle(*notification)));
 
     std::string context_display_text;
@@ -682,11 +746,10 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
     std::string body_str = body.str();
     base::TrimString(body_str, "\n", &body_str);
-    writer.AppendString(body_str);
 
     // Even-indexed elements in this vector are action IDs passed back to
     // us in OnActionInvoked().  Odd-indexed ones contain the button text.
-    std::vector<std::string> actions;
+    std::vector<DbusString> actions;
     std::optional<std::u16string> inline_reply_placeholder;
     if (base::Contains(capabilities_, kCapabilityActions)) {
       const bool has_support_for_inline_reply =
@@ -702,8 +765,8 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
             continue;
           }
 
-          actions.push_back(kInlineReplyButtonId);
-          actions.push_back(label);
+          actions.emplace_back(kInlineReplyButtonId);
+          actions.emplace_back(label);
 
           inline_reply_placeholder = button_info.placeholder;
           continue;
@@ -712,120 +775,95 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         // but not both, and the type of all buttons must be the same (all
         // labels or all icons), so always use labels.
         const std::string id = base::NumberToString(data->action_end++);
-        actions.push_back(id);
-        actions.push_back(label);
+        actions.emplace_back(id);
+        actions.emplace_back(label);
       }
       // Special case: the id "default" will not add a button, but
       // instead makes the entire notification clickable.
-      actions.push_back(kDefaultButtonId);
-      actions.push_back("Activate");
+      actions.emplace_back(kDefaultButtonId);
+      actions.emplace_back("Activate");
       // Always add a settings button for web notifications.
       if (notification->should_show_settings_button()) {
-        actions.push_back(kSettingsButtonId);
-        actions.push_back(
+        actions.emplace_back(kSettingsButtonId);
+        actions.emplace_back(
             l10n_util::GetStringUTF8(IDS_NOTIFICATION_BUTTON_SETTINGS));
       }
       if (ShouldAddCloseButton(server_name_, server_version_)) {
-        actions.push_back(kCloseButtonId);
-        actions.push_back(
+        actions.emplace_back(kCloseButtonId);
+        actions.emplace_back(
             l10n_util::GetStringUTF8(IDS_NOTIFICATION_BUTTON_CLOSE));
       }
     }
-    writer.AppendArrayOfStrings(actions);
 
-    dbus::MessageWriter hints_writer(nullptr);
-    writer.OpenArray("{sv}", &hints_writer);
-    dbus::MessageWriter urgency_writer(nullptr);
-    hints_writer.OpenDictEntry(&urgency_writer);
-    urgency_writer.AppendString("urgency");
+    DbusDictionary hints;
+
     uint32_t urgency =
         notification->never_timeout() &&
                 ShouldMarkPersistentNotificationsAsCritical(server_name_)
             ? URGENCY_CRITICAL
             : NotificationPriorityToFdoUrgency(notification->priority());
-    urgency_writer.AppendVariantOfUint32(urgency);
-    hints_writer.CloseContainer(&urgency_writer);
+    hints.PutAs("urgency", DbusUint32(urgency));
 
     if (notification->silent()) {
-      dbus::MessageWriter suppress_sound_writer(nullptr);
-      hints_writer.OpenDictEntry(&suppress_sound_writer);
-      suppress_sound_writer.AppendString("suppress-sound");
-      suppress_sound_writer.AppendVariantOfBool(true);
-      hints_writer.CloseContainer(&suppress_sound_writer);
+      hints.PutAs("suppress-sound", DbusBoolean(true));
     }
 
     std::unique_ptr<base::Environment> env = base::Environment::Create();
     base::FilePath desktop_file(chrome::GetDesktopName(env.get()));
-    const char kDesktopFileSuffix[] = ".desktop";
+    static const char kDesktopFileSuffix[] = ".desktop";
     DCHECK(base::EndsWith(desktop_file.value(), kDesktopFileSuffix,
                           base::CompareCase::SENSITIVE));
     desktop_file = desktop_file.RemoveFinalExtension();
-    dbus::MessageWriter desktop_entry_writer(nullptr);
-    hints_writer.OpenDictEntry(&desktop_entry_writer);
-    desktop_entry_writer.AppendString("desktop-entry");
-    desktop_entry_writer.AppendVariantOfString(desktop_file.value());
-    hints_writer.CloseContainer(&desktop_entry_writer);
+    hints.PutAs("desktop-entry", DbusString(desktop_file.value()));
 
     if (data->files.has_icon) {
       const base::FilePath icon_path = data->files.dir_path.Append("icon.png");
-      for (const std::string& hint_name : {"image_path", "image-path"}) {
-        dbus::MessageWriter path_writer(nullptr);
-        hints_writer.OpenDictEntry(&path_writer);
-        path_writer.AppendString(hint_name);
-        path_writer.AppendVariantOfString(icon_path.value());
-        hints_writer.CloseContainer(&path_writer);
-      }
+      hints.PutAs("image_path", DbusString(icon_path.value()));
+      hints.PutAs("image-path", DbusString(icon_path.value()));
     }
 
     if (has_support_for_kde_origin_name && !context_display_text.empty()) {
-      dbus::MessageWriter kde_origin_name_writer(nullptr);
-      hints_writer.OpenDictEntry(&kde_origin_name_writer);
-      kde_origin_name_writer.AppendString(kCapabilityXKdeOriginName);
-      kde_origin_name_writer.AppendVariantOfString(context_display_text);
-      hints_writer.CloseContainer(&kde_origin_name_writer);
+      hints.PutAs(kCapabilityXKdeOriginName,
+                  DbusString(std::move(context_display_text)));
     }
 
     if (inline_reply_placeholder.has_value()) {
-      dbus::MessageWriter inline_reply_writer(nullptr);
-      hints_writer.OpenDictEntry(&inline_reply_writer);
-      inline_reply_writer.AppendString(kCapabilityXKdeReplyPlaceholderText);
-      inline_reply_writer.AppendVariantOfString(
-          base::UTF16ToUTF8(inline_reply_placeholder.value()));
-      hints_writer.CloseContainer(&inline_reply_writer);
+      hints.PutAs(
+          kCapabilityXKdeReplyPlaceholderText,
+          DbusString(base::UTF16ToUTF8(inline_reply_placeholder.value())));
     }
-
-    writer.CloseContainer(&hints_writer);
 
     const int32_t kExpireTimeoutDefault = -1;
     const int32_t kExpireTimeoutNever = 0;
-    writer.AppendInt32(notification->never_timeout() ? kExpireTimeoutNever
-                       : base::Contains(capabilities_, kCapabilityPersistence)
-                           ? kExpireTimeoutDefault
-                           : kExpireTimeout);
+    int32_t expire_timeout =
+        notification->never_timeout() ? kExpireTimeoutNever
+        : base::Contains(capabilities_, kCapabilityPersistence)
+            ? kExpireTimeoutDefault
+            : kExpireTimeout;
 
-    notification_proxy_->CallMethod(
-        &notify_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+    CallMethod(
+        notification_proxy_, kFreedesktopNotificationsName, kMethodNotify,
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnNotifyResponse,
                        weak_factory_.GetWeakPtr(), notification->id(),
-                       profile_id, is_incognito));
+                       profile_id, is_incognito),
+        std::move(app_name), DbusUint32(dbus_id), std::move(app_icon),
+        std::move(summary), DbusString(std::move(body_str)),
+        DbusArray<DbusString>(std::move(actions)), std::move(hints),
+        DbusInt32(expire_timeout));
   }
 
   void OnNotifyResponse(const std::string& notification_id,
                         const std::string& profile_id,
                         bool is_incognito,
-                        dbus::Response* response) {
+                        bool success,
+                        DbusUint32 dbus_id) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     NotificationData* data =
         FindNotificationData(notification_id, profile_id, is_incognito);
     if (!data) {
       return;
     }
-    if (response) {
-      dbus::MessageReader reader(response);
-      reader.PopUint32(&data->dbus_id);
-    } else {
-      data->dbus_id = 0;
-    }
+    data->dbus_id = success ? dbus_id.value() : 0;
     if (!data->dbus_id) {
       // There was some sort of error with creating the notification.
       notifications_.erase(data);
@@ -835,19 +873,14 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
   // Makes the "CloseNotification" call to D-Bus.
   void CloseImpl(const std::string& profile_id,
                  const std::string& notification_id) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     std::vector<NotificationData*> to_erase;
     for (const auto& pair : notifications_) {
       NotificationData* data = pair.first;
       if (data->notification_id == notification_id &&
           data->profile_id == profile_id) {
-        dbus::MethodCall method_call(kFreedesktopNotificationsName,
-                                     kMethodCloseNotification);
-        dbus::MessageWriter writer(&method_call);
-        writer.AppendUint32(data->dbus_id);
-        notification_proxy_->CallMethod(&method_call,
-                                        dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                                        base::DoNothing());
+        CallMethod(notification_proxy_, kFreedesktopNotificationsName,
+                   kMethodCloseNotification, base::BindOnce([](bool) {}),
+                   DbusUint32(data->dbus_id));
         to_erase.push_back(data);
       }
     }
@@ -886,37 +919,19 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     return nullptr;
   }
 
-  void OnActivationToken(dbus::Signal* signal) {
+  void OnActivationToken(DbusUint32 dbus_id, DbusString token) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    dbus::MessageReader reader(signal);
-    uint32_t dbus_id;
-    if (!reader.PopUint32(&dbus_id) || !dbus_id) {
-      return;
-    }
-    std::string activation_token;
-    if (!reader.PopString(&activation_token)) {
-      return;
-    }
-    base::nix::SetActivationToken(activation_token);
+    base::nix::SetActivationToken(token.value());
   }
 
-  void OnActionInvoked(dbus::Signal* signal) {
+  void OnActionInvoked(DbusUint32 dbus_id, DbusString dbus_action) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    dbus::MessageReader reader(signal);
-    uint32_t dbus_id;
-    if (!reader.PopUint32(&dbus_id) || !dbus_id) {
-      return;
-    }
-    std::string action;
-    if (!reader.PopString(&action)) {
-      return;
-    }
-
-    NotificationData* data = FindNotificationDataWithDBusId(dbus_id);
+    NotificationData* data = FindNotificationDataWithDBusId(dbus_id.value());
     if (!data) {
       return;
     }
 
+    const std::string& action = dbus_action.value();
     if (action == kDefaultButtonId) {
       ForwardNotificationOperation(
           NotificationOperation::kClick, data->notification_type,
@@ -954,19 +969,9 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
   }
 
-  void OnNotificationReplied(dbus::Signal* signal) {
+  void OnNotificationReplied(DbusUint32 dbus_id, DbusString reply) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    dbus::MessageReader reader(signal);
-    uint32_t dbus_id;
-    if (!reader.PopUint32(&dbus_id) || !dbus_id) {
-      return;
-    }
-    std::string reply;
-    if (!reader.PopString(&reply)) {
-      return;
-    }
-
-    NotificationData* data = FindNotificationDataWithDBusId(dbus_id);
+    NotificationData* data = FindNotificationDataWithDBusId(dbus_id.value());
     if (!data) {
       return;
     }
@@ -974,19 +979,13 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     ForwardNotificationOperation(
         NotificationOperation::kClick, data->notification_type,
         data->origin_url, data->notification_id, /*action_index=*/std::nullopt,
-        /*by_user=*/std::nullopt, base::UTF8ToUTF16(reply), data->profile_id,
-        data->is_incognito);
+        /*by_user=*/std::nullopt, base::UTF8ToUTF16(reply.value()),
+        data->profile_id, data->is_incognito);
   }
 
-  void OnNotificationClosed(dbus::Signal* signal) {
+  void OnNotificationClosed(DbusUint32 dbus_id, DbusUint32 reason) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    dbus::MessageReader reader(signal);
-    uint32_t dbus_id;
-    if (!reader.PopUint32(&dbus_id) || !dbus_id) {
-      return;
-    }
-
-    NotificationData* data = FindNotificationDataWithDBusId(dbus_id);
+    NotificationData* data = FindNotificationDataWithDBusId(dbus_id.value());
     if (!data) {
       return;
     }

@@ -154,10 +154,6 @@ void PageActionView::UpdateIconImage() {
 
   // Icon default size may be different from the size used in the location bar.
   const auto& icon_image = observation_.GetSource()->GetImage();
-  if (icon_image.Size() == gfx::Size(icon_size_, icon_size_)) {
-    return;
-  }
-
   const gfx::ImageSkia image =
       gfx::CreateVectorIcon(*icon_image.GetVectorIcon().vector_icon(),
                             icon_size_, GetForegroundColor());

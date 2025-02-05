@@ -1658,6 +1658,12 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   AdjustTabBoundsForDrag(previous_tab_area_width, first_tab_leading_x,
                          drag_bounds);
 
+  // Set the window origin before making it visible, to avoid flicker on
+  // Windows. See https://crbug.com/394529650
+  const gfx::Vector2d drag_offset = CalculateWindowDragOffset();
+  dragged_widget->SetBounds(
+      gfx::Rect(point_in_screen - drag_offset, dragged_widget->GetSize()));
+
   dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
   browser->window()->Show();
   dragged_widget->SetVisibilityChangedAnimationsEnabled(true);
@@ -1670,7 +1676,7 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       return;
     }
   }
-  RunMoveLoop(point_in_screen, CalculateWindowDragOffset());
+  RunMoveLoop(point_in_screen, drag_offset);
 }
 
 void TabDragController::RunMoveLoop(gfx::Point point_in_screen,

@@ -4904,11 +4904,11 @@ TEST_F(TabStripModelTest, SelectionChangedSingleOperationObserverTest) {
                                 AddTabTypes::ADD_NONE);
   ObservedSelectionChange change = observer.GetLatestSelectionChange();
 
-  // Active webcontents should not change but selection list changes.
+  // Active webcontents and selection list should not change.
   EXPECT_EQ(change.old_tab, tabstrip->GetTabAtIndex(1)->GetHandle());
   EXPECT_EQ(change.new_tab, tabstrip->GetTabAtIndex(1)->GetHandle());
 
-  EXPECT_EQ(change.old_model.active(), 0u);
+  EXPECT_EQ(change.old_model.active(), 1u);
   EXPECT_EQ(change.old_model.size(), 1u);
 
   EXPECT_EQ(change.new_model.active(), 1u);

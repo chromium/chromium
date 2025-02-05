@@ -139,10 +139,8 @@ void FormatLabel(views::Label& label,
       break;
     case FillingProduct::kCreditCard:
       if (text.should_truncate.value()) {
-        // should_truncate should only be set to true iff the experiments are
-        // enabled.
-        DCHECK(base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableVirtualCardMetadata));
+        // `should_truncate` should only be set to true iff
+        // `kAutofillEnableCardProductName` is enabled.
         DCHECK(base::FeatureList::IsEnabled(
             autofill::features::kAutofillEnableCardProductName));
         label.SetMaximumWidthSingleLine(maximum_width_single_line);

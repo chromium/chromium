@@ -7,7 +7,6 @@ package org.chromium.android_webview.common;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.BaseSwitches;
 import org.chromium.blink_public.common.BlinkFeatures;
-import org.chromium.blink_scheduler.BlinkSchedulerFeatures;
 import org.chromium.cc.base.CcFeatures;
 import org.chromium.cc.base.CcSwitches;
 import org.chromium.components.autofill.AndroidAutofillFeatures;
@@ -452,10 +451,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.THREADED_SCROLL_PREVENT_RENDERING_STARVATION,
                 "Enable rendering starvation-prevention during threaded scrolling."
                         + " See https://crbug.com/40833407."),
-        Flag.baseFeature(
-                BlinkSchedulerFeatures.PRIORITIZE_COMPOSITING_AFTER_DELAY_TRIALS,
-                "Controls the delay after which main thread compositing tasks "
-                        + "are prioritized over other non-input tasks."),
         Flag.baseFeature(
                 BlinkFeatures.VIEW_TRANSITION_ON_NAVIGATION,
                 "Enables the experimental View Transitions API for navigations."

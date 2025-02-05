@@ -1645,7 +1645,9 @@ void Browser::TabPinnedStateChanged(TabStripModel* tab_strip_model,
 }
 
 void Browser::TabGroupedStateChanged(
-    std::optional<tab_groups::TabGroupId> group,
+    TabStripModel* tab_strip_model,
+    std::optional<tab_groups::TabGroupId> old_group,
+    std::optional<tab_groups::TabGroupId> new_group,
     tabs::TabInterface* tab,
     int index) {
   // See comment in Browser::OnTabGroupChanged
@@ -1659,7 +1661,7 @@ void Browser::TabGroupedStateChanged(
   sessions::SessionTabHelper* const session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(tab->GetContents());
   session_service->SetTabGroup(session_id(), session_tab_helper->session_id(),
-                               std::move(group));
+                               std::move(new_group));
 }
 
 void Browser::TabStripEmpty() {
@@ -2055,7 +2057,7 @@ content::WebContents* Browser::AddNewContents(
     // cannot switch their independent spaces simultaneously (crbug.com/1315749)
     auto web_contents_creation_callback = base::BindOnce(
         &chrome::AddWebContents, this, source, std::move(new_contents),
-        target_url, disposition, window_features, window_action);
+        target_url, disposition, window_features, window_action, user_gesture);
     fullscreen_controller->RunOrDeferUntilTransitionIsComplete(base::BindOnce(
         base::IgnoreResult(std::move(web_contents_creation_callback))));
     return nullptr;
@@ -2063,7 +2065,7 @@ content::WebContents* Browser::AddNewContents(
 
   return chrome::AddWebContents(this, source, std::move(new_contents),
                                 target_url, disposition, window_features,
-                                window_action);
+                                window_action, user_gesture);
 }
 
 void Browser::ActivateContents(WebContents* contents) {

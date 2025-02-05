@@ -136,7 +136,7 @@
 
 #pragma mark - ContextualPanelEntrypointCommands
 
-- (void)contextualPanelEntrypointIPHWasDismissed {
+- (void)notifyContextualPanelEntrypointIPHDismissed {
   [self enableFullscreen];
   [_mediator.consumer setEntrypointColored:NO];
 }

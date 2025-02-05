@@ -982,7 +982,7 @@ void TableView::OnItemsAdded(size_t start, size_t length) {
   // when trying to access the model indices.
   UpdateVirtualAccessibilityChildrenVisibilityState();
   PreferredSizeChanged();
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, true);
 }
 
 void TableView::OnItemsMoved(size_t old_start,
@@ -1054,7 +1054,7 @@ void TableView::OnItemsRemoved(size_t start, size_t length) {
   GetViewAccessibility().SetTableRowCount(static_cast<int32_t>(GetRowCount()));
   UpdateVirtualAccessibilityChildrenBounds();
   PreferredSizeChanged();
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, true);
   if (observer_) {
     observer_->OnSelectionChanged();
   }
@@ -1842,7 +1842,7 @@ void TableView::RebuildVirtualAccessibilityChildren() {
   // sync, since new AXVirtualViews were added. This will cause CHECKS to hit
   // when trying to access the model indices.
   UpdateVirtualAccessibilityChildrenVisibilityState();
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, true);
 }
 
 void TableView::UpdateAccessibleNameForIndex(size_t start_view_index,
@@ -1882,7 +1882,8 @@ void TableView::UpdateAccessibleNameForIndex(size_t start_view_index,
           model_index, GetVisibleColumn(column_index.value()).column.id);
       if (current_name != new_name) {
         cell_data.SetName(new_name);
-        ax_cell->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged);
+        ax_cell->NotifyAccessibilityEventDeprecated(
+            ax::mojom::Event::kTextChanged);
       }
     }
   }
@@ -2258,14 +2259,16 @@ void TableView::UpdateAccessibilityFocus(
     if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell ||
         !active_visible_column_index_.has_value()) {
       if (ax_header_row) {
-        ax_header_row->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+        ax_header_row->NotifyAccessibilityEventDeprecated(
+            ax::mojom::Event::kSelection);
         GetViewAccessibility().OverrideFocus(ax_header_row);
       }
     } else {
       AXVirtualView* ax_header_cell = GetVirtualAccessibilityCellImpl(
           ax_header_row, active_visible_column_index_.value());
       if (ax_header_cell) {
-        ax_header_cell->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+        ax_header_cell->NotifyAccessibilityEventDeprecated(
+            ax::mojom::Event::kSelection);
         GetViewAccessibility().OverrideFocus(ax_header_cell);
       }
     }
@@ -2282,14 +2285,14 @@ void TableView::UpdateAccessibilityFocus(
   AXVirtualView* ax_row = GetVirtualAccessibilityBodyRow(active_row);
   if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
     if (ax_row) {
-      ax_row->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+      ax_row->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection);
       GetViewAccessibility().OverrideFocus(ax_row);
     }
   } else {
     AXVirtualView* ax_cell = GetVirtualAccessibilityCellImpl(
         ax_row, active_visible_column_index_.value());
     if (ax_cell) {
-      ax_cell->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+      ax_cell->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection);
       GetViewAccessibility().OverrideFocus(ax_cell);
     }
   }

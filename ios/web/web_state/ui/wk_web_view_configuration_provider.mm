@@ -16,6 +16,8 @@
 #import "base/notreached.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/uuid.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/web/common/features.h"
@@ -67,9 +69,26 @@ void WKWebViewConfigurationProvider::DeleteDataStorageForIdentifier(
     const base::Uuid& uuid,
     base::OnceCallback<void(NSError*)> callback) {
   if (@available(iOS 17.0, *)) {
+    // Calling either +removeDataStoreForIdentifier:completionHandler: or
+    // +fetchAllDataStoreIdentifiers: crashes if no WKWebsiteDataStore
+    // instance have been created in the app before.
+    //
+    // To prevent a crash, access the default data store. This prevents the
+    // crash. This is fine since the default data store cannot be deleted,
+    // so there is no risk of preventing the deletion that could happen if
+    // the code were trying to load the store that it is supposed to delete.
+    @autoreleasepool {
+      std::ignore = [WKWebsiteDataStore defaultDataStore];
+    }
+
+    // The WebKit documentation does not specify on which queue the block
+    // is run, so use base::BindPostTask(...) to ensure the callback will
+    // be run on the calling sequence.
+    auto completion = base::CallbackToBlock(base::BindPostTask(
+        base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback)));
+
     [WKWebsiteDataStore removeDataStoreForIdentifier:ToNSUUID(uuid)
-                                   completionHandler:base::CallbackToBlock(
-                                                         std::move(callback))];
+                                   completionHandler:completion];
   } else {
     NOTREACHED();
   }

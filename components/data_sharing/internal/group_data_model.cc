@@ -157,6 +157,13 @@ void GroupDataModel::OnCollaborationGroupSyncDataLoaded() {
   }
 }
 
+void GroupDataModel::OnSyncBridgeUpdateTypeChanged(
+    SyncBridgeUpdateType sync_bridge_update_type) {
+  for (auto& observer : observers_) {
+    observer.OnSyncBridgeUpdateTypeChanged(sync_bridge_update_type);
+  }
+}
+
 void GroupDataModel::OnGroupDataStoreLoaded(
     GroupDataStore::DBInitStatus status) {
   base::UmaHistogramBoolean("DataSharing.GroupDBInitSuccess",
