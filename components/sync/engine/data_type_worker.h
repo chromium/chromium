@@ -191,6 +191,7 @@ class DataTypeWorker : public UpdateHandler,
   void ApplyUpdates(StatusController* status, bool cycle_done) override;
   void RecordRemoteInvalidation(
       std::unique_ptr<SyncInvalidation> incoming) override;
+  void RecordDownloadFailure() const override;
   void CollectPendingInvalidations(sync_pb::GetUpdateTriggers* msg) override;
   bool HasPendingInvalidations() const override;
 

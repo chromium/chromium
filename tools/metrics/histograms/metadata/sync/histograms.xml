@@ -1307,6 +1307,19 @@ chromium-metrics-reviews@google.com.
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
 
+<histogram name="Sync.NudgedUpdateResult{SyncDataType}"
+    enum="NudgedUpdateResult" expires_after="2025-08-06">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records the result of downloading updates for a data type when requested
+    (i.e. there was at least one invalidation during a sync cycle). Recorded at
+    the end of a sync cycle (excluding requests without invalidations for the
+    data type).
+  </summary>
+  <token key="SyncDataType" variants="SyncDataType"/>
+</histogram>
+
 <histogram name="Sync.OutgoingPassordSharingInvitation.CommitError"
     enum="OutgoingPasswordSharingInvitationCommitError"
     expires_after="2025-11-05">
