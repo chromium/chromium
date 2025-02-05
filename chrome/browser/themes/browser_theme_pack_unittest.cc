@@ -122,7 +122,7 @@ class BrowserThemePackTest : public ::testing::Test {
 
   const BrowserThemePack& theme_pack() const { return *theme_pack_; }
 
-  base::FilePath GetTemporaryPakFile(base::FilePath::StringPieceType name) {
+  base::FilePath GetTemporaryPakFile(base::FilePath::StringViewType name) {
     if (dir_.IsValid() || dir_.CreateUniqueTempDir()) {
       return dir_.GetPath().Append(name);
     }

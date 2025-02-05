@@ -1407,23 +1407,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return StyleRef().IsFlippedBlocksWritingMode();
   }
 
-  // If HasFlippedBlocksWritingMode() is true, these functions flip the input
-  // rect/point in blocks direction in this object's local coordinate space
-  // (which is the ContainerBlock()'s space if this object is not a box).
-  // For non-boxes, for better performance, the caller can prepare
-  // |block_for_flipping| (= ContainingBlock()) if it will loop through many
-  // rects/points to flip to avoid the cost of repeated ContainingBlock() calls.
-  [[nodiscard]] LayoutPoint FlipForWritingMode(
-      const PhysicalOffset& p,
-      const LayoutBox* box_for_flipping = nullptr) const {
-    NOT_DESTROYED();
-    if (!HasFlippedBlocksWritingMode()) [[likely]] {
-      return p.ToLayoutPoint();
-    }
-    return {FlipForWritingModeInternal(p.left, LayoutUnit(), box_for_flipping),
-            p.top};
-  }
-
   bool HasLayer() const {
     NOT_DESTROYED();
     return bitfields_.HasLayer();
@@ -3631,11 +3614,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void ApplyPseudoElementStyleChanges(const ComputedStyle* old_style);
   void ApplyFirstLineChanges(const ComputedStyle* old_style);
-
-  virtual LayoutUnit FlipForWritingModeInternal(
-      LayoutUnit position,
-      LayoutUnit width,
-      const LayoutBox* box_for_flipping) const;
 
   void MarkSelfPaintingLayerForVisualOverflowRecalc();
 

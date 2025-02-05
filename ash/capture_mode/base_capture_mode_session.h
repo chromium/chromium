@@ -190,6 +190,16 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // Adds an action button that can be clicked to fetch smart actions.
   virtual void AddSmartActionsButton() = 0;
 
+  // Checks if the controller needs to show the scanner disclaimer and shows if
+  // necessary.
+  // `accept_callback` is run if disclaimer is accepted or if already accepted
+  // previously. Takes a repeating closure because the button that triggers
+  // this (Smart actions button) will continue to appear after the disclaimer is
+  // dismissed, allowing the user to click on it again and trigger the callback
+  // again.
+  virtual void MaybeShowScannerDisclaimer(
+      base::RepeatingClosure accept_callback) = 0;
+
   // Called when the Scanner feature has processed a captured image to suggest
   // available Scanner actions. This will stop loading animations and add action
   // buttons corresponding to `actions_response`, or show an error if needed.

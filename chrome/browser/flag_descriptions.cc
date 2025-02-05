@@ -7095,12 +7095,6 @@ const char kShelfAutoHideSeparationDescription[] =
     "Allows for the shelf's auto-hide preference to be specified separately "
     "for clamshell and tablet mode.";
 
-const char kShimlessRMAAproUpdateRootfsName[] =
-    "Enable APRO update from RootFS in Shimless RMA";
-const char kShimlessRMAAproUpdateRootfsDescription[] =
-    "Updates APRO from RootFS first in the Shimless RMA flow and fallbacks to "
-    "USB drive when it fails.";
-
 const char kShimlessRMAOsUpdateName[] = "Enable OS updates in shimless RMA";
 const char kShimlessRMAOsUpdateDescription[] =
     "Turns on OS updating in Shimless RMA";

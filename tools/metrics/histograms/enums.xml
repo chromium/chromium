@@ -8956,8 +8956,6 @@ from previous Chrome versions.
   <int value="-2041208747" label="StorageBuckets:enabled"/>
   <int value="-2041091005" label="OmniboxDomainSuggestions:enabled"/>
   <int value="-2040899483" label="TabGroupParityAndroid:disabled"/>
-  <int value="-2040676235"
-      label="CrOSLateBootShimlessRMAAproUpdateRootfs:enabled"/>
   <int value="-2040471724" label="CrOSComponent:disabled"/>
   <int value="-2040360427" label="DesktopScreenshots:disabled"/>
   <int value="-2040154722" label="TimeOfDayScreenSaver:enabled"/>
@@ -16017,8 +16015,6 @@ from previous Chrome versions.
   <int value="744050675" label="PrivacySandboxPrivacyGuideAdTopics:disabled"/>
   <int value="744342941" label="SafetyCheckChromeCleanerChild:enabled"/>
   <int value="745541471" label="PaintHolding:disabled"/>
-  <int value="745558273"
-      label="CrOSLateBootShimlessRMAAproUpdateRootfs:disabled"/>
   <int value="745783589" label="translate-force-trigger-on-english"/>
   <int value="745850072" label="FastCheckout:disabled"/>
   <int value="745868416" label="disable-system-timezone-automatic-detection"/>

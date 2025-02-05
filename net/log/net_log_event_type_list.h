@@ -1459,12 +1459,17 @@ EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_JOB_BOUND)
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_PRECONNECT_BOUND)
 
 // Marks the start/end of a HttpStreamPool::Job.
-// The following parameters are attached:
+// The BEGIN phase contains the following parameters:
 //   {
 //      "stream_key": <The HttpStreamKey of the job>,
 //      "quic_version": <The QUIC version to attempt>,
 //      "allowed_alpns": <List of allowed ALPNs>,
 //      "source_dependency": <The source identifier of the JobController>,
+//   }
+// The END phase contains the following parameters:
+//   {
+//      "net_error": <Optional; the result of the job>,
+//      "negotiated_protocol": <Optional; the negotiated protocol>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
 

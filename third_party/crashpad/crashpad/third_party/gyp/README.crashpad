@@ -2,7 +2,7 @@ Name: GYP (Generate Your Projects)
 Short Name: gyp
 URL: https://gyp.gsrc.io/
 Revision: See DEPS
-License: BSD 3-clause
+License: BSD-3-Clause
 License File: gyp/LICENSE
 Security Critical: no
 Shipped: no

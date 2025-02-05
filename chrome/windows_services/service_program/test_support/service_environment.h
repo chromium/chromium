@@ -23,7 +23,7 @@ class ServiceEnvironment {
   // if not empty, will be added to the service's command line. `clsid` and
   // `iid` identify the COM class and interface exposed by the service.
   ServiceEnvironment(std::wstring_view display_name,
-                     base::FilePath::StringPieceType service_exe_name,
+                     base::FilePath::StringViewType service_exe_name,
                      std::string_view testing_switch,
                      const CLSID& clsid,
                      const IID& iid);

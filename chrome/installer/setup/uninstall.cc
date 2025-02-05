@@ -154,7 +154,7 @@ bool RemoveInstallerFiles(const base::FilePath& installer_directory) {
 class ProcessPathPrefixFilter : public base::ProcessFilter {
  public:
   explicit ProcessPathPrefixFilter(
-      const base::FilePath::StringPieceType& process_path_prefix)
+      base::FilePath::StringViewType process_path_prefix)
       : process_path_prefix_(process_path_prefix) {}
 
   // base::ProcessFilter:
@@ -179,7 +179,7 @@ class ProcessPathPrefixFilter : public base::ProcessFilter {
   }
 
  private:
-  const base::FilePath::StringPieceType process_path_prefix_;
+  const base::FilePath::StringViewType process_path_prefix_;
 };
 
 // Kills all Chrome processes in |target_path|, immediately.

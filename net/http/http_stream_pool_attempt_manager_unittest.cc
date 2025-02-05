@@ -148,7 +148,10 @@ class Preconnector {
             stream_key.secure_dns_policy(),
             stream_key.disable_cert_network_fetches(),
             alternative_service_info_, is_http1_allowed_, load_flags_,
-            proxy_info_, NetLogWithSource()),
+            proxy_info_,
+            NetLogWithSource::Make(
+                pool.http_network_session()->net_log(),
+                NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)),
         num_streams_,
         base::BindOnce(&Preconnector::OnComplete, base::Unretained(this)));
     if (rv != ERR_IO_PENDING) {
@@ -279,9 +282,14 @@ class StreamRequester : public HttpStreamRequest::Delegate {
             stream_key.secure_dns_policy(),
             stream_key.disable_cert_network_fetches(),
             alternative_service_info_, is_http1_allowed_, load_flags_,
-            proxy_info_, NetLogWithSource()),
+            proxy_info_,
+            NetLogWithSource::Make(
+                pool.http_network_session()->net_log(),
+                NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)),
         priority_, allowed_bad_certs_, enable_ip_based_pooling_,
-        enable_alternative_services_, NetLogWithSource());
+        enable_alternative_services_,
+        NetLogWithSource::Make(pool.http_network_session()->net_log(),
+                               NetLogSourceType::URL_REQUEST));
     return request_.get();
   }
 

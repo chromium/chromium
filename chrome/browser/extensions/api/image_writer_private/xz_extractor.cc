@@ -19,7 +19,7 @@ namespace image_writer {
 
 namespace {
 
-constexpr base::FilePath::StringPieceType kExtractedBinFileName =
+constexpr base::FilePath::StringViewType kExtractedBinFileName =
     FILE_PATH_LITERAL("extracted.bin");
 
 // https://tukaani.org/xz/xz-file-format-1.0.4.txt

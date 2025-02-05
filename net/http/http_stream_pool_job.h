@@ -166,6 +166,7 @@ class HttpStreamPool::Job {
   base::TimeTicks resume_time_;
 
   std::optional<int> result_;
+  std::optional<NextProto> negotiated_protocol_;
 
   ConnectionAttempts connection_attempts_;
 

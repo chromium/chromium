@@ -51,7 +51,7 @@ using enterprise_management::DeviceLocalAccountsProto;
 
 constexpr std::string_view kDefaultWebAppOrigin = "https://kioskmixinapp.com";
 
-constexpr base::FilePath::StringPieceType kDefaultWebAppPath =
+constexpr base::FilePath::StringViewType kDefaultWebAppPath =
     FILE_PATH_LITERAL("chrome/test/data");
 
 void AppendSwitchesToDisplayLoginScreen(base::CommandLine* command_line) {

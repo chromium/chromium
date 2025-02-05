@@ -58,6 +58,8 @@ class ASH_EXPORT NullCaptureModeSession : public BaseCaptureModeSession {
                                     ActionButtonRank rank,
                                     ActionButtonViewID id) override;
   void AddSmartActionsButton() override;
+  void MaybeShowScannerDisclaimer(
+      base::RepeatingClosure accept_callback) override;
   void OnScannerActionsFetched(
       ScannerSession::FetchActionsResponse actions_response) override;
   gfx::Rect GetFeedbackWidgetScreenBounds() const override;

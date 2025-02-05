@@ -42,12 +42,24 @@ declare_args() {
   # defaults to off.
   enable_iterator_debugging = false
 
-  # Use Clang header modules for libc++.
+  # Use explicit Clang header modules for libc++.
   # This is experimental only (see crbug.com/543704).
   # For details on the current state of modules in Chromium see
   # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
   use_libcxx_modules = false
+
+  # Use implicit Clang header modules for libc++.
+  # This is experimental only (see crbug.com/543704).
+  # For details on the current state of modules in Chromium see
+  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
+  use_implicit_libcxx_modules = false
 }
+
+if (use_implicit_libcxx_modules) {
+  use_libcxx_modules = true
+}
+
+use_explicit_libcxx_modules = use_libcxx_modules && !use_implicit_libcxx_modules
 
 assert(!use_libcxx_modules || !use_remoteexec,
        "Implicit Clang header modules don't work with remote execution.")

@@ -29,7 +29,7 @@ void AddUnattendedTestSwitch(base::CommandLine& command_line) {
 
 ServiceEnvironment::ServiceEnvironment(
     std::wstring_view display_name,
-    base::FilePath::StringPieceType service_exe_name,
+    base::FilePath::StringViewType service_exe_name,
     std::string_view testing_switch,
     const CLSID& clsid,
     const IID& iid) {

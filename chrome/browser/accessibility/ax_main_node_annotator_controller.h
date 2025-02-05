@@ -8,12 +8,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/callback_list.h"
 #else
 #include "ui/accessibility/ax_mode_observer.h"
@@ -22,7 +22,7 @@
 
 class Profile;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 struct AccessibilityStatusEventDetails;
 }
@@ -41,7 +41,7 @@ class AXMainNodeAnnotatorControllerFactory;
 // WebContents when it changes, provided its feature flag is enabled.
 class AXMainNodeAnnotatorController : public KeyedService,
                                       public ScreenAIInstallState::Observer
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     ,
                                       public ui::AXModeObserver
 #endif
@@ -61,7 +61,7 @@ class AXMainNodeAnnotatorController : public KeyedService,
 
   void Activate();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;
 #endif
@@ -74,7 +74,7 @@ class AXMainNodeAnnotatorController : public KeyedService,
  private:
   friend class AXMainNodeAnnotatorControllerFactory;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnAccessibilityStatusEvent(
       const ash::AccessibilityStatusEventDetails& details);
 #endif
@@ -93,7 +93,7 @@ class AXMainNodeAnnotatorController : public KeyedService,
   // before the profile gets destroyed.
   raw_ptr<Profile> profile_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Observes spoken feedback.
   base::CallbackListSubscription accessibility_status_subscription_;
 #else

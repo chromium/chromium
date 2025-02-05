@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_test_util.h"
@@ -34,7 +33,7 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_test.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -50,13 +49,12 @@ speech::LanguageCode fr_fr() {
   return speech::LanguageCode::kFrFr;
 }
 
-// Unused on builds that aren't ash. CQ fails
-// without this guard.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Unused on builds that aren't ash. CQ fails without this guard.
+#if BUILDFLAG(IS_CHROMEOS)
 speech::LanguageCode de_de() {
   return speech::LanguageCode::kDeDe;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -164,7 +162,7 @@ class LiveCaptionControllerTest : public LiveCaptionBrowserTest {
 #endif
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void ToggleLiveCaptionForBabelOrca(bool enabled) {
     LiveCaptionControllerFactory::GetForProfile(browser()->profile())
         ->ToggleLiveCaptionForBabelOrca(enabled);
@@ -358,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnToggleFullscreen) {
 }
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)  // No multi-profile on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)  // No multi-profile on ChromeOS.
 
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
                        LiveCaptionEnabledChanged_MultipleProfiles) {
@@ -461,9 +459,9 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
   ExpectIsWidgetVisibleOnProfile(false, profile1);
   ExpectIsWidgetVisibleOnProfile(false, profile2);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that live caption can be enabled for babel orca.
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest,
                        ToggleLiveCaptionForBabelOrca) {
@@ -555,5 +553,5 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaInstalledForBabelOrca) {
   SetLiveCaptionEnabled(false);
   EXPECT_FALSE(HasBubbleController());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace captions

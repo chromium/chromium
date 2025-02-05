@@ -425,7 +425,7 @@ GURL StartupTabProviderImpl::GetTriggeredResetSettingsUrl() {
 // static
 StartupTabProviderImpl::ParsedCommandLineTabArg
 StartupTabProviderImpl::ParseTabFromCommandLineArg(
-    base::FilePath::StringPieceType arg,
+    base::FilePath::StringViewType arg,
     const base::FilePath& cur_dir,
     Profile* maybe_profile) {
   // Note: Type/encoding of |arg| matches with the one of FilePath.

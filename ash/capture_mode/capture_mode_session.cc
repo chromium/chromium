@@ -1440,6 +1440,25 @@ void CaptureModeSession::AddSmartActionsButton() {
   }
 }
 
+void CaptureModeSession::MaybeShowScannerDisclaimer(
+    base::RepeatingClosure accept_callback) {
+  if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
+          prefs::kSunfishConsentDisclaimerAccepted)) {
+    if (accept_callback) {
+      std::move(accept_callback).Run();
+    }
+    return;
+  }
+  disclaimer_ = DisclaimerView::CreateWidget(
+      capture_mode_util::GetPreferredRootWindow(),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerAccepted,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(accept_callback)),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerDeclined,
+                          weak_ptr_factory_.GetWeakPtr()));
+  disclaimer_->Show();
+}
+
 void CaptureModeSession::OnScannerActionsFetched(
     ScannerSession::FetchActionsResponse actions_response) {
   CHECK(capture_region_overlay_controller_);
@@ -1476,25 +1495,6 @@ void CaptureModeSession::OnScannerActionsFetched(
   }
 }
 
-void CaptureModeSession::MaybeShowDisclaimer(
-    base::RepeatingClosure accept_callback) {
-  if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
-          prefs::kSunfishConsentDisclaimerAccepted)) {
-    if (accept_callback) {
-      std::move(accept_callback).Run();
-    }
-    return;
-  }
-  disclaimer_ = DisclaimerView::CreateWidget(
-      capture_mode_util::GetPreferredRootWindow(),
-      base::BindRepeating(&CaptureModeSession::OnDisclaimerAccepted,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          std::move(accept_callback)),
-      base::BindRepeating(&CaptureModeSession::OnDisclaimerDeclined,
-                          weak_ptr_factory_.GetWeakPtr()));
-  disclaimer_->Show();
-}
-
 void CaptureModeSession::OnDisclaimerDeclined() {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kConsentDisclaimerRejected);
@@ -1515,7 +1515,7 @@ void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
 }
 
 void CaptureModeSession::OnSmartActionsButtonPressed() {
-  MaybeShowDisclaimer(base::BindRepeating(
+  MaybeShowScannerDisclaimer(base::BindRepeating(
       &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
       weak_ptr_factory_.GetWeakPtr()));
 }
@@ -3296,7 +3296,7 @@ CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
     return false;
   }
 
-  // `ShouldShowActionContainerWidget()` checks `IsSunfishAllowedAndEnabled()`
+  // `ShouldShowActionContainerWidget()` checks `IsSunfishSessionAllowed()`
   // which checks if *either* Scanner or Sunfish is enabled. Check again if
   // Sunfish specifically is enabled to show the Search button.
   if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected() &&
@@ -3365,7 +3365,7 @@ bool CaptureModeSession::ShouldHideFeedbackWidget(views::Widget* widget) const {
     return false;
   }
 
-  if (!IsSunfishAllowedAndEnabled()) {
+  if (!IsSunfishSessionAllowed()) {
     return true;
   }
 
@@ -3385,7 +3385,7 @@ bool CaptureModeSession::ShouldHideFeedbackWidget(views::Widget* widget) const {
 }
 
 bool CaptureModeSession::ShouldShowActionContainerWidget() const {
-  if (!IsSunfishAllowedAndEnabled()) {
+  if (!IsSunfishSessionAllowed()) {
     return false;
   }
 

@@ -400,24 +400,11 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
 
   auto [top, bottom] = SelectionTopAndBottom(*this);
 
-  LayoutUnit block_direction_position;
-  LayoutUnit line_direction_position;
-  if (RuntimeEnabledFeatures::SidewaysWritingModesEnabled()) {
-    LogicalOffset logical_point =
-        LocationContainer()->CreateWritingModeConverter().ToLogical(
-            point + PhysicalLocation(), {});
-    block_direction_position = logical_point.block_offset;
-    line_direction_position = logical_point.inline_offset;
-  } else {
-    LayoutPoint flipped_point_in_container =
-        LocationContainer()->FlipForWritingMode(point + PhysicalLocation());
-    block_direction_position = IsHorizontalWritingMode()
-                                   ? flipped_point_in_container.Y()
-                                   : flipped_point_in_container.X();
-    line_direction_position = IsHorizontalWritingMode()
-                                  ? flipped_point_in_container.X()
-                                  : flipped_point_in_container.Y();
-  }
+  LogicalOffset logical_point =
+      LocationContainer()->CreateWritingModeConverter().ToLogical(
+          point + PhysicalLocation(), {});
+  LayoutUnit block_direction_position = logical_point.block_offset;
+  LayoutUnit line_direction_position = logical_point.inline_offset;
 
   if (block_direction_position < top)
     return PositionBeforeThis();  // coordinates are above

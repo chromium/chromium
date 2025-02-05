@@ -772,7 +772,7 @@ size_t BaseLogFileWriterFactory::MinFileSizeBytes() const {
   return 0;
 }
 
-base::FilePath::StringPieceType BaseLogFileWriterFactory::Extension() const {
+base::FilePath::StringViewType BaseLogFileWriterFactory::Extension() const {
   return kWebRtcEventLogUncompressedExtension;
 }
 
@@ -842,7 +842,7 @@ size_t GzippedLogFileWriterFactory::MinFileSizeBytes() const {
   return gzip_compressor_factory_->MinSizeBytes();
 }
 
-base::FilePath::StringPieceType GzippedLogFileWriterFactory::Extension() const {
+base::FilePath::StringViewType GzippedLogFileWriterFactory::Extension() const {
   return kWebRtcEventLogGzippedExtension;
 }
 
@@ -908,11 +908,10 @@ base::FilePath GetRemoteBoundWebRtcEventLogsDir(
   return browser_context_dir.Append(kRemoteBoundLogSubDirectory);
 }
 
-base::FilePath WebRtcEventLogPath(
-    const base::FilePath& remote_logs_dir,
-    const std::string& log_id,
-    size_t web_app_id,
-    const base::FilePath::StringPieceType& extension) {
+base::FilePath WebRtcEventLogPath(const base::FilePath& remote_logs_dir,
+                                  const std::string& log_id,
+                                  size_t web_app_id,
+                                  base::FilePath::StringViewType extension) {
   DCHECK_GE(web_app_id, kMinWebRtcEventLogWebAppId);
   DCHECK_LE(web_app_id, kMaxWebRtcEventLogWebAppId);
 

@@ -38,20 +38,20 @@
 
 namespace component_updater {
 
-constexpr base::FilePath::StringPieceType
+constexpr base::FilePath::StringViewType
     ZxcvbnDataComponentInstallerPolicy::kEnglishWikipediaTxtFileName;
-constexpr base::FilePath::StringPieceType
+constexpr base::FilePath::StringViewType
     ZxcvbnDataComponentInstallerPolicy::kFemaleNamesTxtFileName;
-constexpr base::FilePath::StringPieceType
+constexpr base::FilePath::StringViewType
     ZxcvbnDataComponentInstallerPolicy::kMaleNamesTxtFileName;
-constexpr base::FilePath::StringPieceType
+constexpr base::FilePath::StringViewType
     ZxcvbnDataComponentInstallerPolicy::kPasswordsTxtFileName;
-constexpr base::FilePath::StringPieceType
+constexpr base::FilePath::StringViewType
     ZxcvbnDataComponentInstallerPolicy::kSurnamesTxtFileName;
-constexpr base::FilePath::StringPieceType
+constexpr base::FilePath::StringViewType
     ZxcvbnDataComponentInstallerPolicy::kUsTvAndFilmTxtFileName;
 
-constexpr base::FilePath::StringPieceType
+constexpr base::FilePath::StringViewType
     ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName;
 
 namespace {

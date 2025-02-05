@@ -280,7 +280,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '108cb2280ec2ce380d0b9421656fe413f1c08e81',
+  'skia_revision': '565822c943b3a55660ce126ff7f2dfd7588ab0f2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'aa94da0253a24f0f0cbdb7c1266c6da8e59a0629',
+  'angle_revision': '9c6af5ce1cbcd055eef09da739653233d0b816eb',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '5836f7e70002ab252ca78775bd85a093a79f1752',
+  'devtools_frontend_revision': '9ccaa6618782d25be66e37d07492419227fb2c5a',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'c677aca7720985978599da36d59862cfa49ca38d',
+  'dawn_revision': '83cddb9b590fc8c1e43a574e600179d0294cc841',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1448,7 +1448,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '009e8655e576460e36eb27fb9db72086fcfe97b9',
+    '6b6772c2ed6f39598351c74c163bccd5c1c1568b',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -2416,7 +2416,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/cisco/openh264' + '@' + '33f7f48613258446decb33b3575fc0a3c9ed14e3',
 
   'src/third_party/openscreen/src':
-    Var('chromium_git') + '/openscreen' + '@' + '7559853e0d90e73dfa75e708c4b28317ae63ea3d',
+    Var('chromium_git') + '/openscreen' + '@' + 'f169d685bbf6d5982ed93b18692c424af5e4ac55',
 
   'src/third_party/openxr/src': {
     'url': Var('chromium_git') + '/external/github.com/KhronosGroup/OpenXR-SDK' + '@' + '781f2eab3698d653c804ecbd11e0aed47eaad1c6',
@@ -2756,16 +2756,16 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@83dbcb0be5aec133e6b4cd07ec9801b7e8c0b0b5',
-  'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@1b65bd602b23d401d1c4c86dfa90a36a52c66294',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@4d67b5012a2fd6f3610c317b3fdbbac68864ea22',
+  'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@39766a06679bf5e4bc1e0339136f1b6a519fcec5',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@e7294a8ebed84f8c5bd3686c68dbe12a4e65b644',
-  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@d59325f379ee95217a200122374549cace9d3708',
-  'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@39f924b810e561fd86b2558b6711ca68d4363f68',
-  'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@30aa753eea24da31cce2701d6957640a122caffa',
+  'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@9d07794bc955101c79cbd260233fcc65b9951cfc',
+  'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@234c4b7370a8ea3239a214c9e871e4b17c89f4ab',
+  'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@fde0f9718bd60b49cf8efc80d3fb7a093c309ac0',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@c52931f012cb7b48e42bbf2050a7fb2183b76406',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@fe7a09b13899c5c77d956fa310286f7a7eb2c4ed',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@33837d3d93b0ba401ca1c102a76c57719a1dc63c',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@e9d5ff418fd29381205b7617170a6d556bc6a10e',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '56300b29fbfcc693ee6609ddad3fdd5b7a449a21',
@@ -2804,7 +2804,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '450cceb587613ac1469c5a131fac15935c99e0e7',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'ffc821183ba04f6b4405149b2c9d8e98f98afffb',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '582027b0b37afbc471e1d4a6dcb2550acc93721f',
 
   'src/third_party/webpagereplay':
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
@@ -2877,7 +2877,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': '7KJBgESHAIXB83gv_MjAhnrhrm8TBRwEzSBTq9hVEaoC',
+          'version': 'I3BZhYZm_kKeVlkevESn47vlGlr8k5ZMiI9pZcFE53UC',
         },
       ],
       'dep_type': 'cipd',

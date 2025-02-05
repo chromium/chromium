@@ -2330,6 +2330,21 @@ TEST_F(SunfishMultiDisplayTest, SelectNewRegionAndPanelRoot) {
   EXPECT_FALSE(controller->search_results_panel_widget());
 }
 
+// Should not show scanner disclaimer since scanner is not enabled.
+TEST_F(SunfishTest, DoesNotShowScannerDisclaimer) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_FALSE(disclaimer);
+}
+
 using SunfishDisplayMetricsTest = SunfishTest;
 
 // TODO(crbug.com/388564694): Enable after resolving flakiness.
@@ -3766,6 +3781,102 @@ TEST_F(ScannerTest, KeyboardNavigationDisclaimer) {
   // loop back around to the decline button.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_TRUE(decline_button->HasFocus());
+}
+
+TEST_F(ScannerTest, DisclaimerAcceptRecordsHistogramOnce) {
+  base::HistogramTester histogram_tester;
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+
+  views::View* accept_button =
+      disclaimer->GetContentsView()->GetViewByID(kDisclaimerViewAcceptButtonId);
+  LeftClickOn(accept_button);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kConsentDisclaimerAccepted, 1);
+}
+
+TEST_F(ScannerTest, DisclaimerDeclineRecordsHistogramOnce) {
+  base::HistogramTester histogram_tester;
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+
+  views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
+      kDisclaimerViewDeclineButtonId);
+  LeftClickOn(decline_button);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kConsentDisclaimerRejected, 1);
+}
+
+TEST_F(ScannerTest,
+       DisclaimerAcceptHidesDisclaimerSetPrefsAndContinuesSession) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+
+  views::View* accept_button =
+      disclaimer->GetContentsView()->GetViewByID(kDisclaimerViewAcceptButtonId);
+  LeftClickOn(accept_button);
+
+  EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+  EXPECT_TRUE(controller->IsActive());
+}
+
+TEST_F(ScannerTest,
+       DisclaimerDeclineHidesDisclaimerSetPrefsAndContinuesSession) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+
+  views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
+      kDisclaimerViewDeclineButtonId);
+  LeftClickOn(decline_button);
+
+  EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+  EXPECT_TRUE(controller->IsActive());
 }
 
 }  // namespace ash

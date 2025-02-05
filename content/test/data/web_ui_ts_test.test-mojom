@@ -68,4 +68,7 @@ interface WebUITsMojoTestCache {
   EchoTypemaps(
     mojo_base.mojom.JSTime time
   ) => (mojo_base.mojom.JSTime time);
+
+  AddStringWrapper(pending_remote<StringWrapper> string_wrapper);
+  GetStringWrapperList() => (array<pending_remote<StringWrapper>> string_wrapper_list);
 };

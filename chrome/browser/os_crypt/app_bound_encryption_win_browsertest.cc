@@ -605,8 +605,8 @@ class AppBoundEncryptionWinTestMultiProcess : public AppBoundEncryptionWinTest {
   }
 
   void EncryptOrDecryptInTestProcess(
-      base::FilePath::StringPieceType filename,
-      std::optional<base::FilePath::StringPieceType> sub_dir,
+      base::FilePath::StringViewType filename,
+      std::optional<base::FilePath::StringViewType> sub_dir,
       const std::string& input_data,
       std::string& output_data,
       Operation op,

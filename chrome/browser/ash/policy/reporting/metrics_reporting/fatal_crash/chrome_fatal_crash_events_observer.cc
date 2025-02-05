@@ -13,9 +13,9 @@ using ::ash::cros_healthd::mojom::CrashEventInfo;
 
 namespace reporting {
 
-constexpr base::FilePath::StringPieceType kChromeReportedLocalIdSaveFilePath =
+constexpr base::FilePath::StringViewType kChromeReportedLocalIdSaveFilePath =
     "/var/lib/reporting/crash_events/CHROME_CRASH_REPORTED_LOCAL_IDS";
-constexpr base::FilePath::StringPieceType kChromeUploadedCrashInfoSaveFilePath =
+constexpr base::FilePath::StringViewType kChromeUploadedCrashInfoSaveFilePath =
     "/var/lib/reporting/crash_events/CHROME_CRASH_UPLOADED_CRASH_INFO";
 
 ChromeFatalCrashEventsObserver::ChromeFatalCrashEventsObserver(

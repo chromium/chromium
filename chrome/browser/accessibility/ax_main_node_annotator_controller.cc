@@ -18,7 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #endif
 
@@ -58,7 +58,7 @@ AXMainNodeAnnotatorController::AXMainNodeAnnotatorController(Profile* profile)
           weak_ptr_factory_.GetWeakPtr()));
 
   // Register for changes to screenreader/spoken feedback.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (auto* const accessibility_manager = ash::AccessibilityManager::Get();
       accessibility_manager) {
     // Unretained is safe because `this` owns the subscription.
@@ -67,9 +67,9 @@ AXMainNodeAnnotatorController::AXMainNodeAnnotatorController(Profile* profile)
             &AXMainNodeAnnotatorController::OnAccessibilityStatusEvent,
             base::Unretained(this)));
   }
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   activated_ = accessibility_state_utils::IsScreenReaderEnabled();
   OnActivationChanged();
@@ -89,7 +89,7 @@ void AXMainNodeAnnotatorController::OnAXMainNodeAnnotationsEnabledChanged() {
   OnActivationChanged();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AXMainNodeAnnotatorController::OnAccessibilityStatusEvent(
     const ash::AccessibilityStatusEventDetails& details) {
   if (details.notification_type ==
@@ -98,7 +98,7 @@ void AXMainNodeAnnotatorController::OnAccessibilityStatusEvent(
     OnActivationChanged();
   }
 }
-#endif  // BUIDLFLAG(IS_CHROMEOS_ASH)
+#endif  // BUIDLFLAG(IS_CHROMEOS)
 
 void AXMainNodeAnnotatorController::OnActivationChanged() {
   const bool is_activated =
@@ -189,13 +189,13 @@ void AXMainNodeAnnotatorController::Activate() {
   OnActivationChanged();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void AXMainNodeAnnotatorController::OnAXModeAdded(ui::AXMode mode) {
   if (mode.has_mode(ui::AXMode::kScreenReader)) {
     activated_ = true;
     OnActivationChanged();
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace screen_ai

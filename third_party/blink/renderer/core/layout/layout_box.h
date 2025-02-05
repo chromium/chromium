@@ -898,21 +898,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // this container. This ignores TextDirection.
   WritingModeConverter CreateWritingModeConverter() const;
 
-  [[nodiscard]] LayoutUnit FlipForWritingMode(
-      LayoutUnit position,
-      LayoutUnit width = LayoutUnit()) const {
-    NOT_DESTROYED();
-    // The offset is in the block direction (y for horizontal writing modes, x
-    // for vertical writing modes).
-    if (!HasFlippedBlocksWritingMode()) [[likely]] {
-      return position;
-    }
-    DCHECK(!IsHorizontalWritingMode());
-    return Size().width - (position + width);
-  }
-  // Inherit other flipping methods from LayoutObject.
-  using LayoutObject::FlipForWritingMode;
-
   // Passing |flipped_blocks_container| causes flipped-block flipping w.r.t.
   // that container, or LocationContainer() otherwise.
   PhysicalOffset PhysicalLocation(
@@ -1376,15 +1361,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       ShouldClampToContentBox = kDoNotClampToContentBox,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
       ShouldIncludeScrollbarGutter = kIncludeScrollbarGutter) const;
-
-  LayoutUnit FlipForWritingModeInternal(
-      LayoutUnit position,
-      LayoutUnit width,
-      const LayoutBox* box_for_flipping) const final {
-    NOT_DESTROYED();
-    DCHECK(!box_for_flipping || box_for_flipping == this);
-    return FlipForWritingMode(position, width);
-  }
 
   PhysicalOffset PhysicalLocationInternal(
       const LayoutBox* container_box) const {

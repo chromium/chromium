@@ -32,7 +32,7 @@
 #include "pdf/pdf_features.h"
 #include "ui/accessibility/accessibility_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #endif
 
@@ -165,7 +165,7 @@ PdfOcrController::PdfOcrController(Profile* profile)
   DCHECK(profile_);
 
   // Register for changes to screenreader/spoken feedback/select to speak.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (auto* const accessibility_manager = ash::AccessibilityManager::Get();
       accessibility_manager) {
     // Unretained is safe because `this` owns the subscription.
@@ -174,12 +174,9 @@ PdfOcrController::PdfOcrController(Profile* profile)
             base::BindRepeating(&PdfOcrController::OnAccessibilityStatusEvent,
                                 base::Unretained(this)));
   }
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/289010799): Observe Chrome OS's select-to-speak setting.
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#else   // BUILDFLAG(IS_CHROMEOS)
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Trigger if a screen reader or Select-to-Speak on ChromeOS is enabled.
   OnActivationChanged();
@@ -197,7 +194,7 @@ bool PdfOcrController::IsEnabled() const {
   return scoped_accessibility_mode_ != nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void PdfOcrController::OnAccessibilityStatusEvent(
     const ash::AccessibilityStatusEventDetails& details) {
   if (details.notification_type ==
@@ -207,7 +204,7 @@ void PdfOcrController::OnAccessibilityStatusEvent(
     OnActivationChanged();
   }
 }
-#endif  // BUIDLFLAG(IS_CHROMEOS_ASH)
+#endif  // BUIDLFLAG(IS_CHROMEOS)
 
 void PdfOcrController::OnActivationChanged() {
   // PDF Searchify feature performs OCR on all inaccessible PDFs regardless of
@@ -283,12 +280,12 @@ void PdfOcrController::Activate() {
   OnActivationChanged();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void PdfOcrController::OnAXModeAdded(ui::AXMode mode) {
   if (mode.has_mode(ui::AXMode::kScreenReader)) {
     OnActivationChanged();
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace screen_ai

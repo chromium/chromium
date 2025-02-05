@@ -75,7 +75,7 @@ IsolatedWebAppBrowserTestHarness::~IsolatedWebAppBrowserTestHarness() = default;
 
 std::unique_ptr<net::EmbeddedTestServer>
 IsolatedWebAppBrowserTestHarness::CreateAndStartServer(
-    const base::FilePath::StringPieceType& chrome_test_data_relative_root) {
+    base::FilePath::StringViewType chrome_test_data_relative_root) {
   return CreateAndStartDevServer(chrome_test_data_relative_root);
 }
 
@@ -136,7 +136,7 @@ void UpdateDiscoveryTaskResultWaiter::OnUpdateDiscoveryTaskCompleted(
 }
 
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
-    const base::FilePath::StringPieceType& chrome_test_data_relative_root) {
+    base::FilePath::StringViewType chrome_test_data_relative_root) {
   base::FilePath server_root =
       base::FilePath(FILE_PATH_LITERAL("chrome/test/data"))
           .Append(chrome_test_data_relative_root);

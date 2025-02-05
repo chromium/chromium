@@ -489,7 +489,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   void CheckPwaWindowCreatedImpl(Profile* profile, Site site, Number number);
 
-  base::FilePath GetResourceFile(base::FilePath::StringPieceType relative_path);
+  base::FilePath GetResourceFile(base::FilePath::StringViewType relative_path);
 
   std::vector<base::FilePath> GetTestFilePaths(FilesOptions file_options);
 

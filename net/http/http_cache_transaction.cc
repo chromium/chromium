@@ -1348,16 +1348,11 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
   // This handles the case where opening the disk cache entry failed, or it was
   // found to be unusable due to in-memory flags.
   if (IsUsingURLFromNoVarySearchCache()) {
-    if (result == ERR_CACHE_ENTRY_NOT_SUITABLE) {
-      // If a future request had the LOAD_SKIP_CACHE_VALIDATION flag the entry
-      // would be usable, so don't delete it.
-      return RestartWithoutNoVarySearchCache(
-          RestartCacheEntryAction::kDontErase,
-          NoVarySearchUseResult::kNotSuitable);
-    } else {
-      return RestartWithoutNoVarySearchCache(
-          RestartCacheEntryAction::kErase, NoVarySearchUseResult::kNotOpenable);
-    }
+    return RestartWithoutNoVarySearchCache(
+        RestartCacheEntryAction::kErase,
+        result == ERR_CACHE_ENTRY_NOT_SUITABLE
+            ? NoVarySearchUseResult::kNotSuitable
+            : NoVarySearchUseResult::kNotOpenable);
   }
 
   if (ShouldOpenOnlyMethods() || result == ERR_CACHE_ENTRY_NOT_SUITABLE) {
@@ -2131,14 +2126,6 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
     SetResponse(*new_response_);
     TransitionToState(STATE_FINISH_HEADERS);
     return OK;
-  }
-
-  // If we get here we are going to write or update the cache entry, possibly
-  // with a new No-Vary-Search response header, so insert into the NoVarySearch
-  // cache if appropriate.
-  if (cache_->no_vary_search_cache_ && IsNoVarySearchApplicable()) {
-    cache_->no_vary_search_cache_->MaybeInsert(*request_,
-                                               *new_response_->headers);
   }
 
   // Are we expecting a response to a conditional query?
@@ -3583,10 +3570,19 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
     DCHECK_EQ(HTTP_OK, response.headers->response_code());
   }
 
-  // When writing headers, we normally only write the non-transient headers.
-  bool skip_transient_headers = true;
+  // If we get here, we are definitely going to write the entry, so update the
+  // NoVarySearchCache in the case that there is a No-Vary-Search response
+  // header.
+  if (!truncated && !entry_->IsDoomed() && cache_->no_vary_search_cache_ &&
+      IsNoVarySearchApplicable()) {
+    cache_->no_vary_search_cache_->MaybeInsert(*request_,
+                                               *new_response_->headers);
+  }
+
+  // When writing headers, we only write the non-transient headers.
+  static constexpr bool kSkipTransientHeaders = true;
   auto data = base::MakeRefCounted<PickledIOBuffer>();
-  response.Persist(data->pickle(), skip_transient_headers, truncated);
+  response.Persist(data->pickle(), kSkipTransientHeaders, truncated);
   data->Done();
 
   io_buf_len_ = data->pickle()->size();

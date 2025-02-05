@@ -3978,11 +3978,6 @@
       base_feature: "none",
     },
     {
-      // crbug.com/40501131
-      name: "SidewaysWritingModes",
-      status: "stable",
-    },
-    {
       name: "SignatureBasedInlineIntegrity",
       status: "experimental",
     },

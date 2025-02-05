@@ -57,7 +57,7 @@ void MoveUserData(const base::FilePath& source, const base::FilePath& target) {
   auto exclusion_predicate =
       base::BindRepeating([](const base::FilePath& name) -> bool {
         // TODO(ydago): Share constants instead of hardcoding values here.
-        static constexpr base::FilePath::StringPieceType kFilesToKeep[] = {
+        static constexpr base::FilePath::StringViewType kFilesToKeep[] = {
             FILE_PATH_LITERAL("browsermetrics"),
             FILE_PATH_LITERAL("crashpad"),
             FILE_PATH_LITERAL("first run"),

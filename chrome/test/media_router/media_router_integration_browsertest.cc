@@ -276,14 +276,14 @@ MediaRouterIntegrationBrowserTest::StartSessionWithTestPageAndChooseSink() {
 }
 
 void MediaRouterIntegrationBrowserTest::OpenTestPage(
-    base::FilePath::StringPieceType file_name) {
+    base::FilePath::StringViewType file_name) {
   base::FilePath full_path = GetResourceFile(file_name);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetTestPageUrl(full_path)));
 }
 
 void MediaRouterIntegrationBrowserTest::OpenTestPageInNewTab(
-    base::FilePath::StringPieceType file_name) {
+    base::FilePath::StringViewType file_name) {
   base::FilePath full_path = GetResourceFile(file_name);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetTestPageUrl(full_path),
@@ -310,7 +310,7 @@ void MediaRouterIntegrationBrowserTest::CheckStartFailed(
 }
 
 base::FilePath MediaRouterIntegrationBrowserTest::GetResourceFile(
-    base::FilePath::StringPieceType relative_path) const {
+    base::FilePath::StringViewType relative_path) const {
   const base::FilePath full_path =
       base::PathService::CheckedGet(base::DIR_OUT_TEST_DATA_ROOT)
           .Append(FILE_PATH_LITERAL("media_router/browser_test_resources/"))

@@ -27,7 +27,7 @@ namespace windows_services {
 // `task_runner` indicates the sequence on which the launch will take place.
 // This function returns to the caller only after the handler has started.
 void StartCrashHandler(std::unique_ptr<UserCrashState> user_crash_state,
-                       base::FilePath::StringPieceType directory_name,
+                       base::FilePath::StringViewType directory_name,
                        std::string_view process_type,
                        scoped_refptr<base::SequencedTaskRunner> task_runner);
 

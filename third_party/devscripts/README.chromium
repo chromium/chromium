@@ -5,7 +5,7 @@ Revision: 297122b2376fc7a118185ee68ef13168b1cf9ea6
 CPEPrefix: cpe:/a:debian:devscripts:2.12.4
 Security Critical: no
 Shipped: no
-License: GPL 2.0
+License: GPL-2.0
 
 Description:
 This directory contains selected tools from the Debian's devscripts collection.
