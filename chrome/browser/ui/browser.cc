@@ -2055,7 +2055,7 @@ content::WebContents* Browser::AddNewContents(
     // cannot switch their independent spaces simultaneously (crbug.com/1315749)
     auto web_contents_creation_callback = base::BindOnce(
         &chrome::AddWebContents, this, source, std::move(new_contents),
-        target_url, disposition, window_features, window_action);
+        target_url, disposition, window_features, window_action, user_gesture);
     fullscreen_controller->RunOrDeferUntilTransitionIsComplete(base::BindOnce(
         base::IgnoreResult(std::move(web_contents_creation_callback))));
     return nullptr;
@@ -2063,7 +2063,7 @@ content::WebContents* Browser::AddNewContents(
 
   return chrome::AddWebContents(this, source, std::move(new_contents),
                                 target_url, disposition, window_features,
-                                window_action);
+                                window_action, user_gesture);
 }
 
 void Browser::ActivateContents(WebContents* contents) {
