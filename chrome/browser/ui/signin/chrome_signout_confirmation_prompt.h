@@ -9,9 +9,6 @@
 
 class Browser;
 
-// The minimum height for the WebUI version of the signout prompt.
-inline constexpr int kSignoutConfirmationPromptMinHeight = 189;
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(ChromeSignoutConfirmationChoice)

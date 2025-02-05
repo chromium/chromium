@@ -32,6 +32,7 @@ class SignoutConfirmationHandler
       delete;
 
   // signout_confirmation::mojom::PageHandler:
+  void UpdateViewHeight(uint32_t height) override;
   void Accept() override;
   void Cancel() override;
   void Close() override;

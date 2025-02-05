@@ -146,17 +146,15 @@ SignoutConfirmationHandler::SignoutConfirmationHandler(
       page_(std::move(page)) {
   // Send any necessary data to the page.
   page_->SendSignoutConfirmationData(ConstructSignoutConfirmationData(variant));
-
-  // Explicitly set an initial height for the dialog for it to be shown after
-  // the WebUI has loaded. This eliminates any flicker where the dialog is shown
-  // but the WebUI inside is still loading.
-  if (browser_) {
-    browser_->signin_view_controller()->SetModalSigninHeight(
-        kSignoutConfirmationPromptMinHeight);
-  }
 }
 
 SignoutConfirmationHandler::~SignoutConfirmationHandler() = default;
+
+void SignoutConfirmationHandler::UpdateViewHeight(uint32_t height) {
+  if (browser_) {
+    browser_->signin_view_controller()->SetModalSigninHeight(height);
+  }
+}
 
 void SignoutConfirmationHandler::Accept() {
   ChromeSignoutConfirmationChoice ok_choice =

@@ -176,9 +176,11 @@ SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
     Browser* browser,
     ChromeSignoutConfirmationPromptVariant variant,
     base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback) {
+  // Set an initial height of 0 since the actual dialog's height will be set
+  // dynamically based on its contents, so the initial height does not matter.
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
       browser, GURL(chrome::kChromeUISignoutConfirmationURL),
-      kSignoutConfirmationPromptMinHeight, kModalDialogWidth,
+      /*dialog_height=*/0, kModalDialogWidth,
       InitializeSigninWebDialogUI(false));
 
   SignoutConfirmationUI* web_ui = web_view->GetWebContents()
