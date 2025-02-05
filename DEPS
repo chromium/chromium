@@ -4484,7 +4484,7 @@ deps = {
 
   'src/components/resources/default_100_percent/google_chrome': {
       'url': Var('chrome_git') + '/chrome/components/default_100_percent/google_chrome.git' + '@' +
-        'bcc653f3121b4a35bc2dd0b478397ed73d6cfdea',
+        '8385617f94c93fdb8d56ec48878d9132a146c477',
       'condition': 'checkout_src_internal',
   },
 
