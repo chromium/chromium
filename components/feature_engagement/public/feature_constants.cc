@@ -825,7 +825,7 @@ BASE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunchAppInTab,
 
 BASE_FEATURE(kIPHSupervisedUserProfileSigninFeature,
              "IPH_SupervisedUserProfileSignin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_LINUX)
 

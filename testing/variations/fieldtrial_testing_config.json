@@ -13157,25 +13157,6 @@
             ]
         }
     ],
-    "KidsProfilePhase2": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CustomProfileStringsForSupervisedUsers",
-                        "IPH_SupervisedUserProfileSignin",
-                        "ShowKiteForSupervisedUsers"
-                    ]
-                }
-            ]
-        }
-    ],
     "KioskHeartbeatsViaERP": [
         {
             "platforms": [
