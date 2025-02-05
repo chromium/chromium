@@ -127,6 +127,24 @@ class EntityInstance final {
 
   const EntityType& type() const { return type_; }
 
+  struct EntityMergeability {
+    EntityMergeability();
+    EntityMergeability(std::vector<AttributeInstance> mergeable_attributes,
+                       bool is_subset);
+    EntityMergeability(const EntityMergeability&);
+    EntityMergeability(EntityMergeability&&);
+    EntityMergeability& operator=(const EntityMergeability&);
+    EntityMergeability& operator=(EntityMergeability&&);
+    ~EntityMergeability();
+
+    // Given two instances (caller and parameter), this specifies the values of
+    // the second instance which can be merged in the first one (caller). This
+    // is not present if `is_subset` is true.
+    std::vector<AttributeInstance> mergeable_attributes;
+
+    bool is_subset = false;
+  };
+
   // The attributes present in this instance.
   // This is a subset of the attributes supported by the entity type.
   base::span<const AttributeInstance> attributes() const LIFETIME_BOUND {
@@ -140,6 +158,20 @@ class EntityInstance final {
     auto it = attributes_.find(a);
     return it != attributes_.end() ? &*it : nullptr;
   }
+
+  // - When `newer` is a superset of `this`,
+  //   `EntityMergeability.mergeable_attributes` contains the list of attributes
+  //   that `newer` has, but `this` does not. These attributes can be set on
+  //   `this` to update it.
+  // - If `newer` is a subset of `this`,
+  //   `EntityMergeability.mergeable_attributes` is empty and
+  //   `EntityMergeability.is_subset` is `true`. In this case no saving or
+  //   updating is required.
+  // - Otherwise, we have a situation were `newer` should be considered an
+  //   independent entity.
+  // TODO(389629676): This does not yet properly handle Names and possibly
+  // dates.
+  EntityMergeability GetEntityMergeability(const EntityInstance& newer) const;
 
   // Globally unique identifier of this entity.
   const base::Uuid& guid() const LIFETIME_BOUND { return guid_; }
