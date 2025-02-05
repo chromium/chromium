@@ -20,12 +20,11 @@ import {
   type Script,
   type BrowsingContext,
   ChromiumBidi,
-  NoSuchScriptException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import type {UserContextStorage} from '../browser/UserContextStorage.js';
-import type {CdpTarget} from '../cdp/CdpTarget.js';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -105,27 +104,32 @@ export class ScriptProcessor {
       );
     }
 
-    await this.#userContextStorage.verifyUserContextIdList(
+    const userContexts = await this.#userContextStorage.verifyUserContextIdList(
       params.userContexts ?? [],
     );
 
-    const contexts = this.#browsingContextStorage.verifyTopLevelContextsList(
-      params.contexts,
-    );
+    const browsingContexts =
+      this.#browsingContextStorage.verifyTopLevelContextsList(params.contexts);
 
     const preloadScript = new PreloadScript(params, this.#logger);
     this.#preloadScriptStorage.add(preloadScript);
 
-    const cdpTargets =
-      contexts.size === 0
-        ? new Set<CdpTarget>(
-            this.#browsingContextStorage
-              .getTopLevelContexts()
-              .map((context) => context.cdpTarget),
-          )
-        : new Set<CdpTarget>(
-            [...contexts.values()].map((context) => context.cdpTarget),
-          );
+    let contextsToRunIn: BrowsingContextImpl[] = [];
+    if (userContexts.size) {
+      contextsToRunIn = this.#browsingContextStorage
+        .getTopLevelContexts()
+        .filter((context) => {
+          return userContexts.has(context.userContext);
+        });
+    } else if (browsingContexts.size) {
+      contextsToRunIn = [...browsingContexts.values()];
+    } else {
+      contextsToRunIn = this.#browsingContextStorage.getTopLevelContexts();
+    }
+
+    const cdpTargets = new Set(
+      contextsToRunIn.map((context) => context.cdpTarget),
+    );
 
     await preloadScript.initInTargets(cdpTargets, false);
 
@@ -139,15 +143,9 @@ export class ScriptProcessor {
   ): Promise<EmptyResult> {
     const {script: id} = params;
 
-    const scripts = this.#preloadScriptStorage.find({id});
-
-    if (scripts.length === 0) {
-      throw new NoSuchScriptException(`No preload script with id '${id}'`);
-    }
-
-    await Promise.all(scripts.map((script) => script.remove()));
-
-    this.#preloadScriptStorage.remove({id});
+    const script = this.#preloadScriptStorage.getPreloadScript(id);
+    await script.remove();
+    this.#preloadScriptStorage.remove(id);
 
     return {};
   }

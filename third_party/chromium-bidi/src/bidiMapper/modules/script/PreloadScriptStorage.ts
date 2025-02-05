@@ -14,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {NoSuchScriptException} from '../../../protocol/ErrorResponse.js';
+import type {Browser} from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 
 import type {PreloadScript} from './PreloadScript.js';
 
 /** PreloadScripts can be filtered by BiDi ID or target ID. */
-export type PreloadScriptFilter = Partial<{
-  id: PreloadScript['id'];
+export interface PreloadScriptFilter {
   targetId: CdpTarget['id'];
-  global: boolean;
-}>;
+}
 
 /**
  * Container class for preload scripts.
@@ -41,24 +41,18 @@ export class PreloadScriptStorage {
     }
 
     return [...this.#scripts].filter((script) => {
-      if (filter.id !== undefined && filter.id === script.id) {
+      // Global scripts have no contexts or userContext
+      if (script.contexts === undefined && script.userContexts === undefined) {
         return true;
       }
+
       if (
         filter.targetId !== undefined &&
         script.targetIds.has(filter.targetId)
       ) {
         return true;
       }
-      if (
-        filter.global !== undefined &&
-        // Global scripts have no contexts
-        ((filter.global && script.contexts === undefined) ||
-          // Non global scripts always have contexts
-          (!filter.global && script.contexts !== undefined))
-      ) {
-        return true;
-      }
+
       return false;
     });
   }
@@ -68,9 +62,33 @@ export class PreloadScriptStorage {
   }
 
   /** Deletes all BiDi preload script entries that match the given filter. */
-  remove(filter?: PreloadScriptFilter) {
-    for (const preloadScript of this.find(filter)) {
-      this.#scripts.delete(preloadScript);
+  remove(id: string) {
+    const script = [...this.#scripts].find((script) => script.id === id);
+    if (script === undefined) {
+      throw new NoSuchScriptException(`No preload script with id '${id}'`);
+    }
+    this.#scripts.delete(script);
+  }
+
+  /** Gets the preload script with the given ID, if any, otherwise throws. */
+  getPreloadScript(id: string): PreloadScript {
+    const script = [...this.#scripts].find((script) => script.id === id);
+    if (script === undefined) {
+      throw new NoSuchScriptException(`No preload script with id '${id}'`);
+    }
+    return script;
+  }
+
+  onCdpTargetCreated(targetId: string, userContext: Browser.UserContext) {
+    const scriptInUserContext = [...this.#scripts].filter((script) => {
+      // Global scripts
+      if (!script.userContexts && !script.contexts) {
+        return true;
+      }
+      return script.userContexts?.includes(userContext);
+    });
+    for (const script of scriptInUserContext) {
+      script.targetIds.add(targetId);
     }
   }
 }

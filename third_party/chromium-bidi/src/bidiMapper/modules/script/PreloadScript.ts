@@ -18,7 +18,11 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {BrowsingContext, Script} from '../../../protocol/protocol.js';
+import type {
+  Browser,
+  BrowsingContext,
+  Script,
+} from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
@@ -57,6 +61,8 @@ export class PreloadScript {
   readonly #sandbox?: string;
   /** The browsing contexts to execute the preload scripts in, if any. */
   readonly #contexts?: BrowsingContext.BrowsingContext[];
+  /** The browsing contexts to execute the preload scripts in, if any. */
+  readonly #userContexts?: Browser.UserContext[];
 
   get id(): string {
     return this.#id;
@@ -72,6 +78,7 @@ export class PreloadScript {
     this.#functionDeclaration = params.functionDeclaration;
     this.#sandbox = params.sandbox;
     this.#contexts = params.contexts;
+    this.#userContexts = params.userContexts;
   }
 
   /** Channels of the preload script. */
@@ -82,6 +89,11 @@ export class PreloadScript {
   /** Contexts of the preload script, if any */
   get contexts(): BrowsingContext.BrowsingContext[] | undefined {
     return this.#contexts;
+  }
+
+  /** UserContexts of the preload script, if any */
+  get userContexts(): Browser.UserContext[] | undefined {
+    return this.#userContexts;
   }
 
   /**

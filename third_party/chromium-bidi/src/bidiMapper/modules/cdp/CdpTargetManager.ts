@@ -192,8 +192,14 @@ export class CdpTargetManager {
     }
     this.#targetKeysToBeIgnoredByAutoAttach.add(targetKey);
 
+    const userContext =
+      targetInfo.browserContextId &&
+      targetInfo.browserContextId !== this.#defaultUserContextId
+        ? targetInfo.browserContextId
+        : 'default';
+
     switch (targetInfo.type) {
-      case 'tab':
+      case 'tab': {
         // Tab targets are required only to handle page targets beneath them.
         this.#setEventListeners(targetCdpClient);
 
@@ -208,12 +214,14 @@ export class CdpTargetManager {
           });
         })();
         return;
+      }
       case 'page':
       case 'iframe': {
         const cdpTarget = this.#createCdpTarget(
           targetCdpClient,
           parentSessionCdpClient,
           targetInfo,
+          userContext,
         );
         const maybeContext = this.#browsingContextStorage.findContext(
           targetInfo.targetId,
@@ -228,11 +236,6 @@ export class CdpTargetManager {
             targetInfo,
             parentSessionCdpClient.sessionId,
           );
-          const userContext =
-            targetInfo.browserContextId &&
-            targetInfo.browserContextId !== this.#defaultUserContextId
-              ? targetInfo.browserContextId
-              : 'default';
           // New context.
           BrowsingContextImpl.create(
             targetInfo.targetId,
@@ -273,6 +276,7 @@ export class CdpTargetManager {
           targetCdpClient,
           parentSessionCdpClient,
           targetInfo,
+          userContext,
         );
         this.#handleWorkerTarget(
           cdpToBidiTargetTypes[targetInfo.type],
@@ -290,6 +294,7 @@ export class CdpTargetManager {
           targetCdpClient,
           parentSessionCdpClient,
           targetInfo,
+          userContext,
         );
         this.#handleWorkerTarget(
           cdpToBidiTargetTypes[targetInfo.type],
@@ -329,8 +334,13 @@ export class CdpTargetManager {
     targetCdpClient: CdpClient,
     parentCdpClient: CdpClient,
     targetInfo: Protocol.Target.TargetInfo,
+    userContext: Browser.UserContext,
   ) {
     this.#setEventListeners(targetCdpClient);
+    this.#preloadScriptStorage.onCdpTargetCreated(
+      targetInfo.targetId,
+      userContext,
+    );
 
     const target = CdpTarget.create(
       targetInfo.targetId,

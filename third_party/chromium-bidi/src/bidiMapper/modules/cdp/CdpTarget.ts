@@ -527,7 +527,6 @@ export class CdpTarget extends EventEmitter<TargetEventMap> {
         .find({
           // Needed for OOPIF
           targetId: this.topLevelId,
-          global: true,
         })
         .map((script) => {
           return script.initInTarget(this, true);

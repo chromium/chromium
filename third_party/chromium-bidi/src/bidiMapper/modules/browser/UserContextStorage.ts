@@ -46,9 +46,10 @@ export class UserContextStorage {
     ];
   }
 
-  async verifyUserContextIdList(userContextIds: string[]): Promise<void> {
+  async verifyUserContextIdList(userContextIds: Browser.UserContext[]) {
+    const foundContexts = new Set<Browser.UserContext>();
     if (!userContextIds.length) {
-      return;
+      return foundContexts;
     }
 
     const userContexts = await this.getUserContexts();
@@ -61,6 +62,9 @@ export class UserContextStorage {
           `User context ${userContextId} not found`,
         );
       }
+      foundContexts.add(userContextId);
     }
+
+    return foundContexts;
   }
 }
