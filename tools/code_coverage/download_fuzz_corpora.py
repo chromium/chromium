@@ -12,7 +12,9 @@ directory.
     --build-dir [BUILD_DIR]
 """
 
-CORPORA_BUCKET_BASE_URL = "gs://clusterfuzz-libfuzzer-backup/corpus/libfuzzer/"
+CORPORA_BUCKET_BASE_URL_BY_TYPE = {
+    "libfuzzer": "gs://clusterfuzz-libfuzzer-backup/corpus/libfuzzer/",
+}
 
 import argparse
 import coverage_consts
@@ -30,9 +32,11 @@ def _gsutil(cmd):
 def _download_corpus(args):
   target = args[0]
   download_dir = args[1]
+  corpora_type = args[2]
   target_folder = os.path.join(download_dir, target)
   subprocess.run(['mkdir', target_folder])
-  target_path = os.path.join(CORPORA_BUCKET_BASE_URL, target, "latest.zip")
+  url = CORPORA_BUCKET_BASE_URL_BY_TYPE[corpora_type]
+  target_path = os.path.join(url, target, "latest.zip")
   gsutil_cmd = ['gsutil', 'cp', target_path, target_folder]
   _gsutil(gsutil_cmd)
 
@@ -75,6 +79,12 @@ def _ParseCommandArguments():
                           required=True,
                           type=str,
                           help='Directory where fuzzers were built.')
+  valid_choices = ["libfuzzer", "centipede", "fuzzilli"]
+  arg_parser.add_argument('--corpora-type',
+                          choices=valid_choices,
+                          default='libfuzzer',
+                          help='The type of corpora to download. Accepts'
+                          ' one of libfuzzer, centipede and fuzzilli.')
   args = arg_parser.parse_args()
   return args
 
@@ -104,8 +114,9 @@ def Main():
   print("Corpora to download: " + str(corpora_to_download))
 
   with Pool(cpu_count()) as p:
-    results = p.map(_download_corpus, [(corpus, args.download_dir)
-                                       for corpus in corpora_to_download])
+    results = p.map(_download_corpus,
+                    [(corpus, args.download_dir, args.corpora_type)
+                     for corpus in corpora_to_download])
   with Pool(cpu_count()) as p:
     results = p.map(_unzip_corpus, [(corpus, args.download_dir)
                                     for corpus in corpora_to_download])
