@@ -31,42 +31,7 @@
 #include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #endif
 
-namespace {
-
-using content_settings::SettingSource;
-
 using Variant = permissions::EmbeddedPermissionPromptFlowModel::Variant;
-
-// An upper bound on the maximum number of screens that we can record in
-// metrics. Practically speaking the actual number should never be more than 3
-// but a higher bound allows us to detect via metrics if this happens in the
-// wild.
-constexpr int SCREEN_COUNTER_MAXIMUM = 10;
-
-permissions::ElementAnchoredBubbleVariant GetVariant(Variant variant) {
-  switch (variant) {
-    case Variant::kUninitialized:
-      return permissions::ElementAnchoredBubbleVariant::UNINITIALIZED;
-    case Variant::kAdministratorGranted:
-      return permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_GRANTED;
-    case Variant::kPreviouslyGranted:
-      return permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED;
-    case Variant::kOsSystemSettings:
-      return permissions::ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS;
-    case Variant::kOsPrompt:
-      return permissions::ElementAnchoredBubbleVariant::OS_PROMPT;
-    case Variant::kAsk:
-      return permissions::ElementAnchoredBubbleVariant::ASK;
-    case Variant::kPreviouslyDenied:
-      return permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_DENIED;
-    case Variant::kAdministratorDenied:
-      return permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED;
-  }
-
-  NOTREACHED();
-}
-
-}  // namespace
 
 EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
     Browser* browser,
@@ -98,17 +63,11 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     case Variant::kAsk:
       prompt_view = new EmbeddedPermissionPromptAskView(
           browser(), weak_factory_.GetWeakPtr());
-      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
-          delegate()->Requests(),
-          permissions::ElementAnchoredBubbleVariant::ASK);
       break;
     case Variant::kPreviouslyGranted:
       if (first_prompt) {
         prompt_view = new EmbeddedPermissionPromptPreviouslyGrantedView(
             browser(), weak_factory_.GetWeakPtr());
-        permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
-            delegate()->Requests(),
-            permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED);
       } else {
         delegate()->FinalizeCurrentRequests();
         return;
@@ -117,17 +76,11 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     case Variant::kPreviouslyDenied:
       prompt_view = new EmbeddedPermissionPromptPreviouslyDeniedView(
           browser(), weak_factory_.GetWeakPtr());
-      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
-          delegate()->Requests(),
-          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_DENIED);
       break;
     case Variant::kOsPrompt:
       prompt_view = new EmbeddedPermissionPromptShowSystemPromptView(
           browser(), weak_factory_.GetWeakPtr());
-      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
-          delegate()->Requests(),
-          permissions::ElementAnchoredBubbleVariant::OS_PROMPT);
-      current_variant_first_display_time_ = base::Time::Now();
+      prompt_model_->StartFirstDisplayTime();
       // This view has no buttons, so the OS level prompt should be triggered at
       // the same time as the |EmbeddedPermissionPromptShowSystemPromptView|.
       PromptForOsPermission();
@@ -135,30 +88,23 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     case Variant::kOsSystemSettings:
       prompt_view = new EmbeddedPermissionPromptSystemSettingsView(
           browser(), weak_factory_.GetWeakPtr());
-      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
-          delegate()->Requests(),
-          permissions::ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS);
-      current_variant_first_display_time_ = base::Time::Now();
+      prompt_model_->StartFirstDisplayTime();
       break;
     case Variant::kAdministratorGranted:
       prompt_view = new EmbeddedPermissionPromptPolicyView(
           browser(), weak_factory_.GetWeakPtr(),
           /*is_permission_allowed=*/true);
-      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
-          delegate()->Requests(),
-          permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_GRANTED);
       break;
     case Variant::kAdministratorDenied:
       prompt_view = new EmbeddedPermissionPromptPolicyView(
           browser(), weak_factory_.GetWeakPtr(),
           /*is_permission_allowed=*/false);
-      permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
-          delegate()->Requests(),
-          permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED);
       break;
     case Variant::kUninitialized:
       NOTREACHED();
   }
+
+  prompt_model_->RecordElementAnchoredBubbleVariantUMA(prompt_variant());
 
   if (prompt_view) {
     prompt_view_tracker_.SetView(prompt_view);
@@ -191,50 +137,6 @@ EmbeddedPermissionPrompt::GetTabSwitchingBehavior() {
   return TabSwitchingBehavior::kDestroyPromptAndIgnoreRequest;
 }
 
-void EmbeddedPermissionPrompt::RecordOsMetrics(
-    permissions::OsScreenAction action) {
-  const auto& requests = delegate()->Requests();
-  CHECK_GT(requests.size(), 0U);
-
-  permissions::OsScreen screen;
-
-  switch (prompt_variant()) {
-    case Variant::kOsPrompt:
-      screen = permissions::OsScreen::OS_PROMPT;
-      break;
-    case Variant::kOsSystemSettings:
-      screen = permissions::OsScreen::OS_SYSTEM_SETTINGS;
-      break;
-    default:
-      return;
-  }
-
-  base::TimeDelta time_to_decision =
-      base::Time::Now() - current_variant_first_display_time_;
-  permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
-      requests, screen, action, time_to_decision);
-}
-
-void EmbeddedPermissionPrompt::RecordPermissionActionUKM(
-    permissions::ElementAnchoredBubbleAction action) {
-  // There should never be more than SCREEN_COUNTER_MAXIMUM screens. If this is
-  // hit something has gone wrong and we're probably caught in a loop showing
-  // the same screens over and over.
-  DCHECK_LE(prompt_screen_counter_for_metrics_, SCREEN_COUNTER_MAXIMUM);
-
-  permissions::PermissionUmaUtil::RecordElementAnchoredPermissionPromptAction(
-      // This represents all the requests for the entire prompt.
-      delegate_->Requests(),
-      // This only contains the requests for the currently active screen, which
-      // could sometimes be a subset of all requests for the entire prompt.
-      Requests(), action, GetVariant(prompt_variant()),
-      prompt_screen_counter_for_metrics_, delegate_->GetRequestingOrigin(),
-      delegate_->GetAssociatedWebContents(),
-      delegate_->GetAssociatedWebContents()->GetBrowserContext());
-
-  ++prompt_screen_counter_for_metrics_;
-}
-
 permissions::PermissionPromptDisposition
 EmbeddedPermissionPrompt::GetPromptDisposition() const {
   return permissions::PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE;
@@ -244,52 +146,10 @@ bool EmbeddedPermissionPrompt::ShouldFinalizeRequestAfterDecided() const {
   return false;
 }
 
-void EmbeddedPermissionPrompt::PrecalculateVariantsForMetrics() {
-  if (prompt_variant() == Variant::kUninitialized) {
-    return;
-  }
-
-  if (os_prompt_variant_ == Variant::kUninitialized) {
-    for (const auto& request : delegate()->Requests()) {
-      if (system_permission_settings::CanPrompt(
-              request->GetContentSettingsType())) {
-        os_prompt_variant_ = Variant::kOsPrompt;
-        break;
-      }
-    }
-  }
-
-  if (os_system_settings_variant_ == Variant::kUninitialized) {
-    for (const auto& request : delegate()->Requests()) {
-      if (system_permission_settings::IsDenied(
-              request->GetContentSettingsType())) {
-        os_system_settings_variant_ = Variant::kOsSystemSettings;
-        break;
-      }
-    }
-  }
-}
-
 std::vector<permissions::ElementAnchoredBubbleVariant>
 EmbeddedPermissionPrompt::GetPromptVariants() const {
   std::vector<permissions::ElementAnchoredBubbleVariant> variants;
-
-  // Current prompt variant when the user takes an action on a site level
-  // prompt.
-  if (prompt_variant() != Variant::kUninitialized) {
-    variants.push_back(GetVariant(prompt_variant()));
-  }
-
-#if BUILDFLAG(IS_MAC)
-  if (os_prompt_variant_ != Variant::kUninitialized) {
-    variants.push_back(GetVariant(os_prompt_variant_));
-  }
-  if (os_system_settings_variant_ != Variant::kUninitialized) {
-    variants.push_back(GetVariant(os_system_settings_variant_));
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
-  return variants;
+  return prompt_model_->GetPromptVariants();
 }
 
 bool EmbeddedPermissionPrompt::IsAskPrompt() const {
@@ -306,26 +166,28 @@ EmbeddedPermissionPrompt::GetPromptPosition() const {
 }
 
 void EmbeddedPermissionPrompt::Allow() {
-  PrecalculateVariantsForMetrics();
-  RecordPermissionActionUKM(permissions::ElementAnchoredBubbleAction::kGranted);
+  prompt_model_->PrecalculateVariantsForMetrics();
+  prompt_model_->RecordPermissionActionUKM(
+      permissions::ElementAnchoredBubbleAction::kGranted);
   SendDelegateAction(Action::kAllow);
   CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
 }
 
 void EmbeddedPermissionPrompt::AllowThisTime() {
-  PrecalculateVariantsForMetrics();
-  RecordPermissionActionUKM(
+  prompt_model_->PrecalculateVariantsForMetrics();
+  prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kGrantedOnce);
   SendDelegateAction(Action::kAllowThisTime);
   CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
 }
 
 void EmbeddedPermissionPrompt::Dismiss() {
-  PrecalculateVariantsForMetrics();
+  prompt_model_->PrecalculateVariantsForMetrics();
   permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
       delegate()->Requests(), permissions::DismissedReason::DISMISSED_X_BUTTON);
-  RecordOsMetrics(permissions::OsScreenAction::DISMISSED_X_BUTTON);
-  RecordPermissionActionUKM(
+  prompt_model_->RecordOsMetrics(
+      permissions::OsScreenAction::DISMISSED_X_BUTTON);
+  prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kDismissedXButton);
 
   SendDelegateAction(Action::kDismiss);
@@ -333,15 +195,17 @@ void EmbeddedPermissionPrompt::Dismiss() {
 }
 
 void EmbeddedPermissionPrompt::Acknowledge() {
-  RecordPermissionActionUKM(permissions::ElementAnchoredBubbleAction::kOk);
+  prompt_model_->RecordPermissionActionUKM(
+      permissions::ElementAnchoredBubbleAction::kOk);
 
   SendDelegateAction(Action::kDismiss);
   FinalizePrompt();
 }
 
 void EmbeddedPermissionPrompt::StopAllowing() {
-  PrecalculateVariantsForMetrics();
-  RecordPermissionActionUKM(permissions::ElementAnchoredBubbleAction::kDenied);
+  prompt_model_->PrecalculateVariantsForMetrics();
+  prompt_model_->RecordPermissionActionUKM(
+      permissions::ElementAnchoredBubbleAction::kDenied);
 
   SendDelegateAction(Action::kDeny);
   FinalizePrompt();
@@ -353,8 +217,8 @@ void EmbeddedPermissionPrompt::ShowSystemSettings() {
   // TODO(crbug.com/40275129) Chrome always shows the first permission in a
   // group, as it is not possible to open multiple System Setting pages. Figure
   // out a better way to handle this scenario.
-  RecordOsMetrics(permissions::OsScreenAction::SYSTEM_SETTINGS);
-  RecordPermissionActionUKM(
+  prompt_model_->RecordOsMetrics(permissions::OsScreenAction::SYSTEM_SETTINGS);
+  prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kSystemSettings);
   system_permission_settings::OpenSystemSettings(
       delegate()->GetAssociatedWebContents(),
@@ -365,7 +229,7 @@ void EmbeddedPermissionPrompt::SystemPermissionsAllowed() {
   CHECK(prompt_model_->prompt_variant() ==
         permissions::EmbeddedPermissionPromptFlowModel::Variant::
             kOsSystemSettings);
-  PrecalculateVariantsForMetrics();
+  prompt_model_->PrecalculateVariantsForMetrics();
   CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
 }
 
@@ -382,11 +246,11 @@ EmbeddedPermissionPrompt::Requests() const {
 void EmbeddedPermissionPrompt::DismissScrim() {
   permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
       delegate()->Requests(), permissions::DismissedReason::DISMISSED_SCRIM);
-  RecordOsMetrics(permissions::OsScreenAction::DISMISSED_SCRIM);
-  RecordPermissionActionUKM(
+  prompt_model_->RecordOsMetrics(permissions::OsScreenAction::DISMISSED_SCRIM);
+  prompt_model_->RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kDismissedScrim);
 
-  PrecalculateVariantsForMetrics();
+  prompt_model_->PrecalculateVariantsForMetrics();
   SendDelegateAction(Action::kDismiss);
   FinalizePrompt();
 }
@@ -442,10 +306,12 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
       case system_permission_settings::SystemPermission::kRestricted:
         break;
       case system_permission_settings::SystemPermission::kDenied:
-        RecordOsMetrics(permissions::OsScreenAction::OS_PROMPT_DENIED);
+        prompt_model_->RecordOsMetrics(
+            permissions::OsScreenAction::OS_PROMPT_DENIED);
         break;
       case system_permission_settings::SystemPermission::kAllowed:
-        RecordOsMetrics(permissions::OsScreenAction::OS_PROMPT_ALLOWED);
+        prompt_model_->RecordOsMetrics(
+            permissions::OsScreenAction::OS_PROMPT_ALLOWED);
         break;
       case system_permission_settings::SystemPermission::kNotDetermined:
         NOTREACHED();

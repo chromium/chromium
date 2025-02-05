@@ -149,10 +149,11 @@ public class PermissionDialogDelegate {
                 .acknowledge(mNativeDelegatePtr, PermissionDialogDelegate.this);
     }
 
-    public void onHandleSystemPermission() {
+    public void onSystemPermissionResolved(boolean accepted) {
         assert mNativeDelegatePtr != 0;
         PermissionDialogDelegateJni.get()
-                .handleSystemPermission(mNativeDelegatePtr, PermissionDialogDelegate.this);
+                .systemPermissionResolved(
+                        mNativeDelegatePtr, PermissionDialogDelegate.this, accepted);
     }
 
     public void destroy() {
@@ -160,6 +161,18 @@ public class PermissionDialogDelegate {
         PermissionDialogDelegateJni.get()
                 .destroy(mNativeDelegatePtr, PermissionDialogDelegate.this);
         mNativeDelegatePtr = 0;
+    }
+
+    public void onSystemSettingsShown() {
+        assert mNativeDelegatePtr != 0;
+        PermissionDialogDelegateJni.get()
+                .systemSettingsShown(mNativeDelegatePtr, PermissionDialogDelegate.this);
+    }
+
+    public void onResume() {
+        assert mNativeDelegatePtr != 0;
+        PermissionDialogDelegateJni.get()
+                .resumed(mNativeDelegatePtr, PermissionDialogDelegate.this);
     }
 
     public void setDialogController(PermissionDialogController controller) {
@@ -310,9 +323,16 @@ public class PermissionDialogDelegate {
                 PermissionDialogDelegate caller,
                 @DismissalType int dismissalType);
 
+        void resumed(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+
         void destroy(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
 
-        void handleSystemPermission(
+        void systemPermissionResolved(
+                long nativePermissionDialogDelegate,
+                PermissionDialogDelegate caller,
+                boolean accept);
+
+        void systemSettingsShown(
                 long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
 
         int getRequestTypeEnumSize();

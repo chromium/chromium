@@ -28,6 +28,13 @@ EmbeddedPermissionPromptAndroid::EmbeddedPermissionPromptAndroid(
       web_contents, delegate);
   prompt_model_->CalculateCurrentVariant();
   CreatePermissionDialogDelegate();
+
+  const auto& current_prompt_variant = prompt_model_->prompt_variant();
+  prompt_model_->RecordElementAnchoredBubbleVariantUMA(current_prompt_variant);
+  if (current_prompt_variant == Variant::kOsPrompt ||
+      current_prompt_variant == Variant::kOsSystemSettings) {
+    prompt_model_->StartFirstDisplayTime();
+  }
 }
 
 EmbeddedPermissionPromptAndroid::~EmbeddedPermissionPromptAndroid() = default;
@@ -42,37 +49,82 @@ bool EmbeddedPermissionPromptAndroid::ShouldFinalizeRequestAfterDecided()
   return false;
 }
 
+std::vector<permissions::ElementAnchoredBubbleVariant>
+EmbeddedPermissionPromptAndroid::GetPromptVariants() const {
+  std::vector<permissions::ElementAnchoredBubbleVariant> variants;
+  return prompt_model_->GetPromptVariants();
+}
+
 Variant EmbeddedPermissionPromptAndroid::GetEmbeddedPromptVariant() const {
   return prompt_model_->prompt_variant();
 }
 
 void EmbeddedPermissionPromptAndroid::Closing() {
+  prompt_model_->PrecalculateVariantsForMetrics();
+  // TODO(crbug.com/388408021): in Android, there will be no x button and more
+  // than only one dismiss reason of clicking outside the dialog. We are
+  // grouping all of them into one single type for now and might expose others
+  // later.
+  prompt_model_->RecordOsMetrics(permissions::OsScreenAction::DISMISSED_SCRIM);
+  prompt_model_->RecordPermissionActionUKM(
+      permissions::ElementAnchoredBubbleAction::kDismissedScrim);
   delegate()->Dismiss();
   delegate()->FinalizeCurrentRequests();
 }
 
 void EmbeddedPermissionPromptAndroid::Accept() {
+  prompt_model_->PrecalculateVariantsForMetrics();
+  prompt_model_->RecordPermissionActionUKM(
+      permissions::ElementAnchoredBubbleAction::kGranted);
   delegate()->Accept();
   MaybeUpdateDialogWithNewScreenVariant();
 }
 
 void EmbeddedPermissionPromptAndroid::Acknowledge() {
+  prompt_model_->RecordPermissionActionUKM(
+      permissions::ElementAnchoredBubbleAction::kOk);
   delegate()->Dismiss();
   delegate()->FinalizeCurrentRequests();
 }
 
 void EmbeddedPermissionPromptAndroid::AcceptThisTime() {
+  prompt_model_->PrecalculateVariantsForMetrics();
+  prompt_model_->RecordPermissionActionUKM(
+      permissions::ElementAnchoredBubbleAction::kGrantedOnce);
   delegate()->AcceptThisTime();
   MaybeUpdateDialogWithNewScreenVariant();
 }
 
 void EmbeddedPermissionPromptAndroid::Deny() {
+  prompt_model_->PrecalculateVariantsForMetrics();
+  prompt_model_->RecordPermissionActionUKM(
+      permissions::ElementAnchoredBubbleAction::kDenied);
   delegate()->Deny();
   delegate()->FinalizeCurrentRequests();
 }
 
-void EmbeddedPermissionPromptAndroid::HandleSystemPermission() {
+void EmbeddedPermissionPromptAndroid::Resumed() {
   MaybeUpdateDialogWithNewScreenVariant();
+}
+
+void EmbeddedPermissionPromptAndroid::SystemSettingsShown() {
+  prompt_model_->RecordOsMetrics(permissions::OsScreenAction::SYSTEM_SETTINGS);
+  prompt_model_->RecordPermissionActionUKM(
+      permissions::ElementAnchoredBubbleAction::kSystemSettings);
+}
+
+void EmbeddedPermissionPromptAndroid::SystemPermissionResolved(bool accepted) {
+  if (accepted) {
+    prompt_model_->RecordOsMetrics(
+        permissions::OsScreenAction::OS_PROMPT_ALLOWED);
+    MaybeUpdateDialogWithNewScreenVariant();
+  } else {
+    prompt_model_->PrecalculateVariantsForMetrics();
+    prompt_model_->RecordOsMetrics(
+        permissions::OsScreenAction::OS_PROMPT_DENIED);
+    delegate()->Dismiss();
+    delegate()->FinalizeCurrentRequests();
+  }
 }
 
 bool EmbeddedPermissionPromptAndroid::ShouldCurrentRequestUseQuietUI() {
@@ -226,8 +278,10 @@ int EmbeddedPermissionPromptAndroid::GetIconId() const {
 }
 
 void EmbeddedPermissionPromptAndroid::MaybeUpdateDialogWithNewScreenVariant() {
+  const auto& old_prompt_variant = prompt_model_->prompt_variant();
   prompt_model_->CalculateCurrentVariant();
-  if (prompt_model_->prompt_variant() == Variant::kPreviouslyGranted) {
+  const auto& current_prompt_variant = prompt_model_->prompt_variant();
+  if (current_prompt_variant == Variant::kPreviouslyGranted) {
     // Here the whole permission flow has already ended with permission allowed.
     // It's necessary to notify to Java side, for example to update omnibox
     // icon.
@@ -235,7 +289,16 @@ void EmbeddedPermissionPromptAndroid::MaybeUpdateDialogWithNewScreenVariant() {
     delegate()->FinalizeCurrentRequests();
     return;
   }
-  permission_dialog_delegate()->UpdateDialog();
+  if (current_prompt_variant != old_prompt_variant) {
+    permission_dialog_delegate()->UpdateDialog();
+    prompt_model_->RecordElementAnchoredBubbleVariantUMA(
+        current_prompt_variant);
+  }
+
+  if (current_prompt_variant == Variant::kOsPrompt ||
+      current_prompt_variant == Variant::kOsSystemSettings) {
+    prompt_model_->StartFirstDisplayTime();
+  }
 }
 
 PermissionRequest::AnnotatedMessageText
