@@ -1253,11 +1253,11 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kDeprecateFeedHeaderVariationAbovePlusAddTopPadding[] = {
         {kDeprecateFeedHeaderParameterRemoveLabel, "true"},
-        {kDeprecateFeedHeaderParameterTopPadding, "true"}};
+        {kDeprecateFeedHeaderParameterTopPadding, "34"}};
 const FeatureEntry::FeatureParam
     kDeprecateFeedHeaderVariationAbovePlusEnlargeElements[] = {
         {kDeprecateFeedHeaderParameterRemoveLabel, "true"},
-        {kDeprecateFeedHeaderParameterTopPadding, "true"},
+        {kDeprecateFeedHeaderParameterTopPadding, "34"},
         {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
 
 const FeatureEntry::FeatureVariation kDeprecateFeedHeaderVariations[] = {

@@ -113,13 +113,13 @@ bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine) {
              false);
 }
 
-bool ShouldAddTopPaddingToNTP() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDeprecateFeedHeader, kDeprecateFeedHeaderParameterTopPadding, false);
-}
-
 bool ShouldEnlargeLogoAndFakebox() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kDeprecateFeedHeader, kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox,
       false);
+}
+
+double TopPaddingToNTP() {
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kDeprecateFeedHeader, kDeprecateFeedHeaderParameterTopPadding, 0);
 }

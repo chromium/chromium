@@ -106,7 +106,10 @@ bool IsiPadFeedGhostCardsEnabled();
 
 // YES if the NTP and feed header elements should be re-positioned as described.
 bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine);
-bool ShouldAddTopPaddingToNTP();
 bool ShouldEnlargeLogoAndFakebox();
+
+// Top padding that should be added to the top of the NTP. Returns 0 if the NTP
+// should not be padded.
+double TopPaddingToNTP();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_
