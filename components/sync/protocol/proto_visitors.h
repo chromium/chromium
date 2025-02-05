@@ -215,6 +215,8 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT(profile_label);
   VISIT_REP(name_first);
   VISIT_REP(name_middle);
+  VISIT_REP(name_last_prefix);
+  VISIT_REP(name_last_core);
   VISIT_REP(name_last_first);
   VISIT_REP(name_last_conjunction);
   VISIT_REP(name_last_second);
@@ -223,6 +225,8 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
 
   VISIT_REP(name_first_status);
   VISIT_REP(name_middle_status);
+  VISIT_REP(name_last_prefix_status);
+  VISIT_REP(name_last_core_status);
   VISIT_REP(name_last_first_status);
   VISIT_REP(name_last_conjunction_status);
   VISIT_REP(name_last_second_status);
@@ -402,6 +406,8 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(name_first);
   VISIT(name_middle);
   VISIT(name_last);
+  VISIT(name_last_prefix);
+  VISIT(name_last_core);
   VISIT(name_last_first);
   VISIT(name_last_conjunction);
   VISIT(name_last_second);

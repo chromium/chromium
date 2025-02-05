@@ -233,6 +233,10 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_name_first(), NAME_FIRST);
   s.Set(specifics.mutable_name_middle(), NAME_MIDDLE);
   s.Set(specifics.mutable_name_last(), NAME_LAST);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    s.Set(specifics.mutable_name_last_prefix(), NAME_LAST_PREFIX);
+    s.Set(specifics.mutable_name_last_core(), NAME_LAST_CORE);
+  }
   s.Set(specifics.mutable_name_last_first(), NAME_LAST_FIRST);
   s.Set(specifics.mutable_name_last_conjunction(), NAME_LAST_CONJUNCTION);
   s.Set(specifics.mutable_name_last_second(), NAME_LAST_SECOND);
@@ -373,6 +377,10 @@ std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.name_first(), NAME_FIRST);
   s.Set(specifics.name_middle(), NAME_MIDDLE);
   s.Set(specifics.name_last(), NAME_LAST);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    s.Set(specifics.name_last_prefix(), NAME_LAST_PREFIX);
+    s.Set(specifics.name_last_core(), NAME_LAST_CORE);
+  }
   s.Set(specifics.name_last_first(), NAME_LAST_FIRST);
   s.Set(specifics.name_last_conjunction(), NAME_LAST_CONJUNCTION);
   s.Set(specifics.name_last_second(), NAME_LAST_SECOND);
@@ -460,6 +468,14 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   }
   if (d.Delete(trimmed_specifics.mutable_name_last())) {
     trimmed_specifics.clear_name_last();
+  }
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    if (d.Delete(trimmed_specifics.mutable_name_last_prefix())) {
+      trimmed_specifics.clear_name_last_prefix();
+    }
+    if (d.Delete(trimmed_specifics.mutable_name_last_core())) {
+      trimmed_specifics.clear_name_last_core();
+    }
   }
   if (d.Delete(trimmed_specifics.mutable_name_last_first())) {
     trimmed_specifics.clear_name_last_first();

@@ -51,7 +51,7 @@ AutofillProfile ConstructBaseProfile(
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"K.",
                                            VerificationStatus::kObserved);
-  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Doe",
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"von Doe",
                                            VerificationStatus::kFormatted);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_FIRST, u"D",
                                            VerificationStatus::kParsed);
@@ -59,7 +59,11 @@ AutofillProfile ConstructBaseProfile(
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_SECOND, u"e",
                                            VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. Doe",
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST_PREFIX, u"von",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST_CORE, u"Doe",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. von Doe",
                                            VerificationStatus::kUserVerified);
   profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"Doe",
                                            VerificationStatus::kParsed);
@@ -349,15 +353,19 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_name_middle(), "K.",
            ContactInfoSpecifics::OBSERVED);
-  SetToken(specifics.mutable_name_last(), "Doe",
+  SetToken(specifics.mutable_name_last(), "von Doe",
            ContactInfoSpecifics::FORMATTED);
+  SetToken(specifics.mutable_name_last_prefix(), "von",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_name_last_core(), "Doe",
+           ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_name_last_first(), "D",
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_name_last_conjunction(), "o",
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_name_last_second(), "e",
            ContactInfoSpecifics::PARSED);
-  SetToken(specifics.mutable_name_full(), "John K. Doe",
+  SetToken(specifics.mutable_name_full(), "John K. von Doe",
            ContactInfoSpecifics::USER_VERIFIED);
   SetToken(specifics.mutable_alternative_family_name(), "Doe",
            ContactInfoSpecifics::PARSED);
@@ -696,7 +704,8 @@ class ContactInfoSyncUtilTest
                                 features::kAutofillUseINAddressModel,
                                 features::kAutofillUseITAddressModel,
                                 features::kAutofillUseNLAddressModel,
-                                features::kAutofillSupportPhoneticNameForJP},
+                                features::kAutofillSupportPhoneticNameForJP,
+                                features::kAutofillSupportLastNamePrefix},
                                {});
   }
 

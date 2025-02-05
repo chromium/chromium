@@ -68,6 +68,13 @@ message AutofillProfileSpecifics {
   repeated string name_first = 2;
   repeated string name_middle = 3;
   repeated string name_last = 4;
+
+  // A name_last consists of a prefix and a core (e.g., "van" and "Gogh" in
+  // "van Gogh"). Used for more granular name representation of last names
+  // with prefixes.
+  repeated string name_last_prefix = 99;
+  repeated string name_last_core = 100;
+
   // Sometimes the last name is composed of two names as it is common for
   // Hispanic/Latinx names. In the unstructured representation of the last name,
   // there may be even a conjunction between the first and the second last
@@ -93,6 +100,8 @@ message AutofillProfileSpecifics {
   repeated VerificationStatus name_first_status = 31;
   repeated VerificationStatus name_middle_status = 32;
   repeated VerificationStatus name_last_status = 33;
+  repeated VerificationStatus name_last_prefix_status = 101;
+  repeated VerificationStatus name_last_core_status = 102;
   repeated VerificationStatus name_last_first_status = 34;
   repeated VerificationStatus name_last_conjunction_status = 35;
   repeated VerificationStatus name_last_second_status = 36;
