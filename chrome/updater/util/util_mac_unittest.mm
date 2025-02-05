@@ -36,17 +36,4 @@ TEST(UtilTest, ConfirmFilePermissionsTest) {
       updater::ConfirmFilePermissions(temp_dir_.GetPath(), kPermissionsMask));
 }
 
-TEST(UtilTest, GetCacheBaseDirectoryTest) {
-  std::optional<base::FilePath> path(
-      GetCacheBaseDirectory(GetUpdaterScopeForTesting()));
-  ASSERT_TRUE(path);
-
-  EXPECT_EQ(path->BaseName().value(),
-            FILE_PATH_LITERAL(MAC_BUNDLE_IDENTIFIER_STRING));
-  base::FilePath remaining_path(path->DirName());
-  EXPECT_EQ(remaining_path.BaseName().value(), FILE_PATH_LITERAL("Caches"));
-  remaining_path = remaining_path.DirName();
-  EXPECT_EQ(remaining_path.BaseName().value(), FILE_PATH_LITERAL("Library"));
-}
-
 }  // namespace updater

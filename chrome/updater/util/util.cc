@@ -93,14 +93,8 @@ std::optional<base::FilePath> GetUpdaterExecutablePath(
   return path->Append(GetExecutableRelativePath());
 }
 
-#if !BUILDFLAG(IS_MAC)
-std::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope) {
-  return GetInstallDirectory(scope);
-}
-#endif
-
-std::optional<base::FilePath> GetCrxDiffCacheDirectory(UpdaterScope scope) {
-  const std::optional<base::FilePath> cache_path(GetCacheBaseDirectory(scope));
+std::optional<base::FilePath> GetCrxCacheDirectory(UpdaterScope scope) {
+  const std::optional<base::FilePath> cache_path(GetInstallDirectory(scope));
   if (!cache_path) {
     return std::nullopt;
   }

@@ -114,9 +114,9 @@ TEST(Util, GetCrashDatabasePath) {
             FILE_PATH_LITERAL("Crashpad"));
 }
 
-TEST(Util, GetCrxDiffCacheDirectory) {
+TEST(Util, GetCrxCacheDirectory) {
   std::optional<base::FilePath> diff_cache_directory(
-      GetCrxDiffCacheDirectory(GetUpdaterScopeForTesting()));
+      GetCrxCacheDirectory(GetUpdaterScopeForTesting()));
   ASSERT_TRUE(diff_cache_directory);
   EXPECT_EQ(diff_cache_directory->BaseName().value(),
             FILE_PATH_LITERAL("crx_cache"));

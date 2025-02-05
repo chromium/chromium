@@ -850,7 +850,7 @@ void ExpectClean(UpdaterScope scope) {
                     CheckInstallationVersions::kCheckActiveAndSxS);
 
   // Check that the caches have been removed.
-  const std::optional<base::FilePath> path = GetCacheBaseDirectory(scope);
+  const std::optional<base::FilePath> path = GetCrxCacheDirectory(scope);
   ASSERT_TRUE(path);
   EXPECT_TRUE(
       WaitFor([&] { return !base::PathExists(*path); },

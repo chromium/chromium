@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
@@ -32,6 +33,10 @@ class CleanupTask : public base::RefCountedThreadSafe<CleanupTask> {
   UpdaterScope scope_;
   scoped_refptr<Configurator> config_;
 };
+
+#if BUILDFLAG(IS_MAC)
+void CleanOldCrxCache();
+#endif  // IS_MAC
 
 }  // namespace updater
 

@@ -19,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/updater/app/app_uninstall.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/updater_version.h"
@@ -153,6 +154,10 @@ void CleanupTask::Run(base::OnceClosure callback) {
           [](UpdaterScope scope) {
             CleanupGoogleUpdate(scope);
             CleanupOldUpdaterVersions(scope);
+#if BUILDFLAG(IS_MAC)
+            // TODO(crbug.com/394302692): Delete after M140.
+            CleanOldCrxCache();
+#endif  // IS_MAC
           },
           scope_),
       std::move(callback));

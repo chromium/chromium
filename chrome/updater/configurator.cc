@@ -266,7 +266,7 @@ update_client::UpdaterStateProvider Configurator::GetUpdaterStateProvider()
 
 std::optional<base::FilePath> Configurator::GetCrxCachePath() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return updater::GetCrxDiffCacheDirectory(GetUpdaterScope());
+  return updater::GetCrxCacheDirectory(GetUpdaterScope());
 }
 
 bool Configurator::IsConnectionMetered() const {
