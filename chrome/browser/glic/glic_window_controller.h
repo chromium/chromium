@@ -153,8 +153,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Warms the glic web contents.
   void Preload();
 
-  // Reloads the glic web contents.
-  void ReloadWebview();
+  // Reloads the glic web contents or the FRE's web contents (depending on
+  // which is currently visible).
+  void Reload();
 
   // Returns whether or not the glic web contents are loaded (this can also be
   // true if `IsActive()` (i.e., if the contents are loaded in the glic window).
@@ -187,6 +188,10 @@ class GlicWindowController : public views::WidgetObserver {
 
   // Returns the WebContents hosted in the glic window, or nullptr if none.
   content::WebContents* GetWebContents();
+
+  // Returns the WebContents used for the first-run experience, or nullptr if
+  // none.
+  content::WebContents* GetFreWebContents();
 
   // Return the Browser to which the panel is attached, or null if detached.
   Browser* attached_browser() { return attached_browser_; }

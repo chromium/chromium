@@ -13,6 +13,10 @@ namespace views {
 class Widget;
 }
 
+namespace content {
+class WebContents;
+}
+
 namespace glic {
 
 class GlicFreDialogView;
@@ -40,6 +44,9 @@ class GlicFreController {
   void AcceptFre(Profile* profile);
   // Closes the FRE modal dialog.
   void DismissFre();
+
+  // Returns the WebContents from the dialog view.
+  content::WebContents* GetWebContents();
 
  private:
   std::unique_ptr<views::Widget> fre_widget_;
