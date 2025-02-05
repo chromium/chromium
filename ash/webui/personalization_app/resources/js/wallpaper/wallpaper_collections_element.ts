@@ -850,7 +850,7 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
 
   private getSeaPenTemplatesTileLabel_(): string {
     return isSeaPenTextInputEnabled() ?
-        this.i18n('seaPenFreeformWallpaperTemplatesLabel') :
+        this.i18n('seaPenTemplatesWallpaperLabel') :
         this.i18n('seaPenLabel');
   }
 
