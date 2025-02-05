@@ -198,7 +198,8 @@ def Symlink(src_dir, src_paths, dst_dir, dst_paths):
         abs_src_path = os.path.join(src_dir, src_path)
         abs_dst_path = os.path.join(dst_dir, dst_path)
         shutil.rmtree(abs_dst_path, ignore_errors=True)
-        os.unlink(abs_dst_path)
+        if os.path.exists(abs_dst_path):
+            os.unlink(abs_dst_path)
         MakeDirectory(os.path.dirname(abs_dst_path))
         os.symlink(abs_src_path, abs_dst_path)
 
