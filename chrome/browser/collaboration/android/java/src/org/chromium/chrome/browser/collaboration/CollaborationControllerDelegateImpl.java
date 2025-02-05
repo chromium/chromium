@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfi
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
+import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
@@ -51,6 +52,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
     private long mExitCallback;
     private long mNativePtr;
+    private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
 
     // Stores the runnable to close the current showing UI. Is null when there's no UI showing.
     private Runnable mCloseScreenRunnable;
@@ -59,13 +61,22 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
             Activity activity,
             @FlowType int type,
             DataSharingTabManager tabManager,
-            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher) {
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
+            LoadingFullscreenCoordinator loadingFullscreenCoordinator) {
         mNativePtr = CollaborationControllerDelegateImplJni.get().createNativeObject(this);
 
         mActivity = activity;
         mFlowType = type;
         mDataSharingTabManager = tabManager;
         mSigninAndHistorySyncActivityLauncher = signinAndHistorySyncActivityLauncher;
+        mLoadingFullscreenCoordinator = loadingFullscreenCoordinator;
+
+        if (mFlowType == FlowType.JOIN) {
+            loadingFullscreenCoordinator.startLoading(
+                    () -> {
+                        destroy();
+                    });
+        }
     }
 
     @Override
@@ -129,9 +140,8 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .build();
 
-        if (mCloseScreenRunnable != null) {
-            mCloseScreenRunnable.run();
-        }
+        closeLoadingIfNeeded();
+        closeScreenIfNeeded();
         modalDialogManager.showDialog(model, ModalDialogType.APP);
 
         mCloseScreenRunnable =
@@ -442,6 +452,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     @CalledByNative
     void onFlowFinished() {
         // Destroy currently showing UI if any.
+        closeLoadingIfNeeded();
         closeScreenIfNeeded();
         mDataSharingTabManager.onCollaborationDelegateFlowFinished();
         cleanUpPointers();
@@ -470,12 +481,19 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         mActivity = null;
         mDataSharingTabManager = null;
         mSigninAndHistorySyncActivityLauncher = null;
+        mLoadingFullscreenCoordinator = null;
     }
 
     private void closeScreenIfNeeded() {
         if (mCloseScreenRunnable != null) {
             mCloseScreenRunnable.run();
             mCloseScreenRunnable = null;
+        }
+    }
+
+    private void closeLoadingIfNeeded() {
+        if (mLoadingFullscreenCoordinator != null) {
+            mLoadingFullscreenCoordinator.closeLoadingScreen();
         }
     }
 

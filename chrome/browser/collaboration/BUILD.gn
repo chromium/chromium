@@ -22,6 +22,7 @@ if (is_android) {
       "//chrome/browser/tab_group_sync:factory_java",
       "//chrome/browser/ui/android/signin:java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//components/browser_ui/widget/android:java",
       "//components/collaboration/public:java",
       "//components/data_sharing/public:public_java",
       "//components/data_sharing/public/protocol:proto_java",

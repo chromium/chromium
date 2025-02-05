@@ -12,6 +12,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -165,6 +166,7 @@ import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
+import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
@@ -236,6 +238,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final EdgeToEdgeManager mEdgeToEdgeManager;
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
     private @Nullable BookmarkBarCoordinator mBookmarkBarCoordinator;
+    private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -461,7 +464,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivity,
                             type,
                             getDataSharingTabManager(),
-                            SigninAndHistorySyncActivityLauncherImpl.get());
+                            SigninAndHistorySyncActivityLauncherImpl.get(),
+                            getLoadingFullscreenCoordinator());
                 };
 
         mDataSharingTabManager =
@@ -586,6 +590,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarCoordinator = null;
         }
 
+        if (mLoadingFullscreenCoordinator != null) {
+            mLoadingFullscreenCoordinator.destroy();
+            mLoadingFullscreenCoordinator = null;
+        }
+
         super.onDestroy();
     }
 
@@ -637,6 +646,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return mDataSharingTabManager;
     }
 
+    /** Returns the {@link LoadingFullscreenCoordinator} to control loading over the activity. */
+    public LoadingFullscreenCoordinator getLoadingFullscreenCoordinator() {
+        return mLoadingFullscreenCoordinator;
+    }
+
     /** Show navigation history sheet. */
     public void showFullHistorySheet() {
         if (mActivity == null) return;
@@ -680,7 +694,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     public void onInflationComplete() {
         mCoordinator = mActivity.findViewById(R.id.coordinator);
+
         super.onInflationComplete();
+
+        ViewStub loadingStub = mActivity.findViewById(R.id.loading_stub);
+        assert loadingStub != null;
+
+        loadingStub.setLayoutResource(R.layout.loading_fullscreen);
+        loadingStub.inflate();
+
+        mLoadingFullscreenCoordinator =
+                new LoadingFullscreenCoordinator(
+                        mActivity,
+                        getScrimManager(),
+                        mActivity.findViewById(R.id.loading_fullscreen_container));
     }
 
     @Override
