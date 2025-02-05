@@ -9,8 +9,6 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
-
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -49,8 +47,6 @@ public class BottomControlsCoordinator implements BackPressHandler {
     /** Interface for the BottomControls component to hide and show itself. */
     public interface BottomControlsVisibilityController {
         void setBottomControlsVisible(boolean isVisible);
-
-        void setBottomControlsColor(@ColorInt int color);
     }
 
     /** The mediator that handles events from outside the bottom controls. */
@@ -164,11 +160,6 @@ public class BottomControlsCoordinator implements BackPressHandler {
                                 @Override
                                 public void setBottomControlsVisible(boolean isVisible) {
                                     mMediator.setBottomControlsVisible(isVisible);
-                                }
-
-                                @Override
-                                public void setBottomControlsColor(int color) {
-                                    mMediator.setBottomControlsColor(color);
                                 }
                             },
                             root::onModelTokenChange);

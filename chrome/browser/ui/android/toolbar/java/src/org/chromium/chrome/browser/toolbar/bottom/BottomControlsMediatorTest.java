@@ -19,7 +19,6 @@ import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsPropertie
 import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsProperties.COMPOSITED_VIEW_VISIBLE;
 
 import android.app.Activity;
-import android.graphics.Color;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
@@ -271,14 +270,5 @@ public class BottomControlsMediatorTest {
                 "Android view is not visible during overlay panel.",
                 mModel.get(ANDROID_VIEW_VISIBLE));
         verify(mBrowserControlsVisibilityDelegate).showControlsTransient();
-    }
-
-    @Test
-    public void testColorChange() {
-        mMediator.setBottomControlsColor(Color.RED);
-        verify(mBottomControlsStacker).notifyBackgroundColor(Color.RED);
-
-        mMediator.setBottomControlsColor(Color.BLUE);
-        verify(mBottomControlsStacker).notifyBackgroundColor(Color.BLUE);
     }
 }

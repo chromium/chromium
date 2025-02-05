@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.readaloud.player.mini;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
@@ -31,6 +33,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
@@ -178,6 +181,17 @@ public class MiniPlayerMediatorUnitTest {
     }
 
     @Test
+    public void testBackgroundColorWithBottomToolbarPresent() {
+        mMediator.onBackgroundColorUpdated(0xAABBCCDD);
+        doReturn(true).when(mBottomControlsStacker).isLayerVisible(LayerType.BOTTOM_TOOLBAR);
+        verify(mBottomControlsStacker, never()).notifyBackgroundColor(anyInt());
+        mMediator.show(/* animate= */ true);
+
+        // Simulate the layout reporting its height.
+        mMediator.onHeightKnown(HEIGHT_PX);
+    }
+
+    @Test
     public void testShowAlreadyShowing() {
         mMediator.show(/* animate= */ true);
         assertEquals(VisibilityState.SHOWING, mMediator.getVisibility());
@@ -227,6 +241,7 @@ public class MiniPlayerMediatorUnitTest {
 
     @Test
     public void testShowWithDelayedRunnable_GrowBottomControlsAnimates() {
+        mMediator.onBackgroundColorUpdated(0xAABBCCDD);
         mMediator.show(/* animate= */ true);
 
         // Layout visibility, CC layer visibility, and overall VisibilityState should be set.
@@ -242,6 +257,7 @@ public class MiniPlayerMediatorUnitTest {
                 .setBottomControlsHeight(eq(HEIGHT_PX), eq(HEIGHT_PX), eq(true));
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsHeight();
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsMinHeight();
+        verify(mBottomControlsStacker).notifyBackgroundColor(0xAABBCCDD);
 
         assertEquals(HEIGHT_PX, mModel.get(Properties.HEIGHT));
 

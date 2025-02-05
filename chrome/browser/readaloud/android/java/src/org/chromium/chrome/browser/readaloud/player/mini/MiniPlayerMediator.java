@@ -205,7 +205,12 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     }
 
     private void growBottomControls() {
-        mBottomControlsStacker.notifyBackgroundColor(mModel.get(Properties.BACKGROUND_COLOR_ARGB));
+        if (!mBottomControlsStacker.isLayerVisible(LayerType.BOTTOM_TOOLBAR)) {
+            // TODO(crbug.com/345488108): Handle background coloring for bottom controls layers in a
+            // more coordinated way.
+            mBottomControlsStacker.notifyBackgroundColor(
+                    mModel.get(Properties.BACKGROUND_COLOR_ARGB));
+        }
         int minHeight = getBrowserControls().getBottomControlsMinHeight();
         setBottomControlsHeight(
                 getBrowserControls().getBottomControlsHeight() + mLayoutHeightPx,
