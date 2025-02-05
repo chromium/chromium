@@ -37535,6 +37535,15 @@ should be able to be added at any place in this file.
   <description>Recorded when the Lens side panel entry is shown.</description>
 </action>
 
+<action name="SidePanel.LensOverlayResults.NewTabButtonClicked">
+  <owner>lens-chrome-eng@google.com</owner>
+  <owner>nguyenbryan@google.com</owner>
+  <description>
+    Recorded when the new tab button is clicked with the Lens Overlay side panel
+    entry showing.
+  </description>
+</action>
+
 <action name="SidePanel.LensOverlayResults.Shown">
   <owner>lens-chrome-eng@google.com</owner>
   <owner>juanmojica@google.com</owner>

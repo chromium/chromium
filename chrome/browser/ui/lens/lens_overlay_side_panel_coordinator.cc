@@ -464,7 +464,6 @@ void LensOverlaySidePanelCoordinator::RegisterEntry() {
   // If the entry is already registered, don't register it again.
   if (!registry->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults))) {
-    // TODO(b/328295358): Change title and icon when available.
     auto entry = std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kLensOverlayResults,
         base::BindRepeating(
@@ -505,7 +504,11 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView(
 }
 
 GURL LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl() {
-  return GURL();
+  if (lens::features::IsLensOverlaySidePanelOpenInNewTabEnabled()) {
+    return lens_overlay_controller_->GetSidePanelNewTabUrl();
+  } else {
+    return GURL();
+  }
 }
 
 base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
@@ -521,15 +524,6 @@ LensOverlaySidePanelCoordinator::GetMoreInfoCallback() {
 std::unique_ptr<ui::MenuModel>
 LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel() {
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
-  if (lens::features::IsLensOverlaySidePanelOpenInNewTabEnabled()) {
-    menu_model->AddItemWithIcon(
-        COMMAND_OPEN_IN_NEW_TAB,
-        l10n_util::GetStringUTF16(IDS_ACCNAME_OPEN_IN_NEW_TAB),
-        ui::ImageModel::FromVectorIcon(kOpenInNewIcon, ui::kColorMenuIcon,
-                                       ui::SimpleMenuModel::kDefaultIconSize));
-    menu_model->SetEnabledAt(
-        0, lens_overlay_controller_->ShouldEnableOpenInNewTab());
-  }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   menu_model->AddItemWithIcon(
       COMMAND_MY_ACTIVITY,
@@ -558,12 +552,6 @@ LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel() {
 void LensOverlaySidePanelCoordinator::ExecuteCommand(int command_id,
                                                      int event_flags) {
   switch (command_id) {
-    case COMMAND_OPEN_IN_NEW_TAB: {
-      lens::RecordSidePanelMenuOptionSelected(
-          lens::LensOverlaySidePanelMenuOption::kOpenInNewTab);
-      lens_overlay_controller_->OpenInNewTabRequestedByEvent(event_flags);
-      break;
-    }
     case COMMAND_MY_ACTIVITY: {
       lens::RecordSidePanelMenuOptionSelected(
           lens::LensOverlaySidePanelMenuOption::kMyActivity);

@@ -21,6 +21,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
@@ -619,7 +620,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
               {"use-inner-text-as-context", "true"},
               {"use-inner-html-as-context", "true"},
           }},
-         {lens::features::kLensOverlaySurvey, {}}},
+         {lens::features::kLensOverlaySurvey, {}},
+         {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}},
         /*disabled_features=*/{});
   }
 
@@ -2746,6 +2748,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        SidePanel_OpenInNewTab) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   WaitForPaint();
 
   // State should start in off.
@@ -2781,13 +2784,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
-  // Verify open in new tab enabled.
-  EXPECT_TRUE(controller->ShouldEnableOpenInNewTab());
-
   // Simulate clicking the open in new tab option.
-  controller->results_side_panel_coordinator()->ExecuteCommand(
-      lens::LensOverlaySidePanelCoordinator::CommandID::COMMAND_OPEN_IN_NEW_TAB,
-      /*event_flags=*/0);
+  coordinator->OpenInNewTab();
 
   // Verify the new tab opens to a URL with the same path, no gsc param, and a
   // different vsrid. Other params may be changed or unchanged.
@@ -2806,14 +2804,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                              kLensRequestQueryParameter, &new_vsrid_value);
   EXPECT_NE(original_vsrid_value, new_vsrid_value);
 
-  // Verify histogram recorded.
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.SidePanel.SelectedMoreInfoMenuOption",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.SidePanel.SelectedMoreInfoMenuOption",
-      lens::LensOverlaySidePanelMenuOption::kOpenInNewTab,
-      /*expected_count=*/1);
+  // Verify action recorded.
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SidePanel.LensOverlayResults.NewTabButtonClicked"));
 
   // Verify the loading state was never set.
   EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
@@ -2822,6 +2815,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        SidePanel_OpenInNewTabDisabledForContextualQueries) {
+  base::UserActionTester user_action_tester;
   WaitForPaint();
 
   // State should start in off.
@@ -2857,8 +2851,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(fake_controller);
   fake_controller->ResetSidePanelTracking();
 
-  // Verify open in new tab disabled.
-  EXPECT_FALSE(controller->ShouldEnableOpenInNewTab());
+  // Should do nothing.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  coordinator->OpenInNewTab();
+
+  // Verify no action recorded.
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "SidePanel.LensOverlayResults.NewTabButtonClicked"));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
