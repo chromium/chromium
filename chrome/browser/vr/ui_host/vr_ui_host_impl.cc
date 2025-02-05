@@ -137,9 +137,6 @@ VRUiHostImpl::VRUiHostImpl(
   CHECK(base::Contains(views, device::mojom::XREye::kRight,
                        &device::mojom::XRView::eye));
 
-  content::GetDeviceService().BindGeolocationConfig(
-      geolocation_config_.BindNewPipeAndPassReceiver());
-
   DesktopMediaPickerManager::Get()->AddObserver(this);
 
   VrTabHelper::SetIsContentDisplayedInHeadset(&contents, true);

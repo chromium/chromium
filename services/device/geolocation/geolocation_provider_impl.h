@@ -80,7 +80,6 @@ class GeolocationProviderImpl
   base::CallbackListSubscription AddLocationUpdateCallback(
       const LocationUpdateCallback& callback,
       bool enable_high_accuracy) override;
-  bool HighAccuracyLocationInUse() override;
   void OverrideLocationForTesting(mojom::GeopositionResultPtr result) override;
 
   // Callback from the LocationProviderManager. Public for testing.

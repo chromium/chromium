@@ -6,7 +6,6 @@ module device.mojom;
 
 import "services/device/public/mojom/battery_monitor.mojom";
 import "services/device/public/mojom/fingerprint.mojom";
-import "services/device/public/mojom/geolocation_config.mojom";
 import "services/device/public/mojom/geolocation_context.mojom";
 import "services/device/public/mojom/geolocation_control.mojom";
 import "services/device/public/mojom/geolocation_internals.mojom";
@@ -41,9 +40,6 @@ import "services/device/public/mojom/pressure_manager.mojom";
 interface DeviceService {
   // Binds a Fingerprint endpoint.
   BindFingerprint(pending_receiver<Fingerprint> receiver);
-
-  // Binds a GeolocationConfig endpoint.
-  BindGeolocationConfig(pending_receiver<GeolocationConfig> receiver);
 
   // Binds a GeolocationContext endpoint.
   BindGeolocationContext(pending_receiver<GeolocationContext> receiver);

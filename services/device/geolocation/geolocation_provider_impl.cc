@@ -113,10 +113,6 @@ GeolocationProviderImpl::AddLocationUpdateCallback(
   return subscription;
 }
 
-bool GeolocationProviderImpl::HighAccuracyLocationInUse() {
-  return !high_accuracy_callbacks_.empty();
-}
-
 void GeolocationProviderImpl::OverrideLocationForTesting(
     mojom::GeopositionResultPtr result) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());

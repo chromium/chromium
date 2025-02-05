@@ -17,7 +17,6 @@
 #include "services/device/fingerprint/fingerprint.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/sensor_provider_impl.h"
-#include "services/device/geolocation/geolocation_config.h"
 #include "services/device/geolocation/geolocation_context.h"
 #include "services/device/geolocation/public_ip_address_geolocator.h"
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
@@ -238,11 +237,6 @@ void DeviceService::BindInputDeviceManager(
 void DeviceService::BindFingerprint(
     mojo::PendingReceiver<mojom::Fingerprint> receiver) {
   Fingerprint::Create(std::move(receiver));
-}
-
-void DeviceService::BindGeolocationConfig(
-    mojo::PendingReceiver<mojom::GeolocationConfig> receiver) {
-  GeolocationConfig::Create(std::move(receiver));
 }
 
 void DeviceService::BindGeolocationContext(

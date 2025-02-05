@@ -21,7 +21,6 @@
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/device/public/mojom/geolocation_config.mojom.h"
 
 namespace vr {
 
@@ -107,7 +106,6 @@ class VRUiHostImpl : public content::VrUiHost,
   bool indicators_showing_first_time_ = true;
   std::vector<device::mojom::XRViewPtr> default_views_;
 
-  mojo::Remote<device::mojom::GeolocationConfig> geolocation_config_;
   base::CancelableOnceClosure poll_capturing_state_task_;
 
   THREAD_CHECKER(thread_checker_);
