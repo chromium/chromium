@@ -59,19 +59,24 @@ void ChannelMixer::TransformPartial(const AudioBus* input,
   CHECK_LE(frame_count, input->frames());
   CHECK_LE(frame_count, output->frames());
 
+  if (frame_count <= 0) {
+    return;
+  }
   // Zero initialize |output| so we're accumulating from zero.
   output->ZeroFrames(frame_count);
 
   // If we're just remapping we can simply copy the correct input to output.
   if (remapping_) {
+    const size_t frames = static_cast<size_t>(frame_count);
+
     for (int output_ch = 0; output_ch < output->channels(); ++output_ch) {
       auto output_channel = output->channel_span(output_ch);
       for (int input_ch = 0; input_ch < input->channels(); ++input_ch) {
         float scale = matrix_[output_ch][input_ch];
         if (scale > 0) {
           DCHECK_EQ(scale, 1.0f);
-          output_channel.copy_from_nonoverlapping(
-              input->channel_span(input_ch));
+          output_channel.first(frames).copy_from_nonoverlapping(
+              input->channel_span(input_ch).first(frames));
           break;
         }
       }
