@@ -117,17 +117,6 @@ bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
 #endif  // !BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 }
 
-bool PassthroughCommandDecoderSupported() {
-  GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
-  // Using the passthrough command buffer requires that specific ANGLE
-  // extensions are exposed
-  return display->ext->b_EGL_CHROMIUM_create_context_bind_generates_resource &&
-         display->ext->b_EGL_ANGLE_create_context_webgl_compatibility &&
-         display->ext->b_EGL_ANGLE_robust_resource_initialization &&
-         display->ext->b_EGL_ANGLE_display_texture_share_group &&
-         display->ext->b_EGL_ANGLE_create_context_client_arrays;
-}
-
 const GlWorkarounds& GetGlWorkarounds() {
   return g_workarounds;
 }

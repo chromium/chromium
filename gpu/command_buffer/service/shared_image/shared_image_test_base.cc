@@ -124,8 +124,7 @@ std::vector<SkPixmap> SharedImageTestBase::GetSkPixmaps(
 SharedImageTestBase::SharedImageTestBase() {
   gpu_preferences_.use_passthrough_cmd_decoder =
       gles2::UsePassthroughCommandDecoder(
-          base::CommandLine::ForCurrentProcess()) &&
-      gles2::PassthroughCommandDecoderSupported();
+          base::CommandLine::ForCurrentProcess());
 }
 
 SharedImageTestBase::~SharedImageTestBase() {

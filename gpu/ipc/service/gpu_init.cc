@@ -28,7 +28,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
-#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_driver_bug_list.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -554,34 +553,14 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // Compute passthrough decoder status before ComputeGpuFeatureInfo below.
   // Do this after GL is initialized so extensions can be queried.
   // Using SwANGLE forces the passthrough command decoder.
-  if (gpu_preferences_.use_passthrough_cmd_decoder || is_swangle) {
-    gpu_info_.passthrough_cmd_decoder =
-        gles2::PassthroughCommandDecoderSupported();
-#if BUILDFLAG(IS_ANDROID)
-    // We never use swiftshader on Android
-    LOG_IF(DFATAL, !gpu_info_.passthrough_cmd_decoder)
-#else
-    LOG_IF(ERROR, !gpu_info_.passthrough_cmd_decoder)
-#endif
-        << "Passthrough is not supported, GL is "
-        << gl::GetGLImplementationGLName(gl::GetGLImplementationParts())
-        << ", ANGLE is "
-        << gl::GetGLImplementationANGLEName(gl::GetGLImplementationParts());
-  } else {
-    gpu_info_.passthrough_cmd_decoder = false;
-  }
-  gpu_preferences_.use_passthrough_cmd_decoder =
-      gpu_info_.passthrough_cmd_decoder;
+  gpu_preferences_.use_passthrough_cmd_decoder |= is_swangle;
+  gpu_info_.passthrough_cmd_decoder =
+      gpu_preferences_.use_passthrough_cmd_decoder;
 #else
   // If gl is disabled passthrough/validating command decoder doesn't matter. If
   // it's not ensure that passthrough command decoder is supported as it's our
   // only option.
   if (!gl_disabled) {
-    LOG_IF(FATAL, !gles2::PassthroughCommandDecoderSupported())
-        << "Passthrough is not supported, GL is "
-        << gl::GetGLImplementationGLName(gl::GetGLImplementationParts())
-        << ", ANGLE is "
-        << gl::GetGLImplementationANGLEName(gl::GetGLImplementationParts());
     gpu_info_.passthrough_cmd_decoder = true;
     gpu_preferences_.use_passthrough_cmd_decoder = true;
   }

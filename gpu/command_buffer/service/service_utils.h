@@ -28,9 +28,6 @@ GPU_GLES2_EXPORT gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
 GPU_GLES2_EXPORT bool UsePassthroughCommandDecoder(
     const base::CommandLine* command_line);
 
-// Returns true if the driver supports creating passthrough command decoders
-GPU_GLES2_EXPORT bool PassthroughCommandDecoderSupported();
-
 GPU_GLES2_EXPORT GpuPreferences
 ParseGpuPreferences(const base::CommandLine* command_line);
 

@@ -743,8 +743,7 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
     const scoped_refptr<viz::VulkanContextProvider>& vulkan_context_provider)
     : SharedImageBackingFactory(kSupportedUsage),
       vulkan_context_provider_(vulkan_context_provider),
-      use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
-                       gl::PassthroughCommandDecoderSupported()),
+      use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder),
       gl_format_caps_(GLFormatCaps(feature_info)) {
   DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
 
