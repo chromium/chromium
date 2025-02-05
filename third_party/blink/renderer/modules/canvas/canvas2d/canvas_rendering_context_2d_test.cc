@@ -2224,15 +2224,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
   gfx::Size size(300, 300);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  CanvasElement().SetResourceProviderForTesting(
-      /*provider=*/nullptr, size);
-
-  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+  CanvasElement().SetSize(size);
 
   // Trigger resource provider creation.
-  DrawSomething();
+  Context2D()->fillRect(3, 3, 1, 1);
   EXPECT_TRUE(!!CanvasElement().ResourceProvider());
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+
   auto* box = CanvasElement().GetLayoutBoxModelObject();
   EXPECT_TRUE(box);
   PaintLayer* painting_layer = box->PaintingLayer();
@@ -2247,6 +2245,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ThreadScheduler::Current()
       ->ToMainThreadScheduler()
       ->StartIdlePeriodForTesting();
+
+  // The above fillRect() call caused the CanvasPerformanceMonitor to start
+  // observing tasks. Reset this task observation before running pending tasks
+  // to avoid a CHECK that goes off in its WillProcessTask() method due to its
+  // not being expected to be called at this point in the flow.
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+
   blink::test::RunPendingTasks();
   // If enabled, hibernation should cause repaint of the painting layer.
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
