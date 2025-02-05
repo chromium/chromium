@@ -2892,7 +2892,8 @@ const ComputedStyle* CSSAnimations::EnsureAfterChangeStyleIfNecessary(
 const ComputedStyle& CSSAnimations::CalculateAfterChangeStyle(
     TransitionUpdateState& state,
     const PropertyHandle& transitioning_property) {
-  if (!RuntimeEnabledFeatures::CascadedAfterChangeStyleEnabled()) {
+  if (!RuntimeEnabledFeatures::CascadedAfterChangeStyleEnabled() ||
+      !state.style_recalc_context.has_animating_ancestor) {
     return state.base_style;
   }
   if (!state.after_change_style) {

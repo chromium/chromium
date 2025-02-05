@@ -777,7 +777,7 @@
     },
     {
       name: "CascadedAfterChangeStyle",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Kill switch for changes to RenderFrameMetadataObserverImpl in connection with Engagement

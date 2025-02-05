@@ -116,6 +116,10 @@ class CORE_EXPORT StyleRecalcContext {
   // True if the ancestor of this element had a content-visibility: auto
   // style and was locked, meaning that this is a forced update.
   bool has_content_visibility_auto_locked_ancestor = false;
+
+  // Set to true if there is an ancestor element which has animations or
+  // transitions applied. Used to optimize after-change style computation.
+  bool has_animating_ancestor = false;
 };
 
 }  // namespace blink
