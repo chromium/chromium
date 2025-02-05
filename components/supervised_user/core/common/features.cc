@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/supervised_user/core/common/features.h"
+
 #include <string>
 
 #include "base/check.h"
@@ -26,13 +27,15 @@ BASE_FEATURE(kLocalWebApprovals,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_WIN)
 const int kLocalWebApprovalBottomSheetLoadTimeoutDefaultValueMs = 5000;
 
 const base::FeatureParam<int> kLocalWebApprovalBottomSheetLoadTimeoutMs{
     &kLocalWebApprovals, /*name=*/"LocalWebApprovalBottomSheetLoadTimeoutMs",
     kLocalWebApprovalBottomSheetLoadTimeoutDefaultValueMs};
-#endif
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_WIN)
 
 BASE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload,
              "PacpWidgetSupportsUrlPayload",

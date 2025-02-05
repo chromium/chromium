@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_LINUX_MAC_WINDOWS_PARENT_ACCESS_DIALOG_WEB_CONTENTS_OBSERVER_H_
-#define CHROME_BROWSER_SUPERVISED_USER_LINUX_MAC_WINDOWS_PARENT_ACCESS_DIALOG_WEB_CONTENTS_OBSERVER_H_
+#ifndef CHROME_BROWSER_SUPERVISED_USER_LINUX_MAC_WINDOWS_PARENT_ACCESS_DIALOG_RESULT_OBSERVER_H_
+#define CHROME_BROWSER_SUPERVISED_USER_LINUX_MAC_WINDOWS_PARENT_ACCESS_DIALOG_RESULT_OBSERVER_H_
 
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/navigation_handle.h"
@@ -12,20 +12,19 @@
 // Observer for the web contents of the parent approval dialog.
 // Observes the navigation within the PACP widget and extracts the parent
 // approval result.
-class ParentAccessDialogWebContentsObserver
-    : public content::WebContentsObserver {
+class ParentAccessDialogResultObserver : public content::WebContentsObserver {
  public:
   using LocalApprovalResultCallback =
       base::OnceCallback<void(supervised_user::LocalApprovalResult)>;
 
-  ParentAccessDialogWebContentsObserver(
+  ParentAccessDialogResultObserver(
       content::WebContents* web_contents,
       LocalApprovalResultCallback url_approval_result_callback);
-  ~ParentAccessDialogWebContentsObserver() override;
-  ParentAccessDialogWebContentsObserver(
-      const ParentAccessDialogWebContentsObserver&) = delete;
-  ParentAccessDialogWebContentsObserver& operator=(
-      const ParentAccessDialogWebContentsObserver&) = delete;
+  ~ParentAccessDialogResultObserver() override;
+  ParentAccessDialogResultObserver(const ParentAccessDialogResultObserver&) =
+      delete;
+  ParentAccessDialogResultObserver& operator=(
+      const ParentAccessDialogResultObserver&) = delete;
 
   void StopObserving();
 
@@ -40,4 +39,4 @@ class ParentAccessDialogWebContentsObserver
   LocalApprovalResultCallback url_approval_result_callback_;
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_LINUX_MAC_WINDOWS_PARENT_ACCESS_DIALOG_WEB_CONTENTS_OBSERVER_H_
+#endif  // CHROME_BROWSER_SUPERVISED_USER_LINUX_MAC_WINDOWS_PARENT_ACCESS_DIALOG_RESULT_OBSERVER_H_

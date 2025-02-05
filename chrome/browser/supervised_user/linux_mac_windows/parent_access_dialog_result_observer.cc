@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_web_contents_observer.h"
+#include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_result_observer.h"
 
 #include "base/base64.h"
 #include "base/functional/callback.h"
@@ -21,20 +21,19 @@ bool HasNavigatedToTerminalVerificationUrl(
 }
 }  // namespace
 
-ParentAccessDialogWebContentsObserver::ParentAccessDialogWebContentsObserver(
+ParentAccessDialogResultObserver::ParentAccessDialogResultObserver(
     content::WebContents* web_contents,
     LocalApprovalResultCallback url_approval_result_callback)
     : content::WebContentsObserver(web_contents),
       url_approval_result_callback_(std::move(url_approval_result_callback)) {}
 
-ParentAccessDialogWebContentsObserver::
-    ~ParentAccessDialogWebContentsObserver() = default;
+ParentAccessDialogResultObserver::~ParentAccessDialogResultObserver() = default;
 
-void ParentAccessDialogWebContentsObserver::StopObserving() {
+void ParentAccessDialogResultObserver::StopObserving() {
   Observe(nullptr);
 }
 
-void ParentAccessDialogWebContentsObserver::DidStartNavigation(
+void ParentAccessDialogResultObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   const GURL& handle_url = navigation_handle->GetURL();
   std::optional<std::string> encoded_callback =
@@ -82,7 +81,7 @@ void ParentAccessDialogWebContentsObserver::DidStartNavigation(
   }
 }
 
-void ParentAccessDialogWebContentsObserver::DidFinishNavigation(
+void ParentAccessDialogResultObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!HasNavigatedToTerminalVerificationUrl(navigation_handle) ||
       !result_.has_value()) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_web_contents_observer.h"
+#include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_result_observer.h"
 
 #include <optional>
 #include <string>
@@ -83,9 +83,7 @@ class SupervisedUserParentAccessObserverTest
   }
 
  protected:
-  bool IsCompletionCallbackExecuted() {
-    return is_callback_executed_;
-  }
+  bool IsCompletionCallbackExecuted() { return is_callback_executed_; }
 
   std::optional<supervised_user::LocalApprovalResult>
   extracted_local_approval_result() {
@@ -150,7 +148,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserParentAccessObserverTest,
           &SupervisedUserParentAccessObserverTest::MockCompletionCallback,
           base::Unretained(this));
   auto dialog_web_contents_observer =
-      std::make_unique<ParentAccessDialogWebContentsObserver>(
+      std::make_unique<ParentAccessDialogResultObserver>(
           contents(),
           /*url_approval_result_callback=*/std::move(completion_callback));
 
