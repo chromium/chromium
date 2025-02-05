@@ -19880,24 +19880,6 @@
             ]
         }
     ],
-    "SafeBrowsingDeepScanningCriteria": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingDeepScanningCriteria"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingExternalAppRedirectTelemetry": [
         {
             "platforms": [
