@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
+#include "build/build_config.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -49,7 +50,7 @@ CoreAccountId CoreAccountId::FromRobotEmail(const std::string& robot_email) {
   return CoreAccountId::FromString(robot_email);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 CoreAccountId CoreAccountId::FromEmail(const std::string& email) {
   if (email.empty())

@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "google_apis/buildflags.h"
 #include "google_apis/google_api_keys.h"
 
@@ -34,7 +33,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
 #if !BUILDFLAG(IS_ANDROID)
   const std::string& api_key_hats() const { return api_key_hats_; }
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const std::string& api_key_sharing() const { return api_key_sharing_; }
   const std::string& api_key_read_aloud() const { return api_key_read_aloud_; }
   const std::string& api_key_fresnel() const { return api_key_fresnel_; }
@@ -63,7 +62,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) ApiKeyCache {
 #if !BUILDFLAG(IS_ANDROID)
   std::string api_key_hats_;
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string api_key_sharing_;
   std::string api_key_read_aloud_;
   std::string api_key_fresnel_;

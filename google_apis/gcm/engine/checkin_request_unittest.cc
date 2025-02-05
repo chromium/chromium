@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "google_apis/gcm/engine/checkin_request.h"
+
 #include <stdint.h>
 
 #include <memory>
@@ -9,8 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
-#include "google_apis/gcm/engine/checkin_request.h"
+#include "build/build_config.h"
 #include "google_apis/gcm/engine/gcm_request_test_base.h"
 #include "google_apis/gcm/monitoring/fake_gcm_stats_recorder.h"
 #include "google_apis/gcm/protocol/checkin.pb.h"
@@ -147,7 +148,7 @@ TEST_F(CheckinRequestTest, FetcherDataAndURL) {
   EXPECT_EQ(chrome_build_proto_.channel(),
             request_proto.checkin().chrome_build().channel());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(checkin_proto::DEVICE_CHROME_OS, request_proto.checkin().type());
 #else
   EXPECT_EQ(checkin_proto::DEVICE_CHROME_BROWSER,
