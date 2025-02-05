@@ -269,7 +269,7 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
               prediction_model_handler_provider->GetGenAiModelHandler()) {
         VLOG(1) << "[PermissionsAIv1] Inquire model.";
         gen_ai_model_handler->InquireGenAiOnDeviceModel(
-            std::move(inner_text),
+            std::move(inner_text), request_type,
             base::BindRepeating(&PredictionBasedPermissionUiSelector::
                                     GenAIModelExecutionCallback,
                                 weak_ptr_factory_.GetWeakPtr(),

@@ -35,15 +35,16 @@ using ::optimization_guide::AnyWrapProto;
 using ::optimization_guide::MockSession;
 using ::optimization_guide::OptimizationGuideModelExecutionError;
 using ::optimization_guide::OptimizationGuideModelStreamingExecutionResult;
+using ::optimization_guide::proto::PermissionsAiRequest;
+using ::optimization_guide::proto::PermissionsAiResponse;
+using ::optimization_guide::proto::PermissionType;
+using ::permissions::RequestType;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::StrictMock;
-
-using ::optimization_guide::proto::PermissionsAiRequest;
-using ::optimization_guide::proto::PermissionsAiResponse;
 
 constexpr optimization_guide::ModelBasedCapabilityKey kFeatureKey =
     optimization_guide::ModelBasedCapabilityKey::kPermissionsAi;
@@ -73,9 +74,9 @@ void CallCounter(int& cnt, std::optional<PermissionsAiResponse> _) {
   ++cnt;
 }
 
-class GenAiModelHandlerTest : public testing::Test {
+class GenAiModelHandlerTestBase : public testing::Test {
  protected:
-  GenAiModelHandlerTest()
+  GenAiModelHandlerTestBase()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     CHECK(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
@@ -100,21 +101,6 @@ class GenAiModelHandlerTest : public testing::Test {
                     })));
   }
 
-  optimization_guide::StreamingResponse CreatePermissionsAiResponse(
-      bool is_permission_relevant) {
-    PermissionsAiResponse response;
-    response.set_is_permission_relevant(is_permission_relevant);
-    return optimization_guide::StreamingResponse{
-        .response = AnyWrapProto(response), .is_complete = true};
-  }
-
-  PermissionsAiRequest CreatePermissionsAiRequest(
-      const std::string& rendered_text) {
-    PermissionsAiRequest request;
-    request.set_rendered_text(rendered_text);
-    return request;
-  }
-
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
@@ -125,13 +111,35 @@ class GenAiModelHandlerTest : public testing::Test {
   testing::NiceMock<MockSession> session_;
 };
 
-TEST_F(GenAiModelHandlerTest, CanDealWithInvalidOptimizationGuide) {
+class GenAiModelHandlerTest : public GenAiModelHandlerTestBase {};
+
+struct GenAiModelHandlerTestCase {
+  PermissionType permission_type;
+  RequestType request_type;
+  bool is_permission_relevant;
+};
+
+class ParametrizedGenAiModelHandlerTest
+    : public GenAiModelHandlerTestBase,
+      public testing::WithParamInterface<GenAiModelHandlerTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    RequestTypes,
+    ParametrizedGenAiModelHandlerTest,
+    testing::ValuesIn<GenAiModelHandlerTestCase>({
+        {PermissionType::PERMISSION_TYPE_NOTIFICATIONS,
+         RequestType::kNotifications, /*is_permission_relevant=*/true},
+        {PermissionType::PERMISSION_TYPE_GEOLOCATION, RequestType::kGeolocation,
+         /*is_permission_relevant=*/false},
+    }));
+
+TEST_P(ParametrizedGenAiModelHandlerTest, CanDealWithInvalidOptimizationGuide) {
   base::HistogramTester histogram_tester;
   GenAiModelHandler genai_model_handler(nullptr);
 
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler.InquireGenAiOnDeviceModel(kRenderedText,
-                                                future.GetCallback());
+  genai_model_handler.InquireGenAiOnDeviceModel(
+      kRenderedText, GetParam().request_type, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
 
   histogram_tester.ExpectUniqueSample(kSessionCreationSuccessHistogram, false,
@@ -156,8 +164,8 @@ TEST_F(GenAiModelHandlerTest, ModelNeedsDownloadForFirstInquiry) {
               AddOnDeviceModelAvailabilityChangeObserver(
                   kFeatureKey, genai_model_handler_.get()));
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler_->InquireGenAiOnDeviceModel(kRenderedText,
-                                                  future.GetCallback());
+  genai_model_handler_->InquireGenAiOnDeviceModel(
+      kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
   EXPECT_FALSE(genai_model_handler_->IsOnDeviceModelAvailable());
 
@@ -190,8 +198,8 @@ TEST_F(GenAiModelHandlerTest, ModelDownloadFailureIsHandled) {
           }));
 
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler_->InquireGenAiOnDeviceModel(kRenderedText,
-                                                  future.GetCallback());
+  genai_model_handler_->InquireGenAiOnDeviceModel(
+      kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
 
   // Fails for first created session (because model is not downloaded yet).
@@ -235,8 +243,8 @@ TEST_F(GenAiModelHandlerTest, ModelDownloadsSuccessfully) {
           }));
 
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler_->InquireGenAiOnDeviceModel(kRenderedText,
-                                                  future.GetCallback());
+  genai_model_handler_->InquireGenAiOnDeviceModel(
+      kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
 
   // Fails for first created session (because model is not downloaded yet):
@@ -265,7 +273,7 @@ TEST_F(GenAiModelHandlerTest, ModelDownloadsSuccessfully) {
   EXPECT_TRUE(genai_model_handler_->IsOnDeviceModelAvailable());
 }
 
-TEST_F(GenAiModelHandlerTest, EmptyModelResponseIsHandled) {
+TEST_P(ParametrizedGenAiModelHandlerTest, RequestIsBuildProperly) {
   // We will skip model download here, instantly returning a valid session.
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
@@ -277,7 +285,10 @@ TEST_F(GenAiModelHandlerTest, EmptyModelResponseIsHandled) {
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               AddOnDeviceModelAvailabilityChangeObserver(_, _));
 
-  PermissionsAiRequest request = CreatePermissionsAiRequest(kRenderedText);
+  PermissionsAiRequest request;
+  request.set_rendered_text(kRenderedText);
+  request.set_permission_type(GetParam().permission_type);
+
   optimization_guide::proto::DefaultResponse default_response;
   optimization_guide::StreamingResponse default_streaming_response{
       .response = AnyWrapProto(default_response), .is_complete = true};
@@ -290,11 +301,40 @@ TEST_F(GenAiModelHandlerTest, EmptyModelResponseIsHandled) {
                 base::ok(default_streaming_response),
                 /*provided_by_on_device=*/true));
           })));
+  base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
+  genai_model_handler_->InquireGenAiOnDeviceModel(
+      kRenderedText, GetParam().request_type, future.GetCallback());
+}
+
+TEST_F(GenAiModelHandlerTest, EmptyModelResponseIsHandled) {
+  // We will skip model download here, instantly returning a valid session.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _));
+
+  optimization_guide::proto::DefaultResponse default_response;
+  optimization_guide::StreamingResponse default_streaming_response{
+      .response = AnyWrapProto(default_response), .is_complete = true};
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            callback.Run(OptimizationGuideModelStreamingExecutionResult(
+                base::ok(default_streaming_response),
+                /*provided_by_on_device=*/true));
+          })));
 
   base::HistogramTester histogram_tester;
   base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
-  genai_model_handler_->InquireGenAiOnDeviceModel(kRenderedText,
-                                                  future.GetCallback());
+  genai_model_handler_->InquireGenAiOnDeviceModel(
+      kRenderedText, RequestType::kNotifications, future.GetCallback());
   EXPECT_EQ(future.Take(), std::nullopt);
   EXPECT_TRUE(genai_model_handler_->IsOnDeviceModelAvailable());
 
@@ -339,7 +379,8 @@ TEST_F(GenAiModelHandlerTest, IncompleResponseIsIgnored) {
   base::HistogramTester histogram_tester;
   int call_count = 0;
   genai_model_handler_->InquireGenAiOnDeviceModel(
-      kRenderedText, BindOnce(&CallCounter, OwnedRef(call_count)));
+      kRenderedText, RequestType::kNotifications,
+      BindOnce(&CallCounter, OwnedRef(call_count)));
 
   EXPECT_EQ(call_count, 0);
 
@@ -351,6 +392,53 @@ TEST_F(GenAiModelHandlerTest, IncompleResponseIsIgnored) {
   histogram_tester.ExpectTotalCount(kExecutionDurationHistogram, 0);
   histogram_tester.ExpectTotalCount(kExecutionSuccessHistogram, 0);
   histogram_tester.ExpectTotalCount(kResponseParseSuccessHistogram, 0);
+}
+
+TEST_P(ParametrizedGenAiModelHandlerTest,
+       ResponseIsParsedCorrectlyAndCallbackCalledWithResult) {
+  // We will skip model download on the first session here, instantly
+  // returning a valid session.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _));
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+
+  PermissionsAiResponse response;
+  response.set_is_permission_relevant(GetParam().is_permission_relevant);
+  auto streaming_response = optimization_guide::StreamingResponse{
+      .response = AnyWrapProto(response), .is_complete = true};
+
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            callback.Run(OptimizationGuideModelStreamingExecutionResult(
+                base::ok(streaming_response),
+                /*provided_by_on_device=*/true));
+          })));
+
+  base::HistogramTester histogram_tester;
+
+  base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
+  genai_model_handler_->InquireGenAiOnDeviceModel(
+      kRenderedText, RequestType::kNotifications, future.GetCallback());
+  EXPECT_THAT(future.Take(), Optional(EqualsProto(response)));
+
+  histogram_tester.ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(kSessionCreationSuccessHistogram, true,
+                                      1);
+  histogram_tester.ExpectTotalCount(kSessionCreationTimeHistogram, 1);
+  histogram_tester.ExpectTotalCount(kExecutionDurationHistogram, 1);
+  histogram_tester.ExpectTotalCount(kExecutionSuccessHistogram, 1);
+  histogram_tester.ExpectTotalCount(kResponseParseSuccessHistogram, 1);
 }
 
 }  // namespace permissions
