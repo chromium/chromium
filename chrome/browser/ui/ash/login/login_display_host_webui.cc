@@ -182,7 +182,7 @@ bool HasManagedDeviceSettings() {
 bool IsOobeComplete() {
   // Oobe is completed and we have a user or we are enterprise enrolled.
   return StartupUtils::IsOobeCompleted() &&
-         ((!user_manager::UserManager::Get()->GetUsers().empty() &&
+         ((!user_manager::UserManager::Get()->GetPersistedUsers().empty() &&
            !HasManagedDeviceSettings()) ||
           ash::InstallAttributes::Get()->IsEnterpriseManaged());
 }
@@ -665,7 +665,8 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   DVLOG(1) << "Starting sign in screen";
   CreateExistingUserController();
 
-  existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
+  existing_user_controller_->Init(
+      user_manager::UserManager::Get()->GetPersistedUsers());
 
   ShowGaiaDialogCommon(EmptyAccountId());
 

@@ -56,7 +56,7 @@ bool IsDeviceOwnedByChild() {
 // Returns true is any parent code config is available on the device.
 bool IsParentCodeConfigAvailable() {
   const user_manager::UserList& users =
-      user_manager::UserManager::Get()->GetUsers();
+      user_manager::UserManager::Get()->GetPersistedUsers();
   user_manager::KnownUser known_user(g_browser_process->local_state());
   for (const user_manager::User* user : users) {
     if (known_user.FindPath(user->GetAccountId(),

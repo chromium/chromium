@@ -3569,7 +3569,8 @@ void WizardController::StartEnrollmentScreen() {
 void WizardController::ShowEnrollmentScreenIfEligible() {
   const bool enterprise_managed =
       ash::InstallAttributes::Get()->IsEnterpriseManaged();
-  const bool has_users = !user_manager::UserManager::Get()->GetUsers().empty();
+  const bool has_users =
+      !user_manager::UserManager::Get()->GetPersistedUsers().empty();
   if (!has_users && !enterprise_managed) {
     AdvanceToScreen(EnrollmentScreenView::kScreenId);
   }

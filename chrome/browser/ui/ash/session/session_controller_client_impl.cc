@@ -360,8 +360,9 @@ std::tuple<bool, bool> SessionControllerClientImpl::IsEligibleForSeaPen(
 
 std::optional<int> SessionControllerClientImpl::GetExistingUsersCount() const {
   const auto* user_manager = UserManager::Get();
-  return !user_manager ? std::nullopt
-                       : std::optional<int>(user_manager->GetUsers().size());
+  return !user_manager
+             ? std::nullopt
+             : std::optional<int>(user_manager->GetPersistedUsers().size());
 }
 
 // static

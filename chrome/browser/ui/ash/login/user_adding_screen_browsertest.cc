@@ -91,7 +91,8 @@ class UserAddingScreenTest : public LoginManagerTest,
 
 IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, CancelAdding) {
   const auto& users = login_mixin_.users();
-  EXPECT_EQ(users.size(), user_manager::UserManager::Get()->GetUsers().size());
+  EXPECT_EQ(users.size(),
+            user_manager::UserManager::Get()->GetPersistedUsers().size());
   EXPECT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 0u);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
@@ -304,7 +305,8 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, MAYBE_ScreenVisibilityAfterLock) {
 
 IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, InfoBubbleVisible) {
   const auto& users = login_mixin_.users();
-  EXPECT_EQ(users.size(), user_manager::UserManager::Get()->GetUsers().size());
+  EXPECT_EQ(users.size(),
+            user_manager::UserManager::Get()->GetPersistedUsers().size());
   EXPECT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 0u);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
@@ -352,7 +354,8 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, InfoBubbleVisible) {
 // a OOBE dialog would appear, making the test crash.
 IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, LockScreenWhileAddingUser) {
   const auto& users = login_mixin_.users();
-  EXPECT_EQ(users.size(), user_manager::UserManager::Get()->GetUsers().size());
+  EXPECT_EQ(users.size(),
+            user_manager::UserManager::Get()->GetPersistedUsers().size());
   EXPECT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 0u);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);

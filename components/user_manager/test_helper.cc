@@ -43,7 +43,7 @@ User* TestHelper::AddKioskAppUser(std::string_view user_id) {
 
   // Build DeviceLocalAccountInfo for the existing users.
   std::vector<UserManager::DeviceLocalAccountInfo> device_local_accounts;
-  for (const auto& user : user_manager_->GetUsers()) {
+  for (const auto& user : user_manager_->GetPersistedUsers()) {
     if (user->GetAccountId().GetUserEmail() == user_id) {
       LOG(ERROR) << "duplicated account is found: " << user_id;
       return nullptr;

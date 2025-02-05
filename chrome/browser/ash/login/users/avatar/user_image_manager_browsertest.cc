@@ -362,7 +362,6 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, PRE_SaveAndLoadUserImage) {
 
 // Ensures that the user image in JPEG format is loaded correctly.
 IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveAndLoadUserImage) {
-  user_manager::UserManager::Get()->GetUsers();  // Load users.
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(test_account_id1_);
   ASSERT_TRUE(user);

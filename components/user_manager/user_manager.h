@@ -196,9 +196,15 @@ class USER_MANAGER_EXPORT UserManager {
 
   virtual ~UserManager();
 
-  // Returns a list of users who have logged into this device previously. This
-  // is sorted by last login date with the most recent user at the beginning.
-  virtual const UserList& GetUsers() const = 0;
+  // Returns a list of users who have logged into this device previously or
+  // device local users.
+  // Importantly, this does not include followings: Ephemeral users, guest
+  // user, public-account user being removed, even if while logged-in.
+  // They can be found by FindUser() but not included in the result of this
+  // method.
+  // For regular users, this is sorted by last login date with the most
+  // recent user at the beginning.
+  virtual const UserList& GetPersistedUsers() const = 0;
 
   // Returns list of users allowed for logging in into multi-profile session.
   // Users that have a policy that prevents them from being added to the

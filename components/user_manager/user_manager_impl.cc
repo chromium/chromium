@@ -142,8 +142,8 @@ void UserManagerImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-const UserList& UserManagerImpl::GetUsers() const {
-  return users_;
+const UserList& UserManagerImpl::GetPersistedUsers() const {
+  return persisted_users_;
 }
 
 UserList UserManagerImpl::GetUsersAllowedForMultiUserSignIn() const {
@@ -160,7 +160,7 @@ UserList UserManagerImpl::GetUsersAllowedForMultiUserSignIn() const {
   }
 
   user_manager::UserList result;
-  for (user_manager::User* user : GetUsers()) {
+  for (user_manager::User* user : persisted_users_) {
     if (user->GetType() == UserType::kRegular && !user->is_logged_in()) {
       // Users with a policy that prevents them being added to a session will be
       // shown in login UI but will be grayed out.
@@ -390,14 +390,14 @@ void UserManagerImpl::OnPrimaryUserLoggedIn(User& user) {
   delegate_->OverrideDirHome(user);
   if (user.HasGaiaAccount()) {
     // Move the user to the front of the list.
-    auto it = std::ranges::find(users_, account_id,
+    auto it = std::ranges::find(persisted_users_, account_id,
                                 [](auto& ptr) { return ptr->GetAccountId(); });
-    if (it != users_.end()) {
-      std::rotate(users_.begin(), it, it + 1);
+    if (it != persisted_users_.end()) {
+      std::rotate(persisted_users_.begin(), it, it + 1);
       ScopedListPrefUpdate prefs_users_update(local_state_.get(),
                                               prefs::kRegularUsersPref);
       prefs_users_update->clear();
-      for (const User* u : users_) {
+      for (const User* u : persisted_users_) {
         if (u->HasGaiaAccount()) {
           prefs_users_update->Append(u->GetAccountId().GetUserEmail());
         }
@@ -487,13 +487,13 @@ bool UserManagerImpl::UpdateDeviceLocalAccountUser(
   }
 
   // If the list of device local accounts has not changed, return.
-  if (!IsDeviceLocalAccountChanged(users_, device_local_accounts)) {
+  if (!IsDeviceLocalAccountChanged(persisted_users_, device_local_accounts)) {
     return false;
   }
 
   // Remove the old device local accounts from the user list.
   // Take snapshot because RemoveUserFromListImpl will update |user_|.
-  std::vector<User*> users(users_.begin(), users_.end());
+  std::vector<User*> users(persisted_users_.begin(), persisted_users_.end());
   for (User* user : users) {
     if (!user->IsDeviceLocalAccount()) {
       // Non device local account is not a target to be removed.
@@ -512,7 +512,7 @@ bool UserManagerImpl::UpdateDeviceLocalAccountUser(
       // pending removal, so it will be removed in the next turn.
       GetLocalState()->SetString(prefs::kDeviceLocalAccountPendingDataRemoval,
                                  user->GetAccountId().GetUserEmail());
-      std::erase(users_, user);
+      std::erase(persisted_users_, user);
       continue;
     }
 
@@ -526,20 +526,22 @@ bool UserManagerImpl::UpdateDeviceLocalAccountUser(
   for (size_t i = 0; i < device_local_accounts.size(); ++i) {
     const DeviceLocalAccountInfo& account = device_local_accounts[i];
     auto iter = std::find_if(
-        users_.begin() + i, users_.end(), [&account](const User* user) {
+        persisted_users_.begin() + i, persisted_users_.end(),
+        [&account](const User* user) {
           return user->GetAccountId().GetUserEmail() == account.user_id &&
                  user->GetType() == account.type;
         });
-    if (iter != users_.end()) {
-      // Found the instance. Rotate the `users_` to place the found user at
-      // the i-th position.
-      std::rotate(users_.begin() + i, iter, iter + 1);
+    if (iter != persisted_users_.end()) {
+      // Found the instance. Rotate the `persisted_users_` to place the found
+      // user at the i-th position.
+      std::rotate(persisted_users_.begin() + i, iter, iter + 1);
     } else {
       // Not found so create an instance.
       // Using `new` to access a non-public constructor.
       user_storage_.push_back(base::WrapUnique(
           new User(AccountId::FromUserEmail(account.user_id), account.type)));
-      users_.insert(users_.begin() + i, user_storage_.back().get());
+      persisted_users_.insert(persisted_users_.begin() + i,
+                              user_storage_.back().get());
     }
     if (account.display_name) {
       SaveUserDisplayName(AccountId::FromUserEmail(account.user_id),
@@ -559,7 +561,7 @@ void UserManagerImpl::RemoveUser(const AccountId& account_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UserDirectoryIntegrityManager integrity_manager(local_state_.get());
-  // Misconfigured user would not be included in GetUsers(),
+  // Misconfigured user would not be included in GetPersistedUsers(),
   // account for them separately.
   if (!CanUserBeRemoved(FindUser(account_id)) &&
       !integrity_manager.IsUserMisconfigured(account_id)) {
@@ -611,7 +613,7 @@ bool UserManagerImpl::RemoveStaleEphemeralUsers() {
   const auto owner_id = GetOwnerAccountId();
 
   // Take snapshot because DeleteUser called in the loop will update it.
-  std::vector<User*> users(users_.begin(), users_.end());
+  std::vector<User*> users(persisted_users_.begin(), persisted_users_.end());
   for (user_manager::User* user : users) {
     const AccountId account_id = user->GetAccountId();
     if (user->HasGaiaAccount() && account_id != owner_id &&
@@ -1245,7 +1247,7 @@ bool UserManagerImpl::CanUserBeRemoved(const User* user) const {
   // in order not to remove an owner. However due to non-instant nature of
   // ownership assignment this later check may sometimes fail.
   // See http://crosbug.com/12723
-  if (users_.size() < 2 && !IsEnterpriseManaged()) {
+  if (persisted_users_.size() < 2 && !IsEnterpriseManaged()) {
     return false;
   }
 
@@ -1338,10 +1340,10 @@ void UserManagerImpl::EnsureUsersLoaded() {
     user->set_using_saml(known_user.IsUsingSAML(*it));
 
     user_storage_.emplace_back(user);
-    users_.push_back(user);
+    persisted_users_.push_back(user);
   }
 
-  for (user_manager::User* user : users_) {
+  for (user_manager::User* user : persisted_users_) {
     auto& account_id = user->GetAccountId();
     const std::string* display_name =
         prefs_display_names.FindString(account_id.GetUserEmail());
@@ -1389,7 +1391,7 @@ void UserManagerImpl::LoadDeviceLocalAccounts(
 
     // Using `new` to access a non-public constructor.
     user_storage_.push_back(base::WrapUnique(new User(account_id, *type)));
-    users_.push_back(user_storage_.back().get());
+    persisted_users_.push_back(user_storage_.back().get());
   }
 }
 
@@ -1412,14 +1414,13 @@ void UserManagerImpl::RemovePendingDeviceLocalAccount() {
 }
 
 UserList& UserManagerImpl::GetUsersAndModify() {
-  return users_;
+  return persisted_users_;
 }
 
 const User* UserManagerImpl::FindUserInList(const AccountId& account_id) const {
-  const UserList& users = GetUsers();
-  for (UserList::const_iterator it = users.begin(); it != users.end(); ++it) {
-    if ((*it)->GetAccountId() == account_id) {
-      return *it;
+  for (const User* user : persisted_users_) {
+    if (user->GetAccountId() == account_id) {
+      return user;
     }
   }
   return nullptr;
@@ -1464,7 +1465,7 @@ User* UserManagerImpl::AddGaiaUser(const AccountId& account_id,
   KnownUser(local_state_.get()).SetIsEphemeralUser(user->GetAccountId(), false);
 
   // Add to the persisted list.
-  users_.push_back(user);
+  persisted_users_.push_back(user);
   ScopedListPrefUpdate prefs_users_update(local_state_.get(),
                                           prefs::kRegularUsersPref);
   prefs_users_update->Append(base::Value(account_id.GetUserEmail()));
@@ -1627,10 +1628,11 @@ User* UserManagerImpl::RemoveRegularOrSupervisedUserFromList(
                                           prefs::kRegularUsersPref);
   prefs_users_update->clear();
   User* user = nullptr;
-  for (UserList::iterator it = users_.begin(); it != users_.end();) {
+  for (UserList::iterator it = persisted_users_.begin();
+       it != persisted_users_.end();) {
     if ((*it)->GetAccountId() == account_id) {
       user = *it;
-      it = users_.erase(it);
+      it = persisted_users_.erase(it);
     } else {
       if ((*it)->HasGaiaAccount()) {
         const std::string user_email = (*it)->GetAccountId().GetUserEmail();
@@ -1791,7 +1793,7 @@ void UserManagerImpl::DeleteUser(User* user) {
   if (primary_user_ == user) {
     primary_user_ = nullptr;
   }
-  std::erase(users_, user);
+  std::erase(persisted_users_, user);
   std::erase(logged_in_users_, user);
   std::erase(lru_logged_in_users_, user);
 

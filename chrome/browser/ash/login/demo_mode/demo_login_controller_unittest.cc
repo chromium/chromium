@@ -226,15 +226,15 @@ class DemoLoginControllerTest : public testing::Test {
   }
 
   void AppendTestUserToUserList() {
-    EXPECT_EQ(1U, fake_user_manager_->GetUsers().size());
+    EXPECT_EQ(1U, fake_user_manager_->GetPersistedUsers().size());
     fake_user_manager_->AddUser(AccountId::FromNonCanonicalEmail(
         kTestEmail, kTestGaiaId, AccountType::GOOGLE));
     // Expect 2 users: test user with `kTestGaiaId` and public account user.
-    EXPECT_EQ(2U, fake_user_manager_->GetUsers().size());
+    EXPECT_EQ(2U, fake_user_manager_->GetPersistedUsers().size());
   }
 
   void ExpectOnlyDeviceLocalAccountInUserList() {
-    const auto user_list = fake_user_manager_->GetUsers();
+    const auto user_list = fake_user_manager_->GetPersistedUsers();
     EXPECT_EQ(1U, user_list.size());
     EXPECT_TRUE(user_list[0]->IsDeviceLocalAccount());
   }

@@ -93,7 +93,7 @@ class SessionControllerClientImplTest : public testing::Test {
     cros_settings_test_helper_.reset();
     browser_manager_.reset();
 
-    for (user_manager::User* user : user_manager_->GetUsers()) {
+    for (user_manager::User* user : user_manager_->GetPersistedUsers()) {
       user_manager_->OnUserProfileWillBeDestroyed(user->GetAccountId());
     }
     profile_manager_.reset();

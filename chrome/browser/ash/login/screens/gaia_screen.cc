@@ -407,7 +407,7 @@ bool GaiaScreen::ShouldFetchEnrollmentNudgePolicy(
     return false;
   }
   const bool is_first_user =
-      user_manager::UserManager::Get()->GetUsers().empty();
+      user_manager::UserManager::Get()->GetPersistedUsers().empty();
   if (!is_first_user) {
     // Enrollment nudge targets only initial OOBE flow on unowned devices.
     // Current user is not a first user which means that device is already

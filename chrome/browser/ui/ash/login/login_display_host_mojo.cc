@@ -499,7 +499,8 @@ void LoginDisplayHostMojo::OnStartSignInScreen() {
   ScheduleStartAuthHubInLoginMode();
 
   // Load the UI.
-  existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
+  existing_user_controller_->Init(
+      user_manager::UserManager::Get()->GetPersistedUsers());
 
   user_selection_screen_->InitEasyUnlock();
 

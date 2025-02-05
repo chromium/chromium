@@ -336,7 +336,7 @@ void StartupUtils::SetInitialLocale(const std::string& locale) {
 
 // static
 bool StartupUtils::IsDeviceOwned() {
-  return !user_manager::UserManager::Get()->GetUsers().empty() ||
+  return !user_manager::UserManager::Get()->GetPersistedUsers().empty() ||
          ash::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 

@@ -71,7 +71,7 @@ UserRemovalManagerTest::~UserRemovalManagerTest() = default;
 TEST_F(UserRemovalManagerTest, TestUserRemovingWorks) {
   user_removal_manager::InitiateUserRemoval(base::OnceClosure());
   EXPECT_TRUE(user_removal_manager::RemoveUsersIfNeeded());
-  EXPECT_TRUE(fake_user_manager()->GetUsers().empty());
+  EXPECT_TRUE(fake_user_manager()->GetPersistedUsers().empty());
   EXPECT_TRUE(local_state_.Get()
                   ->FindPreference(prefs::kRemoveUsersRemoteCommand)
                   ->IsDefaultValue());
@@ -84,7 +84,7 @@ TEST_F(UserRemovalManagerTest, TestUserRemovingDoNotRetryOnFailure) {
   // previous removal.
   local_state_.Get()->SetBoolean(prefs::kRemoveUsersRemoteCommand, false);
   EXPECT_FALSE(user_removal_manager::RemoveUsersIfNeeded());
-  EXPECT_FALSE(fake_user_manager()->GetUsers().empty());
+  EXPECT_FALSE(fake_user_manager()->GetPersistedUsers().empty());
 }
 
 // Test that the failsafe timer runs LogOut after 60 seconds.

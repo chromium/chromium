@@ -282,7 +282,7 @@ void LoginDisplayHostCommon::StartUserAdding(
 
 void LoginDisplayHostCommon::StartSignInScreen() {
   const user_manager::UserList& users =
-      user_manager::UserManager::Get()->GetUsers();
+      user_manager::UserManager::Get()->GetPersistedUsers();
 
   // Fix for users who updated device and thus never passed register screen.
   // If we already have users, we assume that it is not a second part of

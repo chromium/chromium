@@ -2533,7 +2533,7 @@ bool DeviceStatusCollector::GetNetworkStatus(
 
 bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
   const user_manager::UserList& users =
-      user_manager::UserManager::Get()->GetUsers();
+      user_manager::UserManager::Get()->GetPersistedUsers();
 
   bool anything_reported = false;
   for (user_manager::User* user : users) {
