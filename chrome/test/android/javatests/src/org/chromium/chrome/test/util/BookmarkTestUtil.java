@@ -93,6 +93,20 @@ public class BookmarkTestUtil {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
+    /** Adds a bookmark with the given index, title, and parent. */
+    public static BookmarkId addBookmark(
+            ChromeTabbedActivityTestRule activityTestRule,
+            BookmarkModel bookmarkModel,
+            int index,
+            String title,
+            GURL url,
+            BookmarkId parent)
+            throws ExecutionException {
+        BookmarkTestUtil.readPartnerBookmarks(activityTestRule);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> bookmarkModel.addBookmark(parent, index, title, url));
+    }
+
     /** Adds a folder with the given title and parent. */
     public static BookmarkId addFolder(
             ChromeTabbedActivityTestRule activityTestRule,

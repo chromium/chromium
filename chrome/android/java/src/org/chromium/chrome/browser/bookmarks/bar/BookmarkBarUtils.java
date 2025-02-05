@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.chrome.R;
@@ -38,18 +39,23 @@ class BookmarkBarUtils {
     /**
      * Creates a list item to render in the bookmark bar for the specified bookmark item.
      *
+     * @param clickCallback the callback to invoke on list item click events.
      * @param context the context in which the created list item will be rendered.
      * @param imageFetcher the image fetcher to use for rendering favicons.
      * @param item the bookmark item for which to create a renderable list item.
      * @return the created list item to render in the bookmark bar.
      */
     public static @NonNull ListItem createListItemFor(
+            @NonNull Callback<BookmarkItem> clickCallback,
             @NonNull Context context,
             @NonNull BookmarkImageFetcher imageFetcher,
             @NonNull BookmarkItem item) {
         return new ListItem(
                 ViewType.ITEM,
                 new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS)
+                        .with(
+                                BookmarkBarButtonProperties.CLICK_CALLBACK,
+                                () -> clickCallback.onResult(item))
                         .with(
                                 BookmarkBarButtonProperties.ICON_SUPPLIER,
                                 createIconSupplierFor(context, imageFetcher, item))

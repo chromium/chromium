@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -50,6 +52,7 @@ public class BookmarkBarUtilsTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private Callback<BookmarkItem> mClickCallback;
     @Mock private Drawable mFavicon;
     @Mock private BookmarkImageFetcher mImageFetcher;
     @Mock private BookmarkItem mItem;
@@ -116,7 +119,7 @@ public class BookmarkBarUtilsTest {
                             // Create list item.
                             final var listItem =
                                     BookmarkBarUtils.createListItemFor(
-                                            activity, mImageFetcher, mItem);
+                                            mClickCallback, activity, mImageFetcher, mItem);
 
                             // Verify expected type.
                             assertEquals(BookmarkBarUtils.ViewType.ITEM, listItem.type);
@@ -130,6 +133,11 @@ public class BookmarkBarUtilsTest {
                             assertIcon(view, isFolder);
                             assertIconTintColorList(view, isFolder);
                             assertEquals(title, view.getTitleForTesting());
+
+                            // Verify expected event propagation.
+                            verify(mClickCallback, never()).onResult(any());
+                            view.performClick();
+                            verify(mClickCallback).onResult(mItem);
                         });
     }
 }

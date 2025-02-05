@@ -18,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -144,7 +145,10 @@ class BookmarkBarMediator
             @BookmarkBarItemsProvider.ObservationId int observationId,
             @NonNull BookmarkItem item,
             int index) {
-        mItemsModel.add(index, BookmarkBarUtils.createListItemFor(mActivity, mImageFetcher, item));
+        mItemsModel.add(
+                index,
+                BookmarkBarUtils.createListItemFor(
+                        this::onBookmarkItemClick, mActivity, mImageFetcher, item));
     }
 
     @Override
@@ -165,7 +169,9 @@ class BookmarkBarMediator
             @NonNull BookmarkItem item,
             int index) {
         mItemsModel.update(
-                index, BookmarkBarUtils.createListItemFor(mActivity, mImageFetcher, item));
+                index,
+                BookmarkBarUtils.createListItemFor(
+                        this::onBookmarkItemClick, mActivity, mImageFetcher, item));
     }
 
     @Override
@@ -175,7 +181,9 @@ class BookmarkBarMediator
             int index) {
         final List<ListItem> batch = new ArrayList<>();
         for (int i = 0; i < items.size(); i++) {
-            batch.add(BookmarkBarUtils.createListItemFor(mActivity, mImageFetcher, items.get(i)));
+            batch.add(
+                    BookmarkBarUtils.createListItemFor(
+                            this::onBookmarkItemClick, mActivity, mImageFetcher, items.get(i)));
         }
         mItemsModel.addAll(batch, index);
     }
@@ -218,6 +226,24 @@ class BookmarkBarMediator
                             modelAfterLoading.getRootFolderId(),
                             profileAfterLoading.isOffTheRecord());
                 });
+    }
+
+    // TODO(crbug.com/394614604): Handle control-click to open in new tab.
+    // TODO(crbug.com/394614166): Handle shift-click to open in new window.
+    private void onBookmarkItemClick(@NonNull BookmarkItem item) {
+        final Profile profile = mProfileSupplier.get();
+
+        if (item.isFolder()) {
+            BookmarkUtils.showBookmarkManager(mActivity, item.getId(), profile.isOffTheRecord());
+            return;
+        }
+
+        new BookmarkOpener(
+                        BookmarkModel.getForProfile(profile),
+                        mActivity,
+                        mActivity.getComponentName(),
+                        /* bookmarkOpenedCallback= */ null)
+                .openBookmarkInCurrentTab(item.getId(), profile.isOffTheRecord());
     }
 
     private void onProfileChange(@Nullable Profile profile) {
