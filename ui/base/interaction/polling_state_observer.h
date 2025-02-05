@@ -125,9 +125,9 @@ class PollingElementStateObserver
 };
 
 template <typename T>
-concept IsPollingStateObserver =
-    IsStateObserver<T> &&
-    std::derived_from<T, PollingStateObserver<typename T::ValueType>>;
+concept IsPollingStateObserver = requires {
+  typename T::ValueType;
+} && std::derived_from<T, PollingStateObserver<typename T::ValueType>>;
 
 }  // namespace ui::test
 
