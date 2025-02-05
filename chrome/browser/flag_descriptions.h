@@ -2719,9 +2719,6 @@ extern const char kOmahaMinSdkVersionAndroidMinSdk1000Description[];
 extern const char kOmniboxShortcutsAndroidName[];
 extern const char kOmniboxShortcutsAndroidDescription[];
 
-extern const char kPasswordSuggestionBottomSheetV2Name[];
-extern const char kPasswordSuggestionBottomSheetV2Description[];
-
 extern const char kPaymentLinkDetectionName[];
 extern const char kPaymentLinkDetectionDescription[];
 
@@ -4723,9 +4720,6 @@ extern const char kEnableBuiltinHlsDescription[];
 extern const char kProfilesReorderingName[];
 extern const char kProfilesReorderingDescription[];
 #endif
-
-extern const char kProfilePickerGlicTesting[];
-extern const char kProfilePickerGlicTestingDescription[];
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 extern const char kBatchUploadDesktopName[];

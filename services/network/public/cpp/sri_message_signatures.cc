@@ -589,10 +589,12 @@ bool ValidateSRIMessageSignaturesOverHeaders(
 std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
     const GURL& request_url,
-    const network::mojom::URLResponseHead& response) {
+    const network::mojom::URLResponseHead& response,
+    bool checks_forced_by_initiator) {
   // If the feature is disabled, never block resources.
   if (!base::FeatureList::IsEnabled(
-          features::kSRIMessageSignatureEnforcement)) {
+          features::kSRIMessageSignatureEnforcement) &&
+      !checks_forced_by_initiator) {
     return std::nullopt;
   }
 
@@ -612,12 +614,14 @@ MaybeBlockResponseForSRIMessageSignature(
 void MaybeSetAcceptSignatureHeader(
     net::URLRequest* request,
     const std::vector<std::string>& expected_signatures) {
-  // The `Accept-Signature` header is only sent if Signature-based SRI
-  // enforcement is generally enabled.
-  if (!base::FeatureList::IsEnabled(
-          features::kSRIMessageSignatureEnforcement)) {
-    return;
-  }
+  // In order to support request-specific experimentation, we send the
+  // `Accept-Signature` header whenever signatures are expected by a request's
+  // initiator, regardless of the `features::kSRIMessageSignatureEnforcement`
+  // flag state.
+  //
+  // TODO(393924693): Remove this comment once we no longer need the origin
+  // trial infrastructure.
+
   std::stringstream header;
   int counter = 0;
   for (const std::string& public_key : expected_signatures) {

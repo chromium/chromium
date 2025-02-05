@@ -47,7 +47,7 @@ class TestEntityDataManager : public EntityDataManager {
     }
   };
 
-  std::vector<EntityInstance> GetCopyOfEentities() const {
+  std::vector<EntityInstance> GetCopyOfEntities() const {
     return std::vector<EntityInstance>(entities_.begin(), entities_.end());
   }
 

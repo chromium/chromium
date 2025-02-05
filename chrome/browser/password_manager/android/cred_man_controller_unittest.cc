@@ -27,7 +27,6 @@ using testing::Return;
 
 using webauthn::CredManSupport;
 using webauthn::WebAuthnCredManDelegate;
-using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
 
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
@@ -97,7 +96,6 @@ class CredManControllerTest : public testing::Test {
 TEST_F(CredManControllerTest, DoesNotShowIfNonWebAuthnForm) {
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
-  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
                                  std::move(filler),
                                  /*frame_driver=*/nullptr,
@@ -109,7 +107,6 @@ TEST_F(CredManControllerTest, DoesNotShowIfFeatureDisabled) {
       CredManSupport::DISABLED);
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
-  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
                                  std::move(filler),
                                  /*frame_driver=*/nullptr,
@@ -121,7 +118,6 @@ TEST_F(CredManControllerTest, DoesNotShowIfGpmNotInCredMan) {
       CredManSupport::PARALLEL_WITH_FIDO_2);
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
   EXPECT_CALL(visibility_controller(), SetVisible(_)).Times(0);
-  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
                                  std::move(filler),
                                  /*frame_driver=*/nullptr,
@@ -130,7 +126,6 @@ TEST_F(CredManControllerTest, DoesNotShowIfGpmNotInCredMan) {
 
 TEST_F(CredManControllerTest, DoesNotShowIfNoResults) {
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
-  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false)));
 
   base::MockCallback<base::RepeatingCallback<void(bool)>>
       mock_full_assertion_request;

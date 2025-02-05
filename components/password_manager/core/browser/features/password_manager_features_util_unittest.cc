@@ -54,29 +54,59 @@ class PasswordManagerFeaturesUtilWithoutAccountStorageTest
     : public PasswordManagerFeaturesUtilTestBase {
  public:
   PasswordManagerFeaturesUtilWithoutAccountStorageTest() {
+    // The UPM state only matters prior to login db deprecation.
+    feature_list_.InitAndDisableFeature(
+        password_manager::features::kLoginDbDeprecationAndroid);
     pref_service_.registry()->RegisterIntegerPref(
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
         static_cast<int>(
             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
+
 #endif  // BUIDLFLAG(IS_ANDROID)
+
+using LoginDbDeprecated = base::StrongAlias<class LoginDbDeprecatedTag, bool>;
 
 // Test fixture where account storage is enabled (via flag) for signed-in
 // non-syncing users and disabled for syncing users.
 class PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest
-    : public PasswordManagerFeaturesUtilTestBase {
+    : public PasswordManagerFeaturesUtilTestBase,
+      public testing::WithParamInterface<LoginDbDeprecated> {
  public:
   PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest() {
-    feature_list_.InitAndDisableFeature(
-        syncer::kEnablePasswordsAccountStorageForSyncingUsers);
 #if BUILDFLAG(IS_ANDROID)
-    pref_service_.registry()->RegisterIntegerPref(
-        prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(
-            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{password_manager::features::
+                                    kLoginDbDeprecationAndroid},
+          /*disabled_features=*/{
+              syncer::kEnablePasswordsAccountStorageForSyncingUsers});
+      // The UPM status pref shouldn't matter anymore. If the Login Db is
+      // deprecated, the account store can theoretically be used.
+      pref_service_.registry()->RegisterIntegerPref(
+          prefs::kPasswordsUseUPMLocalAndSeparateStores,
+          static_cast<int>(password_manager::prefs::
+                               UseUpmLocalAndSeparateStoresState::kOff));
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              password_manager::features::kLoginDbDeprecationAndroid,
+              syncer::kEnablePasswordsAccountStorageForSyncingUsers});
+      pref_service_.registry()->RegisterIntegerPref(
+          prefs::kPasswordsUseUPMLocalAndSeparateStores,
+          static_cast<int>(
+              password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+    }
+
 #endif  //  BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    feature_list_.InitAndDisableFeature(
+        syncer::kEnablePasswordsAccountStorageForSyncingUsers);
     pref_service_.registry()->RegisterBooleanPref(
         ::prefs::kExplicitBrowserSignin, false);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
@@ -89,16 +119,38 @@ class PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest
 // Test fixture where account storage is enabled (via flag) for syncing users
 // and disabled for non-syncing users.
 class PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest
-    : public PasswordManagerFeaturesUtilTestBase {
+    : public PasswordManagerFeaturesUtilTestBase,
+      public testing::WithParamInterface<LoginDbDeprecated> {
  public:
   PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest() {
+#if BUILDFLAG(IS_ANDROID)
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {password_manager::features::kLoginDbDeprecationAndroid,
+           syncer::kEnablePasswordsAccountStorageForSyncingUsers},
+          /*disabled_features=*/{});
+      // The UPM status pref shouldn't matter anymore. If the Login Db is
+      // deprecated, the account store can theoretically be used.
+      pref_service_.registry()->RegisterIntegerPref(
+          prefs::kPasswordsUseUPMLocalAndSeparateStores,
+          static_cast<int>(password_manager::prefs::
+                               UseUpmLocalAndSeparateStoresState::kOff));
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {syncer::kEnablePasswordsAccountStorageForSyncingUsers},
+          /*disabled_features=*/{
+              password_manager::features::kLoginDbDeprecationAndroid,
+          });
+      pref_service_.registry()->RegisterIntegerPref(
+          prefs::kPasswordsUseUPMLocalAndSeparateStores,
+          static_cast<int>(
+              password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+    }
+#else
     feature_list_.InitAndEnableFeature(
         syncer::kEnablePasswordsAccountStorageForSyncingUsers);
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_.registry()->RegisterIntegerPref(
-        prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(
-            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
 #endif  //  BUILDFLAG(IS_ANDROID)
   }
 
@@ -134,7 +186,7 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+TEST_P(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        EnableAccountStorage) {
   CoreAccountInfo account;
   account.email = "foo@account.com";
@@ -163,7 +215,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   EXPECT_FALSE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
 }
 
-TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+TEST_P(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        SyncSuppressesAccountStorage) {
   CoreAccountInfo account;
   account.email = "name@account.com";
@@ -186,7 +238,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 }
 
 #else
-TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+TEST_P(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        AccountStorageOnMobile) {
   CoreAccountInfo account;
   account.email = "name@account.com";
@@ -218,7 +270,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+TEST_P(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        SyncDisablesAccountStorage) {
   CoreAccountInfo account;
   account.email = "name@account.com";
@@ -248,7 +300,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   EXPECT_FALSE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
 }
 
-TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+TEST_P(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        LocalSyncDisablesAccountStorage) {
   CoreAccountInfo account;
   account.email = "name@account.com";
@@ -277,7 +329,19 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
-TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest,
+#if BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+    testing::Values(LoginDbDeprecated(true), LoginDbDeprecated(false)));
+#else
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
+    testing::Values(LoginDbDeprecated(false)));
+#endif
+
+TEST_P(PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest,
        AccountStorageEnabledIfSyncingAndPasswordsSelected) {
   CoreAccountInfo account;
   account.email = "foo@account.com";
@@ -294,5 +358,17 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest,
 
   EXPECT_FALSE(IsAccountStorageEnabled(&pref_service_, &sync_service_));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest,
+    testing::Values(LoginDbDeprecated(true), LoginDbDeprecated(false)));
+#else
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest,
+    testing::Values(LoginDbDeprecated(false)));
+#endif
 
 }  // namespace password_manager::features_util

@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -512,13 +511,6 @@ void ProfileMenuView::OnManageProfilesButtonClicked() {
   if (!perform_menu_actions()) {
     return;
   }
-
-  if (base::FeatureList::IsEnabled(switches::kProfilePickerGlicTesting)) {
-    ProfilePicker::Show(
-        ProfilePicker::Params::ForGlicManager(base::DoNothing()));
-    return;
-  }
-
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
 }

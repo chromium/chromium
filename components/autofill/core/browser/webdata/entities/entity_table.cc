@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -32,11 +33,19 @@ void* GetKey() {
   return reinterpret_cast<void*>(&key);
 }
 
+// TODO(crbug.com/394292801): Remove when we migrate to WebDatabase's
+// versioning.
+namespace version {
+constexpr char kTableName[] = "entities_version";
+constexpr char kVersion[] = "version";
+constexpr int kCurrentVersion = 1;
+}  // namespace version
+
 namespace attributes {
 constexpr char kTableName[] = "attributes";
 constexpr char kEntityGuid[] = "entity_guid";
 constexpr char kType[] = "type";
-constexpr char kValue[] = "value";
+constexpr char kValueEncrypted[] = "value_encrypted";
 constexpr char kContext[] = "context";
 }  // namespace attributes
 
@@ -82,8 +91,7 @@ std::optional<EntityInstance> ValidateEntityInstance(
 }
 
 // If "--autofill-wipe-entities" is present, drops the tables and creates
-// new ones. This allows us to do breaking changes the schema without having to
-// write migration logic as long as the feature rollout hasn't been started.
+// new ones.
 //
 // If "--autofill-add-test-entities" is present, adds two example entities.
 //
@@ -149,13 +157,42 @@ WebDatabaseTable::TypeKey EntityTable::GetTypeKey() const {
 }
 
 bool EntityTable::CreateTablesIfNecessary() {
+  // TODO(crbug.com/394292801): Remove when we migrate to WebDatabase's
+  // versioning.
+  {
+    CreateTableIfNotExists(db(), /*table_name=*/version::kTableName,
+                           /*column_names_and_types=*/
+                           {{version::kVersion, "INTEGER"}});
+    auto get_table_version = [&] {
+      sql::Statement s;
+      SelectBuilder(db(), s, version::kTableName, {version::kVersion});
+      if (s.Step()) {
+        return s.ColumnInt(0);
+      }
+      constexpr int kDefaultVersion = 0;
+      InsertBuilder(db(), s, version::kTableName, {version::kVersion});
+      s.BindInt(0, kDefaultVersion);
+      s.Run();
+      return kDefaultVersion;
+    };
+    if (get_table_version() != version::kCurrentVersion) {
+      sql::Statement s;
+      UpdateBuilder(db(), s, version::kTableName, {version::kVersion},
+                    /*where_clause=*/"");
+      s.BindInt(0, version::kCurrentVersion);
+      s.Run();
+      DropTableIfExists(db(), attributes::kTableName);
+      DropTableIfExists(db(), entities::kTableName);
+    }
+  }
+
   auto create_attributes_table = [&] {
     return CreateTableIfNotExists(
         db(), /*table_name=*/attributes::kTableName,
         /*column_names_and_types=*/
         {{attributes::kEntityGuid, "TEXT NOT NULL"},
          {attributes::kType, "INTEGER NOT NULL"},
-         {attributes::kValue, "TEXT NOT NULL"},
+         {attributes::kValueEncrypted, "BLOB NOT NULL"},
          {attributes::kContext, "TEXT"}},
         /*composite_primary_key=*/{attributes::kEntityGuid, attributes::kType});
   };
@@ -207,10 +244,15 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
     sql::Statement s;
     InsertBuilder(db(), s, attributes::kTableName,
                   {attributes::kEntityGuid, attributes::kType,
-                   attributes::kValue, attributes::kContext});
+                   attributes::kValueEncrypted, attributes::kContext});
     s.BindString(0, entity.guid().AsLowercaseString());
     s.BindInt(1, base::to_underlying(attribute.type().name()));
-    s.BindString(2, attribute.value());
+    if (std::optional<std::vector<uint8_t>> encrypted_value =
+            encryptor()->EncryptString(attribute.value())) {
+      s.BindBlob(2, *encrypted_value);
+    } else {
+      return false;
+    }
     s.BindString(3, attribute.context().format);
     if (!s.Run()) {
       return false;
@@ -299,15 +341,19 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
     sql::Statement s;
     SelectBuilder(db(), s, attributes::kTableName,
                   {attributes::kEntityGuid, attributes::kType,
-                   attributes::kValue, attributes::kContext});
+                   attributes::kValueEncrypted, attributes::kContext});
     while (s.Step()) {
       base::Uuid entity_guid = base::Uuid::ParseLowercase(s.ColumnString(0));
       auto type_name = static_cast<AttributeTypeName>(s.ColumnInt(1));
-      std::string value = s.ColumnString(2);
+      std::optional<std::string> value =
+          encryptor()->DecryptData(s.ColumnBlob(2));
+      if (!value) {
+        continue;
+      }
       AttributeInstance::Context context;
       context.format = s.ColumnString(3);
       if (std::optional<AttributeInstance> a = ValidateAttributeInstance(
-              type_name, std::move(value), std::move(context))) {
+              type_name, *std::move(value), std::move(context))) {
         attributes[entity_guid].push_back(*std::move(a));
       }
     }

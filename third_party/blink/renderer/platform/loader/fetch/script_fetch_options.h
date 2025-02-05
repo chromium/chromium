@@ -21,6 +21,7 @@
 namespace blink {
 
 class DOMWrapperWorld;
+class FeatureContext;
 class KURL;
 class SecurityOrigin;
 
@@ -101,7 +102,8 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
                                         const DOMWrapperWorld* world,
                                         CrossOriginAttributeValue,
                                         const WTF::TextEncoding&,
-                                        FetchParameters::DeferOption) const;
+                                        FetchParameters::DeferOption,
+                                        const FeatureContext*) const;
 
  private:
   // https://html.spec.whatwg.org/C/#concept-script-fetch-options-nonce

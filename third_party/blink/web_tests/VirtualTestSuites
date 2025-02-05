@@ -4694,7 +4694,11 @@
   {
     "prefix": "sri-message-signatures",
     "platforms": ["Linux"],
-    "bases": ["external/wpt/subresource-integrity/signatures/tentative"],
+    "bases": [
+      "external/wpt/subresource-integrity/signatures/tentative/fetch.any.html",
+      "external/wpt/subresource-integrity/signatures/tentative/fetch.any.worker.html",
+      "external/wpt/subresource-integrity/signatures/tentative/fetch.any.sharedworker.html"
+    ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=SRIMessageSignatureEnforcement"],
     "owners": ["mkwst@chromium.org"],

@@ -21,6 +21,8 @@
 #include "base/logging/log_severity.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "build/build_config.h"
+// TODO(crbug.com/354842935): Remove this include once other files don't
+// accidentally (transitively) depend on it anymore.
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -728,7 +730,7 @@ class BASE_EXPORT ErrnoLogMessageFatal final : public ErrnoLogMessage {
 //       after this call.
 BASE_EXPORT void CloseLogFile();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns a new file handle that will write to the same destination as the
 // currently open log file. Returns nullptr if logging to a file is disabled,
 // or if opening the file failed. This is intended to be used to initialize

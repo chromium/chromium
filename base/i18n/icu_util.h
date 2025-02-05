@@ -10,7 +10,6 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/i18n/base_i18n_export.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #define ICU_UTIL_DATA_FILE 0
 #define ICU_UTIL_DATA_STATIC 1

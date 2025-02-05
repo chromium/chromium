@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -55,7 +54,6 @@ source_set("platform_apps") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
     "//chrome/browser:browser_process",
     "//chrome/browser:shell_integration",
@@ -91,7 +89,7 @@ source_set("platform_apps") {
     deps += [ "//chrome/browser/apps/app_shim" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/remote_apps",

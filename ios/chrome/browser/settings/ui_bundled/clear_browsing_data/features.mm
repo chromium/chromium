@@ -6,7 +6,7 @@
 
 BASE_FEATURE(kIOSQuickDelete,
              "kIOSQuickDelete",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsIosQuickDeleteEnabled() {
   return base::FeatureList::IsEnabled(kIOSQuickDelete);

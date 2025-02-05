@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <iterator>
+#include <optional>
 #include <ranges>
 
 #include "base/containers/contains.h"
@@ -246,15 +247,6 @@ bool AutofillField::server_type_prediction_is_override() const {
                                      : server_predictions_[0].override();
 }
 
-bool AutofillField::HasServerPredictionsWithAutofillAiType() const {
-  return std::ranges::any_of(
-      server_predictions_, [](const FieldPrediction& prediction) {
-        return GroupTypeOfFieldType(
-                   ToSafeFieldType(prediction.type(), NO_SERVER_DATA)) ==
-               FieldTypeGroup::kAutofillAi;
-      });
-}
-
 void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
   if (type < 0 || type > MAX_VALID_FIELD_TYPE ||
       type == FIELD_WITH_DEFAULT_VALUE) {
@@ -266,15 +258,17 @@ void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
   }
 }
 
-FieldType AutofillField::GetAutofillAiServerTypePredictions() const {
+std::optional<FieldType> AutofillField::GetAutofillAiServerTypePredictions()
+    const {
   for (const FieldPrediction& prediction : server_predictions_) {
     FieldType predicted_type =
         ToSafeFieldType(prediction.type(), NO_SERVER_DATA);
-    if (GroupTypeOfFieldType(predicted_type) == FieldTypeGroup::kAutofillAi) {
+    if (predicted_type != IMPROVED_PREDICTION &&
+        GroupTypeOfFieldType(predicted_type) == FieldTypeGroup::kAutofillAi) {
       return predicted_type;
     }
   }
-  return FieldType::NO_SERVER_DATA;
+  return std::nullopt;
 }
 
 void AutofillField::set_server_predictions(

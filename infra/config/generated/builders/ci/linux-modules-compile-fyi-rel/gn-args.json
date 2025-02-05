@@ -7,6 +7,6 @@
     "target_cpu": "x64",
     "target_os": "linux",
     "use_libcxx_modules": true,
-    "use_siso": false
+    "use_siso": true
   }
 }

@@ -30,8 +30,6 @@ void KeyboardReplacingSurfaceVisibilityControllerImpl::SetVisible(
   if (IsVisible()) {
     return;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kPasswordSuggestionBottomSheetV2)) {
     frame_driver_ = std::move(frame_driver);
     suppress_callback_ = base::BindRepeating(
         [](base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
@@ -40,8 +38,7 @@ void KeyboardReplacingSurfaceVisibilityControllerImpl::SetVisible(
     frame_driver_->render_frame_host()
         ->GetRenderWidgetHost()
         ->AddSuppressShowingImeCallback(suppress_callback_);
-  }
-  state_ = State::kVisible;
+    state_ = State::kVisible;
 }
 
 void KeyboardReplacingSurfaceVisibilityControllerImpl::SetShown() {

@@ -1216,15 +1216,17 @@ void PrefetchService::StartSinglePrefetch(
 
   prefetch_container->OnPrefetchStarted();
 
-  // Start timer to release the prefetch container after
-  // |PrefetchContainerLifetimeInPrefetchService|.
-  base::TimeDelta reset_delta = PrefetchContainerLifetimeInPrefetchService();
-  if (reset_delta.is_positive()) {
-    prefetch_container->StartTimeoutTimer(
-        PrefetchContainerLifetimeInPrefetchService(),
-        base::BindOnce(&PrefetchService::OnPrefetchTimeout,
-                       weak_method_factory_.GetWeakPtr(), prefetch_container));
-  }
+  // Checks if the `PrefetchContainer` has a specific TTL (Time-to-Live)
+  // configured. If a TTL is configured, the prefetch container will be eligible
+  // for removal after the TTL expires. Otherwise, it will remain alive
+  // indefinitely.
+  //
+  // The default TTL is determined by
+  // `PrefetchContainerDefaultTtlInPrefetchService()`, which may return a zero
+  // or negative value, indicating an indefinite TTL.
+  prefetch_container->StartTimeoutTimerIfNeeded(
+      base::BindOnce(&PrefetchService::OnPrefetchTimeout,
+                     weak_method_factory_.GetWeakPtr(), prefetch_container));
 
   if (prefetch_to_evict) {
     prefetch_to_evict->SetPrefetchStatus(

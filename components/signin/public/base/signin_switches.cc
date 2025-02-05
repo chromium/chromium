@@ -182,15 +182,12 @@ bool IsBatchUploadDesktopEnabled() {
 #endif
 }
 
-BASE_FEATURE(kProfilePickerGlicTesting,
-             "ProfilePickerGlicTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables showing the enterprise dialog after every signin into a managed
 // account.
 BASE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin,
              "ShowEnterpriseDialogForAllManagedAccountsSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/apps/platform_apps/api/api_sources.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -50,7 +49,6 @@ source_set("api") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:primitives",
 
@@ -73,27 +71,21 @@ source_set("api") {
   visibility = []
 
   if (is_chromeos) {
-    sources += [
-      "enterprise_remote_apps/enterprise_remote_apps_api.cc",
-      "enterprise_remote_apps/enterprise_remote_apps_api.h",
-    ]
-
-    deps += [ "//chromeos/components/remote_apps/mojom" ]
-  }
-
-  if (is_chromeos_ash) {
     # For transition period of crosapi removal.
     visibility += [ "//chrome/browser/ash/crosapi" ]
 
     sources += [
       "arc_apps_private/arc_apps_private_api.cc",
       "arc_apps_private/arc_apps_private_api.h",
+      "enterprise_remote_apps/enterprise_remote_apps_api.cc",
+      "enterprise_remote_apps/enterprise_remote_apps_api.h",
     ]
 
     deps += [
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/remote_apps",
+      "//chromeos/components/remote_apps/mojom",
       "//ui/events:event_constants",
     ]
 

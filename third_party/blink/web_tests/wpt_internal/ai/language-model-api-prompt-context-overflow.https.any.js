@@ -3,12 +3,8 @@
 // META: timeout=long
 
 promise_test(async () => {
-  // Make sure the session could be created.
-  const capabilities = await ai.languageModel.capabilities();
-  const status = capabilities.available;
-  // TODO(crbug.com/376789810): make it a PRECONDITION_FAILED if the model is
-  // not ready.
-  assert_true(status !== "no");
+  await ensureLanguageModel();
+
   // Start a new session.
   const session = await ai.languageModel.create();
   // Make sure there is something to evict.

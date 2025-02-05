@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
@@ -169,6 +170,24 @@ bool BookmarkParentFolder::HasDirectChildNode(
   }
 
   return GetIfPermanentFolderType(node->parent()) == as_permanent_folder();
+}
+
+bool BookmarkParentFolder::HasAncestor(
+    const BookmarkParentFolder& ancestor) const {
+  if (ancestor == *this) {
+    return true;
+  }
+
+  if (as_permanent_folder().has_value()) {
+    // `ancestor` can't be the root node.
+    return false;
+  }
+
+  const BookmarkNode* node = as_non_permanent_folder();
+  CHECK(node);
+  BookmarkParentFolder parent(
+      BookmarkParentFolder::FromFolderNode(node->parent()));
+  return parent.HasAncestor(ancestor);
 }
 
 // BookmarkMergedSurfaceService:
@@ -528,30 +547,6 @@ void BookmarkMergedSurfaceService::BookmarkNodeAdded(
   }
 }
 
-void BookmarkMergedSurfaceService::OnWillRemoveBookmarks(
-    const bookmarks::BookmarkNode* parent,
-    size_t old_index,
-    const bookmarks::BookmarkNode* node,
-    const base::Location& location) {
-  CHECK(cached_index_for_nodes_removal_.empty());
-  if (!parent->is_root()) {
-    cached_index_for_nodes_removal_[GetIndexAcrossStorage(node, old_index)] =
-        node;
-    return;
-  }
-
-  // Account node removed, cache the index for each of its child nodes.
-  CHECK(node->is_permanent_node());
-  BookmarkParentFolderChildren children =
-      GetChildren(BookmarkParentFolder::FromFolderNode(node));
-  for (size_t i = 0; i < children.size(); i++) {
-    if (children[i]->parent() != node) {
-      continue;
-    }
-    cached_index_for_nodes_removal_[i] = children[i];
-  }
-}
-
 void BookmarkMergedSurfaceService::BookmarkNodeRemoved(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
@@ -561,30 +556,27 @@ void BookmarkMergedSurfaceService::BookmarkNodeRemoved(
   if (parent->is_root()) {
     // Account node removed.
     CHECK(node->is_permanent_node());
-    CHECK_EQ(cached_index_for_nodes_removal_.size(), node->children().size());
     if (node->children().empty()) {
       return;
     }
     BookmarkParentFolder parent_folder =
         GetBookmarkParentFolderFromPermanentType(node->type());
+    base::flat_set<const BookmarkNode*> removed_nodes =
+        base::MakeFlatSet<const BookmarkNode*>(base::ToVector(
+            node->children(),
+            [](const auto& bookmark_node) { return bookmark_node.get(); }));
     for (auto& observer : observers_) {
-      observer.BookmarkNodesRemoved(parent_folder,
-                                    cached_index_for_nodes_removal_);
+      observer.BookmarkNodesRemoved(parent_folder, removed_nodes);
     }
-    cached_index_for_nodes_removal_.clear();
     return;
   }
 
   CHECK(!parent->is_root());
-  CHECK_EQ(cached_index_for_nodes_removal_.size(), 1u);
   BookmarkParentFolder parent_folder(
       BookmarkParentFolder::FromFolderNode(parent));
-  CHECK_EQ(cached_index_for_nodes_removal_.cbegin()->second, node);
   for (auto& observer : observers_) {
-    observer.BookmarkNodesRemoved(parent_folder,
-                                  cached_index_for_nodes_removal_);
+    observer.BookmarkNodesRemoved(parent_folder, {node});
   }
-  cached_index_for_nodes_removal_.clear();
 }
 
 void BookmarkMergedSurfaceService::BookmarkNodeChanged(

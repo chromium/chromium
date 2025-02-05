@@ -145,8 +145,9 @@ public class Profile {
                         }
                     };
 
-            mBrowserContext.startPrefetchRequest(
-                    url, awPrefetchParameters, awCallback, callbackExecutor);
+            mBrowserContext
+                    .getPrefetchManager()
+                    .startPrefetchRequest(url, awPrefetchParameters, awCallback, callbackExecutor);
         }
     }
 
@@ -161,5 +162,11 @@ public class Profile {
     }
 
     @UiThread
-    public void setSpeculativeLoadingConfig(SpeculativeLoadingConfig speculativeLoadingConfig) {}
+    public void setSpeculativeLoadingConfig(SpeculativeLoadingConfig speculativeLoadingConfig) {
+        mBrowserContext
+                .getPrefetchManager()
+                .updatePrefetchConfiguration(
+                        speculativeLoadingConfig.prefetchTTLSeconds,
+                        speculativeLoadingConfig.maxPrefetches);
+    }
 }

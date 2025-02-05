@@ -145,7 +145,7 @@ size_t PrepareInsertAfterSoo(size_t hash, size_t slot_size,
   assert(common.capacity() == NextCapacity(SooCapacity()));
   // After resize from capacity 1 to 3, we always have exactly the slot with
   // index 1 occupied, so we need to insert either at index 0 or index 2.
-  assert(HashSetResizeHelper::SooSlotIndex() == 1);
+  static_assert(SooSlotIndex() == 1, "");
   PrepareInsertCommon(common);
   const size_t offset = SingleGroupTableH1(hash, common.control()) & 2;
   common.growth_info().OverwriteEmptyAsFull();
@@ -478,18 +478,6 @@ void HashSetResizeHelper::GrowIntoSingleGroupShuffleControlBytes(
   // new_ctrl after 2nd store =  E0123456EEEEEEESE0123456EEEEEEE
 }
 
-void HashSetResizeHelper::InitControlBytesAfterSoo(ctrl_t* new_ctrl, ctrl_t h2,
-                                                   size_t new_capacity) {
-  assert(is_single_group(new_capacity));
-  std::memset(new_ctrl, static_cast<int8_t>(ctrl_t::kEmpty),
-              NumControlBytes(new_capacity));
-  assert(HashSetResizeHelper::SooSlotIndex() == 1);
-  // This allows us to avoid branching on had_soo_slot_.
-  assert(had_soo_slot_ || h2 == ctrl_t::kEmpty);
-  new_ctrl[1] = new_ctrl[new_capacity + 2] = h2;
-  new_ctrl[new_capacity] = ctrl_t::kSentinel;
-}
-
 void HashSetResizeHelper::GrowIntoSingleGroupShuffleTransferableSlots(
     void* new_slots, size_t slot_size) const {
   ABSL_ASSUME(old_capacity_ > 0);
@@ -512,14 +500,23 @@ void HashSetResizeHelper::GrowSizeIntoSingleGroupTransferable(
   PoisonSingleGroupEmptySlots(c, slot_size);
 }
 
-void HashSetResizeHelper::TransferSlotAfterSoo(CommonFields& c,
-                                               size_t slot_size) {
+void HashSetResizeHelper::InsertOldSooSlotAndInitializeControlBytesLarge(
+    CommonFields& c, size_t hash, ctrl_t* new_ctrl, void* new_slots,
+    const PolicyFunctions& policy) {
   assert(was_soo_);
   assert(had_soo_slot_);
-  assert(is_single_group(c.capacity()));
-  std::memcpy(SlotAddress(c.slot_array(), SooSlotIndex(), slot_size),
-              old_soo_data(), slot_size);
-  PoisonSingleGroupEmptySlots(c, slot_size);
+  size_t new_capacity = c.capacity();
+
+  size_t offset = probe(new_ctrl, new_capacity, hash).offset();
+  offset = offset == new_capacity ? 0 : offset;
+  SanitizerPoisonMemoryRegion(new_slots, policy.slot_size * new_capacity);
+  void* target_slot = SlotAddress(new_slots, offset, policy.slot_size);
+  SanitizerUnpoisonMemoryRegion(target_slot, policy.slot_size);
+  policy.transfer(&c, target_slot, c.soo_data());
+  c.set_control(new_ctrl);
+  c.set_slots(new_slots);
+  ResetCtrl(c, policy.slot_size);
+  SetCtrl(c, offset, H2(hash), policy.slot_size);
 }
 
 namespace {
@@ -577,7 +574,7 @@ FindInfo FindInsertPositionWithGrowthOrRehash(CommonFields& common, size_t hash,
     DropDeletesWithoutResize(common, policy);
   } else {
     // Otherwise grow the container.
-    policy.resize(common, NextCapacity(cap), HashtablezInfoHandle{});
+    policy.resize(common, NextCapacity(cap), /*force_infoz=*/false);
   }
   // This function is typically called with tables containing deleted slots.
   // The table will be big and `FindFirstNonFullAfterResize` will always
@@ -633,7 +630,7 @@ size_t PrepareInsertNonSoo(CommonFields& common, size_t hash, FindInfo target,
     // 3. Table with deleted slots that needs to be rehashed or resized.
     if (ABSL_PREDICT_TRUE(common.growth_info().HasNoGrowthLeftAndNoDeleted())) {
       const size_t old_capacity = common.capacity();
-      policy.resize(common, NextCapacity(old_capacity), HashtablezInfoHandle{});
+      policy.resize(common, NextCapacity(old_capacity), /*force_infoz=*/false);
       target = HashSetResizeHelper::FindFirstNonFullAfterResize(
           common, old_capacity, hash);
     } else {
@@ -646,7 +643,7 @@ size_t PrepareInsertNonSoo(CommonFields& common, size_t hash, FindInfo target,
         const size_t cap = common.capacity();
         policy.resize(common,
                       common.growth_left() > 0 ? cap : NextCapacity(cap),
-                      HashtablezInfoHandle{});
+                      /*force_infoz=*/false);
       }
       if (ABSL_PREDICT_TRUE(common.growth_left() > 0)) {
         target = find_first_non_full(common, hash);

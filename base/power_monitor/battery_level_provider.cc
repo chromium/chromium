@@ -12,7 +12,7 @@ namespace base {
 
 #if !BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
 std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40871810): ChromeOS doesn't define
   // `HAS_BATTERY_LEVEL_PROVIDER_IMPL` but still supplies its own
   // `BatteryLevelProvider`

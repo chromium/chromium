@@ -3,12 +3,8 @@
 // META: timeout=long
 
 promise_test(async () => {
-  // Make sure the prompt api is enabled.
-  assert_true(!!ai);
-  // Make sure the session could be created.
-  const capabilities = await ai.languageModel.capabilities();
-  const status = capabilities.available;
-  assert_true(status !== "no");
+  await ensureLanguageModel();
+
   // Start a new session.
   const session = await ai.languageModel.create();
   // Test the prompt API.

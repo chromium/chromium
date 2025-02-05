@@ -94,7 +94,7 @@ class PLATFORM_EXPORT FontFallbackList
   }
   const FontData* FontDataAt(const FontDescription&, unsigned index);
 
-  const FontFeatures& GetFontFeatures(const FontDescription&);
+  base::span<const FontFeatureRange> GetFontFeatures(const FontDescription&);
   bool HasNonInitialFontFeatures(const FontDescription&);
 
   bool CanShapeWordByWord(const FontDescription&);
@@ -127,7 +127,7 @@ class PLATFORM_EXPORT FontFallbackList
   const Member<FontSelector> font_selector_;
   int family_index_ = 0;
   const uint16_t generation_;
-  FontFeatures font_features_;
+  Vector<FontFeatureRange, FontFeatureRange::kInitialSize> font_features_;
 
   bool has_loading_fallback_ : 1 = false;
   bool has_custom_font_ : 1 = false;

@@ -1251,11 +1251,7 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
 #endif
   }
 
-  // Reads 4 to 8 bytes from p. Zero pads to fill uint64_t.
-  // TODO(b/384509507): consider optimizing this by not requiring the output to
-  // be equivalent to an integer load for 4/8 bytes. Currently, we rely on this
-  // behavior for the HashConsistentAcrossIntTypes test case. Ditto for
-  // Read1To3.
+  // Reads 4 to 8 bytes from p. Some input bytes may be duplicated in output.
   static uint64_t Read4To8(const unsigned char* p, size_t len) {
     // If `len < 8`, we duplicate bytes in the middle.
     // E.g.:
@@ -1274,7 +1270,7 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
     return most_significant | least_significant;
   }
 
-  // Reads 1 to 3 bytes from p. Zero pads to fill uint32_t.
+  // Reads 1 to 3 bytes from p. Some input bytes may be duplicated in output.
   static uint32_t Read1To3(const unsigned char* p, size_t len) {
     // The trick used by this implementation is to avoid branches.
     // We always read three bytes by duplicating.

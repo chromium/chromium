@@ -15,7 +15,6 @@ struct hb_feature_t;
 
 namespace blink {
 
-class Font;
 class FontDescription;
 
 //
@@ -48,6 +47,17 @@ struct PLATFORM_EXPORT FontFeatureValue : public FontFeatureTag {
 // This struct has the same size and layout as `hb_feature_t`.
 //
 struct PLATFORM_EXPORT FontFeatureRange : public FontFeatureValue {
+  // The size produced by `FromFontDescription()` for the initial style.
+  static constexpr wtf_size_t kInitialSize = 1;
+
+  // Initialize the list from |FontDescription|.
+  template <wtf_size_t InlineCapacity>
+  static void FromFontDescription(const FontDescription&,
+                                  Vector<FontFeatureRange, InlineCapacity>&);
+
+  // True if the list is for the initial style.
+  static bool IsInitial(base::span<const FontFeatureRange>);
+
   uint32_t start = 0;
   uint32_t end = static_cast<uint32_t>(-1);
 };
@@ -57,8 +67,9 @@ struct PLATFORM_EXPORT FontFeatureRange : public FontFeatureValue {
 //
 class PLATFORM_EXPORT FontFeatures {
  public:
-  // True if `this` is for the initial style.
-  bool IsInitial() const;
+  FontFeatures() = default;
+  explicit FontFeatures(base::span<const FontFeatureRange> features)
+      : features_(features) {}
 
   // Initialize the list from |Font|.
   void Initialize(const FontDescription&);
@@ -69,6 +80,7 @@ class PLATFORM_EXPORT FontFeatures {
   const FontFeatureRange& operator[](wtf_size_t i) const {
     return features_[i];
   }
+  explicit operator base::span<const FontFeatureRange>() { return features_; }
   const hb_feature_t* ToHarfBuzzData() const;
 
   std::optional<uint32_t> FindValueForTesting(uint32_t tag) const;

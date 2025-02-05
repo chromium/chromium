@@ -12,7 +12,6 @@
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
 #include "third_party/icu/source/i18n/unicode/calendar.h"
@@ -198,7 +197,7 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDE) {
                                                            kDropAmPm));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(TimeFormattingTest, TimeMonthYearInUTC) {
   // See third_party/icu/source/data/locales/en.txt.
   // The date patterns are "EEEE, MMMM d, y", "MMM d, y", and "M/d/yy".
@@ -222,7 +221,7 @@ TEST(TimeFormattingTest, TimeMonthYearInUTC) {
             TimeFormatMonthAndYearForTimeZone(time, icu::TimeZone::getGMT()));
   EXPECT_EQ(u"March 2011", TimeFormatMonthAndYear(time));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST(TimeFormattingTest, TimeFormatDateUS) {
   // See third_party/icu/source/data/locales/en.txt.

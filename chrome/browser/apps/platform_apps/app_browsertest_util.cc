@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -32,7 +32,7 @@
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,7 +70,7 @@ void PlatformAppBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void PlatformAppBrowserTest::SetUpOnMainThread() {
   ExtensionApiTest::SetUpOnMainThread();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Mock the Media Router in extension api tests. Several of the
   // PlatformAppBrowserTest suites call RunAllPendingInMessageLoop() when there
   // are mojo messages that will call back into Profile creation through the
@@ -84,7 +84,7 @@ void PlatformAppBrowserTest::SetUpOnMainThread() {
 }
 
 void PlatformAppBrowserTest::TearDownOnMainThread() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CastConfigControllerMediaRouter::SetMediaRouterForTest(nullptr);
 #endif
   ExtensionApiTest::TearDownOnMainThread();

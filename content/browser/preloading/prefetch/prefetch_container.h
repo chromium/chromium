@@ -14,6 +14,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
+#include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
@@ -138,7 +139,9 @@ class CONTENT_EXPORT PrefetchContainer {
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
       const net::HttpRequestHeaders& additional_headers = {},
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener =
-          nullptr);
+          nullptr,
+      base::TimeDelta ttl_in_sec =
+          PrefetchContainerDefaultTtlInPrefetchService());
 
   ~PrefetchContainer();
 
@@ -518,8 +521,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // This method can be called multiple times.
   void UnblockPrefetchMatchResolver();
 
-  void StartTimeoutTimer(base::TimeDelta timeout,
-                         base::OnceClosure on_timeout_callback);
+  void StartTimeoutTimerIfNeeded(base::OnceClosure on_timeout_callback);
 
   // Returns the time between the prefetch request was sent and the time the
   // response headers were received. Not set if the prefetch request hasn't been
@@ -797,7 +799,8 @@ class CONTENT_EXPORT PrefetchContainer {
       std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
-      bool is_javascript_enabled);
+      bool is_javascript_enabled,
+      base::TimeDelta ttl_in_sec);
 
   // Update |prefetch_status_| and report prefetch status to
   // DevTools without updating TriggeringOutcome.
@@ -1039,6 +1042,11 @@ class CONTENT_EXPORT PrefetchContainer {
   base::ObserverList<Observer> observers_;
 
   bool is_likely_ahead_of_prerender_ = false;
+
+  // Time-to-live (TTL) for this prefetched data. Currently, this is configured
+  // for browser-initiated prefetch that doesn't depend on web content.
+  // Default value is `PrefetchContainerDefaultTtlInPrefetchService()`.
+  base::TimeDelta ttl_in_sec_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

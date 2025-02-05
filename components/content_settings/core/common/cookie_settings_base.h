@@ -419,6 +419,12 @@ class CookieSettingsBase {
   // `first_party_url`.
   bool IsBlockedByTopLevel3pcdOriginTrial(const GURL& first_party_url) const;
 
+  // Proxies of the restricted cookie manager can override if third party
+  // cookies should be allowed.
+  // Used by WebView.
+  bool Are3pcsForceDisabledByOverride(
+      net::CookieSettingOverrides overrides) const;
+
  private:
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
@@ -460,12 +466,6 @@ class CookieSettingsBase {
 
   bool IsAllowedByTopLevel3pcdTrialSettings(
       const GURL& first_party_url,
-      net::CookieSettingOverrides overrides) const;
-
-  // Proxies of the restricted cookie manager can override if third party
-  // cookies should be allowed.
-  // Used by WebView.
-  bool Are3pcsForceDisabledByOverride(
       net::CookieSettingOverrides overrides) const;
 
   bool IsAllowedBy3pcdHeuristicsGrantsSettings(
@@ -510,7 +510,9 @@ class CookieSettingsBase {
                                         const GURL& first_party_url) const = 0;
 
   // Returns whether third-party cookies are blocked.
-  virtual bool ShouldBlockThirdPartyCookies() const = 0;
+  virtual bool ShouldBlockThirdPartyCookies(
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides) const = 0;
 
   // Returns whether Third Party Cookie Deprecation mitigations should take
   // effect (under `first_party_url`). True when mitigations are enabled for

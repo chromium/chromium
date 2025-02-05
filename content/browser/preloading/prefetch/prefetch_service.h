@@ -296,10 +296,11 @@ class CONTENT_EXPORT PrefetchService {
   std::tuple<base::WeakPtr<PrefetchContainer>, base::WeakPtr<PrefetchContainer>>
   PopNextPrefetchContainer();
 
-  // After |PrefetchContainerLifetimeInPrefetchService| amount of time, the
-  // prefetch is deleted. Note that if
-  // |PrefetchContainerLifetimeInPrefetchService| is 0 or less, then it is kept
-  // forever.
+  // The prefetch is reset after
+  // `PrefetchContainerDefaultTtlInPrefetchService()`
+  // or the overridden TTL duration. If
+  // `PrefetchContainerDefaultTtlInPrefetchService()` returns a value less than
+  // or equal to zero, the prefetch is kept indefinitely.
   void OnPrefetchTimeout(base::WeakPtr<PrefetchContainer> prefetch);
 
   // Starts the given |prefetch_container|. If |prefetch_to_evict| is specified,

@@ -1962,6 +1962,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_capabilities.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_factory.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_factory.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_params.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_params.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ai_language_detector_capabilities.cc",

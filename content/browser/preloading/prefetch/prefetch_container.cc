@@ -419,7 +419,8 @@ PrefetchContainer::PrefetchContainer(
           /*request_status_listener=*/nullptr,
           WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
               ->GetOrCreateWebPreferences()
-              .javascript_enabled) {
+              .javascript_enabled,
+          PrefetchContainerDefaultTtlInPrefetchService()) {
   CHECK(prefetch_type_.IsRendererInitiated());
 }
 
@@ -451,8 +452,8 @@ PrefetchContainer::PrefetchContainer(
           /*initiator_devtools_navigation_token=*/std::nullopt,
           /*Must be empty: additional_headers=*/{},
           /*request_status_listener=*/nullptr,
-          referring_web_contents.GetOrCreateWebPreferences()
-              .javascript_enabled) {
+          referring_web_contents.GetOrCreateWebPreferences().javascript_enabled,
+          PrefetchContainerDefaultTtlInPrefetchService()) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
 }
@@ -467,7 +468,8 @@ PrefetchContainer::PrefetchContainer(
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<PreloadingAttempt> attempt,
     const net::HttpRequestHeaders& additional_headers,
-    std::unique_ptr<PrefetchRequestStatusListener> request_status_listener)
+    std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
+    base::TimeDelta ttl_in_sec)
     : PrefetchContainer(GlobalRenderFrameHostId(),
                         referring_origin,
                         /*referring_url_hash=*/std::nullopt,
@@ -486,7 +488,8 @@ PrefetchContainer::PrefetchContainer(
                         /*initiator_devtools_navigation_token=*/std::nullopt,
                         additional_headers,
                         std::move(request_status_listener),
-                        javascript_enabled) {
+                        javascript_enabled,
+                        ttl_in_sec) {
   CHECK(!prefetch_type_.IsRendererInitiated());
   CHECK(PrefetchBrowserInitiatedTriggersEnabled());
 }
@@ -508,7 +511,8 @@ PrefetchContainer::PrefetchContainer(
     std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
     const net::HttpRequestHeaders& additional_headers,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
-    bool is_javascript_enabled)
+    bool is_javascript_enabled,
+    base::TimeDelta ttl_in_sec)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
       referring_origin_(referring_origin),
       referring_url_hash_(referring_url_hash),
@@ -527,7 +531,8 @@ PrefetchContainer::PrefetchContainer(
           std::move(initiator_devtools_navigation_token)),
       additional_headers_(additional_headers),
       request_status_listener_(std::move(request_status_listener)),
-      is_javascript_enabled_(is_javascript_enabled) {
+      is_javascript_enabled_(is_javascript_enabled),
+      ttl_in_sec_(ttl_in_sec) {
   is_likely_ahead_of_prerender_ =
       CalculateIsLikelyAheadOfPrerender(attempt_.get());
 
@@ -1347,12 +1352,14 @@ void PrefetchContainer::UnblockPrefetchMatchResolver() {
   }
 }
 
-void PrefetchContainer::StartTimeoutTimer(
-    base::TimeDelta timeout,
+void PrefetchContainer::StartTimeoutTimerIfNeeded(
     base::OnceClosure on_timeout_callback) {
-  CHECK(!timeout_timer_);
-  timeout_timer_ = std::make_unique<base::OneShotTimer>();
-  timeout_timer_->Start(FROM_HERE, timeout, std::move(on_timeout_callback));
+  if (ttl_in_sec_.is_positive()) {
+    CHECK(!timeout_timer_);
+    timeout_timer_ = std::make_unique<base::OneShotTimer>();
+    timeout_timer_->Start(FROM_HERE, ttl_in_sec_,
+                          std::move(on_timeout_callback));
+  }
 }
 
 void PrefetchContainer::OnPrefetchComplete(

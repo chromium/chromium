@@ -170,13 +170,15 @@ declare_args() {
   #
   # For more information see
   # https://chromium.googlesource.com/chromium/src/+/main/docs/component_build.md
-  is_component_build =
-      is_debug && current_os != "ios" && current_os != "watchos"
+  is_component_build = is_debug && current_os != "ios" &&
+                       current_os != "tvos" && current_os != "watchos"
 }
 
 assert(!(is_debug && is_official_build), "Can't do official debug builds")
 assert(!(current_os == "ios" && is_component_build),
        "Can't use component build on iOS")
+assert(!(current_os == "tvos" && is_component_build),
+       "Can't use component build on tvOS")
 assert(!(current_os == "watchos" && is_component_build),
        "Can't use component build on watchOS")
 
@@ -315,10 +317,11 @@ is_ios = current_os == "ios"
 is_linux = current_os == "linux"
 is_mac = current_os == "mac"
 is_nacl = current_os == "nacl"
+is_tvos = current_os == "tvos"
 is_watchos = current_os == "watchos"
 is_win = current_os == "win" || current_os == "winuwp"
 
-is_apple = is_ios || is_mac || is_watchos
+is_apple = is_ios || is_mac || is_tvos || is_watchos
 is_posix = !is_win && !is_fuchsia
 
 # =============================================================================

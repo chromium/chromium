@@ -79,6 +79,26 @@ enum class CrossUserSharingDecryptionResult {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:CrossUserSharingDecryptionResult)
 
+// Result of a GetUpdates request for a data type that was nudged (contained at
+// least one invalidation hint for the data type).
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(NudgedUpdateResult)
+enum class NudgedUpdateResult {
+  // The data type successfully downloaded at least one entity.
+  kSuccess = 0,
+
+  // No entities were downloaded when data type was invalidated.
+  kEmptyResponse = 1,
+
+  // The data type failed to download updates during a sync cycle.
+  kDownloadFailure = 2,
+
+  kMaxValue = kDownloadFailure,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:NudgedUpdateResult)
+
 void LogPasswordNotesState(PasswordNotesStateForUMA state) {
   base::UmaHistogramEnumeration(kPasswordNotesStateHistogramName, state);
 }
@@ -101,6 +121,12 @@ void LogNudgedUpdateLatency(DataType type, base::TimeDelta latency) {
   base::UmaHistogramLongTimes(base::StrCat({"Sync.NudgedUpdateLatency.",
                                             DataTypeToHistogramSuffix(type)}),
                               latency);
+}
+
+void LogNudgedUpdateResult(NudgedUpdateResult result, DataType type) {
+  base::UmaHistogramEnumeration(base::StrCat({"Sync.NudgedUpdateResult.",
+                                              DataTypeToHistogramSuffix(type)}),
+                                result);
 }
 
 // A proxy which can be called from any sequence and delegates the work to the
@@ -794,6 +820,13 @@ void DataTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
       LogNudgedUpdateLatency(
           type_, base::TimeTicks::Now() -
                      oldest_processed_invalidation_received_time.value());
+
+      // Record the result of the GetUpdates request which contained an
+      // invalidation for this datatype.
+      LogNudgedUpdateResult(pending_updates_.empty()
+                                ? NudgedUpdateResult::kEmptyResponse
+                                : NudgedUpdateResult::kSuccess,
+                            type_);
     }
     has_dropped_invalidation_ = false;
 
@@ -1320,6 +1353,16 @@ void DataTypeWorker::RecordRemoteInvalidation(
   }
   nudge_handler_->SetHasPendingInvalidations(type_, HasPendingInvalidations());
   SendPendingInvalidationsToProcessor();
+}
+
+void DataTypeWorker::RecordDownloadFailure() const {
+  // Record the failure only if the data type was nudged / invalidated.
+  for (const PendingInvalidation& invalidation : pending_invalidations_) {
+    if (invalidation.is_processed) {
+      LogNudgedUpdateResult(NudgedUpdateResult::kDownloadFailure, type_);
+      break;
+    }
+  }
 }
 
 void DataTypeWorker::CollectPendingInvalidations(

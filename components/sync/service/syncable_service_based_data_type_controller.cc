@@ -123,8 +123,9 @@ SyncableServiceBasedDataTypeController::SyncableServiceBasedDataTypeController(
     OnceDataTypeStoreFactory store_factory,
     base::WeakPtr<SyncableService> syncable_service,
     const base::RepeatingClosure& dump_stack,
-    DelegateMode delegate_mode)
-    : DataTypeController(type),
+    DelegateMode delegate_mode,
+    std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader)
+    : DataTypeController(type, std::move(batch_uploader)),
       delegate_(std::make_unique<ControllerDelegate>(type,
                                                      std::move(store_factory),
                                                      syncable_service,

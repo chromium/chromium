@@ -120,9 +120,6 @@ struct PasswordFillingParams {
   uint64_t username_field_index;
   uint64_t password_field_index;
   autofill::FieldRendererId focused_field_renderer_id_;
-  // TODO(crbug.com/40274966): Remove this param after
-  // PasswordSuggestionBottomSheetV2 is launched.
-  autofill::mojom::SubmissionReadinessState submission_readiness;
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 

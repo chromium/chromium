@@ -399,6 +399,9 @@ def add_androidx_activity_activity(module, arch):
 def add_androidx_fragment_fragment(module, arch):
   module.static_libs.add("androidx.fragment_fragment")
 
+def add_rustversion_deps(module, arch):
+  module.proc_macros.add("librustversion")
+
 # Android equivalents for third-party libraries that the upstream project
 # depends on. This will be applied to normal and testing targets.
 _builtin_deps = {
@@ -478,6 +481,11 @@ _builtin_deps = {
     add_androidx_fragment_fragment,
     '//third_party/androidx:androidx_test_rules_java':
     add_androidx_test_rules_java_deps,
+    # rustversion uses a build script. AOSP doesn't support build scripts, so
+    # instead use the library from AOSP which has a workaround for it. See
+    # https://crbug.com/394303030.
+    '//third_party/rust/rustversion/v1:lib__proc_macro':
+    add_rustversion_deps,
 }
 builtin_deps = {
     "{}{}".format(key, suffix): value

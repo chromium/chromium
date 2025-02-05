@@ -10,6 +10,7 @@ import '/strings.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {SignoutConfirmationBrowserProxyImpl} from './browser_proxy.js';
 import type {SignoutConfirmationBrowserProxy} from './browser_proxy.js';
@@ -23,6 +24,12 @@ function createDummySignoutConfirmationData(): SignoutConfirmationData {
     dialogSubtitle: '',
     acceptButtonLabel: '',
     cancelButtonLabel: '',
+  };
+}
+
+export interface SignoutConfirmationAppElement {
+  $: {
+    signoutConfirmationDialog: HTMLElement,
   };
 }
 
@@ -76,6 +83,11 @@ export class SignoutConfirmationAppElement extends CrLitElement {
     this.eventTracker_.removeAll();
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    this.updateViewHeight_();
+  }
+
   protected onAcceptButtonClick_() {
     this.signoutConfirmationBrowserProxy_.handler.accept();
   }
@@ -86,6 +98,13 @@ export class SignoutConfirmationAppElement extends CrLitElement {
 
   private onSignoutConfirmationDataReceived_(data: SignoutConfirmationData) {
     this.data_ = data;
+  }
+
+  // Request the browser to update the native view to match the current height
+  // of the web view.
+  private updateViewHeight_() {
+    const height = this.$.signoutConfirmationDialog.clientHeight;
+    this.signoutConfirmationBrowserProxy_.handler.updateViewHeight(height);
   }
 
   private onKeyDown_(e: KeyboardEvent) {

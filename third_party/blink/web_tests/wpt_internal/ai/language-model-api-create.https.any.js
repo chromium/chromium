@@ -3,10 +3,7 @@
 // META: timeout=long
 
 promise_test(async t => {
-  assert_true(!!ai);
-  const capabilities = await ai.languageModel.capabilities();
-  const status = capabilities.available;
-  assert_true(status !== 'no');
+  await ensureLanguageModel();
 }, 'Ensure sessions can be created');
 
 promise_test(async t => {

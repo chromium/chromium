@@ -146,14 +146,9 @@ BASE_DECLARE_FEATURE(kBatchUploadDesktop);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsBatchUploadDesktopEnabled();
 
-// Temporary flag to test Profile Picker Glic version.
-// TODO(crbug.com/390212241): Cleanup the flag when the code triggering the
-// Profile Picker Glic mode is hooked to the Glic view.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kProfilePickerGlicTesting);
-
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
+
 }  // namespace switches
 
 // TODO(crbug.com/337879458): Move switches below into the switches namespace.

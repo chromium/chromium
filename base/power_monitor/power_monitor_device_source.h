@@ -12,7 +12,6 @@
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/power_monitor/power_observer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/security_events/security_event_recorder.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
+#include "chrome/browser/themes/theme_local_data_batch_uploader.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -234,7 +235,11 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
               dump_stack,
               browser_sync::ExtensionDataTypeController::DelegateMode::
                   kLegacyFullSyncModeOnly,
-              extension_system_profile_.value()));
+              extension_system_profile_.value(),
+              // SyncService depends on ThemeService. So the
+              // ThemeSyncableService instance should outlive the controller.
+              std::make_unique<ThemeLocalDataBatchUploader>(
+                  theme_service_.value()->GetThemeSyncableService())));
     }
 
     if (web_app_provider_.value()) {

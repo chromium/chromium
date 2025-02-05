@@ -1141,7 +1141,8 @@ TEST_P(SRIMessageSignatureEnforcementTest, NoHeaders) {
       features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
 
   auto head = ResponseHead("", "", "");
-  auto result = MaybeBlockResponseForSRIMessageSignature(this->url(), *head);
+  auto result = MaybeBlockResponseForSRIMessageSignature(
+      this->url(), *head, /*checks_forced_by_initiator=*/false);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -1154,9 +1155,11 @@ TEST_P(SRIMessageSignatureEnforcementTest, ValidHeaders) {
 
   auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
                            kValidSignatureInputHeader);
-  auto result = MaybeBlockResponseForSRIMessageSignature(this->url(), *head);
+  auto result = MaybeBlockResponseForSRIMessageSignature(
+      this->url(), *head, /*checks_forced_by_initiator=*/false);
   EXPECT_FALSE(result.has_value());
 }
+
 TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
   bool feature_flag_enabled = GetParam();
 
@@ -1172,7 +1175,8 @@ TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
   auto head = ResponseHead(kValidDigestHeader,
                            SignatureHeader("bad-signature", wrong_signature),
                            SignatureInputHeader("bad-signature", wrong_key));
-  auto result = MaybeBlockResponseForSRIMessageSignature(this->url(), *head);
+  auto result = MaybeBlockResponseForSRIMessageSignature(
+      this->url(), *head, /*checks_forced_by_initiator=*/false);
   if (feature_flag_enabled) {
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
@@ -1180,6 +1184,31 @@ TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
   } else {
     EXPECT_FALSE(result.has_value());
   }
+}
+
+TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeadersAndForcedChecks) {
+  // Same test as `MismatchedHeaders`, but forces integrity checks, which means
+  // that the result will not depend upon whether or not the feature flag is
+  // enabled: this test should consistently fail validation.
+  bool feature_flag_enabled = GetParam();
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
+
+  const char* wrong_key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  const char* wrong_signature =
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAAAAAAA==";
+
+  auto head = ResponseHead(kValidDigestHeader,
+                           SignatureHeader("bad-signature", wrong_signature),
+                           SignatureInputHeader("bad-signature", wrong_key));
+  auto result = MaybeBlockResponseForSRIMessageSignature(
+      this->url(), *head, /*checks_forced_by_initiator=*/true);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
+            result.value());
 }
 
 class SRIMessageSignatureRequestHeaderTest
@@ -1269,16 +1298,13 @@ TEST_P(SRIMessageSignatureRequestHeaderTest, ValidSignature) {
 
     auto result =
         url_request()->extra_request_headers().GetHeader(kAcceptSignature);
-    if (GetParam()) {
-      std::string expected =
-          base::StrCat({"sig0=(\"unencoded-digest\";sf);keyid=\"", kPublicKey,
-                        "\";tag=\"sri\""});
-      EXPECT_THAT(result, testing::Optional(expected));
-    } else {
-      // Even with valid inputs, we're not writing the header if the flag is
-      // disabled.
-      EXPECT_FALSE(result.has_value());
-    }
+
+    // The result does not depend on the feature flag: we rely on the caller to
+    // give us expected signatures iff they should be delivered.
+    std::string expected =
+        base::StrCat({"sig0=(\"unencoded-digest\";sf);keyid=\"", kPublicKey,
+                      "\";tag=\"sri\""});
+    EXPECT_THAT(result, testing::Optional(expected));
   }
 }
 
@@ -1299,17 +1325,13 @@ TEST_P(SRIMessageSignatureRequestHeaderTest, ValidSignatures) {
 
     auto result =
         url_request()->extra_request_headers().GetHeader(kAcceptSignature);
-    if (GetParam()) {
-      std::string expected = base::StrCat(
-          {"sig0=(\"unencoded-digest\";sf);keyid=\"", kPublicKey,
-           "\";tag=\"sri\", ", "sig1=(\"unencoded-digest\";sf);keyid=\"",
-           kPublicKey2, "\";tag=\"sri\""});
-      EXPECT_THAT(result, testing::Optional(expected));
-    } else {
-      // Even with valid inputs, we're not writing the header if the flag is
-      // disabled.
-      EXPECT_FALSE(result.has_value());
-    }
+    // The result does not depend on the feature flag: we rely on the caller to
+    // give us expected signatures iff they should be delivered.
+    std::string expected = base::StrCat(
+        {"sig0=(\"unencoded-digest\";sf);keyid=\"", kPublicKey,
+         "\";tag=\"sri\", ", "sig1=(\"unencoded-digest\";sf);keyid=\"",
+         kPublicKey2, "\";tag=\"sri\""});
+    EXPECT_THAT(result, testing::Optional(expected));
   }
 }
 

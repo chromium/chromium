@@ -33,7 +33,7 @@ namespace base {
 BASE_EXPORT BASE_DECLARE_FEATURE(kNumberOfCoresWithCpuSecurityMitigation);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Strings for environment variables.
 BASE_EXPORT extern const char kLsbReleaseKey[];
 BASE_EXPORT extern const char kLsbReleaseTimeKey[];

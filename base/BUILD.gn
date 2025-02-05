@@ -25,7 +25,6 @@ import("//build/buildflag_header.gni")
 import("//build/config/arm.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
@@ -1070,9 +1069,12 @@ component("base") {
     "//base/numerics:base_numerics",
     "//base/third_party/icu",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//third_party/abseil-cpp:absl",
   ]
+
+  # TODO(crbug.com/354842935): Remove this dependency once other modules don't
+  # accidentally (transitively) depend on it anymore.
+  public_deps += [ "//build:chromeos_buildflags" ]
 
   if (!is_nacl) {
     sources += [
@@ -2592,7 +2594,7 @@ buildflag_header("debugging_buildflags") {
 buildflag_header("feature_list_buildflags") {
   header = "feature_list_buildflags.h"
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     flags = [
       "ENABLE_BANNED_BASE_FEATURE_PREFIX=true",
       "BANNED_BASE_FEATURE_PREFIX=\"CrOSLateBoot\"",
@@ -2714,10 +2716,7 @@ static_library("base_static") {
     "immediate_crash.h",
   ]
 
-  deps = [
-    ":fuzzing_buildflags",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ ":fuzzing_buildflags" ]
 
   if (is_win) {
     sources += [
@@ -2793,10 +2792,7 @@ component("i18n") {
     "//third_party/ced",
     "//third_party/icu",
   ]
-  deps = [
-    "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//build:chromecast_buildflags" ]
 
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
@@ -4031,7 +4027,7 @@ test("base_unittests") {
     }
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
       "linux_util_unittest.cc",
       "nix/xdg_util_unittest.cc",

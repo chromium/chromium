@@ -457,11 +457,14 @@ const CacheControlHeader& ResourceRequestHead::GetCacheControlHeader() const {
   return cache_control_header_cache_;
 }
 
-void ResourceRequestHead::SetFetchIntegrity(const String& integrity) {
+void ResourceRequestHead::SetFetchIntegrity(
+    const String& integrity,
+    const FeatureContext* feature_context) {
   fetch_integrity_ = integrity;
 
   IntegrityMetadataSet metadata;
-  SubresourceIntegrity::ParseIntegrityAttribute(integrity, metadata);
+  SubresourceIntegrity::ParseIntegrityAttribute(integrity, metadata,
+                                                feature_context);
   for (const auto& signature : metadata.signatures) {
     expected_signatures_.push_back(signature.first);
   }

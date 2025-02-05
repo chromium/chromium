@@ -349,14 +349,13 @@ SkAlphaType CanvasRenderingContextHost::GetRenderingContextAlphaType() const {
 }
 
 SkColorType CanvasRenderingContextHost::GetRenderingContextSkColorType() const {
-  return RenderingContext() ? RenderingContext()->GetSkColorType()
-                            : kN32_SkColorType;
+  return viz::ToClosestSkColorType(GetRenderingContextFormat());
 }
 
 viz::SharedImageFormat CanvasRenderingContextHost::GetRenderingContextFormat()
     const {
-  return viz::SkColorTypeToSinglePlaneSharedImageFormat(
-      GetRenderingContextSkColorType());
+  return RenderingContext() ? RenderingContext()->GetSharedImageFormat()
+                            : GetN32FormatForCanvas();
 }
 
 sk_sp<SkColorSpace>

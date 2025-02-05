@@ -37,8 +37,6 @@
 
 namespace {
 
-using ToShowVirtualKeyboard =
-    password_manager::PasswordManagerDriver::ToShowVirtualKeyboard;
 using password_manager::UiCredential;
 
 // Returns whether there is at least one credential with a non-empty username.
@@ -227,7 +225,6 @@ void TouchToFillControllerAutofillDelegate::OnCredManDismissed(
   if (!filler_) {
     return;
   }
-  filler_->Dismiss(ToShowVirtualKeyboard(false));
   std::move(action_completed).Run();
 }
 
@@ -237,15 +234,6 @@ GURL TouchToFillControllerAutofillDelegate::GetFrameUrl() {
 }
 
 bool TouchToFillControllerAutofillDelegate::ShouldShowTouchToFill() {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordSuggestionBottomSheetV2)) {
-    // For password suggesion bottom sheet version 1 all the conditions for
-    // showing TTF are checked in the renderer (see
-    // `PasswordAutofillAgent::TryToShowKeyboardReplacingSurface`). That's why
-    // no additional checks are needed here.
-    return true;
-  }
-
   if (!form_to_fill_) {
     return false;
   }
@@ -363,7 +351,6 @@ void TouchToFillControllerAutofillDelegate::CleanUpFillerAndReportOutcome(
   if (!url.is_empty()) {
     password_client_->MarkSharedCredentialsAsNotified(url);
   }
-  filler_->Dismiss(ToShowVirtualKeyboard(show_virtual_keyboard));
   filler_.reset();
   base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome", outcome);
 }

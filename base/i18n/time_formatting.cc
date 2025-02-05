@@ -15,7 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
@@ -169,7 +169,7 @@ std::u16string TimeFormatShortDateAndTimeWithTimeZone(const Time& time) {
   return TimeFormat(*formatter, time);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::u16string TimeFormatMonthAndYearForTimeZone(
     const Time& time,
     const icu::TimeZone* time_zone) {

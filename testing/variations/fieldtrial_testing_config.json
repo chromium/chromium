@@ -12133,21 +12133,6 @@
             ]
         }
     ],
-    "IOSQuickDelete": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "kIOSQuickDelete"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSReactivationNotifications": [
         {
             "platforms": [
@@ -13167,25 +13152,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableKeyboardUsedPalmSuppression"
-                    ]
-                }
-            ]
-        }
-    ],
-    "KidsProfilePhase2": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CustomProfileStringsForSupervisedUsers",
-                        "IPH_SupervisedUserProfileSignin",
-                        "ShowKiteForSupervisedUsers"
                     ]
                 }
             ]
@@ -22010,11 +21976,9 @@
             ]
         }
     ],
-    "ServiceWorkerAvoidMainThreadForInitialization": [
+    "ServiceWorkerAvoidMainThreadForInitializationForDesktop": [
         {
             "platforms": [
-                "android",
-                "android_webview",
                 "chromeos",
                 "fuchsia",
                 "linux",

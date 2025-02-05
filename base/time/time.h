@@ -78,6 +78,8 @@
 #include "base/compiler_specific.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
+// TODO(crbug.com/354842935): Remove this include once other modules don't
+// accidentally (transitively) depend on it anymore.
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -1244,7 +1246,7 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // milliseconds) performed by uptimeMillis().
   static TimeTicks FromUptimeMillis(int64_t uptime_millis_value);
 
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
   // Converts to TimeTicks the value obtained from System.nanoTime(). This

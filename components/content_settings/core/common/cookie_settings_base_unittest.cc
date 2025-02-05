@@ -80,7 +80,11 @@ class CallbackCookieSettings : public CookieSettingsBase {
     return false;
   }
 
-  bool ShouldBlockThirdPartyCookies() const override { return false; }
+  bool ShouldBlockThirdPartyCookies(
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides) const override {
+    return Are3pcsForceDisabledByOverride(overrides);
+  }
   bool MitigationsEnabledFor3pcd() const override { return false; }
 
   bool IsThirdPartyCookiesAllowedScheme(

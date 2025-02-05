@@ -27,7 +27,7 @@ namespace {
 
 #if (!defined(NDEBUG) || defined(MEMORY_SANITIZER) || \
      defined(ADDRESS_SANITIZER)) &&                   \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
 // History of this value:
 // 1) TODO(crbug.com/40120948): reduce the multiplier back to 2x.
 // 2) A number of tests on ChromeOS run very close to the base limit, so
@@ -64,7 +64,7 @@ void InitializeTimeout(const char* switch_name,
   // down significantly.
   // For MSan the slowdown depends heavily on the value of msan_track_origins
   // build flag. The multiplier below corresponds to msan_track_origins = 1.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Typical slowdown for memory sanitizer is 3x.
   constexpr int kTimeoutMultiplier = 3 * kAshBaseMultiplier;
 #else
@@ -76,7 +76,7 @@ void InitializeTimeout(const char* switch_name,
   // ASan/Win has not been optimized yet, give it a higher
   // timeout multiplier. See http://crbug.com/412471
   constexpr int kTimeoutMultiplier = 3;
-#elif defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS)
   // Typical slowdown for memory sanitizer is 2x.
   constexpr int kTimeoutMultiplier = 2 * kAshBaseMultiplier;
 #elif defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
@@ -84,7 +84,7 @@ void InitializeTimeout(const char* switch_name,
 #elif BUILDFLAG(CLANG_PROFILING)
   // On coverage build, tests run 3x slower.
   constexpr int kTimeoutMultiplier = 3;
-#elif !defined(NDEBUG) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif !defined(NDEBUG) && BUILDFLAG(IS_CHROMEOS)
   constexpr int kTimeoutMultiplier = kAshBaseMultiplier;
 #elif !defined(NDEBUG) && BUILDFLAG(IS_MAC)
   // A lot of browser_tests on Mac debug time out.

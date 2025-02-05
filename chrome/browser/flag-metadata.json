@@ -2420,7 +2420,7 @@
   {
     "name": "enable-asweb-authentication-session",
     "owners": [ "jlebel@chromium.org", "msarda@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "enable-async-real-time-check",
@@ -4281,7 +4281,7 @@
   {
     "name": "event-based-log-upload",
     "owners": [ "iremuguz@google.com", "chromeos-commercial-supportability@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "ewallet-payments",
@@ -4720,11 +4720,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "force-signin-flows-profile-picker",
-    "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 126
-  },
-  {
     "name": "force-startup-signin-promo",
     "owners": [ "jlebel@chromium.org", "chrome-signin-team@google.com" ],
     // This is required by test teams and dev teams to verify the startup
@@ -5093,7 +5088,7 @@
       "derinel@google.com",
       "chrome-webauthn@google.com"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "identity-confirmation-snackbar",
@@ -7214,11 +7209,6 @@
     "name": "productivity-launcher-image-search",
     "owners": [ "wcwang@chromium.org", "yulunwu@chromium.org","cros-system-ui-eng@google.com" ],
     "expiry_milestone": 140
-  },
-  {
-    "name": "profile-picker-glic-testing",
-    "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 134
   },
   {
     "name": "profiles-reordering",

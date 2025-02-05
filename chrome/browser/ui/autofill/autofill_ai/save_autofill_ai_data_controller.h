@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
+#include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/user_annotations/user_annotations_types.h"
 #include "content/public/browser/web_contents.h"
 
@@ -49,11 +50,11 @@ class SaveAutofillAiDataController {
       content::WebContents* web_contents);
 
   // Shows a save Autofill AI data bubble which the user can accept or decline.
-  virtual void OfferSave(
-      autofill::EntityInstance entity,
-      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback,
-      LearnMoreClickedCallback learn_more_clicked_callback,
-      UserFeedbackCallback user_feedback_callback) = 0;
+  virtual void OfferSave(autofill::EntityInstance entity,
+                         AutofillAiClient::SavePromptAcceptanceCallback
+                             save_prompt_acceptance_callback,
+                         LearnMoreClickedCallback learn_more_clicked_callback,
+                         UserFeedbackCallback user_feedback_callback) = 0;
 
   // Called when the user accepts to save Autofill AI data.
   virtual void OnSaveButtonClicked() = 0;

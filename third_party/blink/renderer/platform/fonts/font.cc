@@ -517,7 +517,7 @@ int Font::OffsetForPosition(const TextRun& run,
   return shaper.OffsetForPosition(run, x_float, partial_glyphs, break_glyphs);
 }
 
-const FontFeatures& Font::GetFontFeatures() const {
+base::span<const FontFeatureRange> Font::GetFontFeatures() const {
   return EnsureFontFallbackList()->GetFontFeatures(font_description_);
 }
 

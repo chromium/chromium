@@ -23,6 +23,11 @@ struct SignoutConfirmationData {
 
 // Called from TS side of chrome://signout-confirmation (Renderer -> Browser)
 interface PageHandler {
+  // Updates the native view of the dialog based on the current `height` of the
+  // web content view measured in pixels. Height of the content view is variable
+  // based on its contents.
+  UpdateViewHeight(uint32 height);
+
   // The user has accepted the prompt through clicking a button.
   Accept();
 

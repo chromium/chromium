@@ -385,10 +385,12 @@ bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
   return base::Contains(third_party_cookies_allowed_schemes_, scheme);
 }
 
-bool CookieSettings::ShouldBlockThirdPartyCookies() const {
+bool CookieSettings::ShouldBlockThirdPartyCookies(
+    base::optional_ref<const url::Origin> top_frame_origin,
+    net::CookieSettingOverrides overrides) const {
   return block_third_party_cookies_ ||
-         IsThirdPartyPhaseoutEnabled(std::nullopt,
-                                     net::CookieSettingOverrides());
+         Are3pcsForceDisabledByOverride(overrides) ||
+         IsThirdPartyPhaseoutEnabled(top_frame_origin, overrides);
 }
 
 bool CookieSettings::IsThirdPartyPhaseoutEnabled(
@@ -435,8 +437,7 @@ void CookieSettings::AugmentInclusionStatus(
       return;
     }
 
-    if (ShouldBlockThirdPartyCookies() ||
-        IsThirdPartyPhaseoutEnabled(top_frame_origin, overrides)) {
+    if (ShouldBlockThirdPartyCookies(top_frame_origin, overrides)) {
       CHECK(has_exemption);
       out_status.MaybeSetExemptionReason(GetExemptionReason(allow_mechanism));
     } else {

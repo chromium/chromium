@@ -420,7 +420,8 @@ TEST_F(GetUpdatesProcessorApplyUpdatesTest, Normal) {
   EXPECT_EQ(0, GetAppliedHandler()->GetApplyUpdatesCount());
 
   StatusController status;
-  processor->ApplyUpdates(GetGuTypes(), &status);
+  processor->ApplyUpdates(GetGuTypes(), /*data_types_with_failure=*/{},
+                          &status);
 
   EXPECT_EQ(0, GetNonAppliedHandler()->GetApplyUpdatesCount());
   EXPECT_EQ(1, GetAppliedHandler()->GetApplyUpdatesCount());
@@ -437,7 +438,8 @@ TEST_F(GetUpdatesProcessorApplyUpdatesTest, Configure) {
   EXPECT_EQ(0, GetAppliedHandler()->GetApplyUpdatesCount());
 
   StatusController status;
-  processor->ApplyUpdates(GetGuTypes(), &status);
+  processor->ApplyUpdates(GetGuTypes(), /*data_types_with_failure=*/{},
+                          &status);
 
   EXPECT_EQ(0, GetNonAppliedHandler()->GetApplyUpdatesCount());
   EXPECT_EQ(1, GetAppliedHandler()->GetApplyUpdatesCount());
@@ -453,7 +455,8 @@ TEST_F(GetUpdatesProcessorApplyUpdatesTest, Poll) {
   EXPECT_EQ(0, GetAppliedHandler()->GetApplyUpdatesCount());
 
   StatusController status;
-  processor->ApplyUpdates(GetGuTypes(), &status);
+  processor->ApplyUpdates(GetGuTypes(), /*data_types_with_failure=*/{},
+                          &status);
 
   EXPECT_EQ(0, GetNonAppliedHandler()->GetApplyUpdatesCount());
   EXPECT_EQ(1, GetAppliedHandler()->GetApplyUpdatesCount());

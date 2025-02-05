@@ -5897,6 +5897,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5299" label="HTMLImageElementNaturalSizeDiffersForSvgImage"/>
   <int value="5300" label="WindowProxyIndexedGetter"/>
   <int value="5301" label="WindowProxyNamedGetter"/>
+  <int value="5302" label="V8AILanguageModelFactory_Availability_Method"/>
+  <int value="5303" label="V8AILanguageModelFactory_Params_Method"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

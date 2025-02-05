@@ -2,3 +2,4 @@ file://chrome/browser/new_tab_page/OWNERS
 pkasting@chromium.org
 
 per-file *theme_syncable_service*=file://components/sync/OWNERS
+per-file *theme_local_data_batch_uploader*=file://components/sync/OWNERS

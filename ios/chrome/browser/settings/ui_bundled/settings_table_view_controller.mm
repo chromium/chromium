@@ -287,7 +287,6 @@ struct EnhancedSafeBrowsingActivePromoData
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
   TableViewDetailIconItem* _notificationsItem;
   TableViewDetailIconItem* _defaultBrowserCellItem;
-  TableViewItem* _syncItem;
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
@@ -674,12 +673,6 @@ struct EnhancedSafeBrowsingActivePromoData
     _hasRecordedSigninImpression = NO;
   }
 
-  // Sync item.
-  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-      ![self shouldReplaceSyncSettingsWithAccountSettings]) {
-    [model addItem:[self syncItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierAccount];
-  }
   // Google Services item.
   [model addItem:[self googleServicesCellItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAccount];
@@ -751,6 +744,7 @@ struct EnhancedSafeBrowsingActivePromoData
           accessibilityIdentifier:kSettingsGoogleServicesCellId];
 }
 
+// TODO(crbug.com/40066949): Remove this method with Sync row.
 - (TableViewItem*)syncDisabledByPolicyItem {
   return [self infoButtonWithType:SettingsItemTypeGoogleSync
                              text:l10n_util::GetNSString(
@@ -762,26 +756,6 @@ struct EnhancedSafeBrowsingActivePromoData
                     l10n_util::GetNSString(
                         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT)
           accessibilityIdentifier:kSettingsGoogleSyncAndServicesCellId];
-}
-
-- (TableViewItem*)syncItem {
-  if ([self isSyncDisabledByPolicy]) {
-    _syncItem = [self syncDisabledByPolicyItem];
-    return _syncItem;
-  }
-
-  TableViewDetailIconItem* syncItem =
-      [self detailItemWithType:SettingsItemTypeGoogleSync
-                             text:l10n_util::GetNSString(
-                                      IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE)
-                       detailText:nil
-                           symbol:nil
-            symbolBackgroundColor:nil
-          accessibilityIdentifier:kSettingsGoogleSyncAndServicesCellId];
-  [self updateSyncItem:syncItem];
-  _syncItem = syncItem;
-
-  return _syncItem;
 }
 
 - (TableViewItem*)defaultBrowserCellItem {
@@ -1310,23 +1284,10 @@ struct EnhancedSafeBrowsingActivePromoData
           signin_metrics::AccessPoint::kSettings);
       [self showSignIn];
       break;
-    case SettingsItemTypeAccount: {
-      if ([self shouldReplaceSyncSettingsWithAccountSettings]) {
-        // Redirect to Account Settings page if the user is signed-in and
-        // not-syncing.
-        base::RecordAction(base::UserMetricsAction("Settings.Sync"));
-        [self showGoogleSync];
-        break;
-      }
-      base::RecordAction(base::UserMetricsAction("Settings.MyAccount"));
-
-      _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
-          initWithBaseNavigationController:self.navigationController
-                                   browser:_browser
-                 closeSettingsOnAddAccount:NO];
-      [_manageAccountsCoordinator start];
+    case SettingsItemTypeAccount:
+      base::RecordAction(base::UserMetricsAction("Settings.Sync"));
+      [self showGoogleSync];
       break;
-    }
     case SettingsItemTypeGoogleServices:
       base::RecordAction(base::UserMetricsAction("Settings.GoogleServices"));
       [self showGoogleServices];
@@ -1648,13 +1609,6 @@ struct EnhancedSafeBrowsingActivePromoData
   [_addressBarPreferenceCoordinator start];
 }
 
-- (BOOL)shouldReplaceSyncSettingsWithAccountSettings {
-  // TODO(crbug.com/40066949): Remove usage of HasSyncConsent() after kSync
-  // users migrated to kSignin in phase 3. See ConsentLevel::kSync
-  // documentation for details.
-  return !SyncServiceFactory::GetForProfile(_profile)->HasSyncConsent();
-}
-
 - (void)showGoogleSync {
   if (_manageSyncSettingsCoordinator &&
       self.navigationController.topViewController != self) {
@@ -1834,10 +1788,7 @@ struct EnhancedSafeBrowsingActivePromoData
   }
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
-  BOOL shouldShowSigninIPH =
-      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-      [self shouldReplaceSyncSettingsWithAccountSettings];
-  if (!shouldShowSigninIPH) {
+  if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return;
   }
 
@@ -1894,6 +1845,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Updates the Sync item to display the right icon and status message in the
 // cell.
+// TODO(crbug.com/40066949): Remove this method with Sync row.
 - (void)updateSyncItem:(TableViewDetailIconItem*)googleSyncItem {
   switch (GetSyncFeatureState(SyncServiceFactory::GetForProfile(_profile))) {
     case SyncState::kSyncConsentOff: {

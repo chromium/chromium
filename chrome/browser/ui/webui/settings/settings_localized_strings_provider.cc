@@ -1485,6 +1485,19 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
                              Profile* profile) {
+  std::string sync_dashboard_url =
+      google_util::AppendGoogleLocaleParam(
+          GURL(chrome::kSyncGoogleDashboardURL),
+          g_browser_process->GetApplicationLocale())
+          .spec();
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  html_source->AddString(
+      "syncDisconnectManagedProfileExplanation",
+      l10n_util::GetStringFUTF8(
+          IDS_SETTINGS_TURN_OFF_SYNC_MANAGED_PROFILE_EXPLANATION, u"$1",
+          base::ASCIIToUTF16(sync_dashboard_url)));
+
   if (base::FeatureList::IsEnabled(
           supervised_user::kCustomProfileStringsForSupervisedUsers) &&
       profile->IsChild()) {
@@ -1494,24 +1507,7 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
          IDS_SETTINGS_TURN_OFF_SYNC_AND_SIGN_OUT_DIALOG_TITLE_SUPERVISED_PROFILE},
     };
     html_source->AddLocalizedStrings(kTurnOffStrings);
-  } else {
-    static constexpr webui::LocalizedString kTurnOffStrings[] = {
-        {"syncDisconnect", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
-        {"syncDisconnectTitle",
-         IDS_SETTINGS_TURN_OFF_SYNC_AND_SIGN_OUT_DIALOG_TITLE},
-    };
-    html_source->AddLocalizedStrings(kTurnOffStrings);
-  }
 
-  std::string sync_dashboard_url =
-      google_util::AppendGoogleLocaleParam(
-          GURL(chrome::kSyncGoogleDashboardURL),
-          g_browser_process->GetApplicationLocale())
-          .spec();
-
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kCustomProfileStringsForSupervisedUsers) &&
-      profile->IsChild()) {
     static constexpr webui::LocalizedString kSyncDisconnectStrings[] = {
         {"syncDisconnectDeleteProfile",
          IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX},
@@ -1521,7 +1517,20 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
          IDS_SETTINGS_SYNC_DISCONNECT_AND_SIGN_OUT_EXPLANATION_SUPERVISED_PROFILE},
     };
     html_source->AddLocalizedStrings(kSyncDisconnectStrings);
-  } else {
+
+    return;
+  }
+#endif
+
+  // Use the non-supervised strings.
+  {
+    static constexpr webui::LocalizedString kTurnOffStrings[] = {
+        {"syncDisconnect", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
+        {"syncDisconnectTitle",
+         IDS_SETTINGS_TURN_OFF_SYNC_AND_SIGN_OUT_DIALOG_TITLE},
+    };
+    html_source->AddLocalizedStrings(kTurnOffStrings);
+
     static constexpr webui::LocalizedString kSyncDisconnectStrings[] = {
         {"syncDisconnectDeleteProfile",
          IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX},
@@ -1532,14 +1541,6 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
     };
     html_source->AddLocalizedStrings(kSyncDisconnectStrings);
   }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  html_source->AddString(
-      "syncDisconnectManagedProfileExplanation",
-      l10n_util::GetStringFUTF8(
-          IDS_SETTINGS_TURN_OFF_SYNC_MANAGED_PROFILE_EXPLANATION, u"$1",
-          base::ASCIIToUTF16(sync_dashboard_url)));
-#endif
 }
 
 void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {

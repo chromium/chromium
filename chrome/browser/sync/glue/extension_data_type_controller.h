@@ -24,7 +24,9 @@ class ExtensionDataTypeController
       base::WeakPtr<syncer::SyncableService> syncable_service,
       const base::RepeatingClosure& dump_stack,
       DelegateMode delegate_mode,
-      Profile* profile);
+      Profile* profile,
+      std::unique_ptr<syncer::DataTypeLocalDataBatchUploader> batch_uploader =
+          nullptr);
 
   ExtensionDataTypeController(const ExtensionDataTypeController&) = delete;
   ExtensionDataTypeController& operator=(const ExtensionDataTypeController&) =

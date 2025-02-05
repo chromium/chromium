@@ -303,8 +303,6 @@ class FakePasswordAutofillAgent
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  void KeyboardReplacingSurfaceClosed(bool show_virtual_keyboard) override {}
-
   void TriggerFormSubmission() override {}
 #endif
 

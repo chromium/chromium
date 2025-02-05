@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -58,6 +57,7 @@ source_set("link_capturing") {
     deps += [
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/apps/app_service",
+      "//chromeos/ash/experiences/arc",
     ]
 
     # Needed only to allow circular includes.
@@ -80,10 +80,6 @@ source_set("link_capturing") {
       "//components/strings:components_strings_grit",
       "//components/vector_icons",
     ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/experiences/arc:arc" ]
   }
 }
 

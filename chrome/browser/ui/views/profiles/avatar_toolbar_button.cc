@@ -346,6 +346,7 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
   }
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
   if (!base::FeatureList::IsEnabled(
           feature_engagement::kIPHSupervisedUserProfileSigninFeature)) {
@@ -388,6 +389,7 @@ void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
   params.title_params = base::UTF8ToUTF16(account_info.given_name);
   browser_->window()->MaybeShowFeaturePromo(std::move(params));
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
     const AccountInfo& account_info) {

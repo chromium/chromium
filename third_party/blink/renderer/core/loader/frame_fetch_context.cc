@@ -1154,6 +1154,10 @@ const PermissionsPolicy* FrameFetchContext::GetPermissionsPolicy() const {
                    : nullptr;
 }
 
+const FeatureContext* FrameFetchContext::GetFeatureContext() const {
+  return document_ ? document_->GetExecutionContext() : nullptr;
+}
+
 HashSet<HashAlgorithm> FrameFetchContext::CSPHashesToReport() const {
   return GetContentSecurityPolicy()->HashesToReport();
 }

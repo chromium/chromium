@@ -41,7 +41,7 @@ void TestEntityDataManager::LoadEntityInstances(LoadCallback cb) {
           &TestEntityDataManager::OnWebDataServiceRequestDone,
           weak_ptr_factory_.GetWeakPtr(), handle,
           std::make_unique<WDResult<std::vector<EntityInstance>>>(
-              AUTOFILL_ENTITY_INSTANCE_RESULT, GetCopyOfEentities())));
+              AUTOFILL_ENTITY_INSTANCE_RESULT, GetCopyOfEntities())));
 }
 
 }  // namespace autofill

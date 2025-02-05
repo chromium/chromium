@@ -117,13 +117,6 @@ class AwBrowserContext : public content::BrowserContext,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& io_thread_client);
 
-  void StartPrefetchRequest(
-      JNIEnv* env,
-      const std::string& url,
-      const base::android::JavaParamRef<jobject>& prefetch_params,
-      const base::android::JavaParamRef<jobject>& callback,
-      const base::android::JavaParamRef<jobject>& callback_executor);
-
   int AllowedPrerenderingCount() const;
   void SetAllowedPrerenderingCount(int allowed_count);
 

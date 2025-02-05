@@ -203,9 +203,11 @@ void Resource::CheckResourceIntegrity() {
 
   // Check `Unencoded-Digest` headers. If the digest doesn't match, fail.
   // Otherwise, fall through to validating SRI.
-  auto unencoded_digest = GetResponse().UnencodedDigest();
+  const FeatureContext* feature_context =
+      loader_ ? loader_->GetFeatureContext() : nullptr;
+  auto unencoded_digest = GetResponse().UnencodedDigest(feature_context);
   if (unencoded_digest.has_value() && !unencoded_digest->DoesMatch(Data())) {
-    DCHECK(RuntimeEnabledFeatures::UnencodedDigestEnabled());
+    DCHECK(RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context));
     integrity_disposition_ =
         ResourceIntegrityDisposition::kFailedUnencodedDigest;
     return;
@@ -222,8 +224,8 @@ void Resource::CheckResourceIntegrity() {
     integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
   } else {
     if (SubresourceIntegrity::CheckSubresourceIntegrity(
-            IntegrityMetadata(), Data(), Url(), *this, integrity_report_,
-            &integrity_hashes)) {
+            IntegrityMetadata(), Data(), Url(), *this, feature_context,
+            integrity_report_, &integrity_hashes)) {
       integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
     } else {
       integrity_disposition_ =
@@ -426,7 +428,10 @@ AtomicString Resource::HttpContentType() const {
 }
 
 bool Resource::ForceIntegrityChecks() const {
-  return IsLinkPreload() || GetResponse().UnencodedDigest().has_value();
+  const FeatureContext* feature_context =
+      loader_ ? loader_->GetFeatureContext() : nullptr;
+  return IsLinkPreload() ||
+         GetResponse().UnencodedDigest(feature_context).has_value();
 }
 
 bool Resource::MustRefetchDueToIntegrityMetadata(

@@ -8673,7 +8673,9 @@ CanvasResourceProvider* WebGLRenderingContextBase::
           wrapper->ContextProvider().RasterContextProvider();
     }
     temp = CreateResourceProviderForVideoFrame(
-        SkImageInfo::Make(size, sk_color_type, alpha_type, sk_color_space),
+        gfx::Size(size.width(), size.height()),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
+        alpha_type, SkColorSpaceToGfxColorSpace(sk_color_space),
         raster_context_provider);
   } else {
     // TODO(fserb): why is this a BITMAP?

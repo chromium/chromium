@@ -111,7 +111,7 @@ bool PrefetchStartsSpareRenderer() {
              true);
 }
 
-base::TimeDelta PrefetchContainerLifetimeInPrefetchService() {
+base::TimeDelta PrefetchContainerDefaultTtlInPrefetchService() {
   // A value of 0 or less, indicates that |PrefetchService| should keep the
   // prefetch forever.
   return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(

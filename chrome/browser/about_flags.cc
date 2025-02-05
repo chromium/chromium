@@ -9439,12 +9439,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableVirtualCardMetadata)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"password-suggestion-bottom-sheet-v2",
-     flag_descriptions::kPasswordSuggestionBottomSheetV2Name,
-     flag_descriptions::kPasswordSuggestionBottomSheetV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordSuggestionBottomSheetV2)},
-
     {"pwa-restore-backend", flag_descriptions::kPwaRestoreBackendName,
      flag_descriptions::kPwaRestoreBackendDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(syncer::kWebApkBackupAndRestoreBackend)},
@@ -10136,11 +10130,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProfilesReorderingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(kProfilesReordering)},
 #endif
-
-    {"profile-picker-glic-testing",
-     flag_descriptions::kProfilePickerGlicTesting,
-     flag_descriptions::kProfilePickerGlicTestingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(switches::kProfilePickerGlicTesting)},
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     {"batch-upload-desktop", flag_descriptions::kBatchUploadDesktopName,

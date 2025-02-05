@@ -333,7 +333,11 @@ TEST(ServiceWorkerLoaderHelpersTest, IsEligibleForSyntheticResponse) {
   EXPECT_TRUE(IsEligibleForSyntheticResponse(GURL("http://example.com/"),
                                              "http://example.com/"));
   EXPECT_TRUE(IsEligibleForSyntheticResponse(GURL("http://example.com/foo/"),
-                                             "http://example.com/"));
+                                             "http://example.com/foo/"));
+  // Currently trailing slash is not accepted. Will consider accepting once we
+  // have a use case.
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(GURL("http://example.com/foo/"),
+                                              "http://example.com/foo"));
   EXPECT_FALSE(IsEligibleForSyntheticResponse(GURL("http://example.com/"),
                                               "http://example.com/foo"));
   EXPECT_FALSE(IsEligibleForSyntheticResponse(GURL("http://example.com/foo"),

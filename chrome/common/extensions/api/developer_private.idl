@@ -256,6 +256,7 @@ namespace developerPrivate {
     DOMString iconUrl;
     DOMString id;
     AccessModifier incognitoAccess;
+    AccessModifier userScriptsAccess;
     DOMString[] installWarnings;
     boolean isCommandRegistrationHandledExternally;
     DOMString? launchUrl;
@@ -344,6 +345,7 @@ namespace developerPrivate {
     DOMString extensionId;
     boolean? fileAccess;
     boolean? incognitoAccess;
+    boolean? userScriptsAccess;
     boolean? errorCollection;
     HostAccess? hostAccess;
     boolean? showAccessRequestsInToolbar;

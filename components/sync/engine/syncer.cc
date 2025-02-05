@@ -209,6 +209,9 @@ bool Syncer::DownloadAndApplyUpdates(DataTypeSet* request_types,
         get_updates_processor.DownloadUpdates(&download_types, cycle);
   } while (get_updates_processor.HasMoreUpdatesToDownload());
 
+  DataTypeSet data_types_with_failure = Difference(
+      Difference(*request_types, download_types), requested_commit_only_types);
+
   // It is our responsibility to propagate the removal of types that occurred in
   // GetUpdatesProcessor::DownloadUpdates().
   *request_types = Union(download_types, requested_commit_only_types);
@@ -225,7 +228,7 @@ bool Syncer::DownloadAndApplyUpdates(DataTypeSet* request_types,
     // Apply updates to the other types. May or may not involve cross-thread
     // traffic, depending on the underlying update handlers and the GU type's
     // delegate.
-    get_updates_processor.ApplyUpdates(download_types,
+    get_updates_processor.ApplyUpdates(download_types, data_types_with_failure,
                                        cycle->mutable_status_controller());
 
     cycle->SendEventNotification(SyncCycleEvent::STATUS_CHANGED);

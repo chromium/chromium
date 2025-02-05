@@ -7,7 +7,6 @@
 #include "base/numerics/clamped_math.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

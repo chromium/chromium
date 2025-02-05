@@ -5522,11 +5522,13 @@ void BrowserView::MaybeShowProfileSwitchIPH() {
 }
 
 void BrowserView::MaybeShowSupervisedUserProfileSignInIPH() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (!ShouldShowAvatarToolbarIPH()) {
     return;
   }
   toolbar_button_provider_->GetAvatarToolbarButton()
       ->MaybeShowSupervisedUserSignInIPH();
+#endif
 }
 
 void BrowserView::ShowHatsDialog(

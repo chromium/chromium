@@ -93,8 +93,6 @@ class ContentPasswordManagerDriver final
   void FillIntoFocusedField(bool is_password,
                             const std::u16string& credential) override;
 #if BUILDFLAG(IS_ANDROID)
-  void KeyboardReplacingSurfaceClosed(
-      ToShowVirtualKeyboard show_virtual_keyboard) override;
   void TriggerFormSubmission() override;
 #endif
   void PreviewField(autofill::FieldRendererId field_id,
@@ -175,11 +173,6 @@ class ContentPasswordManagerDriver final
                                     bool is_likely_otp) override;
   void ShowPasswordSuggestions(
       const autofill::PasswordSuggestionRequest& request) override;
-#if BUILDFLAG(IS_ANDROID)
-  void ShowKeyboardReplacingSurface(
-      autofill::mojom::SubmissionReadinessState submission_readiness,
-      bool is_webauthn_form) override;
-#endif
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
   void FocusedInputChanged(

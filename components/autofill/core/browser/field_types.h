@@ -460,6 +460,7 @@ enum FieldType {
   // This type is a metatype and does not correspond to a specific sort of
   // data.
   // It should not take precedence over existing types.
+  // TODO(crbug.com/389629676): Deprecate this field type.
   IMPROVED_PREDICTION = 162,
 
   // Types to represent alternative names (e.g. phonetic name in Japanese).

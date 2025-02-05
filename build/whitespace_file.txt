@@ -231,4 +231,6 @@ New :)
 
 The longest word in English with only one vowel is "strengths."
 
+Nulla est doctrina sine lingua Latina.
+
 Adding more non whitespace.

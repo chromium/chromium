@@ -9,10 +9,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -142,7 +142,7 @@ void IntentHandlingMetrics::RecordLinkCapturingEntryPointShown(
                                 LinkCapturingEvent::kEntryPointShown);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
     content::BrowserContext* context,
     PickerEntryType entry_type,
@@ -155,6 +155,6 @@ void IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
         context, arc::UserInteractionType::APP_STARTED_FROM_LINK);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

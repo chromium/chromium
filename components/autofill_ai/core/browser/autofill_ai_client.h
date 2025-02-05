@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_CLIENT_H_
 #define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_CLIENT_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -40,6 +42,38 @@ class AutofillAiManager;
 // in the settings while the client is alive.
 class AutofillAiClient {
  public:
+  // Encapsulates the result of user interaction with the save/update AutofillAi
+  // prompt.
+
+  struct SavePromptAcceptanceResult final {
+    SavePromptAcceptanceResult();
+
+    SavePromptAcceptanceResult(bool prompt_was_accepted,
+                               bool did_user_interact,
+                               bool did_thumbs_up_triggered,
+                               bool did_thumbs_down_triggered,
+                               std::optional<autofill::EntityInstance> entity);
+    explicit SavePromptAcceptanceResult(bool prompt_was_accepted);
+    SavePromptAcceptanceResult(const SavePromptAcceptanceResult&);
+    SavePromptAcceptanceResult(SavePromptAcceptanceResult&&);
+    SavePromptAcceptanceResult& operator=(const SavePromptAcceptanceResult&);
+    SavePromptAcceptanceResult& operator=(SavePromptAcceptanceResult&&);
+    ~SavePromptAcceptanceResult();
+
+    bool prompt_was_accepted = false;
+    bool did_user_interact = false;
+    // TODO(crbug.com/389629676): Delete feedback infrastructure.
+    bool did_thumbs_up_triggered = false;
+    bool did_thumbs_down_triggered = false;
+
+    // Set when `prompt_was_accepted` is true.
+    // TODO(crbug.com/389629676): Remove `prompt_was_accepted` in favour of
+    // simply checking whether `entity` exists.
+    std::optional<autofill::EntityInstance> entity;
+  };
+  using SavePromptAcceptanceCallback =
+      base::OnceCallback<void(SavePromptAcceptanceResult result)>;
+
   // The callback to extract the accessibility tree snapshot.
   using AXTreeCallback =
       base::OnceCallback<void(optimization_guide::proto::AXTreeUpdate)>;
@@ -113,10 +147,8 @@ class AutofillAiClient {
 
   // Shows a bubble asking whether the user wants to save Autofill AI data.
   virtual void ShowSaveAutofillAiBubble(
-      std::unique_ptr<user_annotations::FormAnnotationResponse>
-          form_annotation_response,
-      user_annotations::PromptAcceptanceCallback
-          prompt_acceptance_callback) = 0;
+      autofill::EntityInstance entity,
+      SavePromptAcceptanceCallback save_prompt_acceptance_callback) = 0;
 };
 
 }  // namespace autofill_ai

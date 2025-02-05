@@ -150,11 +150,11 @@ void NativeScreenCapturePickerMac::Open(
         type == DesktopMediaID::Type::TYPE_WINDOW);
   if (@available(macOS 14.0, *)) {
     NSNumber* source_id = @(next_id_);
-    auto picker_observer = [[PickerObserver alloc]
-        initWithPickerCallback:(std::move(picker_callback))
-                cancelCallback:(std::move(cancel_callback))errorCallback
-                              :(std::move(error_callback))assignSourceId
-                              :next_id_];
+    PickerObserver* picker_observer = [[PickerObserver alloc]
+        initWithPickerCallback:std::move(picker_callback)
+                cancelCallback:std::move(cancel_callback)
+                 errorCallback:std::move(error_callback)
+                assignSourceId:next_id_];
     picker_observers_[source_id] = picker_observer;
     std::move(created_callback).Run(next_id_);
     ++next_id_;
@@ -172,14 +172,14 @@ void NativeScreenCapturePickerMac::Open(
       picker.defaultConfiguration = config;
       picker.maximumStreamCount = max_stream_count;
       VLOG(1) << "NSCPM: Show screen-sharing picker for source_id = "
-              << next_id_ - 1;
+              << source_id.longValue;
       [picker presentPickerUsingContentStyle:SCShareableContentStyleDisplay];
     } else {
       config.allowedPickerModes = SCContentSharingPickerModeSingleWindow;
       picker.defaultConfiguration = config;
       picker.maximumStreamCount = max_stream_count;
       VLOG(1) << "NSCPM: Show window-sharing picker for source_id = "
-              << next_id_ - 1;
+              << source_id.longValue;
       [picker presentPickerUsingContentStyle:SCShareableContentStyleWindow];
     }
   } else {

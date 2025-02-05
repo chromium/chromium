@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_MOCK_AUTOFILL_AI_CLIENT_H_
 #define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_MOCK_AUTOFILL_AI_CLIENT_H_
 
+#include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -52,13 +53,11 @@ class MockAutofillAiClient : public AutofillAiClient {
                autofill::FieldType field_type,
                const autofill::FormFieldData& field),
               (override));
-  MOCK_METHOD(
-      void,
-      ShowSaveAutofillAiBubble,
-      (std::unique_ptr<user_annotations::FormAnnotationResponse>
-           form_annotation_response,
-       user_annotations::PromptAcceptanceCallback prompt_acceptance_callback),
-      (override));
+  MOCK_METHOD(void,
+              ShowSaveAutofillAiBubble,
+              (autofill::EntityInstance entity,
+               SavePromptAcceptanceCallback prompt_acceptance_callback),
+              (override));
 };
 
 }  // namespace autofill_ai

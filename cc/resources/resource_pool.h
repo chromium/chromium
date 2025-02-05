@@ -65,13 +65,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken mailbox_sync_token;
-  };
-
-  // A class to hold ownership of gpu backed PoolResources.
-  class CC_EXPORT GpuBacking : public Backing {
-   public:
-    GpuBacking();
-    ~GpuBacking() override;
 
     bool overlay_candidate = false;
     // For resources that are modified directly on the gpu, outside the command
@@ -88,6 +81,16 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
     // True if the backing is using raw draw.
     bool is_using_raw_draw = false;
+
+    // Note: Required and set only for software resources.
+    scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
+  };
+
+  // A class to hold ownership of gpu backed PoolResources.
+  class CC_EXPORT GpuBacking : public Backing {
+   public:
+    GpuBacking();
+    ~GpuBacking() override;
   };
 
   // A class to hold ownership of software backed PoolResources.
@@ -95,8 +98,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
    public:
     SoftwareBacking();
     ~SoftwareBacking() override;
-
-    scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
   };
 
   // Scoped move-only object returned when getting a resource from the pool.

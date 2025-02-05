@@ -522,10 +522,15 @@ void ServiceWorkerStorageControlImpl::GetFakeRegistrationForClientUrl(
     const GURL& client_url,
     const blink::StorageKey& key,
     FindRegistrationForClientUrlCallback callback) {
-  const auto kScript = GURL(client_url.scheme() + "://" + client_url.host() +
-                            "/fake-sw-for-synthetic-response.js");
-  const auto kScope =
-      GURL(client_url.scheme() + "://" + client_url.host() + client_url.path());
+  GURL::Replacements replacements_for_script;
+  replacements_for_script.ClearQuery();
+  replacements_for_script.SetPathStr("/fake-sw-for-synthetic-response.js");
+  const auto kScript = client_url.ReplaceComponents(replacements_for_script);
+
+  GURL::Replacements replacements_for_scope;
+  replacements_for_scope.ClearQuery();
+  const auto kScope = client_url.ReplaceComponents(replacements_for_scope);
+
   auto resources = std::make_unique<
       std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>>();
   {

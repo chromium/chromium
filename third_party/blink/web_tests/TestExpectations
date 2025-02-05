@@ -4103,7 +4103,7 @@ crbug.com/1494838 external/wpt/css/css-page/page-name-img-003-print.html [ Failu
 crbug.com/1494838 external/wpt/css/css-page/page-name-img-004-print.html [ Failure ]
 crbug.com/1494847 external/wpt/css/css-page/page-name-margin-001-print.html [ Failure ]
 crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html [ Failure ]
-crbug.com/346088869 [ Mac ] external/wpt/css/css-page/page-size-011-print.html [ Pass Timeout ]
+crbug.com/346088869 external/wpt/css/css-page/page-size-011-print.html [ Pass Timeout ]
 
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-007.tentative.html [ Failure ]
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-009.tentative.html [ Failure ]
@@ -9139,6 +9139,8 @@ crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-children-hei
 crbug.com/390162928 external/wpt/css/css-writing-modes/nested-orthogonal-001.html [ Failure Skip ]
 crbug.com/390162928 external/wpt/css/css-contain/contain-size-select-elem-003.html [ Failure Skip ]
 crbug.com/390162928 external/wpt/css/css-multicol/multicol-span-all-013.html [ Failure Skip ]
+
+crbug.com/41493642 external/wpt/html/semantics/embedded-content/the-canvas-element/toBlob-cross-realm-callback-report-exception.html [ Failure Pass ]
 
 # Gardener 2025-01-21
 crbug.com/391126821 [ Win11-arm64 ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]

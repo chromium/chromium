@@ -196,16 +196,6 @@ interface PasswordManagerDriver {
   // Similar for the password field.
   ShowPasswordSuggestions(PasswordSuggestionRequest request);
 
-  // Instructs the browser to show a keyboard replacing surface (e.g.
-  // TouchToFill) and whether the form is ready for submission after filling. If
-  // `is_webauthn`, Android U+ can display Credential Manager UI instead of
-  // TouchToFill UI.
-  // TODO(crbug.com/40274966): Remove this API once PasswordSuggestionBottomSheetV2
-  // is launched.
-  [EnableIf=is_android]
-  ShowKeyboardReplacingSurface(SubmissionReadinessState submission_readiness,
-                  bool is_webauthn);
-
   // Checks the safe browsing reputation of the website where the focused
   // username/password field is on.
   CheckSafeBrowsingReputation(

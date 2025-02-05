@@ -26,7 +26,6 @@
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
@@ -47,11 +46,7 @@ namespace base {
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kOneGroupPerRenderer,
              "OneGroupPerRenderer",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             FEATURE_ENABLED_BY_DEFAULT);
-#else
              FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 BASE_FEATURE(kFlattenCpuCgroups,
              "FlattenCpuCgroups",
@@ -97,11 +92,7 @@ const char kUclampMaxFile[] = "cpu.uclamp.max";
 constexpr int kCgroupDeleteRetries = 3;
 constexpr TimeDelta kCgroupDeleteRetryTime(Seconds(1));
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kCgroupPrefix[] = "l-";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
 const char kCgroupPrefix[] = "a-";
-#endif
 
 bool PathIsCGroupFileSystem(const FilePath& path) {
   struct statfs statfs_buf;
@@ -326,9 +317,7 @@ Process::Priority GetProcessPriorityCGroup(std::string_view cgroup_contents) {
 
   return Process::Priority::kUserBlocking;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Reads /proc/<pid>/status and returns the PID in its PID namespace.
 // If the process is not in a PID namespace or /proc/<pid>/status does not
 // report NSpid, kNullProcessId is returned.
@@ -356,7 +345,7 @@ ProcessId Process::GetPidInNamespace() const {
   }
   return kNullProcessId;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool Process::IsSeccompSandboxed() {

@@ -2317,6 +2317,11 @@ if (enable_java_templates) {
       "--webp-cache-dir=obj/android-webp-cache",
     ]
 
+    # TODO(b/355432192): Remove this flag once not needed by Compose.
+    if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {
+      _args += [ "--xml-namespaces" ]
+    }
+
     _inputs += [ invoker.android_manifest ]
     _outputs = [ _final_srcjar_path ]
     _args += [
@@ -3999,16 +4004,15 @@ if (enable_java_templates) {
       }
 
       if (_kt_files != []) {
-        _abs_kt_files = get_path_info(_kt_files, "abspath")
         _kt_allowlist = [
-          "*/AsyncTabParamsManagerImpl.kt",
-          "//third_party/androidx/*",
-          "*/webengine_shell_apk/*",
+          "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerImpl.kt",
+          "java/androidx/core/os/BuildCompat.kt",
+          "webengine_shell_apk/src/org/chromium/webengine/shell/*.kt",
         ]
-        _found_kt = filter_exclude(_abs_kt_files, _kt_allowlist)
+        _found_kt = filter_exclude(_kt_files, _kt_allowlist)
         assert(
             _found_kt == [],
-            "Only a files in the allowlist can be included for now. Feel free to remove this assert when experimenting locally. Found: $_found_kt")
+            "Only a files in the allowlist can be included for now. Feel " + "free to remove this assert when experimenting locally. Found: $_found_kt")
         _compile_kt_target_name = "${_main_target_name}__compile_kt"
         _kotlinc_jar_path = "$target_out_dir/$_output_name.kotlinc.jar"
         _kotlin_interface_jar_path =

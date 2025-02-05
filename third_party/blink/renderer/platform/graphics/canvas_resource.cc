@@ -648,9 +648,6 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
 
   const sk_sp<SkImage>& image = sk_surface->makeImageSnapshot();
 
-  if (!ContextProviderWrapper()) {
-    return;
-  }
   std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping =
       GetClientSharedImage()->Map();
   if (!mapping) {

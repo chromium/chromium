@@ -54,10 +54,8 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
       autofill::FieldType field_type,
       const autofill::FormFieldData& field) override;
   void ShowSaveAutofillAiBubble(
-      std::unique_ptr<user_annotations::FormAnnotationResponse>
-          form_annotation_response,
-      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback)
-      override;
+      autofill::EntityInstance entity,
+      SavePromptAcceptanceCallback save_prompt_acceptance_callback) override;
 
   void SetModelExecutorForTesting(
       std::unique_ptr<autofill_ai::AutofillAiModelExecutor> model_executor) {

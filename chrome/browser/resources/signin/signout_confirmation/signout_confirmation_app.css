@@ -14,7 +14,7 @@
   --dialog-padding: 20px;
 }
 
-.container {
+#signoutConfirmationDialog {
   display: flex;
   flex-direction: column;
   padding-bottom: var(--dialog-padding);

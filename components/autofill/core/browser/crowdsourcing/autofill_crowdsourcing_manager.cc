@@ -363,6 +363,18 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
     out << Tr{} << "has_form_tag:" << upload.has_form_tag();
 
   out << Tr{} << "form_signature:" << upload.form_signature();
+  if (upload.has_second_last_address_form_submitted()) {
+    out << Tr{} << "second_last_address_form_submitted:"
+        << upload.second_last_address_form_submitted();
+  }
+  if (upload.has_last_address_form_submitted()) {
+    out << Tr{} << "last_address_form_submitted:"
+        << upload.last_address_form_submitted();
+  }
+  if (upload.has_last_credit_card_form_submitted()) {
+    out << Tr{} << "last_credit_card_form_submitted:"
+        << upload.last_credit_card_form_submitted();
+  }
   for (const auto& field : upload.field_data()) {
     out << Tr{} << Attrib{"style", "font-weight: bold"}
         << "field_signature:" << field.signature();

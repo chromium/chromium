@@ -126,6 +126,20 @@ static bool ShouldForceSampling() {
   return state == kForce;
 }
 
+#if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
+HashtablezInfoHandle ForcedTrySample(size_t inline_element_size,
+                                     size_t key_size, size_t value_size,
+                                     uint16_t soo_capacity) {
+  return HashtablezInfoHandle(SampleSlow(global_next_sample,
+                                         inline_element_size, key_size,
+                                         value_size, soo_capacity));
+}
+#else
+HashtablezInfoHandle ForcedTrySample(size_t, size_t, size_t, uint16_t) {
+  return HashtablezInfoHandle{nullptr};
+}
+#endif  // ABSL_INTERNAL_HASHTABLEZ_SAMPLE
+
 HashtablezInfo* SampleSlow(SamplingState& next_sample,
                            size_t inline_element_size, size_t key_size,
                            size_t value_size, uint16_t soo_capacity) {

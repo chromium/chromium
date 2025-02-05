@@ -129,7 +129,7 @@ class MockBookmarkMergedSurfaceServiceObserver
   MOCK_METHOD(void,
               BookmarkNodesRemoved,
               (const BookmarkParentFolder&,
-               (const base::flat_map<size_t, raw_ptr<const BookmarkNode>>&)));
+               (const base::flat_set<const BookmarkNode*>&)));
 
   MOCK_METHOD(void,
               BookmarkNodeMoved,
@@ -980,9 +980,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeRemovedOrderingTracked) {
 
   EXPECT_CALL(
       mock_service_observer(),
-      BookmarkNodesRemoved(
-          bb_folder, UnorderedElementsAre(Pair(across_storage_index,
-                                               testing::Eq(node_to_remove)))));
+      BookmarkNodesRemoved(bb_folder, UnorderedElementsAre(node_to_remove)));
   expected_children.erase(expected_children.cbegin() + across_storage_index);
   model().Remove(node_to_remove, bookmarks::metrics::BookmarkEditSource::kOther,
                  FROM_HERE);
@@ -995,9 +993,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeRemovedOrderingTracked) {
   ASSERT_EQ(across_storage_index, 1u);
   EXPECT_CALL(
       mock_service_observer(),
-      BookmarkNodesRemoved(
-          bb_folder, UnorderedElementsAre(Pair(across_storage_index,
-                                               testing::Eq(node_to_remove)))));
+      BookmarkNodesRemoved(bb_folder, UnorderedElementsAre(node_to_remove)));
   expected_children.erase(expected_children.cbegin() + across_storage_index);
   model().Remove(node_to_remove, bookmarks::metrics::BookmarkEditSource::kOther,
                  FROM_HERE);
@@ -1031,9 +1027,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeRemovedCustomOrder) {
   const size_t index_node_to_remove = 1u;
   EXPECT_CALL(mock_service_observer(),
               BookmarkNodesRemoved(
-                  bb_folder, UnorderedElementsAre(Pair(
-                                 index_node_to_remove,
-                                 testing::Eq(account_children[1].get())))));
+                  bb_folder, UnorderedElementsAre(account_children[1].get())));
   expected_children.erase(expected_children.cbegin() + index_node_to_remove);
   model().Remove(account_children[1].get(),
                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
@@ -1054,9 +1048,8 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkNodeRemovedNonTrackedNode) {
 
   EXPECT_CALL(
       mock_service_observer(),
-      BookmarkNodesRemoved(
-          BookmarkParentFolder::FromFolderNode(parent_node),
-          UnorderedElementsAre(Pair(index, testing::Eq(node_to_remove)))));
+      BookmarkNodesRemoved(BookmarkParentFolder::FromFolderNode(parent_node),
+                           UnorderedElementsAre(node_to_remove)));
   model().Remove(node_to_remove, bookmarks::metrics::BookmarkEditSource::kOther,
                  FROM_HERE);
 }
@@ -1075,12 +1068,11 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
       model().account_bookmark_bar_node()->children();
   EXPECT_CALL(
       mock_service_observer(),
-      BookmarkNodesRemoved(
-          bb_folder, UnorderedElementsAre(
-                         Pair(0u, testing::Eq(account_child_nodes[0].get())),
-                         Pair(1u, testing::Eq(account_child_nodes[1].get())),
-                         Pair(2u, testing::Eq(account_child_nodes[2].get())),
-                         Pair(3u, testing::Eq(account_child_nodes[3].get())))));
+      BookmarkNodesRemoved(bb_folder,
+                           UnorderedElementsAre(account_child_nodes[0].get(),
+                                                account_child_nodes[1].get(),
+                                                account_child_nodes[2].get(),
+                                                account_child_nodes[3].get())));
   model().RemoveAccountPermanentFolders();
 }
 
@@ -1109,10 +1101,8 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
   EXPECT_CALL(mock_service_observer(),
               BookmarkNodesRemoved(
                   bb_folder, UnorderedElementsAre(
-                                 Pair(0u, testing::Eq(expected_children[0])),
-                                 Pair(1u, testing::Eq(expected_children[1])),
-                                 Pair(4u, testing::Eq(expected_children[4])),
-                                 Pair(6u, testing::Eq(expected_children[6])))));
+                                 expected_children[0], expected_children[1],
+                                 expected_children[4], expected_children[6])));
 
   expected_children.clear();
   model().RemoveAccountPermanentFolders();
@@ -1148,11 +1138,10 @@ TEST_F(BookmarkMergedSurfaceServiceTest,
       model().account_bookmark_bar_node()->children();
   EXPECT_CALL(
       mock_service_observer(),
-      BookmarkNodesRemoved(
-          bb_folder, UnorderedElementsAre(
-                         Pair(0u, testing::Eq(account_child_nodes[0].get())),
-                         Pair(1u, testing::Eq(account_child_nodes[1].get())),
-                         Pair(2u, testing::Eq(account_child_nodes[2].get())))));
+      BookmarkNodesRemoved(bb_folder,
+                           UnorderedElementsAre(account_child_nodes[0].get(),
+                                                account_child_nodes[1].get(),
+                                                account_child_nodes[2].get())));
   model().RemoveAccountPermanentFolders();
   EXPECT_FALSE(service().GetChildrenCount(bb_folder));
 }
@@ -1464,6 +1453,36 @@ TEST(BookmarkParentFolderTest, HasDirectChildNode) {
     EXPECT_FALSE(folder.HasDirectChildNode(model->other_node()));
     EXPECT_FALSE(folder.HasDirectChildNode(f1));
   }
+}
+
+TEST(BookmarkParentFolderTest, HasAncestor) {
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      std::make_unique<bookmarks::BookmarkModel>(
+          std::make_unique<bookmarks::TestBookmarkClient>());
+  model->LoadEmptyForTest();
+  AddNodesFromModelString(model.get(), model->bookmark_bar_node(),
+                          "1 2 3 f1:[ 4 5 f2:[ 1 ] ] ");
+
+  const BookmarkNode* f1 = model->bookmark_bar_node()->children()[3].get();
+  const BookmarkParentFolder f1_folder(
+      BookmarkParentFolder::FromFolderNode(f1));
+  EXPECT_TRUE(f1_folder.HasAncestor(BookmarkParentFolder::FromFolderNode(f1)));
+  EXPECT_TRUE(f1_folder.HasAncestor(BookmarkParentFolder::BookmarkBarFolder()));
+  EXPECT_FALSE(f1_folder.HasAncestor(BookmarkParentFolder::OtherFolder()));
+
+  const BookmarkParentFolder f2_folder(
+      BookmarkParentFolder::FromFolderNode(f1->children()[2].get()));
+  EXPECT_FALSE(f1_folder.HasAncestor(f2_folder));
+  EXPECT_TRUE(f2_folder.HasAncestor(f2_folder));
+  EXPECT_TRUE(f2_folder.HasAncestor(BookmarkParentFolder::BookmarkBarFolder()));
+  EXPECT_FALSE(f2_folder.HasAncestor(BookmarkParentFolder::OtherFolder()));
+
+  EXPECT_FALSE(
+      BookmarkParentFolder::BookmarkBarFolder().HasAncestor(f1_folder));
+  EXPECT_TRUE(BookmarkParentFolder::BookmarkBarFolder().HasAncestor(
+      BookmarkParentFolder::BookmarkBarFolder()));
+  EXPECT_FALSE(BookmarkParentFolder::BookmarkBarFolder().HasAncestor(
+      BookmarkParentFolder::OtherFolder()));
 }
 
 }  // namespace

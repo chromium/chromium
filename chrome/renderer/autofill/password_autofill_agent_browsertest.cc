@@ -120,22 +120,6 @@ const char kFormHTML[] =
     "  <INPUT type='submit' value='Login'/>"
     "</FORM>";
 
-#if BUILDFLAG(IS_ANDROID)
-const char kFormWithUsernameFieldWebauthnHTML[] =
-    "<FORM id='LoginTestForm' action='http://www.example.com'>"
-    "  <INPUT type='text' id='username' autocomplete='webauthn'/>"
-    "  <INPUT type='password' id='password'/>"
-    "  <INPUT type='submit' value='Login'/>"
-    "</FORM>";
-
-const char kFormWithPasswordFieldWebauthnHTML[] =
-    "<FORM id='LoginTestForm' action='http://www.example.com'>"
-    "  <INPUT type='text' id='username'/>"
-    "  <INPUT type='password' id='password' autocomplete='webauthn'/>"
-    "  <INPUT type='submit' value='Login'/>"
-    "</FORM>";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 const char kSocialNetworkPostFormHTML[] =
     "<FORM id='SocialMediaPostForm' action='http://www.chirper.com'>"
     "  <TEXTAREA id='new_chirp'>"
@@ -729,12 +713,8 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   // test regular popups, e.g. `ShowPasswordSuggestions`.
   void SimulateClosingKeyboardReplacingSurfaceIfAndroid(
       const std::string& element_id) {
-    // Put the build guard here to save space in the caller test.
 #if BUILDFLAG(IS_ANDROID)
     FocusElement(element_id);
-    // Don't show a keyboard, but let the caller to trigger it if needed.
-    password_autofill_agent_->KeyboardReplacingSurfaceClosed(
-        /*show_virtual_keyboard*/ false);
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
@@ -1292,9 +1272,6 @@ TEST_F(PasswordAutofillAgentTest, WaitUsername) {
   // Simulate the browser sending back the login info.
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
-
-  // Ensure TTF isn't in the foreground while this test simulates a typing user.
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
 
   // No auto-fill should have taken place.
   CheckTextFieldsSuggestedState(
@@ -2161,294 +2138,6 @@ TEST_F(PasswordAutofillAgentTest, ClearPreviewBeforeFillingSuggestion) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// Tests that TryToShowKeyboardReplacingSurface() works correctly for fillable
-// and non-fillable fields.
-TEST_F(PasswordAutofillAgentTest, TryToShowKeyboardReplacingSurfaceUsername) {
-  // Initially no fill data is available.
-  WebInputElement random_element = GetInputElementByID("random_field");
-  EXPECT_FALSE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      username_element_));
-  EXPECT_FALSE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-  EXPECT_FALSE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      random_element));
-  EXPECT_FALSE(password_autofill_agent_->ShouldSuppressKeyboard());
-
-  // This changes once fill data is simulated. `random_element` continue  to
-  // have no fill data, though.
-  fill_data_.wait_for_username = true;
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      username_element_));
-  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
-  EXPECT_EQ(WebAutofillState::kNotFilled, username_element_.GetAutofillState());
-  EXPECT_EQ(WebAutofillState::kNotFilled, password_element_.GetAutofillState());
-
-  EXPECT_CALL(fake_driver_,
-              ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kEmptyFields,
-                  /*is_webauthn=*/false));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(PasswordAutofillAgentTest, TryToShowKeyboardReplacingSurfacePassword) {
-  fill_data_.wait_for_username = true;
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
-  EXPECT_EQ(WebAutofillState::kNotFilled, password_element_.GetAutofillState());
-
-  EXPECT_CALL(fake_driver_,
-              ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kEmptyFields,
-                  /*is_webauthn=*/false));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(PasswordAutofillAgentTest,
-       TryToShowKeyboardReplacingSurfaceWithWebauthnField) {
-  LoadHTML(kFormWithUsernameFieldWebauthnHTML);
-  UpdateUrlForHTML(kFormWithUsernameFieldWebauthnHTML);
-  UpdateUsernameAndPasswordElements();
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
-
-  EXPECT_CALL(fake_driver_,
-              ShowKeyboardReplacingSurface(_, /*is_webauthn=*/true));
-  base::RunLoop().RunUntilIdle();
-
-  LoadHTML(kFormWithPasswordFieldWebauthnHTML);
-  UpdateUrlForHTML(kFormWithPasswordFieldWebauthnHTML);
-  UpdateUsernameAndPasswordElements();
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
-
-  EXPECT_CALL(fake_driver_,
-              ShowKeyboardReplacingSurface(_, /*is_webauthn=*/true));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(PasswordAutofillAgentTest,
-       TryToShowKeyboardReplacingSurfaceButDontEnableSubmission) {
-  LoadHTML(kPasswordChangeFormHTML);
-  UpdateUrlForHTML(kPasswordChangeFormHTML);
-  UpdateUsernameAndPasswordElements();
-  // Enable filling for the old password field.
-  fill_data_.wait_for_username = true;
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
-  EXPECT_EQ(WebAutofillState::kNotFilled, password_element_.GetAutofillState());
-
-  // As there are other input fields, don't enable automatic submission.
-  EXPECT_CALL(
-      fake_driver_,
-      ShowKeyboardReplacingSurface(
-          autofill::mojom::SubmissionReadinessState::kFieldAfterPasswordField,
-          /*is_webauthn=*/false));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_NoUsernameField) {
-  LoadHTML(kVisibleFormWithNoUsernameHTML);
-  UpdateUrlForHTML(kVisibleFormWithNoUsernameHTML);
-  UpdateOnlyPasswordElement();
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-
-  EXPECT_CALL(fake_driver_,
-              ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kNoUsernameField,
-                  /*is_webauthn=*/false));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_FieldsInBetween) {
-  // Parse the "random_field" as username. Then, the "username" field should
-  // block a submission.
-  WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element =
-      document.GetElementById(WebString::FromUTF16(u"random_field"));
-  ASSERT_TRUE(element);
-  username_element_ = element.To<WebInputElement>();
-  UpdateRendererIDsInFillData();
-
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-
-  EXPECT_CALL(fake_driver_, ShowKeyboardReplacingSurface(
-                                autofill::mojom::SubmissionReadinessState::
-                                    kFieldBetweenUsernameAndPassword,
-                                /*is_webauthn=*/false));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_FieldAfterPassword) {
-  LoadHTML(kPasswordChangeFormHTML);
-  UpdateUrlForHTML(kPasswordChangeFormHTML);
-  UpdateUsernameAndPasswordElements();
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-
-  EXPECT_CALL(
-      fake_driver_,
-      ShowKeyboardReplacingSurface(
-          autofill::mojom::SubmissionReadinessState::kFieldAfterPasswordField,
-          /*is_webauthn=*/false));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_EmptyFields) {
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-
-  EXPECT_CALL(fake_driver_,
-              ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kEmptyFields,
-                  /*is_webauthn=*/false));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_MoreThanTwoFields) {
-  SimulateOnFillPasswordForm(fill_data_);
-  WebInputElement surname_element = GetInputElementByID("random_field");
-  ASSERT_TRUE(surname_element);
-  SimulateUserInputChangeForElement(surname_element, "Smith");
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-
-  EXPECT_CALL(fake_driver_,
-              ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kMoreThanTwoFields,
-                  /*is_webauthn=*/false));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_TwoFields) {
-  LoadHTML(kSimpleWebpage);
-  UpdateUrlForHTML(kSimpleWebpage);
-  UpdateUsernameAndPasswordElements();
-
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-
-  EXPECT_CALL(fake_driver_,
-              ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kTwoFields,
-                  /*is_webauthn=*/false));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_NoPasswordField) {
-  LoadHTML(kSingleUsernameFormHTML);
-  UpdateUrlForHTML(kSingleUsernameFormHTML);
-  UpdateOnlyUsernameElement();
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      username_element_));
-
-  EXPECT_CALL(fake_driver_,
-              ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kNoPasswordField,
-                  /*is_webauthn=*/false));
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(PasswordAutofillAgentTest,
-       DontTryToShowKeyboardReplacingSurfaceOnReadonlyForm) {
-  SetElementReadOnly(username_element_, true);
-  SetElementReadOnly(password_element_, true);
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_FALSE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      username_element_));
-  EXPECT_FALSE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-}
-
-class PasswordAutofillAgentTestReadonlyElementVariationTest
-    : public PasswordAutofillAgentTest,
-      public testing::WithParamInterface<bool> {};
-
-TEST_P(PasswordAutofillAgentTestReadonlyElementVariationTest,
-       DontTryToShowKeyboardReplacingSurfaceOnReadonlyElement) {
-  bool is_password_readonly = GetParam();
-
-  WebInputElement readonly_element =
-      is_password_readonly ? password_element_ : username_element_;
-  WebInputElement editable_element =
-      is_password_readonly ? username_element_ : password_element_;
-  SetElementReadOnly(readonly_element, true);
-  SetElementReadOnly(editable_element, false);
-  base::RunLoop().RunUntilIdle();
-
-  SimulateOnFillPasswordForm(fill_data_);
-
-  // Firstly, check that Touch-To-Fill is not shown on the readonly element.
-  EXPECT_FALSE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      readonly_element));
-
-  // Secondly, check that Touch-To-Fill can be shown on the editable element.
-  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      editable_element));
-}
-
-INSTANTIATE_TEST_SUITE_P(ReadonlyElementVariation,
-                         PasswordAutofillAgentTestReadonlyElementVariationTest,
-                         testing::Bool());
-
-// Credentials are sent to the renderer even for sign-up forms as these may be
-// eligible for filling via manual fall back. In this case, the username_field
-// and password_field are not set. This test verifies that no failures are
-// recorded in PasswordManager.FirstRendererFillingResult.
-TEST_F(PasswordAutofillAgentTest,
-       DontTryToShowKeyboardReplacingSurfaceSignUpForm) {
-  LoadHTML(kSignupFormHTML);
-
-  WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element =
-      document.GetElementById(WebString::FromUTF8("random_info"));
-  ASSERT_TRUE(element);
-  username_element_ = element.To<WebInputElement>();
-
-  fill_data_.username_element_renderer_id = autofill::FieldRendererId();
-  fill_data_.password_element_renderer_id = autofill::FieldRendererId();
-
-  WebFormElement form_element =
-      document.GetElementById("LoginTestForm").To<WebFormElement>();
-  fill_data_.form_renderer_id = form_util::GetFormRendererId(form_element);
-
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_FALSE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
-      password_element_));
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Tests that `FillIntoFocusedField` doesn't fill read-only text fields.
 TEST_F(PasswordAutofillAgentTest, FillIntoFocusedReadonlyTextField) {
   // Neither field should be autocompleted.
@@ -2651,7 +2340,7 @@ TEST_F(PasswordAutofillAgentTest, OnChangeLoggingState_Deactivated) {
 // credential suggestion popup, and the user can autocomplete the password by
 // selecting the credential from the popup.
 TEST_F(PasswordAutofillAgentTest, ClickAndSelect) {
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
+  FocusElement(kUsernameName);
 
   // SimulateElementClick() is called so that a user gesture is actually made
   // and the password can be filled. However, SimulateElementClick() does not
@@ -2679,7 +2368,6 @@ TEST_F(PasswordAutofillAgentTest, ClickAndSelect) {
 // TODO(b:322923603): Clean up when the feature is launched.
 TEST_F(PasswordAutofillAgentTest, SuggestionsPrefixMatchedByTypedUsername) {
   ConfigurePasswordSuggestionFiltering(/*enabled=*/false);
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
 
   ClearUsernameAndPasswordFieldValues();
   // Make sure there's password data to fill in the field.
@@ -2699,7 +2387,6 @@ TEST_F(PasswordAutofillAgentTest, SuggestionsPrefixMatchedByTypedUsername) {
 TEST_F(PasswordAutofillAgentTest,
        SuggestionsNotPrefixMatchedWhenFeatureEnabled) {
   ConfigurePasswordSuggestionFiltering(/*enabled=*/true);
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
 
   ClearUsernameAndPasswordFieldValues();
   // Make sure there's password data to fill in the field.
@@ -2764,8 +2451,6 @@ TEST_F(PasswordAutofillAgentTest, NoPopupOnPasswordFieldWithoutSuggestions) {
 // load and the element is autofilled, when the user clicks on an element that
 // has a matching username.
 TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
-
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -2797,7 +2482,6 @@ TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
 // user clicks on the password field.
 TEST_F(PasswordAutofillAgentTest, NoCredentialsOnPasswordClick) {
   SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
-
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -2930,8 +2614,6 @@ TEST_F(PasswordAutofillAgentTest, RememberLastNonEmptySingleUsername) {
 // test checks that the overwritten password is not reverted back.
 TEST_F(PasswordAutofillAgentTest,
        NoopEditingDoesNotOverwriteManuallyEditedPassword) {
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
-
   fill_data_.wait_for_username = true;
   SimulateUsernameTyping(kAliceUsername);
   SimulateOnFillPasswordForm(fill_data_);
@@ -2959,8 +2641,6 @@ TEST_F(PasswordAutofillAgentTest,
 // that autofilling does not rewrite the username, if the value is already
 // there.
 TEST_F(PasswordAutofillAgentTest, AcceptingSuggestionDoesntRewriteUsername) {
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
-
   fill_data_.wait_for_username = true;
   SimulateUsernameTyping(kAliceUsername);
   SimulateOnFillPasswordForm(fill_data_);
@@ -3386,8 +3066,6 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnEmptyPasswordField) {
   fill_data_.preferred_login.username_value.clear();
   fill_data_.additional_logins.clear();
 
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kPasswordName);
-
   password_element_.SetValue("");
   password_element_.SetAutofillState(WebAutofillState::kNotFilled);
 
@@ -3412,8 +3090,6 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnAutofilledPasswordField) {
   UpdateOnlyPasswordElement();
   fill_data_.preferred_login.username_value.clear();
   fill_data_.additional_logins.clear();
-
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kPasswordName);
 
   password_element_.SetValue("");
   password_element_.SetAutofillState(WebAutofillState::kNotFilled);
@@ -3628,9 +3304,6 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
 // be displayed when available after the field is focused again.
 // Regression test for crbug/1495325.
 TEST_F(PasswordAutofillAgentTest, CanShowSuggestionsAfterManualGeneration) {
-  // Ensure TTF isn't shown when the user focuses the password field.
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kPasswordName);
-
   // Simulate receiving credentials for filling from the browser.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -3695,8 +3368,6 @@ TEST_F(PasswordAutofillAgentTest,
   UpdateUrlForHTML(kPasswordChangeFormHTML);
   UpdateUsernameAndPasswordElements();
 
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kPasswordName);
-
   ClearUsernameAndPasswordFieldValues();
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -3713,8 +3384,6 @@ TEST_F(PasswordAutofillAgentTest,
   LoadHTML(kPasswordChangeFormHTML);
   UpdateUrlForHTML(kPasswordChangeFormHTML);
   UpdateUsernameAndPasswordElements();
-
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kPasswordName);
 
   ClearUsernameAndPasswordFieldValues();
   fill_data_.wait_for_username = true;
@@ -4332,7 +4001,6 @@ TEST_F(PasswordAutofillAgentTest,
 // username field is present.
 TEST_F(PasswordAutofillAgentTest, SuggestPasswordFieldSignInForm) {
   SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
-
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -4681,8 +4349,6 @@ TEST_F(PasswordAutofillAgentTest,
 }
 
 TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
-
   password_autofill_agent_->SetPasswordFillData(fill_data_);
   ASSERT_TRUE(SimulateElementClick(kPasswordName));
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions)
@@ -4948,8 +4614,6 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernameClearPreview) {
 // Fill on account select for credentials with empty usernames:
 // Do not refill usernames if non-empty username is already selected.
 TEST_F(PasswordAutofillAgentTest, NoUsernameCredential) {
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
-
   const char kPasswordForEmptyUsernameCredential[] = "empty";
   const char16_t kPasswordForEmptyUsernameCredential16[] = u"empty";
 
@@ -5186,13 +4850,6 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationWhenFormTagHostsShadowDom) {
   LoadHTML(kFormTagHostsShadowDomInputs);
   ASSERT_TRUE(UpdateFormElementsForFormHostingShadowDom());
 
-#if BUILDFLAG(IS_ANDROID)
-  // Ensure TTF isn't shown when the user focuses the password field.
-  SimulateElementClick(password_element_);
-  password_autofill_agent_->KeyboardReplacingSurfaceClosed(
-      /*show_virtual_keyboard=*/false);
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Propagate fill data for filling on manual fallback.
   UpdateRendererIDsInFillData();
   fill_data_.wait_for_username = true;
@@ -5303,8 +4960,6 @@ TEST_F(PasswordAutofillAgentTest,
       password_manager::features::kShowSuggestionsOnAutofocus);
 
 #if BUILDFLAG(IS_ANDROID)
-  // A fixture needed to properly test suggestions showing on Android.
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
   // The method above leaves the field focused, which is not needed for this
   // test.
   BlurElement(kUsernameName);
@@ -5336,8 +4991,6 @@ TEST_F(PasswordAutofillAgentTest,
   UpdateRendererIDsInFillData();
 
 #if BUILDFLAG(IS_ANDROID)
-  // A fixture needed to properly test suggestions showing on Android.
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
   // The method above leaves the field focused, which is not needed for this
   // test.
   BlurElement(kUsernameName);
@@ -5361,8 +5014,6 @@ TEST_F(PasswordAutofillAgentTest,
       password_manager::features::kShowSuggestionsOnAutofocus);
 
 #if BUILDFLAG(IS_ANDROID)
-  // A fixture needed to properly test suggestions showing on Android.
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
   // The method above leaves the field focused, which is not needed for this
   // test.
   BlurElement(kUsernameName);
@@ -5390,8 +5041,6 @@ TEST_F(PasswordAutofillAgentTest,
       password_manager::features::kShowSuggestionsOnAutofocus);
 
 #if BUILDFLAG(IS_ANDROID)
-  // A fixture needed to properly test suggestions showing on Android.
-  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
   // The method above leaves the field focused, which is not needed for this
   // test.
   BlurElement(kUsernameName);

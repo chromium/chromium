@@ -6,9 +6,11 @@
 #define UI_BASE_X_SELECTION_UTILS_H_
 
 #include <stddef.h>
+
 #include <map>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -101,8 +103,7 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionData {
 
   bool IsValid() const;
   x11::Atom GetType() const;
-  const unsigned char* GetData() const;
-  size_t GetSize() const;
+  base::span<const unsigned char> GetSpan() const;
 
   // If |type_| is a string type, convert the data to UTF8 and return it.
   std::string GetText() const;

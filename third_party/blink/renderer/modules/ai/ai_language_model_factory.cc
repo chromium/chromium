@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model.h"
-#include "third_party/blink/renderer/modules/ai/ai_language_model_capabilities.h"
+#include "third_party/blink/renderer/modules/ai/ai_language_model_params.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -168,6 +168,7 @@ void AILanguageModelFactory::Trace(Visitor* visitor) const {
   visitor->Trace(ai_);
 }
 
+// TODO(crbug.com/390459309): remove `OnGetModelInfoComplete()`.
 void AILanguageModelFactory::OnGetModelInfoComplete(
     ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
     AILanguageModelCapabilities* capabilities,
@@ -182,6 +183,7 @@ void AILanguageModelFactory::OnGetModelInfoComplete(
   resolver->Resolve(capabilities);
 }
 
+// TODO(crbug.com/390459309): remove `OnCanCreateSessionComplete()`.
 void AILanguageModelFactory::OnCanCreateSessionComplete(
     ScriptPromiseResolver<AILanguageModelCapabilities>* resolver,
     mojom::blink::ModelAvailabilityCheckResult check_result) {
@@ -200,6 +202,7 @@ void AILanguageModelFactory::OnCanCreateSessionComplete(
       WrapPersistent(resolver), WrapPersistent(capabilities)));
 }
 
+// TODO(crbug.com/390459309): remove `capabilities()`.
 ScriptPromise<AILanguageModelCapabilities> AILanguageModelFactory::capabilities(
     ScriptState* script_state,
     ExceptionState& exception_state) {
@@ -219,6 +222,78 @@ ScriptPromise<AILanguageModelCapabilities> AILanguageModelFactory::capabilities(
 
   ai_->GetAIRemote()->CanCreateLanguageModel(
       WTF::BindOnce(&AILanguageModelFactory::OnCanCreateSessionComplete,
+                    WrapPersistent(this), WrapPersistent(resolver)));
+
+  return promise;
+}
+
+void AILanguageModelFactory::OnCanCreateLanguageModelComplete(
+    ScriptPromiseResolver<V8AICapabilityAvailability>* resolver,
+    mojom::blink::ModelAvailabilityCheckResult check_result) {
+  AICapabilityAvailability availability = HandleModelAvailabilityCheckResult(
+      GetExecutionContext(), AIMetrics::AISessionType::kLanguageModel,
+      check_result);
+  resolver->Resolve(AICapabilityAvailabilityToV8(availability));
+}
+
+// TODO(crbug.com/390459309): implement the logic that actually checks the
+// options.
+ScriptPromise<V8AICapabilityAvailability> AILanguageModelFactory::availability(
+    ScriptState* script_state,
+    const AILanguageModelCreateCoreOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<V8AICapabilityAvailability>();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8AICapabilityAvailability>>(
+          script_state);
+  auto promise = resolver->Promise();
+
+  base::UmaHistogramEnumeration(AIMetrics::GetAIAPIUsageMetricName(
+                                    AIMetrics::AISessionType::kLanguageModel),
+                                AIMetrics::AIAPI::kCanCreateSession);
+
+  ai_->GetAIRemote()->CanCreateLanguageModel(
+      WTF::BindOnce(&AILanguageModelFactory::OnCanCreateLanguageModelComplete,
+                    WrapPersistent(this), WrapPersistent(resolver)));
+
+  return promise;
+}
+
+void AILanguageModelFactory::OnGetLanguageModelParamsComplete(
+    ScriptPromiseResolver<IDLNullable<AILanguageModelParams>>* resolver,
+    mojom::blink::AILanguageModelParamsPtr language_model_params) {
+  if (!language_model_params) {
+    resolver->Resolve(nullptr);
+    return;
+  }
+
+  auto* params = MakeGarbageCollected<AILanguageModelParams>(
+      language_model_params->default_sampling_params->top_k,
+      language_model_params->max_sampling_params->top_k,
+      language_model_params->default_sampling_params->temperature,
+      language_model_params->max_sampling_params->temperature);
+
+  resolver->Resolve(params);
+}
+
+ScriptPromise<IDLNullable<AILanguageModelParams>>
+AILanguageModelFactory::params(ScriptState* script_state,
+                               ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<IDLNullable<AILanguageModelParams>>();
+  }
+
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLNullable<AILanguageModelParams>>>(script_state);
+  auto promise = resolver->Promise();
+
+  ai_->GetAIRemote()->GetLanguageModelParams(
+      WTF::BindOnce(&AILanguageModelFactory::OnGetLanguageModelParamsComplete,
                     WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;

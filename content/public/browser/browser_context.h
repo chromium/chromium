@@ -199,13 +199,16 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   StoragePartition* GetDefaultStoragePartition();
 
-  // Starts a prefetch network request for the given |url|.
+  // Starts a prefetch network request for the given `url`.
+  // `ttl` (Time-To-Live) specifies how long prefetched data remains valid in
+  // the cache. After this period, the data is reset.
   void StartBrowserPrefetchRequest(
       const GURL& url,
       bool javascript_enabled,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       const net::HttpRequestHeaders& additional_headers,
-      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener);
+      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
+      base::TimeDelta ttl_in_sec);
 
   // Updates the "Accept Language" header that the prefetch service delegate
   // will use.

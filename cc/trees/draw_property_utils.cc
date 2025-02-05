@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/math_util.h"
@@ -36,6 +37,7 @@
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "cc/trees/viewport_property_ids.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -524,7 +526,15 @@ inline bool LayerShouldBeSkippedForDrawPropertiesComputation(
     Layer* layer,
     const TransformTree& transform_tree,
     const EffectTree& effect_tree) {
+  static crash_reporter::CrashKeyString<16> effect_tree_index_crash_key(
+      "Effect tree index");
   const EffectNode* effect_node = effect_tree.Node(layer->effect_tree_index());
+  if (!effect_node) {
+    crash_reporter::ScopedCrashKeyString crash_key_scope(
+        &effect_tree_index_crash_key,
+        base::NumberToString(layer->effect_tree_index()));
+    CHECK(effect_node);
+  }
   if (effect_node->HasRenderSurface() && effect_node->subtree_has_copy_request)
     return false;
 

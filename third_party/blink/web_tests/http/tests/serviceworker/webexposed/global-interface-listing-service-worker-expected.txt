@@ -54,9 +54,18 @@ interface AILanguageModelCapabilities
     method languageAvailable
 interface AILanguageModelFactory
     attribute @@toStringTag
+    method availability
     method capabilities
     method constructor
     method create
+    method params
+interface AILanguageModelParams
+    attribute @@toStringTag
+    getter defaultTemperature
+    getter defaultTopK
+    getter maxTemperature
+    getter maxTopK
+    method constructor
 interface AIRewriter
     attribute @@toStringTag
     getter expectedContextLanguages

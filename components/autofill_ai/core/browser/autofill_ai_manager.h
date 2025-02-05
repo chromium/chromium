@@ -118,7 +118,14 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   base::WeakPtr<AutofillAiManager> GetWeakPtr();
 
  private:
+  enum class EntityUpdateType { kSave, kUpdate };
+
   friend class AutofillAiManagerTestApi;
+
+  // Run after the user has either accepted, decline or ignored a save prompt.
+  void OnSavePromptAcceptance(
+      EntityUpdateType update_type,
+      AutofillAiClient::SavePromptAcceptanceResult result);
 
   // Event handler called when the loading suggestion is shown. Used for the
   // automatic triggering path.
@@ -165,13 +172,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
 
   // Returns whether improved predictions exist for the `field`.
   bool HasAutofillAiDataForField(const autofill::FormFieldData& field);
-
-  void OnReceivedAXTreeForFormImport(
-      const GURL& url,
-      const std::string& title,
-      std::unique_ptr<autofill::FormStructure> form,
-      user_annotations::ImportFormCallback callback,
-      optimization_guide::proto::AXTreeUpdate ax_tree_update);
 
   // Returns values to fill based on the `cache_`.
   base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill();

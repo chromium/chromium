@@ -35,14 +35,6 @@ class FakeMojoPasswordManagerDriver
               PasswordFormCleared,
               (const autofill::FormData&),
               (override));
-
-#if BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(void,
-              ShowKeyboardReplacingSurface,
-              (autofill::mojom::SubmissionReadinessState, bool),
-              (override));
-#endif
-
   MOCK_METHOD(void,
               UserModifiedNonPasswordField,
               (autofill::FieldRendererId renderer_id,
