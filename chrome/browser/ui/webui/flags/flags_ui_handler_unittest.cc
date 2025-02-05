@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/flags/flags_ui_handler.h"
 
 #include "base/test/task_environment.h"
-#include "components/flags_ui/flags_storage.h"
-#include "components/flags_ui/flags_ui_constants.h"
+#include "components/webui/flags/flags_storage.h"
+#include "components/webui/flags/flags_ui_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"

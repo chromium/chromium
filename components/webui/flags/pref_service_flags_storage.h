@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FLAGS_UI_PREF_SERVICE_FLAGS_STORAGE_H_
-#define COMPONENTS_FLAGS_UI_PREF_SERVICE_FLAGS_STORAGE_H_
+#ifndef COMPONENTS_WEBUI_FLAGS_PREF_SERVICE_FLAGS_STORAGE_H_
+#define COMPONENTS_WEBUI_FLAGS_PREF_SERVICE_FLAGS_STORAGE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/flags_ui/flags_storage.h"
+#include "components/webui/flags/flags_storage.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -53,4 +53,4 @@ class PrefServiceFlagsStorage : public FlagsStorage {
 
 }  // namespace flags_ui
 
-#endif  // COMPONENTS_FLAGS_UI_PREF_SERVICE_FLAGS_STORAGE_H_
+#endif  // COMPONENTS_WEBUI_FLAGS_PREF_SERVICE_FLAGS_STORAGE_H_

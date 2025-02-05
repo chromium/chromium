@@ -4,8 +4,8 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/flags_state.h"
+#include "components/webui/flags/feature_entry.h"
+#include "components/webui/flags/flags_state.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 #ifndef CHROME_BROWSER_UI_WEBUI_FLAGS_FLAGS_UI_HANDLER_H_

@@ -221,7 +221,7 @@ if (!is_android && !is_mac) {
         "//components/crash/core/app:run_as_crashpad_handler",
         "//components/crash/core/common",
         "//components/crash/win:chrome_wer",
-        "//components/flags_ui:switches",
+        "//components/webui/flags:switches",
         "//content:sandbox_helper_win",
         "//content/public/common:static_switches",
         "//crypto",

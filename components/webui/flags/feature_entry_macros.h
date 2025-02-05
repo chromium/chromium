@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FLAGS_UI_FEATURE_ENTRY_MACROS_H_
-#define COMPONENTS_FLAGS_UI_FEATURE_ENTRY_MACROS_H_
+#ifndef COMPONENTS_WEBUI_FLAGS_FEATURE_ENTRY_MACROS_H_
+#define COMPONENTS_WEBUI_FLAGS_FEATURE_ENTRY_MACROS_H_
 
 // Macros to simplify specifying the type of FeatureEntry. Please refer to
 // the comments on FeatureEntry::Type in feature_entry.h, which explain the
@@ -31,8 +31,10 @@
   }
 #define ENABLE_DISABLE_VALUE_TYPE(enable_switch, disable_switch) \
   ENABLE_DISABLE_VALUE_TYPE_AND_VALUE(enable_switch, "", disable_switch, "")
-#define MULTI_VALUE_TYPE(choices_list) \
-  flags_ui::FeatureEntry::MULTI_VALUE, { .choices = choices_list }
+#define MULTI_VALUE_TYPE(choices_list)   \
+  flags_ui::FeatureEntry::MULTI_VALUE, { \
+    .choices = choices_list              \
+  }
 #define FEATURE_VALUE_TYPE(feature_entry)      \
   flags_ui::FeatureEntry::FEATURE_VALUE, {     \
     .feature = { &feature_entry, {}, nullptr } \
@@ -61,4 +63,4 @@
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#endif  // COMPONENTS_FLAGS_UI_FEATURE_ENTRY_MACROS_H_
+#endif  // COMPONENTS_WEBUI_FLAGS_FEATURE_ENTRY_MACROS_H_

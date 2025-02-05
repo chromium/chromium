@@ -1025,10 +1025,6 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [7330],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/components/flags_ui/resources/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [7340],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/components/gcm_driver/resources/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [7350],
@@ -1080,6 +1076,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/components/webui/chrome_urls/resources/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [7450],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/components/webui/flags/resources/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [7455],
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/webui/internal_debug_pages_disabled/resources/resources.grd": {
     "META": {"sizes": {"includes": [5]}},

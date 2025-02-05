@@ -18,10 +18,10 @@
 #include "base/test/metrics/histogram_enum_reader.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_version.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/feature_entry_macros.h"
-#include "components/flags_ui/flags_test_helpers.h"
-#include "components/flags_ui/flags_ui_metrics.h"
+#include "components/webui/flags/feature_entry.h"
+#include "components/webui/flags/feature_entry_macros.h"
+#include "components/webui/flags/flags_test_helpers.h"
+#include "components/webui/flags/flags_ui_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace about_flags {

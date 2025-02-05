@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/flags_ui/flags_ui_metrics.h"
+#include "components/webui/flags/flags_ui_metrics.h"
 
 #include <set>
 #include <string>
@@ -28,8 +28,9 @@ void ReportAboutFlagsHistogramSwitches(const std::string& uma_histogram_name,
 
       // Kill value, if any.
       const size_t value_pos = switch_name.find('=');
-      if (value_pos != std::string::npos)
+      if (value_pos != std::string::npos) {
         switch_name.resize(value_pos);
+      }
 
       uma_id = GetSwitchUMAId(switch_name);
     } else {

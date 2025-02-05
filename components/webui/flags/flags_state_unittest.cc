@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/flags_ui/flags_state.h"
+#include "components/webui/flags/flags_state.h"
 
 #include <stddef.h>
 
@@ -23,16 +23,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/feature_entry_macros.h"
-#include "components/flags_ui/flags_ui_pref_names.h"
-#include "components/flags_ui/flags_ui_switches.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
+#include "components/webui/flags/feature_entry.h"
+#include "components/webui/flags/feature_entry_macros.h"
+#include "components/webui/flags/flags_ui_pref_names.h"
+#include "components/webui/flags/flags_ui_switches.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -194,12 +194,14 @@ class FlagsStateTest : public ::testing::Test,
     prefs_.registry()->RegisterListPref(prefs::kAboutFlagsEntries);
     prefs_.registry()->RegisterDictionaryPref(prefs::kAboutFlagsOriginLists);
 
-    for (size_t i = 0; i < std::size(kEntries); ++i)
+    for (size_t i = 0; i < std::size(kEntries); ++i) {
       kEntries[i].supported_platforms = FlagsState::GetCurrentPlatform();
+    }
 
     int os_other_than_current = 1;
-    while (os_other_than_current == FlagsState::GetCurrentPlatform())
+    while (os_other_than_current == FlagsState::GetCurrentPlatform()) {
       os_other_than_current <<= 1;
+    }
     kEntries[2].supported_platforms = os_other_than_current;
     flags_state_ = std::make_unique<FlagsState>(kEntries, this);
 
@@ -210,9 +212,7 @@ class FlagsStateTest : public ::testing::Test,
 #endif
   }
 
-  ~FlagsStateTest() override {
-    variations::testing::ClearAllVariationParams();
-  }
+  ~FlagsStateTest() override { variations::testing::ClearAllVariationParams(); }
 
   // FlagsState::Delegate:
   bool ShouldExcludeFlag(const FlagsStorage* storage,
@@ -570,15 +570,17 @@ TEST_F(FlagsStateTest, RemoveFlagSwitches_Features) {
     auto switch_list = command_line.GetSwitches();
     EXPECT_EQ(cases[i].expected_enable_features != nullptr,
               base::Contains(switch_list, kEnableFeatures));
-    if (cases[i].expected_enable_features)
+    if (cases[i].expected_enable_features) {
       EXPECT_EQ(CreateSwitch(cases[i].expected_enable_features),
                 switch_list[kEnableFeatures]);
+    }
 
     EXPECT_EQ(cases[i].expected_disable_features != nullptr,
               base::Contains(switch_list, kDisableFeatures));
-    if (cases[i].expected_disable_features)
+    if (cases[i].expected_disable_features) {
       EXPECT_EQ(CreateSwitch(cases[i].expected_disable_features),
                 switch_list[kDisableFeatures]);
+    }
 
     // RemoveFlagsSwitches() should result in the original values for these
     // switches.
@@ -586,14 +588,16 @@ TEST_F(FlagsStateTest, RemoveFlagSwitches_Features) {
     flags_state_->RemoveFlagsSwitches(&switch_list);
     EXPECT_EQ(cases[i].existing_enable_features != nullptr,
               base::Contains(switch_list, kEnableFeatures));
-    if (cases[i].existing_enable_features)
+    if (cases[i].existing_enable_features) {
       EXPECT_EQ(CreateSwitch(cases[i].existing_enable_features),
                 switch_list[kEnableFeatures]);
+    }
     EXPECT_EQ(cases[i].existing_disable_features != nullptr,
               base::Contains(switch_list, kEnableFeatures));
-    if (cases[i].existing_disable_features)
+    if (cases[i].existing_disable_features) {
       EXPECT_EQ(CreateSwitch(cases[i].existing_disable_features),
                 switch_list[kDisableFeatures]);
+    }
   }
 }
 

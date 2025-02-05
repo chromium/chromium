@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/values.h"
-#include "components/flags_ui/flags_state.h"
+#include "components/webui/flags/flags_state.h"
 
 namespace base {
 class CommandLine;

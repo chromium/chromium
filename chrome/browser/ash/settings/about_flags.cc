@@ -20,11 +20,11 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
-#include "components/flags_ui/flags_storage.h"
-#include "components/flags_ui/flags_ui_pref_names.h"
 #include "components/ownership/owner_settings_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "components/webui/flags/flags_storage.h"
+#include "components/webui/flags/flags_ui_pref_names.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
 namespace ash {

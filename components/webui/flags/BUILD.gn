@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("flags_ui") {
+static_library("flags") {
   sources = [
     "feature_entry.cc",
     "feature_entry.h",
@@ -54,7 +54,7 @@ static_library("test_support") {
   ]
 
   deps = [
-    ":flags_ui",
+    ":flags",
     "//base",
     "//testing/gtest",
   ]
@@ -65,7 +65,7 @@ source_set("unit_tests") {
   sources = [ "flags_state_unittest.cc" ]
 
   deps = [
-    ":flags_ui",
+    ":flags",
     ":switches",
     "//base",
     "//base/test:test_support",

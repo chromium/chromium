@@ -21,7 +21,6 @@ include_rules = [
   "+components/download/public/common",
   "+components/embedder_support",
   "+components/favicon_base",
-  "+components/flags_ui",
   "+components/grit",
   "+components/heap_profiling",
   "+components/history/core/browser",
@@ -68,6 +67,7 @@ include_rules = [
   "+components/viz/service/frame_sinks",
   "+components/viz/test",
   "+components/webdata/common",
+  "+components/webui/flags",
 
   "+content/public/browser",
   "+content/public/test",

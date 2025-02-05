@@ -14,8 +14,8 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "components/flags_ui/flags_state.h"
-#include "components/flags_ui/flags_storage.h"
+#include "components/webui/flags/flags_state.h"
+#include "components/webui/flags/flags_storage.h"
 #include "ui/display/display_observer.h"
 
 class ChromeBrowserMainParts;

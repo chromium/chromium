@@ -7,7 +7,7 @@
 #pragma allow_unsafe_libc_calls
 #endif
 
-#include "components/flags_ui/feature_entry.h"
+#include "components/webui/flags/feature_entry.h"
 
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -34,8 +34,9 @@ const char kGenericExperimentChoiceDisabled[] = "Disabled";
 const char kGenericExperimentChoiceAutomatic[] = "Automatic";
 
 bool FeatureEntry::InternalNameMatches(const std::string& name) const {
-  if (!base::StartsWith(name, internal_name, base::CompareCase::SENSITIVE))
+  if (!base::StartsWith(name, internal_name, base::CompareCase::SENSITIVE)) {
     return false;
+  }
 
   const size_t internal_name_length = strlen(internal_name);
   switch (type) {

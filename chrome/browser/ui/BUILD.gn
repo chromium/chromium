@@ -488,7 +488,6 @@ static_library("ui") {
     "//components/feedback/redaction_tool",
     "//components/find_in_page",
     "//components/fingerprinting_protection_filter/browser",
-    "//components/flags_ui",
     "//components/gcm_driver",
     "//components/google/core/common",
     "//components/heap_profiling/multi_process",
@@ -635,6 +634,7 @@ static_library("ui") {
     "//components/webui/about",
     "//components/webui/chrome_urls",
     "//components/webui/chrome_urls/mojom:mojo_bindings",
+    "//components/webui/flags",
     "//components/webui/version",
     "//components/zoom",
     "//content/public/common",
@@ -5751,7 +5751,7 @@ source_set("ui_features") {
     "//extensions/buildflags",
   ]
   deps = [
-    "//components/flags_ui",
+    "//components/webui/flags",
     "//ui/base:features",
   ]
 }

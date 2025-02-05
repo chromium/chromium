@@ -31,8 +31,8 @@ static_library("early_prefs") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/osauth/impl",
     "//chromeos/ash/components/osauth/public",
-    "//components/flags_ui",
     "//components/user_manager",
+    "//components/webui/flags",
     "//content/public/browser",
   ]
 }

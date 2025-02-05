@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FLAGS_UI_FLAGS_TEST_HELPERS_H_
-#define COMPONENTS_FLAGS_UI_FLAGS_TEST_HELPERS_H_
+#ifndef COMPONENTS_WEBUI_FLAGS_FLAGS_TEST_HELPERS_H_
+#define COMPONENTS_WEBUI_FLAGS_FLAGS_TEST_HELPERS_H_
 
 #include "base/containers/span.h"
-#include "components/flags_ui/feature_entry.h"
+#include "components/webui/flags/feature_entry.h"
 
 namespace flags_ui {
 
@@ -41,4 +41,4 @@ void EnsureRecentUnexpireFlagsArePresent(
 
 }  // namespace flags_ui
 
-#endif  // COMPONENTS_FLAGS_UI_FLAGS_TEST_HELPERS_H_
+#endif  // COMPONENTS_WEBUI_FLAGS_FLAGS_TEST_HELPERS_H_

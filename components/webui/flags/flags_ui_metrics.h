@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FLAGS_UI_FLAGS_UI_METRICS_H_
-#define COMPONENTS_FLAGS_UI_FLAGS_UI_METRICS_H_
+#ifndef COMPONENTS_WEBUI_FLAGS_FLAGS_UI_METRICS_H_
+#define COMPONENTS_WEBUI_FLAGS_FLAGS_UI_METRICS_H_
 
 #include <set>
 #include <string>
@@ -32,4 +32,4 @@ extern const base::HistogramBase::Sample32 kBadSwitchFormatHistogramId;
 
 }  // namespace flags_ui
 
-#endif  // COMPONENTS_FLAGS_UI_FLAGS_UI_METRICS_H_
+#endif  // COMPONENTS_WEBUI_FLAGS_FLAGS_UI_METRICS_H_

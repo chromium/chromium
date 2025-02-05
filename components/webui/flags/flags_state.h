@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FLAGS_UI_FLAGS_STATE_H_
-#define COMPONENTS_FLAGS_UI_FLAGS_STATE_H_
+#ifndef COMPONENTS_WEBUI_FLAGS_FLAGS_STATE_H_
+#define COMPONENTS_WEBUI_FLAGS_FLAGS_STATE_H_
 
 #include <stddef.h>
 
@@ -251,7 +251,6 @@ class FlagsState {
       const std::set<std::string>& enabled_entries,
       int platform_mask) const;
 
-
   // Variant of GetSanitizedEnabledFlags that also removes any flags that aren't
   // enabled on the current platform.
   void GetSanitizedEnabledFlagsForCurrentPlatform(
@@ -311,4 +310,4 @@ class FlagsState {
 
 }  // namespace flags_ui
 
-#endif  // COMPONENTS_FLAGS_UI_FLAGS_STATE_H_
+#endif  // COMPONENTS_WEBUI_FLAGS_FLAGS_STATE_H_

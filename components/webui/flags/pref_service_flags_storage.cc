@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/flags_ui/pref_service_flags_storage.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 
 #include "base/logging.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/flags_ui/flags_ui_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/webui/flags/flags_ui_pref_names.h"
 
 namespace flags_ui {
 
@@ -36,8 +36,9 @@ std::set<std::string> PrefServiceFlagsStorage::GetFlags() const {
 
 bool PrefServiceFlagsStorage::SetFlags(const std::set<std::string>& flags) {
   base::Value::List experiments_list;
-  for (const auto& flag : flags)
+  for (const auto& flag : flags) {
     experiments_list.Append(flag);
+  }
   prefs_->SetList(prefs::kAboutFlagsEntries, std::move(experiments_list));
 
   return true;
@@ -47,8 +48,9 @@ std::string PrefServiceFlagsStorage::GetOriginListFlag(
     const std::string& internal_entry_name) const {
   const base::Value::Dict& origin_lists =
       prefs_->GetDict(prefs::kAboutFlagsOriginLists);
-  if (const std::string* s = origin_lists.FindString(internal_entry_name))
+  if (const std::string* s = origin_lists.FindString(internal_entry_name)) {
     return *s;
+  }
   return std::string();
 }
 

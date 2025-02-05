@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/flags_ui/flags_test_helpers.h"
+#include "components/webui/flags/flags_test_helpers.h"
 
 #include <gtest/gtest.h>
 
@@ -19,8 +19,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/flags_state.h"
+#include "components/webui/flags/feature_entry.h"
+#include "components/webui/flags/flags_state.h"
 
 namespace {
 
@@ -92,8 +92,9 @@ bool IsValidLookingOwner(std::string_view owner) {
   //   "owners": [ "foo@chromium.org bar@chromium.org" ]
   // Apologies to those who have spaces in their email addresses or OWNERS file
   // path names :)
-  if (owner.find_first_of(", ") != std::string::npos)
+  if (owner.find_first_of(", ") != std::string::npos) {
     return false;
+  }
 
   // Per the specification at the top of flag-metadata.json, an owner is one of:
   // 1) A string containing '@', which is treated as a full email address
@@ -216,17 +217,21 @@ void EnsureNamesAreAlphabetical(const NameVector& names,
 bool IsUnexpireFlagFor(const flags_ui::FeatureEntry& entry, int milestone) {
   std::string expected_flag =
       base::StringPrintf("temporary-unexpire-flags-m%d", milestone);
-  if (entry.internal_name != expected_flag)
+  if (entry.internal_name != expected_flag) {
     return false;
-  if (!(entry.supported_platforms & flags_ui::kFlagInfrastructure))
+  }
+  if (!(entry.supported_platforms & flags_ui::kFlagInfrastructure)) {
     return false;
-  if (entry.type != flags_ui::FeatureEntry::FEATURE_VALUE)
+  }
+  if (entry.type != flags_ui::FeatureEntry::FEATURE_VALUE) {
     return false;
+  }
   std::string expected_feature =
       base::StringPrintf("UnexpireFlagsM%d", milestone);
   const auto* feature = entry.feature.feature;
-  if (!feature || feature->name != expected_feature)
+  if (!feature || feature->name != expected_feature) {
     return false;
+  }
   return true;
 }
 
@@ -244,11 +249,13 @@ void EnsureEveryFlagHasMetadata(
   for (const auto& entry : entries) {
     // Flags that are part of the flags system itself (like unexpiry meta-flags)
     // don't have metadata, so skip them here.
-    if (entry.supported_platforms & flags_ui::kFlagInfrastructure)
+    if (entry.supported_platforms & flags_ui::kFlagInfrastructure) {
       continue;
+    }
 
-    if (metadata.count(entry.internal_name) == 0)
+    if (metadata.count(entry.internal_name) == 0) {
       missing_flags.push_back(entry.internal_name);
+    }
   }
 
   std::sort(missing_flags.begin(), missing_flags.end());
@@ -281,8 +288,9 @@ void EnsureEveryFlagHasNonEmptyOwners() {
   std::vector<std::string> sad_flags;
 
   for (const auto& it : metadata) {
-    if (it.second.owners.empty())
+    if (it.second.owners.empty()) {
       sad_flags.push_back(it.first);
+    }
   }
 
   std::sort(sad_flags.begin(), sad_flags.end());
@@ -297,8 +305,9 @@ void EnsureOwnersLookValid() {
 
   for (const auto& flag : metadata) {
     for (const auto& owner : flag.second.owners) {
-      if (!IsValidLookingOwner(owner))
+      if (!IsValidLookingOwner(owner)) {
         sad_flags.push_back(flag.first);
+      }
     }
   }
 
@@ -334,8 +343,9 @@ void EnsureRecentUnexpireFlagsArePresent(
     int current_milestone) {
   auto contains_unexpire_for = [&](int mstone) {
     for (const auto& entry : entries) {
-      if (IsUnexpireFlagFor(entry, mstone))
+      if (IsUnexpireFlagFor(entry, mstone)) {
         return true;
+      }
     }
     return false;
   };

@@ -18,8 +18,8 @@
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/flags_state.h"
+#include "components/webui/flags/feature_entry.h"
+#include "components/webui/flags/flags_state.h"
 
 class Profile;
 

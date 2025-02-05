@@ -8,7 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/flags_ui/feature_entry.h"
+#include "components/webui/flags/feature_entry.h"
 #include "ui/base/ui_base_features.h"
 
 namespace features {

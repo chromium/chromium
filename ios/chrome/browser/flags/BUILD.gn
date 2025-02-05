@@ -28,8 +28,6 @@ source_set("flags") {
     "//components/enterprise",
     "//components/feature_engagement/public",
     "//components/feed:feature_list",
-    "//components/flags_ui",
-    "//components/flags_ui:switches",
     "//components/history/core/browser",
     "//components/invalidation/impl:feature_list",
     "//components/ntp_tiles",
@@ -62,6 +60,8 @@ source_set("flags") {
     "//components/unified_consent",
     "//components/variations",
     "//components/variations/service",
+    "//components/webui/flags",
+    "//components/webui/flags:switches",
     "//ios/chrome/app:background_mode_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/app_store_rating/ui_bundled:features",
@@ -147,8 +147,8 @@ source_set("unit_tests") {
     ":flags",
     ":test_data",
     "//base",
-    "//components/flags_ui",
-    "//components/flags_ui:test_support",
+    "//components/webui/flags",
+    "//components/webui/flags:test_support",
     "//testing/gtest",
   ]
 }

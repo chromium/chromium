@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FLAGS_UI_FEATURE_ENTRY_H_
-#define COMPONENTS_FLAGS_UI_FEATURE_ENTRY_H_
+#ifndef COMPONENTS_WEBUI_FLAGS_FEATURE_ENTRY_H_
+#define COMPONENTS_WEBUI_FLAGS_FEATURE_ENTRY_H_
 
 #include <string>
 
@@ -294,4 +294,4 @@ extern const char kMultiSeparator[];
 
 }  // namespace flags_ui
 
-#endif  // COMPONENTS_FLAGS_UI_FEATURE_ENTRY_H_
+#endif  // COMPONENTS_WEBUI_FLAGS_FEATURE_ENTRY_H_
