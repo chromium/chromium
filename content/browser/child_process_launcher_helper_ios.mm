@@ -293,6 +293,8 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
         xpc_array_append_value(args_array, value);
       }
       xpc_dictionary_set_value(message, "args", args_array);
+      xpc_dictionary_set_fd(message, "stdout", STDOUT_FILENO);
+      xpc_dictionary_set_fd(message, "stderr", STDERR_FILENO);
       xpc_dictionary_set_mach_send(
           message, "port", rendezvous_server_->GetMachSendRight().get());
       xpc_connection_send_message(xpc_connection, message);
