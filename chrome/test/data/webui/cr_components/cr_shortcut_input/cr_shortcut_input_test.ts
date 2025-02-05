@@ -45,18 +45,21 @@ suite('CrShortcutInputTest', function() {
         loadTimeData.getString(expectedErrorStringId), field.errorMessage);
   }
 
+  async function activateInputCapture() {
+    const whenInputCaptureChange =
+        eventToPromise('input-capture-change', input);
+    input.$.edit.click();
+    const event = await whenInputCaptureChange;
+    assertTrue(event.detail);
+    await microtasksFinished();
+  }
+
   test('Basic', async function() {
     const field = input.$.input;
     assertEquals('', field.value);
 
     // Click the edit button. Capture should start.
-    const whenInputCaptureChange =
-        eventToPromise('input-capture-change', input);
-    input.$.edit.click();
-    let event = await whenInputCaptureChange;
-    assertTrue(event.detail);
-    await microtasksFinished();
-    assertEquals('', field.value);
+    await activateInputCapture();
 
     // Press character.
     await assertError(true, 65, [], 'shortcutIncludeStartModifier');
@@ -68,16 +71,12 @@ suite('CrShortcutInputTest', function() {
     await assertError(true, 17, ['ctrl', 'shift'], 'shortcutNeedCharacter');
     // Remove shift.
     await assertError(false, 17, ['ctrl'], 'shortcutNeedCharacter');
-    // Add alt (ctrl + alt is invalid).
-    await assertError(true, 17, ['ctrl', 'alt'], 'shortcutTooManyModifiers');
-    // Remove alt.
-    await assertError(false, 17, ['ctrl'], 'shortcutNeedCharacter');
 
     // Add 'A'. Once a valid shortcut is typed (like Ctrl + A), it is
     // committed.
     const whenShortcutUpdate = eventToPromise('shortcut-updated', input);
     keyDownOn(field, 65, ['ctrl']);
-    event = await whenShortcutUpdate;
+    let event = await whenShortcutUpdate;
     assertEquals('Ctrl+A', event.detail);
 
     await microtasksFinished();
@@ -137,4 +136,40 @@ suite('CrShortcutInputTest', function() {
     assertNotEquals(input.getBubbleAnchor(), null);
     assertEquals(input.$.edit, input.getBubbleAnchor());
   });
+
+  test('allowCtrlAltShortcuts_CtrlAlt', async function() {
+    assertFalse(input.allowCtrlAltShortcuts);
+    activateInputCapture();
+
+    // Press Ctrl + Alt which should be invalid.
+    await assertError(true, 17, ['ctrl', 'alt'], 'shortcutTooManyModifiers');
+    // Remove alt.
+    await assertError(false, 17, ['ctrl'], 'shortcutNeedCharacter');
+
+    input.allowCtrlAltShortcuts = true;
+    const field = input.$.input;
+    keyDownOn(field, 65, ['ctrl', 'alt']);
+    await microtasksFinished();
+    assertEquals('Ctrl + Alt + A', field.value);
+    assertEquals('Ctrl+Alt+A', input.shortcut);
+  });
+
+  // <if expr="is_macosx">
+  test('allowCtrlAltShortcuts_CommandAlt', async function() {
+    assertFalse(input.allowCtrlAltShortcuts);
+    activateInputCapture();
+
+    // Press Command + Alt which should be invalid.
+    await assertError(true, 65, ['meta', 'alt'], 'shortcutTooManyModifiers');
+    // Remove alt.
+    await assertError(false, 17, ['meta'], 'shortcutNeedCharacter');
+
+    input.allowCtrlAltShortcuts = true;
+    const field = input.$.input;
+    keyDownOn(field, 65, ['meta', 'alt']);
+    await microtasksFinished();
+    assertEquals('Command + Alt + A', field.value);
+    assertEquals('Command+Alt+A', input.shortcut);
+  });
+  // </if>
 });
