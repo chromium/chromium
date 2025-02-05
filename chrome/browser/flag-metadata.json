@@ -8799,7 +8799,7 @@
       "markrowe@chromium.org",
       "chrome-platform-security@google.com"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "use-ahardwarebuffer-usage-flags-from-vulkan",
