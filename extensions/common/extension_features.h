@@ -244,6 +244,11 @@ BASE_DECLARE_FEATURE(kRemoveCoreSiteInstance);
 // rather than the developer mode toggle on chrome://extensions.
 BASE_DECLARE_FEATURE(kUserScriptUserExtensionToggle);
 
+// Forces the debugger API/feature to always be restricted by developer mode.
+// This ensures we're always testing the developer mode API/feature restriction
+// capability, even when no other API/feature might be restricted by it.
+BASE_DECLARE_FEATURE(kDebuggerAPIRestrictedToDevMode);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

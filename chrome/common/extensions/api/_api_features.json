@@ -336,7 +336,10 @@
   }],
   "debugger": {
     "dependencies": ["permission:debugger"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    // This restriction is not true for production. It is only true when the
+    // extensions_features::kDebuggerAPIRestrictedToDevMode feature is enabled.
+    "developer_mode_only" : true
   },
   "declarativeContent": {
     "dependencies": ["permission:declarativeContent"],
