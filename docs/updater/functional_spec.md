@@ -1514,6 +1514,9 @@ updater installation fails, then the updater sends an error event with
 `"eventtype": 2`. For example:
 `"event":[{"errorcode":75075,"eventresult":1,"eventtype":2,`.
 
+Or for metainstaller errors in the 73000-73500 range:
+`"event":[{"errorcode":73118,"eventresult":1,"eventtype":2,`.
+
 When the updater updates an application (including itself) it sends an
 event with `"eventtype": 3` indicating the outcome of update operation.
 
