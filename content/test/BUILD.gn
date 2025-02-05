@@ -2560,6 +2560,7 @@ test("content_unittests") {
     "../browser/interest_group/auction_url_loader_factory_proxy_unittest.cc",
     "../browser/interest_group/auction_worklet_manager_unittest.cc",
     "../browser/interest_group/bidding_and_auction_response_unittest.cc",
+    "../browser/interest_group/bidding_and_auction_serializer_fuzztest.cc",
     "../browser/interest_group/bidding_and_auction_serializer_unittest.cc",
     "../browser/interest_group/bidding_and_auction_server_key_fetcher_unittest.cc",
     "../browser/interest_group/header_direct_from_seller_signals_unittest.cc",
@@ -2941,6 +2942,10 @@ test("content_unittests") {
     "test_aggregation_service_impl_unittest.cc",
     "test_page_unittest.cc",
     "test_render_frame_host_unittest.cc",
+  ]
+
+  fuzztests = [
+    "BiddingAndAuctionSerializerTargetSizeEstimator.DoesNotCrashForAnyInput",
   ]
 
   if (is_mac) {

@@ -67,6 +67,7 @@ class CONTENT_EXPORT BiddingAndAuctionSerializer {
     void UpdateUnsizedGroupSizes(size_t remaining_size);
 
     const size_t total_size_before_groups_ = 0;
+    bool size_allocated_ = false;
 
     // Size to use for equally-sized buyers (without a targetSize). Set to
     // nullopt until calculated by `UpdateUnsizedGroupSizes`.
