@@ -3296,7 +3296,7 @@ CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
     return false;
   }
 
-  // `ShouldShowActionContainerWidget()` checks `IsSunfishAllowedAndEnabled()`
+  // `ShouldShowActionContainerWidget()` checks `IsSunfishSessionAllowed()`
   // which checks if *either* Scanner or Sunfish is enabled. Check again if
   // Sunfish specifically is enabled to show the Search button.
   if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected() &&
@@ -3365,7 +3365,7 @@ bool CaptureModeSession::ShouldHideFeedbackWidget(views::Widget* widget) const {
     return false;
   }
 
-  if (!IsSunfishAllowedAndEnabled()) {
+  if (!IsSunfishSessionAllowed()) {
     return true;
   }
 
@@ -3385,7 +3385,7 @@ bool CaptureModeSession::ShouldHideFeedbackWidget(views::Widget* widget) const {
 }
 
 bool CaptureModeSession::ShouldShowActionContainerWidget() const {
-  if (!IsSunfishAllowedAndEnabled()) {
+  if (!IsSunfishSessionAllowed()) {
     return false;
   }
 

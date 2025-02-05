@@ -810,7 +810,7 @@ void SearchBoxView::OnThemeChanged() {
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, button_icon_color,
                                      GetSearchBoxIconSize()));
-  if (IsSunfishAllowedAndEnabled()) {
+  if (IsSunfishSessionAllowed()) {
     sunfish_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(

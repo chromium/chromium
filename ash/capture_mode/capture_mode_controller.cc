@@ -516,7 +516,7 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
     case CaptureModeEntryType::kGameDashboard:
       return BehaviorType::kGameDashboard;
     case CaptureModeEntryType::kSunfish:
-      DCHECK(IsSunfishAllowedAndEnabled());
+      DCHECK(IsSunfishSessionAllowed());
       return BehaviorType::kSunfish;
     default:
       return BehaviorType::kDefault;
@@ -939,7 +939,7 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 void CaptureModeController::StartSunfishSession() {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kSunfishScreenEnteredViaShortcut);
-  DCHECK(IsSunfishAllowedAndEnabled());
+  DCHECK(IsSunfishSessionAllowed());
   if (!capture_mode_util::GetActiveUserPrefService()->GetBoolean(
           prefs::kSunfishEnabled)) {
     return;

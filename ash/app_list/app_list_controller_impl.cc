@@ -1800,7 +1800,7 @@ SearchModel* AppListControllerImpl::GetSearchModel() {
 void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
   SearchBoxModel* search_box_model = GetSearchModel()->search_box();
   search_box_model->SetShowAssistantButton(IsAssistantAllowedAndEnabled());
-  search_box_model->SetShowSunfishButton(IsSunfishAllowedAndEnabled());
+  search_box_model->SetShowSunfishButton(IsSunfishSessionAllowed());
 
   if (!client_) {
     return;
@@ -2122,7 +2122,7 @@ void AppListControllerImpl::MaybeShowSunfishLauncherNudge(
     return;
   }
 
-  if (!IsSunfishAllowedAndEnabled()) {
+  if (!IsSunfishSessionAllowed()) {
     return;
   }
 
