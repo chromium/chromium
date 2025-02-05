@@ -114,8 +114,7 @@ void InkDropHighlight::AnimateFade(AnimationType animation_type,
   layer_->SetTransform(CalculateTransform());
 
   const base::TimeDelta effective_duration =
-      gfx::Animation::ShouldRenderRichAnimation() ? duration
-                                                  : base::TimeDelta();
+      gfx::Animation::RichAnimationDuration(duration);
   const float opacity = animation_type == AnimationType::kFadeIn
                             ? visible_opacity_
                             : kHiddenOpacity;

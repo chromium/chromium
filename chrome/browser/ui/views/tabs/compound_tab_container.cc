@@ -248,10 +248,6 @@ CompoundTabContainer::CompoundTabContainer(
       scroll_contents_view_(scroll_contents_view),
       bounds_animator_(this) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
-
-  if (!gfx::Animation::ShouldRenderRichAnimation()) {
-    bounds_animator_.SetAnimationDuration(base::TimeDelta());
-  }
 }
 
 CompoundTabContainer::~CompoundTabContainer() {
@@ -971,6 +967,8 @@ void CompoundTabContainer::AnimateTabTo(Tab* tab, gfx::Rect ideal_bounds) {
   if (bounds_animator_.IsAnimating(tab)) {
     bounds_animator_.SetTargetBounds(tab, ideal_bounds);
   } else {
+    bounds_animator_.SetAnimationDuration(
+        gfx::Animation::RichAnimationDuration(base::Milliseconds(200)));
     bounds_animator_.AnimateViewTo(tab, ideal_bounds,
                                    std::make_unique<PinUnpinAnimationDelegate>(
                                        &GetTabContainerFor(tab), tab));
@@ -1084,8 +1082,8 @@ void CompoundTabContainer::AnimateScrollToShowXCoordinate(
   gfx::Rect target_rect(target_edge, 0, 0, 0);
 
   tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
-      scroll_contents_view_, bounds_animator_.container(),
-      bounds_animator_.GetAnimationDuration(), start_rect, target_rect);
+      scroll_contents_view_, bounds_animator_.container(), start_rect,
+      target_rect);
   tab_scrolling_animation_->Start();
 }
 

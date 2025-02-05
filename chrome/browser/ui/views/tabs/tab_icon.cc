@@ -94,11 +94,7 @@ TabIcon::TabIcon()
     : AnimationDelegateViews(this),
       clock_(base::DefaultTickClock::GetInstance()),
       favicon_size_animation_(this),
-      tab_discard_animation_(base::Seconds(1),
-                             gfx::LinearAnimation::kDefaultFrameRate,
-                             this) {
-  favicon_size_animation_.SetSlideDuration(base::Milliseconds(250));
-
+      tab_discard_animation_(this) {
   SetCanProcessEventsWithinSubtree(false);
 
   // Add padding to avoid clipping the attention indicator and the increased
@@ -112,11 +108,6 @@ TabIcon::TabIcon()
 
   // Initial state (before any data) should not be animating.
   DCHECK(!GetShowingLoadingAnimation());
-
-  if (!gfx::Animation::ShouldRenderRichAnimation()) {
-    tab_discard_animation_.SetDuration(base::TimeDelta());
-    favicon_size_animation_.SetSlideDuration(base::TimeDelta());
-  }
 
   SetProperty(views::kElementIdentifierKey, kTabIconElementId);
 }
@@ -463,7 +454,11 @@ void TabIcon::SetDiscarded(bool discarded) {
   bool show_discard_indicator = is_discarded_ && should_show_discard_indicator_;
   if (was_discard_indicator_shown_ != show_discard_indicator) {
     was_discard_indicator_shown_ = show_discard_indicator;
+    favicon_size_animation_.SetSlideDuration(
+        gfx::Animation::RichAnimationDuration(base::Milliseconds(250)));
     if (show_discard_indicator) {
+      tab_discard_animation_.SetDuration(
+          gfx::Animation::RichAnimationDuration(base::Seconds(1)));
       tab_discard_animation_.Start();
       favicon_size_animation_.Hide();
 
@@ -484,6 +479,8 @@ void TabIcon::SetNetworkState(TabNetworkState network_state) {
   network_state_ = network_state;
   const bool is_animated = NetworkStateIsAnimated(network_state_);
   if (was_animated != is_animated) {
+    favicon_size_animation_.SetSlideDuration(
+        gfx::Animation::RichAnimationDuration(base::Milliseconds(250)));
     if (was_animated && GetNonDefaultFavicon()) {
       favicon_size_animation_.Show();
     } else {

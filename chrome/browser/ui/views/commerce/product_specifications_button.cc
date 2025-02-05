@@ -221,9 +221,11 @@ void ProductSpecificationsButton::ExecuteShow() {
   scoped_tab_strip_modal_ui_ = tab_strip_model_->ShowModalUI();
 
   expansion_animation_.SetSlideDuration(
-      GetAnimationDuration(kExpansionInDuration));
-  opacity_animation_.SetSlideDuration(GetAnimationDuration(kOpacityInDuration));
-  const base::TimeDelta delay = GetAnimationDuration(kOpacityDelay);
+      gfx::Animation::RichAnimationDuration(kExpansionInDuration));
+  opacity_animation_.SetSlideDuration(
+      gfx::Animation::RichAnimationDuration(kOpacityInDuration));
+  const base::TimeDelta delay =
+      gfx::Animation::RichAnimationDuration(kOpacityDelay);
   opacity_animation_delay_timer_.Start(
       FROM_HERE, delay, this,
       &ProductSpecificationsButton::ShowOpacityAnimation);
@@ -240,11 +242,11 @@ void ProductSpecificationsButton::ExecuteShow() {
 void ProductSpecificationsButton::ExecuteHide() {
   hide_button_timer_.Stop();
   expansion_animation_.SetSlideDuration(
-      GetAnimationDuration(kExpansionOutDuration));
+      gfx::Animation::RichAnimationDuration(kExpansionOutDuration));
   expansion_animation_.Hide();
 
   opacity_animation_.SetSlideDuration(
-      GetAnimationDuration(kOpacityOutDuration));
+      gfx::Animation::RichAnimationDuration(kOpacityOutDuration));
   opacity_animation_.Hide();
   if (entry_point_controller_) {
     entry_point_controller_->OnEntryPointHidden();
@@ -344,12 +346,6 @@ void ProductSpecificationsButton::SetWidthFactor(float factor) {
 
 void ProductSpecificationsButton::ShowOpacityAnimation() {
   opacity_animation_.Show();
-}
-
-base::TimeDelta ProductSpecificationsButton::GetAnimationDuration(
-    base::TimeDelta duration) {
-  return gfx::Animation::ShouldRenderRichAnimation() ? duration
-                                                     : base::TimeDelta();
 }
 
 BEGIN_METADATA(ProductSpecificationsButton)

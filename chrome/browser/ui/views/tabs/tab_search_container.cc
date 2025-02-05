@@ -117,15 +117,17 @@ void TabSearchContainer::TabOrganizationAnimationSession::Show() {
   flat_edge_animation_.SetTweenType(gfx::Tween::Type::LINEAR);
 
   expansion_animation_.SetSlideDuration(
-      GetAnimationDuration(kExpansionInDuration));
+      gfx::Animation::RichAnimationDuration(kExpansionInDuration));
   flat_edge_animation_.SetSlideDuration(
-      GetAnimationDuration(kFlatEdgeInDuration));
-  opacity_animation_.SetSlideDuration(GetAnimationDuration(kOpacityInDuration));
+      gfx::Animation::RichAnimationDuration(kFlatEdgeInDuration));
+  opacity_animation_.SetSlideDuration(
+      gfx::Animation::RichAnimationDuration(kOpacityInDuration));
 
   expansion_animation_.Show();
   flat_edge_animation_.Show();
 
-  const base::TimeDelta delay = GetAnimationDuration(kOpacityDelay);
+  const base::TimeDelta delay =
+      gfx::Animation::RichAnimationDuration(kOpacityDelay);
   opacity_animation_delay_timer_.Start(
       FROM_HERE, delay, this,
       &TabSearchContainer::TabOrganizationAnimationSession::
@@ -147,24 +149,17 @@ void TabSearchContainer::TabOrganizationAnimationSession::Hide() {
   flat_edge_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
 
   expansion_animation_.SetSlideDuration(
-      GetAnimationDuration(kExpansionOutDuration));
+      gfx::Animation::RichAnimationDuration(kExpansionOutDuration));
 
   flat_edge_animation_.SetSlideDuration(
-      GetAnimationDuration(kFlatEdgeOutDuration));
+      gfx::Animation::RichAnimationDuration(kFlatEdgeOutDuration));
 
   opacity_animation_.SetSlideDuration(
-      GetAnimationDuration(kOpacityOutDuration));
+      gfx::Animation::RichAnimationDuration(kOpacityOutDuration));
 
   expansion_animation_.Hide();
   flat_edge_animation_.Hide();
   opacity_animation_.Hide();
-}
-
-base::TimeDelta
-TabSearchContainer::TabOrganizationAnimationSession::GetAnimationDuration(
-    base::TimeDelta duration) {
-  return gfx::Animation::ShouldRenderRichAnimation() ? duration
-                                                     : base::TimeDelta();
 }
 
 void TabSearchContainer::TabOrganizationAnimationSession::
