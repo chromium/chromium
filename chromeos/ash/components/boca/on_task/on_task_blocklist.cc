@@ -243,27 +243,10 @@ bool OnTaskBlocklist::CanPerformOneLevelNavigation(content::WebContents* tab) {
     return false;
   }
 
-  // For one level deep (1LD) navigation restriction, we check if the last
-  // committed URL is the same as the original URL being tracked. This helps us
-  // determine if we have already navigated 1LD.
-  //
-  // For same domain + 1LD navigation restriction, we check if the last
-  // committed URL is in the same domain as the original URL that was being
-  // tracked. This helps us determine if we have already navigated 1LD.
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
   if (tab_id.is_valid() &&
       base::Contains(one_level_deep_original_url_, tab_id)) {
-    const GURL one_level_deep_original_url =
-        one_level_deep_original_url_[tab_id];
-    const GURL last_committed_url = tab->GetLastCommittedURL();
-    if (current_page_restriction_level_ ==
-        LockedNavigationOptions::LIMITED_NAVIGATION) {
-      return one_level_deep_original_url == last_committed_url;
-    }
-
-    // Same domain + 1LD navigation restriction.
-    return last_committed_url.is_valid() &&
-           last_committed_url.DomainIs(one_level_deep_original_url.host());
+    return one_level_deep_original_url_[tab_id] == tab->GetLastCommittedURL();
   }
   return true;
 }
