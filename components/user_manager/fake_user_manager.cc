@@ -63,7 +63,6 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
     // UserManagerImpl::UserLoggedIn eventually.
     active_user_ = AddEphemeralUser(account_id, UserType::kRegular);
     SetIsCurrentUserNew(true);
-    is_current_user_ephemeral_regular_user_ = true;
   }
 
   NotifyOnLogin();

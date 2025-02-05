@@ -276,7 +276,6 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
     active_user_ =
         AddEphemeralUser(account_id, user_manager::UserType::kRegular);
     SetIsCurrentUserNew(true);
-    is_current_user_ephemeral_regular_user_ = true;
   }
 
   NotifyOnLogin();
