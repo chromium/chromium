@@ -15,6 +15,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.url.GURL;
 
@@ -88,25 +89,18 @@ public class AwSupervisedUserUrlClassifier {
     }
 
     @CalledByNative
-    public static void shouldBlockUrl(GURL requestUrl, long nativeCallbackPtr) {
+    public static void shouldBlockUrl(GURL requestUrl, JniOnceCallback<Boolean> callback) {
         getInstance()
                 .mDelegate
                 .shouldBlockUrl(
                         requestUrl,
                         shouldBlockUrl -> {
-                            ThreadUtils.postOnUiThread(
-                                    () -> {
-                                        AwSupervisedUserUrlClassifierJni.get()
-                                                .onShouldBlockUrlResult(
-                                                        nativeCallbackPtr, shouldBlockUrl);
-                                    });
+                            ThreadUtils.postOnUiThread(() -> callback.onResult(shouldBlockUrl));
                         });
     }
 
     @NativeMethods
     interface Natives {
-        void onShouldBlockUrlResult(long callbackPtr, boolean shouldBlock);
-
         void setUserRequiresUrlChecks(boolean userRequiresUrlChecks);
     }
 }
