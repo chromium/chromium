@@ -3641,7 +3641,7 @@
   {
     "name": "enable-preferences-account-storage",
     "owners": [ "ankushkush@google.com", "treib@chromium.org" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 137
   },
   {
     "name": "enable-prevent-close",
@@ -7873,12 +7873,12 @@
       "ankushkush@google.com",
       "chrome-sync-dev@google.com"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "separate-local-and-account-themes",
     "owners": ["ankushkush@google.com", "chrome-sync-dev@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "separate-profiles-for-managed-accounts",
