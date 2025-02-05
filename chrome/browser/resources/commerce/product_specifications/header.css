@@ -72,7 +72,7 @@ cr-input.stroked:hover {
   flex: 1;
 }
 
-#subtitle:hover {
+:host(:not([disabled])) #subtitle:hover {
   border-bottom: 1px solid var(--color-product-specifications-divider);
   margin-bottom: -1px; /* Don't move on hover */
 }

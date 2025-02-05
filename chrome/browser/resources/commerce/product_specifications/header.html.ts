@@ -37,7 +37,7 @@ export function getHtml(this: HeaderElement) {
 
   <cr-icon-button id="menuButton" class="icon-more-vert"
       @click="${this.showMenu_}"
-      ?disabled="${this.menuButtonDisabled}"
+      ?disabled="${this.disabled}"
       ?hidden="${!this.subtitle}"
       aria-label="$i18n{tableMenuA11yLabel}">
   </cr-icon-button>

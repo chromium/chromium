@@ -42,6 +42,9 @@ class AccountChecker {
   // necessarily mean sync is active.
   virtual bool IsSyncTypeEnabled(syncer::UserSelectableType type);
 
+  // Check whether sync is available for the user.
+  virtual bool IsSyncAvailable();
+
   virtual bool IsAnonymizedUrlDataCollectionEnabled();
 
   virtual bool IsSubjectToParentalControls();

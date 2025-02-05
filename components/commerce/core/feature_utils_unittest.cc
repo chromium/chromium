@@ -159,6 +159,23 @@ TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoSync) {
   ASSERT_FALSE(IsProductSpecificationsSettingVisible(account_checker_.get()));
 }
 
+TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_SyncInactive) {
+  test_features_.InitWithFeatures(
+      {kProductSpecifications,
+       optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi},
+      {});
+  SetupProductSpecificationsEnabled();
+
+  // We should be able to fetch data before turning off sync.
+  ASSERT_TRUE(CanFetchProductSpecificationsData(account_checker_.get()));
+  ASSERT_TRUE(IsProductSpecificationsSettingVisible(account_checker_.get()));
+
+  account_checker_->SetSyncAvailable(false);
+
+  ASSERT_FALSE(CanFetchProductSpecificationsData(account_checker_.get()));
+  ASSERT_FALSE(IsProductSpecificationsSettingVisible(account_checker_.get()));
+}
+
 TEST_F(FeatureUtilsTest,
        CanFetchProductSpecificationsData_NoEnterpriseNoSettings) {
   test_features_.InitWithFeatures(

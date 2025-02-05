@@ -2372,27 +2372,30 @@ suite('AppTest', () => {
       assertFalse(isVisible(feedbackButtons));
     });
 
-    test('shows sync state if user is not syncing', async () => {
-      shoppingServiceApi.setResultFor(
-          'getProductSpecificationsFeatureState', Promise.resolve({
-            state: {
-              isSyncingTabCompare: false,
-              canLoadFullPageUi: true,
-              canManageSets: true,
-              canFetchData: true,
-              isAllowedForEnterprise: true,
-            },
-          }));
-      await createAppElement();
-      await shoppingServiceApi.whenCalled(
-          'getProductSpecificationsFeatureState');
-      await microtasksFinished();
+    test(
+        'shows sync state and disables header if user is not syncing',
+        async () => {
+          shoppingServiceApi.setResultFor(
+              'getProductSpecificationsFeatureState', Promise.resolve({
+                state: {
+                  isSyncingTabCompare: false,
+                  canLoadFullPageUi: true,
+                  canManageSets: true,
+                  canFetchData: true,
+                  isAllowedForEnterprise: true,
+                },
+              }));
+          await createAppElement();
+          await shoppingServiceApi.whenCalled(
+              'getProductSpecificationsFeatureState');
+          await microtasksFinished();
 
-      assertTrue(isVisible(appElement.$.syncPromo));
-      assertFalse(isVisible(appElement.$.error));
-      assertFalse(isVisible(appElement.$.empty));
-      assertFalse(isVisible(appElement.$.specs));
-    });
+          assertTrue(isVisible(appElement.$.syncPromo));
+          assertFalse(isVisible(appElement.$.error));
+          assertFalse(isVisible(appElement.$.empty));
+          assertFalse(isVisible(appElement.$.specs));
+          assertTrue(appElement.$.header.disabled);
+        });
 
     test('shows error state if disabled', async () => {
       shoppingServiceApi.setResultFor(
