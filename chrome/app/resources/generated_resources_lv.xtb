@@ -1777,7 +1777,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2217208085547223783">Uzticamības statuss</translation>
 <translation id="2218019600945559112">Pele un skārienpaliktnis</translation>
 <translation id="2218515861914035131">Ielīmēt kā vienkāršu tekstu</translation>
-<translation id="221872881068107022">Ritināšana atpakaļgaitā</translation>
+<translation id="221872881068107022">Ritināšana pretējā virzienā</translation>
 <translation id="2219007152108311874">Vaicāt katrā apmeklējuma reizē</translation>
 <translation id="2219081237089444028">Lai pierakstīšanās būtu ērtāka, iestatiet paroli šai ierīcei: <ph name="DEVICE_TYPE" /></translation>
 <translation id="2220409419896228519">Pievienojiet grāmatzīmes savām iecienītajām Google lietotnēm</translation>
@@ -7726,7 +7726,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6495266441917713704">Nevar pārsūtīt Wi-Fi</translation>
 <translation id="6495453178162183932">Motīvs ir atjaunināts uz Chrome noklusējumu</translation>
 <translation id="6497784818439587832">Mainiet attēlojuma lielumu, lai samazinātu vai palielinātu ekrānā redzamos vienumus.</translation>
-<translation id="6497789971060331894">Peles ritināšana atpakaļgaitā</translation>
+<translation id="6497789971060331894">Peles ritināšana pretējā virzienā</translation>
 <translation id="6498249116389603658">&amp;Visas valodas</translation>
 <translation id="6499143127267478107">No starpniekservera skripta tiek noteikts saimniekdators...</translation>
 <translation id="650185290742160385">Pazemināt slieksni</translation>
@@ -8127,7 +8127,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6784523122863989144">Profils tiek atbalstīts</translation>
 <translation id="6785594991951195537">Vietnes <ph name="PASSWORD_DOMAIN" /> izmantošana</translation>
 <translation id="6785739405821760313">Tiek skatītas saglabātās darbvietas. Lai pārietu citur, nospiediet tabulēšanas taustiņu.</translation>
-<translation id="6785915470941880363">Ritināšana atpakaļgaitā <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
+<translation id="6785915470941880363">Ritināšana pretējā virzienā <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786480815699355166">Var tulkot tikai funkcijas “Subtitri reāllaikā” atbalstītās valodas.</translation>
 <translation id="6786747875388722282">Paplašinājumi</translation>
@@ -9931,7 +9931,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8049029041626250638">Pievienojiet tastatūru vai peli. Ja izmantojat Bluetooth ierīces, jūsu ierīcēm ir jābūt gatavām savienošanai pārī.</translation>
 <translation id="8049122382261047457">Meklējiet pēc jebkura attēla, izmantojot Google Lens</translation>
 <translation id="8049705080247101012">Google atzīmēja paplašinājumu <ph name="EXTENSION_NAME" /> kā ļaunprātīgu un nepieļāva instalēšanu.</translation>
-<translation id="8049948037269924837">Skārienpaliktņa ritināšana atpakaļgaitā</translation>
+<translation id="8049948037269924837">Skārienpaliktņa ritināšana pretējā virzienā</translation>
 <translation id="8050038245906040378">Microsoft tirdzniecības koda parakstīšana</translation>
 <translation id="8050191834453426339">Verificēt vēlreiz</translation>
 <translation id="8051193500142930381">Funkcijas, kurām nepieciešama piekļuve kamerai, nedarbosies</translation>

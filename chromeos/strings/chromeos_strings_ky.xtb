@@ -509,7 +509,7 @@
 <translation id="3486220673238053218">аныктама</translation>
 <translation id="3487866404496702283">Mahi функциясы тууралуу пикир</translation>
 <translation id="3488065109653206955">Жарым-жартылай жандырылган</translation>
-<translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> түстөр менен <ph name="OFFICE_STYLE" /> кеңсе</translation>
+<translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> түстөгү <ph name="OFFICE_STYLE" /> кеңсе</translation>
 <translation id="3493187369049186498">Дайын-даректерди Chromebook эсептеп турат. Бул провайдердин маалыматынан айырмаланышы мүмкүн.</translation>
 <translation id="349570724365779960">Мектеп куралдары окуучулар менен байланыштырылган</translation>
 <translation id="3502426834823382181">бардык колдонмолорду көрүү</translation>
@@ -1551,7 +1551,7 @@
 <translation id="8391349326751432483">Эстутумду сыноо үчүн кеминде 500 Мб бош орун керек. Эстутумда орун бошотуу үчүн өтмөктөр менен колдонмолорду жабыңыз.</translation>
 <translation id="8395584934117017006">Бул <ph name="DEVICE_TYPE" /> түзмөгүн ишкана башкарат</translation>
 <translation id="8398927464629426868">Түзмөк кубатталган же кубатталышы токтотулган деңгээл</translation>
-<translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> стилинде тартылган <ph name="ART_FEATURE" /> сүрөтү</translation>
+<translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> стилиндеги <ph name="ART_FEATURE" /> сүрөтү</translation>
 <translation id="8410244574650205435">Автоматтык түрдө аныкталат</translation>
 <translation id="8420955526972171689">Аппараттык камсыздоону сынап, бузулууларды аныктап оңдоо</translation>
 <translation id="8422748173858722634">IMEI</translation>
