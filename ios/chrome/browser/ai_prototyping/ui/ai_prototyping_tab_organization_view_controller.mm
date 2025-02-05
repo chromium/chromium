@@ -133,9 +133,11 @@ using optimization_guide::proto::
 
 - (void)updateResponseField:(NSString*)response {
   _responseContainer.text = response;
+}
 
-  // Re-enable the submit button as the query has resolved.
-  [self enableSubmitButton];
+- (void)enableSubmitButtons {
+  _groupTabsButton.enabled = YES;
+  _groupTabsButton.backgroundColor = [UIColor colorNamed:kBlueColor];
 }
 
 #pragma mark - Private
@@ -237,12 +239,6 @@ using optimization_guide::proto::
     default:
       NOTREACHED();
   }
-}
-
-// Enable submit button, and style the accordingly.
-- (void)enableSubmitButton {
-  _groupTabsButton.enabled = YES;
-  _groupTabsButton.backgroundColor = [UIColor colorNamed:kBlueColor];
 }
 
 // Disable submit button, and style the accordingly.
