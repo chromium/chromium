@@ -68,9 +68,6 @@ class UseCounterMetricsRecorder {
   // Returns a list of opt-in UKM features for use counter.
   static const UkmFeatureList& GetAllowedUkmFeatures();
 
-  // Returns a list of opt-in UKM features for the Web Dev Metrics use counter.
-  static const UkmFeatureList& GetAllowedWebDevMetricsUkmFeatures();
-
   // Getters for mappings of WebFeature and CSSSampleId's to WebDXFeature use
   // counters.
   static const base::flat_map<blink::mojom::WebFeature,
@@ -105,8 +102,6 @@ class UseCounterMetricsRecorder {
   // To keep tracks of which features have been measured.
   std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kMaxValue) + 1>
       ukm_features_recorded_;
-  std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kMaxValue) + 1>
-      webdev_metrics_ukm_features_recorded_;
 };
 
 // This class reports several use counters coming from Blink.

@@ -3618,36 +3618,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Blink.DeveloperMetricsRare">
-  <owner>foolip@chromium.org</owner>
-  <owner>chrome-webdev-metrics@google.com</owner>
-  <summary>
-    Collects data for a subset of UseCounter features of interest to the Web
-    Platform Developer Metrics team due to their recent launch or potential for
-    spec changes. Features reported in this set should be rare, appearing in
-    fewer than 5% of page loads.
-  </summary>
-  <metric name="Feature" enum="FeatureObserver">
-    <summary>
-      Opt-in UseCounter feature, listed in
-      components/page_load_metrics/browser/observers/use_counter/webdev_metrics_ukm_features.cc
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="IsMainFrameFeature" enum="Boolean">
-    <summary>
-      Emits True(1) or False(0) to indicate whether the Feature recorded is in
-      the main frame or not.
-    </summary>
-  </metric>
-</event>
-
 <event name="Blink.FedCm">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
