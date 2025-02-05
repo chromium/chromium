@@ -4,12 +4,16 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
 import android.view.View;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
@@ -20,6 +24,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator class to handle logic of embedded permission dialog */
+@NullMarked
 public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
         implements ActivityStateObserver {
     public EmbeddedPermissionDialogMediator(PermissionDialogCoordinator.Delegate delegate) {
@@ -45,7 +50,8 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
     public void showDialogInternal(View view) {
         assert mState == State.NOT_SHOWING || mState == State.SHOW_SYSTEM_PROMPT;
         mDialogModel = createModalDialogModel(view);
-        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
+        assumeNonNull(mModalDialogManager)
+                .showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
         mState = State.PROMPT_OPEN;
     }
 
@@ -53,12 +59,15 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
     public void updateDialog(View customView) {
         if (mState == State.NOT_SHOWING || mState == State.SHOW_SYSTEM_PROMPT) {
             showDialogInternal(customView);
-        } else if (mDialogDelegate.getEmbeddedPromptVariant() == EmbeddedPromptVariant.OS_PROMPT) {
+        } else if (assumeNonNull(mDialogDelegate).getEmbeddedPromptVariant()
+                == EmbeddedPromptVariant.OS_PROMPT) {
             mState = State.SHOW_SYSTEM_PROMPT;
-            mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
+            assumeNonNull(mModalDialogManager)
+                    .dismissDialog(mDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
             requestAndroidPermissionsIfNecessary();
         } else {
             mState = State.PROMPT_OPEN;
+            assumeNonNull(mDialogModel);
             if (PermissionDialogModelFactory.shouldUseVerticalButtons(mDialogDelegate)) {
                 mDialogModel.set(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true);
                 mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, new String());
@@ -68,6 +77,7 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
                         PermissionDialogModelFactory.getButtonSpecs(mDialogDelegate));
             } else {
                 mDialogModel.set(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, false);
+                // @NullUnmarked because PropertyModel values are marked as non-null.
                 mDialogModel.set(ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST, null);
                 mDialogModel.set(
                         ModalDialogProperties.POSITIVE_BUTTON_TEXT,
@@ -82,7 +92,8 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
 
     @Override
     public void dismissFromNative() {
-        mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        assumeNonNull(mModalDialogManager)
+                .dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
         onPermissionDialogEnded();
     }
 
@@ -98,20 +109,20 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
 
     private void acknowledgeDelegate() {
         onPermissionDialogResult(ContentSettingValues.DEFAULT);
-        mDialogDelegate.onAcknowledge();
+        assumeNonNull(mDialogDelegate).onAcknowledge();
     }
 
     private void denyDelegate() {
         onPermissionDialogResult(ContentSettingValues.BLOCK);
-        mDialogDelegate.onDeny();
+        assumeNonNull(mDialogDelegate).onDeny();
     }
 
     private void resumeDelegate() {
-        mDialogDelegate.onResume();
+        assumeNonNull(mDialogDelegate).onResume();
     }
 
     private void onSystemSettingsShownDelegate() {
-        mDialogDelegate.onSystemSettingsShown();
+        assumeNonNull(mDialogDelegate).onSystemSettingsShown();
     }
 
     // We will not notify `onPermissionDialogResult` in `accept.*Delegate`. If this dialog comes
@@ -119,11 +130,11 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
     // It makes more sense to notify the observers (in this case to change the icon) after all the
     // screens have appeared.
     private void acceptDelegate() {
-        mDialogDelegate.onAccept();
+        assumeNonNull(mDialogDelegate).onAccept();
     }
 
     private void acceptThisTimeDelegate() {
-        mDialogDelegate.onAcceptThisTime();
+        assumeNonNull(mDialogDelegate).onAcceptThisTime();
     }
 
     private void handleSystemPermission(boolean accepted) {
@@ -224,6 +235,7 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
         // - Missing permission runnalble, in this case is to acknowledge the dialog.
         // If it returns false, no system level permissions need to be requested, so just run the
         // accept callback.
+        assumeNonNull(mDialogDelegate);
         if (!AndroidPermissionRequester.requestAndroidPermissions(
                 mDialogDelegate.getWindow(),
                 mDialogDelegate.getContentSettingsTypes(),
@@ -280,7 +292,7 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
         return intent;
     }
 
-    public PermissionDialogDelegate getDelegateForTest() {
+    public @Nullable PermissionDialogDelegate getDelegateForTest() {
         return mDialogDelegate;
     }
 }

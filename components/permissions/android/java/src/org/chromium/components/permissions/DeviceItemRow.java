@@ -4,19 +4,23 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** A class representing one data row in the dialog. */
+@NullMarked
 public class DeviceItemRow {
     public final String mKey;
     public String mDescription;
-    public Drawable mIcon;
-    public String mIconDescription;
+    public @Nullable Drawable mIcon;
+    public @Nullable String mIconDescription;
 
     /**
      * Creates a device item row which can be shown in the dialog.
@@ -54,8 +58,8 @@ public class DeviceItemRow {
         if (!TextUtils.equals(mIconDescription, iconDescription)) return false;
 
         if (icon != null && mIcon != null) {
-            Drawable myIcon = mIcon.getConstantState().newDrawable();
-            Drawable theirIcon = icon.getConstantState().newDrawable();
+            Drawable myIcon = assumeNonNull(mIcon.getConstantState()).newDrawable();
+            Drawable theirIcon = assumeNonNull(icon.getConstantState()).newDrawable();
 
             Bitmap myBitmap =
                     Bitmap.createBitmap(

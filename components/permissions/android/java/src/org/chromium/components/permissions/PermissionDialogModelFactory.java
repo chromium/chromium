@@ -8,11 +8,13 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** This class creates the model for the permission dialog. */
+@NullMarked
 class PermissionDialogModelFactory {
     public static PropertyModel getModel(
             ModalDialogProperties.Controller controller,

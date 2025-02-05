@@ -4,12 +4,16 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -24,6 +28,7 @@ import java.lang.annotation.RetentionPolicy;
  * Mediator class Contains the logic for show, dismiss and update a dialog. Controls the dialog
  * state and reacts to UI events.
  */
+@NullMarked
 public class PermissionDialogMediator
         implements AndroidPermissionRequester.RequestDelegate, ModalDialogProperties.Controller {
     @IntDef({
@@ -50,11 +55,11 @@ public class PermissionDialogMediator
         int SHOW_SYSTEM_PROMPT = 8;
     }
 
-    protected PropertyModel mDialogModel;
-    private PropertyModel mOverlayDetectedDialogModel;
-    protected PermissionDialogDelegate mDialogDelegate;
-    protected ModalDialogManager mModalDialogManager;
-    protected PermissionDialogCoordinator.Delegate mCoordinatorDelegate;
+    protected @Nullable PropertyModel mDialogModel;
+    private @Nullable PropertyModel mOverlayDetectedDialogModel;
+    protected @Nullable PermissionDialogDelegate mDialogDelegate;
+    protected @Nullable ModalDialogManager mModalDialogManager;
+    protected PermissionDialogCoordinator.@Nullable Delegate mCoordinatorDelegate;
 
     /** The current state, whether we have a prompt showing and so on. */
     protected @State int mState;
@@ -93,8 +98,8 @@ public class PermissionDialogMediator
         // function may be called after onClick and before onDismiss, or before both of
         // those listeners.
         if (mState == State.PROMPT_OPEN) {
-            mModalDialogManager.dismissDialog(
-                    mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+            assumeNonNull(mModalDialogManager)
+                    .dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
         } else {
             assert mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT
                     || mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT
@@ -111,7 +116,10 @@ public class PermissionDialogMediator
      */
     protected PropertyModel createModalDialogModel(View view) {
         return PermissionDialogModelFactory.getModel(
-                this, mDialogDelegate, view, () -> showFilteredTouchEventDialog(getContext()));
+                this,
+                assumeNonNull(mDialogDelegate),
+                view,
+                () -> showFilteredTouchEventDialog(getContext()));
     }
 
     /**
@@ -122,15 +130,18 @@ public class PermissionDialogMediator
         // Don't show another dialog if one is already displayed.
         if (mOverlayDetectedDialogModel != null) return;
 
+        assumeNonNull(mModalDialogManager);
         ModalDialogProperties.Controller overlayDetectedDialogController =
                 new SimpleModalDialogController(
                         mModalDialogManager,
                         (Integer dismissalCause) -> {
                             if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                                     && mDialogModel != null) {
-                                mModalDialogManager.dismissDialog(
-                                        mDialogModel,
-                                        DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                                assumeNonNull(mModalDialogManager)
+                                        .dismissDialog(
+                                                mDialogModel,
+                                                DialogDismissalCause
+                                                        .NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
                             }
                             mOverlayDetectedDialogModel = null;
                         });
@@ -273,7 +284,7 @@ public class PermissionDialogMediator
     protected void handleDismissNegativeButtonClickedState() {
         // Run the necessary delegate callback immediately and will schedule the next dialog.
         onPermissionDialogResult(ContentSettingValues.BLOCK);
-        mDialogDelegate.onDeny();
+        assumeNonNull(mDialogDelegate).onDeny();
         onPermissionDialogEnded();
     }
 
@@ -296,6 +307,7 @@ public class PermissionDialogMediator
         // onAndroidPermissionCanceled, which will schedule the next permission dialog. If it
         // returns false, no system level permissions need to be requested, so just run the accept
         // callback.
+        assumeNonNull(mDialogDelegate);
         if (!AndroidPermissionRequester.requestAndroidPermissions(
                 mDialogDelegate.getWindow(),
                 mDialogDelegate.getContentSettingsTypes(),
@@ -320,7 +332,9 @@ public class PermissionDialogMediator
 
     protected Context getContext() {
         assert mDialogDelegate != null;
-        return mDialogDelegate.getWindow().getContext().get();
+        Context context = mDialogDelegate.getWindow().getContext().get();
+        assert context != null;
+        return context;
     }
 
     public void destroy() {
@@ -336,6 +350,6 @@ public class PermissionDialogMediator
     }
 
     public void clickButtonForTest(@ModalDialogProperties.ButtonType int buttonType) {
-        onClick(mDialogModel, buttonType);
+        onClick(assumeNonNull(mDialogModel), buttonType);
     }
 }

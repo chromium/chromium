@@ -12,6 +12,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -26,12 +28,13 @@ import java.util.List;
  * respond appropriately.
  */
 @JNINamespace("permissions")
+@NullMarked
 public class PermissionDialogDelegate {
     /** The native-side counterpart of this class */
     private long mNativeDelegatePtr;
 
     /** The controller for this class */
-    private PermissionDialogController mDialogController;
+    private @Nullable PermissionDialogController mDialogController;
 
     /** The window for which to create the dialog. */
     private WindowAndroid mWindow;

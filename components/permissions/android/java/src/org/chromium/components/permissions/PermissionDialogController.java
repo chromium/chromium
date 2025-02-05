@@ -4,6 +4,8 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,6 +13,8 @@ import android.graphics.Bitmap;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.WindowAndroid;
@@ -27,6 +31,7 @@ import java.util.List;
  * be visible on the screen at once. Any additional request for a modal permissions dialog is
  * queued, and will be displayed once the user responds to the current dialog.
  */
+@NullMarked
 public class PermissionDialogController {
     /** Interface for a class that wants to receive updates from this controller. */
     public interface Observer {
@@ -64,8 +69,8 @@ public class PermissionDialogController {
 
     private final ObserverList<Observer> mObservers;
 
-    private PermissionDialogDelegate mDialogDelegate;
-    private PermissionDialogCoordinator mCoordinator;
+    private @Nullable PermissionDialogDelegate mDialogDelegate;
+    private @Nullable PermissionDialogCoordinator mCoordinator;
 
     // As the PermissionRequestManager handles queueing for a tab and only shows prompts for active
     // tabs, we typically only have one request. This class only handles multiple requests at once
@@ -121,7 +126,7 @@ public class PermissionDialogController {
      */
     public void updateDialog(PermissionDialogDelegate delegate) {
         if (mDialogDelegate == delegate) {
-            mCoordinator.updateDialog();
+            assumeNonNull(mCoordinator).updateDialog();
         }
     }
 
@@ -170,7 +175,7 @@ public class PermissionDialogController {
             assert mRequestQueue.contains(delegate);
             mRequestQueue.remove(delegate);
         } else {
-            mCoordinator.dismissFromNative();
+            assumeNonNull(mCoordinator).dismissFromNative();
         }
         delegate.destroy();
     }
@@ -200,7 +205,7 @@ public class PermissionDialogController {
      */
     public void updateIcon(PermissionDialogDelegate delegate, Bitmap icon) {
         if (mDialogDelegate == delegate) {
-            mCoordinator.updateIcon(icon);
+            assumeNonNull(mCoordinator).updateIcon(icon);
         }
     }
 
@@ -211,7 +216,7 @@ public class PermissionDialogController {
      * @return icon The size of icon displayed on the custom view.
      */
     public int getIconSizeInPx(PermissionDialogDelegate delegate) {
-        return mDialogDelegate == delegate ? mCoordinator.getIconSizeInPx() : 0;
+        return mDialogDelegate == delegate ? assumeNonNull(mCoordinator).getIconSizeInPx() : 0;
     }
 
     public boolean isDialogShownForTest() {
@@ -219,6 +224,6 @@ public class PermissionDialogController {
     }
 
     public void clickButtonForTest(@ModalDialogProperties.ButtonType int buttonType) {
-        mCoordinator.clickButtonForTest(buttonType); // IN-TEST
+        assumeNonNull(mCoordinator).clickButtonForTest(buttonType); // IN-TEST
     }
 }

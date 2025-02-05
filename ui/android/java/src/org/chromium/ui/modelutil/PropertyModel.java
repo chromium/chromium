@@ -427,11 +427,12 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
 
     /** Set the value for the Object based key. */
     @SuppressWarnings("unchecked")
-    public <T extends @Nullable Object> void set(WritableObjectPropertyKey<T> key, T value) {
+    public <T extends @Nullable Object> void set(
+            WritableObjectPropertyKey<T> key, @Nullable T value) {
         validateKey(key);
         ObjectContainer<T> container = (ObjectContainer<T>) mData.get(key);
         if (container == null) {
-            container = new ObjectContainer<T>(value);
+            container = new ObjectContainer<>(value);
             mData.put(key, container);
         } else if (!key.mSkipEquality && ObjectsCompat.equals(container.value, value)) {
             return;
@@ -773,16 +774,16 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         }
     }
 
-    private static class ObjectContainer<T extends @Nullable Object> extends ValueContainer {
-        public T value;
+    private static class ObjectContainer<T> extends ValueContainer {
+        public @Nullable T value;
 
-        public ObjectContainer(T value) {
+        public ObjectContainer(@Nullable T value) {
             this.value = value;
         }
 
         @Override
         public String toString() {
-            return value + " in " + getClass().getSimpleName();
+            return (value != null ? value : "null") + " in " + getClass().getSimpleName();
         }
 
         @Override
