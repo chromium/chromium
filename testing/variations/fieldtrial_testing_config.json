@@ -8241,21 +8241,6 @@
             ]
         }
     ],
-    "DisableTrimmingWhileSuspended": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisableTrimmingWhileSuspended"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableUrgentPageDiscarding": [
         {
             "platforms": [
