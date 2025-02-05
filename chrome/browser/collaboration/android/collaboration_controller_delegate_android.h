@@ -47,6 +47,7 @@ class CollaborationControllerDelegateAndroid
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
 
  private:
+  bool on_flow_finished_called_{false};
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 };
 
