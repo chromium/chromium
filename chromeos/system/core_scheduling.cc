@@ -50,7 +50,8 @@ BASE_FEATURE(kCoreScheduling,
 }
 
 void EnableCoreSchedulingIfAvailable() {
-  if (!base::FeatureList::IsEnabled(kCoreScheduling)) {
+  if (!IsCoreSchedulingAvailable() ||
+      !base::FeatureList::IsEnabled(kCoreScheduling)) {
     return;
   }
 
@@ -102,6 +103,10 @@ bool IsCoreSchedulingAvailable() {
     std::string buf;
     for (const std::string& s : {"l1tf", "mds"}) {
       base::FilePath vuln = sysfs_vulns.Append(s);
+      if (!base::PathExists(vuln)) {
+        continue;
+      }
+
       if (!base::ReadFileToString(vuln, &buf)) {
         LOG(ERROR) << "Could not read " << vuln;
         continue;
