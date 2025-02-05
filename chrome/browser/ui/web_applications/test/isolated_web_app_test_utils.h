@@ -57,7 +57,7 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> CreateAndStartServer(
-      const base::FilePath::StringPieceType& chrome_test_data_relative_root);
+      base::FilePath::StringViewType chrome_test_data_relative_root);
   IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       const url::Origin& origin);
   content::RenderFrameHost* OpenApp(const webapps::AppId& app_id,
@@ -104,7 +104,7 @@ class UpdateDiscoveryTaskResultWaiter
 };
 
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
-    const base::FilePath::StringPieceType& chrome_test_data_relative_root);
+    base::FilePath::StringViewType chrome_test_data_relative_root);
 
 IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
     Profile* profile,

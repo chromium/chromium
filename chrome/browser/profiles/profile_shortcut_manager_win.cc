@@ -693,7 +693,7 @@ std::wstring SanitizeShortcutProfileNameString(
 
 namespace profiles {
 
-const base::FilePath::StringPieceType kProfileIconFileName =
+const base::FilePath::StringViewType kProfileIconFileName =
     FILE_PATH_LITERAL("Google Profile.ico");
 
 namespace internal {

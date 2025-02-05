@@ -40,7 +40,7 @@ void GetGaiaTestAccount(std::string& out_email, std::string& out_password) {
   base::FilePath root_path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
 
-  base::FilePath::StringPieceType kTestAccountFilePath = FILE_PATH_LITERAL(
+  base::FilePath::StringViewType kTestAccountFilePath = FILE_PATH_LITERAL(
       "chrome/browser/internal/resources/chromeos/crosier/test_accounts.json");
   base::FilePath test_accounts_path =
       base::MakeAbsoluteFilePath(root_path.Append(kTestAccountFilePath));
@@ -61,7 +61,7 @@ FamilyTestData GetFamilyTestData() {
   base::FilePath root_path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
 
-  base::FilePath::StringPieceType kTestAccountFilePath = FILE_PATH_LITERAL(
+  base::FilePath::StringViewType kTestAccountFilePath = FILE_PATH_LITERAL(
       "chrome/browser/internal/resources/chromeos/crosier/test_accounts.json");
   base::FilePath test_accounts_path =
       base::MakeAbsoluteFilePath(root_path.Append(kTestAccountFilePath));

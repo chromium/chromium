@@ -79,7 +79,7 @@ namespace policy {
 namespace {
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr base::FilePath::StringPieceType kCachedPolicyDirname =
+constexpr base::FilePath::StringViewType kCachedPolicyDirname =
     FILE_PATH_LITERAL("Policies");
 #endif
 

@@ -2091,7 +2091,7 @@ void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
 }
 
 base::FilePath WebAppIntegrationTestDriver::GetResourceFile(
-    base::FilePath::StringPieceType relative_path) {
+    base::FilePath::StringViewType relative_path) {
   base::FilePath base_dir;
   if (!base::PathService::Get(chrome::DIR_TEST_DATA, &base_dir)) {
     return base::FilePath();

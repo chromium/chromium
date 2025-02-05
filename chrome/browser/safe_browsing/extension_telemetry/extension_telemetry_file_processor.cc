@@ -35,7 +35,7 @@ constexpr base::FilePath::CharType kHTMLFileSuffix[] =
 constexpr base::FilePath::CharType kCSSFileSuffix[] = FILE_PATH_LITERAL(".css");
 
 constexpr auto kFileTypePriorityMap =
-    base::MakeFixedFlatMap<base::FilePath::StringPieceType, int>(
+    base::MakeFixedFlatMap<base::FilePath::StringViewType, int>(
         {{kJSFileSuffix, 3}, {kHTMLFileSuffix, 2}, {kCSSFileSuffix, 1}});
 
 void RecordLargestFileSizeObserved(size_t size) {

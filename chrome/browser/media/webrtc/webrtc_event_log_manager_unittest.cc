@@ -149,7 +149,7 @@ PeerConnectionKey GetPeerConnectionKey(RenderProcessHost* rph, int lid) {
 
 bool CreateRemoteBoundLogFile(const base::FilePath& dir,
                               size_t web_app_id,
-                              const base::FilePath::StringPieceType& extension,
+                              base::FilePath::StringViewType extension,
                               base::Time capture_time,
                               base::FilePath* file_path,
                               base::File* file) {
@@ -848,8 +848,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
 
   // Extensions associated with local/remote-bound event logs. Depends on
   // whether they're compressed.
-  base::FilePath::StringPieceType local_log_extension_;
-  base::FilePath::StringPieceType remote_log_extension_;
+  base::FilePath::StringViewType local_log_extension_;
+  base::FilePath::StringViewType remote_log_extension_;
 
   // The directory which will contain all profiles.
   base::ScopedTempDir profiles_dir_;
@@ -2845,7 +2845,7 @@ TEST_F(WebRtcEventLogManagerTest,
   std::list<WebRtcLogFileInfo> expected_files;
   ASSERT_TRUE(base::CreateDirectory(remote_logs_dir));
 
-  auto extensions = std::to_array<base::FilePath::StringPieceType>(
+  auto extensions = std::to_array<base::FilePath::StringViewType>(
       {kWebRtcEventLogUncompressedExtension, kWebRtcEventLogGzippedExtension});
   ASSERT_LE(std::size(extensions), kMaxPendingRemoteBoundWebRtcEventLogs)
       << "Lacking test coverage.";

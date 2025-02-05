@@ -37,7 +37,7 @@ namespace {
 // the directory within C:\Windows\SystemTemp that will be created to house a
 // "Crashpad" directory. Each process should provide a distinct value (e.g.,
 // "ChromiumTracing" for the elevated tracing service in a Chromium build).
-base::FilePath GetCrashpadDir(base::FilePath::StringPieceType directory_name) {
+base::FilePath GetCrashpadDir(base::FilePath::StringViewType directory_name) {
   base::FilePath system_temp;
   if (!base::PathService::Get(base::DIR_SYSTEM_TEMP, &system_temp)) {
     return base::FilePath();
@@ -229,7 +229,7 @@ void CrashClient::UpdateUploadConsent() {
 }
 
 void StartCrashHandlerImpl(std::unique_ptr<UserCrashState> user_crash_state,
-                           base::FilePath::StringPieceType directory_name,
+                           base::FilePath::StringViewType directory_name,
                            std::string_view process_type) {
   // The child process requires that the directory holding the client's "crash
   // dump location" already exists, so create it now before launching the child.
@@ -279,7 +279,7 @@ void StartCrashHandlerImpl(std::unique_ptr<UserCrashState> user_crash_state,
 namespace windows_services {
 
 void StartCrashHandler(std::unique_ptr<UserCrashState> user_crash_state,
-                       base::FilePath::StringPieceType directory_name,
+                       base::FilePath::StringViewType directory_name,
                        std::string_view process_type,
                        scoped_refptr<base::SequencedTaskRunner> task_runner) {
   if (task_runner) {
@@ -288,7 +288,7 @@ void StartCrashHandler(std::unique_ptr<UserCrashState> user_crash_state,
         FROM_HERE,
         base::BindOnce(
             [](std::unique_ptr<UserCrashState> user_crash_state,
-               base::FilePath::StringPieceType directory_name,
+               base::FilePath::StringViewType directory_name,
                std::string_view process_type, base::WaitableEvent& event) {
               StartCrashHandlerImpl(std::move(user_crash_state), directory_name,
                                     process_type);

@@ -13,7 +13,7 @@
 
 namespace web_app {
 
-const base::FilePath::StringPieceType kLastBrowserFilename =
+const base::FilePath::StringViewType kLastBrowserFilename =
     FILE_PATH_LITERAL("Last Browser");
 
 base::FilePath ReadChromePathFromLastBrowserFile(
@@ -29,7 +29,7 @@ base::FilePath ReadChromePathFromLastBrowserFile(
       reinterpret_cast<const base::FilePath::CharType*>(
           last_browser_file_data.data()),
       last_browser_file_data.size() / sizeof(base::FilePath::CharType));
-  const base::FilePath::StringPieceType chrome_path_trimmed =
+  const base::FilePath::StringViewType chrome_path_trimmed =
       base::TrimString(chrome_path, FILE_PATH_LITERAL(" \n"), base::TRIM_ALL);
   return base::FilePath(chrome_path_trimmed);
 }
