@@ -8,6 +8,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_configuration_factory.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_view_finder_metrics_recorder.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_view_finder_transition_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -55,6 +56,9 @@ const CGFloat kBottomCornerRadius = 108.0;
 
   /// Forces the device orientation in portrait mode.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
+
+  /// Records LVF related metrics.
+  LensViewFinderMetricsRecorder* _metricsRecorder;
 }
 
 @synthesize baseViewController = _baseViewController;
@@ -67,6 +71,7 @@ const CGFloat kBottomCornerRadius = 108.0;
 
 - (void)start {
   [super start];
+  _metricsRecorder = [[LensViewFinderMetricsRecorder alloc] init];
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(LensCommands)];
@@ -75,6 +80,7 @@ const CGFloat kBottomCornerRadius = 108.0;
 - (void)stop {
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self lockOrientationPortrait:NO];
+  _metricsRecorder = nil;
   [super stop];
 }
 
@@ -110,6 +116,7 @@ const CGFloat kBottomCornerRadius = 108.0;
   _lensViewController.modalTransitionStyle =
       UIModalTransitionStyleCrossDissolve;
 
+  [_metricsRecorder recordLensViewFinderOpened];
   [self.baseViewController presentViewController:_lensViewController
                                         animated:YES
                                       completion:nil];
@@ -141,6 +148,11 @@ const CGFloat kBottomCornerRadius = 108.0;
   if (isCameraImage && isPortrait) {
     image = [self infilledImageForPortraitCameraCapture:image];
   }
+
+  [_metricsRecorder
+      recordImageWithSource:isCameraImage
+                                ? LensViewFinderImageSource::kCamera
+                                : LensViewFinderImageSource::kGallery];
 
   LensOverlayEntrypoint entrypoint =
       isCameraImage ? LensOverlayEntrypoint::kLVFCameraCapture
@@ -187,6 +199,7 @@ const CGFloat kBottomCornerRadius = 108.0;
 
 - (void)lensControllerDidTapDismissButton:
     (id<ChromeLensViewFinderController>)lensController {
+  [_metricsRecorder recordLensViewFinderDismissTapped];
   [self exitLensViewFinderAnimated:YES];
 }
 
