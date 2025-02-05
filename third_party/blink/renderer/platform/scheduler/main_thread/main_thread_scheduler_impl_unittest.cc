@@ -71,9 +71,6 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 using InputEventState = WidgetScheduler::InputEventState;
 
-constexpr base::TimeDelta kDelayForHighPriorityRendering =
-    base::Milliseconds(150);
-
 // This is a wrapper around MainThreadSchedulerImpl::CreatePageScheduler, that
 // returns the PageScheduler as a PageSchedulerImpl.
 std::unique_ptr<PageSchedulerImpl> CreatePageScheduler(
@@ -3351,7 +3348,8 @@ TEST_F(MainThreadSchedulerImplTest,
 
 TEST_F(MainThreadSchedulerImplTest,
        TestCompositorPolicy_FirstCompositorTaskSetToVeryHighPriority) {
-  AdvanceTimeWithTask(kDelayForHighPriorityRendering);
+  AdvanceTimeWithTask(
+      MainThreadSchedulerImpl::kDefaultRenderingStarvationThreshold);
 
   Vector<String> run_order;
   PostTestTasks(&run_order, "D1 C1 D2 C2 P1");
@@ -3402,59 +3400,6 @@ TEST_F(MainThreadSchedulerImplTest, ThrottleHandleThrottlesQueue) {
     EXPECT_TRUE(throttleable_task_queue()->IsThrottled());
   }
   EXPECT_FALSE(throttleable_task_queue()->IsThrottled());
-}
-
-class PrioritizeCompositingAfterDelayTest : public MainThreadSchedulerImplTest {
- public:
-  PrioritizeCompositingAfterDelayTest()
-      : MainThreadSchedulerImplTest({::base::test::FeatureRefAndParams(
-            kPrioritizeCompositingAfterDelayTrials,
-            {{"PreFCP", "120"}, {"PostFCP", "80"}})}) {}
-};
-
-TEST_F(PrioritizeCompositingAfterDelayTest, PreFCP) {
-  scheduler_->SetCurrentUseCase(UseCase::kEarlyLoading);
-  AdvanceTimeWithTask(base::Milliseconds(119));
-  Vector<String> run_order;
-  PostTestTasks(&run_order, "D1 CM1 P1");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("P1", "D1", "CM1"));
-
-  AdvanceTimeWithTask(base::Milliseconds(121));
-  run_order.clear();
-  PostTestTasks(&run_order, "D1 CM1 P1");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("P1", "CM1", "D1"));
-}
-
-TEST_F(PrioritizeCompositingAfterDelayTest, PostFCP) {
-  scheduler_->SetCurrentUseCase(UseCase::kNone);
-  AdvanceTimeWithTask(base::Milliseconds(79));
-  Vector<String> run_order;
-  PostTestTasks(&run_order, "D1 CM1 P1");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("P1", "D1", "CM1"));
-
-  AdvanceTimeWithTask(base::Milliseconds(81));
-  run_order.clear();
-  PostTestTasks(&run_order, "D1 CM1 P1");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("P1", "CM1", "D1"));
-}
-
-TEST_F(PrioritizeCompositingAfterDelayTest, DuringCompositorGesture) {
-  scheduler_->SetCurrentUseCase(UseCase::kCompositorGesture);
-  AdvanceTimeWithTask(base::Milliseconds(99));
-  Vector<String> run_order;
-  PostTestTasks(&run_order, "D1 CM1 P1");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("P1", "D1", "CM1"));
-
-  AdvanceTimeWithTask(base::Milliseconds(101));
-  run_order.clear();
-  PostTestTasks(&run_order, "P1 D1 CM1");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("P1", "CM1", "D1"));
 }
 
 class ThreadedScrollPreventRenderingStarvationTest

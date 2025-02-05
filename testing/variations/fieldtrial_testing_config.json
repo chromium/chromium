@@ -17850,31 +17850,6 @@
             ]
         }
     ],
-    "PrioritizeCompositingAfterDelay": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PrioritizeCompositingAfter50ms2",
-                    "params": {
-                        "PostFCP": "50",
-                        "PreFCP": "100"
-                    },
-                    "enable_features": [
-                        "PrioritizeCompositingAfterDelayTrials"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacyGuideAiSettings": [
         {
             "platforms": [
