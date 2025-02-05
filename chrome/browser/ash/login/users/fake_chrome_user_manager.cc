@@ -289,36 +289,6 @@ bool FakeChromeUserManager::IsKnownUser(const AccountId& account_id) const {
   return true;
 }
 
-const user_manager::User* FakeChromeUserManager::FindUser(
-    const AccountId& account_id) const {
-  if (active_user_ != nullptr && active_user_->GetAccountId() == account_id) {
-    return active_user_;
-  }
-
-  for (const user_manager::User* user : persisted_users_) {
-    if (user->GetAccountId() == account_id) {
-      return user;
-    }
-  }
-
-  return nullptr;
-}
-
-user_manager::User* FakeChromeUserManager::FindUserAndModify(
-    const AccountId& account_id) {
-  if (active_user_ != nullptr && active_user_->GetAccountId() == account_id) {
-    return active_user_;
-  }
-
-  for (user_manager::User* user : persisted_users_) {
-    if (user->GetAccountId() == account_id) {
-      return user;
-    }
-  }
-
-  return nullptr;
-}
-
 const user_manager::User* FakeChromeUserManager::GetActiveUser() const {
   return GetActiveUserInternal();
 }
