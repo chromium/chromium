@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
+#include "student_heartbeat_request.h"
 
 namespace ash::boca {
 
@@ -80,6 +81,10 @@ void SessionClientImpl::RemoveStudent(
 
 void SessionClientImpl::JoinSession(
     std::unique_ptr<JoinSessionRequest> request) {
+  sender_->StartRequestWithAuthRetry(std::move(request));
+}
+void SessionClientImpl::StudentHeartbeat(
+    std::unique_ptr<StudentHeartbeatRequest> request) {
   sender_->StartRequestWithAuthRetry(std::move(request));
 }
 }  // namespace ash::boca
