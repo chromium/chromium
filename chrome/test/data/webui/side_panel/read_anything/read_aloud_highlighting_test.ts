@@ -8,7 +8,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {emitEvent, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
+import {emitEvent, waitForPlayFromSelection} from './common.js';
 
 suite('ReadAloudHighlight', () => {
   let app: AppElement;
@@ -60,7 +60,6 @@ suite('ReadAloudHighlight', () => {
   }
 
   setup(() => {
-    suppressInnocuousErrors();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to

@@ -8,7 +8,7 @@ import {BrowserProxy, MetricsBrowserProxyImpl, ReadAnythingLogger} from 'chrome-
 import type {AppElement, ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {stubAnimationFrame, suppressInnocuousErrors} from './common.js';
+import {stubAnimationFrame} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -59,7 +59,6 @@ suite('PhraseHighlighting', () => {
   };
 
   setup(() => {
-    suppressInnocuousErrors();
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
     BrowserProxy.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

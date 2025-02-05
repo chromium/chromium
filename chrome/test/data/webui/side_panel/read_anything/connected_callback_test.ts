@@ -8,7 +8,6 @@ import {BrowserProxy} from '//resources/cr_components/color_change_listener/brow
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -16,7 +15,6 @@ suite('ConnectedCallback', () => {
   let app: AppElement;
 
   setup(() => {
-    suppressInnocuousErrors();
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();

@@ -9,7 +9,7 @@ import {PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
+import {waitForPlayFromSelection} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('ReadAloud_UpdateContentSelectionPDF', () => {
@@ -85,7 +85,6 @@ suite('ReadAloud_UpdateContentSelectionPDF', () => {
   };
 
   setup(() => {
-    suppressInnocuousErrors();
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
     BrowserProxy.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

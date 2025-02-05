@@ -8,7 +8,6 @@ import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-c
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {FakeTree} from './fake_tree_builder.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
@@ -30,7 +29,6 @@ suite('UpdateContentSelection', () => {
   }
 
   setup(() => {
-    suppressInnocuousErrors();
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();

@@ -10,7 +10,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {stubAnimationFrame, suppressInnocuousErrors} from './common.js';
+import {stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 
 suite('FontSize', () => {
@@ -21,7 +21,6 @@ suite('FontSize', () => {
   let fontSizeEmitted: boolean;
 
   setup(() => {
-    suppressInnocuousErrors();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;

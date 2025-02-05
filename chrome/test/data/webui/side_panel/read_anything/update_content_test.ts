@@ -8,7 +8,7 @@ import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-c
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
+import {createSpeechSynthesisVoice, emitEvent} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -26,7 +26,6 @@ suite('UpdateContent', () => {
   ];
 
   setup(() => {
-    suppressInnocuousErrors();
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     readingMode = new FakeReadingMode();

@@ -9,7 +9,7 @@ import {MetricsBrowserProxyImpl, ReadAnythingLogger, ReadAnythingSettingsChange,
 import type {LetterSpacingMenu} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {emitEventWithTarget, suppressInnocuousErrors} from './common.js';
+import {emitEventWithTarget} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -18,7 +18,6 @@ suite('LetterSpacing', () => {
   let metrics: TestMetricsBrowserProxy;
 
   setup(() => {
-    suppressInnocuousErrors();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
