@@ -67,14 +67,23 @@ ChromeTailoredSecurityService::ChromeTailoredSecurityService(Profile* profile)
     : TailoredSecurityService(IdentityManagerFactory::GetForProfile(profile),
                               SyncServiceFactory::GetForProfile(profile),
                               profile->GetPrefs()),
-      profile_(profile) {
+      profile_(profile),
+      retry_handler_(std::make_unique<MessageRetryHandler>(
+          profile_,
+          prefs::kTailoredSecuritySyncFlowRetryState,
+          prefs::kTailoredSecurityNextSyncFlowTimestamp,
+          kRetryNextAttemptDelay,
+          base::BindOnce(&ChromeTailoredSecurityService::
+                             TailoredSecurityTimestampUpdateCallback,
+                         base::Unretained(this)),
+          base::BindOnce(
+              &ChromeTailoredSecurityService::HistorySyncEnabledForUser,
+              base::Unretained(this)),
+          "SafeBrowsing.TailoredSecurity.ShouldRetryOutcome",
+          prefs::kAccountTailoredSecurityUpdateTimestamp,
+          prefs::kEnhancedProtectionEnabledViaTailoredSecurity)) {
   AddObserver(this);
-  if (HistorySyncEnabledForUser() &&
-      !SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
-          prefs())) {
-    retry_timer_.Start(FROM_HERE, kRetryAttemptStartupDelay, this,
-                       &ChromeTailoredSecurityService::MaybeRetryForSyncUsers);
-  }
+  retry_handler_->MaybeStartRetryTimer();
 }
 
 ChromeTailoredSecurityService::~ChromeTailoredSecurityService() {
@@ -131,7 +140,9 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
                        /*is_esb_enabled_by_account_integration=*/is_enabled);
   DisplayDesktopDialog(browser, is_enabled);
 #endif
-  SaveRetryState(TailoredSecurityRetryState::NO_RETRY_NEEDED);
+  retry_handler_->SaveRetryState(
+      MessageRetryHandler::RetryState::NO_RETRY_NEEDED);
+
   if (is_enabled) {
     RecordEnabledNotificationResult(TailoredSecurityNotificationResult::kShown);
   }
@@ -234,88 +245,6 @@ scoped_refptr<network::SharedURLLoaderFactory>
 ChromeTailoredSecurityService::GetURLLoaderFactory() {
   return profile_->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
-}
-
-void ChromeTailoredSecurityService::SaveRetryState(
-    TailoredSecurityRetryState state) {
-  profile_->GetPrefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
-                                   state);
-}
-
-void ChromeTailoredSecurityService::MaybeRetryForSyncUsers() {
-  if (ShouldRetryForSyncUsers()) {
-    TailoredSecurityTimestampUpdateCallback();
-  }
-}
-
-bool ChromeTailoredSecurityService::ShouldRetryForSyncUsers() {
-  PrefService* prefs = profile_->GetPrefs();
-  if (prefs->GetTime(prefs::kAccountTailoredSecurityUpdateTimestamp) ==
-      base::Time()) {
-    // Do nothing because we can still rely on the user setting the tailored
-    // security bit on their account settings in the future.
-    return false;
-  }
-  if (prefs->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState) ==
-      safe_browsing::NO_RETRY_NEEDED) {
-    return false;
-  }
-  if (prefs->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState) ==
-      safe_browsing::RETRY_NEEDED) {
-    if (base::Time::Now() >=
-        prefs->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp)) {
-      // Set the next attempt time to a future point in time so that if this
-      // retry attempt fails, enough time passes before retrying again.
-      prefs->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
-                     base::Time::Now() + kRetryNextAttemptDelay);
-      LogShouldRetryOutcome(
-          TailoredSecurityShouldRetryOutcome::kRetryNeededDoRetry);
-      return true;
-    }
-    LogShouldRetryOutcome(
-        TailoredSecurityShouldRetryOutcome::kRetryNeededKeepWaiting);
-    return false;
-  }
-  if (prefs->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState) ==
-          safe_browsing::UNSET &&
-      !prefs->GetBoolean(
-          prefs::kEnhancedProtectionEnabledViaTailoredSecurity)) {
-    // The stateful version of `ChromeTailoredSecurityService` has not run yet,
-    // and we don't know if a previous version of the service showed the dialog
-    // to the user in the past (pre-M106), so we need to wait long enough before
-    // retrying.
-    //
-    // Chrome M106+ sets kEnhancedProtectionEnabledViaTailoredSecurity on
-    // successfully showing a notification to the user, so we can guard this
-    // logic based on that.
-    if (prefs->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp) ==
-        base::Time()) {
-      prefs->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
-                     base::Time::Now() + kWaitingPeriodInterval);
-      LogShouldRetryOutcome(
-          TailoredSecurityShouldRetryOutcome::kUnsetInitializeWaitingPeriod);
-      return false;
-    } else if (base::Time::Now() >=
-               prefs->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp)) {
-      // Set the next attempt time to a future point in time so that if this
-      // retry attempt fails, enough time passes before retrying again.
-      prefs->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,
-                     base::Time::Now() + kRetryNextAttemptDelay);
-      LogShouldRetryOutcome(
-          TailoredSecurityShouldRetryOutcome::kUnsetRetryBecauseDoneWaiting);
-      return true;
-    } else {
-      LogShouldRetryOutcome(
-          TailoredSecurityShouldRetryOutcome::kUnsetStillWaiting);
-    }
-  }
-  return false;
-}
-
-void LogShouldRetryOutcome(
-    ChromeTailoredSecurityService::TailoredSecurityShouldRetryOutcome outcome) {
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.TailoredSecurity.ShouldRetryOutcome", outcome);
 }
 
 }  // namespace safe_browsing
