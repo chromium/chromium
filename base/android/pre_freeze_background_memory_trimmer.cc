@@ -28,6 +28,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/trace_event/named_trigger.h"  // no-presubmit-check
 
 namespace base::android {
 namespace {
@@ -522,6 +523,7 @@ void PreFreezeBackgroundMemoryTrimmer::StartSelfCompaction(
         "PreFreezeBackgroundMemoryTrimmer.ProcessCompacted",
         /*is_compacted=*/1, base::SampleMetadataScope::kProcess);
   }
+  base::trace_event::EmitNamedTrigger("start-self-compaction");
   metric->RecordBeforeMetrics();
   MaybePostSelfCompactionTask(std::move(task_runner), std::move(regions),
                               std::move(metric), max_bytes, started_at);
