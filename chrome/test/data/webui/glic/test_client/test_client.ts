@@ -130,8 +130,14 @@ async function focusedTabChanged(newValue: TabData|undefined) {
 }
 
 createGlicHostRegistryOnLoad().then((registry) => {
-  logMessage('registring web client');
-  registry.registerWebClient(client);
+  logMessage('registering web client');
+  const params = new URLSearchParams(window.location.search);
+  const delayMs = Number(params.get('delay_ms'));
+  if (delayMs) {
+    setTimeout(() => registry.registerWebClient(client), delayMs);
+  } else {
+    registry.registerWebClient(client);
+  }
 });
 
 type PermissionSwitchName = 'microphone'|'geolocation'|'tabContext';

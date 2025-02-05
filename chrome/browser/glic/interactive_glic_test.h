@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_GLIC_INTERACTIVE_GLIC_TEST_H_
 #define CHROME_BROWSER_GLIC_INTERACTIVE_GLIC_TEST_H_
 
+#include <map>
+#include <sstream>
+#include <string_view>
+
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_cookie_synchronizer.h"
@@ -27,6 +31,8 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/interaction/polling_state_observer.h"
+#include "url/gurl.h"
+#include "url/url_util.h"
 
 namespace glic::test {
 
@@ -122,16 +128,35 @@ class InteractiveGlicTestT : public T {
     // Need to set this here rather than in SetUpCommandLine because we need to
     // use the embedded test server to get the right URL and it's not started
     // at that time.
+    std::ostringstream path;
+    path << "/glic/test_client/index.html";
+
+    // Append the query parameters to the URL.
+    bool first_param = true;
+    auto encode = [](const std::string_view& value) {
+      url::RawCanonOutputT<char> encoded;
+      url::EncodeURIComponent(value, &encoded);
+      return std::string(encoded.view());
+    };
+    for (const auto& [key, value] : mock_glic_query_params_) {
+      path << (first_param ? "?" : "&");
+      first_param = false;
+      path << encode(key);
+      if (!value.empty()) {
+        path << "=" << encode(value);
+      }
+    }
+
     auto* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(::switches::kGlicGuestURL,
-                                    Test::embedded_test_server()
-                                        ->GetURL("/glic/test_client/index.html")
-                                        .spec());
+    command_line->AppendSwitchASCII(
+        ::switches::kGlicGuestURL,
+        Test::embedded_test_server()->GetURL(path.str()).spec());
 
     // Mark the glic FRE as accepted by default.
     // TODO(cuianthony): Move this logic to glic_test_util.h after
     // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
-    PrefService* prefs = InProcessBrowserTest::browser()->profile()->GetPrefs();
+    PrefService* const prefs =
+        InProcessBrowserTest::browser()->profile()->GetPrefs();
     prefs->SetBoolean(prefs::kGlicCompletedFre, true);
     Browser* browser = InProcessBrowserTest::browser();
     identity_test_environment_adaptor_ =
@@ -280,6 +305,14 @@ class InteractiveGlicTestT : public T {
                             desc);
   }
 
+  // Adds a query param to the URL that will be used to load the mock glic.
+  // Must be called before `SetUpOnMainThread()`. Both `key` and `value` (if
+  // specified) will be URL-encoded for safety.
+  void add_mock_glic_query_param(const std::string_view& key,
+                                 const std::string_view& value = "") {
+    mock_glic_query_params_.emplace(key, value);
+  }
+
  private:
   // Because of limitations in the template system, calls to base class methods
   // that are guaranteed by the `requires` clause must still be scoped. These
@@ -293,6 +326,7 @@ class InteractiveGlicTestT : public T {
       identity_test_environment_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
   std::unique_ptr<glic::GlicTestEnvironment> glic_test_environment_;
+  std::map<std::string, std::string> mock_glic_query_params_;
 };
 
 // For most tests, you can alias or inherit from this instead of deriving your
