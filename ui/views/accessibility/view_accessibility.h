@@ -293,7 +293,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // the sole determinant of whether the ignored state is set. See
   // `UpdateIgnoredState`.
   void SetIsIgnored(bool is_ignored);
-  virtual bool GetIsIgnored() const;
+  bool GetIsIgnored() const;
 
   // Note that `pos_in_set` starts from 1 not 0.
   void SetPosInSet(int pos_in_set);
