@@ -609,8 +609,16 @@ AHardwareBufferImageBacking::ProduceDawn(
   // backing.
   DCHECK(hardware_buffer_handle_.is_valid());
 
+  bool has_required_wgpu_ahb_features =
+      device.HasFeature(
+          wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer) &&
+      device.HasFeature(wgpu::FeatureName::SharedFenceSyncFD);
+
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-  if (backend_type == wgpu::BackendType::OpenGLES) {
+  // Some old GL devices do not have SyncFD support, fall back to the
+  // EGLimage-based backing.
+  if (backend_type == wgpu::BackendType::OpenGLES &&
+      !has_required_wgpu_ahb_features) {
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation;
     if (use_passthrough_) {
       gl_representation = ProduceGLTexturePassthrough(manager, tracker);
@@ -628,15 +636,16 @@ AHardwareBufferImageBacking::ProduceDawn(
   }
 #endif
 
-  DCHECK_EQ(backend_type, wgpu::BackendType::Vulkan);
   wgpu::TextureFormat webgpu_format = ToDawnFormat(format());
   if (webgpu_format == wgpu::TextureFormat::Undefined) {
     LOG(ERROR) << "Unable to fine a suitable WebGPU format.";
     return nullptr;
   }
 
+  DCHECK(has_required_wgpu_ahb_features);
+
   return std::make_unique<DawnAHardwareBufferImageRepresentation>(
-      manager, this, tracker, wgpu::Device(device), webgpu_format,
+      manager, this, tracker, wgpu::Device(device), backend_type, webgpu_format,
       std::move(view_formats), hardware_buffer_handle_.get());
 #else
   return nullptr;
