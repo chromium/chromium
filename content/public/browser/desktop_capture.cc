@@ -27,15 +27,11 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 
-BASE_FEATURE(kUseCGDisplayStreamCreateSonoma,
-             "UseCGDisplayStreamCreateSonoma",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // CGDisplayStreamCreate() is marked as deprecated from macOS 14 (Sonoma), so
 // don't use unless the feature flag is set.
 bool CGDisplayStreamCreateIsAvailable() {
   if (base::mac::MacOSMajorVersion() >= 14) {
-    return base::FeatureList::IsEnabled(kUseCGDisplayStreamCreateSonoma);
+    return false;
   }
   return true;
 }
