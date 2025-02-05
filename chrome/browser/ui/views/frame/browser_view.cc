@@ -1191,6 +1191,7 @@ BrowserView::~BrowserView() {
   find_bar_host_view_ = nullptr;
   download_shelf_ = nullptr;
   infobar_container_ = nullptr;
+  multi_contents_view_ = nullptr;
   contents_web_view_ = nullptr;
   devtools_web_view_ = nullptr;
   contents_scrim_view_ = nullptr;
