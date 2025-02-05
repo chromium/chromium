@@ -5935,7 +5935,7 @@
   {
     "name": "modern-tab-strip",
     "owners": [ "ewannpv@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 134
+    "expiry_milestone": 137
   },
   {
     "name": "mojo-linux-sharedmem",
@@ -8452,7 +8452,7 @@
   {
     "name": "tab-groups-on-ipad",
     "owners": [ "alionadangla@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "tab-groups-save-ui-update",
