@@ -870,12 +870,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="13" label="FontVariationSettings"/>
 </enum>
 
-<enum name="DevToolsCSSPropertyDocumentation">
-  <int value="0" label="Documentation shown"/>
-  <int value="1" label="Feature toggled on"/>
-  <int value="2" label="Feature toggled off"/>
-</enum>
-
 <enum name="DevToolsDebuggingUserDataDirStatus">
   <int value="0" label="Not being debugged"/>
   <int value="1" label="Being debugged with a non-default user data dir"/>

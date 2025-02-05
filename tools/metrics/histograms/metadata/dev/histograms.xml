@@ -86,17 +86,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.CSSPropertyDocumentation"
-    enum="DevToolsCSSPropertyDocumentation" expires_after="2025-03-09">
-  <owner>ergunsh@google.com</owner>
-  <owner>changhaohan@google.com</owner>
-  <owner>bmeurer@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <summary>
-    Records the CSS Property documentation usage and feature toggles.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.DeveloperResourceLoaded"
     enum="DevToolsDeveloperResourceLoaded" expires_after="2025-07-06">
   <owner>bmeurer@google.com</owner>
