@@ -75,7 +75,7 @@ def main():
     targets_list.sort(key=lambda t: t[1], reverse=True)
 
     for n in class_nodes[:_TOP_N_RESULTS]:
-        print(f'{len(n.inbound)=} {n.package}{n.name} {n.build_targets}')
+        print(f'{len(n.inbound)=} {n.name} {n.build_targets}')
 
     for t, num in targets_list[:_TOP_N_RESULTS]:
         print(f'{t} {num=}')
