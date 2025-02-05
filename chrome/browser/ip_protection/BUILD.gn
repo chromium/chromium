@@ -77,6 +77,7 @@ source_set("unit_tests") {
     "//components/privacy_sandbox:tracking_protection_settings",
     "//components/signin/public/identity_manager:identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//components/variations/service:service",
     "//content/test:test_support",
     "//net/third_party/quiche:blind_sign_auth",
     "//net/traffic_annotation:test_support",

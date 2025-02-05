@@ -55,6 +55,15 @@
 
 using ::ip_protection::TryGetAuthTokensResult;
 
+namespace {
+
+bool IsLikelyDogfoodClient() {
+  variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  return variations_service && variations_service->IsLikelyDogfoodClient();
+}
+
+}  // namespace
 IpProtectionCoreHost::IpProtectionCoreHost(
     signin::IdentityManager* identity_manager,
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
@@ -217,6 +226,25 @@ void IpProtectionCoreHost::RequestOAuthToken(
                             std::nullopt);
     return;
   }
+
+  // If the user is not eligible and not a dogfooder, do not even try to fetch
+  // tokens. If unknown, fall back to trying anyway.
+  const CoreAccountId account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  CHECK(!account_id.empty());
+  const AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  bool cannot_use_chrome_ip_protection =
+      !account_info.IsEmpty() &&
+      account_info.capabilities.can_use_chrome_ip_protection() ==
+          signin::Tribool::kFalse;
+  if (cannot_use_chrome_ip_protection && !IsLikelyDogfoodClient()) {
+    VLOG(2) << "RequestOAuthToken failed: not eligible";
+    std::move(callback).Run(TryGetAuthTokensResult::kFailedNotEligible,
+                            std::nullopt);
+    return;
+  }
+
   RequestOAuthTokenInternal(base::BindOnce(
       [](ip_protection::IpProtectionTokenDirectFetcher::Delegate::
              RequestOAuthTokenCallback callback,
@@ -240,9 +268,6 @@ void IpProtectionCoreHost::RequestOAuthToken(
 
 void IpProtectionCoreHost::RequestOAuthTokenInternal(
     RequestOAuthTokenInternalCallback callback) {
-  // TODO(crbug.com/40267788): Add a client side account capabilities
-  // check to compliment the server-side checks.
-
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kIpProtectionAuthScope);
 
@@ -416,18 +441,17 @@ bool IpProtectionCoreHost::ShouldDisableIpProtectionForManaged() {
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
 #endif
 
-    variations::VariationsService* variations_service =
-        g_browser_process->variations_service();
-    if (variations_service && variations_service->IsLikelyDogfoodClient()) {
+    if (IsLikelyDogfoodClient()) {
       // For Googler/Dogfood devices we don't want to disable IP Protection by
-      // default so that we can carry out dogfood experiments via Finch instead
-      // of also needing to coordinate internal enterprise policy rollouts.
+      // default so that we can carry out dogfood experiments via Finch
+      // instead of also needing to coordinate internal enterprise policy
+      // rollouts.
       return false;
     }
 
-    // If the user's enterprise has a policy for IP, use this regardless of user
-    // UX feature status. Enterprises should have the ability to enable or
-    // disable IPP even when users do not have UX access to the feature.
+    // If the user's enterprise has a policy for IP, use this regardless of
+    // user UX feature status. Enterprises should have the ability to enable
+    // or disable IPP even when users do not have UX access to the feature.
     if (pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled)) {
       return !pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
     }

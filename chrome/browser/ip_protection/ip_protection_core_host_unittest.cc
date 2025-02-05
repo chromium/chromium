@@ -18,11 +18,16 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/ip_protection/common/ip_protection_config_http.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
+#include "components/metrics/enabled_state_provider.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -32,6 +37,8 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/variations/service/test_variations_service.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/features.h"
@@ -77,6 +84,9 @@ enum class PrimaryAccountBehavior {
   // Primary account exists but is not eligible for IP protection.
   kIneligible,
 
+  // Like kIneligible, but also a dogfooder.
+  kIneligibleDogfooder,
+
   // Primary account exists but eligibility is kUnknown.
   kUnknownEligibility,
 
@@ -93,9 +103,18 @@ class IpProtectionCoreHostTest : public testing::Test {
       : expiration_time_(base::Time::Now() + base::Hours(1)),
         geo_hint_({.country_code = "US",
                    .iso_region = "US-AL",
-                   .city_name = "ALABASTER"}) {
+                   .city_name = "ALABASTER"}),
+        enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
+    variations::TestVariationsService::RegisterPrefs(prefs()->registry());
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        prefs(), &enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    variations_service_ = std::make_unique<variations::TestVariationsService>(
+        prefs(), metrics_state_manager_.get());
   }
 
   void SetUp() override {
@@ -133,9 +152,14 @@ class IpProtectionCoreHostTest : public testing::Test {
         net::features::kIpPrivacyTryGetAuthTokensTransientBackoff.Get();
     default_bug_backoff_ =
         net::features::kIpPrivacyTryGetAuthTokensBugBackoff.Get();
+
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(
+        variations_service_.get());
   }
 
   void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+
     // Remove the raw_ptr to the Mock BSA before `core_host_` frees it.
     bsa_ = nullptr;
     host_content_settings_map_->ShutdownOnUIThread();
@@ -167,6 +191,10 @@ class IpProtectionCoreHostTest : public testing::Test {
       } else {
         SetCanUseChromeIpProtectionCapability(true);
       }
+
+      variations_service_->SetIsLikelyDogfoodClientForTesting(
+          primary_account_behavior_ ==
+          PrimaryAccountBehavior::kIneligibleDogfooder);
     }
   }
 
@@ -189,6 +217,7 @@ class IpProtectionCoreHostTest : public testing::Test {
         break;
       case PrimaryAccountBehavior::kUnknownEligibility:
       case PrimaryAccountBehavior::kReturnsToken:
+      case PrimaryAccountBehavior::kIneligibleDogfooder:
         identity_test_env_
             .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
                 "access_token", base::Time::Now());
@@ -286,6 +315,12 @@ class IpProtectionCoreHostTest : public testing::Test {
   // quiche::BlindSignAuthInterface owned and used by the sequence bound
   // ip_protection_token_fetcher_ in core_host_.
   raw_ptr<ip_protection::MockBlindSignAuth> bsa_;
+
+  // Variations service and associated values, used to indicate
+  // whether the client is dogfooding.
+  metrics::TestEnabledStateProvider enabled_state_provider_;
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::TestVariationsService> variations_service_;
 
   // Default backoff times applied for calculating `try_again_after`.
   base::TimeDelta default_not_eligible_backoff_;
@@ -598,6 +633,46 @@ TEST_F(IpProtectionCoreHostTest, NoPrimary) {
       ip_protection::TryGetAuthTokensResult::kFailedNoAccount, 1);
   histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 0);
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
+}
+
+// Primary account exists but does not have CanUseChromeIpProtection.
+TEST_F(IpProtectionCoreHostTest, NoCapability) {
+  primary_account_behavior_ = PrimaryAccountBehavior::kIneligible;
+
+  TryGetAuthTokens(1, ip_protection::ProxyLayer::kProxyB);
+
+  EXPECT_FALSE(bsa_->get_tokens_called());
+  ExpectTryGetAuthTokensResultFailed(default_not_eligible_backoff_);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensResultHistogram,
+      ip_protection::TryGetAuthTokensResult::kFailedNotEligible, 1);
+  histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
+}
+
+// Primary account exists, does not have CanUseChromeIpProtection, but is a
+// dogfooder.
+TEST_F(IpProtectionCoreHostTest, NoCapabilityButDogfooder) {
+  primary_account_behavior_ = PrimaryAccountBehavior::kIneligibleDogfooder;
+  bsa_->set_tokens({ip_protection::IpProtectionTokenFetcherHelper::
+                        CreateBlindSignTokenForTesting(
+                            "single-use-1", expiration_time_, geo_hint_)});
+
+  TryGetAuthTokens(1, ip_protection::ProxyLayer::kProxyB);
+
+  EXPECT_TRUE(bsa_->get_tokens_called());
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
+  std::vector<BlindSignedAuthToken> expected;
+  expected.push_back(ip_protection::IpProtectionTokenFetcherHelper::
+                         CreateMockBlindSignedAuthTokenForTesting(
+                             "single-use-1", expiration_time_, geo_hint_)
+                             .value());
+  ExpectTryGetAuthTokensResult(std::move(expected));
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensResultHistogram,
+      ip_protection::TryGetAuthTokensResult::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 1);
 }
 
 // TryGetAuthTokens() fails because IP Protection is disabled by user settings.

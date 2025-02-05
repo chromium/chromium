@@ -248,12 +248,6 @@ std::optional<base::TimeDelta> IpProtectionTokenDirectFetcher::CalculateBackoff(
       backoff = base::TimeDelta::Max();
       break;
     case kFailedNotEligible:
-      // TODO(crbug.com/40267788): When we add a client side account
-      // capabilities check, if this capability/eligibility is something that
-      // can change and be detected via callbacks to an overridden
-      // `IdentityManager::Observer::OnExtendedAccountInfoUpdated()` method,
-      // then update this failure so that we wait indefinitely as well (like
-      // the cases above).
     case kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
