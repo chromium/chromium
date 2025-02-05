@@ -46,4 +46,7 @@ BASE_DECLARE_FEATURE(kLensSingleTapTextSelectionDisabled);
 // Whether to disable the Ink library's multi-sample mode.
 BASE_DECLARE_FEATURE(kLensInkMultiSampleModeDisabled);
 
+// Whether to disable gesture text selection.
+BASE_DECLARE_FEATURE(kLensGestureTextSelectionDisabled);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_

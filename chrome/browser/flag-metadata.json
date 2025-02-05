@@ -5633,6 +5633,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "lens-gesture-text-selection-disabled",
+    "owners": ["cmyang@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lens-ink-multi-sample-mode-disabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 140
