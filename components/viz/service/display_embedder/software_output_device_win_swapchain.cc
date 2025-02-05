@@ -96,7 +96,18 @@ void SoftwareOutputDeviceWinSwapChain::ResizeDelegated() {
     Microsoft::WRL::ComPtr<IDCompositionTarget> dcomp_target;
     hr = dcomp_device->CreateTargetForHwnd(child_window_.window(), TRUE,
                                            &dcomp_target);
-    CHECK_EQ(hr, S_OK);
+    if (FAILED(hr)) {
+      // Destroying the parent window will automatically destroy all child
+      // windows. Since the GPU process manages the child window, it needs to be
+      // prepared for the window handle to become invalid at any point. The
+      // child window may not be valid in scenarios such as the parent window
+      // being closed immediately prior to this code being executed, so ignore
+      // cases where hr == E_INVALIDARG, which is empirically found to be
+      // returned when the window is not valid. This will ensure that the
+      // following CHECK still hits for more meaningful errors.
+      CHECK_EQ(hr, E_INVALIDARG);
+      return;
+    }
 
     Microsoft::WRL::ComPtr<IDCompositionVisual> dcomp_root_visual;
     hr = dcomp_device->CreateVisual(&dcomp_root_visual);
