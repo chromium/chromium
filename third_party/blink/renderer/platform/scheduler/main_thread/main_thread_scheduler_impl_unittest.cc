@@ -299,7 +299,6 @@ class MockPageSchedulerImpl : public PageSchedulerImpl {
 
 class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
  public:
-  using MainThreadSchedulerImpl::CompositorTaskQueue;
   using MainThreadSchedulerImpl::ControlTaskQueue;
   using MainThreadSchedulerImpl::DefaultTaskQueue;
   using MainThreadSchedulerImpl::OnIdlePeriodEnded;

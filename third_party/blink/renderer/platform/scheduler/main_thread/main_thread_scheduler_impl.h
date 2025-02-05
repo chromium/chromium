@@ -383,7 +383,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   scoped_refptr<MainThreadTaskQueue> ControlTaskQueue();
   scoped_refptr<MainThreadTaskQueue> DefaultTaskQueue();
-  scoped_refptr<MainThreadTaskQueue> CompositorTaskQueue();
   scoped_refptr<MainThreadTaskQueue> V8TaskQueue();
 
   // `current_use_case` will be overwritten by the next call to UpdatePolicy.
