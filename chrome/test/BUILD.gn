@@ -5744,6 +5744,23 @@ if (!is_android) {
   }
 }
 
+if (!is_android) {
+  script_test("crossbench_smoketests") {
+    script = "//testing/scripts/run_performance_tests.py"
+
+    data_deps = [
+      "//base:base_perftests",
+      "//chrome/test:load_library_perf_tests",
+      "//chrome/test:telemetry_perf_tests",
+      "//components:components_perftests",
+      "//components/tracing:tracing_perftests",
+      "//testing:run_perf_test",
+      "//third_party/dawn/src/tint/cmd/bench:bench_cmd",
+      "//ui/views:views_perftests",
+    ]
+  }
+}
+
 # Generate performance_test_suite_${board} targets.
 # These set --board to ${board} instead of deriving it from the target.
 # This is useful for Lacros, where the generic build is deployed to
