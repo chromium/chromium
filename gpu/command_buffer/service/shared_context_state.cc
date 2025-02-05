@@ -540,6 +540,8 @@ bool SharedContextState::InitializeSkia(
     base::UmaHistogramEnumeration("GPU.SkiaBackendType", context_enum);
   }
 
+  is_drdc_enabled_ = features::IsDrDcEnabled() && !workarounds.disable_drdc;
+
   if (gr_context_type_ == GrContextType::kNone) {
     // SharedContextState only exists to hold a GL context for WebGL fallback
     // if context type is set to none. We don't need to initialization Skia
@@ -659,7 +661,6 @@ bool SharedContextState::InitializeGanesh(
       base::BindRepeating(&SharedContextState::ScheduleSkiaCleanup,
                           base::Unretained(this)));
   gr_cache_controller_ = std::make_unique<raster::GrCacheController>(this);
-  is_drdc_enabled_ = features::IsDrDcEnabled() && !workarounds.disable_drdc;
   return true;
 }
 
@@ -725,9 +726,14 @@ bool SharedContextState::InitializeGraphite(
           gpu_main_graphite_recorder_.get(), graphite_context_.get(),
           dawn_context_provider_);
 
-  viz_compositor_graphite_recorder_ =
-      MakeGraphiteRecorder(graphite_context_, context_options.fGpuBudgetInBytes,
-                           max_viz_compositor_image_provider_cache_bytes);
+  // Only create the Viz recorder for the SharedContextState used by the
+  // compositor which will be the GPU main context without DrDC and the
+  // the CompositorGpuThread context with DrDC.
+  if (!is_drdc_enabled_ || created_on_compositor_gpu_thread_) {
+    viz_compositor_graphite_recorder_ = MakeGraphiteRecorder(
+        graphite_context_, context_options.fGpuBudgetInBytes,
+        max_viz_compositor_image_provider_cache_bytes);
+  }
 
   transfer_cache_ = std::make_unique<ServiceTransferCache>(
       gpu_preferences,
