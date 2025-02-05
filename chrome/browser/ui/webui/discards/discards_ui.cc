@@ -147,15 +147,14 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
           GetLifecycleUnitVisibility(lifecycle_unit->GetVisibility());
       info->loading_state = lifecycle_unit->GetLoadingState();
       info->state = lifecycle_unit->GetState();
-      resource_coordinator::DecisionDetails discard_details;
-      info->can_discard = lifecycle_unit->CanDiscard(
-          ::mojom::LifecycleUnitDiscardReason::PROACTIVE, &discard_details);
-      info->cannot_discard_reasons = discard_details.GetFailureReasonStrings();
 
       base::WeakPtr<performance_manager::PageNode> page_node =
           performance_manager::PerformanceManager::
               GetPrimaryPageNodeForWebContents(contents);
       if (page_node) {
+        info->cannot_discard_reasons = performance_manager::user_tuning::
+            GetCannotDiscardReasonsForPageNode(page_node.get());
+        info->can_discard = info->cannot_discard_reasons.empty();
         info->cannot_freeze_reasons = base::ToVector(
             performance_manager::freezing::GetCannotFreezeReasonsForPageNode(
                 page_node.get()));
@@ -163,6 +162,7 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
                                ? discards::mojom::CanFreeze::YES
                                : discards::mojom::CanFreeze::NO;
       } else {
+        info->can_discard = false;
         info->can_freeze = discards::mojom::CanFreeze::UNKNOWN;
       }
 

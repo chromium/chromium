@@ -28,6 +28,10 @@ void GetDiscardedMemoryEstimateForWebContents(
     content::WebContents* web_contents,
     base::OnceCallback<void(uint64_t)> result_callback);
 
+// Returns a list of human-readable reasons why a page can't be discarded, or an
+// empty list if it can be discarded. This must be invoked on the PM sequence.
+std::vector<std::string> GetCannotDiscardReasonsForPageNode(
+    const PageNode* page_node);
 }  // namespace performance_manager::user_tuning
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_USER_TUNING_UTILS_H_

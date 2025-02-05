@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
+#include "chrome/browser/performance_manager/policies/cannot_discard_reason.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/memory_pressure/reclaim_target.h"
 #include "components/memory_pressure/unnecessary_discard_monitor.h"
@@ -179,10 +180,12 @@ class PageDiscardingHelper
   // criteria depending on `discard_reason`. If `minimum_time_in_background` is
   // non-zero, the page will not be discarded if it has not spent at least
   // `minimum_time_in_background` in the not-visible state.
-  CanDiscardResult CanDiscard(const PageNode* page_node,
-                              DiscardReason discard_reason,
-                              base::TimeDelta minimum_time_in_background =
-                                  kNonVisiblePagesUrgentProtectionTime) const;
+  CanDiscardResult CanDiscard(
+      const PageNode* page_node,
+      DiscardReason discard_reason,
+      base::TimeDelta minimum_time_in_background =
+          kNonVisiblePagesUrgentProtectionTime,
+      std::vector<CannotDiscardReason>* cannot_discard_reasons = nullptr) const;
 
   static void AddDiscardAttemptMarkerForTesting(PageNode* page_node);
   static void RemovesDiscardAttemptMarkerForTesting(PageNode* page_node);
