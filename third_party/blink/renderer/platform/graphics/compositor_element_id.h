@@ -14,40 +14,13 @@
 
 namespace blink {
 
-const int kCompositorNamespaceBitCount = 5;
+const int kCompositorNamespaceBitCount = cc::kElementIdNamespaceBitCount;
 
 // The functions in this header requires cc::ElementId::InternalValue to be
 // uint64_t.
 static_assert(std::is_same_v<cc::ElementId::InternalValue, uint64_t>);
 
-enum class CompositorElementIdNamespace {
-  kPrimary,
-  kUniqueObjectId,
-  kScroll,
-  kStickyTranslation,
-  kAnchorPositionScrollTranslation,
-  kPrimaryEffect,
-  kPrimaryTransform,
-  kEffectFilter,
-  kEffectMask,
-  kEffectClipPath,
-  kScaleTransform,
-  kRotateTransform,
-  kTranslateTransform,
-  kVerticalScrollbar,
-  kHorizontalScrollbar,
-  kScrollCorner,
-  kViewTransitionSubframeRoot,
-  kViewTransitionElement,
-  kElementCapture,
-  kPlaceElement,
-  kDOMNodeId,
-  // The following values are for internal usage only.
-  kMax = kDOMNodeId,
-  // A sentinel to indicate the maximum representable namespace id
-  // (the maximum is one less than this value).
-  kMaxRepresentable = 1 << kCompositorNamespaceBitCount
-};
+using CompositorElementIdNamespace = cc::ElementIdNamespace;
 
 static_assert(CompositorElementIdNamespace::kMax <
               CompositorElementIdNamespace::kMaxRepresentable);
