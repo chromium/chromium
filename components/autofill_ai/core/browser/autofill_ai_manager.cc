@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -21,9 +22,11 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_manager/entities/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/data_model/entity_type.h"
+#include "components/autofill/core/browser/data_model/entity_type_names.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
@@ -64,6 +67,30 @@ using autofill::LoggingScope;
 using autofill::LogMessage;
 using autofill::SuggestionType;
 
+// TODO(crbug.com/389629676): Remove this in favour of an implementation that
+// lives in EntityType (or similar), as a way to avoid missing new entities.
+static constexpr auto kEntitiesOrderedByImportPreference =
+    std::array{autofill::EntityType(autofill::EntityTypeName::kPassport),
+               autofill::EntityType(autofill::EntityTypeName::kLoyaltyCard)};
+
+bool CheckIfEntitySatisfiesConstraints(const autofill::EntityInstance& entity) {
+  autofill::DenseSet<autofill::AttributeType> entity_attribute_types =
+      [](const autofill::EntityInstance& entity) {
+        autofill::DenseSet<autofill::AttributeType> types;
+        for (const autofill::AttributeInstance& entity_attribute_instance :
+             entity.attributes()) {
+          types.insert(entity_attribute_instance.type());
+        }
+        return types;
+      }(entity);
+
+  return std::ranges::any_of(
+      entity.type().import_constraints(),
+      [&](const autofill::DenseSet<autofill::AttributeType>& constraint) {
+        return entity_attribute_types.contains_all(constraint);
+      });
+}
+
 std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     const autofill::FormStructure& submitted_form) {
   std::map<autofill::Section,
@@ -93,14 +120,30 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
   for (auto& [section, entity_to_attributes] :
        section_to_entity_types_attributes) {
     for (auto& [entity_name, attributes] : entity_to_attributes) {
-      entities_found_in_form.emplace_back(
+      autofill::EntityInstance entity = autofill::EntityInstance(
           autofill::EntityType(entity_name), std::move(attributes),
           base::Uuid::GenerateRandomV4(), /*nickname=*/std::string(""),
           base::Time::Now());
+      if (!CheckIfEntitySatisfiesConstraints(entity)) {
+        continue;
+      }
+      entities_found_in_form.push_back(std::move(entity));
     }
   }
 
   return entities_found_in_form;
+}
+
+bool ShouldEntityBeSaved(
+    const autofill::EntityInstance& entity,
+    base::span<const autofill::EntityInstance> current_entities) {
+  if (!base::Contains(current_entities, entity.type(),
+                      &autofill::EntityInstance::type)) {
+    return true;
+  }
+  // TODO(crbug.com/389629676): Handle the entity existing but not being
+  // mergeable.
+  return false;
 }
 
 }  // namespace
@@ -572,18 +615,47 @@ void AutofillAiManager::MaybeImportForm(
         // TODO(crbug.com/389629676): Add proper import logic. For now blindly
         // import the first instance seen in the form. This should however
         // depend on `current_entities`.
-        self->client_->ShowSaveAutofillAiBubble(
-            std::move(entity_instances_from_form[0]),
-            BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self));
-        std::move(autofill_callback).Run(std::move(form), true);
+        for (const autofill::EntityType& entity_type :
+             kEntitiesOrderedByImportPreference) {
+          for (const autofill::EntityInstance& entity :
+               entity_instances_from_form) {
+            if (entity.type() != entity_type) {
+              continue;
+            }
+
+            if (ShouldEntityBeSaved(entity, current_entities)) {
+              self->client_->ShowSaveAutofillAiBubble(
+                  std::move(entity),
+                  BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
+                           AutofillAiManager::EntityUpdateType::kSave));
+              std::move(autofill_callback).Run(std::move(form), true);
+              return;
+            }
+          }
+        }
+        std::move(autofill_callback).Run(std::move(form), false);
       },
       GetWeakPtr(), std::move(form), std::move(entity_instances_from_form),
       std::move(autofill_callback)));
 }
 
 void AutofillAiManager::OnSavePromptAcceptance(
+    AutofillAiManager::EntityUpdateType update_type,
     AutofillAiClient::SavePromptAcceptanceResult result) {
-  // TODO(crbug.com/389629676): implement
+  if (!result.prompt_was_accepted) {
+    return;
+  }
+
+  autofill::EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  if (!entity_manager) {
+    return;
+  }
+  CHECK(result.entity);
+  if (update_type == AutofillAiManager::EntityUpdateType::kSave) {
+    entity_manager->AddEntityInstance(*result.entity);
+  } else if (update_type == AutofillAiManager::EntityUpdateType::kUpdate) {
+    entity_manager->UpdateEntityInstance(*result.entity);
+  }
 }
 
 void AutofillAiManager::GetSuggestionsV2(

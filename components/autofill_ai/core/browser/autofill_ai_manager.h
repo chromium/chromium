@@ -118,10 +118,13 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   base::WeakPtr<AutofillAiManager> GetWeakPtr();
 
  private:
+  enum class EntityUpdateType { kSave, kUpdate };
+
   friend class AutofillAiManagerTestApi;
 
   // Run after the user has either accepted, decline or ignored a save prompt.
   void OnSavePromptAcceptance(
+      EntityUpdateType update_type,
       AutofillAiClient::SavePromptAcceptanceResult result);
 
   // Event handler called when the loading suggestion is shown. Used for the

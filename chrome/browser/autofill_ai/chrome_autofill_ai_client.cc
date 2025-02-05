@@ -221,7 +221,8 @@ void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-  std::move(prompt_acceptance_callback).Run({/*prompt_was_accepted=*/false});
+  std::move(prompt_acceptance_callback)
+      .Run(SavePromptAcceptanceResult(/*prompt_was_accepted=*/false));
 }
 
 bool ChromeAutofillAiClient::IsUserEligible() {
