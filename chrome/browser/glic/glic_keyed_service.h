@@ -52,9 +52,10 @@ class GlicKeyedService : public KeyedService {
   // KeyedService
   void Shutdown() override;
 
-  // Show, summon or activate the panel, or close it if it's already active.
-  // If glic_button_view is non-null, attach the panel to that view's Browser.
-  void ToggleUI(BrowserWindowInterface* bwi);
+  // Show, summon or activate the panel, or close it if it's already active and
+  // prevent_close is false. If glic_button_view is non-null, attach the panel
+  // to that view's Browser.
+  void ToggleUI(BrowserWindowInterface* bwi, bool prevent_close = false);
 
   GlicMetrics* metrics() { return metrics_.get(); }
   GlicWindowController& window_controller() { return *window_controller_; }

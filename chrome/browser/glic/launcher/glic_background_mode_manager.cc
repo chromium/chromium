@@ -69,7 +69,7 @@ void GlicBackgroundModeManager::OnKeyPressed(
     const ui::Accelerator& accelerator) {
   CHECK(accelerator == actual_registered_hotkey_);
   CHECK(actual_registered_hotkey_ == expected_registered_hotkey_);
-  controller_->Show();
+  controller_->Toggle();
 }
 
 void GlicBackgroundModeManager::ExecuteCommand(

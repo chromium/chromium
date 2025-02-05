@@ -90,7 +90,7 @@ GlicStatusIcon::~GlicStatusIcon() {
 }
 
 void GlicStatusIcon::OnStatusIconClicked() {
-  controller_->Show();
+  controller_->Toggle();
 }
 
 void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {

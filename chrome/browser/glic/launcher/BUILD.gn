@@ -71,10 +71,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "glic_background_mode_manager_browsertest.cc",
-    "glic_controller_browsertest.cc",
-  ]
+  sources = [ "glic_background_mode_manager_browsertest.cc" ]
 
   deps = [
     ":launcher",
@@ -91,4 +88,17 @@ source_set("browser_tests") {
     "//testing/gtest",
     "//ui/base/accelerators/global_accelerator_listener",
   ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "glic_controller_interactive_uitest.cc" ]
+  deps = [
+    ":launcher",
+    "//chrome/browser/glic:glic",
+    "//chrome/browser/glic:impl",
+    "//chrome/browser/glic:test_support",
+  ]
+  data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
 }

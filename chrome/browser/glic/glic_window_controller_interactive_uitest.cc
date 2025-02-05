@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/glic/launcher/glic_controller.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -49,6 +52,11 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
         expect_widget, "CheckControllerHasWidget");
   }
 
+  auto CheckControllerShowing(bool expect_showing) {
+    return CheckResult([this]() { return window_controller().IsShowing(); },
+                       expect_showing, "CheckControllerShowing");
+  }
+
   auto CheckControllerWidgetMode(GlicWindowMode mode) {
     return CheckResult(
         [this]() {
@@ -62,6 +70,14 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
     // TODO: Actually implement the hotkey when we know what it is.
     return Do([this]() { window_controller().Toggle(nullptr); });
   }
+
+  auto SimulateOpenMenuItem() {
+    return Do([this]() { glic_controller_->Show(); });
+  }
+
+ private:
+  std::unique_ptr<GlicController> glic_controller_ =
+      std::make_unique<GlicController>();
 };
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseAttachedWidget) {
@@ -227,6 +243,35 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       MoveMouseTo(center), ClickMouse(ui_controls::RIGHT),
       InAnyContext(SelectMenuItem(RenderViewContextMenu::kGlicCloseMenuItem)),
       CheckControllerHasWidget(false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, OpenMenuItemShows) {
+  RunTestSequence(SimulateOpenMenuItem(),
+                  WaitForAndInstrumentGlic(kHostAndContents),
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  CloseGlicWindow(), CheckControllerHasWidget(false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       OpenMenuItemWhenAttachedToActiveBrowserDoesNotClose) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      // Glic should close.
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+      ActivateSurface(kBrowserViewElementId), SimulateOpenMenuItem(),
+      CheckControllerShowing(true));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       OpenMenuItemWhenDetachedActiveDoesNotClose) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              kActivateSurfaceIncompatibilityNotice),
+      InAnyContext(ActivateSurface(test::kGlicHostElementId)),
+      SimulateOpenMenuItem(), CheckControllerShowing(true));
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest

@@ -63,6 +63,7 @@ class MockStatusTray : public StatusTray {
 
 class MockGlicController : public GlicController {
  public:
+  MOCK_METHOD0(Toggle, void());
   MOCK_METHOD0(Show, void());
 };
 
@@ -125,7 +126,7 @@ class GlicStatusIconTest : public testing::Test {
 
 #if !BUILDFLAG(IS_LINUX)
 TEST_F(GlicStatusIconTest, OnStatusIconClicked) {
-  EXPECT_CALL(*glic_controller(), Show).Times(1);
+  EXPECT_CALL(*glic_controller(), Toggle).Times(1);
   status_icon()->DispatchClickEvent();
 }
 #endif

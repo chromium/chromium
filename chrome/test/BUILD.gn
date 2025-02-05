@@ -11512,8 +11512,14 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (enable_glic) {
-      deps += [ "//chrome/browser/glic:interactive_ui_tests" ]
-      data_deps += [ "//chrome/browser/glic:interactive_ui_tests" ]
+      deps += [
+        "//chrome/browser/glic:interactive_ui_tests",
+        "//chrome/browser/glic/launcher:interactive_ui_tests",
+      ]
+      data_deps += [
+        "//chrome/browser/glic:interactive_ui_tests",
+        "//chrome/browser/glic/launcher:interactive_ui_tests",
+      ]
     }
 
     sources += [

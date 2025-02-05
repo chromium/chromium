@@ -295,7 +295,8 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
   }
 }
 
-void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
+void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
+                                  bool prevent_close) {
   // If `bwi` is non-null, the glic button was clicked on a specific window and
   // glic should be attached to that window. Otherwise glic was invoked from the
   // hotkey or other OS-level entrypoint.
@@ -329,6 +330,12 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
     }
   }
 
+  auto maybe_close = [this, prevent_close] {
+    if (!prevent_close) {
+      Close();
+    }
+  };
+
   // Pressing the button or the hotkey when the window is open, or waiting to
   // load should close it. The latter is required because otherwise if there
   // were an error loading the backend (or if it just took a long time) then the
@@ -347,7 +354,7 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
         // button click was eventually processed asynchronously after the button
         // was obscured, or the user invokes the glic hotkey while glic is
         // attached to the active window.
-        Close();
+        maybe_close();
       } else {
         // Button clicked on a different browser: attach to that one.
         AttachToBrowser(new_attached_browser);
@@ -363,7 +370,7 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
     if (attached_browser_) {
       if (IsActive()) {
         // Hotkey when glic active and attached: close.
-        Close();
+        maybe_close();
         return;
       }
 
@@ -372,7 +379,7 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
         // Hotkey when glic inactive but attached to active browser: close.
         // Note: this should not be possible, since if the attached browser is
         // active, new_attached_browser must not have been null.
-        Close();
+        maybe_close();
       } else {
         // Hotkey when neither attached browser nor glic are active: open
         // detached.
@@ -382,7 +389,7 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi) {
     }
 
     // Hotkey invoked when glic is already detached.
-    Close();
+    maybe_close();
 
   } else if (state_ != State::kClosed) {
     // Currently in the process of showing the widget, allow that to finish.

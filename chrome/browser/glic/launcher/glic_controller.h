@@ -17,11 +17,15 @@ class GlicController {
   GlicController(const GlicController&) = delete;
   GlicController& operator=(const GlicController&) = delete;
 
+  // Toggles the glic UI.
+  virtual void Toggle();
+
   // Shows the glic UI.
   virtual void Show();
 
-  // Hides the glic UI.
-  void Hide();
+ private:
+  // Helper that implements both Toggle and Show.
+  void ToggleUI(bool prevent_close = false);
 };
 
 }  // namespace glic
