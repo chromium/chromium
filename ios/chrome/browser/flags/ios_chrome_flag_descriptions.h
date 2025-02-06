@@ -1028,6 +1028,10 @@ extern const char kSeparateProfilesForManagedAccountsDescription[];
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
 
+// Title and description for the flag to enable ShopCard.
+extern const char kShopCardName[];
+extern const char kShopCardDescription[];
+
 // Title and description for the flag to enable the Set Up List in the First
 // Run.
 extern const char kSetUpListInFirstRunName[];

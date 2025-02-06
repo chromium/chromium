@@ -1176,6 +1176,10 @@ const char kShareInWebContextMenuIOSName[] = "Share in web context menu";
 const char kShareInWebContextMenuIOSDescription[] =
     "Enables the Share button in the web context menu in iOS 16.0 and above.";
 
+const char kShopCardName[] = "Enables ShopCard";
+const char kShopCardDescription[] =
+    "Enables being able to show ShopCard in the Magic Stack";
+
 const char kShowAutofillTypePredictionsName[] = "Show Autofill predictions";
 const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "

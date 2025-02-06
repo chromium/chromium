@@ -186,6 +186,10 @@ BASE_FEATURE(kPriceTrackingPromo,
              "PriceTrackingPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// ShopCard in Magic Stack, including shopping features like price drop,
+// reviews, etc.
+BASE_FEATURE(kShopCard, "ShopCard", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kProductSpecifications,
              "ProductSpecifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
