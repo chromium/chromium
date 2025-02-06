@@ -11072,6 +11072,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kCertVerificationNetworkTime)},
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"enable-lens-overlay-simplified-selection",
+     flag_descriptions::kLensOverlaySimplifiedSelectionName,
+     flag_descriptions::kLensOverlaySimplifiedSelectionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlaySimplifiedSelection)},
+
     {"enable-lens-overlay-translate-button",
      flag_descriptions::kLensOverlayTranslateButtonName,
      flag_descriptions::kLensOverlayTranslateButtonDescription, kOsDesktop,

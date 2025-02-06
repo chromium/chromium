@@ -14147,6 +14147,7 @@ from previous Chrome versions.
   <int value="9692911" label="BatteryBadgeIcon:enabled"/>
   <int value="10405060" label="BluetoothSessionizedMetrics:disabled"/>
   <int value="10458238" label="disable-print-preview-simplify"/>
+  <int value="10511293" label="LensOverlaySimplifiedSelection:enabled"/>
   <int value="11698808" label="enable-dom-distiller-button-animation"/>
   <int value="11924259"
       label="AutofillEnableUpdateVirtualCardEnrollment:enabled"/>
@@ -18033,6 +18034,7 @@ from previous Chrome versions.
   <int value="1538690515" label="OneGoogleBarOnLocalNtp:enabled"/>
   <int value="1539225325" label="AndroidOpenPdfInlineBackport:enabled"/>
   <int value="1539399467" label="PerAppLanguage:disabled"/>
+  <int value="1539795906" label="LensOverlaySimplifiedSelection:disabled"/>
   <int value="1540395380" label="WebContentsOcclusion:enabled"/>
   <int value="1540487070" label="ContextualSearchDebug:enabled"/>
   <int value="1541446160" label="DisallowManagedProfileSignout:disabled"/>

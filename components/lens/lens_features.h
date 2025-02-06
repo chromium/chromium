@@ -53,6 +53,10 @@ BASE_DECLARE_FEATURE(kLensOverlaySurvey);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlaySidePanelOpenInNewTab);
 
+// Enables the Lens overlay simplified selection flow.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlaySimplifiedSelection);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -634,6 +638,11 @@ extern bool ShouldZstdCompressPdfBytes();
 // details.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetZstdCompressionLevel();
+
+// Whether to enable the simplified selection flow in the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsSimplifiedSelectionEnabled();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

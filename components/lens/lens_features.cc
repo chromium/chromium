@@ -59,6 +59,10 @@ BASE_FEATURE(kLensOverlaySidePanelOpenInNewTab,
              "LensOverlaySidePanelOpenInNewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlaySimplifiedSelection,
+             "LensOverlaySimplifiedSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -807,5 +811,9 @@ bool ShouldZstdCompressPdfBytes() {
 
 int GetZstdCompressionLevel() {
   return kZstdCompressionLevel.Get();
+}
+
+bool IsSimplifiedSelectionEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlaySimplifiedSelection);
 }
 }  // namespace lens::features

@@ -2367,6 +2367,11 @@ const char kLensOverlaySidePanelOpenInNewTabName[] =
 const char kLensOverlaySidePanelOpenInNewTabDescription[] =
     "Enables open in new tab in the Lens overlay side panel.";
 
+const char kLensOverlaySimplifiedSelectionName[] =
+    "Lens overlay simplified selection";
+const char kLensOverlaySimplifiedSelectionDescription[] =
+    "Enables simplified selection in the Lens overlay.";
+
 const char kLensOverlayTranslateButtonName[] = "Lens overlay translate button";
 const char kLensOverlayTranslateButtonDescription[] =
     "Enables translate button via the Lens overlay.";
