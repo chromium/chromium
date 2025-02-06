@@ -24372,48 +24372,6 @@
             ]
         }
     ],
-    "UseRustJsonParserInCurrentSequence": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "UseRustJsonParserInCurrentSequence": "true"
-                    },
-                    "enable_features": [
-                        "UseRustJsonParser"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseRustJsonParserInCurrentSequenceAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "UseRustJsonParserInCurrentSequence": "true"
-                    },
-                    "enable_features": [
-                        "UseRustJsonParser"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseSCContentSharingPicker": [
         {
             "platforms": [
