@@ -5433,6 +5433,7 @@ if (!is_android) {
 
     if (is_win || is_mac || is_linux) {
       sources += [
+        "../browser/ui/startup/default_browser_prompt/default_browser_prompt_browsertest.cc",
         "../browser/ui/startup/first_run_service_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_dice_sign_in_provider_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_glic_flow_controller_browsertest.cc",

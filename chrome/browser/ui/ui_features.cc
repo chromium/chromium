@@ -44,6 +44,13 @@ BASE_FEATURE(kDefaultBrowserPromptRefresh,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+// Parallel feature to track the group name for the synthetic trial.
+BASE_FEATURE(kDefaultBrowserPromptRefreshTrial,
+             "DefaultBrowserPromptRefreshTrial",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kDefaultBrowserPromptRefreshStudyGroup{
+    &kDefaultBrowserPromptRefreshTrial, "group_name", ""};
 
 const base::FeatureParam<bool> kShowDefaultBrowserInfoBar{
     &kDefaultBrowserPromptRefresh, "show_info_bar", true};

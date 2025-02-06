@@ -29,6 +29,11 @@ BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 BASE_DECLARE_FEATURE(kCloseOmniboxPopupOnInactiveAreaClick);
 
 BASE_DECLARE_FEATURE(kDefaultBrowserPromptRefresh);
+BASE_DECLARE_FEATURE(kDefaultBrowserPromptRefreshTrial);
+
+// String representation of the study group for running a synthetic trial.
+extern const base::FeatureParam<std::string>
+    kDefaultBrowserPromptRefreshStudyGroup;
 
 // Whether to show the default browser info bar prompt.
 extern const base::FeatureParam<bool> kShowDefaultBrowserInfoBar;
