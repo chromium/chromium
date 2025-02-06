@@ -655,11 +655,8 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
     return;
   }
 
-  auto surface = SkSurfaces::WrapPixels(
-      mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()));
-  SkPixmap pixmap;
-  image->peekPixels(&pixmap);
-  surface->writePixels(pixmap, 0, 0);
+  image->readPixels(/*context=*/nullptr,
+                    mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()), 0, 0);
 
   // Unmap the underlying buffer.
   mapping.reset();
