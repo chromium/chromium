@@ -336,6 +336,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
   content::RenderFrameHost* extension_host =
       LoadPdfInNewTabGetExtensionHost(url);
   ASSERT_TRUE(extension_host);
+  content::RenderFrameHost* plugin_host =
+      pdf_frame_util::FindPdfChildFrame(extension_host);
+  ASSERT_TRUE(plugin_host);
+  content::RenderWidgetHostView* view = plugin_host->GetView();
+  ASSERT_TRUE(view);
+  EXPECT_TRUE(view->GetSelectedText().empty());
 
   content::WaitForHitTestData(extension_host);
 
@@ -350,6 +356,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
       UseOopif() ? extension_host : contents->GetPrimaryMainFrame();
   views::Widget* widget = TouchSelectText(contents, listener_host, {473, 166});
   ASSERT_TRUE(widget);
+
+  EXPECT_EQ(u"some", view->GetSelectedText());
 
   auto* touch_selection_controller =
       extension_host->GetView()
