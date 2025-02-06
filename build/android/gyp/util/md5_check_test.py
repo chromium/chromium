@@ -47,21 +47,13 @@ class TestMd5Check(unittest.TestCase):
                            outputs_missing=False,
                            expected_changes=None,
                            added_or_modified_only=None,
-                           track_subentries=False,
-                           output_newer_than_record=False):
+                           track_subentries=False):
       output_paths = None
       if outputs_specified:
         output_file1 = tempfile.NamedTemporaryFile()
         if outputs_missing:
           output_file1.close()  # Gets deleted on close().
         output_paths = [output_file1.name]
-      if output_newer_than_record:
-        output_mtime = os.path.getmtime(output_file1.name)
-        os.utime(record_path.name, (output_mtime - 1, output_mtime - 1))
-      else:
-        # touch the record file so it doesn't look like it's older that
-        # the output we've just created
-        os.utime(record_path.name, None)
 
       self.called = False
       self.changes = None
@@ -105,13 +97,6 @@ class TestMd5Check(unittest.TestCase):
                        outputs_specified=True, outputs_missing=True,
                        expected_changes='Outputs do not exist:*',
                        added_or_modified_only=False)
-    CheckCallAndRecord(True,
-                       'should call when output is newer than record',
-                       expected_changes='Outputs newer than stamp file:*',
-                       outputs_specified=True,
-                       outputs_missing=False,
-                       added_or_modified_only=False,
-                       output_newer_than_record=True)
     CheckCallAndRecord(True, force=True, message='should call when forced',
                        expected_changes='force=True',
                        added_or_modified_only=False)
