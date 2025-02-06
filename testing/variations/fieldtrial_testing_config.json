@@ -21298,21 +21298,6 @@
             ]
         }
     ],
-    "ScreenlockReauthChromeOS": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BiometricsAuthForPwdFill"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScrimForBrowserWindowModal": [
         {
             "platforms": [
