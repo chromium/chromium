@@ -129,6 +129,9 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
 
   void NewAndBuildFullMenu() {
     root_menu_ = std::make_unique<views::MenuItemView>();
+    // Add a placeholder here because in practice the full menu is never
+    // empty.
+    root_menu_->AppendTitle(std::u16string());
     root_menu_->CreateSubmenu();
     NewDelegate();
     bookmark_menu_delegate_->BuildFullMenu(root_menu_.get());
@@ -243,9 +246,9 @@ TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
   NewAndBuildFullMenu();
   views::MenuItemView* root_item = menu();
   ASSERT_TRUE(root_item->HasSubmenu());
-  EXPECT_EQ(6u, root_item->GetSubmenu()->GetMenuItems().size());
-  EXPECT_EQ(7u, root_item->GetSubmenu()->children().size());  // + separator
-  views::MenuItemView* f1_item = root_item->GetSubmenu()->GetMenuItemAt(2);
+  EXPECT_EQ(8u, root_item->GetSubmenu()->GetMenuItems().size());
+  EXPECT_EQ(10u, root_item->GetSubmenu()->children().size());  // + separators
+  views::MenuItemView* f1_item = root_item->GetSubmenu()->GetMenuItemAt(4);
   ASSERT_TRUE(f1_item->HasSubmenu());
   // f1 hasn't been loaded yet.
   EXPECT_EQ(0u, f1_item->GetSubmenu()->GetMenuItems().size());
@@ -550,7 +553,7 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
 
   // Drop before managed node.
 
-  auto* managed_folder_menu = root_item->GetSubmenu()->GetMenuItemAt(0);
+  auto* managed_folder_menu = root_item->GetSubmenu()->GetMenuItemAt(2);
   ASSERT_EQ(managed_folder_menu->title(), managed_node()->GetTitle());
   // Calling `CanDrop()` is required as it sets `drop_data_`.
   ASSERT_TRUE(bookmark_menu_delegate_->CanDrop(managed_folder_menu, drop_data));
@@ -564,7 +567,7 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
   // Drop before mobile node.
 
   size_t mobile_folder_menu_index =
-      2u +  // managed + other node.
+      4u +  // placeholder + bookmarks title + managed + other node.
       model()->bookmark_bar_node()->children().size();
   auto* mobile_folder_menu =
       root_item->GetSubmenu()->GetMenuItemAt(mobile_folder_menu_index);
@@ -599,7 +602,7 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
 
   // Drop on url.
 
-  auto* url_item = root_item->GetSubmenu()->GetMenuItemAt(1);
+  auto* url_item = root_item->GetSubmenu()->GetMenuItemAt(3);
   ASSERT_EQ(url_item->title(),
             model()->bookmark_bar_node()->children()[0]->GetTitle());
   ASSERT_TRUE(bookmark_menu_delegate_->CanDrop(url_item, drop_data));
@@ -615,7 +618,7 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterManagedNode) {
   views::MenuItemView* root_item = menu();
   LoadAllMenus(root_item);
 
-  auto* managed_folder_menu = root_item->GetSubmenu()->GetMenuItemAt(0);
+  auto* managed_folder_menu = root_item->GetSubmenu()->GetMenuItemAt(2);
   ASSERT_EQ(managed_folder_menu->title(), managed_node()->GetTitle());
 
   ui::OSExchangeData drop_data;
@@ -656,7 +659,7 @@ TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeOtherNode) {
   size_t bookmark_bar_nodes_size =
       model()->bookmark_bar_node()->children().size();
   auto* other_folder_menu = root_item->GetSubmenu()->GetMenuItemAt(
-      bookmark_bar_nodes_size + 1u);  // add managed folder.
+      bookmark_bar_nodes_size + 3u);  // add managed folder + bookmarks title.
   ASSERT_EQ(other_folder_menu->title(), model()->other_node()->GetTitle());
 
   ui::OSExchangeData drop_data;
