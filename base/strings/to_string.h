@@ -6,7 +6,6 @@
 #define BASE_STRINGS_TO_STRING_H_
 
 #include <concepts>
-#include <iomanip>
 #include <ios>
 #include <memory>
 #include <sstream>
