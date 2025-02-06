@@ -38,6 +38,7 @@ source_set("impl") {
     "//chrome/browser:global_features",
     "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/glic:resources_grit",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//components/keep_alive_registry",

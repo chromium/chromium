@@ -22,20 +22,29 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/glic_resources.h"
 #include "glic_status_icon.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {
 gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
+#if BUILDFLAG(IS_WIN)
+  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      native_theme->ShouldUseDarkColorsForSystemIntegratedUI()
+          ? IDR_GLIC_GLIC_STATUS_ICON_DARK_PNG
+          : IDR_GLIC_GLIC_STATUS_ICON_LIGHT_PNG);
+#else
   return gfx::CreateVectorIcon(
       kGlicButtonIcon,
       (native_theme->ShouldUseDarkColorsForSystemIntegratedUI())
           ? SK_ColorWHITE
           : SK_ColorBLACK);
+#endif
 }
 }  // namespace
 
