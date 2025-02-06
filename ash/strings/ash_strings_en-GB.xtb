@@ -1705,6 +1705,7 @@ New install</translation>
 <translation id="6637729079642709226">Change time</translation>
 <translation id="6641720045729354415">Toggle Live Caption. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Undo sort order by name</translation>
+<translation id="664793810957802384">Items in the suggested group</translation>
 <translation id="6649641931981131786">Adjust camera to put you in the centre of the screen.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="6650742588569439432">Couldn't load items.</translation>
@@ -2382,6 +2383,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8956420987536947088">Open your previous windows and apps</translation>
 <translation id="8959380109429710384">You pressed the keyboard shortcut for the full-screen magnifier. Use Ctrl + Alt + arrows to move around the zoomed in view.</translation>
 <translation id="8964525410783593407">1 h</translation>
+<translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8973885907461690937">Place focus on menu icon</translation>
 <translation id="8980862970816311842">Move an app icon in/out of a folder in app grid</translation>
 <translation id="8982906748181120328">Nearby visibility</translation>

@@ -770,7 +770,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2318594867107319532">Dernière actualisation des règles :</translation>
 <translation id="2320564945062300737">Produits pour le soin du visage</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 fenêtre}one{# fenêtre}other{# fenêtres}}</translation>
-<translation id="2328651992442742497">Autorisée (par défaut)</translation>
+<translation id="2328651992442742497">Autorisé (par défaut)</translation>
 <translation id="2328955282645810595">Outils électriques et de construction</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, arrive à expiration le <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Paramètre contrôlé par votre administrateur</translation>
@@ -1234,6 +1234,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3194737229810486521"><ph name="URL" /> souhaite stocker des données de façon permanente sur votre appareil</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Peut demander à savoir quand vous utilisez activement cet appareil</translation>
+<translation id="3201482403106004262">Une erreur s'est produite dans l'enquête.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer les infos que vous synchronisez dans les paramètres Chrome</translation>
 <translation id="3203025201812691413">Vous devez saisir une URL</translation>
 <translation id="320323717674993345">Annuler le paiement</translation>
@@ -1873,6 +1874,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4269264543938335308">Vêtements de bain</translation>
 <translation id="4269599248168651462">Le certificat du serveur est délivré pour un nom non unique.</translation>
 <translation id="4270541775497538019">Empileur 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Afficher 0 avis. La note moyenne est de <ph name="STARS" /> étoiles.}=1{Afficher 1 avis. La note moyenne est de <ph name="STARS" /> étoiles.}one{Afficher # avis. La note moyenne est de <ph name="STARS" /> étoiles.}other{Afficher les # avis. La note moyenne est de <ph name="STARS" /> étoiles.}}</translation>
 <translation id="4271652479722040953">Lorsque des extensions sont ajoutées à Chrome, les données pertinentes les concernant sont envoyées à des tiers pour analyse et peuvent être visibles par votre administrateur. Ces données incluent des informations sur les extensions (nom, date d'installation, source d'installation, etc.) ainsi que l'activité associée à ces extensions (changement d'onglet, contact de sites Web, accès aux cookies, etc.). Ces données sont collectées pour les extensions installées à partir du Chrome Web Store et d'autres sources.</translation>
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
 <translation id="4276974990916607331">Non, merci</translation>
@@ -2062,7 +2064,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4644567637638438744">Vous ne pouvez importer des fichiers que si vous êtes connecté à Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Ordre inverse, face vers le bas</translation>
 <translation id="4648262692072505866">Le hachage doit être au format SHA-256.</translation>
-<translation id="4652266463001779298">Non autorisée</translation>
+<translation id="4652266463001779298">Non autorisé</translation>
 <translation id="4652440160515225514">Votre organisation a bloqué ce site, car il ne respecte pas une règle.</translation>
 <translation id="4658638640878098064">Agrafe en haut à gauche</translation>
 <translation id="4661556981531699496">Animaux sauvages et domestiques</translation>
@@ -2346,6 +2348,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5138227688689900538">Afficher moins</translation>
 <translation id="5143309888746105072">Chromium empêche les sites d'utiliser des cookies tiers pour suivre votre activité lorsque vous naviguez.
             <ph name="NEW_LINE" />Si les fonctionnalités des sites ne fonctionnent pas, <ph name="START_LINK" />essayez d'autoriser temporairement les cookies tiers<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Autorisation accordée pour ce site : <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Code d'erreur présent dans la réponse de la règle.</translation>
 <translation id="5146995429444047494">Les notifications sont bloquées pour <ph name="ORIGIN" /></translation>
 <translation id="514704532284964975"><ph name="URL" /> souhaite consulter et modifier des informations sur les appareils NFC que vous touchez avec votre téléphone</translation>
@@ -2952,6 +2955,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6224281071334553713">Pierres précieuses et bijoux</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, puis Tabulation, puis Entrée pour personnaliser vos outils d'accessibilité dans les paramètres Chrome</translation>
 <translation id="6228346913624365233">Véhicules de luxe</translation>
+<translation id="6228836011612806720">Avis sur le magasin. La note moyenne est de <ph name="STARS" /> étoiles.</translation>
 <translation id="6229196330202833460">Diffusion de films et d'émissions TV en streaming</translation>
 <translation id="6234122620015464377">Couper après chaque document</translation>
 <translation id="6234310016144827337">Vérifiez la connexion, puis réessayez</translation>
@@ -4402,6 +4406,7 @@ Informations supplémentaires :
 <translation id="8792621596287649091">Vous risquez de perdre l'accès à votre compte <ph name="ORG_NAME" /> ou d'être victime d'usurpation d'identité. L'équipe Chromium vous recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="8792626944327216835">le micro</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> a activé ces connecteurs dans votre navigateur, lesquels ont accès à certaines de vos données.</translation>
+<translation id="8796062699363039080">Paramètres <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8800034312320686233">Impossible d'accéder au site ?</translation>
 <translation id="8805819170075074995">Entrée de la liste "<ph name="LANGUAGE_ID" />" : entrée ignorée, car elle est aussi incluse dans la règle SpellcheckLanguage.</translation>
@@ -4621,6 +4626,7 @@ Informations supplémentaires :
 <translation id="9192361865877479444">Métal (mat)</translation>
 <translation id="9192947025498305328">Beauté éthique</translation>
 <translation id="9199905725844810519">Impression bloquée</translation>
+<translation id="9201904868909900493">Ouverture de l'enquête...</translation>
 <translation id="9204089334327209740">Une fois l'importation terminée, vous pourrez modifier vos fichiers dans <ph name="CLOUD_PROVIDER" />. L'espace de stockage local, y compris les fichiers dans la corbeille, sera automatiquement supprimé.</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase secrète de synchronisation. Saisissez-la pour lancer la synchronisation.</translation>
 <translation id="920643408853370361">Assurance voyage</translation>

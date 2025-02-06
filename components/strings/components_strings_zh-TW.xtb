@@ -1163,6 +1163,7 @@
 <translation id="3076865167425975822">作業系統</translation>
 <translation id="3080254622891793721">圖片</translation>
 <translation id="3082007635241601060">允許 Google 使用你的購物車，尋找可用的個人化折扣</translation>
+<translation id="3086269988715347183">你先前並未核准「<ph name="BLOCKED_URL" />」</translation>
 <translation id="3086579638707268289">你的網路活動正遭到監控</translation>
 <translation id="3087734570205094154">置底</translation>
 <translation id="3090667236485488075">玻璃</translation>
@@ -1232,10 +1233,12 @@
 <translation id="3194737229810486521"><ph name="URL" /> 要求在你的裝置上永久儲存資料</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> 上的 <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">可以要求偵測你使用這部裝置的時間</translation>
+<translation id="3201482403106004262">問卷調查發生錯誤。</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理要同步處理哪些資訊</translation>
 <translation id="3203025201812691413">網址不得留空</translation>
 <translation id="320323717674993345">取消付款</translation>
 <translation id="3203366800380907218">來自網路</translation>
+<translation id="3207830513221832868">「<ph name="BLOCKED_URL" />」可能含有兒童不宜的內容</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3208701679386778924">請傳送報告，讓我們進一步改善 ChromeOS 更新。</translation>
 <translation id="3209034400446768650">這個頁面可能會產生費用</translation>
@@ -1871,6 +1874,7 @@
 <translation id="4269264543938335308">泳裝</translation>
 <translation id="4269599248168651462">伺服器憑證的核發名稱重複。</translation>
 <translation id="4270541775497538019">堆疊出紙器 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{查看 0 則評論，平均評分為 <ph name="STARS" /> 顆星。}=1{查看 1 則評論，平均評分為 <ph name="STARS" /> 顆星。}other{查看全部 # 則評論，平均評分為 <ph name="STARS" /> 顆星。}}</translation>
 <translation id="4271652479722040953">在 Chrome 中新增擴充功能時，系統會將擴充功能相關資料傳送給第三方進行分析，系統管理員也可能會看到這些資料。這類資料包括擴充功能相關資訊，例如名稱、安裝時間、安裝來源，以及與擴充功能相關的活動 (例如變更分頁、聯絡網站或存取 Cookie)。無論擴充功能是否透過 Chrome 線上應用程式商店安裝，系統都會收集上述資料。</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4276974990916607331">不用了，謝謝</translation>
@@ -2344,6 +2348,7 @@
 <translation id="5138227688689900538">顯示較少</translation>
 <translation id="5143309888746105072">Chromium 會禁止網站使用第三方 Cookie 追蹤瀏覽網站的使用者。
             <ph name="NEW_LINE" />如果網站功能無法正常運作，請<ph name="START_LINK" />嘗試暫時允許使用第三方 Cookie<ph name="END_LINK" />。</translation>
+<translation id="5144613843429436866">你已允許這個網站使用<ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">政策回應中存在錯誤代碼</translation>
 <translation id="5146995429444047494">已封鎖 <ph name="ORIGIN" /> 的通知</translation>
 <translation id="514704532284964975"><ph name="URL" /> 希望查看和變更你透過手機在 NFC 裝置上輕觸的資訊</translation>
@@ -2950,6 +2955,7 @@
 <translation id="6224281071334553713">珠寶首飾</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中依個人需求調整無障礙工具</translation>
 <translation id="6228346913624365233">豪華房車</translation>
+<translation id="6228836011612806720">商店評論，平均評分為 <ph name="STARS" /> 顆星。</translation>
 <translation id="6229196330202833460">電影和電視串流</translation>
 <translation id="6234122620015464377">完成每份文件後裁切</translation>
 <translation id="6234310016144827337">請檢查連線狀態，然後再試一次</translation>
@@ -2967,6 +2973,7 @@
 <translation id="6254436959401408446">記憶體不足，無法開啟這個網頁</translation>
 <translation id="625463612687472648">不再授予權限</translation>
 <translation id="6259156558325130047">重做重新排序(&amp;R)</translation>
+<translation id="6259282549512536479">你先前已封鎖「<ph name="BLOCKED_URL" />」</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 書籤</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6264485186158353794">返回安全網頁</translation>
@@ -4399,6 +4406,7 @@
 <translation id="8792621596287649091">你可能會失去 <ph name="ORG_NAME" /> 帳戶存取權，或身分遭到冒用。Chromium 建議你立即變更密碼。</translation>
 <translation id="8792626944327216835">麥克風</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> 已為你的瀏覽器啟用 Chrome Enterprise 連接器。這些連接器可以存取你的部分資料。</translation>
+<translation id="8796062699363039080">「<ph name="OPERATING_SYSTEM" />」設定</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8800034312320686233">網站無法正常運作嗎？</translation>
 <translation id="8805819170075074995">清單項目「<ph name="LANGUAGE_ID" />」：這個項目同時也納入在 SpellcheckLanguage 政策中，因此系統已予以忽略。</translation>
@@ -4618,6 +4626,7 @@
 <translation id="9192361865877479444">金屬 (霧面)</translation>
 <translation id="9192947025498305328">純淨美妝</translation>
 <translation id="9199905725844810519">列印功能已遭封鎖</translation>
+<translation id="9201904868909900493">正在開啟問卷調查...</translation>
 <translation id="9204089334327209740">上傳完成後，你可以在 <ph name="CLOUD_PROVIDER" /> 中修改檔案。系統會自動移除本機儲存空間中的檔案 (包括垃圾桶中的所有檔案)。</translation>
 <translation id="9205078245616868884">您已使用同步通關密語對資料進行加密，請輸入通關密語開始進行同步。</translation>
 <translation id="920643408853370361">旅遊保險</translation>

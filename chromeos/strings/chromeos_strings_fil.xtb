@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Di-wasto ang PIN.</translation>
 <translation id="382043424867370667">Wallpaper na paglubog ng araw</translation>
 <translation id="3824259034819781947">Mag-attach ng mga file</translation>
-<translation id="3836587210832263413">I-on lang ang mga extension na pinagkakatiwalaan mo</translation>
 <translation id="3838338534323494292">Bagong password</translation>
 <translation id="3845880861638660475">Pindutin ang <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> para isara ang dialog.</translation>
 <translation id="3848280697030027394">pagpapadilim ng keyboard</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Pamahalaan ang iyong mga printer sa mga setting ng printer</translation>
 <translation id="6292095526077353682">Habang nagcha-charge, ipakita ang screen saver sa loob ng</translation>
 <translation id="629550705077076970">pag-dim ng keyboard</translation>
-<translation id="6301193653204230066">Sa pangkaligtasang pag-reset, io-off ang mga extension ng Chrome browser at ire-reset ang network at iba pang setting sa mga ligtas na default.
-          Hindi mababago ang iyong mga tab, mga file, cookies, at history.</translation>
 <translation id="6302401976930124515">Nakansela ang pagsubok na <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Explore app</translation>
 <translation id="6318437367327684789">habambuhay</translation>
@@ -1774,6 +1771,8 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="951780398843003443">Paghambingin ang mga boses sa buong recording para maipakita ng transcript kung ano ang sinabi ng bawat speaker at kung kailan</translation>
 <translation id="952992212772159698">Hindi na-activate</translation>
 <translation id="95718197892796296">clay</translation>
+<translation id="959792926760890141">Sa pangkaligtasang pag-reset, io-off ang mga extension ng Chrome browser at ire-reset ang network at iba pang setting sa mga ligtas na default.
+          Ire-reset ang iyong default na search engine, pero hindi mababago ang mga tab, mga file, cookies, at history mo.</translation>
 <translation id="960719561871045870">Operator code</translation>
 <translation id="965918541715156800">dilaw at teal</translation>
 <translation id="966787709310836684">menu</translation>

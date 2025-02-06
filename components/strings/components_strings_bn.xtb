@@ -1165,6 +1165,7 @@
 <translation id="3076865167425975822">অপারেটিং সিস্টেম</translation>
 <translation id="3080254622891793721">গ্রাফিক</translation>
 <translation id="3082007635241601060">উপলভ্য হলে পছন্দমতো ডিসকাউন্ট খুঁজে পেতে Google-কে আপনার কার্ট ব্যবহার করতে দিন</translation>
+<translation id="3086269988715347183">আপনি আগে <ph name="BLOCKED_URL" /> ওয়েবসাইটকে অনুমতি দেননি</translation>
 <translation id="3086579638707268289">ওয়েবে আপনার অ্যাক্টিভিটি নজরে রাখা হচ্ছে</translation>
 <translation id="3087734570205094154">নিচে</translation>
 <translation id="3090667236485488075">গ্লাস</translation>
@@ -1235,10 +1236,12 @@
 <translation id="3194737229810486521"><ph name="URL" /> স্থায়ীভাবে আপনার ডিভাইসে ডেটা স্টোর করতে চায়</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> এ <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">আপনি কখন ডিভাইস সক্রিয়ভাবে ব্যবহার করেন তা জানতে চাইতে পারে</translation>
+<translation id="3201482403106004262">সমীক্ষায় কিছু সমস্যা হয়েছে।</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে কী ধরনের তথ্য আপনি সিঙ্ক করবেন, তা ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="3203025201812691413">URL খালি রাখা যাবে না</translation>
 <translation id="320323717674993345">পেমেন্ট বাতিল করুন</translation>
 <translation id="3203366800380907218">ওয়েব থেকে</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> ওয়েবসাইটে প্রাপ্তবয়স্কদের জন্য উপযুক্ত কন্টেন্ট থাকতে পারে</translation>
 <translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
 <translation id="3208701679386778924">একটি রিপোর্ট পাঠান যাতে ChromeOS-এর আপডেট আমরা আরও উন্নত করতে পারি।</translation>
 <translation id="3209034400446768650">পৃষ্ঠাটির মাধ্যমে টাকা চার্জ করা হতে পারে</translation>
@@ -1874,6 +1877,7 @@
 <translation id="4269264543938335308">সাঁতারের পোশাক</translation>
 <translation id="4269599248168651462">সার্ভার শংসাপত্র এমন ডোমেনের নামে নেওয়া হয়েছে যা অনন্য নয়।</translation>
 <translation id="4270541775497538019">স্ট্যাকার ৬</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{কোনও রিভিউ নেই। গড় রেটিং হল <ph name="STARS" /> স্টার।}=1{১টি রিভিউ দেখুন। গড় রেটিং হল <ph name="STARS" /> স্টার।}one{#টি রিভিউয়ের মধ্যে সবগুলি দেখুন। গড় রেটিং হল <ph name="STARS" /> স্টার।}other{#টি রিভিউয়ের মধ্যে সবগুলি দেখুন। গড় রেটিং হল <ph name="STARS" /> স্টার।}}</translation>
 <translation id="4271652479722040953">Chrome-এ এক্সটেনশন যোগ করা হলে, এইসব এক্সটেনশন সম্পর্কিত প্রাসঙ্গিক ডেটা বিশ্লেষণের জন্য থার্ড-পার্টিকে পাঠানো হয় এবং আপনার অ্যাডমিনিস্ট্রেটর হয়ত তা দেখতে পাবেন। এই ডেটা এক্সটেনশন সম্পর্কিত তথ্য অন্তর্ভুক্ত করে, যেমন এক্সটেনশনের নাম, সেগুলি কখন ইনস্টল করা হয়েছে, ইনস্টল করার সোর্স এবং এইসব এক্সটেনশনের সাথে যুক্ত অ্যাক্টিভিটি (যেমন, ট্যাব পরিবর্তন করা, ওয়েবসাইটের সাথে যোগাযোগ করা বা কুকিজ অ্যাক্সেস করা)। এই ডেটা Chrome ওয়েব স্টোর এবং অফ-স্টোর এক্সটেনশন থেকে ইনস্টল করা এক্সটেনশনের জন্য সংগ্রহ করা হয়।</translation>
 <translation id="4275830172053184480">আপনার ডিভাইস বন্ধ করে চালু করুন</translation>
 <translation id="4276974990916607331">না থাক</translation>
@@ -2347,6 +2351,7 @@
 <translation id="5138227688689900538">কম দেখুন</translation>
 <translation id="5143309888746105072">আপনি ব্রাউজ করাকালীন আপনার অ্যাক্টিভিটি ট্র্যাক করার জন্য সাইটগুলি যে থার্ড-পার্টি কুকি ব্যবহার করে, Chromium তা ব্লক করে দেয়।
             <ph name="NEW_LINE" />সাইটের ফিচার কাজ না করলে <ph name="START_LINK" />সাময়িকভাবে থার্ড-পার্টি কুকি ব্যবহারের অনুমতি দিয়ে দেখুন<ph name="END_LINK" />।</translation>
+<translation id="5144613843429436866">এই সাইটের জন্য আপনি <ph name="PERMISSION" />-এর অনুমতি দিয়েছেন</translation>
 <translation id="5145883236150621069">নীতি প্রতিক্রিয়ার মধ্যে ত্রুটি কোড উপস্থিত</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />-এর বিজ্ঞপ্তি ব্লক করা হয়েছে</translation>
 <translation id="514704532284964975"><ph name="URL" /> আপনার ফোনে ট্যাপ করেন এমন NFC ডিভাইসে তথ্য দেখতে এবং পরিবর্তন করতে চায়</translation>
@@ -2952,6 +2957,7 @@
 <translation id="6224281071334553713">রত্ন ও গয়না</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংস থেকে আপনার অ্যাক্সেসিবিলিটি টুল পছন্দমতো সাজিয়ে নিতে Tab বোতাম প্রেস করে Enter প্রেস করুন</translation>
 <translation id="6228346913624365233">বিলাসবহুল যানবাহন</translation>
+<translation id="6228836011612806720">স্টোরের রিভিউ। গড় রেটিং হল <ph name="STARS" /> স্টার।</translation>
 <translation id="6229196330202833460">সিনেমা ও টিভি স্ট্রিমিং</translation>
 <translation id="6234122620015464377">প্রতিটি ডকুমেন্টের শেষে ট্রিম করুন</translation>
 <translation id="6234310016144827337">আপনার কানেকশন চেক করে আবার চেষ্টা করে দেখুন</translation>
@@ -2969,6 +2975,7 @@
 <translation id="6254436959401408446">এই পৃষ্ঠাটি খোলার জন্য পর্যাপ্ত মেমরি নেই</translation>
 <translation id="625463612687472648">অনুমতি বন্ধ করুন</translation>
 <translation id="6259156558325130047">&amp;পুনর্বিন্যাসকে আবার করুন</translation>
+<translation id="6259282549512536479">আপনি আগে <ph name="BLOCKED_URL" /> ওয়েবসাইটকে ব্লক করেছিলেন</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> বুকমার্কগুলি</translation>
 <translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
 <translation id="6264485186158353794">সুরক্ষাতে ফিরুন</translation>
@@ -4401,6 +4408,7 @@
 <translation id="8792621596287649091">আপনি নিজের <ph name="ORG_NAME" /> অ্যাকাউন্টের অ্যাক্সেস হারাতে পারেন অথবা আপনার পরিচয় চুরি হয়ে যেতে পারে। Chromium এখনই আপনার পাসওয়ার্ড পরিবর্তন করার আর্জি জানাচ্ছে।</translation>
 <translation id="8792626944327216835">মাইক্রোফোন</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> আপনার ব্রাউজারে Chrome Enterprise কানেক্টর চালু করেছে। এই কানেক্টর আপনার কিছু ডেটা অ্যাক্সেস করতে পারবে।</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> সেটিংস</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
 <translation id="8800034312320686233">সাইট কি কাজ করছে না?</translation>
 <translation id="8805819170075074995">তালিকার এন্ট্রি "<ph name="LANGUAGE_ID" />": এন্ট্রিটি SpellcheckLanguage নীতিতেও অন্তর্ভুক্ত থাকার জন্য এটি অগ্রাহ্য করা হয়েছে।</translation>
@@ -4621,6 +4629,7 @@
 <translation id="9192361865877479444">মেটাল (ম্যাট)</translation>
 <translation id="9192947025498305328">ক্লিন বিউটি</translation>
 <translation id="9199905725844810519">প্রিন্টিং ব্লক করা আছে</translation>
+<translation id="9201904868909900493">সমীক্ষা খুলছে …</translation>
 <translation id="9204089334327209740">আপলোড করা হয়ে গেলে, আপনি <ph name="CLOUD_PROVIDER" />-এ নিজের ফাইল মডিফাই করতে পারবেন। ট্র্যাশে থাকা সব ফাইল সহ লোকাল স্টোরেজ অটোমেটিক সরিয়ে দেওয়া হবে।</translation>
 <translation id="9205078245616868884">আপনার ডেটা আপনার সিঙ্ক পাসফ্রেজ দিয়ে এনক্রিপ্ট করা হয়েছে। সিঙ্ক শুরু করার জন্য এটি লিখুন।</translation>
 <translation id="920643408853370361">ভ্রমণ বীমা</translation>

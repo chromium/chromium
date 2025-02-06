@@ -770,7 +770,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2318594867107319532">Ostatnia sygnatura czasowa zasad:</translation>
 <translation id="2320564945062300737">Produkty do pielęgnacji twarzy</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 okna}few{# okien}many{# okien}other{# okna}}</translation>
-<translation id="2328651992442742497">Zezwolono (domyślnie)</translation>
+<translation id="2328651992442742497">Dozwolone (domyślnie)</translation>
 <translation id="2328955282645810595">Narzędzia budowlane i elektronarzędzia</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ważna do <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Ustawienie kontrolowane przez administratora</translation>
@@ -1164,6 +1164,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3076865167425975822">Systemy operacyjne</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Pozwól Google na sprawdzanie, czy do produktów, które masz w koszykach, można zastosować spersonalizowane rabaty</translation>
+<translation id="3086269988715347183">Strona <ph name="BLOCKED_URL" /> nie została przez Ciebie wcześniej zatwierdzona</translation>
 <translation id="3086579638707268289">Twoja aktywność w internecie jest monitorowana</translation>
 <translation id="3087734570205094154">Na dół</translation>
 <translation id="3090667236485488075">Szkło</translation>
@@ -1234,10 +1235,12 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3194737229810486521"><ph name="URL" /> chce na stałe przechowywać dane na Twoim urządzeniu</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na serwerze <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Może prosić o pozwolenie na sprawdzanie, kiedy używasz urządzenia</translation>
+<translation id="3201482403106004262">Wystąpił błąd dotyczący ankiety.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać w ustawieniach Chrome informacjami, które mają być synchronizowane, naciśnij Tab, a potem Enter</translation>
 <translation id="3203025201812691413">URL nie może być pusty</translation>
 <translation id="320323717674993345">Anuluj płatność</translation>
 <translation id="3203366800380907218">Z sieci</translation>
+<translation id="3207830513221832868">Strona <ph name="BLOCKED_URL" /> może zawierać treści dla dorosłych</translation>
 <translation id="3207960819495026254">Dodano do zakładek</translation>
 <translation id="3208701679386778924">Prześlij raport, abyśmy mogli ulepszać kolejne aktualizacje ChromeOS.</translation>
 <translation id="3209034400446768650">Strona może powodować naliczanie opłat</translation>
@@ -2347,6 +2350,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5138227688689900538">Pokaż mniej</translation>
 <translation id="5143309888746105072">Chromium blokuje witrynom możliwość używania plików cookie innych firm do śledzenia Twoich czynności związanych z przeglądaniem internetu.
             <ph name="NEW_LINE" />Jeśli funkcje w witrynie nie działają, <ph name="START_LINK" />tymczasowo zezwól na używanie plików cookie innych firm<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Przyznałeś(-aś) tej witrynie uprawnienia: <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">W odebranej polityce znajduje się kod błędu</translation>
 <translation id="5146995429444047494">Powiadomienia z <ph name="ORIGIN" /> są blokowane</translation>
 <translation id="514704532284964975">Strona <ph name="URL" /> chce odczytywać i zmieniać informacje na urządzeniach z funkcją NFC, do których zbliżasz telefon</translation>
@@ -2971,6 +2975,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6254436959401408446">Za mało pamięci, by otworzyć tę stronę</translation>
 <translation id="625463612687472648">Cofnij uprawnienia:</translation>
 <translation id="6259156558325130047">&amp;Ponów zmianę kolejności</translation>
+<translation id="6259282549512536479">Strona <ph name="BLOCKED_URL" /> została przez Ciebie wcześniej zablokowana</translation>
 <translation id="6263376278284652872">Zakładki <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Pobierz mimo to</translation>
 <translation id="6264485186158353794">Wróć do bezpieczeństwa</translation>
@@ -4403,6 +4408,7 @@ Dodatkowe informacje:
 <translation id="8792621596287649091">Możesz stracić dostęp do swojego konta <ph name="ORG_NAME" /> lub paść ofiarą kradzieży tożsamości. Chromium zaleca natychmiastową zmianę hasła.</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">Strona <ph name="ENROLLMENT_DOMAIN" /> włączyła w przeglądarce oprogramowanie sprzęgające Chrome Enterprise. Może ono mieć dostęp do niektórych Twoich danych.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> – ustawienia</translation>
 <translation id="8798099450830957504">Domyślny</translation>
 <translation id="8800034312320686233">Strona nie działa?</translation>
 <translation id="8805819170075074995">Pozycja na liście „<ph name="LANGUAGE_ID" />”: pozycja została zignorowana, ponieważ występuje też w zasadzie SpellcheckLanguage.</translation>
@@ -4622,6 +4628,7 @@ Dodatkowe informacje:
 <translation id="9192361865877479444">Metal (matowy)</translation>
 <translation id="9192947025498305328">Kosmetyki naturalne</translation>
 <translation id="9199905725844810519">Drukowanie jest zablokowane</translation>
+<translation id="9201904868909900493">Otwieram ankietę…</translation>
 <translation id="9204089334327209740">Po zakończeniu przesyłania możesz zmodyfikować pliki w usłudze <ph name="CLOUD_PROVIDER" />. Dane z pamięci lokalnej, w tym wszystkie pliki w koszu, zostaną automatycznie usunięte.</translation>
 <translation id="9205078245616868884">Twoje dane są szyfrowane z użyciem hasła wielowyrazowego do synchronizacji. Wpisz je, by rozpocząć synchronizację.</translation>
 <translation id="920643408853370361">Ubezpieczenia turystyczne</translation>

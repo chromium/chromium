@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="382043424867370667">Pozadinska slika zalaska sunca</translation>
 <translation id="3824259034819781947">Prilaganje fajlova</translation>
-<translation id="3836587210832263413">Uključite samo ekstenzije kojima vjerujete</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
 <translation id="3845880861638660475">Pritisnite <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> i <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> da zatvorite dijaloški okvir.</translation>
 <translation id="3848280697030027394">zatamnjena tastatura</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Upravljajte štampačima u postavkama štampača</translation>
 <translation id="6292095526077353682">Prilikom punjenja prikazuj čuvar ekrana</translation>
 <translation id="629550705077076970">zatamnjenje tastature</translation>
-<translation id="6301193653204230066">Vraćanje sigurnosti na zadano isključuje ekstenzije preglednika Chrome te vraća mrežu i druge postavke na sigurne zadane postavke.
-          Kartice, fajlovi, kolačići i historija se neće promijeniti.</translation>
 <translation id="6302401976930124515">Test "<ph name="TEST_NAME" />" je otkazan</translation>
 <translation id="631063167932043783">Aplikacija Istraži</translation>
 <translation id="6318437367327684789">zauvijek</translation>
@@ -1774,6 +1771,8 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="951780398843003443">uporedi glasove na snimku da transkript odražava šta i kada je svaki govornik rekao</translation>
 <translation id="952992212772159698">Nije aktivirano</translation>
 <translation id="95718197892796296">gline</translation>
+<translation id="959792926760890141">Vraćanje sigurnosti na zadano isključuje ekstenzije preglednika Chrome te vraća mrežu i druge postavke na sigurne zadane postavke.
+          Zadani pretraživač će se vratiti na zadano, ali se kartice, fajlovi, kolačići i historija neće promijeniti.</translation>
 <translation id="960719561871045870">Kôd operatera</translation>
 <translation id="965918541715156800">žuto-tirkiznoj</translation>
 <translation id="966787709310836684">meni</translation>

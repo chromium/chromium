@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
 <translation id="1396327438254055134">Dozvolite web lokaciji da koristi optimizator V8.</translation>
+<translation id="1409338233051621926">Dodir na Aplikacije, a zatim na Zadane aplikacije</translation>
 <translation id="1415402041810619267">URL je odsječen</translation>
 <translation id="1415855080660575082">Dozvolite Chromeu da dijeli nedavne kartice s uređajem da ih vidite na listi aplikacija i u rezultatima pretraživanja na uređaju. Možete uključiti ili isključiti u postavkama Chromea.</translation>
 <translation id="1448064542941920355">Smanjenje zumiranja</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Tamna tema se neće primjenjivati na web lokacije</translation>
 <translation id="2606760465469169465">Automatska potvrda</translation>
 <translation id="2621115761605608342">Dozvolite JavaScript za posebnu web lokaciju.</translation>
+<translation id="2626708220538466178">Donja tabela zadanog preglednika je zatvorena</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2682367912565197520">Brisanje sačuvanog nivoa zumiranja</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Isključuje zvuk na web lokacijama koje ga reproduciraju</translation>
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3628308229821498208">Predložena pretraživanja</translation>
+<translation id="3658847490588580244">Donja tabela zadanog preglednika</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> web lokacije u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}}</translation>
 <translation id="3697164069658504920">Kada je postavka uključena, web lokacije mogu zatražiti da koriste USB uređaje. Kada je postavka isključena, web lokacije ne mogu koristiti USB uređaje.</translation>
 <translation id="3707034683772193706">Web lokacija koju posjećujete može putem Chromea sačuvati malu količinu informacija uglavnom da potvrdi da niste bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Izbriši i poništi</translation>
 <translation id="4645575059429386691">Upravlja roditelj</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
+<translation id="4672315773691449562">Dodir na aplikaciju Preglednik, a zatim na Chrome</translation>
 <translation id="4676059169848868271">Da dozvolite aplikaciji <ph name="APP_NAME" /> da koristi praćenje ruku, također uključite praćenje ruku u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Senzori pokreta ili svjetla</translation>
 <translation id="4755971844837804407">Kada je postavka uključena, web lokacije vam mogu prikazivati bilo koje oglase. Kada je postavka isključena, web lokacije ne mogu prikazivati ometajuće ni obmanjujuće oglase.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
 <translation id="8609465669617005112">Pomjeri nagore</translation>
 <translation id="8617611086246832542">Kada je postavka uključena, web lokacije se prikazuju u obliku prikaza na računaru. Kada je postavka isključena, web lokacije se prikazuju u obliku prikaza na mobilnom uređaju.</translation>
+<translation id="8670078035093027626">Donja tabela zadanog preglednika je otvorena u punoj visini</translation>
 <translation id="8676316391139423634">Kada je ova postavka uključena, web lokacije mogu zatražiti da prate vaše ruke. Kada je isključena, web lokacije ne mogu pratiti vaše ruke.</translation>
 <translation id="8676374126336081632">Brisanje unosa</translation>
 <translation id="8681886425883659911">Oglasi se blokiraju na web lokacijama za koje je poznato da prikazuju ometajuće ili obmanjujuće oglase</translation>

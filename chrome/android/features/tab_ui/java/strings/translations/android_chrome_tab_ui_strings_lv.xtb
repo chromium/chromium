@@ -25,6 +25,7 @@ Ja izdzēsīsiet šo grupu, visi lietotāji nekavējoties zaudēs piekļuvi ciļ
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Uzzināt vairāk<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Grupēta <ph name="TABS_COUNT_ONE" /> cilne</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> cilnes}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
+<translation id="1909810060368225529">Paziņojums: šīs kopīgotās ciļņu grupas izmaiņas ir redzamas visiem. Ikviens var veikt izmaiņas jūsu kopīgotajās ciļņu grupās</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Saglabāt <ph name="TABS_COUNT_ONE" /> atlasīto cilni kā grāmatzīmi}zero{Saglabāt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes kā grāmatzīmes}one{Saglabāt <ph name="TABS_COUNT_MANY" /> atlasīto cilni kā grāmatzīmi}other{Saglabāt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes kā grāmatzīmes}}</translation>
 <translation id="2118649612461486615">Veikala informācija</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Varat atkārtoti atvērt aizvērtās cilnes un grupas sadaļās “Nesen atvērtas cilnes” un “Ciļņu grupas”. Inkognito cilne nebūs pieejama.}zero{Varat atkārtoti atvērt aizvērtās cilnes un grupas sadaļās “Nesen atvērtas cilnes” un “Ciļņu grupas”. Neviena no # inkognito cilnēm nebūs pieejama.}one{Varat atkārtoti atvērt aizvērtās cilnes un grupas sadaļās “Nesen atvērtas cilnes” un “Ciļņu grupas”. Jūsu # inkognito cilne nebūs pieejama.}other{Varat atkārtoti atvērt aizvērtās cilnes un grupas sadaļās “Nesen atvērtas cilnes” un “Ciļņu grupas”. Neviena no # inkognito cilnēm nebūs pieejama.}}</translation>
@@ -126,11 +127,13 @@ Ja izdzēsīsiet šo grupu, visi lietotāji nekavējoties zaudēs piekļuvi ciļ
 <translation id="6381032505162537930">Šeit varēsiet skatīt savas ciļņu grupas</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Atcelt <ph name="TABS_COUNT_ONE" /> atlasītās cilnes grupēšanu}zero{Atcelt <ph name="TABS_COUNT_MANY" /> atlasīto ciļņu grupēšanu}one{Atcelt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes grupēšanu}other{Atcelt <ph name="TABS_COUNT_MANY" /> atlasīto ciļņu grupēšanu}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> ciļņu}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
+<translation id="6499296376514955580">Paziņojums par kopīgotās ciļņu grupas izmaiņām ir aizvērts</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Pēc 1 dienas}zero{Pēc <ph name="DAY_COUNT_MANY" /> dienām}one{Pēc <ph name="DAY_COUNT_MANY" /> dienas}other{Pēc <ph name="DAY_COUNT_MANY" /> dienām}}</translation>
 <translation id="6549021453810473782">Skatīt veikala informāciju</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Pārvietot cilni pa kreisi</translation>
+<translation id="6589356853295569750">Paziņojums par kopīgotās ciļņu grupas izmaiņām ir atvērts pilna ekrāna augstumā</translation>
 <translation id="6590332670428149473">Atvērt kopīgotās ciļņu grupas “<ph name="TITLE_OF_GROUP" />” (krāsa: <ph name="COLOR_NAME" />) darbību izvēlni</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> cilne mainīta}zero{<ph name="MANY_CHANGED" /> cilnes mainītas}one{<ph name="MANY_CHANGED" /> cilne mainīta}other{<ph name="MANY_CHANGED" /> cilnes mainītas}}</translation>
@@ -157,6 +160,7 @@ Ja izdzēsīsiet šo grupu, visi lietotāji nekavējoties zaudēs piekļuvi ciļ
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Kopīgot <ph name="TABS_COUNT_ONE" /> atlasīto cilni}zero{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}one{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasīto cilni}other{Kopīgot <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}}</translation>
 <translation id="7773714564112603605">Noņemt cilni un dzēst grupu</translation>
 <translation id="7792771145871471484">Pārskatīt ieteikumus.</translation>
+<translation id="7792860826279960128">Paziņojums par kopīgotās ciļņu grupas izmaiņām ir atvērts pusekrāna augstumā</translation>
 <translation id="7825973332242257878">Ciļņu grupas</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupēt <ph name="TABS_COUNT_ONE" /> atlasīto cilni}zero{Grupēt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}one{Grupēt <ph name="TABS_COUNT_MANY" /> atlasīto cilni}other{Grupēt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes}}</translation>
 <translation id="7853202427316060426">Aktivitāte</translation>

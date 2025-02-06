@@ -330,6 +330,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="569897634095159764">Impossible de se connecter à Internet. Le serveur proxy exige que vous vous authentifiiez.</translation>
 <translation id="5761096224651992291">Vous n'avez pas consulté le site récemment. Chromium a supprimé l'autorisation de <ph name="PERMISSION_2" /> ainsi que les autorisations d'accéder à la <ph name="PERMISSION_1" /> et à l'<ph name="PERMISSION_3" />.</translation>
 <translation id="5768371961535086509">Chromium libère de la mémoire dans les onglets inactifs. Ainsi, les onglets actifs et d'autres applis peuvent utiliser davantage de ressources, et Chromium reste rapide. Vos onglets inactifs redeviennent actifs lorsque vous les consultez. <ph name="BEGIN_LINK" />En savoir plus sur l'économiseur de mémoire<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="SETTINGS_LINK" /> les données Chromium de votre compte</translation>
 <translation id="5800158606660203929">Personnaliser et contrôler Chromium. Définir Chromium comme navigateur par défaut.</translation>
 <translation id="5809516625706423866">Impossible de se connecter à Internet : erreur HTTP 401 (accès non autorisé). Veuillez vérifier la configuration de votre proxy.</translation>
 <translation id="5821520528363214608">Pour utiliser et enregistrer des données Chromium dans votre compte Google, mettez à jour Chromium</translation>

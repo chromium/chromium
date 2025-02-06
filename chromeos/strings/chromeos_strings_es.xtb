@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN no válido.</translation>
 <translation id="382043424867370667">Fondo de pantalla del atardecer</translation>
 <translation id="3824259034819781947">Adjuntar archivos</translation>
-<translation id="3836587210832263413">Activa únicamente extensiones que sean de confianza</translation>
 <translation id="3838338534323494292">Contraseña nueva</translation>
 <translation id="3845880861638660475">Pulsa <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> para cerrar el cuadro de diálogo.</translation>
 <translation id="3848280697030027394">oscurecimiento de teclado</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Administra tus impresoras en los ajustes de impresora</translation>
 <translation id="6292095526077353682">Mientras se carga el dispositivo, se mostrará el salvapantallas durante este periodo:</translation>
 <translation id="629550705077076970">atenuación de teclado</translation>
-<translation id="6301193653204230066">Al restablecer los valores seguros, se desactivan las extensiones del navegador Chrome y se restablece la configuración de red y otros ajustes a los valores predeterminados seguros.
-          Tus pestañas, archivos, cookies e historial no se modificarán.</translation>
 <translation id="6302401976930124515">La prueba <ph name="TEST_NAME" /> se ha cancelado</translation>
 <translation id="631063167932043783">Aplicación Explorar</translation>
 <translation id="6318437367327684789">siempre</translation>
@@ -1774,6 +1771,8 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="951780398843003443">Comparará las voces a lo largo de la grabación para que la transcripción refleje lo que ha dicho cada interlocutor y en qué momento</translation>
 <translation id="952992212772159698">Sin activar</translation>
 <translation id="95718197892796296">arcilla</translation>
+<translation id="959792926760890141">Al restablecer los valores seguros, se desactivan las extensiones del navegador Chrome y se restablece la configuración de red y otros ajustes a los valores predeterminados seguros.
+          Se restablecerá el buscador predeterminado, pero tus pestañas, tus archivos, las cookies y tu historial no se modificarán.</translation>
 <translation id="960719561871045870">Código del operador</translation>
 <translation id="965918541715156800">amarillo y turquesa</translation>
 <translation id="966787709310836684">menú</translation>

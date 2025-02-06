@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1384959399684842514">Download angehalten</translation>
 <translation id="1396327438254055134">Du kannst einer Website erlauben, dass V8‑Optimierungstool zu verwenden.</translation>
+<translation id="1409338233051621926">Tippe auf „Apps“ und dann auf „Standard-Apps“</translation>
 <translation id="1415402041810619267">URL abgeschnitten</translation>
 <translation id="1415855080660575082">Erlaube Chrome, deine zuletzt geöffneten Tabs mit deinem Gerät zu teilen, damit sie dort in der App-Liste und in den Suchergebnissen angezeigt werden können. Diese Funktion lässt sich in den Chrome-Einstellungen aktivieren oder deaktivieren.</translation>
 <translation id="1448064542941920355">Herauszoomen</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Dunkles Design nicht auf Websites anwenden</translation>
 <translation id="2606760465469169465">Automatische Bestätigung</translation>
 <translation id="2621115761605608342">JavaScript für eine bestimmte Website zulassen.</translation>
+<translation id="2626708220538466178">Ansicht am unteren Rand des Standardbrowsers geschlossen</translation>
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2682367912565197520">Gespeicherte Zoomstufe löschen</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Websites stummschalten, die Ton wiedergeben</translation>
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3628308229821498208">Vorgeschlagene Suchanfragen</translation>
+<translation id="3658847490588580244">Ansicht am unteren Rand des Standardbrowsers</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> Website in der Gruppe von <ph name="RWS_OWNER" />, die deine Aktivitäten in der Gruppe sehen kann}other{<ph name="RWS_MEMBERS_COUNT" /> Websites in der Gruppe von <ph name="RWS_OWNER" />, die deine Aktivitäten in der Gruppe sehen können}}</translation>
 <translation id="3697164069658504920">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie USB-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine USB-Geräte verwenden.</translation>
 <translation id="3707034683772193706">Von dir besuchte Websites können eine kleine Datenmenge in Chrome speichern, die hauptsächlich dazu dienen, zu belegen, dass du kein Bot bist</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Löschen und zurücksetzen</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
+<translation id="4672315773691449562">Tippe auf „Browser-App“ und dann auf „Chrome“</translation>
 <translation id="4676059169848868271">Damit <ph name="APP_NAME" /> Handtracking verwenden kann, musst du die Einstellung auch in den <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="4751476147751820511">Bewegungs- oder Lichtsensoren</translation>
 <translation id="4755971844837804407">Wenn dieser Schalter aktiviert ist, können dir Websites beliebige Werbung anzeigen. Wenn er deaktiviert ist, können dir Websites keine aufdringliche oder irreführende Werbung anzeigen.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Zugelassen (empfohlen)</translation>
 <translation id="8609465669617005112">Nach oben</translation>
 <translation id="8617611086246832542">Wenn dieser Schalter aktiviert ist, wird die Desktop-Ansicht von Websites angezeigt. Wenn er deaktiviert ist, wird die mobile Ansicht von Websites angezeigt.</translation>
+<translation id="8670078035093027626">Ansicht am unteren Rand des Standardbrowsers vollständig geöffnet</translation>
 <translation id="8676316391139423634">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie deine Handbewegungen verfolgen dürfen. Wenn er deaktiviert ist, können Websites deine Handbewegungen nicht verfolgen.</translation>
 <translation id="8676374126336081632">Eingabe löschen</translation>
 <translation id="8681886425883659911">Werbung auf Websites, die bekanntermaßen aufdringliche oder irreführende Anzeigen präsentieren, wird blockiert</translation>

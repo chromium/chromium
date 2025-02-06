@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">Оперативни системи</translation>
 <translation id="3080254622891793721">Слика</translation>
 <translation id="3082007635241601060">Дозволите да Google користи ваше корпе да би пронашао персонализоване попусте када су доступни</translation>
+<translation id="3086269988715347183">Нисте до сада одобрили <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Ваше активности на вебу се прате</translation>
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090667236485488075">Стакло</translation>
@@ -1234,10 +1235,12 @@
 <translation id="3194737229810486521"><ph name="URL" /> жели да трајно складишти податке на уређају</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на: <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Може да тражи да зна када активно користите уређај</translation>
+<translation id="3201482403106004262">Дошло је до грешке са анкетом.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали тиме које информације синхронизујете у подешавањима Chrome-а</translation>
 <translation id="3203025201812691413">URL не може да буде празан</translation>
 <translation id="320323717674993345">Откажи плаћање</translation>
 <translation id="3203366800380907218">Са веба</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> може да обухвата садржај за старију публику</translation>
 <translation id="3207960819495026254">Обележено</translation>
 <translation id="3208701679386778924">Пошаљите извештај да бисмо побољшали даља ажурирања ChromeOS-а.</translation>
 <translation id="3209034400446768650">Страница може да наплаћује</translation>
@@ -2347,6 +2350,7 @@
 <translation id="5138227688689900538">Прикажи мање</translation>
 <translation id="5143309888746105072">Chromium блокира сајтове да користе колачиће треће стране да би вас пратили док прегледате.
             <ph name="NEW_LINE" />Ако функције сајта не раде, <ph name="START_LINK" />пробајте да привремено дозволите колачиће треће стране<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Одобрили сте дозволу <ph name="PERMISSION" /> за овај сајт</translation>
 <translation id="5145883236150621069">Кôд грешке је присутан у одговору на смернице</translation>
 <translation id="5146995429444047494">Обавештења за <ph name="ORIGIN" /> су блокирана</translation>
 <translation id="514704532284964975"><ph name="URL" /> жели да види и мења информације на NFC уређајима које додирујете телефоном</translation>
@@ -2970,6 +2974,7 @@
 <translation id="6254436959401408446">Нема довољно меморије за отварање ове странице</translation>
 <translation id="625463612687472648">Опозови дозволу</translation>
 <translation id="6259156558325130047">&amp;Понови промену редоследа</translation>
+<translation id="6259282549512536479">Претходно сте блокирали <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872">Обележивачи домена <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Ипак преузми</translation>
 <translation id="6264485186158353794">Назад на безбедно</translation>
@@ -4403,6 +4408,7 @@
 <translation id="8792621596287649091">Можете да изгубите приступ налогу за <ph name="ORG_NAME" /> или би могло да дође до крађе идентитета. Chromium вам препоручује да одмах промените лозинку.</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> је укључио Chrome Enterprise Connectors у прегледачу. Ови прикључци имају приступ неким вашим подацима.</translation>
+<translation id="8796062699363039080">Подешавања за <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Подразумевано</translation>
 <translation id="8800034312320686233">Да ли сајт не ради?</translation>
 <translation id="8805819170075074995">Унос на листи „<ph name="LANGUAGE_ID" />“: Унос се занемарује јер је обухваћен и смерницама SpellcheckLanguage.</translation>
@@ -4623,6 +4629,7 @@
 <translation id="9192361865877479444">Метал (мат)</translation>
 <translation id="9192947025498305328">Природни козметички производи</translation>
 <translation id="9199905725844810519">Штампање је блокирано</translation>
+<translation id="9201904868909900493">Отвара се анкета…</translation>
 <translation id="9204089334327209740">Када се отпремање заврши, можете да измените фајлове у услузи <ph name="CLOUD_PROVIDER" />. Локално складиште, укључујући све фајлове у отпаду, аутоматски ће бити уклоњено.</translation>
 <translation id="9205078245616868884">Подаци се шифрују помоћу приступне фразе за синхронизацију. Унесите је да бисте започели синхронизацију.</translation>
 <translation id="920643408853370361">Путно осигурање</translation>

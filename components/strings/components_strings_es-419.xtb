@@ -770,7 +770,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2318594867107319532">Marca de tiempo de la última política:</translation>
 <translation id="2320564945062300737">Productos para el cuidado facial</translation>
 <translation id="2322254345061973671">{COUNT,plural, =1{1 entana}other{# ventanas}}</translation>
-<translation id="2328651992442742497">Se permite (predeterminado).</translation>
+<translation id="2328651992442742497">Se permite (predeterminado)</translation>
 <translation id="2328955282645810595">Herramientas eléctricas y de construcción</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Configuración controlada por tu administrador</translation>
@@ -872,7 +872,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2505063700931618106">Se guardó la información de la tarjeta</translation>
 <translation id="2505268675989099013">Proteger cuenta</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (se aplican condiciones)</translation>
-<translation id="2512101340618156538">No se permite (predeterminado).</translation>
+<translation id="2512101340618156538">No se permite (predeterminado)</translation>
 <translation id="2512413427717747692">Establece Chrome como el botón de navegador predeterminado, presiona Intro para establecer Chrome como el navegador predeterminado en la configuración de iOS</translation>
 <translation id="2514548229949738417">Casa y jardín</translation>
 <translation id="2515629240566999685">Verificar la señal en tu área.</translation>
@@ -1164,6 +1164,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3076865167425975822">Sistemas operativos</translation>
 <translation id="3080254622891793721">Gráfico</translation>
 <translation id="3082007635241601060">Permite que Google use tus carritos para buscar descuentos personalizados disponibles</translation>
+<translation id="3086269988715347183">No aprobaste a <ph name="BLOCKED_URL" /> antes</translation>
 <translation id="3086579638707268289">Se supervisa tu actividad en la Web</translation>
 <translation id="3087734570205094154">Inferior</translation>
 <translation id="3090667236485488075">Vidrio</translation>
@@ -1235,10 +1236,12 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3194737229810486521"><ph name="URL" /> desea almacenar datos de forma permanente en el dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> en <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Puede solicitar permiso para saber en qué momento estás usando activamente este dispositivo</translation>
+<translation id="3201482403106004262">Se produjo un error con la encuesta.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para administrar en la configuración de Chrome qué información sincronizar</translation>
 <translation id="3203025201812691413">La URL no puede estar vacía</translation>
 <translation id="320323717674993345">Cancelar pago</translation>
 <translation id="3203366800380907218">Desde la Web</translation>
+<translation id="3207830513221832868">Es posible que <ph name="BLOCKED_URL" /> tenga contenido para mayores de edad</translation>
 <translation id="3207960819495026254">Agregada a favoritos</translation>
 <translation id="3208701679386778924">Envía un informe para que podamos mejorar las actualizaciones de ChromeOS.</translation>
 <translation id="3209034400446768650">La página puede cobrar cargos</translation>
@@ -1874,6 +1877,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4269264543938335308">Trajes de baño</translation>
 <translation id="4269599248168651462">El certificado del servidor se emite con un nombre que no es único.</translation>
 <translation id="4270541775497538019">Apilador 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Ver 0 opiniones. La calificación promedio es de <ph name="STARS" /> estrellas.}=1{Ver 1 opinión. La calificación promedio es de <ph name="STARS" /> estrellas.}other{Ver # opiniones. La calificación promedio es de <ph name="STARS" /> estrellas.}}</translation>
 <translation id="4271652479722040953">Cuando se agregan extensiones a Chrome, se envían datos pertinentes sobre ellas a terceros para su análisis, y es posible que tu administrador pueda verlos. Los datos incluyen información sobre las extensiones, como el nombre, la hora de instalación, la fuente de la instalación y la actividad asociada a estas extensiones (como cambiar de pestaña, comunicarse con sitios web o acceder a cookies). Estos datos se recopilan para las extensiones instaladas desde Chrome Web Store y las extensiones que no pertenecen a la tienda.</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4276974990916607331">No, gracias</translation>
@@ -2347,6 +2351,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5143309888746105072">Chromium impide que los sitios usen cookies de terceros para seguirte mientras navegas.
             <ph name="NEW_LINE" />Si las funciones del sitio no funcionan, <ph name="START_LINK" />prueba permitir temporalmente las cookies de terceros<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Permitiste que este sitio use tu <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Código de error en la respuesta de la política</translation>
 <translation id="5146995429444047494">Se bloquearon las notificaciones de <ph name="ORIGIN" /></translation>
 <translation id="514704532284964975"><ph name="URL" /> quiere ver y cambiar la información de los dispositivos NFC que presionas con tu teléfono</translation>
@@ -2953,6 +2958,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6224281071334553713">Piedras preciosas y joyas</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar tus herramientas de accesibilidad en la configuración de Chrome</translation>
 <translation id="6228346913624365233">Vehículos de lujo</translation>
+<translation id="6228836011612806720">Opiniones sobre la tienda. La calificación promedio es de <ph name="STARS" /> estrellas.</translation>
 <translation id="6229196330202833460">Transmisión de películas y TV</translation>
 <translation id="6234122620015464377">Cortar después de cada documento</translation>
 <translation id="6234310016144827337">Comprueba la conexión y vuelve a intentarlo</translation>
@@ -2970,6 +2976,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6254436959401408446">Tu dispositivo no tiene suficiente memoria para abrir esta página</translation>
 <translation id="625463612687472648">Dejar de permitir</translation>
 <translation id="6259156558325130047">&amp;Rehacer Reorganizar</translation>
+<translation id="6259282549512536479">Bloqueaste a <ph name="BLOCKED_URL" /> antes</translation>
 <translation id="6263376278284652872">Favoritos de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Descargar de todos modos</translation>
 <translation id="6264485186158353794">Volver a un sitio seguro</translation>
@@ -4403,6 +4410,7 @@ Detalles adicionales:
 <translation id="8792621596287649091">Es posible que hayas perdido el acceso a tu cuenta de <ph name="ORG_NAME" /> o sufrido un robo de identidad. Chromium te recomienda que cambies la contraseña ahora.</translation>
 <translation id="8792626944327216835">micrófono</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> activó Chrome Enterprise Connectors en tu navegador. Estos conectores tienen acceso a algunos de tus datos.</translation>
+<translation id="8796062699363039080">Configuración de <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8800034312320686233">¿No funciona el sitio?</translation>
 <translation id="8805819170075074995">Entrada de lista "<ph name="LANGUAGE_ID" />": Se ignorará la entrada porque también se incluye en la política SpellcheckLanguage.</translation>
@@ -4623,6 +4631,7 @@ Detalles adicionales:
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Productos de belleza ecológicos</translation>
 <translation id="9199905725844810519">No se permite imprimir este contenido</translation>
+<translation id="9201904868909900493">Abriendo encuesta…</translation>
 <translation id="9204089334327209740">Una vez que se complete la carga, podrás modificar tus archivos en <ph name="CLOUD_PROVIDER" />. El almacenamiento local, que incluye los archivos de la papelera, se quitará automáticamente.</translation>
 <translation id="9205078245616868884">Tus datos están encriptados con tu frase de contraseña para sincronización. Debes ingresarla para iniciar la sincronización.</translation>
 <translation id="920643408853370361">Seguro de viaje</translation>

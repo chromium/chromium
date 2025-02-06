@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">Операционные системы</translation>
 <translation id="3080254622891793721">Изображения</translation>
 <translation id="3082007635241601060">Разрешите компании Google использовать корзины, чтобы находить для вас персонализированные скидки.</translation>
+<translation id="3086269988715347183">Вы ещё не одобряли <ph name="BLOCKED_URL" />.</translation>
 <translation id="3086579638707268289">Ваши действия в Интернете отслеживаются</translation>
 <translation id="3087734570205094154">Снизу</translation>
 <translation id="3090667236485488075">Стекло</translation>
@@ -1233,10 +1234,12 @@
 <translation id="3194737229810486521">Сайт <ph name="URL" /> запрашивает разрешение на постоянное хранение данных на вашем устройстве.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Разрешено запрашивать информацию об использовании устройства</translation>
+<translation id="3201482403106004262">Не удалось открыть опрос.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем – Ввод, чтобы открыть настройки Chrome и указать, какая информация должна синхронизироваться.</translation>
 <translation id="3203025201812691413">Нужно указать URL.</translation>
 <translation id="320323717674993345">Отменить оплату</translation>
 <translation id="3203366800380907218">Из интернета</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> может содержать материалы для взрослых.</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3208701679386778924">Отправьте отчет, чтобы мы могли улучшать последующие обновления ChromeOS.</translation>
 <translation id="3209034400446768650">На этой странице может взиматься плата</translation>
@@ -1362,7 +1365,7 @@
 <translation id="3422248202833853650">Закройте другие программы, чтобы освободить память.</translation>
 <translation id="3422472998109090673">Сайт <ph name="HOST_NAME" /> недоступен.</translation>
 <translation id="3423742043356668186">Использовать системные параметры</translation>
-<translation id="3427092606871434483">Разрешать (по умолчанию)</translation>
+<translation id="3427092606871434483">Разрешить (по умолчанию)</translation>
 <translation id="3427342743765426898">&amp;Повторить изменения</translation>
 <translation id="342781501876943858">Chromium рекомендует сбросить пароль, если вы использовали его на других сайтах.</translation>
 <translation id="3428151540071562330">Один или несколько серверных шаблонов URI DnsOverHttpsTemplates недействительны и не будут использоваться.</translation>
@@ -2346,6 +2349,7 @@
 <translation id="5138227688689900538">Свернуть</translation>
 <translation id="5143309888746105072">Chromium запрещает сайтам отслеживать ваши действия в интернете с помощью сторонних файлов cookie.
             <ph name="NEW_LINE" />Если функции сайта не работают, <ph name="START_LINK" />попробуйте временно предоставить это разрешение<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Вы предоставили разрешение "<ph name="PERMISSION" />" этому сайту.</translation>
 <translation id="5145883236150621069">При проверке политики возвращен код ошибки</translation>
 <translation id="5146995429444047494">Уведомления для сайта <ph name="ORIGIN" /> заблокированы.</translation>
 <translation id="514704532284964975">Сайт <ph name="URL" /> запрашивает разрешение на доступ к информации и ее изменение на устройствах, которые подключаются к телефону через NFC.</translation>
@@ -2566,7 +2570,7 @@
 <translation id="5534785731327961487">Выгодно</translation>
 <translation id="5536214594743852365">Показать раздел "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Конверт Chou 2</translation>
-<translation id="5538270463355278784">автоматическое включение полноэкранного режима</translation>
+<translation id="5538270463355278784">автопереход в полноэкранный режим</translation>
 <translation id="5539243836947087108">Плот</translation>
 <translation id="5540224163453853">Не удалось найти указанную статью</translation>
 <translation id="5540969246441091044">Конный спорт</translation>
@@ -2970,6 +2974,7 @@
 <translation id="6254436959401408446">Недостаточно памяти для загрузки страницы</translation>
 <translation id="625463612687472648">Отозвать разрешение</translation>
 <translation id="6259156558325130047">&amp;Повторить изменение порядка</translation>
+<translation id="6259282549512536479">Ранее вы блокировали <ph name="BLOCKED_URL" />.</translation>
 <translation id="6263376278284652872">Закладки <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Все равно скачать</translation>
 <translation id="6264485186158353794">Вернуться к безопасной странице</translation>
@@ -4176,7 +4181,7 @@
 <translation id="8378714024927312812">Управляется вашей организацией</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Списание может быть разовым или повторяющимся без каких-либо уведомлений. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
-<translation id="8382097126743287270">Автоматическое включение полноэкранного режима</translation>
+<translation id="8382097126743287270">Автопереход в полноэкранный режим</translation>
 <translation id="838307841291975086">Автомобили с кузовом универсал</translation>
 <translation id="8389532092404711541">Средняя цена: <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Кастомные и спортивные транспортные средства</translation>
@@ -4402,6 +4407,7 @@
 <translation id="8792621596287649091">Кто-то посторонний мог получить доступ к вашим личным данным или аккаунту в домене <ph name="ORG_NAME" />. Рекомендуем немедленно сменить пароль.</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685">Домен <ph name="ENROLLMENT_DOMAIN" /> включил в браузере коннекторы Chrome Enterprise Connectors. У них есть доступ к некоторым вашим данным.</translation>
+<translation id="8796062699363039080">Настройки <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">По умолчанию</translation>
 <translation id="8800034312320686233">Сайт не работает?</translation>
 <translation id="8805819170075074995">Элемент списка "<ph name="LANGUAGE_ID" />": элемент проигнорирован, поскольку он уже включен в правило SpellcheckLanguage.</translation>
@@ -4622,6 +4628,7 @@
 <translation id="9192361865877479444">Металл (матовый)</translation>
 <translation id="9192947025498305328">Экологически чистая косметика</translation>
 <translation id="9199905725844810519">Печать заблокирована</translation>
+<translation id="9201904868909900493">Опрос открывается…</translation>
 <translation id="9204089334327209740">Когда загрузка завершится, вы сможете изменять свои файлы в сервисе <ph name="CLOUD_PROVIDER" />. Данные в локальном хранилище, в том числе в корзине, будут автоматически удалены.</translation>
 <translation id="9205078245616868884">Данные зашифрованы с помощью кодовой фразы. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="920643408853370361">Туристическое страхование</translation>

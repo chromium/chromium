@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
 <translation id="382043424867370667">טפט השקיעה</translation>
 <translation id="3824259034819781947">צירוף קבצים</translation>
-<translation id="3836587210832263413">חשוב להפעיל רק תוספים מהימנים</translation>
 <translation id="3838338534323494292">סיסמה חדשה</translation>
 <translation id="3845880861638660475">‏כדי לסגור את תיבת הדו-שיח, מקישים על <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> +‏ <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">מקלדת כהה</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">ניתן לנהל את המדפסות בהגדרות המדפסת</translation>
 <translation id="6292095526077353682">בזמן הטעינה יוצג שומר מסך של</translation>
 <translation id="629550705077076970">עמעום התאורה במקלדת</translation>
-<translation id="6301193653204230066">‏איפוס הגדרות האבטחה משבית את התוספים של דפדפן Chrome ומאפס את הרשת והגדרות אחרות לברירות מחדל בטוחות.
-          הכרטיסיות, הקבצים, קובצי ה-Cookie וההיסטוריה לא ישתנו.</translation>
 <translation id="6302401976930124515">בדיקת ה<ph name="TEST_NAME" /> בוטלה</translation>
 <translation id="631063167932043783">‏האפליקציה 'מה חדש ב-Chromebook'</translation>
 <translation id="6318437367327684789">ללא הפסקה</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">להשוות בין הקולות במשך ההקלטה כך שהתמליל ישקף את מה שכל אחד הדוברים אמר ומתי</translation>
 <translation id="952992212772159698">לא פעיל</translation>
 <translation id="95718197892796296">חימר</translation>
+<translation id="959792926760890141">‏איפוס הגדרות האבטחה משבית את התוספים של דפדפן Chrome ומאפס את הרשת והגדרות אחרות לברירות מחדל בטוחות.
+          מנוע החיפוש שמשמש כברירת מחדל יתאפס, אבל הכרטיסיות, הקבצים, קובצי ה-Cookie וההיסטוריה לא ישתנו.</translation>
 <translation id="960719561871045870">קוד ספק</translation>
 <translation id="965918541715156800">צהוב וכחול-ירקרק</translation>
 <translation id="966787709310836684">תפריט</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1444443021901415601">Chrome zaznamenává témata, která vás podle vaší nedávné historie prohlížení zajímají</translation>
-<translation id="2252052615723281030">Když jste do prohlížeče Chrome přihlášeni, pomáhá toto nastavení uchovat vaši IP adresu v soukromí. Pokud má Chrome podezření, že by vás některý web mohl sledovat, může část vašeho provozu odesílat přes servery pro ochranu soukromí.</translation>
 <translation id="235789365079050412">Zásady ochrany soukromí Google</translation>
 <translation id="2793385791865768072">Chromium zaznamenává témata, která vás podle vaší nedávné historie prohlížení zajímají</translation>
 <translation id="2979365474350987274">Soubory cookie třetích stran jsou omezeny</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Soubory cookie třetích stran jsou omezeny</translation>
 <translation id="6371812158043974664">Když jste do prohlížeče Chromium přihlášeni, pomáhá toto nastavení uchovat vaši IP adresu v soukromí. Pokud má Chromium podezření, že by vás některý web mohl sledovat, může část vašeho provozu odesílat přes servery pro ochranu soukromí. <ph name="LINK_BEGIN" />Jak ochrana IP adresy funguje<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Další informace o tom, jak Google chrání vaše data, najdete v našich zásadách <ph name="BEGIN_LINK1" />ochrany soukromí<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261"><ph name="BEGIN_LINK" />Jak ochrana IP adresy funguje<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Zkontrolujte nastavení témat reklam</translation>
 </translationbundle>

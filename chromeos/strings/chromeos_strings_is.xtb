@@ -230,7 +230,7 @@
 <translation id="1908234395526491708">UDP-beiðnir mistókust</translation>
 <translation id="1908394185991500139">ör til vinstri</translation>
 <translation id="1914144885717544695">á föstudaginn</translation>
-<translation id="1915960750806557358">Sendu ábendingu eða lýstu vandamálinu. Gakktu úr skugga um að ekkert sé persónulegt, viðkvæmt eða trúnaðarmál.</translation>
+<translation id="1915960750806557358">Sendu ábendingu eða lýstu vandamálinu. Gættu þess að ekkert sé persónulegt, viðkvæmt eða trúnaðarmál.</translation>
 <translation id="1923388006036088459">Áherslulitir</translation>
 <translation id="1945403655450283000">Upptökutæki</translation>
 <translation id="1947737735496445907">Prentað</translation>
@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Ógilt PIN-númer.</translation>
 <translation id="382043424867370667">Veggfóður, sólarlag</translation>
 <translation id="3824259034819781947">Hengja skrár við</translation>
-<translation id="3836587210832263413">Kveiktu bara á viðbótum sem þú treystir</translation>
 <translation id="3838338534323494292">Nýtt aðgangsorð</translation>
 <translation id="3845880861638660475">Ýttu samtímis á <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> og <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> til að loka glugganum.</translation>
 <translation id="3848280697030027394">dekkja lyklaborð</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Stjórnaðu prenturunum í prentarastillingunum</translation>
 <translation id="6292095526077353682">Á meðan hleðsla stendur yfir skal sýna skjávara</translation>
 <translation id="629550705077076970">lyklaborð dekkt</translation>
-<translation id="6301193653204230066">Öryggisendurstilling slekkur á viðbótum Chrome-vafra og endurstillir netkerfi og aðrar stillingar á öruggar, sjálfgefnar stillingar.
-          Þetta hefur ekki áhrif á flipana þína, skrár, fótspor og feril.</translation>
 <translation id="6302401976930124515">Hætt var við prófunina: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Skoða forrit</translation>
 <translation id="6318437367327684789">endalaust</translation>
@@ -1774,6 +1771,8 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="951780398843003443">Bera saman raddir á allri upptökunni til að textauppskriftin endurspegli hvað hver mælandi segir og hvenær</translation>
 <translation id="952992212772159698">Ekki virkjuð</translation>
 <translation id="95718197892796296">leir</translation>
+<translation id="959792926760890141">Öryggisendurstilling slekkur á viðbótum Chrome-vafra og endurstillir netkerfi og aðrar stillingar á öruggar, sjálfgefnar stillingar.
+          Sjálfgefin leitarvél verður endurstillt en flipar, skrár, fótspor og ferill breytist ekki.</translation>
 <translation id="960719561871045870">Kóði símafyrirtækis</translation>
 <translation id="965918541715156800">gulum og grænbláum lit</translation>
 <translation id="966787709310836684">valmynd</translation>

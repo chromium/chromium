@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1384959399684842514">İndirme işlemi duraklatıldı</translation>
 <translation id="1396327438254055134">Sitenin, V8 optimize ediciyi kullanmasına izin verin.</translation>
+<translation id="1409338233051621926">Uygulamalar'a, ardından "Varsayılan uygulamalar"a dokunun</translation>
 <translation id="1415402041810619267">URL kısaltıldı</translation>
 <translation id="1415855080660575082">Chrome'un son sekmelerinizi cihazınızla paylaşmasına izin verdiğinizde bu sekmeleri cihazınızın uygulama listesinde ve arama sonuçlarında görebilirsiniz. Bu özelliği Chrome ayarlarından etkinleştirebilir veya devre dışı bırakabilirsiniz.</translation>
 <translation id="1448064542941920355">Yakınlaştırmayı azalt</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Sitelere koyu tema uygulama</translation>
 <translation id="2606760465469169465">Otomatik doğrulama</translation>
 <translation id="2621115761605608342">Belirli bir site için JavaScript'e izin verin.</translation>
+<translation id="2626708220538466178">Varsayılan tarayıcı alt sayfası kapatıldı</translation>
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2677748264148917807">Çık</translation>
 <translation id="2682367912565197520">Kayıtlı yakınlaştırma seviyesini sil</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Ses çalan sitelerin sesini kapat</translation>
 <translation id="3602290021589620013">Önizleme</translation>
 <translation id="3628308229821498208">Önerilen aramalar</translation>
+<translation id="3658847490588580244">Varsayılan tarayıcı alt sayfası</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="RWS_MEMBERS_COUNT" /> site var}other{<ph name="RWS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="RWS_MEMBERS_COUNT" /> site var}}</translation>
 <translation id="3697164069658504920">Bu düğme açıkken siteler USB cihazları kullanmak isteyebilir. Düğme kapalıyken siteler USB cihazları kullanamaz.</translation>
 <translation id="3707034683772193706">Ziyaret ettiğiniz bir site, esasen bot olmadığınızı doğrulayan az miktarda bilgiyi Chrome'a kaydedebilir</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Sil ve sıfırla</translation>
 <translation id="4645575059429386691">Ebeveyniniz tarafından yönetiliyor</translation>
 <translation id="4670064810192446073">Sanal gerçeklik</translation>
+<translation id="4672315773691449562">Tarayıcı uygulamasına, ardından Chrome'a dokunun</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" /> uygulamasının, el takibi özelliğini kullanmasına izin vermek için <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> el takibini de etkinleştirin.</translation>
 <translation id="4751476147751820511">Hareket veya ışık sensörleri</translation>
 <translation id="4755971844837804407">Bu düğme açıkken siteler size tüm reklamları gösterebilir. Düğme kapalıyken siteler size araya giren veya yanıltıcı reklamlar gösteremez.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">İzin verildi (önerilir)</translation>
 <translation id="8609465669617005112">Yukarı taşı</translation>
 <translation id="8617611086246832542">Bu düğme açıkken web sitelerinin masaüstü görünümü gösterilir. Düğme kapalıyken web sitelerinin mobil cihaz görünümü gösterilir.</translation>
+<translation id="8670078035093027626">Varsayılan tarayıcı alt sayfası tam ekran olarak açıldı</translation>
 <translation id="8676316391139423634">Düğme açıkken siteler ellerinizi izlemek için izin isteyebilir. Düğme kapalıyken siteler ellerinizi izleyemez.</translation>
 <translation id="8676374126336081632">Girişi temizle</translation>
 <translation id="8681886425883659911">Araya giren veya yanıltıcı reklamlar gösterdiği bilinen sitelerdeki reklamlar engellenir</translation>

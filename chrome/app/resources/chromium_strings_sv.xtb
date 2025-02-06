@@ -332,6 +332,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="569897634095159764">Det går inte att ansluta till internet. Proxyservern kräver autentisering.</translation>
 <translation id="5761096224651992291">Du har inte besökt webbplatsen nyligen. Chromium har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="PERMISSION_3" /></translation>
 <translation id="5768371961535086509">Chromium frigör minne från inaktiva flikar. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chromium fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem. <ph name="BEGIN_LINK" />Läs mer om minnessparläget<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Om du har glömt lösenfrasen eller vill ändra den här inställningen kan du <ph name="SETTINGS_LINK" /> Chromium-datan i kontot</translation>
 <translation id="5800158606660203929">Anpassa och kontrollera Chromium. Ställ in Chromium som standardwebbläsare.</translation>
 <translation id="5809516625706423866">Det går inte att ansluta till internet. HTTP 401 Åtkomst nekad. Kontrollera proxykonfigurationen.</translation>
 <translation id="5821520528363214608">Uppdatera Chromium om du vill använda och spara Chromium-data i ditt Google-konto</translation>

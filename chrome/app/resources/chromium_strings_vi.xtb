@@ -330,6 +330,7 @@
 <translation id="569897634095159764">Không thể kết nối với Internet. Máy chủ proxy yêu cầu xác thực.</translation>
 <translation id="5761096224651992291">Gần đây bạn không truy cập trang web này. Chromium đã xoá <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="5768371961535086509">Chromium giải phóng bộ nhớ khỏi các thẻ không hoạt động. Nhờ đó, các thẻ đang hoạt động và ứng dụng khác sẽ được sử dụng nhiều tài nguyên máy tính hơn, còn Chromium thì hoạt động nhanh chóng. Các thẻ không hoạt động sẽ tự động hoạt động trở lại khi bạn quay lại các thẻ đó. <ph name="BEGIN_LINK" />Tìm hiểu thêm về Trình tiết kiệm bộ nhớ<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="SETTINGS_LINK" /> dữ liệu Chromium trong tài khoản của bạn</translation>
 <translation id="5800158606660203929">Tuỳ chỉnh và kiểm soát Chromium. Đặt Chromium làm trình duyệt mặc định.</translation>
 <translation id="5809516625706423866">Không thể kết nối với Internet. HTTP 401 không được phép. Vui lòng kiểm tra cấu hình proxy.</translation>
 <translation id="5821520528363214608">Để sử dụng và lưu dữ liệu Chromium trong Tài khoản Google, hãy cập nhật Chromium</translation>

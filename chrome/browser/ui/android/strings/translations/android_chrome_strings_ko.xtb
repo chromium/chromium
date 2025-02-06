@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">모든 기기의 비밀번호</translation>
 <translation id="1082920045291562218">요약 의견 시트와 공유 닫힘</translation>
 <translation id="1087176310396019910">스팸일 수 있음</translation>
+<translation id="1087799850623149508">길게 터치하여 주소 표시줄을 하단으로 이동할 수 있습니다.</translation>
 <translation id="1089606299949659462">검토 완료</translation>
 <translation id="1094555143448724771">다른 기기의 탭을 보려면 탭과 방문 기록을 동기화하세요.</translation>
 <translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요</translation>
@@ -131,6 +132,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1513858653616922153">비밀번호 삭제</translation>
 <translation id="1521774566618522728">오늘 사용</translation>
 <translation id="153446405401665083">Chrome의 새 버전을 사용할 수 있습니다.</translation>
+<translation id="1540012742443808215">현재 주소 표시줄이 상단에 있음</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{북마크 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}other{북마크 #개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장하세요.}}</translation>
 <translation id="1544084554881119930">결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.
 암호를 아는 사람만 암호화된 내 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
@@ -1185,6 +1187,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6459045781120991510">설문조사</translation>
 <translation id="6461962085415701688">파일을 열 수 없습니다</translation>
 <translation id="6464977750820128603">Chrome에서 내가 방문한 사이트를 보고 사이트에 타이머를 설정할 수 있습니다.\n\nGoogle에서는 타이머가 설정된 사이트와 사이트 방문 시간 정보를 수집합니다. 이 정보는 디지털 웰빙을 개선하는 데 사용됩니다.</translation>
+<translation id="6468703991511753953">현재 주소 표시줄이 하단에 있음</translation>
 <translation id="6470181189905173055"><ph name="APP_LABEL" /> 사용 중에 Chrome에서 연 페이지가 여기에 표시됩니다.</translation>
 <translation id="6473086018775716761">공유 옵션 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="6475951671322991020">동영상 다운로드</translation>

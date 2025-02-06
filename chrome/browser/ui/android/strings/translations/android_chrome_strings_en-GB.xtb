@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Passwords on all of your devices</translation>
 <translation id="1082920045291562218">Share with summary feedback sheet closed</translation>
 <translation id="1087176310396019910">Possible spam</translation>
+<translation id="1087799850623149508">You can touch and hold to move the address bar to the bottom</translation>
 <translation id="1089606299949659462">Review complete!</translation>
 <translation id="1094555143448724771">To see tabs from your other devices, sync your tabs and history</translation>
 <translation id="1095761715416917775">Make sure that you can always access your sync data</translation>
@@ -131,6 +132,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1513858653616922153">Delete password</translation>
 <translation id="1521774566618522728">Active today</translation>
 <translation id="153446405401665083">New version of Chrome is available</translation>
+<translation id="1540012742443808215">Address bar currently on top</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="ACCOUNT_EMAIL" />.}other{# bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Payment methods and addresses won't be encrypted. Browsing history from Chrome won't sync.
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6459045781120991510">Surveys</translation>
 <translation id="6461962085415701688">Can’t open file</translation>
 <translation id="6464977750820128603">You can see sites that you visit in Chrome and set timers for them.\n\nGoogle gets info about the sites for which you set timers and how long you visit them. This info is used to make Digital Wellbeing better.</translation>
+<translation id="6468703991511753953">Address bar currently on bottom</translation>
 <translation id="6470181189905173055">The pages that you've opened in Chrome while using <ph name="APP_LABEL" /> will show up here.</translation>
 <translation id="6473086018775716761">List of sharing options opened at half height.</translation>
 <translation id="6475951671322991020">Download video</translation>

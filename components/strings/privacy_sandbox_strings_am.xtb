@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1444443021901415601">Chrome በእርስዎ የቅርብ ጊዜ የአሰሳ ታሪክ መሠረት የዝንባሌ ርዕሶችን ማስታወሻ ይይዛል</translation>
-<translation id="2252052615723281030">Chrome ውስጥ ሲገቡ ይህ ቅንብር የእርስዎን አይፒ አድራሻ የግል ሆኖ እንዲቆይ ያግዛል። Chrome አንድ ጣቢያ እየተከታተለዎ እንደሆነ ከጠረጠረ አንዳንድ ትራፊክዎ በግላዊነት አገልጋዮች በኩል ሊላኩ ይችላሉ።</translation>
 <translation id="235789365079050412">የGoogle የግላዊነት መመሪያ</translation>
 <translation id="2793385791865768072">Chromium በእርስዎ የቅርብ ጊዜ የአሰሳ ታሪክ መሠረት የዝንባሌ ርዕሶችን ማስታወሻ ይይዛል</translation>
 <translation id="2979365474350987274">የሦስተኛ ወገን ኩኪዎች የተገደቡ ናቸው</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">የሦስተኛ ወገን ኩኪዎች ተገድበዋል</translation>
 <translation id="6371812158043974664">እርስዎ Chromium ውስጥ ሲገቡ ይህ ቅንብር የእርስዎ አይፒ አድራሻ የግል ሆኖ እንዲቆይ ያግዛል። Chromium አንድ ጣቢያ እየተከታተለዎ እንደሆነ ከጠረጠረ አንዳንድ ትራፊክዎ በግላዊነት አገልጋዮች በኩል ሊላኩ ይችላሉ። <ph name="LINK_BEGIN" />የአይፒ ጥበቃ እንዴት እንደሚሠራ<ph name="LINK_END" /> የበለጠ ይወቁ</translation>
 <translation id="6398358690696005758">Google በእኛ <ph name="BEGIN_LINK1" />የግላዊነት መመሪያ<ph name="LINK_END1" /> ውስጥ እንዴት ውሂብዎን እንደሚጠብቅ የበለጠ ይወቁ።</translation>
-<translation id="7040031291654706261"><ph name="BEGIN_LINK" />የአይፒ ጥበቃ እንዴት እንደሚሠራ<ph name="END_LINK" /> ይወቁ</translation>
 <translation id="7475768947023614021">የማስታወቂያ ርዕሶች ቅንብርዎን ይገምግሙ</translation>
 </translationbundle>

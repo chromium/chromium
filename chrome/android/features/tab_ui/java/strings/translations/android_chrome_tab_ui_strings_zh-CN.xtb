@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">已将 <ph name="TABS_COUNT_ONE" /> 个标签页合为一组</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
+<translation id="1909810060368225529">注意：对此共享标签页分组所做的更改对所有人均可见。所有人都可以更改您的共享标签页分组</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{为 <ph name="TABS_COUNT_ONE" /> 个所选标签页添加书签}other{为 <ph name="TABS_COUNT_MANY" /> 个所选标签页添加书签}}</translation>
 <translation id="2118649612461486615">商店信息</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。不过，无法打开已关闭的无痕式标签页。}other{您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。不过，无法打开您已关闭的 # 个无痕式标签页。}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">您的标签页分组会显示在此处</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{为 <ph name="TABS_COUNT_ONE" /> 个所选标签页取消分组}other{为 <ph name="TABS_COUNT_MANY" /> 个所选标签页取消分组}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
+<translation id="6499296376514955580">关于共享标签页分组更改的通知已关闭</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 天后}other{<ph name="DAY_COUNT_MANY" /> 天后}}</translation>
 <translation id="6549021453810473782">查看商店信息</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">左移标签页</translation>
+<translation id="6589356853295569750">关于共享标签页分组更改的通知已全屏打开</translation>
 <translation id="6590332670428149473">打开分享的标签页分组“<ph name="TITLE_OF_GROUP" />”（颜色为<ph name="COLOR_NAME" />）的操作菜单。</translation>
 <translation id="6615455863669487791">演示一下</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{已更改 <ph name="ONE_CHANGED" /> 个标签页}other{已更改 <ph name="MANY_CHANGED" /> 个标签页}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{分享所选的 <ph name="TABS_COUNT_ONE" /> 个标签页}other{分享所选的 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="7773714564112603605">移除标签页并删除分组</translation>
 <translation id="7792771145871471484">查看建议。</translation>
+<translation id="7792860826279960128">关于共享标签页分组更改的通知已半屏打开</translation>
 <translation id="7825973332242257878">标签页分组</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{为 <ph name="TABS_COUNT_ONE" /> 个所选标签页建组}other{为 <ph name="TABS_COUNT_MANY" /> 个所选标签页建组}}</translation>
 <translation id="7853202427316060426">活动</translation>

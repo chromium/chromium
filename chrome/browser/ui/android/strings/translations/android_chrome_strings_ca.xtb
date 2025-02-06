@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Contrasenyes en tots els teus dispositius</translation>
 <translation id="1082920045291562218">Full per compartir comentaris sobre el resum tancat</translation>
 <translation id="1087176310396019910">Possible contingut brossa</translation>
+<translation id="1087799850623149508">Pots mantenir premuda la barra d'adreces per moure-la a la part inferior</translation>
 <translation id="1089606299949659462">Revisió completada</translation>
 <translation id="1094555143448724771">Per veure les pestanyes dels altres dispositius, sincronitza les pestanyes i l'historial</translation>
 <translation id="1095761715416917775">Assegura't de poder accedir a les dades sincronitzades en qualsevol moment</translation>
@@ -131,6 +132,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1513858653616922153">Suprimeix la contrasenya</translation>
 <translation id="1521774566618522728">Actiu avui</translation>
 <translation id="153446405401665083">Hi ha una versió nova de Chrome disponible</translation>
+<translation id="1540012742443808215">Actualment la barra d'adreces és a la part superior</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 adreça d'interès s'ha desat només en aquest dispositiu. Per utilitzar-la als teus altres dispositius, desa-la al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}other{# adreces d'interès s'han desat només en aquest dispositiu. Per utilitzar-les als teus altres dispositius, desa-les al teu Compte de Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Les formes de pagament i les adreces no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
 Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6459045781120991510">Enquestes</translation>
 <translation id="6461962085415701688">El fitxer no es pot obrir</translation>
 <translation id="6464977750820128603">Pots veure els llocs web que visites a Chrome i establir-hi temporitzadors.\n\nGoogle obté informació sobre els llocs web en què estableixes temporitzadors i sobre el temps que hi passes. Aquesta informació s'utilitza per millorar Benestar digital.</translation>
+<translation id="6468703991511753953">Actualment la barra d'adreces és a la part inferior</translation>
 <translation id="6470181189905173055">Les pàgines que hagis obert a Chrome mentre utilitzaves <ph name="APP_LABEL" /> es mostraran aquí.</translation>
 <translation id="6473086018775716761">La llista d'opcions de compartició s'ha obert a mitja alçada.</translation>
 <translation id="6475951671322991020">Baixa el vídeo</translation>

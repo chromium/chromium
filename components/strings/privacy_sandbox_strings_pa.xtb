@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
 <translation id="1444443021901415601">Chrome ਤੁਹਾਡੇ ਹਾਲੀਆ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ ਦਿਲਚਸਪੀ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਨੂੰ ਨੋਟ ਕਰਦਾ ਹੈ</translation>
-<translation id="2252052615723281030">ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਇਹ ਸੈਟਿੰਗ ਤੁਹਾਡੇ IP ਪਤੇ ਨੂੰ ਪ੍ਰਾਈਵੇਟ ਰੱਖਣ ਵਿੱਚ ਮਦਦ ਕਰਦੀ ਹੈ। ਜੇ Chrome ਨੂੰ ਸ਼ੱਕ ਹੈ ਕਿ ਕੋਈ ਸਾਈਟ ਤੁਹਾਨੂੰ ਟਰੈਕ ਕਰ ਰਹੀ ਹੈ, ਤਾਂ ਤੁਹਾਡਾ ਕੁਝ ਟਰੈਫ਼ਿਕ ਪਰਦੇਦਾਰੀ ਸਰਵਰਾਂ ਰਾਹੀਂ ਭੇਜਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="235789365079050412">Google ਪਰਦੇਦਾਰੀ ਨੀਤੀ</translation>
 <translation id="2793385791865768072">Chromium ਤੁਹਾਡੇ ਹਾਲੀਆ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੇ ਆਧਾਰ 'ਤੇ ਦਿਲਚਸਪੀ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਨੂੰ ਨੋਟ ਕਰਦਾ ਹੈ</translation>
 <translation id="2979365474350987274">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਸੀਮਤ ਹਨ</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਸੀਮਤ ਹਨ</translation>
 <translation id="6371812158043974664">ਤੁਹਾਡੇ ਵੱਲੋਂ Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਇਹ ਸੈਟਿੰਗ ਤੁਹਾਡੇ IP ਪਤੇ ਨੂੰ ਪ੍ਰਾਈਵੇਟ ਰੱਖਣ ਵਿੱਚ ਮਦਦ ਕਰਦੀ ਹੈ। ਜੇ Chromium ਨੂੰ ਸ਼ੱਕ ਹੈ ਕਿ ਕੋਈ ਸਾਈਟ ਤੁਹਾਨੂੰ ਟਰੈਕ ਕਰ ਰਹੀ ਹੈ, ਤਾਂ ਤੁਹਾਡਾ ਕੁਝ ਟਰੈਫ਼ਿਕ ਪਰਦੇਦਾਰੀ ਸਰਵਰਾਂ ਰਾਹੀਂ ਭੇਜਿਆ ਜਾ ਸਕਦਾ ਹੈ। ਇਸ ਬਾਰੇ ਹੋਰ ਜਾਣੋ ਕਿ <ph name="LINK_BEGIN" />IP ਸੁਰੱਖਿਆ ਕਿਵੇਂ ਕੰਮ ਕਰਦੀ ਹੈ<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">ਸਾਡੀ <ph name="BEGIN_LINK1" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="LINK_END1" /> ਵਿੱਚ ਇਸ ਬਾਰੇ ਹੋਰ ਜਾਣੋ ਕਿ Google ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ ਕਿਵੇਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ।</translation>
-<translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP ਸੁਰੱਖਿਆ ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਬਾਰੇ<ph name="END_LINK" /> ਜਾਣੋ</translation>
 <translation id="7475768947023614021">ਆਪਣੀ 'ਵਿਗਿਆਪਨ ਦੇ ਵਿਸ਼ੇ' ਸੈਟਿੰਗ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 </translationbundle>

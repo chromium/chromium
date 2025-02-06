@@ -1234,6 +1234,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3194737229810486521"><ph name="URL" />, cihazınıza kalıcı olarak veri depolamak istiyor</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> üzerinde <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Bu cihazı etkin olarak kullandığınızda bilgilendirilmek isteyebilir</translation>
+<translation id="3201482403106004262">Anketle ilgili bir hata oluştu.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında hangi bilgileri senkronize ettiğinizi yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="3203025201812691413">URL boş olamaz</translation>
 <translation id="320323717674993345">Ödemeyi iptal et</translation>
@@ -1873,6 +1874,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4269264543938335308">Mayolar</translation>
 <translation id="4269599248168651462">Sunucu sertifikası, benzersiz olmayan bir ada verilmiş.</translation>
 <translation id="4270541775497538019">Yığınlayıcı 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 yorumu göster. Ortalama puan <ph name="STARS" /> yıldız.}=1{1 yorumu göster. Ortalama puan <ph name="STARS" /> yıldız.}other{# yorumun tümünü göster. Ortalama puan <ph name="STARS" /> yıldız.}}</translation>
 <translation id="4271652479722040953">Chrome'a eklenen uzantılarla ilgili veriler analiz edilmek üzere üçüncü taraflara gönderilir ve yöneticiniz tarafından görülebilir. Ad, yükleme zamanı, yükleme kaynağı gibi uzantılarla ilgili bilgilerin yanı sıra uzantılarla ilişkili etkinlikler (ör. sekme değiştirme, web siteleriyle iletişime geçme veya çerezlere erişme) bu veriler arasında yer alır. Bu veriler hem Chrome Web Mağazası'ndan hem de mağaza dışından yüklenen uzantılar için toplanır.</translation>
 <translation id="4275830172053184480">Cihazınızı yeniden başlatın</translation>
 <translation id="4276974990916607331">Hayır, teşekkürler</translation>
@@ -2346,6 +2348,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5138227688689900538">Daha az göster</translation>
 <translation id="5143309888746105072">Chromium, sitelerin internette gezinirken sizi izlemek için üçüncü taraf çerezlerini kullanmasını engeller.
             <ph name="NEW_LINE" />Site özellikleri çalışmıyorsa <ph name="START_LINK" />üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Bu site için <ph name="PERMISSION" /> iznini verdiniz</translation>
 <translation id="5145883236150621069">Politika yanıtında hata kodu var</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> için bildirimler engellendi</translation>
 <translation id="514704532284964975"><ph name="URL" />, telefonunuzla dokunduğunuz NFC cihazlardaki bilgileri görme ve değiştirme izni istiyor</translation>
@@ -2952,6 +2955,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6224281071334553713">Mücevher ve Takılar</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="6228346913624365233">Lüks Araçlar</translation>
+<translation id="6228836011612806720">Mağaza yorumları. Ortalama puan <ph name="STARS" /> yıldız.</translation>
 <translation id="6229196330202833460">Film ve TV Akışı</translation>
 <translation id="6234122620015464377">Her dokümandan sonra kırp</translation>
 <translation id="6234310016144827337">Bağlantınızı kontrol edip tekrar deneyin</translation>
@@ -4402,6 +4406,7 @@ Ek ayrıntılar:
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> hesabınıza erişimi kaybedebilir veya kimlik hırsızlığına maruz kalabilirsiniz. Chromium, şifrenizi hemen değiştirmenizi önerir.</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" />, tarayıcınızda Chrome Enterprise Connectors'ı etkinleştirdi. Bu bağlayıcıların verilerinizin bir kısmına erişimi vardır.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> ayarları</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
 <translation id="8800034312320686233">Site çalışmıyor mu?</translation>
 <translation id="8805819170075074995">Liste girişi "<ph name="LANGUAGE_ID" />": Giriş, SpellcheckLanguage politikasında da yer aldığı için yoksayıldı.</translation>
@@ -4621,6 +4626,7 @@ Ek ayrıntılar:
 <translation id="9192361865877479444">Metal (Mat)</translation>
 <translation id="9192947025498305328">Temiz İçeriğe Sahip Güzellik Ürünleri</translation>
 <translation id="9199905725844810519">Yazdırma engellendi</translation>
+<translation id="9201904868909900493">Anket açılıyor…</translation>
 <translation id="9204089334327209740">Yükleme işlemi tamamlandıktan sonra dosyalarınızı <ph name="CLOUD_PROVIDER" /> içinde düzenleyebilirsiniz. Çöp kutusundaki dosyalar da dahil olmak üzere yerel depolama alanı otomatik olarak kaldırılır.</translation>
 <translation id="9205078245616868884">Verileriniz senkronizasyon parolanızla şifrelendi. Senkronizasyonu başlatmak için senkronizasyon parolanızı girin.</translation>
 <translation id="920643408853370361">Seyahat Sigortası</translation>

@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
 <translation id="382043424867370667">Ilunabarra erakusten duen horma-papera</translation>
 <translation id="3824259034819781947">Erantsi fitxategiak</translation>
-<translation id="3836587210832263413">Aktibatu luzapen fidagarriak soilik</translation>
 <translation id="3838338534323494292">Pasahitz berria</translation>
 <translation id="3845880861638660475">Leihoa ixteko, sakatu <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Ihes<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">teklatua iluntzea</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Kudeatu inprimagailuak haien ezarpenetan</translation>
 <translation id="6292095526077353682">Gailua kargatu bitartean, erakutsi pantaila-babeslea denbora tarte honetan:</translation>
 <translation id="629550705077076970">teklatuaren argia gutxitzea</translation>
-<translation id="6301193653204230066">Segurtasun-berrezartzeak Chrome-ko arakatzaile-luzapenak desaktibatzen ditu, eta balio lehenetsi seguruak berrezartzen ditu sarearen ezarpenetan eta beste ezarpen batzuetan.
-          Ez dira aldatuko zure fitxak, fitxategiak, cookieak eta historia.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> neurtzeko proba bertan behera utzi da</translation>
 <translation id="631063167932043783">"Arakatu" aplikazioa</translation>
 <translation id="6318437367327684789">betiko</translation>
@@ -1774,6 +1771,8 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="951780398843003443">Grabaketako ahotsak konparatu, gauza bakoitza nork eta noiz esan duen adieraz dezan transkripzioak.</translation>
 <translation id="952992212772159698">Ez da aktibatu</translation>
 <translation id="95718197892796296">buztina</translation>
+<translation id="959792926760890141">Segurtasun-berrezartzeak Chrome-ko arakatzaile-luzapenak desaktibatzen ditu, eta balio lehenetsi seguruak berrezartzen ditu sarearen ezarpenetan eta beste ezarpen batzuetan.
+          Bilatzaile lehenetsia berrezarriko da, baina ez dira aldatuko zure fitxak, fitxategiak, cookieak eta historia.</translation>
 <translation id="960719561871045870">Operadorearen kodea</translation>
 <translation id="965918541715156800">hori eta berde urdinxka</translation>
 <translation id="966787709310836684">menua</translation>

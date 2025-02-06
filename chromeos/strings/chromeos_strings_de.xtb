@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Ungültige PIN.</translation>
 <translation id="382043424867370667">Sonnenuntergang-Hintergrund</translation>
 <translation id="3824259034819781947">Dateien anhängen</translation>
-<translation id="3836587210832263413">Aktiviere nur Erweiterungen, denen du vertraust</translation>
 <translation id="3838338534323494292">Neues Passwort</translation>
 <translation id="3845880861638660475">Drücke die Tastenkombination <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />, um das Dialogfeld zu schließen.</translation>
 <translation id="3848280697030027394">Tastatur abdunkeln</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Du kannst deine Drucker in den Druckereinstellungen verwalten</translation>
 <translation id="6292095526077353682">Beim Laden Bildschirmschoner</translation>
 <translation id="629550705077076970">Dimmen der Tastatur</translation>
-<translation id="6301193653204230066">Durch einen Sicherheits-Reset werden Chrome-Erweiterungen deaktiviert und Netzwerkeinstellungen und andere Einstellungen auf die sicheren Standardeinstellungen zurückgesetzt.
-          Deine Tabs, Dateien, Cookies und der Verlauf werden nicht geändert.</translation>
 <translation id="6302401976930124515">Test „<ph name="TEST_NAME" />“ wurde abgebrochen</translation>
 <translation id="631063167932043783">Entdecken</translation>
 <translation id="6318437367327684789">dauerhaft</translation>
@@ -1774,6 +1771,8 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="951780398843003443">Stimmen in der Aufnahme vergleichen, damit im Transkript korrekt wiedergegeben wird, welcher Sprecher wann spricht</translation>
 <translation id="952992212772159698">Nicht aktiviert</translation>
 <translation id="95718197892796296">Lehm</translation>
+<translation id="959792926760890141">Durch einen Sicherheits-Reset werden Chrome-Erweiterungen deaktiviert und Netzwerkeinstellungen und andere Einstellungen auf die sicheren Standardeinstellungen zurückgesetzt.
+          Deine Standardsuchmaschine wird dabei zurückgesetzt. An deinen Tabs, Dateien, Cookies und deinem Verlauf ändert sich jedoch nichts.</translation>
 <translation id="960719561871045870">Betreibercode</translation>
 <translation id="965918541715156800">gelb und blaugrün</translation>
 <translation id="966787709310836684">Menü</translation>

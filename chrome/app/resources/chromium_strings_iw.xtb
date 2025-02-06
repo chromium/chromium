@@ -328,6 +328,7 @@
 <translation id="569897634095159764">‏לא ניתן להתחבר לאינטרנט. נדרש אימות של שרת ה-proxy.</translation>
 <translation id="5761096224651992291">‏לא נכנסת לאתר הזה בזמן האחרון. ההרשאות '<ph name="PERMISSION_1" />', '<ph name="PERMISSION_2" />' ו'<ph name="PERMISSION_3" />' הוסרו על ידי Chromium</translation>
 <translation id="5768371961535086509">‏‫Chromium מפנה מקום בזיכרון שמוקצה לכרטיסיות לא פעילות. כך, לכרטיסיות הפעילות ולאפליקציות אחרות יש יותר משאבים מהמחשב ו-Chromium פועל מהר. כשחוזרים לכרטיסיות הלא פעילות, הן מופעלות מחדש באופן אוטומטי. <ph name="BEGIN_LINK" />מידע נוסף על מצב חיסכון בזיכרון<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, עליך <ph name="SETTINGS_LINK" /> את נתוני Chromium בחשבון</translation>
 <translation id="5800158606660203929">‏אפשר להתאים אישית את Chromium ולנהל אותו. הגדרת Chromium כברירת המחדל.</translation>
 <translation id="5809516625706423866">‏לא ניתן להתחבר לאינטרנט. HTTP 401: אין הרשאה. צריך לבדוק את ההגדרה של שרת ה-proxy.</translation>
 <translation id="5821520528363214608">‏כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך לעדכן את Chromium</translation>

@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">ລະບົບປະຕິບັດການ</translation>
 <translation id="3080254622891793721">ກຣາບຟິກ</translation>
 <translation id="3082007635241601060">ໃຫ້ Google ໃຊ້ກະຕ່າຂອງທ່ານເພື່ອຊອກຫາສ່ວນຫຼຸດທີ່ປັບແຕ່ງສ່ວນຕົວໃນເວລາທີ່ສາມາດໃຊ້ໄດ້</translation>
+<translation id="3086269988715347183">ທ່ານບໍ່ເຄີຍອະນຸມັດ <ph name="BLOCKED_URL" /> ມາກ່ອນ</translation>
 <translation id="3086579638707268289">ກຳລັງມີການຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນເວັບ</translation>
 <translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
 <translation id="3090667236485488075">ແກ້ວ</translation>
@@ -1234,10 +1235,12 @@
 <translation id="3194737229810486521"><ph name="URL" /> ຕ້ອງການເກັບຂໍ້ມູນໄວ້ໃນອຸປະກອນຂອງທ່ານຢ່າງຖາວອນ</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> ໃນ <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">ສາມາດຂໍຂໍ້ມູນວ່າທ່ານກຳລັງໃຊ້ອຸປະກອນນີ້ຢ່າງຕໍ່ເນື່ອງຕອນໃດ</translation>
+<translation id="3201482403106004262">ເກີດຄວາມຜິດພາດຂຶ້ນກັບແບບສຳຫຼວດ.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການວ່າຂໍ້ມູນໃດທີ່ທ່ານຈະຊິ້ງຂໍ້ມູນໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="3203025201812691413">ຕ້ອງລະບຸ URL</translation>
 <translation id="320323717674993345">ຍົກເລີກການຈ່າຍເງິນ</translation>
 <translation id="3203366800380907218">​ຈາກ​ເວັບ​ໄຊ</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> ອາດມີເນື້ອຫາສຳລັບຜູ້ໃຫຍ່</translation>
 <translation id="3207960819495026254">ໃສ່ບຸກ​ມາກ​໌​ແລ້ວ</translation>
 <translation id="3208701679386778924">ກະລຸນາສົ່ງລາຍງານເພື່ອໃຫ້ພວກເຮົາສາມາດປັບປຸງການອັບເດດ ChromeOS ເພີ່ມເຕີມໄດ້.</translation>
 <translation id="3209034400446768650">ໜ້າອາດຈະຮຽກເກັບເງິນ</translation>
@@ -2347,6 +2350,7 @@
 <translation id="5138227688689900538">ຫຍໍ້ລົງ</translation>
 <translation id="5143309888746105072">Chromium ບລັອກເວັບໄຊບໍ່ໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເພື່ອຕິດຕາມທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ.
             <ph name="NEW_LINE" />ຫາກຄຸນສົມບັດຂອງເວັບໄຊບໍ່ເຮັດວຽກ ໃຫ້ <ph name="START_LINK" />ລອງອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມຊົ່ວຄາວ<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">ທ່ານໄດ້ອະນຸຍາດ <ph name="PERMISSION" /> ສຳລັບເວັບໄຊນີ້</translation>
 <translation id="5145883236150621069">ລະຫັດຄວາມຜິດພາດມີຢູ່ໃນການຕອບຮັບນະໂຍບາຍ</translation>
 <translation id="5146995429444047494">ການແຈ້ງເຕືອນສຳລັບ <ph name="ORIGIN" /> ຖືກບລັອກໄວ້</translation>
 <translation id="514704532284964975"><ph name="URL" /> ຕ້ອງການເບິ່ງ ແລະ ປ່ຽນຂໍ້ມູນຢູ່ອຸປະກອນ NFC ທີ່ທ່ານແຕະດ້ວຍໂທລະສັບຂອງທ່ານ</translation>
@@ -2971,6 +2975,7 @@
 <translation id="6254436959401408446">ບໍ່ມີຄວາມຈຳພຽງພໍເພື່ອເປີດໜ້ານີ້</translation>
 <translation id="625463612687472648">ຢຸດການອະນຸຍາດ</translation>
 <translation id="6259156558325130047">ເຮັດຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
+<translation id="6259282549512536479">ທ່ານເຄີຍບລັອກ <ph name="BLOCKED_URL" /> ໄວ້ກ່ອນໜ້ານີ້</translation>
 <translation id="6263376278284652872">ບຸກມາກສ໌ <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">ຢືນຢັນການດາວໂຫຼດ</translation>
 <translation id="6264485186158353794">ກັບ​ຄືນ​ສູ່ຄາມປອດ​ໄພ</translation>
@@ -4402,6 +4407,7 @@
 <translation id="8792621596287649091">ທ່ານສາມາດສູນເສຍການເຂົ້າເຖິງບັນຊີ <ph name="ORG_NAME" /> ຂອງທ່ານ ຫຼື ປະສົບກັບການຖືກລັກໃຊ້ຕົວຕົນ. Chromium ຂໍແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານຂອງທ່ານດຽວນີ້.</translation>
 <translation id="8792626944327216835">ໄມໂຄຣໂຟນ</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ໄດ້ເປີດ Chrome Enterprise Connectors ໃນໂປຣແກຣມທ່ອງເວັບຂອງທ່ານແລ້ວ. ເຄື່ອງມືເຊື່ອມຕໍ່ເຫຼົ່ານີ້ມີສິດເຂົ້າເຖິງບາງຂໍ້ມູນຂອງທ່ານໄດ້.</translation>
+<translation id="8796062699363039080">ການຕັ້ງຄ່າ <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
 <translation id="8800034312320686233">ເວັບໄຊໃຊ້ບໍ່ໄດ້ບໍ?</translation>
 <translation id="8805819170075074995">ບອກລາຍການ "<ph name="LANGUAGE_ID" />": ລາຍການຖືກລະເລີຍ ເພາະວ່າມັນຮວມມີຢູ່ໃນນະໂຍບາຍ SpellcheckLanguage ນຳ.</translation>
@@ -4622,6 +4628,7 @@
 <translation id="9192361865877479444">ໂລຫະ (ດ້ານ)</translation>
 <translation id="9192947025498305328">ຜະລິດຕະພັນເສີມຄວາມງາມຈາກທຳມະຊາດ</translation>
 <translation id="9199905725844810519">ມີການບລັອກການພິມໄວ້</translation>
+<translation id="9201904868909900493">ກຳລັງເປີດແບບສຳຫຼວດ...</translation>
 <translation id="9204089334327209740">ເມື່ອອັບໂຫຼດສຳເລັດແລ້ວ, ທ່ານສາມາດແກ້ໄຂໄຟລ໌ຂອງທ່ານໄດ້ໃນ <ph name="CLOUD_PROVIDER" />. ບ່ອນຈັດເກັບຂໍ້ມູນໃນເຄື່ອງ, ຮວມທັງໄຟລ໌ໃດກໍຕາມໃນຖັງຂີ້ເຫຍື້ອ, ຈະຖືກລຶບອອກໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="9205078245616868884">ຂໍ້ມູນຂອງທ່ານຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍວະລີຜ່ານການຊິ້ງຂອງທ່ານ. ໃຫ້ປ້ອນມັນເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="920643408853370361">ປະກັນໄພການເດີນທາງ</translation>

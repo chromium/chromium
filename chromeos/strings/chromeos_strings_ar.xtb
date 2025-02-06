@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
 <translation id="382043424867370667">خلفية تعرض غروب الشمس</translation>
 <translation id="3824259034819781947">إرفاق ملفات</translation>
-<translation id="3836587210832263413">ننصحك بتفعيل الإضافات التي تثق بها فقط</translation>
 <translation id="3838338534323494292">كلمة المرور الجديدة</translation>
 <translation id="3845880861638660475">‏اضغط على <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />مفتاح الخروج (Esc)<ph name="ESC_SHORTCUT_END" /> لإغلاق مربع الحوار.</translation>
 <translation id="3848280697030027394">جعل إضاءة لوحة المفاتيح داكنة</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">إدارة الطابعات في إعدادات الطابعة</translation>
 <translation id="6292095526077353682">عرض شاشة الاستراحة أثناء الشحن لمدة</translation>
 <translation id="629550705077076970">تعتيم لوحة المفاتيح</translation>
-<translation id="6301193653204230066">‏تؤدي ميزة "إعادة الضبط لتعزيز الأمان" إلى إيقاف إضافات متصفِّح Chrome وإعادة ضبط الشبكة والإعدادات الأخرى على الإعدادات التلقائية الآمنة.
-          ولن يتم تغيير علامات التبويب والملفات وسجلّ البحث وملفات تعريف الارتباط.</translation>
 <translation id="6302401976930124515">تم إلغاء اختبار <ph name="TEST_NAME" />.</translation>
 <translation id="631063167932043783">تطبيق "استكشاف"</translation>
 <translation id="6318437367327684789">للأبد</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">مقارنة الأصوات طوال مدة التسجيل ليعرض النص ما يقوله كل متحدّث ووقت الكلام</translation>
 <translation id="952992212772159698">غير نشطة</translation>
 <translation id="95718197892796296">الصلصال</translation>
+<translation id="959792926760890141">‏وتؤدي الميزة إلى إيقاف إضافات متصفِّح Chrome وإعادة ضبط الشبكة والإعدادات الأخرى على الإعدادات التلقائية الآمنة.
+          ستتمّ إعادة ضبط محرك البحث التلقائي، ولكن لن يتمّ تغيير علامات التبويب والملفات وسجل البحث وملفات تعريف الارتباط.</translation>
 <translation id="960719561871045870">رمز مشغل شبكة الجوال</translation>
 <translation id="965918541715156800">الأصفر والأزرق المخضر</translation>
 <translation id="966787709310836684">القائمة</translation>

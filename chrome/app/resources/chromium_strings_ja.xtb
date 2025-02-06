@@ -329,6 +329,7 @@
 <translation id="569897634095159764">インターネットに接続できません。プロキシ サーバーにより認証を求められています。</translation>
 <translation id="5761096224651992291">最近アクセスしていないため、Chromium で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> の権限を削除しました</translation>
 <translation id="5768371961535086509">アクティブでないタブのメモリを解放します。これにより、アクティブなタブや他のアプリで利用できるコンピュータ リソースが増え、Chromium の速度低下を抑えられます。アクティブでないタブは、再度アクセスすると自動的にアクティブになります。<ph name="BEGIN_LINK" />メモリセーバーの詳細<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">パスフレーズを忘れた場合や、この設定を変更する場合は、アカウントの Chromium データを<ph name="SETTINGS_LINK" />してください</translation>
 <translation id="5800158606660203929">Chromium をカスタマイズ、管理します。Chromium をデフォルトに設定します。</translation>
 <translation id="5809516625706423866">インターネットに接続できません。HTTP 401 認証エラーが発生しました。プロキシ設定をご確認ください。</translation>
 <translation id="5821520528363214608">Google アカウントで Chromium のデータを使用、保存するには、Chromium を更新してください</translation>

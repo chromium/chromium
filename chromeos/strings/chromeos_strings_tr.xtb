@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Geçersiz PIN.</translation>
 <translation id="382043424867370667">Gün batımı duvar kağıdı</translation>
 <translation id="3824259034819781947">Dosya ekle</translation>
-<translation id="3836587210832263413">Yalnızca güvendiğiniz uzantıları etkinleştirin.</translation>
 <translation id="3838338534323494292">Yeni şifre</translation>
 <translation id="3845880861638660475">İletişim kutusunu kapatmak için <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> tuşlarına basın.</translation>
 <translation id="3848280697030027394">klavyeyi koyulaştır</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Yazıcılarınızı yazıcı ayarlarından yönetin</translation>
 <translation id="6292095526077353682">Şarj olurken ekran koruyucuyu şu kadar süre boyunca göster:</translation>
 <translation id="629550705077076970">klavye karartma</translation>
-<translation id="6301193653204230066">Güvenlik ayarları sıfırlamak, Chrome tarayıcı uzantılarını devre dışı bırakır, ağ ve diğer ayarları güvenli varsayılan ayarlara sıfırlar.
-          Sekmeleriniz, dosyalarınız, çerezleriniz ve geçmişiniz değiştirilmez.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
 <translation id="631063167932043783">Keşfet uygulaması</translation>
 <translation id="6318437367327684789">sonsuza kadar</translation>
@@ -1774,6 +1771,8 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="951780398843003443">Kayıt boyunca sesleri karşılaştırarak her konuşmacının ne zaman ne söylediğinin transkriptte gösterilmesini sağlar.</translation>
 <translation id="952992212772159698">Etkin değil</translation>
 <translation id="95718197892796296">kil</translation>
+<translation id="959792926760890141">Güvenlik ayarları sıfırlama, Chrome tarayıcı uzantılarını devre dışı bırakır, ağ ve diğer ayarları güvenli varsayılan ayarlara sıfırlar.
+          Varsayılan arama motorunuz sıfırlanır ancak sekmeleriniz, dosyalarınız, çerezleriniz ve geçmişiniz değişmez.</translation>
 <translation id="960719561871045870">Operatör kodu</translation>
 <translation id="965918541715156800">sarı ve deniz mavisi</translation>
 <translation id="966787709310836684">menü</translation>

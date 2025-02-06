@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ٹیب کا گروپ بن گیا</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
+<translation id="1909810060368225529">نوٹس: اس مشترکہ ٹیب گروپ میں ہونے والی تبدیلیاں ہر کسی کو نظر آتی ہیں۔ ہر کوئی آپ کے مشترکہ ٹیب گروپس میں تبدیلیاں کر سکتا ہے</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو بُک مارک کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز کو بُک مارک کریں}}</translation>
 <translation id="2118649612461486615">اسٹور کی معلومات</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{آپ کے بند ٹیبز اور گروپس کو حالیہ ٹیبز سیکشن اور ٹیب گروپس سیکشن سے دوبارہ کھولا جا سکتا ہے۔ آپ کا پوشیدگی ٹیب دستیاب نہیں ہوگا۔}other{آپ کے بند ٹیبز اور گروپس کو حالیہ ٹیبز سیکشن اور ٹیب گروپس سیکشن سے دوبارہ کھولا جا سکتا ہے۔ آپ کے # پوشیدگی ٹیبز دستیاب نہیں ہوں گے۔}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">آپ کو اپنے ٹیب گروپس یہاں ملیں گے</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> کو منتخب کردہ ٹیب سے گروپ ختم کریں}other{<ph name="TABS_COUNT_MANY" /> کو منتخب کردہ ٹیبز سے گروپ ختم کریں}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
+<translation id="6499296376514955580">مشترکہ ٹیب گروپ کی تبدیلیوں کے بارے میں نوٹس بند ہے</translation>
 <translation id="6527303717912515753">اشتراک کریں</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 دن کے بعد}other{<ph name="DAY_COUNT_MANY" /> دن کے بعد}}</translation>
 <translation id="6549021453810473782">اسٹور کی معلومات دیکھیں</translation>
 <translation id="6557858706263317126"><ph name="HIDDEN_TABS_COUNT" />+</translation>
 <translation id="6562820390860419811">ٹیب کو بائیں منتقل کریں</translation>
+<translation id="6589356853295569750">مشترکہ ٹیب گروپ کی تبدیلیوں کے بارے میں نوٹس پوری اسکرین پر کھلا ہے</translation>
 <translation id="6590332670428149473">اشتراک کردہ ٹیب گروپ <ph name="TITLE_OF_GROUP" />، رنگ <ph name="COLOR_NAME" /> کے لیے ٹیب گروپ کارروائی مینو کھولیں۔</translation>
 <translation id="6615455863669487791">مجھے دکھائیں</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ٹیب تبدیل ہو گیا}other{<ph name="MANY_CHANGED" /> ٹیبز تبدیل ہو گئے}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب ٹیب کا اشتراک کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب ٹیبز کا اشتراک کریں}}</translation>
 <translation id="7773714564112603605">ٹیب کو ہٹائیں اور گروپ کو حذف کریں</translation>
 <translation id="7792771145871471484">تجاویز کا جائزہ لیں۔</translation>
+<translation id="7792860826279960128">آدھی اسکرین پر مشترکہ ٹیب گروپ کی تبدیلیوں کے بارے میں نوٹس</translation>
 <translation id="7825973332242257878">ٹیب گروپس</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />منتخب کردہ ٹیب کی گروپ بندی کریں}other{<ph name="TABS_COUNT_MANY" />منتخب کردہ ٹیبز کی گروپ بندی کریں}}</translation>
 <translation id="7853202427316060426">سرگرمی</translation>

@@ -1234,6 +1234,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3194737229810486521">Vietnē <ph name="URL" /> tiek pieprasīta atļauja pastāvīgi glabāt datus jūsu ierīcē.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> serverī <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Var pieprasīt informāciju par to, kad jūs aktīvi lietojat šo ierīci</translation>
+<translation id="3201482403106004262">Radās ar aptauju saistīta kļūda.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />: nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu, lai Chrome iestatījumos pārvaldītu, kāda informācija tiek sinhronizēta.</translation>
 <translation id="3203025201812691413">URL lauks nedrīkst būt tukšs.</translation>
 <translation id="320323717674993345">Atcelt maksājumu</translation>
@@ -1871,6 +1872,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4269264543938335308">Peldkostīmi</translation>
 <translation id="4269599248168651462">Servera sertifikāts ir izsniegts nosaukumam, kas nav unikāls.</translation>
 <translation id="4270541775497538019">6. izvades vieta</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Skatīt 0 atsauksmes. Vidējais vērtējums ir <ph name="STARS" /> zvaigznītes.}=1{Skatīt 1 atsauksmi. Vidējais vērtējums ir <ph name="STARS" /> zvaigznītes.}zero{Skatīt visas atsauksmes (#). Vidējais vērtējums ir <ph name="STARS" /> zvaigznītes.}one{Skatīt visas atsauksmes (#). Vidējais vērtējums ir <ph name="STARS" /> zvaigznītes.}other{Skatīt visas atsauksmes (#). Vidējais vērtējums ir <ph name="STARS" /> zvaigznītes.}}</translation>
 <translation id="4271652479722040953">Kad pārlūkam Chrome tiek pievienoti paplašinājumi, atbilstošie dati par šiem paplašinājumiem tiek nosūtīti trešajām pusēm, lai veiktu analīzi, un var būt redzami jūsu administratoram. Šie dati ietver informāciju par paplašinājumiem, piemēram, nosaukumu, instalēšanas laiku un instalēšanas avotu, kā arī ar šiem paplašinājumiem saistītās darbības, piemēram, ciļņu pārslēgšanu, saziņu ar tīmekļa vietnēm vai piekļuvi sīkfailiem. Šie dati tiek vākti gan par paplašinājumiem, kas instalēti no Chrome interneta veikala, gan par tādiem, kuri nav instalēti no veikala.</translation>
 <translation id="4275830172053184480">Ierīces restartēšana</translation>
 <translation id="4276974990916607331">Nē, paldies</translation>
@@ -2344,6 +2346,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5138227688689900538">Rādīt mazāk</translation>
 <translation id="5143309888746105072">Pārlūkā Chromium vietnēm tiek liegts pārlūkošanas laikā izmantot trešo pušu sīkfailus, lai izsekotu jūsu darbības.
             <ph name="NEW_LINE" />Ja vietnes funkcijas nedarbojas, <ph name="START_LINK" />varat īslaicīgi atļaut trešo pušu sīkfailus<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Jūs esat piešķīris tālāk norādīto atļauju šai vietnei: <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Politikas atbildē ir kļūdas kods.</translation>
 <translation id="5146995429444047494">Vietnes <ph name="ORIGIN" /> paziņojumi ir bloķēti</translation>
 <translation id="514704532284964975"><ph name="URL" /> pieprasa atļauju piekļūt informācijai un to mainīt NFC ierīcēs, kuru nosaukumiem tālrunī pieskaraties</translation>
@@ -2950,6 +2953,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6224281071334553713">Dārgakmeņi un juvelierizstrādājumi</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai Chrome iestatījumos personalizētu pieejamības rīkus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="6228346913624365233">Luksusa transportlīdzekļi</translation>
+<translation id="6228836011612806720">Atsauksmes veikalā. Vidējais vērtējums ir <ph name="STARS" /> zvaigznītes.</translation>
 <translation id="6229196330202833460">Filmu un TV pārraižu straumēšana</translation>
 <translation id="6234122620015464377">Apgriešana pēc katra dokumenta</translation>
 <translation id="6234310016144827337">Pārbaudiet savienojumu un mēģiniet vēlreiz.</translation>
@@ -4400,6 +4404,7 @@ Papildu informācija:
 <translation id="8792621596287649091">Varat zaudēt piekļuvi savam <ph name="ORG_NAME" /> kontam, vai jūsu identitāte var tikt nozagta. Chromium iesaka nekavējoties nomainīt paroli.</translation>
 <translation id="8792626944327216835">mikrofons</translation>
 <translation id="8793655568873652685">Domēns <ph name="ENROLLMENT_DOMAIN" /> ir iespējojis savienotājus Chrome Enterprise Connectors jūsu pārlūkā. Šie savienotāji var piekļūt daļai jūsu datu.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> iestatījumi</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
 <translation id="8800034312320686233">Vai vietne nedarbojas?</translation>
 <translation id="8805819170075074995">Saraksta ieraksts “<ph name="LANGUAGE_ID" />”: ieraksts tiek ignorēts, jo tas ir iekļauts arī SpellcheckLanguage politikā.</translation>
@@ -4619,6 +4624,7 @@ Papildu informācija:
 <translation id="9192361865877479444">Metāls (matēts)</translation>
 <translation id="9192947025498305328">Videi draudzīga skaistumkopšana</translation>
 <translation id="9199905725844810519">Drukāšana ir bloķēta</translation>
+<translation id="9201904868909900493">Notiek aptaujas atvēršana…</translation>
 <translation id="9204089334327209740">Kad augšupielāde būs pabeigta, varēsiet pārveidot savus failus pakalpojumā <ph name="CLOUD_PROVIDER" />. Lokālā krātuve un visi atkritnē esošie faili tiks automātiski noņemti.</translation>
 <translation id="9205078245616868884">Jūsu dati ir šifrēti, izmantojot jūsu sinhronizācijas ieejas frāzi. Lai sāktu sinhronizāciju, ievadiet ieejas frāzi.</translation>
 <translation id="920643408853370361">Ceļojuma apdrošināšana</translation>

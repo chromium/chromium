@@ -1164,6 +1164,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3076865167425975822">Hệ điều hành</translation>
 <translation id="3080254622891793721">Đồ họa</translation>
 <translation id="3082007635241601060">Cho phép Google sử dụng giỏ hàng của bạn để tìm ưu đãi chiết khấu phù hợp với bạn (nếu có)</translation>
+<translation id="3086269988715347183">Bạn chưa từng phê duyệt <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Hoạt động của bạn trên web đang bị giám sát</translation>
 <translation id="3087734570205094154">Bên dưới</translation>
 <translation id="3090667236485488075">Thuỷ tinh</translation>
@@ -1234,10 +1235,12 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3194737229810486521"><ph name="URL" /> muốn lưu trữ vĩnh viễn dữ liệu trên thiết bị của bạn</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> trên <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Trang web có thể yêu cầu được biết khi bạn đang dùng thiết bị này</translation>
+<translation id="3201482403106004262">Đã xảy ra lỗi với bản khảo sát.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab, sau đó nhấn Enter để quản lý loại thông tin bạn đồng bộ hóa trong phần Cài đặt của Chrome</translation>
 <translation id="3203025201812691413">Không được để trống URL</translation>
 <translation id="320323717674993345">Hủy thanh toán</translation>
 <translation id="3203366800380907218">Trên web</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> có thể chứa nội dung dành cho người trưởng thành</translation>
 <translation id="3207960819495026254">Đã đánh dấu trang</translation>
 <translation id="3208701679386778924">Vui lòng gửi báo cáo để chúng tôi có thể cải thiện hơn nữa các bản cập nhật ChromeOS.</translation>
 <translation id="3209034400446768650">Trang này có thể tính phí</translation>
@@ -1873,6 +1876,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4269264543938335308">Đồ bơi</translation>
 <translation id="4269599248168651462">Chứng chỉ máy chủ này được cấp cho một tên không phải là duy nhất.</translation>
 <translation id="4270541775497538019">Khay xếp chồng 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Xem 0 bài đánh giá. Điểm xếp hạng trung bình là <ph name="STARS" /> sao.}=1{Xem 1 bài đánh giá. Điểm xếp hạng trung bình là <ph name="STARS" /> sao.}other{Xem tất cả # bài đánh giá. Điểm xếp hạng trung bình là <ph name="STARS" /> sao.}}</translation>
 <translation id="4271652479722040953">Khi bạn thêm tiện ích vào Chrome, dữ liệu liên quan về những tiện ích này sẽ được gửi cho bên thứ ba để phân tích và quản trị viên của bạn có thể thấy dữ liệu này. Dữ liệu này bao gồm thông tin về các tiện ích như tên, thời gian cài đặt, nguồn cài đặt cũng như hoạt động liên quan đến các tiện ích này (chẳng hạn như thay đổi thẻ, liên hệ với trang web hoặc truy cập vào cookie). Dữ liệu này được thu thập cho các tiện ích được cài đặt từ Cửa hàng Chrome trực tuyến cũng như các tiện ích được cài đặt từ bên ngoài cửa hàng.</translation>
 <translation id="4275830172053184480">Khởi động lại thiết bị của bạn</translation>
 <translation id="4276974990916607331">Không, cảm ơn</translation>
@@ -2346,6 +2350,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5138227688689900538">Ẩn bớt</translation>
 <translation id="5143309888746105072">Chromium cấm các trang web sử dụng cookie của bên thứ ba để theo dõi bạn khi bạn duyệt web.
             <ph name="NEW_LINE" />Nếu các tính năng của trang web không hoạt động, <ph name="START_LINK" />hãy thử tạm thời cho phép cookie của bên thứ ba<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Bạn đã cho phép trang web này sử dụng <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Mã lỗi có trong phản hồi chính sách</translation>
 <translation id="5146995429444047494">Đã chặn các thông báo đối với <ph name="ORIGIN" /></translation>
 <translation id="514704532284964975"><ph name="URL" /> muốn xem và thay đổi thông tin trên thiết bị NFC khi bạn nhấn vào điện thoại</translation>
@@ -2952,6 +2957,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6224281071334553713">Đá quý và đồ trang sức</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để cá nhân hoá các công cụ hỗ trợ tiếp cận của bạn trong phần Cài đặt của Chrome</translation>
 <translation id="6228346913624365233">Xe hạng sang</translation>
+<translation id="6228836011612806720">Bài đánh giá cửa hàng. Điểm xếp hạng trung bình là <ph name="STARS" /> sao.</translation>
 <translation id="6229196330202833460">Truyền trực tuyến phim và truyền hình</translation>
 <translation id="6234122620015464377">Cắt bỏ sau mỗi tài liệu</translation>
 <translation id="6234310016144827337">Hãy kiểm tra kết nối của bạn và thử lại</translation>
@@ -2969,6 +2975,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6254436959401408446">Không đủ bộ nhớ để mở trang này</translation>
 <translation id="625463612687472648">Dừng cho phép</translation>
 <translation id="6259156558325130047">&amp;Làm lại sắp xếp lại</translation>
+<translation id="6259282549512536479">Bạn đã từng chặn <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872">Dấu trang trên <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Vẫn tải xuống</translation>
 <translation id="6264485186158353794">Quay lại trang an toàn</translation>
@@ -4402,6 +4409,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8792621596287649091">Bạn có thể mất quyền truy cập vào tài khoản <ph name="ORG_NAME" /> của mình hoặc bị đánh cắp danh tính. Chromium khuyên bạn nên thay đổi mật khẩu ngay bây giờ.</translation>
 <translation id="8792626944327216835">micrô</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> đã bật Chrome Enterprise Connectors trên trình duyệt bạn dùng. Các trình kết nối này có quyền truy cập vào một số dữ liệu của bạn.</translation>
+<translation id="8796062699363039080">Cài đặt <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Mặc định</translation>
 <translation id="8800034312320686233">Trang web không hoạt động?</translation>
 <translation id="8805819170075074995">Mục nhập danh sách "<ph name="LANGUAGE_ID" />": Mục nhập bị bỏ qua vì cũng được bao gồm trong chính sách SpellcheckLanguage.</translation>
@@ -4622,6 +4630,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9192361865877479444">Kim loại (Không bóng)</translation>
 <translation id="9192947025498305328">Mỹ phẩm sạch</translation>
 <translation id="9199905725844810519">Tính năng in đã bị chặn</translation>
+<translation id="9201904868909900493">Đang mở bản khảo sát...</translation>
 <translation id="9204089334327209740">Sau khi tải lên xong, bạn có thể sửa đổi các tệp của mình trong <ph name="CLOUD_PROVIDER" />. Bộ nhớ cục bộ, bao gồm mọi tệp trong Thùng rác, đều sẽ tự động bị xoá.</translation>
 <translation id="9205078245616868884">Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng bộ hóa. Nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="920643408853370361">Bảo hiểm du lịch</translation>

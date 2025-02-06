@@ -331,6 +331,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="569897634095159764">Lidhja me internetin nuk mund të kryhej. Serveri proxy kërkon vërtetim.</translation>
 <translation id="5761096224651992291">Nuk ke vizituar së fundi. Chromium ka hequr lejet (<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />)</translation>
 <translation id="5768371961535086509">Chromium liron memorien nga skedat joaktive. Kjo u jep më shumë burime kompjuterike skedave aktive dhe aplikacioneve të tjera dhe bën që Chromium të jetë i shpejtë. Skedat e tua joaktive bëhen përsëri aktive në mënyrë automatike kur kthehesh tek ato. <ph name="BEGIN_LINK" />Mëso më shumë për "Kursyesin e memories"<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="SETTINGS_LINK" /> të dhënat e Chromium në llogarinë tënde</translation>
 <translation id="5800158606660203929">Personalizo dhe kontrollo Chromium. Cakto Chromium si parazgjedhje.</translation>
 <translation id="5809516625706423866">Lidhja me internetin nuk mund të kryhej. HTTP 401 (E paautorizuar). Kontrollo konfigurimin e proxy-t.</translation>
 <translation id="5821520528363214608">Për të përdorur dhe ruajtur të dhënat e Chromium te "Llogaria jote e Google", përditëso Chromium</translation>

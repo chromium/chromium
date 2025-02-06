@@ -1234,6 +1234,7 @@
 <translation id="3194737229810486521">Сайт <ph name="URL" /> хоче постійно зберігати дані на вашому пристрої</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на сервері <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Може запитувати, чи ви активно використовуєте цей пристрій</translation>
+<translation id="3201482403106004262">З опитуванням сталася помилка.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб вибрати в налаштуваннях Chrome, яку інформацію синхронізувати</translation>
 <translation id="3203025201812691413">Потрібно вказати URL-адресу</translation>
 <translation id="320323717674993345">Скасувати оплату</translation>
@@ -1873,6 +1874,7 @@
 <translation id="4269264543938335308">Одяг для плавання</translation>
 <translation id="4269599248168651462">Сертифікат сервера видається на неунікальне ім’я.</translation>
 <translation id="4270541775497538019">Накопичувач 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Переглянути 0 відгуків. Середня оцінка в зірочках: <ph name="STARS" />.}=1{Переглянути 1 відгук. Середня оцінка в зірочках: <ph name="STARS" />.}one{Переглянути # відгук. Середня оцінка в зірочках: <ph name="STARS" />.}few{Переглянути # відгуки. Середня оцінка в зірочках: <ph name="STARS" />.}many{Переглянути # відгуків. Середня оцінка в зірочках: <ph name="STARS" />.}other{Переглянути # відгуку. Середня оцінка в зірочках: <ph name="STARS" />.}}</translation>
 <translation id="4271652479722040953">Коли ви додаєте розширення в Chrome, дані про них надсилаються стороннім сервісам для аналізу, і ваш адміністратор може їх бачити. До таких даних належать назви розширень, час і джерело встановлення, а також відомості про пов’язані з ними дії (наприклад, зміна вкладок, звернення до вебсайтів або доступ до файлів cookie). Ці дані збираються для розширень, установлених із Вебмагазину Chrome і інших джерел.</translation>
 <translation id="4275830172053184480">Перезапустіть пристрій</translation>
 <translation id="4276974990916607331">Ні, дякую</translation>
@@ -2346,6 +2348,7 @@
 <translation id="5138227688689900538">Показати менше</translation>
 <translation id="5143309888746105072">Chromium забороняє сайтам використовувати сторонні файли cookie, щоб відстежувати ваші дії в Інтернеті.
             <ph name="NEW_LINE" />Якщо функції сайту не працюють належним чином, <ph name="START_LINK" />спробуйте тимчасово дозволити сторонні файли cookie<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Ви надали цьому сайту такий дозвіл: <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Відповідь правила містить код помилки</translation>
 <translation id="5146995429444047494">Сповіщення сайту <ph name="ORIGIN" /> заблоковано</translation>
 <translation id="514704532284964975">Сайт <ph name="URL" /> хоче переглядати й змінювати інформацію на пристроях NFC, яких ви торкаєтеся телефоном</translation>
@@ -2952,6 +2955,7 @@
 <translation id="6224281071334553713">Ювелірні вироби й коштовності</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб персоналізувати інструменти спеціальних можливостей у налаштуваннях Chrome</translation>
 <translation id="6228346913624365233">Транспортні засоби класу люкс</translation>
+<translation id="6228836011612806720">Відгуки про магазин. Середня оцінка в зірочках: <ph name="STARS" />.</translation>
 <translation id="6229196330202833460">Перегляд фільмів і телепрограм в Інтернеті</translation>
 <translation id="6234122620015464377">Обрізати після кожного документа</translation>
 <translation id="6234310016144827337">Перевірте з’єднання й повторіть спробу</translation>
@@ -4402,6 +4406,7 @@
 <translation id="8792621596287649091">Ви можете втратити доступ до облікового запису, який вам надає <ph name="ORG_NAME" />, або хтось може викрасти вашу особисту інформацію. Chromium радить змінити пароль.</translation>
 <translation id="8792626944327216835">мікрофон</translation>
 <translation id="8793655568873652685">Домен <ph name="ENROLLMENT_DOMAIN" /> увімкнув Chrome Enterprise Connectors у веб-переглядачі. Ці конектори мають доступ до деяких ваших даних.</translation>
+<translation id="8796062699363039080">Налаштування <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">За умовчанням</translation>
 <translation id="8800034312320686233">Сайт не працює?</translation>
 <translation id="8805819170075074995">Елемент списку <ph name="LANGUAGE_ID" />: елемент ігнорується, оскільки його також включено в правило SpellcheckLanguage.</translation>
@@ -4622,6 +4627,7 @@
 <translation id="9192361865877479444">Метал (матовий)</translation>
 <translation id="9192947025498305328">Свідома краса</translation>
 <translation id="9199905725844810519">Друк заблоковано</translation>
+<translation id="9201904868909900493">Опитування відкривається…</translation>
 <translation id="9204089334327209740">Коли завантаження завершиться, ви зможете змінювати файли в сервісі <ph name="CLOUD_PROVIDER" />. Локальне сховище, зокрема файли в кошику, буде автоматично вилучено.</translation>
 <translation id="9205078245616868884">Ваші дані зашифровано за допомогою парольної фрази. Введіть її, щоб почати синхронізацію.</translation>
 <translation id="920643408853370361">Туристичне страхування</translation>

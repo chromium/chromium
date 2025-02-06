@@ -354,7 +354,7 @@
 <translation id="2526590354069164005">Eneo-kazi</translation>
 <translation id="2529641961800709867">Chaguo za kitufe</translation>
 <translation id="253029298928638905">Inazima kisha iwake...</translation>
-<translation id="2531772459602846206">ua dogo lenye rangi mchanganyiko</translation>
+<translation id="2531772459602846206">haidrangea</translation>
 <translation id="2533048460510040082">Maudhui ya usaidizi yanayopendekezwa</translation>
 <translation id="2536159006530886390">Imeshindwa kuunganisha kwenye intaneti.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> zaidi</translation>
@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN si sahihi</translation>
 <translation id="382043424867370667">Mandhari ya machweo</translation>
 <translation id="3824259034819781947">Ambatisha faili</translation>
-<translation id="3836587210832263413">Washa tu viendelezi unavyoviamini</translation>
 <translation id="3838338534323494292">Nenosiri jipya</translation>
 <translation id="3845880861638660475">Bonyeza <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> kisha <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> ili ufunge kidirisha.</translation>
 <translation id="3848280697030027394">kibodi kuwa nyeusi</translation>
@@ -1028,7 +1027,7 @@
 <translation id="5904994456462260490">Weka APN mpya</translation>
 <translation id="590746845088109442">paka</translation>
 <translation id="5907649332524363701">rangi ya kitufe</translation>
-<translation id="5908813850962688338">Kuweka sasisho hili kutachukua dakika kadhaa. Hakikisha kifaa chako kimechomekwa na kimewashwa wakati sasisho hili linapakiliwa. Huenda kifaa chako kikajiwasha tena mara kadhaa na kuonyesha skrini nyeusi wakati wa mchakato huu. Utaombwa kuzima kisha uwashe kifaa chako ili kukamilisha uwekaji huu.</translation>
+<translation id="5908813850962688338">Kuweka sasisho hili kutachukua dakika kadhaa. Hakikisha kifaa chako kimechomekwa na kimewashwa wakati sasisho hili linapakuliwa. Huenda kifaa chako kikajiwasha tena mara kadhaa na kuonyesha skrini nyeusi wakati wa mchakato huu. Utaombwa kuzima kisha uwashe kifaa chako ili kukamilisha uwekaji huu.</translation>
 <translation id="5916084858004523819">Marufuku</translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Faili yako imechanganuliwa na imehifadhiwa kwenye <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Faili zako zimechanganuliwa na zimehifadhiwa kwenye <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Dhibiti printa zako kwenye mipangilio ya printa</translation>
 <translation id="6292095526077353682">Wakati inachaji, onyesha taswira ya skrini ya</translation>
 <translation id="629550705077076970">kupunguza mwangaza wa kibodi</translation>
-<translation id="6301193653204230066">Hatua ya kuweka upya mipangilio salama huzima viendelezi vya kivinjari cha Chrome na kurejesha mipangilio salama chaguomsingi ya mtandao na mingineyo.
-          Haitabadilisha vichupo, faili, vidakuzi na historia yako.</translation>
 <translation id="6302401976930124515">Jaribio la <ph name="TEST_NAME" /> limeghairiwa</translation>
 <translation id="631063167932043783">Programu ya Gundua</translation>
 <translation id="6318437367327684789">wakati wote</translation>
@@ -1774,6 +1771,8 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="951780398843003443">Linganisha sauti katika kipindi chote cha kurekodi ili manukuu yalingane na yale kila mzungumzaji anayasema na anapoyasema</translation>
 <translation id="952992212772159698">Haijaamilishwa</translation>
 <translation id="95718197892796296">udongo wa mfinyanzi</translation>
+<translation id="959792926760890141">Uwekaji upya wa mipangilio salama huzima viendelezi vya kivinjari cha Chrome na kurejesha mipangilio salama chaguomsingi ya mtandao na mingineyo.
+          Mtambo wako chaguomsingi wa kutafuta utawekwa upya, lakini vichupo, faili, vidakuzi na historia yako haitabadilishwa.</translation>
 <translation id="960719561871045870">Msimbo wa mtoa huduma</translation>
 <translation id="965918541715156800">manjano na samawati kijani</translation>
 <translation id="966787709310836684">menyu</translation>

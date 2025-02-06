@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">已將 <ph name="TABS_COUNT_ONE" /> 個分頁加入群組</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="1909810060368225529">注意：所有人都能看到這個共用分頁群組的變動，以及變更你的共用分頁群組</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{已將 <ph name="TABS_COUNT_ONE" /> 個選取的分頁加入書籤}other{已將 <ph name="TABS_COUNT_MANY" /> 個選取的分頁加入書籤}}</translation>
 <translation id="2118649612461486615">商店資訊</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組，但無痕分頁無法重新開啟。}other{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組，但這 # 個無痕分頁無法重新開啟。}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">你可以在這裡找到分頁群組</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個所選分頁移出群組}other{將 <ph name="TABS_COUNT_MANY" /> 個所選分頁移出群組}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="6499296376514955580">共用分頁群組異動通知已關閉</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 天後}other{<ph name="DAY_COUNT_MANY" /> 天後}}</translation>
 <translation id="6549021453810473782">查看商店資訊</translation>
 <translation id="6557858706263317126">還有 <ph name="HIDDEN_TABS_COUNT" /> 個</translation>
 <translation id="6562820390860419811">將分頁向左移</translation>
+<translation id="6589356853295569750">共用分頁群組異動通知已開啟，並顯示在整個畫面</translation>
 <translation id="6590332670428149473">開啟共用分頁群組「<ph name="TITLE_OF_GROUP" />」(<ph name="COLOR_NAME" />) 的動作選單。</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{已變更 <ph name="ONE_CHANGED" /> 個分頁}other{已變更 <ph name="MANY_CHANGED" /> 個分頁}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{分享 <ph name="TABS_COUNT_ONE" /> 個選取的分頁}other{分享 <ph name="TABS_COUNT_MANY" /> 個選取的分頁}}</translation>
 <translation id="7773714564112603605">移除分頁並刪除群組</translation>
 <translation id="7792771145871471484">查看建議項目。</translation>
+<translation id="7792860826279960128">共用分頁群組異動通知已開啟，並顯示在畫面下半部</translation>
 <translation id="7825973332242257878">分頁群組</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" />個所選分頁加入群組}other{將 <ph name="TABS_COUNT_MANY" />個所選分頁加入群組}}</translation>
 <translation id="7853202427316060426">活動</translation>

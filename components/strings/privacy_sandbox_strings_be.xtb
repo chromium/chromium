@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1444443021901415601">Chrome вызначае цікавыя для вас тэмы на падставе нядаўняй гісторыі прагляду вамі сайтаў</translation>
-<translation id="2252052615723281030">Калі вы ўвайшлі ў Chrome, гэта налада дапамагае захоўваць прыватнасць вашага IP-адраса. Калі Chrome западозрыць, што сайт адсочвае вашы дзеянні, то можа накіраваць частку трафіка праз серверы прыватнасці.</translation>
 <translation id="235789365079050412">Палітыка прыватнасці Google</translation>
 <translation id="2793385791865768072">Chromium вызначае цікавыя для вас тэмы на падставе нядаўняй гісторыі прагляду вамі сайтаў</translation>
 <translation id="2979365474350987274">Выкарыстанне старонніх файлаў cookie абмежавана</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Староннія файлы cookie абмежаваны</translation>
 <translation id="6371812158043974664">Калі вы ўвайшлі ў Chromium, гэта налада дапамагае захоўваць прыватнасць вашага IP-адраса. Калі Chromium западозрыць, што сайт адсочвае вашы дзеянні, то можа накіраваць частку трафіка праз серверы прыватнасці. Даведайцеся больш пра тое, <ph name="LINK_BEGIN" />як працуе абарона IP-адраса<ph name="LINK_END" />.</translation>
 <translation id="6398358690696005758">Каб даведацца больш пра тое, як Google абараняе вашы даныя, азнаёмцеся з нашай <ph name="BEGIN_LINK1" />Палітыкай прыватнасці<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261"><ph name="BEGIN_LINK" />Як працуе абарона IP-адраса<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Праглядзіце налады тэм рэкламы</translation>
 </translationbundle>

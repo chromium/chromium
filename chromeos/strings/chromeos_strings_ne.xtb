@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">अमान्य PIN।</translation>
 <translation id="382043424867370667">सनसेट वालपेपर</translation>
 <translation id="3824259034819781947">फाइलहरू एट्याच गर्नुहोस्</translation>
-<translation id="3836587210832263413">आफूलाई विश्वास लाग्ने एक्स्टेन्सनहरू मात्र अन गर्नुहोस्</translation>
 <translation id="3838338534323494292">नयाँ पासवर्ड</translation>
 <translation id="3845880861638660475">डायलग बन्द गर्न <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> थिच्नुहोस्।</translation>
 <translation id="3848280697030027394">किबोर्डको ब्याकलाइटको चमक अझ अँध्यारो बनाउनुहोस्</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">प्रिन्टरसम्बन्धी सेटिङमा गई आफ्ना प्रिन्टरहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6292095526077353682">चार्ज भइरहेका बेला निम्न अवधिका लागि स्क्रिनसेभर देखाउनुहोस्</translation>
 <translation id="629550705077076970">किबोर्डको ब्याकलाइटको चमक कम गर्नुहोस्</translation>
-<translation id="6301193653204230066">सुरक्षाका निम्ति सेटिङ रिसेट गरियो भने Chrome को ब्राउजर एक्स्टेन्सन अफ हुन्छ र नेटवर्क तथा अन्य सेटिङ रिसेट गरी सुरक्षित डिफल्ट सेटिङ हुन्छ।
-          तपाईंका ट्याब, फाइल, कुकी र हिस्ट्री परिवर्तन गरिने छैनन्।</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> परीक्षण रद्द गरिएको छ</translation>
 <translation id="631063167932043783">एक्स्प्लोर एप</translation>
 <translation id="6318437367327684789">सधैँ</translation>
@@ -1142,7 +1139,7 @@
 <translation id="6394634179843537518">फाइल हाल्नुहोस्</translation>
 <translation id="6396719002784938593">सुकेको फेदर ग्रास</translation>
 <translation id="639964859328803943">बेलुकीको चियासहितको खाजा</translation>
-<translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> ले बनेको <ph name="DREAMSCAPES_COLORS" /> रङको अद्भूत <ph name="DREAMSCAPES_MATERIAL" /></translation>
+<translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" />ले बनेको <ph name="DREAMSCAPES_COLORS" /> रङको अद्भूत <ph name="DREAMSCAPES_MATERIAL" /></translation>
 <translation id="6401427872449207797">ब्राउजरमा खोज्नुहोस्</translation>
 <translation id="6410257289063177456">फोटो फाइलहरू</translation>
 <translation id="641081527798843608">विषयको मिलान</translation>
@@ -1585,7 +1582,7 @@
 <translation id="8391349326751432483">मेमोरीको जाँच गर्न तपाईंको डिभाइसको मेमोरीमा कम्तीमा ५०० एम.बि. खाली ठाउँ हुनु पर्छ। मेमोरीमा ठाउँ खाली गर्न ट्याब र एपहरू बन्द गर्नुहोस्।</translation>
 <translation id="8395584934117017006">इन्टरप्राइजले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
 <translation id="8398927464629426868">यन्त्र हाल चार्ज वा डिस्चार्ज भइरहेको दर</translation>
-<translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> शैलीमा <ph name="ART_FEATURE" /> को चित्रकला</translation>
+<translation id="8403988360557588704"><ph name="ART_MOVEMENT" /> शैलीमा <ph name="ART_FEATURE" />को चित्रकला</translation>
 <translation id="8410244574650205435">स्वतः पत्ता लगाइएको</translation>
 <translation id="8420955526972171689">हार्डवेयरसम्बन्धी समस्याहरू पत्ता लगाउन परीक्षण गर्नुहोस् र ती समस्या निवारण गर्नुहोस्</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">हरेक वक्ताले कति बेला के भनेका छन् भन्ने कुरा ट्रान्स्क्रिप्टमा उल्लेख गरियोस् भन्नाका लागि रेकर्डिङको पूरै अवधिमा सुनिएका आवाजहरूको तुलना गर्न</translation>
 <translation id="952992212772159698">सक्रिय छैन</translation>
 <translation id="95718197892796296">माटो</translation>
+<translation id="959792926760890141">सुरक्षाका निम्ति सेटिङ रिसेट गरियो भने Chrome को ब्राउजर एक्स्टेन्सन अफ हुन्छ र नेटवर्क तथा अन्य सेटिङ रिसेट गरी सुरक्षित डिफल्ट सेटिङ हुन्छ।
+          तपाईंको डिफल्ट सर्च इन्जिन रिसेट गरिने छ तर तपाईंका ट्याब, फाइल, कुकी र हिस्ट्री परिवर्तन गरिने छैनन्।</translation>
 <translation id="960719561871045870">अपरेटरको कोड</translation>
 <translation id="965918541715156800">पहेँलो र टिल</translation>
 <translation id="966787709310836684">मेनु</translation>

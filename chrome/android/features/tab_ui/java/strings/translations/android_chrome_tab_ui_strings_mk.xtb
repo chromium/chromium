@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Дознајте повеќе<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Создадена е група со <ph name="TABS_COUNT_ONE" /> картичка</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>
+<translation id="1909810060368225529">Известување: промените во споделенава група картички може да ги видат сите. Секој може да врши промени во вашите споделени групи картички</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Обележи <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Обележи <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Обележи <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="2118649612461486615">Информации за продавницата</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Картичката „Инкогнито“ нема да биде достапна.}one{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Вашите # картичка „Инкогнито“ нема да бидат достапни.}other{Вашите затворени картички и групи може да се отворат повторно од делот „Неодамнешни картички“ и делот „Групи картички“. Вашите # картички „Инкогнито“ нема да бидат достапни.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">Вашите групи картички ќе ги најдете овде</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Одгрупирајте <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Одгрупирајте <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Одгрупирајте <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>
+<translation id="6499296376514955580">Известувањето за промените во споделената група картички е затворено</translation>
 <translation id="6527303717912515753">Сподели</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{По 1 ден}one{По <ph name="DAY_COUNT_MANY" /> ден}other{По <ph name="DAY_COUNT_MANY" /> дена}}</translation>
 <translation id="6549021453810473782">Прегледајте ги информациите за продавницата</translation>
 <translation id="6557858706263317126">уште <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Премести ја картичката налево</translation>
+<translation id="6589356853295569750">Известувањето за промените во споделената група картички е отворено на цел екран</translation>
 <translation id="6590332670428149473">Отворете го менито со дејства на групи картички за споделената група картички „<ph name="TITLE_OF_GROUP" />“, боја: <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Променети картички: <ph name="ONE_CHANGED" />}one{Променети картички: <ph name="MANY_CHANGED" />}other{Променети картички: <ph name="MANY_CHANGED" />}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Споделете <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Споделете <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Споделете <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="7773714564112603605">Отстранете ја картичката и избришете ја групата</translation>
 <translation id="7792771145871471484">Прегледајте ги предлозите.</translation>
+<translation id="7792860826279960128">Известување за промените во споделената група картички на половина екран</translation>
 <translation id="7825973332242257878">Групи картички</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Групирајте <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Групирајте <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Групирајте <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="7853202427316060426">Активност</translation>

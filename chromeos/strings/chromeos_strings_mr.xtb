@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">चुकीचे पिन.</translation>
 <translation id="382043424867370667">सनसेट वॉलपेपर</translation>
 <translation id="3824259034819781947">फाइल अटॅच करा</translation>
-<translation id="3836587210832263413">फक्त तुमचा विश्वास असलेली एक्स्टेंशन सुरू करा</translation>
 <translation id="3838338534323494292">नवीन पासवर्ड</translation>
 <translation id="3845880861638660475">डायलॉग बंद करण्यासाठी,<ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> प्रेस करा.</translation>
 <translation id="3848280697030027394">कीबोर्ड गडद</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">प्रिंटर सेटिंग्जमध्ये तुमचे प्रिंटर व्यवस्थापित करा</translation>
 <translation id="6292095526077353682">चार्ज करताना, इतक्या वेळेसाठी स्क्रीन सेव्हर दाखवा</translation>
 <translation id="629550705077076970">कीबोर्ड मंद करणे</translation>
-<translation id="6301193653204230066">सुरक्षितता रीसेट केल्यामुळे Chrome ब्राउझर एक्स्टेंशन बंद होतात आणि नेटवर्क व इतर सेटिंग्ज सुरक्षित डीफॉल्टवर रीसेट होतात.
-          तुमचे टॅब, फाइल, कुकी आणि इतिहास बदलणार नाही.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> चाचणी रद्द करण्यात आली आहे</translation>
 <translation id="631063167932043783">अ‍ॅप एक्सप्लोर करा</translation>
 <translation id="6318437367327684789">कायमचे</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">संपूर्ण रेकॉर्डिंगमधील आवाजांची तुलना करा, जेणेकरून प्रत्येक स्पीकर काय आणि केव्हा म्हणाला ते ट्रान्स्क्रिप्ट दाखवेल</translation>
 <translation id="952992212772159698">सक्रिय नाही</translation>
 <translation id="95718197892796296">माती</translation>
+<translation id="959792926760890141">सुरक्षितता रीसेट केल्यामुळे Chrome ब्राउझर एक्स्टेंशन बंद केली जातात आणि नेटवर्क व इतर सेटिंग्ज सुरक्षित डीफॉल्टवर रीसेट होतात.
+          तुमचे डीफॉल्ट शोध इंजीन रीसेट केले जाईल, पण तुमचे टॅब, फाइल, कुकी आणि इतिहास बदलला जाणार नाही.</translation>
 <translation id="960719561871045870">ऑपरेटर कोड</translation>
 <translation id="965918541715156800">पिवळा आणि टील</translation>
 <translation id="966787709310836684">मेनू</translation>

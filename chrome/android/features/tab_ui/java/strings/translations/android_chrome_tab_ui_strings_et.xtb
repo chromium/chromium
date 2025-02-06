@@ -25,6 +25,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Lisateave<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> vaheleht grupeeriti</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vaheleht}other{<ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
+<translation id="1909810060368225529">Teade. Selle jagatud vahelehegrupi muutused on kõigile nähtavad. Kõik saavad teie jagatud vahelehegruppides muudatusi teha</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> valitud vahelehe järjehoidjatesse lisamine}other{<ph name="TABS_COUNT_MANY" /> valitud vahelehe järjehoidjatesse lisamine}}</translation>
 <translation id="2118649612461486615">Poe teave</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Teie suletud vahelehti ja gruppe on võimalik uuesti avada jaotistest Hiljutised vahelehed ja Vahelehegrupid. Teie inkognito vaheleht pole saadaval.}other{Teie suletud vahelehti ja gruppe on võimalik uuesti avada jaotistest Hiljutised vahelehed ja Vahelehegrupid. Teie # inkognito vahelehte pole saadaval.}}</translation>
@@ -126,11 +127,13 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="6381032505162537930">Leiate oma vahelehegrupid siit</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Tühista <ph name="TABS_COUNT_ONE" /> valitud vahelehe grupeerimine}other{Tühista <ph name="TABS_COUNT_MANY" /> valitud vahelehe grupeerimine}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vaheleht}other{<ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
+<translation id="6499296376514955580">Teade, kui jagatud vahelehegruppide muutused on suletud</translation>
 <translation id="6527303717912515753">Jaga</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 päeva pärast}other{<ph name="DAY_COUNT_MANY" /> päeva pärast}}</translation>
 <translation id="6549021453810473782">Kuva poe teave</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Teisalda vaheleht vasakule</translation>
+<translation id="6589356853295569750">Teade, kui jagatud vahelehegruppide muutused on avatud täiskõrgusel</translation>
 <translation id="6590332670428149473">Avage jagatud vahelehegrupi <ph name="TITLE_OF_GROUP" /> toimingute menüü, värv <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Kuva mulle</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> vahelehte muudeti}other{<ph name="MANY_CHANGED" /> vahelehte muudeti}}</translation>
@@ -157,6 +160,7 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Jaga <ph name="TABS_COUNT_ONE" /> valitud vahelehte}other{Jaga <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
 <translation id="7773714564112603605">Eemaldage vaheleht ja kustutage grupp</translation>
 <translation id="7792771145871471484">Vaadake soovitused üle.</translation>
+<translation id="7792860826279960128">Teade, kui jagatud vahelehegruppide muutused on avatud poolel kõrgusel</translation>
 <translation id="7825973332242257878">Vahelehegrupid</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupeeri <ph name="TABS_COUNT_ONE" /> valitud vaheleht}other{Grupeeri <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
 <translation id="7853202427316060426">Tegevus</translation>

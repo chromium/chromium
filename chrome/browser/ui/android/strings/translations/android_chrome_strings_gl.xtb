@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Contrasinais en todos os teus dispositivos</translation>
 <translation id="1082920045291562218">Pechouse a folla para compartir comentarios sobre o resumo</translation>
 <translation id="1087176310396019910">Posible spam</translation>
+<translation id="1087799850623149508">Podes manter premida a barra de enderezos para movela á parte inferior</translation>
 <translation id="1089606299949659462">Completaches a revisión</translation>
 <translation id="1094555143448724771">Para ver as pestanas dos teus outros dispositivos, sincroniza as pestanas e o historial</translation>
 <translation id="1095761715416917775">Asegúrate de poder acceder sempre aos teus datos sincronizados</translation>
@@ -131,6 +132,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1513858653616922153">Eliminar contrasinal</translation>
 <translation id="1521774566618522728">Dispositivo activo hoxe</translation>
 <translation id="153446405401665083">Hai unha versión de Chrome máis recente</translation>
+<translation id="1540012742443808215">A barra de enderezos está actualmente na parte superior</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{Hai 1 marcador gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}other{Hai # marcadores gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Os enderezos e os métodos de pago non se encriptarán. Tampouco se sincronizará o historial de navegación de Chrome.
 Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase de acceso. Google non recibirá nin almacenará a frase de acceso. Se a esqueces ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6459045781120991510">Enquisas</translation>
 <translation id="6461962085415701688">Non se puido abrir o ficheiro</translation>
 <translation id="6464977750820128603">Podes ver os sitios que visitas en Chrome e definirlles temporizadores.\n\nGoogle obtén información sobre os sitios para os que estableces temporizadores e sobre a duración da túa visita. Estes datos utilízanse para mellorar Benestar dixital.</translation>
+<translation id="6468703991511753953">A barra de enderezos está actualmente na parte inferior</translation>
 <translation id="6470181189905173055">As páxinas que abras en Chrome mentres usas <ph name="APP_LABEL" /> mostraranse aquí.</translation>
 <translation id="6473086018775716761">A lista de cartafoles de opcións para compartir está aberta a media pantalla.</translation>
 <translation id="6475951671322991020">Descargar vídeo</translation>

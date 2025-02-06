@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">ოპერაციული სისტემები</translation>
 <translation id="3080254622891793721">გრაფიკა</translation>
 <translation id="3082007635241601060">მიეცით საშუალება Google-ს, გამოიყენოს თქვენი კალათები, რომ პერსონალურად გიპოვოთ ხელმისაწვდომი ფასდაკლებები</translation>
+<translation id="3086269988715347183">თქვენ აქამდე არ დაგიმტკიცებიათ <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">თქვენს აქტივობაზე ვებში მიმდინარეობს მონიტორინგი</translation>
 <translation id="3087734570205094154">ქვედა საზღვარი</translation>
 <translation id="3090667236485488075">შუშა</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3203025201812691413">URL არ უნდა იყოს ცარიელი</translation>
 <translation id="320323717674993345">გადახდის გაუქმება</translation>
 <translation id="3203366800380907218">ვებიდან</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> შეიძლება შეიცავდეს ზრდასრულთა კონტენტს</translation>
 <translation id="3207960819495026254">ჩანიშნულია</translation>
 <translation id="3208701679386778924">გთხოვთ, გამოგვიგზავნოთ ანგარიში, ChromeOS-ის განახლების პროცესი კიდევ უფრო რომ გავაუმჯობესოთ.</translation>
 <translation id="3209034400446768650">გვერდმა შეიძლება დაგაკისროთ თანხის გადახდა</translation>
@@ -2348,6 +2350,7 @@
 <translation id="5138227688689900538">ნაკლების ჩვენება</translation>
 <translation id="5143309888746105072">Chromium უბლოკავს საიტების უმეტესობას მესამე მხარის ქუქი-ჩანაწერების გამოყენების შესაძლებლობას ვების დათვალიერებისას თქვენთვის თვალის დევნების მიზნით.
             <ph name="NEW_LINE" />თუ საიტის ფუნქციები არ მუშაობს, <ph name="START_LINK" />ცადეთ მესამე მხარის ქუქი-ჩანაწერების დროებით დაშვება<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">თქვენ დაუშვით ამ საიტის წვდომა <ph name="PERMISSION" />-ზე</translation>
 <translation id="5145883236150621069">წესის პასუხში შეცდომის კოდია</translation>
 <translation id="5146995429444047494">შეტყობინებები დაბლოკილია <ph name="ORIGIN" />-ისთვის</translation>
 <translation id="514704532284964975"><ph name="URL" />-ს სურს ჰქონდეს წვდომა და შეცვალოს ინფორმაცია NFC მოწყობილობებზე, რომლებსაც ტელეფონის მეშვეობით მიუერთდით</translation>
@@ -2972,6 +2975,7 @@
 <translation id="6254436959401408446">ამ გვერდის გასახსნელად მეხსიერება არასაკმარისია</translation>
 <translation id="625463612687472648">აღარ დაიშვას</translation>
 <translation id="6259156558325130047">გადალაგების &amp;გამეორება</translation>
+<translation id="6259282549512536479">თქვენ წარსულში დაბლოკეთ <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> სანიშნე</translation>
 <translation id="6264376385120300461">მაინც ჩამოტვირთვა</translation>
 <translation id="6264485186158353794">უსაფრთხოებაზე დაბრუნება</translation>
@@ -4403,6 +4407,7 @@
 <translation id="8792621596287649091">თქვენ შეიძლება მოგპარონ პერსონალური მონაცემები, ან დაკარგოთ წვდომა თქვენს <ph name="ORG_NAME" /> ანგარიშზე. Chromium გირჩევთ, ახლავე შეცვალოთ პაროლი.</translation>
 <translation id="8792626944327216835">მიკროფონი</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" />-მა ჩართო Chrome Enterprise Connectors თქვენს ბრაუზერში. აღნიშნულ მაერთებლებს წვდომა აქვს თქვენს გარკვეულ მონაცემებზე.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" />-ის პარამეტრები</translation>
 <translation id="8798099450830957504">ნაგულისხმევი</translation>
 <translation id="8800034312320686233">საიტი არ მუშაობს?</translation>
 <translation id="8805819170075074995">სიის ჩანაწერი „<ph name="LANGUAGE_ID" />“: ჩანაწერი იგნორირებულია, ვინაიდან მას შეიცავს „SpellcheckLanguage“ წესებიც.</translation>

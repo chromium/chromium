@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Несапраўдны PIN-код.</translation>
 <translation id="382043424867370667">Шпалеры "Захад сонца"</translation>
 <translation id="3824259034819781947">Далучыць файлы</translation>
-<translation id="3836587210832263413">Уключайце толькі тыя пашырэнні, якім вы давяраеце</translation>
 <translation id="3838338534323494292">Новы пароль</translation>
 <translation id="3845880861638660475">Каб закрыць дыялогавае акно, націсніце <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">зацямніць клавіятуру</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Вы можаце кіраваць прынтарамі ў адпаведных наладах</translation>
 <translation id="6292095526077353682">Падчас зарадкі паказваць застаўку</translation>
 <translation id="629550705077076970">зацямненне клавіятуры</translation>
-<translation id="6301193653204230066">Пашырэнні ў браўзеры Chrome будуць адключаны, а налады сеткі і іншыя налады скінуты да бяспечных стандартных значэнняў.
-          Гэта не паўплывае на вашы ўкладкі, файлы (у тым ліку файлы cookie) і гісторыю.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тэст скасаваны</translation>
 <translation id="631063167932043783">Праграма "Агляд"</translation>
 <translation id="6318437367327684789">назаўжды</translation>
@@ -1772,6 +1769,8 @@
 <translation id="951780398843003443">параўноўваць галасы ва ўсім запісе, каб у расшыфроўцы было зразумела, што і калі сказаў кожны суразмоўнік.</translation>
 <translation id="952992212772159698">Неактыўнае</translation>
 <translation id="95718197892796296">гліна</translation>
+<translation id="959792926760890141">Пашырэнні ў браўзеры Chrome будуць адключаны, а налады сеткі і іншыя налады скінуты да бяспечных стандартных значэнняў.
+          Налады стандартнай пошукавай сістэмы будуць скінуты, але на вашы ўкладкі, асабістыя файлы, файлы cookie і гісторыю браўзера гэта не паўплывае.</translation>
 <translation id="960719561871045870">Код аператара</translation>
 <translation id="965918541715156800">жоўты і сіне-зялёны</translation>
 <translation id="966787709310836684">меню</translation>

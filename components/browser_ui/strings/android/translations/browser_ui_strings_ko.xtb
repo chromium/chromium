@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">검색</translation>
 <translation id="1384959399684842514">다운로드 일시중지됨</translation>
 <translation id="1396327438254055134">사이트에서 V8 옵티마이저를 사용하도록 허용합니다.</translation>
+<translation id="1409338233051621926">앱을 탭한 다음 기본 앱을 탭합니다</translation>
 <translation id="1415402041810619267">URL 잘림</translation>
 <translation id="1415855080660575082">Chrome에서 내 기기와 최근 탭을 공유하도록 허용하면 기기의 앱 목록과 검색 결과에서 최근 탭을 볼 수 있습니다. 이 기능은 Chrome 설정에서 사용 또는 사용 중지할 수 있습니다.</translation>
 <translation id="1448064542941920355">축소</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">사이트에 어두운 테마를 적용하지 마세요.</translation>
 <translation id="2606760465469169465">자동 인증</translation>
 <translation id="2621115761605608342">특정 사이트에서 자바스크립트를 허용합니다.</translation>
+<translation id="2626708220538466178">기본 브라우저 하단 시트가 닫힘</translation>
 <translation id="2653659639078652383">제출</translation>
 <translation id="2677748264148917807">나가기</translation>
 <translation id="2682367912565197520">저장된 확대/축소 수준 삭제</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">소리를 재생하는 사이트 음소거</translation>
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3628308229821498208">추천 검색어</translation>
+<translation id="3658847490588580244">기본 브라우저 하단 시트</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{사이트 <ph name="RWS_MEMBERS_COUNT" />개는 <ph name="RWS_OWNER" />의 사이트 그룹에 있으며, 여기에서는 그룹 내 활동을 볼 수 있습니다.}other{사이트 <ph name="RWS_MEMBERS_COUNT" />개는 <ph name="RWS_OWNER" />의 사이트 그룹에 있으며, 여기에서는 그룹 내 활동을 볼 수 있습니다.}}</translation>
 <translation id="3697164069658504920">사용 설정하면 사이트에서 USB 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 USB 기기를 사용할 수 없습니다.</translation>
 <translation id="3707034683772193706">방문하는 사이트에서 주로 내가 봇이 아님을 확인하기 위해 Chrome에 약간의 정보를 저장할 수 있습니다.</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">삭제 및 재설정</translation>
 <translation id="4645575059429386691">부모님이 관리합니다.</translation>
 <translation id="4670064810192446073">가상 현실</translation>
+<translation id="4672315773691449562">브라우저 앱을 탭한 다음 Chrome을 탭합니다</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" />에서 손 추적을 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서도 손 추적을 사용 설정하세요.</translation>
 <translation id="4751476147751820511">모션 또는 조도 센서</translation>
 <translation id="4755971844837804407">사용 설정하면 사이트에서 모든 광고를 표시할 수 있습니다. 사용 중지하면 사이트에서 방해가 되거나 사용자를 현혹하는 광고를 표시할 수 없습니다.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">허용(권장)</translation>
 <translation id="8609465669617005112">위로 이동</translation>
 <translation id="8617611086246832542">사용 설정하면 웹사이트 데스크톱 뷰가 표시됩니다. 사용 중지하면 웹사이트 모바일 뷰가 표시됩니다.</translation>
+<translation id="8670078035093027626">기본 브라우저 하단 시트가 전체 높이로 열림</translation>
 <translation id="8676316391139423634">이 옵션을 사용 설정하면 사이트에서 손 추적을 요청할 수 있습니다. 사용 중지하면 사이트에서 내 손을 추적할 수 없습니다.</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="8681886425883659911">방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려진 사이트에서 광고가 차단됩니다.</translation>

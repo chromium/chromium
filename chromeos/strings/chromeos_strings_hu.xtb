@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Érvénytelen PIN-kód.</translation>
 <translation id="382043424867370667">Naplemente háttérkép</translation>
 <translation id="3824259034819781947">Fájlok csatolása</translation>
-<translation id="3836587210832263413">Csak a megbízható bővítményeket kapcsolja be</translation>
 <translation id="3838338534323494292">Új jelszó</translation>
 <translation id="3845880861638660475">A párbeszédpanel bezárásához nyomja le az <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> billentyűkombinációt.</translation>
 <translation id="3848280697030027394">billentyűzet sötétítése</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">A nyomtatókat a nyomtatóbeállításokban kezelheti</translation>
 <translation id="6292095526077353682">Képernyőkímélő megjelenítése töltés közben ennyi ideig:</translation>
 <translation id="629550705077076970">billentyűzet elsötétítése</translation>
-<translation id="6301193653204230066">A biztonsági visszaállítás kikapcsolja a Chrome-bővítményeket, és visszaállítja a hálózati és egyéb beállításokat a biztonságos alapértelmezett értékekre.
-          Alapjai, fájljai, cookie-jai és előzményei nem változnak.</translation>
 <translation id="6302401976930124515">Teszt (<ph name="TEST_NAME" />) megszakítva</translation>
 <translation id="631063167932043783">Felfedezés alkalmazás</translation>
 <translation id="6318437367327684789">a végtelenségig</translation>
@@ -1774,6 +1771,8 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="951780398843003443">Hasonlítsa össze a felvételben elhangzó beszédhangokat, hogy az átiratban látható legyen, az egyes beszélők mit és mikor mondtak</translation>
 <translation id="952992212772159698">Nincs aktiválva</translation>
 <translation id="95718197892796296">agyag</translation>
+<translation id="959792926760890141">A biztonsági visszaállítás kikapcsolja a Chrome-bővítményeket, és visszaállítja a hálózati és egyéb beállításokat a biztonságos alapértelmezett értékekre.
+          Az alapértelmezett keresőmotor visszaállítódik, de a lapjai, fájljai, cookie-jai és előzményei nem változnak.</translation>
 <translation id="960719561871045870">Operátorkód</translation>
 <translation id="965918541715156800">sárga és pávakék</translation>
 <translation id="966787709310836684">menü</translation>

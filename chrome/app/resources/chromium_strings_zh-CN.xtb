@@ -329,6 +329,7 @@
 <translation id="569897634095159764">无法连接到互联网。代理服务器要求进行身份验证。</translation>
 <translation id="5761096224651992291">您近期未访问过该网站。Chromium 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />权限</translation>
 <translation id="5768371961535086509">Chromium 会释放闲置标签页占用的内存。这可让活跃标签页和其他应用获得更多计算机资源，并让 Chromium 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活跃状态。<ph name="BEGIN_LINK" />详细了解省内存模式<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">如果您忘记了口令或想更改此设置，请<ph name="SETTINGS_LINK" />您账号中的 Chromium 数据</translation>
 <translation id="5800158606660203929">自定义和控制 Chromium。将 Chromium 设为默认浏览器。</translation>
 <translation id="5809516625706423866">无法连接到互联网。发生 HTTP 401 Unauthorized 错误，请检查您的代理配置。</translation>
 <translation id="5821520528363214608">如要将 Chromium 数据保存在 Google 账号中并使用这些数据，请更新 Chromium</translation>

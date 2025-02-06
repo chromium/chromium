@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">‏غلط PIN۔</translation>
 <translation id="382043424867370667">سن سیٹ وال پیپر</translation>
 <translation id="3824259034819781947">فائلز منسلک کریں</translation>
-<translation id="3836587210832263413">صرف ان ایکسٹینشنز کو آن کریں جن پر آپ بھروسہ کرتے ہیں</translation>
 <translation id="3838338534323494292">نیا پاس ورڈ</translation>
 <translation id="3845880861638660475">‏ڈائیلاگ کو بند کرنے کے لیے <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + ‏<ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> دبائیں۔</translation>
 <translation id="3848280697030027394">کی بورڈ کو گہرا بنانا</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">پرنٹر کی ترتیبات میں اپنے پرنٹرز کا نظم کریں</translation>
 <translation id="6292095526077353682">چارج کرتے وقت، اس کیلئے اسکرین سیور دکھائیں</translation>
 <translation id="629550705077076970">مدھم کی بورڈ</translation>
-<translation id="6301193653204230066">‏سیفٹی ری سیٹ Chrome براؤزر کی ایکسٹینشنز کو آف کر دیتا ہے اور نیٹ ورک اور دیگر ترتیبات کو محفوظ ڈیفالٹس پر ری سیٹ کرتا ہے۔
-          آپ کے ٹیبز، فائلز، کوکیز اور سرگزشت کو تبدیل نہیں کیا جائے گا۔</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ٹیسٹ منسوخ کر دیا گیا ہے</translation>
 <translation id="631063167932043783">ایکسپلور ایپ</translation>
 <translation id="6318437367327684789">ہمیشہ کے لیے</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">پوری ریکارڈنگ کے دوران آوازوں کا موازنہ کریں تاکہ ٹرانسکرپٹ میں اس بات کی عکاسی کی جا سکے کہ ہر اسپیکر نے کیا اور کب کہا</translation>
 <translation id="952992212772159698">فعال نہیں ہے</translation>
 <translation id="95718197892796296">چکنی مٹی</translation>
+<translation id="959792926760890141">‏سیفٹی ری سیٹ Chrome براؤزر کی ایکسٹینشنز کو آف کر دیتا ہے اور نیٹ ورک اور دیگر ترتیبات کو محفوظ ڈیفالٹس پر ری سیٹ کرتا ہے۔
+          آپ کے ڈیفالٹ سرچ انجن کو ری سیٹ کر دیا جائے گا، لیکن آپ کے ٹیبز، فائلز، کوکیز اور سرگزشت کو تبدیل نہیں کیا جائے گا۔</translation>
 <translation id="960719561871045870">آپریٹر کوڈ</translation>
 <translation id="965918541715156800">پیلا اور نیلگوں سبز</translation>
 <translation id="966787709310836684">مینیو</translation>

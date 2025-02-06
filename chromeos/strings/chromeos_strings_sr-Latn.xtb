@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="382043424867370667">Pozadina sa zalaskom sunca</translation>
 <translation id="3824259034819781947">Priloži fajlove</translation>
-<translation id="3836587210832263413">Uključite samo pouzdane dodatke</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
 <translation id="3845880861638660475">Pritisnite <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> da biste zatvorili dijalog.</translation>
 <translation id="3848280697030027394">potamnjivanje tastature</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Upravljajte štampačima u podešavanjima štampača</translation>
 <translation id="6292095526077353682">Tokom punjenja prikaži čuvar ekrana za</translation>
 <translation id="629550705077076970">zatamnjivanje tastature</translation>
-<translation id="6301193653204230066">Bezbedno resetovanje isključuje dodatke za Chrome pregledač i resetuje mrežna i druga podešavanja na bezbedne podrazumevane vrednosti.
-          Kartice, fajlovi, kolačići i istorija neće biti promenjeni.</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> je otkazan</translation>
 <translation id="631063167932043783">Istražite aplikaciju</translation>
 <translation id="6318437367327684789">zauvek</translation>
@@ -1142,7 +1139,7 @@
 <translation id="6394634179843537518">Dodajte fajl</translation>
 <translation id="6396719002784938593">suvo kovilje</translation>
 <translation id="639964859328803943">popodnevni čaj</translation>
-<translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> iz snova od <ph name="DREAMSCAPES_MATERIAL" /> <ph name="DREAMSCAPES_COLORS" /></translation>
+<translation id="6400680457268373900">Nadrealno: <ph name="DREAMSCAPES_OBJECT" />, materijal: <ph name="DREAMSCAPES_MATERIAL" /> <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">pretraga pregledača</translation>
 <translation id="6410257289063177456">Datoteke slika</translation>
 <translation id="641081527798843608">Podudaranje naslova</translation>
@@ -1774,6 +1771,8 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="951780398843003443">Poređenje glasove na snimku da bi transkript odražavao šta je svaki govornik rekao i kada</translation>
 <translation id="952992212772159698">Nije aktivirano</translation>
 <translation id="95718197892796296">gline</translation>
+<translation id="959792926760890141">Bezbedno resetovanje isključuje dodatke za Chrome pregledač i resetuje mrežna i druga podešavanja na bezbedne podrazumevane vrednosti.
+          Podrazumevani pretraživač će se resetovati, ali kartice, fajlovi, kolačići i istorija neće biti promenjeni.</translation>
 <translation id="960719561871045870">Kôd mobilnog operatera</translation>
 <translation id="965918541715156800">žute i plavozelene boje</translation>
 <translation id="966787709310836684">meni</translation>

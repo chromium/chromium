@@ -1705,6 +1705,7 @@ Kaka-install lang</translation>
 <translation id="6637729079642709226">Baguhin ang oras</translation>
 <translation id="6641720045729354415">I-toggle ang Instant Caption. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">I-undo ang ayos ng pagkakasunod-sunod ayon sa pangalan</translation>
+<translation id="664793810957802384">Mga item sa iminumungkahing grupo</translation>
 <translation id="6649641931981131786">I-adjust ang camera para mapunta ka sa gitna ng screen.</translation>
 <translation id="6650072551060208490">Gustong kumpirmahin ng <ph name="ORIGIN_NAME" /> na ikaw ito</translation>
 <translation id="6650742588569439432">Hindi ma-load ang mga item.</translation>
@@ -2380,6 +2381,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8956420987536947088">Buksan ang iyong mga nakaraang window at app</translation>
 <translation id="8959380109429710384">Pinindot mo ang keyboard shortcut para sa full-screen magnifier. Gamitin ang ctrl + alt + mga arrow para gumalaw-galaw sa naka-zoom in na view.</translation>
 <translation id="8964525410783593407">1h</translation>
+<translation id="8970887620466824814">Nagkaproblema.</translation>
 <translation id="8973885907461690937">Mag-focus sa icon ng menu</translation>
 <translation id="8980862970816311842">Ilipat ang icon ng isang app sa/mula sa folder sa grid ng app</translation>
 <translation id="8982906748181120328">Visible Nearby</translation>

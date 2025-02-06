@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384959399684842514">Téléchargement suspendu</translation>
 <translation id="1396327438254055134">Autorisez le site à utiliser l'optimiseur V8.</translation>
+<translation id="1409338233051621926">Appuyer sur Applis, puis sur Applis par défaut</translation>
 <translation id="1415402041810619267">URL tronquée</translation>
 <translation id="1415855080660575082">Autorisez Chrome à partager vos onglets récents avec votre appareil pour les voir s'afficher dans la liste d'applis et les résultats de recherche de votre appareil. Vous pouvez activer ou désactiver cette option à tout moment dans les paramètres de Chrome.</translation>
 <translation id="1448064542941920355">Réduire le zoom</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Le thème sombre n'est pas appliqué aux sites</translation>
 <translation id="2606760465469169465">Validation automatique</translation>
 <translation id="2621115761605608342">Autorisez le langage JavaScript pour un site spécifique.</translation>
+<translation id="2626708220538466178">Bottom sheet du navigateur par défaut fermé</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2682367912565197520">Supprimer le niveau de zoom enregistré</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Couper le son des sites</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3628308229821498208">Recherches suggérées</translation>
+<translation id="3658847490588580244">Bottom sheet du navigateur par défaut</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}one{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}other{<ph name="RWS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="RWS_OWNER" /> qui peuvent voir votre activité dans le groupe}}</translation>
 <translation id="3697164069658504920">Lorsque cette option est activée, les sites peuvent demander à utiliser des périphériques USB. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser de périphérique USB.</translation>
 <translation id="3707034683772193706">Un site auquel vous accédez peut enregistrer une petite quantité d'informations dans Chrome, principalement pour confirmer que vous n'êtes pas un robot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par ton parent</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
+<translation id="4672315773691449562">Appuyer sur Appli de navigateur, puis sur Chrome</translation>
 <translation id="4676059169848868271">Pour autoriser <ph name="APP_NAME" /> à utiliser le suivi des mains, activez-le également dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de lumière</translation>
 <translation id="4755971844837804407">Lorsque cette option est activée, les sites peuvent vous présenter tous types d'annonces. Lorsqu'elle est désactivée, les sites ne peuvent pas afficher d'annonces intrusives ou trompeuses.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Autorisé (recommandé)</translation>
 <translation id="8609465669617005112">Monter</translation>
 <translation id="8617611086246832542">Lorsque cette option est activée, les sites Web sont affichés comme sur ordinateur. Lorsqu'elle est désactivée, les sites Web sont affichés comme sur mobile.</translation>
+<translation id="8670078035093027626">Bottom sheet du navigateur par défaut ouvert à pleine hauteur</translation>
 <translation id="8676316391139423634">Lorsque cette option est activée, les sites peuvent demander à suivre vos mains. Lorsqu'elle est désactivée, les sites ne peuvent pas suivre vos mains.</translation>
 <translation id="8676374126336081632">Effacer la saisie</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour afficher des annonces intrusives ou trompeuses</translation>

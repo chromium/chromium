@@ -331,6 +331,7 @@
 <translation id="569897634095159764">인터넷에 연결할 수 없습니다. 프록시 서버를 인증해야 합니다.</translation>
 <translation id="5761096224651992291">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> 권한을 삭제했습니다.</translation>
 <translation id="5768371961535086509">Chromium이 비활성 탭에서 메모리를 확보합니다. 이에 따라 활성 탭과 기타 앱에 더 많은 컴퓨터 리소스가 제공되고 Chromium의 빠른 속도가 유지됩니다. 비활성 탭으로 돌아가면 탭이 자동으로 다시 활성화됩니다. <ph name="BEGIN_LINK" />메모리 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">암호가 기억나지 않거나 이 설정을 변경하려면 계정의 Chromium 데이터를 <ph name="SETTINGS_LINK" />하세요.</translation>
 <translation id="5800158606660203929">Chromium을 맞춤설정 및 제어합니다. Chromium을 기본 브라우저로 설정합니다.</translation>
 <translation id="5809516625706423866">인터넷에 연결할 수 없습니다(HTTP 401 Unauthorized). 프록시 설정을 확인하시기 바랍니다.</translation>
 <translation id="5821520528363214608">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 Chromium을 업데이트하세요.</translation>

@@ -1164,6 +1164,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3076865167425975822">Operačné systémy</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Umožnite Googlu hľadať prispôsobené zľavy pomocou vašich košíkov (keď budú k dispozícii)</translation>
+<translation id="3086269988715347183"><ph name="BLOCKED_URL" /> ste ešte neschválili</translation>
 <translation id="3086579638707268289">Vaša aktivita na internete je sledovaná</translation>
 <translation id="3087734570205094154">Spodok</translation>
 <translation id="3090667236485488075">Sklo</translation>
@@ -1231,10 +1232,12 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3194737229810486521"><ph name="URL" /> chce natrvalo ukladať dáta vo vašom zariadení</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na serveri <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Môže žiadať o povolenie zistiť, kedy aktívne používate toto zariadenie</translation>
+<translation id="3201482403106004262">V súvislosti s prieskumom sa vyskytla chyba</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter môžete v nastaveniach Chromu spravovať, aké údaje sa synchronizujú</translation>
 <translation id="3203025201812691413">Webová adresa nemôže byť prázdna</translation>
 <translation id="320323717674993345">Zrušiť platbu</translation>
 <translation id="3203366800380907218">Z webu</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> môže zahrnovať obsah nevhodný pre deti</translation>
 <translation id="3207960819495026254">Pridané medzi záložky</translation>
 <translation id="3208701679386778924">Pošlite nám spätnú väzbu, aby sme mohli aktualizácie systému ChromeOS ďalej zlepšovať.</translation>
 <translation id="3209034400446768650">Stránka môže účtovať peniaze</translation>
@@ -2343,6 +2346,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5138227688689900538">Zobraziť menej</translation>
 <translation id="5143309888746105072">Chromium blokuje webom možnosť sledovať vás pri prehliadaní pomocou súborov cookie tretích strán.
             <ph name="NEW_LINE" />Ak funkcie webu nie sú k dispozícii, <ph name="START_LINK" />skúste dočasne povoliť súbory cookie tretích strán<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Tomuto webu ste udelili povolenie <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">V odpovedi na pravidlo sa nachádza kód chyby</translation>
 <translation id="5146995429444047494">Upozornenia webu <ph name="ORIGIN" /> sú blokované</translation>
 <translation id="514704532284964975"><ph name="URL" /> chce zobrazovať a meniť informácie v zariadeniach, ku ktorým priložíte svoj telefón</translation>
@@ -2966,6 +2970,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6254436959401408446">Na otvorenie stránky nie je dostatok pamäte</translation>
 <translation id="625463612687472648">Prestať povoľovať</translation>
 <translation id="6259156558325130047">&amp;Znova zmeniť poradie</translation>
+<translation id="6259282549512536479">Používateľa <ph name="BLOCKED_URL" /> ste predtým zablokovali</translation>
 <translation id="6263376278284652872">Záložky domény <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Napriek tomu stiahnuť</translation>
 <translation id="6264485186158353794">Späť do bezpečia</translation>
@@ -4399,6 +4404,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8792621596287649091">Môžete stratiť prístup do účtu <ph name="ORG_NAME" /> alebo vám niekto môže ukradnúť identitu. Chromium odporúča, aby ste si ihneď zmenili heslo.</translation>
 <translation id="8792626944327216835">mikrofón</translation>
 <translation id="8793655568873652685">Doména <ph name="ENROLLMENT_DOMAIN" /> zapla vo vašom prehliadači Chrome Enterprise Connectors. Tieto konektory majú prístup k niektorým vašim údajom.</translation>
+<translation id="8796062699363039080">Nastavenia operačného systému <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Predvolené</translation>
 <translation id="8800034312320686233">Web nefunguje?</translation>
 <translation id="8805819170075074995">Položka zoznamu <ph name="LANGUAGE_ID" />: položka bola ignorovaná, pretože je tiež zahrnutá v pravidle SpellcheckLanguage.</translation>
@@ -4618,6 +4624,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9192361865877479444">Kov (matný)</translation>
 <translation id="9192947025498305328">Čistá krása</translation>
 <translation id="9199905725844810519">Tlač je blokovaná</translation>
+<translation id="9201904868909900493">Otvára sa prieskum…</translation>
 <translation id="9204089334327209740">Po dokončení nahrávania môžete svoje súbory upraviť v službe <ph name="CLOUD_PROVIDER" />. Obsah miestneho úložiska vrátane všetkých súborov v koši bude automaticky odstránený.</translation>
 <translation id="9205078245616868884">Údaje sú šifrované pomocou vlastnej prístupovej frázy synchronizácie. Keď ju zadáte, synchronizácia sa spustí.</translation>
 <translation id="920643408853370361">Cestovné poistenie</translation>

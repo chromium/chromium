@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN kod xato.</translation>
 <translation id="382043424867370667">Oqshom fon rasmi</translation>
 <translation id="3824259034819781947">Fayl biriktirish</translation>
-<translation id="3836587210832263413">Faqat ishonchli kengaytmalarni yoqing</translation>
 <translation id="3838338534323494292">Yangi parol</translation>
 <translation id="3845880861638660475">Muloqot oynasini yopish uchun <ph name="ALT_SHORTCUT_START" />esc<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />alt<ph name="ESC_SHORTCUT_END" /> tugmalarini bosing.</translation>
 <translation id="3848280697030027394">klaviaturani xiralashtirish</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Printerlarni sozlamalar orqali boshqaring</translation>
 <translation id="6292095526077353682">Quvvatlashda ekran lavhasi vaqti</translation>
 <translation id="629550705077076970">klaviatura xiraligi</translation>
-<translation id="6301193653204230066">Chrome brauzeri kengaytmalari faolsizlantiriladi, tarmoq va boshqa sozlamalar (birlamchi qidiruv tizimi kabi) tiklanadi.
-          Varaqlar, fayllar, cookie fayllar va tarix oʻzgarmaydi.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> sinovi bekor qilindi</translation>
 <translation id="631063167932043783">Ilovani varaqlash</translation>
 <translation id="6318437367327684789">har doim</translation>
@@ -1774,6 +1771,8 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="951780398843003443">Yozuv davomida ovozlarni solishtiring, shunda transkripsiya har bir maʼruzachi nima va qachon aytganini aks ettiradi</translation>
 <translation id="952992212772159698">Faollashtirilmagan</translation>
 <translation id="95718197892796296">loy</translation>
+<translation id="959792926760890141">Chrome brauzeri kengaytmalari faolsizlantiriladi, tarmoq va boshqa sozlamalar (birlamchi qidiruv tizimi kabi) tiklanadi.
+          Bu oʻzgarishlar cookie fayllari, varaqlar, tarix va shaxsiy fayllarga taʼsir qilmaydi.</translation>
 <translation id="960719561871045870">Operator kodi</translation>
 <translation id="965918541715156800">sariq va moviy</translation>
 <translation id="966787709310836684">menyu</translation>

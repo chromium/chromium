@@ -4913,6 +4913,19 @@ Kebijakan ini tidak berpengaruh jika disetel ke aktif, dibiarkan kosong, atau ti
 <translation id="4534500438517478692">Nama pembatasan Android:</translation>
 <translation id="4541530620466526913">Akun lokal perangkat</translation>
 <translation id="4542255783284620926">Blokir penambahan akun terkelola sebagai Akun Sekunder di ChromeOS (dalam sesi)</translation>
+<translation id="4543338637126011529">Menyetel kebijakan ini akan menentukan daftar aplikasi web terisolasi (IWA) yang diinstal secara otomatis.
+      IWA adalah aplikasi yang memiliki properti keamanan yang berguna dan tidak tersedia untuk halaman web normal. Aplikasi tersebut dikemas dalam Paket Web Bertanda Tangan. Kunci publik Paket Web Bertanda Tangan digunakan untuk membuat ID Paket Web yang mengidentifikasi IWA.
+      Sejauh ini, kebijakan ini hanya berfungsi untuk Sesi Tamu Terkelola.
+
+      Setiap item daftar kebijakan merupakan objek yang memiliki dua kolom wajib: <ph name="URL_LABEL" /> manifes update dan ID Paket Web Aplikasi Web Terisolasi.
+
+      Setiap item juga dapat menyertakan kolom opsional berikut:
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />: Nama saluran update/rilis IWA. Jika tidak disetel, "default" akan digunakan.
+
+        * <ph name="PINNED_VERSION_OPTION" />: Versi tertentu yang akan diinstal. Sistem akan mencoba menginstal versi ini jika tersedia di saluran update yang ditentukan. Secara default, menyematkan IWA ke versi tertentu mencegahnya diupdate ke versi yang lebih tinggi dari versi tersebut. Untuk membatalkan penyematan, hapus kolom ini.
+
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />: Mengaktifkan penginstalan versi IWA yang lebih lama. Tindakan ini mengharuskan kolom `pinned_version` disetel. Jika tidak disediakan atau disetel ke <ph name="FALSE" />, downgrade dinonaktifkan untuk IWA tersebut.</translation>
 <translation id="4543502256674577024">Setelan update perangkat</translation>
 <translation id="454585952814397564">Gunakan Prioritas normal untuk proses audio</translation>
 <translation id="4546641664653711266">Kebijakan ini adalah kebijakan sementara yang akan dihapus di M127.
@@ -5662,6 +5675,7 @@ Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MA
 <translation id="5030415914668947893">Mengizinkan pengumpulan metrik yang menyertakan URL</translation>
 <translation id="5033070732967197381">Izinkan permintaan WebAuthn API di situs dengan sertifikat TLS yang rusak.</translation>
 <translation id="5034504101537897433">Aktifkan pelaporan informasi laporan kerusakan perangkat</translation>
+<translation id="5035980227219807711">Nonaktifkan penyediaan sertifikat klien untuk browser</translation>
 <translation id="5036013147560568855">Versi protokol penyediaan sertifikat. Default-nya adalah 1. 1 adalah protokol 'statis'. 2 adalah protokol 'dinamis'.</translation>
 <translation id="5036559232677914717">Menyetel kebijakan memungkinkan Anda menentukan perilaku sistem saat browser mulai dijalankan. Menonaktifkan setelan ini memiliki efek yang sama dengan tidak menyetelnya, karena <ph name="PRODUCT_NAME" /> sudah menetapkan perilaku saat browser mulai dijalankan.
 
@@ -8968,6 +8982,7 @@ TLS.
 
 Nilai kebijakan ini adalah daftar sertifikat X.509 berenkode base64. Sertifikat
 apa pun dengan SPKI yang cocok (SubjectPublicKeyInfo) akan tidak dipercaya.</translation>
+<translation id="7174997120839381414">Aktifkan penyediaan sertifikat klien untuk browser</translation>
 <translation id="717630378807352957">Izinkan semua printer dari file konfigurasi.</translation>
 <translation id="7177293255621000064">Jika kebijakan ditetapkan ke Benar (True), semua jenis media penyimpanan eksternal (USB, flash drive, hard drive eksternal, kartu SD dan kartu memori lainnya, penyimpanan optik) akan menjadi tidak tersedia di file browser. Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, pengguna akan dapat menggunakan penyimpanan eksternal di perangkat mereka.
 
@@ -9445,6 +9460,7 @@ Jika kebijakan ini dikosongkan, tidak akan ada pengecualian untuk <ph name="FLOA
       Jika kebijakan ini disetel ke nonaktif, konversi unit Jawaban Instan akan dinonaktifkan.</translation>
 <translation id="7584363090329234690">Mengizinkan Latar Belakang VC AI Generatif tanpa meningkatkan kualitas model AI</translation>
 <translation id="7585312329612243723">Mengaktifkan alur pengesahan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL di Browser Terkelola</translation>
+<translation id="7586199729147257934">Mengaktifkan penyediaan sertifikat klien untuk browser terkelola</translation>
 <translation id="7587345076013230465">Minta pengguna memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat di layar login</translation>
 <translation id="7587921466180902617">Aktifkan dogfood Screencast untuk pengguna Family Link</translation>
 <translation id="7595074040612182185">Jika kebijakan ini disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs yang dapat menampilkan gambar.
@@ -10525,6 +10541,9 @@ Sertifikat harus dienkode dengan base64.</translation>
 <translation id="8399825694820904218">Jika kebijakan disetel ke angka, <ph name="PRODUCT_NAME" /> akan menampilkan pesan untuk angka milidetik tersebut, kemudian membuka browser alternatif.
 
 Jika kebijakan tidak disetel atau disetel ke 0, navigasi ke URL yang ditetapkan akan segera membuka kebijakan tersebut di browser alternatif.</translation>
+<translation id="8400225642589806131">Jika kebijakan ini disetel ke <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" /> (nilai 1), <ph name="PRODUCT_NAME" /> akan meminta sertifikat klien dari server pengelolaan perangkat untuk sesi browser terkelola. Sertifikat ini akan tersedia untuk, mis. koneksi mTLS.
+
+Jika kebijakan ini disetel ke <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (nilai 0) atau tidak disetel, <ph name="PRODUCT_NAME" /> tidak akan dapat meminta sertifikat klien. Jika sertifikat klien terkelola milik browser sudah disediakan, karena kebijakan ini telah diaktifkan sebelumnya, sertifikat tersebut tidak akan dihapus, tetapi sertifikat tidak akan tersedia untuk koneksi mTLS dan tidak akan diperpanjang saat masa berlakunya berakhir.</translation>
 <translation id="8402079500086185021">Selalu Buka file PDF secara eksternal</translation>
 <translation id="8402357110539568621">Mengaktifkan fitur aksesibilitas keyboard virtual.
 

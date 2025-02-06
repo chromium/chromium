@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ટૅબનું ગ્રૂપ બનાવ્યું</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
+<translation id="1909810060368225529">નોટિસ: શેર કરેલા ટૅબના આ ગ્રૂપમાં કરવામાં આવેલા ફેરફારો દરેક વ્યક્તિ જોઈ શકે છે. દરેક વ્યક્તિ તમારા શેર કરેલા ટૅબના ગ્રૂપમાં ફેરફારો કરી શકે છે</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બુકમાર્ક કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}}</translation>
 <translation id="2118649612461486615">સ્ટોરની માહિતી</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારું છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}one{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારું # છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}other{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારા # છૂપા ટૅબ ઉપલબ્ધ રહેશે નહીં.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">અહીં તમને તમારા ટૅબના ગ્રૂપ જોવા મળશે</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{પસંદ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ અનગ્રૂપ કરો}one{પસંદ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
+<translation id="6499296376514955580">શેર કરેલા ટૅબના ગ્રૂપમાં કરવામાં આવેલા ફેરફારો સંબંધિત નોટિસવાળું ટૅબ બંધ કરવામાં આવ્યું</translation>
 <translation id="6527303717912515753">શેર કરો</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 દિવસ પછી}one{<ph name="DAY_COUNT_MANY" /> દિવસ પછી}other{<ph name="DAY_COUNT_MANY" /> દિવસ પછી}}</translation>
 <translation id="6549021453810473782">સ્ટોરની માહિતી જુઓ</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ટૅબને ડાબે ખસેડો</translation>
+<translation id="6589356853295569750">શેર કરેલા ટૅબના ગ્રૂપમાં કરવામાં આવેલા ફેરફારો સંબંધિત નોટિસવાળું ટૅબ સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવ્યું</translation>
 <translation id="6590332670428149473"><ph name="COLOR_NAME" /> રંગના, શેર કરેલા ટૅબના ગ્રૂપ <ph name="TITLE_OF_GROUP" /> માટેનું ટૅબના ગ્રૂપનું ક્રિયા મેનૂ ખોલો.</translation>
 <translation id="6615455863669487791">મને બતાવો</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ટૅબ બદલ્યું}one{<ph name="MANY_CHANGED" /> ટૅબ બદલ્યું}other{<ph name="MANY_CHANGED" /> ટૅબ બદલ્યા}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{પસંદ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ શેર કરો}one{પસંદ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ શેર કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ શેર કરો}}</translation>
 <translation id="7773714564112603605">ટૅબ કાઢી નાખો અને ગ્રૂપ ડિલીટ કરો</translation>
 <translation id="7792771145871471484">સૂચનોનો રિવ્યૂ કરો.</translation>
+<translation id="7792860826279960128">શેર કરેલા ટૅબના ગ્રૂપમાં કરવામાં આવેલા ફેરફારો સંબંધિત નોટિસવાળું ટૅબ અડધી ઊંચાઈએ ખોલવામાં આવ્યું</translation>
 <translation id="7825973332242257878">ટૅબના ગ્રૂપ</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> ટૅબનું ગ્રૂપ બનાવો}one{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબનું ગ્રૂપ બનાવો}other{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબનું ગ્રૂપ બનાવો}}</translation>
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>

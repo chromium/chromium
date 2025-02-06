@@ -25,6 +25,7 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> separador agrupado</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
+<translation id="1909810060368225529">Aviso: as alterações a este grupo de separadores partilhado são visíveis para todos. Todos podem fazer alterações aos seus grupos de separadores partilhados</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador selecionado aos marcadores}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores selecionados aos marcadores}}</translation>
 <translation id="2118649612461486615">Informações da loja</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores. O separador de navegação anónima não vai estar disponível.}other{É possível reabrir os separadores e os grupos fechados a partir das secções Separadores recentes e Grupos de separadores. Os # separadores de navegação anónima não vão estar disponíveis.}}</translation>
@@ -126,11 +127,13 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="6381032505162537930">Os seus grupos de separadores vão ser apresentados aqui</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Desagrupar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
+<translation id="6499296376514955580">Aviso sobre as alterações ao grupo de separadores partilhado fechado</translation>
 <translation id="6527303717912515753">Partilhar</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Após 1 dia}other{Após <ph name="DAY_COUNT_MANY" /> dias}}</translation>
 <translation id="6549021453810473782">Veja as informações da loja</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Mover o separador para a esquerda</translation>
+<translation id="6589356853295569750">Aviso sobre as alterações ao grupo de separadores partilhado aberto à altura total</translation>
 <translation id="6590332670428149473">Abra o menu de ação do grupo de separadores para o grupo de separadores partilhado <ph name="TITLE_OF_GROUP" />, com a cor <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> separador alterado}other{<ph name="MANY_CHANGED" /> separadores alterados}}</translation>
@@ -157,6 +160,7 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Partilhar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Partilhar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="7773714564112603605">Remover separador e eliminar grupo</translation>
 <translation id="7792771145871471484">Reveja as sugestões.</translation>
+<translation id="7792860826279960128">Aviso sobre as alterações ao grupo de separadores partilhado a meia altura</translation>
 <translation id="7825973332242257878">Grupos de separadores</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Agrupar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="7853202427316060426">Atividade</translation>

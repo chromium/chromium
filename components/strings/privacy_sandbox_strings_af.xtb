@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="1444443021901415601">Chrome neem kennis van onderwerpe waarin jy belangstel gegrond op jou onlangse blaaigeskiedenis</translation>
-<translation id="2252052615723281030">Hierdie instelling help om jou IP-adres privaat te hou wanneer jy by Chrome aangemeld is. Indien Chrome vermoed dat ’n werf jou dalk naspoor, kan sommige van jou verkeer deur privaatheidbedieners gestuur word.</translation>
 <translation id="235789365079050412">Google se privaatheidsbeleid</translation>
 <translation id="2793385791865768072">Chromium neem kennis van onderwerpe waarin jy belangstel gegrond op jou onlangse blaaigeskiedenis</translation>
 <translation id="2979365474350987274">Derdepartywebkoekies is beperk</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Derdepartywebkoekies is beperk</translation>
 <translation id="6371812158043974664">Hierdie instelling help om jou IP-adres privaat te hou wanneer jy by Chromium aangemeld is. Indien Chromium vermoed dat ’n werf jou dalk naspoor, kan sommige van jou verkeer deur privaatheidbedieners gestuur word. Kry meer inligting oor <ph name="LINK_BEGIN" />hoe IP-beskerming werk<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Kry meer inligting oor hoe Google jou data beskerm in ons <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261">VInd uit <ph name="BEGIN_LINK" />hoe IP-beskerming werk<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Hersien jou advertensie-onderwerpinstelling</translation>
 </translationbundle>

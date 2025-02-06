@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1444443021901415601">Chrome notes topics of interest based on your recent browsing history</translation>
-<translation id="2252052615723281030">When you're signed in to Chrome, this setting helps to keep your IP address private. If Chrome suspects that a site may be tracking you, some of your traffic may be sent through privacy servers.</translation>
 <translation id="235789365079050412">Google Privacy Policy</translation>
 <translation id="2793385791865768072">Chromium notes topics of interest based on your recent browsing history</translation>
 <translation id="2979365474350987274">Third-party cookies are limited</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Third-party cookies limited</translation>
 <translation id="6371812158043974664">When you're signed in to Chromium, this setting helps to keep your IP address private. If Chromium suspects that a site may be tracking you, some of your traffic may be sent through privacy servers. Learn more about <ph name="LINK_BEGIN" />how IP Protection works<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Learn more about how Google protects your data in our <ph name="BEGIN_LINK1" />Privacy Policy<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261">Learn <ph name="BEGIN_LINK" />how IP protection works<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Review your ad topics setting</translation>
 </translationbundle>

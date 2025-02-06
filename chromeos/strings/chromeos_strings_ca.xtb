@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
 <translation id="382043424867370667">Fons de pantalla Posta de sol</translation>
 <translation id="3824259034819781947">Adjunta fitxers</translation>
-<translation id="3836587210832263413">Activa només les extensions de confiança</translation>
 <translation id="3838338534323494292">Contrasenya nova</translation>
 <translation id="3845880861638660475">Prem <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> per tancar el quadre de diàleg.</translation>
 <translation id="3848280697030027394">enfosquiment del teclat</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Gestiona les teves impressores a la configuració de la impressora</translation>
 <translation id="6292095526077353682">Mentre es carrega, mostra l'estalvi de pantalla durant</translation>
 <translation id="629550705077076970">atenuació del teclat</translation>
-<translation id="6301193653204230066">El restabliment de seguretat desactiva les extensions del navegador Chrome i restableix la configuració de la xarxa i d'altres opcions als valors predeterminats segurs.
-          No es canviaran les pestanyes, els fitxers, les galetes ni l'historial.</translation>
 <translation id="6302401976930124515">La prova <ph name="TEST_NAME" /> s'ha cancel·lat</translation>
 <translation id="631063167932043783">Aplicació Explora</translation>
 <translation id="6318437367327684789">sempre</translation>
@@ -1585,7 +1582,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8391349326751432483">Necessites com a mínim 500 MB lliures per executar una prova de memòria. Per alliberar memòria, tanca pestanyes i aplicacions.</translation>
 <translation id="8395584934117017006">Aquest <ph name="DEVICE_TYPE" /> està gestionat per una empresa</translation>
 <translation id="8398927464629426868">El percentatge al qual s'està carregant o descarregant el dispositiu actualment</translation>
-<translation id="8403988360557588704">Una pintura amb <ph name="ART_FEATURE" /> d'estil <ph name="ART_MOVEMENT" /></translation>
+<translation id="8403988360557588704">Pintura de <ph name="ART_FEATURE" /> d'estil <ph name="ART_MOVEMENT" /></translation>
 <translation id="8410244574650205435">Detectat automàticament</translation>
 <translation id="8420955526972171689">Executa proves i resol els problemes relacionats amb el maquinari</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -1774,6 +1771,8 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="951780398843003443">Comparar les veus al llarg de la gravació perquè la transcripció reflecteixi què ha dit cada interlocutor i en quin moment</translation>
 <translation id="952992212772159698">No activat</translation>
 <translation id="95718197892796296">argila</translation>
+<translation id="959792926760890141">El restabliment de seguretat desactiva les extensions del navegador Chrome i restableix la configuració de la xarxa i d'altres opcions als valors predeterminats segurs.
+          Es restablirà el motor de cerca predeterminat, però no es canviaran les pestanyes, els fitxers, les galetes ni l'historial.</translation>
 <translation id="960719561871045870">Codi d'operador</translation>
 <translation id="965918541715156800">groc i verd blavós</translation>
 <translation id="966787709310836684">menú</translation>

@@ -717,6 +717,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1486486872607808064">Pindai kode QR ini dengan kamera di perangkat tempat Anda ingin membuat kunci sandi untuk <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Membuat draf atau memperbaiki pekerjaan yang ada.</translation>
 <translation id="1487335504823219454">Aktif - setelan khusus</translation>
+<translation id="1489101155914355052">Membuat saran untuk dokumen ini…</translation>
 <translation id="1493892686965953381">Menunggu <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Situs dapat meminta untuk menggunakan font yang diinstal di perangkat Anda</translation>
 <translation id="1494429729245089920">Mesin virtual "<ph name="VM_NAME" />" ada, tetapi tampaknya bukan mesin virtual <ph name="APP_NAME" /> yang valid. Hubungi administrator Anda.</translation>
@@ -785,6 +786,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1542524755306892917">Hal ini memungkinkan Asisten Google memberikan respons yang disesuaikan saat <ph name="SUPERVISED_USER_NAME" /> mengajukan pertanyaan.</translation>
 <translation id="1543284117603151572">Diimpor Dari Edge</translation>
 <translation id="1543538514740974167">Buka halaman ini lebih cepat</translation>
+<translation id="154420222899071768">Sandi Anda tidak diperbarui, tetapi Anda seharusnya masih dapat mengakses situs dengan sandi lama Anda</translation>
 <translation id="1544588554445317666">Coba gunakan nama file yang lebih pendek atau simpan ke folder lain</translation>
 <translation id="1545177026077493356">Mode Kios Otomatis</translation>
 <translation id="1545749641540134597">Pindai Kode QR</translation>
@@ -799,7 +801,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ingin mengakses <ph name="VOLUME_NAME" />. Ini dapat mengubah atau menghapus file Anda.</translation>
 <translation id="1549966883323105187">Dapatkan sandi tersimpan Anda lebih cepat</translation>
 <translation id="1550656959113606473">Chrome default</translation>
-<translation id="1552065819535218588">Chrome akan berhenti menandai notifikasi dari <ph name="URL" /> sebagai spam</translation>
 <translation id="1552301827267621511">Ekstensi "<ph name="EXTENSION_NAME" />" mengubah penyedia penelusuran menjadi <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Kelola ekstensi</translation>
 <translation id="1553538517812678578">tidak terbatas</translation>
@@ -1183,6 +1184,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1805967612549112634">Konfirmasi PIN</translation>
 <translation id="1806335016774576568">Alihkan ke aplikasi lain yang terbuka</translation>
 <translation id="1807246157184219062">Terang</translation>
+<translation id="1808805149659872686">Entri baru</translation>
 <translation id="1809201888580326312">Anda telah memilih untuk tidak menyimpan sandi untuk situs dan aplikasi ini</translation>
 <translation id="1809734401532861917">Tambahkan bookmark, histori, sandi, dan setelan saya lainnya ke <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810070166657251157">Untuk menggunakan sandi tersimpan Anda di ponsel, ikuti kode QR, download Chrome untuk iOS, dan login ke Akun Google Anda.</translation>
@@ -1410,9 +1412,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Bersiap</translation>
 <translation id="1969654639948595766">Log teks WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1970895205072379091"><ph name="BEGIN_PARAGRAPH1" />Mengizinkan perangkat ChromeOS Anda mengirim laporan otomatis akan membantu kami memprioritaskan hal-hal yang harus diperbaiki dan ditingkatkan di ChromeOS. Laporan tersebut dapat mencakup informasi seperti kapan ChromeOS mengalami error, fitur mana yang Anda gunakan, berapa banyak memori yang biasanya Anda gunakan. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Data penggunaan dan diagnostik aplikasi lainnya, termasuk untuk aplikasi web dan Android, akan dikumpulkan jika sinkronisasi aplikasi juga diaktifkan.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Anda dapat mulai atau berhenti mengizinkan laporan ini kapan saja di setelan perangkat ChromeOS. Jika Anda merupakan administrator domain, Anda dapat mengubah setelan ini di konsol admin.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Jika setelan Aktivitas Web &amp; Aplikasi diaktifkan untuk Akun Google Anda, data Android Anda mungkin akan disimpan ke Akun Google Anda. Anda dapat melihat atau menghapus data, dan mengubah setelan akun Anda di account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1971694696800660479">Semua data akan dihapus. Tindakan ini tidak dapat diurungkan</translation>
 <translation id="1972313920920745320">Situs yang Anda tambahkan akan selalu aktif dan memori tidak akan dikosongkan dari situs tersebut. <ph name="BEGIN_LINK" />Pelajari lebih lanjut cara membuat situs tertentu tetap aktif<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Anda akan menjelajah lebih cepat karena konten dimuat secara proaktif berdasarkan halaman web yang sedang Anda buka</translation>
@@ -1953,6 +1952,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2328561734797404498">Mulai ulang perangkat Anda untuk menggunakan <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Jika Anda menggunakan mode Samaran, situs hanya dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di situsnya. Cookie akan dihapus pada akhir sesi Samaran.</translation>
 <translation id="2329597144923131178">Login untuk mendapatkan bookmark, histori, sandi, dan setelan Anda lainnya di semua perangkat.</translation>
+<translation id="2331334586452217517">Konten dari situs ini dikirim ke Google dan mungkin dilihat oleh petugas peninjau. Tentang <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Tidak dapat memuat perangkat yang disimpan ke <ph name="PRIMARY_EMAIL" />. Periksa koneksi internet Anda, lalu coba lagi.</translation>
 <translation id="2332131598580221120">Lihat di toko</translation>
 <translation id="2332515770639153015">Safe Browsing yang Disempurnakan aktif</translation>
@@ -2451,6 +2451,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2676084251379299915">Ekstensi ini telah dinonaktifkan oleh kebijakan perusahaan karena tidak lagi tersedia di Chrome Web Store.</translation>
 <translation id="2677748264148917807">Keluar</translation>
 <translation id="2678063897982469759">Aktifkan ulang</translation>
+<translation id="267829273183481634">{NUM_GROUPS,plural, =1{Simpan Grup Tab?}other{Simpan Grup Tab?}}</translation>
 <translation id="2678801466438589151">Pilih tombol Google Lens</translation>
 <translation id="268053382412112343">Ri&amp;wayat</translation>
 <translation id="2681124317993121768">Profil tamu tidak didukung</translation>
@@ -2652,7 +2653,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2809346626032021864">Membaca</translation>
 <translation id="2811205483104563968">Akun</translation>
 <translation id="2812049959647166806">Thunderbolt tidak didukung</translation>
-<translation id="2812171980080389735">Jaringan dan sandi disimpan agar Anda dapat langsung terhubung</translation>
 <translation id="2813094189969465044">Kontrol orang tua</translation>
 <translation id="2813765525536183456">&amp;Tambahkan Profil Baru</translation>
 <translation id="281390819046738856">Permintaan tidak dapat ditandatangani.</translation>
@@ -2685,6 +2685,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2836112522909777958">Untuk menghapus data, tutup semua jendela Samaran</translation>
 <translation id="2836269494620652131">Kerusakan</translation>
 <translation id="283669119850230892">Untuk menggunakan <ph name="NETWORK_ID" /> jaringan, pertama-tama, selesaikan sambungan Anda ke Internet di bawah ini.</translation>
+<translation id="2837436785711770027">{NUM_GROUPS,plural, =1{Hapus grup}other{Hapus grup}}</translation>
 <translation id="2838379631617906747">Memasang</translation>
 <translation id="2839032553903800133">Notifikasi diblokir</translation>
 <translation id="2841013758207633010">Waktu</translation>
@@ -2894,6 +2895,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2991182900092497283">Masukkan alasan untuk menempel data ini:</translation>
 <translation id="2992931425024192067">Tampilkan semua konten notifikasi</translation>
 <translation id="2993517869960930405">Info Aplikasi</translation>
+<translation id="2995472388018163047">{NUM_GROUPS,plural, =1{Simpan grup ini untuk menambahkan tab nanti, atau keluar dari grup jika Anda tidak ingin lagi mengaksesnya}other{Simpan grup ini untuk menambahkan tab nanti, atau keluar dari grup jika Anda tidak ingin lagi mengaksesnya}}</translation>
 <translation id="2996108796702395498">Nomor seri perangkat Anda adalah <ph name="SERIAL_NUMBER" />. Nomor ini dapat digunakan untuk membantu mengaktifkan layanan.</translation>
 <translation id="2996286169319737844">Data dienkripsi dengan frasa sandi sinkronisasi Anda. Data ini tidak mencakup alamat dan metode pembayaran dari Google Pay.</translation>
 <translation id="2996722619877761919">Balik di sisi panjang</translation>
@@ -2929,6 +2931,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3013652227108802944">Nonaktif • Ekstensi ini melanggar kebijakan Chrome Web Store</translation>
 <translation id="301525898020410885">Bahasa disetel oleh Organisasi Anda</translation>
 <translation id="3015639418649705390">Luncurkan ulang sekarang</translation>
+<translation id="3015651504578568463">Tambahkan Tab ke Tabel Perbandingan Baru</translation>
 <translation id="3016381065346027039">Tidak ada entri log</translation>
 <translation id="3019023222666709803">Alat Panah</translation>
 <translation id="3019285239893817657">Tombol subhalaman</translation>
@@ -3162,9 +3165,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3193695589337931419">Utilitas Sinyal Sistem</translation>
 <translation id="3196912927885212665">Untuk melakukan penyiapan dengan ponsel Android, Bluetooth Chromebook harus diaktifkan</translation>
 <translation id="3197453258332670132">Dengan klik kanan atau tekan lama, tampilkan info terkait untuk teks yang Anda pilih</translation>
-<translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />Mengizinkan perangkat ChromeOS mengirim laporan otomatis akan membantu kami memprioritaskan hal-hal yang harus diperbaiki dan ditingkatkan di ChromeOS. Laporan tersebut dapat mencakup informasi seperti kapan ChromeOS mengalami error, fitur mana yang digunakan, berapa banyak memori yang biasanya digunakan. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Data penggunaan dan diagnostik aplikasi lainnya, termasuk untuk aplikasi web dan Android, akan dikumpulkan jika sinkronisasi aplikasi juga diaktifkan.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Anda dapat mulai atau berhenti mengizinkan laporan ini kapan saja di setelan perangkat ChromeOS anak Anda. Jika Anda merupakan administrator domain, Anda dapat mengubah setelan ini di konsol admin.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH4" />Jika setelan Aktivitas Web &amp; Aplikasi diaktifkan untuk Akun Google anak Anda, data anak mungkin akan disimpan ke Akun Google miliknya. Pelajari setelan ini dan cara menyesuaikannya lebih lanjut di families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="3199127022143353223">Server</translation>
 <translation id="3199637719075529971">Tab ini terhubung ke port serial</translation>
 <translation id="3201237270673604992">Z ke A</translation>
@@ -3521,6 +3521,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="345693547134384690">Buka gambar d&amp;i tab baru</translation>
 <translation id="3458451003193188688">Tidak dapat menginstal mesin virtual karena ada error jaringan. Coba lagi atau hubungi administrator Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Gagal mengurungkan berbagi</translation>
+<translation id="3459071708136098445">{NUM_GROUPS,plural, =1{Simpan Grup}other{Simpan Grup}}</translation>
 <translation id="3459509316159669723">Pencetakan</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 bookmark dihapus}other{# bookmark dihapus}}</translation>
 <translation id="3461766685318630278">Buat dan hapus penampung ekstra.</translation>
@@ -3608,7 +3609,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3523447078673133727">Jangan izinkan situs melacak tangan Anda</translation>
 <translation id="3524518036046613664">Menemukan perangkat pada jaringan lokal Anda, seperti printer</translation>
 <translation id="3524965460886318643">Ekspor Aktivitas</translation>
-<translation id="3525426269008462093">Tinjau sinkronisasi perangkat setelah penyiapan selesai</translation>
 <translation id="3525606571546393707">Coba buka file dari folder lain, atau pilih "Buka di editor dasar" untuk menggunakan opsi tampilan dan pengeditan terbatas.</translation>
 <translation id="3526034519184079374">Tidak Dapat Membaca atau Mengubah Data Situs</translation>
 <translation id="3527085408025491307">Folder</translation>
@@ -3846,6 +3846,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="369489984217678710">Sandi dan data login lainnya</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Pemeriksaan keamanan selesai. Data Anda akan diupload.}=1{Pemeriksaan keamanan selesai. File Anda akan diupload.}other{Pemeriksaan keamanan selesai. File Anda akan diupload.}}</translation>
 <translation id="3695339288331169103">Dari <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
+<translation id="3696309329332791122">Periksa sandi Anda</translation>
 <translation id="369736917241079046">peluncur + panah kiri</translation>
 <translation id="3697716475445175867">terakhir dibuka</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Anda dapat mencegah situs ini agar tidak mengirim notifikasi pada masa mendatang.}other{Anda dapat mencegah situs ini agar tidak mengirim notifikasi pada masa mendatang.}}</translation>
@@ -4146,6 +4147,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3873423927483480833">Tampilkan PIN</translation>
 <translation id="3873915545594852654">Terjadi masalah dengan ARC++.</translation>
 <translation id="3874164307099183178">Aktifkan Asisten Google</translation>
+<translation id="3874845889165401548">Fitur ini menggunakan AI dan bersifat eksperimental</translation>
 <translation id="3875511946736639169">Aktifkan gambar</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> disetel untuk dibuka di tab browser baru, link yang didukung juga akan dibuka di browser. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Jendela diubah ukurannya ke atas</translation>
@@ -4166,7 +4168,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3893630138897523026">ChromeVox (respons lisan)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894427358181296146">Tambah folder</translation>
-<translation id="3894983081771074056">Perilaku keyboard dan mouse, preferensi bahasa, dan lainnya</translation>
 <translation id="3895076768659607631">&amp;Kelola Mesin Telusur ...</translation>
 <translation id="3895090224522145010">Nama pengguna Kerberos</translation>
 <translation id="3895097816015686240">Buka jendela dan tab sebelumnya untuk melanjutkan dengan mudah dari bagian terakhir yang Anda buka</translation>
@@ -4326,7 +4327,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="399179161741278232">Diimpor</translation>
 <translation id="3992008114154328194">Mendownload <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Cadangkan data</translation>
-<translation id="3993887353483242788">Sinkronkan <ph name="DEVICE_TYPE" /> agar preferensi Anda bisa digunakan di perangkat mana pun saat Anda login dengan Akun Google Anda. Preferensi meliputi aplikasi, setelan, sandi Wi-Fi, bahasa, wallpaper, pintasan keyboard, dan lainnya.</translation>
 <translation id="3994318741694670028">Sayangnya, komputer Anda dikonfigurasi dengan ID hardware yang salah. Hal ini mencegah ChromeOS Flex diupdate dengan perbaikan keamanan terbaru dan komputer Anda <ph name="BEGIN_BOLD" />mungkin rentan terhadap serangan berbahaya<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Buka kunci ponsel dan dekatkan untuk membuka kunci <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="3994530503403062649">Temukan tombol di tablet Anda</translation>
@@ -4641,6 +4641,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4237282663517880406">Tampilkan saran Google Drive</translation>
 <translation id="4241140145060464825">Konten Aplikasi</translation>
 <translation id="4241182343707213132">Mulai ulang untuk mengupdate aplikasi organisasi</translation>
+<translation id="4241224519481557898">Kategori</translation>
 <translation id="4242145785130247982">Beberapa sertifikat klien tidak didukung</translation>
 <translation id="4242533952199664413">Buka setelan</translation>
 <translation id="4242577469625748426">Gagal memasang setelan kebijakan di perangkat: <ph name="VALIDATION_ERROR" />.</translation>
@@ -4672,6 +4673,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4255841059940367080">Perlindungan berteknologi AI secara real-time terhadap situs, download, dan ekstensi berbahaya yang didasarkan pada data penjelajahan yang dikirim ke Google</translation>
 <translation id="4256316378292851214">Sim&amp;pan Video Sebagai...</translation>
 <translation id="4258348331913189841">Sistem file</translation>
+<translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Simpan grup}other{Simpan grup}}</translation>
 <translation id="4259388776256904261">Proses ini mungkin memerlukan waktu beberapa saat</translation>
 <translation id="4260699894265914672">Tekan tombol keyboard untuk menyesuaikan</translation>
 <translation id="4261429981378979799">Izin ekstensi</translation>
@@ -4745,6 +4747,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4305402730127028764">Salin ke <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Alihkan</translation>
 <translation id="4306119971288449206">Aplikasi harus disediakan dengan jenis konten "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4306810703452026910">Chrome akan berhenti menandai notifikasi dari situs ini sebagai spam</translation>
 <translation id="4307992518367153382">Dasar</translation>
 <translation id="4309165024397827958">Izinkan aplikasi dan layanan Android yang memiliki izin akses lokasi untuk menggunakan lokasi perangkat Anda. Google dapat mengumpulkan data lokasi secara berkala dan menggunakan data ini secara anonim untuk meningkatkan akurasi lokasi serta layanan yang berbasis lokasi.</translation>
 <translation id="4309183709806093061">Juga bagikan audio sistem. Perangkat ini akan dibisukan untuk mencegah respons suara.</translation>
@@ -5057,6 +5060,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4540409690203718935">Tidak dapat menjangkau Pengelola Sandi Google. Coba lagi dalam beberapa menit</translation>
 <translation id="4540780316273593836">Terjadi Error</translation>
 <translation id="4541123282641193691">Tidak dapat memverifikasi akun Anda. Coba lagi atau mulai ulang Chromebook.</translation>
+<translation id="4541396589393395475">Fitur ini dinonaktifkan oleh organisasi Anda</translation>
 <translation id="4541505619120536051">Selalu buka</translation>
 <translation id="4541662893742891060">Tidak dapat terhubung ke profil ini. Untuk dukungan teknis, hubungi operator Anda.</translation>
 <translation id="4541706525461326392">Menghapus profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
@@ -5654,6 +5658,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmisikan layar</translation>
 <translation id="496185450405387901">Aplikasi ini telah diinstal oleh administrator Anda.</translation>
+<translation id="4963079328730030450">Organisasi Anda mengontrol cara penggunaan data yang dikumpulkan oleh fitur ini.</translation>
 <translation id="4963603093937263654">Pastikan notifikasi diaktifkan di <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Hapus tab saat ini</translation>
 <translation id="4964455510556214366">Pengaturan</translation>
@@ -5688,6 +5693,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4989966318180235467">Periksa halaman latar &amp;belakang</translation>
 <translation id="4990673372047946816">Tidak ada kamera yang tersedia</translation>
 <translation id="4991420928586866460">Gunakan tombol baris atas sebagai tombol fungsi</translation>
+<translation id="4991873517942703737">Tanyakan info tentang dokumen ini</translation>
 <translation id="4992443049233195791">Setelan file Microsoft 365</translation>
 <translation id="4992458225095111526">Konfirmasi Powerwash</translation>
 <translation id="4992473555164495036">Administrator membatasi metode masukan yang tersedia.</translation>
@@ -5841,6 +5847,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5101839224773798795">Klik secara otomatis saat kursor berhenti</translation>
 <translation id="5102244391872941183">Aplikasi dan situs yang memiliki izin lokasi, serta layanan sistem, dapat menggunakan lokasi Anda</translation>
 <translation id="5103311607312269661">tingkatkan kecerahan layar</translation>
+<translation id="5105228265654873067">{NUM_GROUPS,plural, =1{Hapus Grup}other{Hapus Grup}}</translation>
 <translation id="5106350808162641062">Hapus</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> diawasi oleh Family Link. Kamu bisa menambahkan akun sekolah untuk mengakses materi sekolah dengan pengawasan orang tua.</translation>
 <translation id="5107093668001980925">Jangan pernah tampilkan <ph name="MODULE_NAME" /></translation>
@@ -5854,7 +5861,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5112577000029535889">Alat &amp;Pengembang</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 file dipindahkan}other{{NUM_OF_FILES} file dipindahkan}}</translation>
 <translation id="511313294362309725">Nyalakan Sambungan Cepat</translation>
-<translation id="5113384440341086023">Aplikasi yang diinstal dari Play Store dan aplikasi web dari browser Chrome</translation>
 <translation id="51143538739122961">Masukkan kunci keamanan Anda, lalu sentuh</translation>
 <translation id="5115309401544567011">Harap colokkan perangkat <ph name="DEVICE_TYPE" /> ke sumber listrik.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -6032,6 +6038,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
     Terlihat sebagai <ph name="DEVICE_TYPE" />...</translation>
 <translation id="523862956770478816">Izin situs</translation>
 <translation id="5240931875940563122">Login dengan ponsel Android</translation>
+<translation id="5241689948221696942">Untuk beberapa produk, tabel perbandingan akan meringkas ulasan dari seluruh web</translation>
 <translation id="5242724311594467048">Aktifkan "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Coba lagi setelah beberapa saat</translation>
 <translation id="5244234799035360187">OneDrive kini akan muncul di aplikasi File</translation>
@@ -6177,6 +6184,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="535123479159372765">Teks disalin dari perangkat lain</translation>
 <translation id="5352033265844765294">Penyetempelan Waktu</translation>
 <translation id="5352257124367865087">Kelola izin situs</translation>
+<translation id="5352535894553509810">Tambahkan tab ke tabel perbandingan baru</translation>
 <translation id="5353252989841766347">Ekspor Sandi dari Chrome</translation>
 <translation id="5353769147530541973">Hapus <ph name="SITE_NAME" /> dari daftar tab untuk menonaktifkannya</translation>
 <translation id="5355099869024327351">Izinkan Asisten menampilkan notifikasi</translation>
@@ -7582,6 +7590,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6383382161803538830">Mode baca tidak tersedia di halaman ini</translation>
 <translation id="638418309848716977">Link yang didukung</translation>
 <translation id="6384275966486438344">Ubah setelan penelusuran Anda menjadi: <ph name="SEARCH_HOST" /></translation>
+<translation id="6384512202164833048">{NUM_GROUPS,plural, =1{Simpan grup ini untuk menambahkan tab nanti, atau hapus grup jika Anda tidak lagi memerlukannya.}other{Simpan grup ini untuk menambahkan tab nanti, atau hapus grup jika Anda tidak lagi memerlukannya.}}</translation>
 <translation id="6385149369087767061">Sambungkan ke internet dan coba lagi</translation>
 <translation id="6385382178401976503">Kartu: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Peringatan - Logging mendetail diaktifkan; log di bawah dapat berisi URL atau informasi sensitif lainnya. Tinjau dan pastikan apakah Anda ingin mengirim informasi ini.</translation>
@@ -7713,6 +7722,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="648204537326351595">Izinkan <ph name="SPECIFIC_NAME" /> mengakses mikrofon Anda</translation>
 <translation id="6482559668224714696">Kaca pembesar layar penuh</translation>
 <translation id="6483485061007832714">Buka download</translation>
+<translation id="6483727753854114405">{NUM_GROUPS,plural, =1{Simpan grup tab?}other{Simpan grup tab?}}</translation>
 <translation id="6483805311199035658">Membuka <ph name="FILE" />...</translation>
 <translation id="6486301003991593638">Untuk mengelola kunci sandi, gunakan versi Windows yang lebih baru</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> tidak dapat memeriksa sandi Anda dari pelanggaran data. Coba periksa koneksi internet Anda.</translation>
@@ -7911,11 +7921,13 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6624687053722465643">Legit</translation>
 <translation id="6626581113916585374">Mode efek</translation>
 <translation id="6627743754845412571">Tidak diizinkan melacak tangan Anda</translation>
+<translation id="6628184833987882108">Konten dari situs ini dikirim ke Google dan mungkin dilihat oleh petugas peninjau untuk meningkatkan kualitas fitur ini</translation>
 <translation id="6628316682330029452">Sertifikat klien adalah sertifikat yang mengidentifikasi Anda ke server lain.</translation>
 <translation id="6628328486509726751"><ph name="WEBRTC_LOG_UPLOAD_TIME" /> yang diupload</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630117778953264026">Keamanan yang lebih kuat</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> menginginkan akses permanen ke sertifikat untuk mengautentikasi dirinya sendiri atas nama Anda.</translation>
+<translation id="6633847349217844732">{NUM_GROUPS,plural, =1{Keluar dari grup}other{Keluar dari grup}}</translation>
 <translation id="6635362468090274700">Tidak ada yang dapat berbagi dengan Anda sampai perangkat Anda terlihat.<ph name="BR" /><ph name="BR" />Agar perangkat terlihat untuk sementara, buka area status, lalu aktifkan visibilitas Berbagi Langsung.</translation>
 <translation id="6635674640674343739">Tidak dapat terhubung ke jaringan. Periksa koneksi jaringan Anda, lalu coba lagi.</translation>
 <translation id="663569763553406962">Lihat ekstensi yang dapat membaca atau mengubah situs</translation>
@@ -8032,6 +8044,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6713233729292711163">Tambahkan Profil Kerja</translation>
 <translation id="6713441551032149301">Tahan tombol peluncur untuk beralih antara tombol fungsi dan tombol baris atas sistem</translation>
 <translation id="6713668088933662563">Jangan pernah tawarkan penerjemahan bahasa ini</translation>
+<translation id="6714871567554212732">Lihat detail selengkapnya tentang <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Situs tidak diizinkan menggunakan mikrofon Anda</translation>
 <translation id="6715803357256707211">Terjadi error saat menginstal aplikasi Linux. Klik notifikasi untuk mengetahui detailnya.</translation>
 <translation id="6716049856796700977">Tidak ada yang dapat menggunakan lokasi Anda. Namun, lokasi Anda mungkin masih dapat dilihat oleh aplikasi dan situs melalui alamat IP Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -8078,6 +8091,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6750757184909117990">Nonaktifkan Jaringan Seluler</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Samaran)</translation>
 <translation id="6754918760968695779">Penyisipan Cepat</translation>
+<translation id="6755702685749429945">Tambahkan kamus</translation>
 <translation id="6756157672127672536">Aplikasi File memberikan akses cepat ke file yang telah Anda simpan di Google Drive, penyimpanan eksternal, atau perangkat ChromeOS.</translation>
 <translation id="6756643207511618722">Mesin ucapan</translation>
 <translation id="6757431299485455321">Bantu perangkat lain menemukan hotspot ini.</translation>
@@ -8287,7 +8301,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6883319974225028188">Maaf!  Sistem gagal menyimpan konfigurasi ponsel.</translation>
 <translation id="6883606786470492001">Mengelola topik iklan dan setelan lainnya untuk membatasi informasi yang dapat dipelajari situs tentang Anda guna menampilkan iklan yang dipersonalisasi</translation>
 <translation id="6884474387073389421">Yakin ingin menghapus data login yang dipilih?</translation>
-<translation id="6885122019363983153">Latar belakang desktop cocok di seluruh perangkat</translation>
 <translation id="6885771755599377173">Pratinjau Informasi Sistem</translation>
 <translation id="6886380424988777998">Tidak dapat mengupgrade Linux</translation>
 <translation id="6886871292305414135">Buka link di &amp;tab baru</translation>
@@ -8449,6 +8462,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7001036685275644873">Mencadangkan file &amp; aplikasi Linux</translation>
 <translation id="7001066449188684145">Perlu autentikasi identitas untuk mencetak ke <ph name="PRINTER_NAME" />. Harap hubungi administrator Anda.</translation>
 <translation id="7001397294201412227">Gunakan ponsel, tablet, atau kunci keamanan</translation>
+<translation id="7001556399332161712">Penelusuran dan saran</translation>
 <translation id="7003339318920871147">Basis data web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} file}other{{COUNT} file}}</translation>
 <translation id="7003644704445046755">File suara <ph name="LANGUAGE" /> berkualitas tinggi telah didownload</translation>
@@ -8917,7 +8931,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7357271391997763660">Jalankan pemeriksaan sandi?</translation>
 <translation id="735745346212279324">VPN terputus</translation>
 <translation id="7359680654975233185">Tidak dapat mentransmisikan tab</translation>
-<translation id="735994578317267253">Dapatkan aplikasi, setelan, dan lainnya di perangkat ChromeOS mana pun</translation>
 <translation id="7360257054721917104">Melihat desktop dan template tersimpan. Tekan tab untuk memilih.</translation>
 <translation id="7360333718677093875">pemilih emoji</translation>
 <translation id="7360460316021916328">Pilih jendela</translation>
@@ -9066,8 +9079,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7458168200501453431">Menggunakan pemeriksa ejaan yang sama seperti yang digunakan di penelusuran Google. Teks yang Anda ketik di browser akan dikirim ke Google.</translation>
 <translation id="7458715171471938198">Pulihkan aplikasi?</translation>
 <translation id="7458933488302148148">Periksa sandi tersimpan untuk memperkuat keamanan Anda dan tetap aman saat online</translation>
-<translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Mengizinkan perangkat ChromeOS Anda mengirim laporan otomatis akan membantu kami memprioritaskan hal-hal yang harus diperbaiki dan ditingkatkan di ChromeOS. Laporan tersebut dapat mencakup informasi seperti kapan ChromeOS mengalami error, fitur mana yang Anda gunakan, dan berapa banyak memori yang biasanya Anda gunakan. Data penggunaan dan diagnostik aplikasi lainnya, termasuk untuk aplikasi web dan Android, akan dikumpulkan jika sinkronisasi aplikasi juga diaktifkan.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Anda dapat mulai atau berhenti mengizinkan laporan ini kapan saja di setelan perangkat Chrome. Jika Anda merupakan administrator domain, Anda dapat mengubah setelan ini di konsol admin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7461924472993315131">Sematkan</translation>
 <translation id="746216226901520237">Saat digunakan lagi, ponsel Anda akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda dapat menonaktifkan Smart Lock di Setelan.</translation>
 <translation id="746329643760972486">MacOS</translation>
@@ -9195,6 +9206,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7552846755917812628">Coba tips berikut:</translation>
 <translation id="7553012839257224005">Memeriksa container Linux</translation>
 <translation id="7553242001898162573">Masukkan sandi</translation>
+<translation id="7554342082838376298">Perubahan otomatis sandi</translation>
 <translation id="755472745191515939">Administrator Anda tidak mengizinkan bahasa ini</translation>
 <translation id="7554791636758816595">Tab Baru</translation>
 <translation id="7556033326131260574">Smart Lock tidak dapat memverifikasi akun. Ketikkan sandi untuk masuk.</translation>
@@ -9914,6 +9926,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> tidak merespons.</translation>
 <translation id="8044899503464538266">Lambat</translation>
 <translation id="8045253504249021590">Sinkronisasi telah dihentikan melalui Dasbor Google.</translation>
+<translation id="8045752459073395242">Pelajari lebih lanjut cara menggunakan AI generatif di tempat kerja</translation>
 <translation id="8045923671629973368">Masukan ID aplikasi atau URL toko web</translation>
 <translation id="804786196054284061">Perjanjian Lisensi Pengguna Akhir</translation>
 <translation id="8048596485169033655">Mendownload file anotasi node utama… <ph name="PERCENT" />%</translation>
@@ -10576,8 +10589,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="851263357009351303">Selalu izinkan <ph name="HOST" /> menampilkan gambar</translation>
 <translation id="8513108775083588393">Putar otomatis</translation>
 <translation id="8513357934662532537">Untuk mengimpor sandi ke <ph name="BRAND" /> untuk <ph name="USER_EMAIL" />, pilih file CSV.</translation>
-<translation id="8513683386591916542"><ph name="BEGIN_PARAGRAPH1" />Mengizinkan perangkat ChromeOS mengirim laporan otomatis akan membantu kami memprioritaskan hal-hal yang harus diperbaiki dan ditingkatkan di ChromeOS. Laporan tersebut dapat mencakup informasi seperti kapan ChromeOS mengalami error, fitur mana yang digunakan, dan berapa banyak memori yang biasanya digunakan. Data penggunaan dan diagnostik aplikasi lainnya, termasuk untuk aplikasi web dan Android, akan dikumpulkan jika sinkronisasi aplikasi juga diaktifkan.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Anda dapat mulai atau berhenti mengizinkan laporan ini kapan saja di setelan perangkat ChromeOS anak Anda. Jika Anda merupakan administrator domain, Anda dapat mengubah setelan ini di konsol admin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8514746246728959655">Coba kunci keamanan lain</translation>
 <translation id="8514828975162859845">Kue pop</translation>
 <translation id="8514955299594277296">Jangan izinkan situs menyimpan data di perangkat Anda (tidak direkomendasikan)</translation>
@@ -11032,6 +11043,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8834039744648160717">Konfigurasi jaringan dikontrol oleh <ph name="USER_EMAIL" />.</translation>
 <translation id="8835786707922974220">Pastikan Anda selalu dapat mengakses sandi yang disimpan</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> mengharuskan Anda mencadangkan data dan mengembalikan <ph name="DEVICE_TYPE" /> ini dalam 1 minggu. <ph name="LINK_BEGIN" />Lihat detailnya<ph name="LINK_END" /></translation>
+<translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Keluar dari Grup}other{Keluar dari Grup}}</translation>
 <translation id="8836782447513334597">melanjutkan</translation>
 <translation id="8838234842677265403"><ph name="WEB_DRIVE_MESSAGE" /> (<ph name="SUPPORT_INFO" />)</translation>
 <translation id="8838601485495657486">Buram</translation>
@@ -11558,6 +11570,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="9203398526606335860">&amp;Penyidikan diaktifkan</translation>
 <translation id="9203904171912129171">Pilih perangkat</translation>
 <translation id="920410963177453528">Klik menu drop-down untuk memilih panel lain</translation>
+<translation id="9204881338516142227">Perubahan Otomatis Sandi</translation>
 <translation id="9205304506427975617">Anda dapat membuat kursor tetap stabil meskipun kepala Anda bergerak sedikit. Bergantung pada nilai yang disetel, Anda mungkin memerlukan lebih banyak usaha untuk memindahkan kursor.</translation>
 <translation id="9206889157914079472">Mencatat dengan stilus dari layar kunci</translation>
 <translation id="9207434080086272167">Cerah</translation>

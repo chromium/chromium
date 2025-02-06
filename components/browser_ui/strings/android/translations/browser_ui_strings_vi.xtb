@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1384959399684842514">Đã tạm dừng quá trình tải xuống</translation>
 <translation id="1396327438254055134">Cho phép trang web sử dụng trình tối ưu hoá V8.</translation>
+<translation id="1409338233051621926">Nhấn vào Ứng dụng rồi nhấn vào Ứng dụng mặc định</translation>
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
 <translation id="1415855080660575082">Cho phép Chrome chia sẻ các thẻ gần đây với thiết bị của bạn để xem các thẻ này trong danh sách ứng dụng và kết quả tìm kiếm trên thiết bị. Bạn có thể bật hoặc tắt tính năng này trong phần cài đặt của Chrome.</translation>
 <translation id="1448064542941920355">Giảm mức thu phóng</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Không áp dụng giao diện tối cho các trang web</translation>
 <translation id="2606760465469169465">Tự động xác minh</translation>
 <translation id="2621115761605608342">Cho phép JavaScript cho trang web cụ thể.</translation>
+<translation id="2626708220538466178">Bảng dưới cùng của trình duyệt mặc định đã đóng</translation>
 <translation id="2653659639078652383">Gửi</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
 <translation id="2682367912565197520">Xoá mức thu phóng đã lưu</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Tắt tiếng trên các trang web phát âm thanh</translation>
 <translation id="3602290021589620013">Xem trước</translation>
 <translation id="3628308229821498208">Cụm từ tìm kiếm đề xuất</translation>
+<translation id="3658847490588580244">Bảng dưới cùng của trình duyệt mặc định</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="RWS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}other{<ph name="RWS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="RWS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}}</translation>
 <translation id="3697164069658504920">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị USB. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị USB.</translation>
 <translation id="3707034683772193706">Trang web bạn truy cập có thể lưu một lượng nhỏ thông tin với Chrome, chủ yếu để xác thực rằng bạn không phải là bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Xoá và đặt lại</translation>
 <translation id="4645575059429386691">Do cha mẹ của bạn quản lý</translation>
 <translation id="4670064810192446073">Thực tế ảo</translation>
+<translation id="4672315773691449562">Nhấn vào Ứng dụng trình duyệt rồi nhấn vào Chrome</translation>
 <translation id="4676059169848868271">Để cho phép <ph name="APP_NAME" /> dùng tính năng theo dõi cử chỉ tay, hãy bật cả tính năng này trong phần <ph name="BEGIN_LINK" />cài đặt hệ thống<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Cảm biến chuyển động hoặc ánh sáng</translation>
 <translation id="4755971844837804407">Khi bạn bật tuỳ chọn này, các trang web có thể hiển thị bất kỳ quảng cáo nào cho bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu lầm.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Được phép (nên dùng)</translation>
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8617611086246832542">Khi bạn bật tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên máy tính để bàn. Khi bạn tắt tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên thiết bị di động.</translation>
+<translation id="8670078035093027626">Bảng dưới cùng của trình duyệt mặc định đã mở trên toàn màn hình</translation>
 <translation id="8676316391139423634">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu theo dõi tay bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể theo dõi tay bạn.</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="8681886425883659911">Quảng cáo sẽ bị chặn trên các trang web được xác định là hiện quảng cáo xâm nhập hoặc gây hiểu lầm</translation>

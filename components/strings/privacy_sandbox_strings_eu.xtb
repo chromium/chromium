@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1444443021901415601">Azkenaldiko arakatze-historian oinarrituta, interesatzen zaizkizun gaiak erregistratzen ditu Chrome-k</translation>
-<translation id="2252052615723281030">Chrome-n saioa hasita daukazunean, IP helbidea pribatu mantentzen laguntzen du ezarpen honek. Chrome-k webgune bat jarraipena egiten ari zaizula susmatzen badu, baliteke zure trafikoaren zati bat zerbitzari pribatuen bidez bidaltzea.</translation>
 <translation id="235789365079050412">Google-ren Pribatutasun-gidalerroak</translation>
 <translation id="2793385791865768072">Azkenaldiko arakatze-historian oinarrituta, interesatzen zaizkizun gaiak erregistratzen ditu Chromium-ek</translation>
 <translation id="2979365474350987274">Hirugarrenen cookieek murriztapenak dituzte</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Hirugarrenen cookieak mugatuta daude</translation>
 <translation id="6371812158043974664">Chromium-en saioa hasita daukazunean, IP helbidea pribatu mantentzen laguntzen du ezarpen honek. Chromium-ek webgune bat jarraipena egiten ari zaizula susmatzen badu, baliteke zure trafikoaren zati bat zerbitzari pribatuen bidez bidaltzea. Lortu <ph name="LINK_BEGIN" />IParen babesak funtzionatzeko moduari<ph name="LINK_END" /> buruzko informazio gehiago</translation>
 <translation id="6398358690696005758">Google-k zure datuak babesteko duen moduari buruzko informazio gehiago lortzeko, joan gure <ph name="BEGIN_LINK1" />Pribatutasun-gidalerroetara<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261">Ikusi <ph name="BEGIN_LINK" />IParen babesak nola funtzionatzen duen<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Berrikusi iragarkien gaien ezarpena</translation>
 </translationbundle>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1444443021901415601">Chrome registrerer emner, du kan være interesseret i, baseret på din seneste browserhistorik</translation>
-<translation id="2252052615723281030">Denne indstilling hjælper med at beskytte din IP-adresse, når du er logget ind i Chrome. Hvis Chrome har mistanke om, at et website muligvis sporer dig, kan noget af din trafik sendes via privatlivsbeskyttende servere.</translation>
 <translation id="235789365079050412">Googles privatlivspolitik</translation>
 <translation id="2793385791865768072">Chromium registrerer emner, du kan være interesseret i, baseret på din seneste browserhistorik</translation>
 <translation id="2979365474350987274">Tredjepartscookies er begrænsede</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Tredjepartscookies er begrænset</translation>
 <translation id="6371812158043974664">Denne indstilling hjælper med at beskytte din IP-adresse, når du er logget ind i Chromium. Hvis Chromium har mistanke om, at et website muligvis sporer dig, kan noget af din trafik sendes via privatlivsbeskyttende servere. Få flere oplysninger om, <ph name="LINK_BEGIN" />hvordan IP-beskyttelse fungerer<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Få flere oplysninger om, hvordan Google beskytter dine data, i vores <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261">Få flere oplysninger om, <ph name="BEGIN_LINK" />hvordan IP-beskyttelse fungerer<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Gennemgå din indstilling for annonceemner</translation>
 </translationbundle>

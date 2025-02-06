@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Več o tem<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> zavihek je združen</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> zavihek}one{<ph name="TABS_COUNT_MANY" /> zavihek}two{<ph name="TABS_COUNT_MANY" /> zavihka}few{<ph name="TABS_COUNT_MANY" /> zavihki}other{<ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
+<translation id="1909810060368225529">Obvestilo: Spremembe te deljene skupine zavihkov so vidne vsem. Vsi lahko spreminjajo vaše deljene skupine zavihkov</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> izbran zavihek med zaznamke}one{Dodaj <ph name="TABS_COUNT_MANY" /> izbran zavihek med zaznamke}two{Dodaj <ph name="TABS_COUNT_MANY" /> izbrana zavihka med zaznamke}few{Dodaj <ph name="TABS_COUNT_MANY" /> izbrane zavihke med zaznamke}other{Dodaj <ph name="TABS_COUNT_MANY" /> izbranih zavihkov med zaznamke}}</translation>
 <translation id="2118649612461486615">Podatki o trgovini</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. Anonimni zavihek ne bo na voljo.}one{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimni zavihek ne bo na voljo.}two{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimna zavihka ne bosta na voljo.}few{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimni zavihki ne bodo na voljo.}other{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimnih zavihkov ne bo na voljo.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">Skupine zavihkov bodo prikazane tukaj</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Razdruži <ph name="TABS_COUNT_ONE" /> izbrani zavihek}one{Razdruži <ph name="TABS_COUNT_MANY" /> izbrani zavihek}two{Razdruži <ph name="TABS_COUNT_MANY" /> izbrana zavihka}few{Razdruži <ph name="TABS_COUNT_MANY" /> izbrane zavihke}other{Razdruži <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> zavihek}one{<ph name="TABS_COUNT_MANY" /> zavihek}two{<ph name="TABS_COUNT_MANY" /> zavihka}few{<ph name="TABS_COUNT_MANY" /> zavihki}other{<ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
+<translation id="6499296376514955580">Obvestilo o spremembah deljene skupine zavihkov je zaprto</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Po 1 dnevu}one{Po <ph name="DAY_COUNT_MANY" /> dnevu}two{Po <ph name="DAY_COUNT_MANY" /> dneh}few{Po <ph name="DAY_COUNT_MANY" /> dneh}other{Po <ph name="DAY_COUNT_MANY" /> dneh}}</translation>
 <translation id="6549021453810473782">Ogled podatkov o trgovini</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Premakni zavihek v levo</translation>
+<translation id="6589356853295569750">Obvestilo o spremembah deljene skupine zavihkov, odprto pri polni višini</translation>
 <translation id="6590332670428149473">Odpiranje menija z dejanji za deljeno skupino zavihkov <ph name="TITLE_OF_GROUP" /> barve <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> zavihek je spremenjen}one{<ph name="MANY_CHANGED" /> zavihek je spremenjen}two{<ph name="MANY_CHANGED" /> zavihka sta spremenjena}few{<ph name="MANY_CHANGED" /> zavihki so spremenjeni}other{<ph name="MANY_CHANGED" /> zavihkov je spremenjenih}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Deli <ph name="TABS_COUNT_ONE" /> izbran zavihek}one{Deli <ph name="TABS_COUNT_MANY" /> izbran zavihek}two{Deli <ph name="TABS_COUNT_MANY" /> izbrana zavihka}few{Deli <ph name="TABS_COUNT_MANY" /> izbrane zavihke}other{Deli <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
 <translation id="7773714564112603605">Odstrani zavihek in izbriši skupino</translation>
 <translation id="7792771145871471484">Pregled predlogov.</translation>
+<translation id="7792860826279960128">Obvestilo o spremembah deljene skupine zavihkov pri polovični višini</translation>
 <translation id="7825973332242257878">Skupine zavihkov</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Uvrsti <ph name="TABS_COUNT_ONE" /> izbrani zavihek v skupino}one{Uvrsti <ph name="TABS_COUNT_MANY" /> izbrani zavihek v skupino}two{Uvrsti <ph name="TABS_COUNT_MANY" /> izbrana zavihka v skupino}few{Uvrsti <ph name="TABS_COUNT_MANY" /> izbrane zavihke v skupino}other{Uvrsti <ph name="TABS_COUNT_MANY" /> izbranih zavihkov v skupino}}</translation>
 <translation id="7853202427316060426">Dejavnost</translation>

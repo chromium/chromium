@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1444443021901415601">Chrome จะบันทึกหัวข้อที่สนใจโดยอิงตามประวัติการท่องเว็บล่าสุด</translation>
-<translation id="2252052615723281030">เมื่อลงชื่อเข้าใช้ Chrome การตั้งค่านี้จะเก็บที่อยู่ IP ของคุณไว้เป็นส่วนตัว หากสงสัยว่ามีเว็บไซต์ติดตามคุณอยู่ Chrome อาจส่งการเข้าชมบางส่วนผ่านเซิร์ฟเวอร์ส่วนตัว</translation>
 <translation id="235789365079050412">นโยบายความเป็นส่วนตัวของ Google</translation>
 <translation id="2793385791865768072">Chromium จะบันทึกหัวข้อที่สนใจโดยอิงตามประวัติการท่องเว็บล่าสุด</translation>
 <translation id="2979365474350987274">มีการจำกัดคุกกี้ของบุคคลที่สาม</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">จำกัดคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6371812158043974664">เมื่อลงชื่อเข้าใช้ Chromium การตั้งค่านี้จะเก็บที่อยู่ IP ของคุณไว้เป็นส่วนตัว หากสงสัยว่ามีเว็บไซต์ติดตามคุณอยู่ Chromium อาจส่งการเข้าชมบางส่วนผ่านเซิร์ฟเวอร์ส่วนตัว ดูข้อมูลเพิ่มเติมว่า<ph name="LINK_BEGIN" />การปกป้อง IP ทำงานอย่างไร<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">ดูข้อมูลเพิ่มเติมเกี่ยวกับวิธีที่ Google ปกป้องข้อมูลของคุณใน<ph name="BEGIN_LINK1" />นโยบายความเป็นส่วนตัว<ph name="LINK_END1" /></translation>
-<translation id="7040031291654706261">ดูว่า<ph name="BEGIN_LINK" />การปกป้อง IP ทำงานอย่างไร<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">ตรวจสอบการตั้งค่าหัวข้อโฆษณา</translation>
 </translationbundle>

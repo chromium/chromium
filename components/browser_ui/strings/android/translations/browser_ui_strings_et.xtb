@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="1384959399684842514">Allalaadimine peatatud</translation>
 <translation id="1396327438254055134">Lubage saidil V8 optimeerijat kasutada.</translation>
+<translation id="1409338233051621926">Puudutage valikut Rakendused ja seejärel valikut Vaikerakendused</translation>
 <translation id="1415402041810619267">Lühendatud URL</translation>
 <translation id="1415855080660575082">Lubage Chrome’il jagada teie hiljutisi vahelehti teie seadmega, et näha neid seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes sisse või välja lülitada.</translation>
 <translation id="1448064542941920355">Suumi vähendamine</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Saitidele ei rakendata tumedat teemat</translation>
 <translation id="2606760465469169465">Automaatne kinnitamine</translation>
 <translation id="2621115761605608342">Lubage JavaScript konkreetse saidi jaoks.</translation>
+<translation id="2626708220538466178">Vaikebrauseri alumine leht on suletud</translation>
 <translation id="2653659639078652383">Esita</translation>
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2682367912565197520">Salvestatud suumitaseme kustutamine</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Heli esitavad saidid vaigistatakse</translation>
 <translation id="3602290021589620013">Eelvaade</translation>
 <translation id="3628308229821498208">Soovitatud otsingud</translation>
+<translation id="3658847490588580244">Vaikebrauseri alumine leht</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sait domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näeb teie tegevusi grupis}other{<ph name="RWS_MEMBERS_COUNT" /> saiti domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näevad teie tegevusi grupis}}</translation>
 <translation id="3697164069658504920">Kui see on sisse lülitatud, võivad saidid küsida luba USB-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid USB-seadmeid kasutada.</translation>
 <translation id="3707034683772193706">Külastatav sait võib Chrome’iga salvestada väikese hulga teavet, peamiselt kinnitamaks, et te pole robot.</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Kustuta ja lähtesta</translation>
 <translation id="4645575059429386691">Vanema hallatud</translation>
 <translation id="4670064810192446073">Virtuaalreaalsus</translation>
+<translation id="4672315773691449562">Puudutage valikut Brauseri rakendus ja seejärel valikut Chrome</translation>
 <translation id="4676059169848868271">Kui soovite lubada rakendusel <ph name="APP_NAME" /> kasutada käeliigutuste jälgimist, lülitage <ph name="BEGIN_LINK" />süsteemiseadetes<ph name="END_LINK" /> sisse ka käeliigutuste jälgimine.</translation>
 <translation id="4751476147751820511">Liikumis- või valgusandurid</translation>
 <translation id="4755971844837804407">Kui see on sisse lülitatud, saavad saidid teile kuvada mis tahes reklaame. Kui see on välja lülitatud, ei saa saidid kuvada sekkuvaid ega eksitavaid reklaame.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Lubatud (soovitatav)</translation>
 <translation id="8609465669617005112">Liiguta üles</translation>
 <translation id="8617611086246832542">Kui see on sisse lülitatud, kuvatakse veebisaitide arvutivaade. Kui see on välja lülitatud, kuvatakse veebisaitide mobiilivaade.</translation>
+<translation id="8670078035093027626">Vaikebrauseri alumine leht on avatud täiskõrgusel</translation>
 <translation id="8676316391139423634">Kui see on sisse lülitatud, saavad saidid küsida teie käeliigutuste jälgimiseks luba. Kui see on välja lülitatud, ei saa saidid teie käeliigutusi jälgida.</translation>
 <translation id="8676374126336081632">Tühjenda sisestus</translation>
 <translation id="8681886425883659911">Reklaamid on blokeeritud saitidel, mis teadaolevalt kuvavad sekkuvaid või eksitavaid reklaame</translation>

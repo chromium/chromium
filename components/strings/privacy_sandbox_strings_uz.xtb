@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1444443021901415601">Chrome qiziqish mavzularini oxirgi brauzer tarixi asosoida qayd qiladi</translation>
-<translation id="2252052615723281030">Chrome hisobiga kirsangiz, bu sozlama IP manzilingizni maxfiy saqlashga yordam beradi. Chrome saytning sizni kuzatishini gumon qilsa, trafikning ayrim qismi maxfiylik serverlariga yuborilishi mumkin.</translation>
 <translation id="235789365079050412">Google maxfiylik siyosati</translation>
 <translation id="2793385791865768072">Chromium qiziqish mavzularini oxirgi brauzer tarixi asosoida qayd qiladi</translation>
 <translation id="2979365474350987274">Tashqi cookie fayllar cheklangan</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Tashqi cookie fayllar cheklangan</translation>
 <translation id="6371812158043974664">Chromium hisobiga kirsangiz, bu sozlama IP manzilingizni maxfiy saqlashga yordam beradi. Chromium saytning sizni kuzatishini gumon qilsa, trafikning ayrim qismi maxfiylik serverlariga yuborilishi mumkin. <ph name="LINK_BEGIN" />IP himoyasi qanday ishlashi haqida<ph name="LINK_END" /> batafsil</translation>
 <translation id="6398358690696005758"><ph name="BEGIN_LINK1" />Maxfiylik siyosatimizda<ph name="LINK_END1" /> Google maʼlumotlarni qanday himoyalashi haqida batafsil axborot mavjud.</translation>
-<translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP himoyasi qanday ishlashi<ph name="END_LINK" /> haqida</translation>
 <translation id="7475768947023614021">Reklama mavzulari sozlamasini tekshiring</translation>
 </translationbundle>

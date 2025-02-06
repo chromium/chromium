@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Virheellinen PIN-koodi</translation>
 <translation id="382043424867370667">Auringonlasku-taustakuva</translation>
 <translation id="3824259034819781947">Liitä tiedostoja</translation>
-<translation id="3836587210832263413">Laita päälle vain luotettavia laajennuksia</translation>
 <translation id="3838338534323494292">Uusi salasana</translation>
 <translation id="3845880861638660475">Sulje valintaikkuna painamalla <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">näppäimistö tummennus</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Hallinnoi tulostimia tulostinasetuksista</translation>
 <translation id="6292095526077353682">Näytä näytönsäästäjä näin kauan, kun lataus on käynnissä:</translation>
 <translation id="629550705077076970">näppäimistön himmennys</translation>
-<translation id="6301193653204230066">Turvallinen nollaus laittaa Chrome-selaimen laajennukset pois päältä ja palauttaa verkkoasetukset ja muut asetukset turvallisiin oletusasetuksiin.
-          Välilehdet, tiedostot, evästeet ja historia eivät muutu.</translation>
 <translation id="6302401976930124515">Testi on peruttu: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Tutustu sovellukseen</translation>
 <translation id="6318437367327684789">ikuisesti</translation>
@@ -1774,6 +1771,8 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="951780398843003443">Vertaile tallenteen ääniä niin, että transkriptio kuvastaa, mitä kukin puhuja sanoi ja milloin</translation>
 <translation id="952992212772159698">Ei aktivoitu</translation>
 <translation id="95718197892796296">savi</translation>
+<translation id="959792926760890141">Turvallinen nollaus laittaa Chrome-selaimen laajennukset pois päältä ja palauttaa verkkoasetukset ja muut asetukset turvallisiin oletusasetuksiin.
+          Oletushakumoottorisi nollataan, mutta välilehdet, tiedostot, evästeet ja historia eivät muutu.</translation>
 <translation id="960719561871045870">Operaattorikoodi</translation>
 <translation id="965918541715156800">keltainen ja sinivihreä</translation>
 <translation id="966787709310836684">valikko</translation>

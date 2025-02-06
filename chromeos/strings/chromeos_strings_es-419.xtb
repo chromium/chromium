@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN no válido</translation>
 <translation id="382043424867370667">Fondo de pantalla Puesta del sol</translation>
 <translation id="3824259034819781947">Adjuntar archivos</translation>
-<translation id="3836587210832263413">Activa solo las extensiones de confianza</translation>
 <translation id="3838338534323494292">Nueva contraseña</translation>
 <translation id="3845880861638660475">Presiona <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> para cerrar el diálogo.</translation>
 <translation id="3848280697030027394">oscurecimiento del teclado</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Administra tus impresoras en la configuración de impresoras</translation>
 <translation id="6292095526077353682">Mientras se carga, mostrar el protector de pantalla por</translation>
 <translation id="629550705077076970">atenuación del teclado</translation>
-<translation id="6301193653204230066">El restablecimiento de seguridad desactiva las extensiones del navegador Chrome y restablece la configuración de red y otros parámetros a los valores predeterminados seguros.
-          No se modificarán las pestañas, los archivos, las cookies ni el historial.</translation>
 <translation id="6302401976930124515">Se canceló la prueba de <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">App Explorar</translation>
 <translation id="6318437367327684789">siempre</translation>
@@ -1774,6 +1771,8 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="951780398843003443">Compara las voces a lo largo de la grabación para que la transcripción refleje qué dijo cada interlocutor y cuándo lo dijo</translation>
 <translation id="952992212772159698">No activado</translation>
 <translation id="95718197892796296">arcilla</translation>
+<translation id="959792926760890141">El restablecimiento de seguridad desactiva las extensiones del navegador Chrome y restablece la configuración de red y otros parámetros a los valores predeterminados seguros.
+          Se restablecerá tu motor de búsqueda predeterminado, pero no se modificarán las pestañas, los archivos, las cookies ni el historial.</translation>
 <translation id="960719561871045870">Código del operador</translation>
 <translation id="965918541715156800">amarillo y verde azulado</translation>
 <translation id="966787709310836684">menú</translation>

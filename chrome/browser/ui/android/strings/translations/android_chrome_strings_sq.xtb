@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Fjalëkalimet në të gjitha pajisjet e tua</translation>
 <translation id="1082920045291562218">Fleta për ndarjen e komenteve për përmbledhjen u mbyll</translation>
 <translation id="1087176310396019910">Përmbajtje e mundshme e bezdisshme</translation>
+<translation id="1087799850623149508">Mund të prekësh dhe të mbash shtypur për të zhvendosur shiritin e adresave në fund</translation>
 <translation id="1089606299949659462">Shqyrtimi përfundoi!</translation>
 <translation id="1094555143448724771">Për të parë skedat nga pajisjet e tua të tjera, sinkronizo skedat dhe historikun</translation>
 <translation id="1095761715416917775">Sigurohu që gjithmonë të mund të qasesh në të dhënat e tua të sinkronizimit</translation>
@@ -131,6 +132,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="1513858653616922153">Fshi fjalëkalimin</translation>
 <translation id="1521774566618522728">Aktiv sot</translation>
 <translation id="153446405401665083">Ofrohet një version i ri i Chrome</translation>
+<translation id="1540012742443808215">Shiriti i adresave aktualisht në krye</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 faqeshënues është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje atë në "Llogarinë tënde të Google", <ph name="ACCOUNT_EMAIL" />.}other{# faqeshënues janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
 Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6459045781120991510">Anketat</translation>
 <translation id="6461962085415701688">Skedari nuk mund të hapet</translation>
 <translation id="6464977750820128603">Mund të shikosh sajtet që viziton në Chrome dhe të caktosh kohëmatës për to.\n\nGoogle merr informacion rreth sajteve për të cilat cakton kohëmatës dhe për sa kohë i viziton ato. Ky informacion përdoret për të përmirësuar "Mirëqenien dixhitale".</translation>
+<translation id="6468703991511753953">Shiriti i adresave aktualisht në fund</translation>
 <translation id="6470181189905173055">Faqet që ke hapur në Chrome gjatë përdorimit të <ph name="APP_LABEL" /> do të shfaqen këtu.</translation>
 <translation id="6473086018775716761">Listë e opsioneve të ndarjes e hapur në gjysmën e lartësisë.</translation>
 <translation id="6475951671322991020">Shkarko videon</translation>

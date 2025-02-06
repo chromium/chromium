@@ -1163,6 +1163,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3076865167425975822">Operatsion tizimlar</translation>
 <translation id="3080254622891793721">Tasvirlar</translation>
 <translation id="3082007635241601060">Google xarid savatlaringiz uchun shaxsiy chegirmalar qidirishiga ruxsat berish</translation>
+<translation id="3086269988715347183"><ph name="BLOCKED_URL" /> ilgari tasdiqlanmagan</translation>
 <translation id="3086579638707268289">Internetdagi faoliyatingiz kuzatuv ostida</translation>
 <translation id="3087734570205094154">Pastga</translation>
 <translation id="3090667236485488075">Shisha</translation>
@@ -1236,6 +1237,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3203025201812691413">URL boʻsh boʻlmaydi</translation>
 <translation id="320323717674993345">To‘lovni bekor qilish</translation>
 <translation id="3203366800380907218">Internetdan</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> tarkibida kattalash uchun kontent boʻlishi mumkin</translation>
 <translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
 <translation id="3208701679386778924">Keyingi ChromeOS yangilanishlarini yaxshilashimiz uchun bizga hisobot yuboring</translation>
 <translation id="3209034400446768650">Sahifa pul yechib olishi mumkin</translation>
@@ -2343,6 +2345,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5138227688689900538">Kamroq chiqsin</translation>
 <translation id="5143309888746105072">Chromium saytlarni kezishda sizni kuzatish uchun tashqi cookie fayllardan foydalanuvchi saytlarni bloklaydi.
             <ph name="NEW_LINE" />Sayt funksiyalari ishlamay qolsa, <ph name="START_LINK" />tashqi cookie fayllariga vaqtincha ruxsat bering<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Bu sayt <ph name="PERMISSION" /> ishlatishi mumkin</translation>
 <translation id="5145883236150621069">Siyosat javobida xato kodi bor</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> bildirishnomalari bloklandi</translation>
 <translation id="514704532284964975">Telefonga teginganingizda <ph name="URL" /> sayti NFC qurilmalarni koʻrmoqchi va ulardagi axborotni oʻzgartirmoqchi</translation>
@@ -2966,6 +2969,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6254436959401408446">Sahifani ochish uchun xotira yetishmayapti</translation>
 <translation id="625463612687472648">Ruxsat bekor qilinsin</translation>
 <translation id="6259156558325130047">&amp;Qayta tartiblashni qaytarish</translation>
+<translation id="6259282549512536479"><ph name="BLOCKED_URL" /> ilgari bloklangan</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> xatcho‘plari</translation>
 <translation id="6264376385120300461">Baribir yuklab olish</translation>
 <translation id="6264485186158353794">Xavfsizlik sahifasiga qaytish</translation>
@@ -4397,6 +4401,7 @@ Batafsil axborot:
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> hisobingiz xavf ostida va shaxsiy ma’lumotlaringizni kimdir ko‘rishi mumkin. Parolingizni hoziroq o‘zgartirishni tavsiya etamiz.</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> brauzeringizda Chrome korporativ konnektorlarini faollashtirdi. Bu konnektorlar ayrim axborotlaringizdan foydalana oladi.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> sozlamalari</translation>
 <translation id="8798099450830957504">Standart</translation>
 <translation id="8800034312320686233">Sayt ishlamayaptimi?</translation>
 <translation id="8805819170075074995">“<ph name="LANGUAGE_ID" />” tili: Bu til SpellcheckLanguage parametrida borligi uchun inkor etildi.</translation>

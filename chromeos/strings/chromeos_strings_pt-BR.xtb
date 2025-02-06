@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN inválido.</translation>
 <translation id="382043424867370667">Plano de fundo Pôr do sol</translation>
 <translation id="3824259034819781947">Anexar arquivos</translation>
-<translation id="3836587210832263413">Ative somente extensões confiáveis</translation>
 <translation id="3838338534323494292">Nova senha</translation>
 <translation id="3845880861638660475">Pressione <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> para fechar a caixa de diálogo.</translation>
 <translation id="3848280697030027394">escurecer teclado</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Gerencie suas impressoras nas configurações de impressora</translation>
 <translation id="6292095526077353682">Durante o carregamento, mostrar protetor de tela por</translation>
 <translation id="629550705077076970">escurecimento do teclado</translation>
-<translation id="6301193653204230066">A redefinição de segurança desativa as extensões do navegador Chrome e redefine a rede e outras configurações para os padrões seguros.
-          Guias, arquivos, cookies e histórico não serão modificados.</translation>
 <translation id="6302401976930124515">O teste de <ph name="TEST_NAME" /> foi cancelado</translation>
 <translation id="631063167932043783">App Explorar</translation>
 <translation id="6318437367327684789">sempre</translation>
@@ -1774,6 +1771,8 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="951780398843003443">Comparar as vozes durante a gravação para que a transcrição inclua o que e quando cada pessoa falou.</translation>
 <translation id="952992212772159698">Desativado</translation>
 <translation id="95718197892796296">argila</translation>
+<translation id="959792926760890141">A redefinição de segurança desativa as extensões do navegador Chrome e redefine a rede e outras configurações para os padrões seguros.
+          O mecanismo de pesquisa padrão será redefinido, mas as guias, os arquivos, os cookies e o histórico não serão modificados.</translation>
 <translation id="960719561871045870">Código da operadora</translation>
 <translation id="965918541715156800">amarelo e azul-petróleo</translation>
 <translation id="966787709310836684">menu</translation>

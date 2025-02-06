@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Pausouse a descarga</translation>
 <translation id="1396327438254055134">Permite que un sitio use o optimizador de V8.</translation>
+<translation id="1409338233051621926">Toca Aplicacións e, a continuación, Aplicacións predeterminadas</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1415855080660575082">Permite que Chrome comparta as pestanas recentes co teu dispositivo para que se mostren na lista de aplicacións e nos resultados de busca do aparello. Activa ou desactiva esta opción na configuración de Chrome.</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Non se lles aplica o tema escuro aos sitios</translation>
 <translation id="2606760465469169465">Verificación automática</translation>
 <translation id="2621115761605608342">Permite a execución de JavaScript para un sitio específico.</translation>
+<translation id="2626708220538466178">Panel inferior do navegador predeterminado pechado</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Saír</translation>
 <translation id="2682367912565197520">Eliminar o nivel de zoom gardado</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Silencia sitios que reproducen son</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3628308229821498208">Buscas suxeridas</translation>
+<translation id="3658847490588580244">Panel inferior do navegador predeterminado</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sitio no grupo de sitios de <ph name="RWS_OWNER" /> pode ver a túa actividade no grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sitios no grupo de sitios de <ph name="RWS_OWNER" /> poden ver a túa actividade no grupo}}</translation>
 <translation id="3697164069658504920">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar dispositivos USB. Cando esta opción está desactivada, os sitios non poden utilizar dispositivos USB.</translation>
 <translation id="3707034683772193706">Calquera sitio que visites poderá gardar unha pequena cantidade de información con Chrome, basicamente, para confirmar que non es un bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Eliminar e restablecer</translation>
 <translation id="4645575059429386691">Xestionado por teus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
+<translation id="4672315773691449562">Toca Aplicación do navegador e, a continuación, Chrome</translation>
 <translation id="4676059169848868271">Para permitir que <ph name="APP_NAME" /> use o seguimento das mans, tamén tes que activar a opción correspondente na <ph name="BEGIN_LINK" />configuración do sistema<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Sensores de movemento ou de luz</translation>
 <translation id="4755971844837804407">Cando esta opción está activada, os sitios poden mostrarche todo tipo de anuncios. Cando esta opción está desactivada, os sitios non poden mostrarche anuncios enganosos nin intrusivos.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover cara arriba</translation>
 <translation id="8617611086246832542">Cando esta opción está activada, móstrase a vista para ordenadores dos sitios web. Cando esta opción está desactivada, móstrase a vista para dispositivos móbiles dos sitios web.</translation>
+<translation id="8670078035093027626">Panel inferior do navegador predeterminado aberto a altura completa</translation>
 <translation id="8676316391139423634">Cando esta opción está activada, os sitios poden pedir permiso para seguir as túas mans. Se está desactivada, os sitios non poderán facer ese seguimento.</translation>
 <translation id="8676374126336081632">Borrar texto</translation>
 <translation id="8681886425883659911">Bloquéanse anuncios nos sitios que conteñen anuncios enganosos ou intrusivos</translation>

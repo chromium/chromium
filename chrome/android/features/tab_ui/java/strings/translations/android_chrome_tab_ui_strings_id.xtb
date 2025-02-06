@@ -25,6 +25,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Pelajari lebih lanjut<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab dikelompokkan</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="1909810060368225529">Pemberitahuan: Perubahan pada Grup Tab bersama ini dapat dilihat oleh semua orang. Siapa saja dapat melakukan perubahan pada grup tab bersama Anda</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bookmark <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Bookmark <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="2118649612461486615">Info toko</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. Tab Samaran Anda tidak akan tersedia.}other{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. # tab Samaran Anda tidak akan tersedia.}}</translation>
@@ -126,11 +127,13 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="6381032505162537930">Anda akan menemukan grup tab di sini</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Pisahkan <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Pisahkan <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="6499296376514955580">Pemberitahuan terkait perubahan Grup Tab Bersama ditutup</translation>
 <translation id="6527303717912515753">Bagikan</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Setelah 1 hari}other{Setelah <ph name="DAY_COUNT_MANY" /> hari}}</translation>
 <translation id="6549021453810473782">Lihat info toko</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Pindahkan tab ke kiri</translation>
+<translation id="6589356853295569750">Pemberitahuan terkait perubahan Grup Tab Bersama dibuka sepenuhnya</translation>
 <translation id="6590332670428149473">Buka menu tindakan grup tab untuk grup tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" /> yang dibagikan.</translation>
 <translation id="6615455863669487791">Tunjukkan</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab diubah}other{<ph name="MANY_CHANGED" /> tab diubah}}</translation>
@@ -157,6 +160,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Bagikan <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Bagikan <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="7773714564112603605">Hapus tab dan grup</translation>
 <translation id="7792771145871471484">Tinjau saran.</translation>
+<translation id="7792860826279960128">Pemberitahuan terkait perubahan Grup Tab Bersama dibuka setengah</translation>
 <translation id="7825973332242257878">Grup tab</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Masukkan <ph name="TABS_COUNT_ONE" /> tab yang dipilih ke grup}other{Masukkan <ph name="TABS_COUNT_MANY" /> tab yang dipilih ke grup}}</translation>
 <translation id="7853202427316060426">Aktivitas</translation>

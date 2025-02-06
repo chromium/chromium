@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Zaporke na svim vašim uređajima</translation>
 <translation id="1082920045291562218">Zatvoreno je dijeljenje pomoću tablice s povratnim informacijama o sažetku</translation>
 <translation id="1087176310396019910">Mogući neželjeni sadržaj</translation>
+<translation id="1087799850623149508">Možete dodirnuti i zadržati pritisak da biste adresnu traku premjestili na dno</translation>
 <translation id="1089606299949659462">Pregled je dovršen!</translation>
 <translation id="1094555143448724771">Kako biste vidjeli kartice s drugih uređaja, sinkronizirajte kartice i povijest</translation>
 <translation id="1095761715416917775">Pobrinite se da uvijek možete pristupiti sinkroniziranim podacima</translation>
@@ -131,6 +132,7 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="1513858653616922153">Izbriši zaporku</translation>
 <translation id="1521774566618522728">Aktivan danas</translation>
 <translation id="153446405401665083">Dostupna je nova verzija preglednika Chrome</translation>
+<translation id="1540012742443808215">Adresna traka trenutačno je pri vrhu</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{Jedna oznaka sprema se samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj Google račun, <ph name="ACCOUNT_EMAIL" />.}one{# zaporka sprema se samo na ovaj uređaj. Ako ih želite upotrebljavati na svojim drugim uređajima, spremite ih na svoj Google račun, <ph name="ACCOUNT_EMAIL" />.}few{# zaporke spremaju se samo na ovaj uređaj. Ako ih želite upotrebljavati na svojim drugim uređajima, spremite ih na svoj Google račun, <ph name="ACCOUNT_EMAIL" />.}other{# zaporki sprema se samo na ovaj uređaj. Ako ih želite upotrebljavati na svojim drugim uređajima, spremite ih na svoj Google račun, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Načini plaćanja i adrese neće se šifrirati. Povijest pregledavanja iz Chromea neće se sinkronizirati.
 Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šifra se ne šalje Googleu niti se pohranjuje na Googleu. Ako zaboravite šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />izbrišite Chromeove podatke na računu<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6459045781120991510">Ankete</translation>
 <translation id="6461962085415701688">Datoteka se ne može otvoriti</translation>
 <translation id="6464977750820128603">Možete vidjeti web-lokacije koje otvorite u Chromeu i postaviti tajmere za njih.\n\nGoogle prima informacije o web-lokacijama za koje postavite tajmere i koliko dugo ih posjećujete. Te se informacije koriste za poboljšanje Digitalne ravnoteže.</translation>
+<translation id="6468703991511753953">Adresna traka trenutačno je pri dnu</translation>
 <translation id="6470181189905173055">Ovdje će se prikazati stranice koje ste otvorili u Chromeu dok upotrebljavate aplikaciju <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Popis opcija za dijeljenje otvoren na pola visine.</translation>
 <translation id="6475951671322991020">Preuzmi videozapis</translation>

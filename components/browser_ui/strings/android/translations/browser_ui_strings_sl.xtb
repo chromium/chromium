@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1384959399684842514">Prenos je zaustavljen</translation>
 <translation id="1396327438254055134">Spletnemu mestu dovolite uporabo orodja za optimiziranje mehanizma V8.</translation>
+<translation id="1409338233051621926">Dotaknite se možnosti Aplikacije in nato možnosti Privzete aplikacije</translation>
 <translation id="1415402041810619267">URL je skrajšan</translation>
 <translation id="1415855080660575082">Chrome naj deli vaše nedavne zavihke z napravo, da si jih boste lahko ogledali na seznamu aplikacij in v rezultatih iskanja naprave. To lahko kadar koli vklopite ali izklopite v nastavitvah Chroma.</translation>
 <translation id="1448064542941920355">Zmanjšanje povečave/pomanjšave</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Brez uporabe temne teme na spletnih mestih.</translation>
 <translation id="2606760465469169465">Samodejno preverjanje</translation>
 <translation id="2621115761605608342">Dovoli JavaScript za določeno spletno mesto.</translation>
+<translation id="2626708220538466178">Razdelek na dnu zaslona za privzeti brskalnik je zaprt</translation>
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2677748264148917807">Zapusti</translation>
 <translation id="2682367912565197520">Izbris shranjene stopnje povečave</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Izklop zvoka na spletnih mestih, ki predvajajo zvok</translation>
 <translation id="3602290021589620013">Predogled</translation>
 <translation id="3628308229821498208">Predlagane iskalne poizvedbe</translation>
+<translation id="3658847490588580244">Razdelek na dnu zaslona za privzeti brskalnik</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}one{<ph name="RWS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}two{<ph name="RWS_MEMBERS_COUNT" /> spletni mesti v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}few{<ph name="RWS_MEMBERS_COUNT" /> spletna mesta v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}other{<ph name="RWS_MEMBERS_COUNT" /> spletnih mest v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}}</translation>
 <translation id="3697164069658504920">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo naprav USB. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati naprav USB.</translation>
 <translation id="3707034683772193706">Spletno mesto, ki ga obiščete, lahko v Chromu shrani majhno količino podatkov, predvsem za potrditev, da niste bot.</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Izbriši in ponastavi</translation>
 <translation id="4645575059429386691">Upravlja starš</translation>
 <translation id="4670064810192446073">Navidezna resničnost</translation>
+<translation id="4672315773691449562">Dotaknite se aplikacije brskalnika in nato Chrome</translation>
 <translation id="4676059169848868271">Če želite aplikaciji <ph name="APP_NAME" /> dovoliti uporabo sledenja potezam dlani, sledenje potezam dlani vklopite tudi v <ph name="BEGIN_LINK" />sistemskih nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Tipala za gibanje in svetlobo</translation>
 <translation id="4755971844837804407">Če je ta možnost vklopljena, vam spletna mesta lahko prikazujejo kateri koli oglas. Če je ta možnost izklopljena, spletna mesta ne smejo prikazovati vsiljivih ali zavajajočih oglasov.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Dovoljeno (priporočeno)</translation>
 <translation id="8609465669617005112">Premakni navzgor</translation>
 <translation id="8617611086246832542">Če je ta možnost vklopljena, je prikazan pogled spletnih mest za namizni računalnik. Če je ta možnost izklopljena, je prikazan pogled spletnih mest za mobilno napravo.</translation>
+<translation id="8670078035093027626">Razdelek na dnu zaslona za privzeti brskalnik, odprt pri polni višini</translation>
 <translation id="8676316391139423634">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo, da dovolite sledenje potezam z dlanmi. Če je ta možnost izklopljena, spletna mesta ne smejo slediti potezam z dlanmi.</translation>
 <translation id="8676374126336081632">Izbriši vnos</translation>
 <translation id="8681886425883659911">Oglasi so blokirani na spletnih mestih, za katera je znano, da prikazujejo vsiljive ali zavajajoče oglase.</translation>

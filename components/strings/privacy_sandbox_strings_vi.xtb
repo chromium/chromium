@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1444443021901415601">Chrome ghi nhớ các chủ đề bạn quan tâm dựa trên nhật ký duyệt web gần đây của bạn</translation>
-<translation id="2252052615723281030">Khi bạn đăng nhập vào Chrome, chế độ cài đặt này sẽ giúp bạn bảo mật địa chỉ IP của mình. Nếu Chrome nghi ngờ rằng có thể một trang web nào đó đang theo dõi bạn, thì một số lưu lượng truy cập của bạn có thể sẽ được gửi qua máy chủ bảo mật.</translation>
 <translation id="235789365079050412">Chính sách quyền riêng tư của Google</translation>
 <translation id="2793385791865768072">Chromium ghi nhớ các chủ đề bạn quan tâm dựa trên nhật ký duyệt web gần đây của bạn</translation>
 <translation id="2979365474350987274">Cookie của bên thứ ba bị hạn chế</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Đã hạn chế cookie của bên thứ ba</translation>
 <translation id="6371812158043974664">Khi bạn đăng nhập vào Chromium, chế độ cài đặt này sẽ giúp bạn bảo mật địa chỉ IP của mình. Nếu Chromium nghi ngờ rằng có thể một trang web nào đó đang theo dõi bạn, thì một số lưu lượng truy cập của bạn có thể sẽ được gửi qua máy chủ bảo mật. Tìm hiểu thêm về <ph name="LINK_BEGIN" />cách hoạt động của tính năng Bảo vệ địa chỉ IP<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Tìm hiểu thêm về cách Google bảo vệ dữ liệu của bạn trong <ph name="BEGIN_LINK1" />Chính sách quyền riêng tư<ph name="LINK_END1" /> của chúng tôi.</translation>
-<translation id="7040031291654706261">Tìm hiểu <ph name="BEGIN_LINK" />cách hoạt động của tính năng Bảo vệ địa chỉ IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Xem lại chế độ cài đặt chủ đề quảng cáo</translation>
 </translationbundle>

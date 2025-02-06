@@ -4776,6 +4776,19 @@ Questo criterio non ha effetto se viene attivato, lasciato vuoto o se non viene 
 <translation id="4534500438517478692">Nome della limitazione di Android:</translation>
 <translation id="4541530620466526913">Account del dispositivo</translation>
 <translation id="4542255783284620926">Blocca l'aggiunta di un account gestito come account secondario su ChromeOS (all'interno della sessione)</translation>
+<translation id="4543338637126011529">La configurazione della policy consente di specificare un elenco di app web isolate (IWA) che vengono installate automaticamente.
+      Le IWA sono applicazioni che presentano proprietà di sicurezza utili non disponibili per le normali pagine web, che vengono pacchettizzate in un bundle web firmato. La chiave pubblica del bundle web firmato viene utilizzata per creare l'ID pacchetto web che identifica l'IWA.
+      Finora questa policy funziona solo per la sessione Ospite gestita.
+
+      Ogni elemento nell'elenco della policy è un oggetto con due campi obbligatori: il manifest di aggiornamento <ph name="URL_LABEL" /> e l'ID pacchetto web dell'app web isolata.
+
+      Ogni elemento può anche includere questi campi facoltativi:
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />: il nome del canale di rilascio/aggiornamento dell'IWA. Se questa policy non viene impostata, viene utilizzata la modalità "predefinita".
+
+        * <ph name="PINNED_VERSION_OPTION" />:  una versione specifica da installare. Il sistema tenterà di installare questa versione, se disponibile sul canale di aggiornamento specificato. Per impostazione predefinita, il blocco di un'IWA a una versione specifica ne impedirà l'aggiornamento oltre quella versione. Per sbloccare la versione, rimuovi questo campo.
+
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />:: consente di installare versioni precedenti dell'IWA. Per farlo, è necessario impostare il campo "pinned_version". Se la policy non viene specificata o se viene impostata su <ph name="FALSE" />, il downgrade è disabilitato per l'IWA.</translation>
 <translation id="4543502256674577024">Impostazioni di aggiornamento dispositivo
 </translation>
 <translation id="454585952814397564">Viene usata la priorità normale per il processo audio</translation>
@@ -5493,6 +5506,7 @@ Questo criterio viene applicato soltanto se la macchina viene registrata con <ph
 <translation id="5030415914668947893">Consenti la raccolta di metriche con chiave URL</translation>
 <translation id="5033070732967197381">Consenti le richieste API WebAuthn su siti con certificati TLS inaccessibili.</translation>
 <translation id="5034504101537897433">Attiva i report relativi alle informazioni sul report sugli arresti anomali del dispositivo</translation>
+<translation id="5035980227219807711">Disattiva il provisioning dei certificati client per i browser</translation>
 <translation id="5036013147560568855">Versione del protocollo di provisioning del certificato. Il valore predefinito è 1. 1 significa che il protocollo è "statico". 2 significa che il protocollo è "dinamico".</translation>
 <translation id="5036559232677914717">Questa policy consente di specificare il comportamento del sistema all'avvio. Disattivare questa impostazione equivale a non impostarla, perché per <ph name="PRODUCT_NAME" /> è necessario specificare un comportamento da adottare all'avvio.
 
@@ -8701,6 +8715,7 @@ del server.
 
 Il valore del criterio è un elenco di certificati X.509 codificati in base64. Nessun
 certificato con un SPKI (SubjectPublicKeyInfo) corrispondente sarà ritenuto attendibile.</translation>
+<translation id="7174997120839381414">Attiva il provisioning dei certificati client per i browser</translation>
 <translation id="717630378807352957">Consenti tutte le stampanti del file di configurazione.</translation>
 <translation id="7177293255621000064">L'impostazione del criterio su True rende tutti i tipi di supporti di archiviazione esterni (unità flash USB, dischi rigidi esterni, schede di memoria SD e di altro tipo, memorie ottiche) non disponibili nel browser di file. L'impostazione del criterio su False o la mancata impostazione implica che gli utenti possano utilizzare spazi di archiviazione esterni sul loro dispositivo.
 
@@ -9176,6 +9191,7 @@ Se il criterio viene lasciato vuoto, non sono consentite eccezioni a <ph name="F
       Se il criterio è disattivato, la funzionalità di conversione delle unità di Risposte rapide sarà disattivata.</translation>
 <translation id="7584363090329234690">Consenti Sfondo AI generativa per videoconferenze senza migliorare i modelli di AI</translation>
 <translation id="7585312329612243723">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL su browser gestiti</translation>
+<translation id="7586199729147257934">Consente il provisioning dei certificati client per i browser gestiti</translation>
 <translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando il criterio di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
 <translation id="7587921466180902617">Attiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
 <translation id="7595074040612182185">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono mostrare immagini.
@@ -10233,6 +10249,9 @@ I certificati devono essere codificati in base64.</translation>
 <translation id="8399825694820904218">Se per il criterio viene impostato un numero, <ph name="PRODUCT_NAME" /> mostra un messaggio relativo al numero di millisecondi impostato, quindi apre un browser alternativo.
 
 Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL definito, l'URL viene aperto subito in un browser alternativo.</translation>
+<translation id="8400225642589806131">Se questa policy viene impostata su <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" /> (valore 1), <ph name="PRODUCT_NAME" /> richiederà al server di gestione dispositivi un certificato client per una sessione del browser gestita. Questo certificato verrà reso disponibile, ad esempio, per le connessioni mTLS.
+
+Se questa policy viene impostata su <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (valore 0) o se non viene configurata, <ph name="PRODUCT_NAME" /> non potrà richiedere il certificato client. Se è già stato eseguito il provisioning del certificato client gestito di un browser, poiché questa policy è stata attivata in precedenza non verrà eliminato, ma non sarà disponibile per le connessioni mTLS e non verrà rinnovato alla scadenza.</translation>
 <translation id="8402079500086185021">Apri sempre file PDF esternamente</translation>
 <translation id="8402357110539568621">Consente di attivare la funzione di accessibilità della tastiera virtuale.
 

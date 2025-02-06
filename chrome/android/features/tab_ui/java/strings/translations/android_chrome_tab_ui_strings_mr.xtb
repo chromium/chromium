@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> टॅब गटबद्ध केला आहे</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
+<translation id="1909810060368225529">नोटिस: शेअर केलेल्या या टॅब गट मधील बदल प्रत्येकासाठी दृश्यमान आहेत. सर्वजण तुमच्या शेअर केलेल्या टॅब गटांमध्ये बदल करू शकतात</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब बुकमार्क करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब बुकमार्क करा}}</translation>
 <translation id="2118649612461486615">स्टोअरची माहिती</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{तुमचे बंद केलेले टॅब आणि गट हे अलीकडील टॅब या विभागामधून व टॅब गट या विभागामधून पुन्हा उघडले जाऊ शकतात. तुमचा गुप्त टॅब उपलब्ध नसेल.}other{तुमचे बंद केलेले टॅब आणि गट हे अलीकडील टॅब या विभागामधून व टॅब गट या विभागामधून पुन्हा उघडले जाऊ शकतात. तुमचे # गुप्त टॅब उपलब्ध नसतील.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">तुम्हाला तुमचे टॅब गट इथे दिसतील</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब गटामधून काढून टाका}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब गटामधून काढून टाका}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
+<translation id="6499296376514955580">शेअर केलेल्या टॅब गट मधील बदलांविषयी नोटिस बंद केली आहे</translation>
 <translation id="6527303717912515753">शेअर करा</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{एका दिवसानंतर}other{<ph name="DAY_COUNT_MANY" /> दिवसांनंतर}}</translation>
 <translation id="6549021453810473782">स्टोअरची माहिती पहा</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">टॅब डावीकडे हलवा</translation>
+<translation id="6589356853295569750">शेअर केलेल्या टॅब गट मधील बदलांविषयी नोटिस पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="6590332670428149473"><ph name="TITLE_OF_GROUP" /> या शेअर केलेल्या टॅब गटासाठी टॅब गट अ‍ॅक्‍शन मेनू उघडा, <ph name="COLOR_NAME" /> रंग.</translation>
 <translation id="6615455863669487791">मला दर्शवा</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> टॅब बदलला}other{<ph name="MANY_CHANGED" /> टॅब बदलले}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब शेअर करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब शेअर करा}}</translation>
 <translation id="7773714564112603605">टॅब काढून टाकून गट हटवा</translation>
 <translation id="7792771145871471484">सूचनांचे पुनरावलोकन करा.</translation>
+<translation id="7792860826279960128">अर्ध्या उंचीवर शेअर केलेल्या टॅब गट मधील बदलांविषयी नोटिस</translation>
 <translation id="7825973332242257878">टॅब गट</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{निवडलेल्या <ph name="TABS_COUNT_ONE" /> टॅबचा गट बनवा}other{निवडलेल्या <ph name="TABS_COUNT_MANY" /> टॅबचा गट बनवा}}</translation>
 <translation id="7853202427316060426">गतिविधी</translation>

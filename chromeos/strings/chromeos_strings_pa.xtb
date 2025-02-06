@@ -7,7 +7,7 @@
 <translation id="1018656279737460067">ਰੱਦ ਕੀਤਾ</translation>
 <translation id="1020274983236703756">ਵਿਸ਼ੇਸ਼ <ph name="PRODUCT_NAME" /> ਸੰਪਤੀਆਂ ਹੁਣ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="1022628058306505708">ਧਰਤੀ ਪ੍ਰਵਾਹ</translation>
-<translation id="102432830749687801">ਆਪਣੇ ਸਕੂਲ ਖਾਤੇ ਦੇ ਡਾਟੇ ਨੂੰ ਆਪਣੇ ਨਿੱਜੀ ਖਾਤੇ ਵਿੱਚ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਲਈ Google ਦੀ ਕੰਟੈਂਟ ਟ੍ਰਾਂਸਫ਼ਰ ਐਪ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਪੱਕਾ ਕਰੋ ਅਤੇ ਅਜਿਹਾ ਪਹੁੰਚ ਗੁਆਉਣ ਤੋਂ ਪਹਿਲਾਂ ਕਰ ਲਓ।</translation>
+<translation id="102432830749687801">ਆਪਣੇ ਸਕੂਲੀ ਖਾਤੇ ਸੰਬੰਧੀ ਡਾਟੇ ਨੂੰ ਆਪਣੇ ਨਿੱਜੀ ਖਾਤੇ ਵਿੱਚ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਲਈ Google ਦੀ ਕੰਟੈਂਟ ਟ੍ਰਾਂਸਫ਼ਰ ਐਪ ਵਰਤੋ ਅਤੇ ਪਹੁੰਚ ਗੁਆਉਣ ਤੋਂ ਪਹਿਲਾਂ ਯਾਦ ਨਾਲ ਇਹ ਕਰ ਲਓ।</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" ਲਈ ਸ਼ਾਰਟਕੱਟ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ। ਮੌਜੂਦਾ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਬਦਲਣ ਲਈ, ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ।</translation>
 <translation id="1030856839388844477">ਡਾਟਾ ਵਰਤੋਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ਥ੍ਰੈੱਡ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -94,7 +94,7 @@
 <translation id="1394661041439318933">ਡੀਵਾਈਸ ਦੇ ਕੇਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="1397738625398125236">ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="1398634363027580500">ਬਹੁਤ ਜ਼ਿਆਦਾ HTTPS ਵਿਲੰਬਤਾ</translation>
-<translation id="1406389211945506521">ਆਪਣਾ ਅਨੁਭਵ ਸਾਂਝਾ ਕਰਨ ਲਈ ਧੰਨਵਾਦ। ਤੁਹਾਡਾ ਵਿਚਾਰ ਸਾਨੂੰ ਜ਼ਿਆਦਾ ਸਟੀਕ ਅਤੇ ਲਾਭਦਾਇਕ ਸਮੱਗਰੀ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਦਾ ਹੈ।</translation>
+<translation id="1406389211945506521">ਅਨੁਭਵ ਸਾਂਝਾ ਕਰਨ ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ। ਤੁਹਾਡੇ ਵਿਚਾਰ ਸਾਨੂੰ ਜ਼ਿਆਦਾ ਸਟੀਕ ਅਤੇ ਲਾਭਦਾਇਕ ਸਮੱਗਰੀ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਦੇ ਹਨ।</translation>
 <translation id="1407069428457324124">ਗੂੜ੍ਹਾ ਥੀਮ</translation>
 <translation id="1413240736185167732">ਅਸਫਲ ਰਹੀ - ਫਿਲਟਰ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -200,7 +200,7 @@
 <translation id="1808803439260407870">ਕਲਾਸਿਕ ਆਰਟ</translation>
 <translation id="181434555916624618">ਫ਼ਿਲਹਾਲ, ਅਜਿਹੇ ਨਤੀਜੇ ਨਹੀਂ ਦਿਖਾਏ ਜਾਣਗੇ, ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਲੋਕ ਸ਼ਾਮਲ ਹੋਣ। ਕੋਈ ਹੋਰ ਉਤਪ੍ਰੇਰਕ ਅਜ਼ਮਾਓ।</translation>
 <translation id="1815850098929213707">ਚੁਣੀ ਹੋਈ ਕੁੰਜੀ <ph name="KEYS" /> ਹੈ। ਕੰਟਰੋਲ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
-<translation id="1818174214124933000">ਜਦੋਂ ਤੁਸੀਂ "ਭੇਜੋ" ਚੁਣਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਡੇ ਵਿਚਾਰ ਅਤੇ ਸਮੱਗਰੀ (ਹੇਠਾਂ ਦਿਖਾਈ ਗਈ ਹੈ) ਨੂੰ Google ਨੂੰ ਭੇਜਿਆ ਜਾਵੇਗਾ, ਉਸਦੀ ਮਨੁੱਖਾਂ ਵੱਲੋਂ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਵੇਗੀ ਅਤੇ ਉਸਦੀ ਵਰਤੋਂ ਸਾਡੀ <ph name="LINK_POLICY_BEGIN" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="LINK_POLICY_END" /> ਅਤੇ <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="LINK_TERMS_OF_SERVICE_END" /> ਦੇ ਅਧੀਨ ਸਾਡੇ ਉਤਪਾਦਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਨੂੰ ਸਿਖਲਾਈ ਦੇਣ ਜਾਂ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਕੀਤੀ ਜਾਵੇਗੀ।</translation>
+<translation id="1818174214124933000">ਜਦੋਂ ਤੁਸੀਂ "ਭੇਜੋ" ਚੁਣਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਡੇ ਵਿਚਾਰ ਅਤੇ ਸਮੱਗਰੀ (ਹੇਠਾਂ ਦਿਖਾਈ ਗਈ ਹੈ) ਨੂੰ Google ਕੋਲ ਭੇਜਿਆ ਜਾਵੇਗਾ, ਮਨੁੱਖਾਂ ਵੱਲੋਂ ਉਨ੍ਹਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਵੇਗੀ ਅਤੇ ਜਿਸਦੀ ਵਰਤੋਂ ਸਾਡੀ <ph name="LINK_POLICY_BEGIN" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="LINK_POLICY_END" /> ਅਤੇ <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="LINK_TERMS_OF_SERVICE_END" /> ਹੇਠ ਸਾਡੇ ਉਤਪਾਦਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਨੂੰ ਸਿਖਲਾਈ ਦੇਣ ਜਾਂ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਕੀਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="1823120442877418684">ਅੱਖਰ-ਚਿੰਨ੍ਹ</translation>
 <translation id="1827738518074806965">ਕਲਾ ਗੈਲਰੀ</translation>
 <translation id="183287940576828840">ਅਪਮਾਨਜਨਕ/ਅਸੁਰੱਖਿਅਤ</translation>
@@ -230,7 +230,7 @@
 <translation id="1908234395526491708">UDP ਬੇਨਤੀ ਦੀਆਂ ਅਸਫਲਤਾਵਾਂ</translation>
 <translation id="1908394185991500139">ਖੱਬਾ ਤੀਰ</translation>
 <translation id="1914144885717544695">ਸ਼ੁੱਕਰਵਾਰ ਨੂੰ</translation>
-<translation id="1915960750806557358">ਆਪਣਾ ਵਿਚਾਰ ਸਾਂਝਾ ਕਰੋ ਜਾਂ ਆਪਣੀ ਸਮੱਸਿਆ ਦਾ ਵਰਣਨ ਕਰੋ। ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਇਸ ਵਿੱਚ ਕੋਈ ਵੀ ਅਜਿਹੀ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਨਾ ਹੋਵੇ ਜੋ ਨਿੱਜੀ, ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਗੁਪਤ ਹੋਵੇ।</translation>
+<translation id="1915960750806557358">ਆਪਣੇ ਵਿਚਾਰ ਸਾਂਝੇ ਕਰੋ ਜਾਂ ਆਪਣੀ ਸਮੱਸਿਆ ਦਾ ਵਰਣਨ ਕਰੋ। ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਇਸ ਵਿੱਚ ਕੋਈ ਵੀ ਅਜਿਹੀ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਨਾ ਹੋਵੇ ਜੋ ਨਿੱਜੀ, ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਗੁਪਤ ਹੋਵੇ।</translation>
 <translation id="1923388006036088459">ਐਕਸੈਂਟ ਰੰਗ</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">ਪ੍ਰਿੰਟ ਕੀਤੀ ਗਈ</translation>
@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">ਅਵੈਧ ਪਿੰਨ।</translation>
 <translation id="382043424867370667">ਡੁੱਬਦੇ ਸੂਰਜ ਦਾ ਵਾਲਪੇਪਰ</translation>
 <translation id="3824259034819781947">ਫ਼ਾਈਲਾਂ ਨੱਥੀ ਕਰੋ</translation>
-<translation id="3836587210832263413">ਸਿਰਫ਼ ਉਨ੍ਹਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ, ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਭਰੋਸਾ ਕਰਦੇ ਹੋ</translation>
 <translation id="3838338534323494292">ਨਵਾਂ ਪਾਸਵਰਡ</translation>
 <translation id="3845880861638660475">ਵਿੰਡੋ ਬੰਦ ਕਰਨ ਲਈ <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> ਕੁੰਜੀਆਂ ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="3848280697030027394">ਕੀ-ਬੋਰਡ 'ਤੇ ਗੂੜ੍ਹਾ ਥੀਮ ਲਾਓ</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">ਪ੍ਰਿੰਟਰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪ੍ਰਿੰਟਰਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6292095526077353682">ਚਾਰਜ ਕਰਨ ਦੌਰਾਨ, ਇਸ ਮਿਆਦ ਤੱਕ ਸਕ੍ਰੀਨ ਸੇਵਰ ਦਿਖਾਓ</translation>
 <translation id="629550705077076970">ਕੀ-ਬੋਰਡ ਦੀ ਰੋਸ਼ਨੀ ਘੱਟ ਕਰੋ</translation>
-<translation id="6301193653204230066">ਸੁਰੱਖਿਆ ਰੀਸੈੱਟ ਕਰਨ ਨਾਲ Chrome ਬ੍ਰਾਊਜ਼ਰ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬੰਦ ਹੋ ਜਾਂਦੀਆਂ ਹਨ, ਨੈੱਟਵਰਕ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਸੁਰੱਖਿਅਤ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਹੋ ਜਾਂਦੀਆਂ ਹਨ।
-          ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ, ਫ਼ਾਈਲਾਂ, ਕੁਕੀਜ਼ ਅਤੇ ਇਤਿਹਾਸ ਵਿੱਚ ਕੋਈ ਤਬਦੀਲੀ ਨਹੀਂ ਹੋਵੇਗੀ।</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ਟੈਸਟ ਨੂੰ ਰੱਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="631063167932043783">Explore ਐਪ</translation>
 <translation id="6318437367327684789">ਹਮੇਸ਼ਾਂ</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">ਸਾਰੀ ਰਿਕਾਰਡਿੰਗ ਵਿੱਚ ਅਵਾਜ਼ਾਂ ਦੀ ਤੁਲਨਾ ਕਰਦੀ ਹੈ, ਤਾਂ ਜੋ ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਇਹ ਦਰਸਾ ਸਕੇ ਕਿ ਹਰੇਕ ਸਪੀਕਰ ਨੇ ਕੀ ਅਤੇ ਕਦੋਂ ਕਿਹਾ ਹੈ</translation>
 <translation id="952992212772159698">ਸਕਿਰਿਆ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="95718197892796296">ਕਲੇ</translation>
+<translation id="959792926760890141">ਸੁਰੱਖਿਆ ਰੀਸੈੱਟ ਕਰਨ ਨਾਲ Chrome ਬ੍ਰਾਊਜ਼ਰ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬੰਦ ਹੋ ਜਾਂਦੀਆਂ ਹਨ, ਨੈੱਟਵਰਕ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਸੁਰੱਖਿਅਤ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਹੋ ਜਾਂਦੀਆਂ ਹਨ।
+          ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ, ਪਰ ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ, ਫ਼ਾਈਲਾਂ, ਕੂਕੀ, ਅਤੇ ਇਤਿਹਾਸ ਵਿੱਚ ਕੋਈ ਤਬਦੀਲੀ ਨਹੀਂ ਹੋਵੇਗੀ।</translation>
 <translation id="960719561871045870">ਓਪਰੇਟਰ ਕੋਡ</translation>
 <translation id="965918541715156800">ਪੀਲਾ ਅਤੇ ਟੀਲ</translation>
 <translation id="966787709310836684">ਮੀਨੂ</translation>

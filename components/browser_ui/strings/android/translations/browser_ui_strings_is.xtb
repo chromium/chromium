@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1384959399684842514">Gert var hlé á niðurhali</translation>
 <translation id="1396327438254055134">Leyfa vefsvæði að nota V8 optimizer.</translation>
+<translation id="1409338233051621926">Ýttu á „Forrit“ og síðan á „Sjálfgefin forrit“</translation>
 <translation id="1415402041810619267">Stytt vefslóð</translation>
 <translation id="1415855080660575082">Leyfðu Chrome að deila nýlegum flipum með tækinu þínu svo að þú getir séð þá á forritalista og í leitarniðurstöðum tækisins. Þú getur kveikt eða slökkt á þessu í stillingum Chrome.</translation>
 <translation id="1448064542941920355">Minnka aðdrátt</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Ekki nota dökkt þema fyrir vefsvæði</translation>
 <translation id="2606760465469169465">Sjálfvirk staðfesting</translation>
 <translation id="2621115761605608342">Leyfa JavaScript fyrir ákveðna síðu.</translation>
+<translation id="2626708220538466178">Blað neðst í sjálfgefnum vafra, lokað</translation>
 <translation id="2653659639078652383">Senda</translation>
 <translation id="2677748264148917807">Yfirgefa</translation>
 <translation id="2682367912565197520">Eyða vistaðri stærð</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Slökkva á hljóði vefsvæða sem spila hljóð</translation>
 <translation id="3602290021589620013">Forskoða</translation>
 <translation id="3628308229821498208">Leitartillögur</translation>
+<translation id="3658847490588580244">Blað neðst í sjálfgefnum vafra</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}one{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}other{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}}</translation>
 <translation id="3697164069658504920">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota USB-tæki. Þegar slökkt er á þessu geta vefsvæði ekki notað USB-tæki.</translation>
 <translation id="3707034683772193706">Vefsvæði sem þú heimsækir getur vistað lítið magn upplýsinga í Chrome, aðallega til að staðfesta að þú sért raunverulegur notandi</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Eyða og endurstilla</translation>
 <translation id="4645575059429386691">Stjórnað af foreldri þínu</translation>
 <translation id="4670064810192446073">Sýndarveruleiki</translation>
+<translation id="4672315773691449562">Ýttu á „Vafraforrit“ og síðan á „Chrome“</translation>
 <translation id="4676059169848868271">Til að leyfa <ph name="APP_NAME" /> að nota rakningu handahreyfinga skaltu líka kveikja á rakningu handahreyfinga í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Hreyfi- eða birtuskynjarar</translation>
 <translation id="4755971844837804407">Þegar kveikt er á þessu geta vefsvæði birt þér hvaða auglýsingar sem er. Þegar slökkt er á þessu geta vefsvæði ekki sýnt ágengar eða villandi auglýsingar.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Leyft (ráðlagt)</translation>
 <translation id="8609465669617005112">Færa upp</translation>
 <translation id="8617611086246832542">Þegar kveikt er á þessu er tölvuútgáfa vefsvæða sýnd. Þegar slökkt er á þessu er símaútgáfa vefsvæða sýnd.</translation>
+<translation id="8670078035093027626">Blað neðst í sjálfgefnum vafra, opið til fulls</translation>
 <translation id="8676316391139423634">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að rekja handahreyfingarnar þínar. Þegar slökkt er á þessu geta vefsvæði ekki rakið handahreyfingarnar þínar.</translation>
 <translation id="8676374126336081632">Hreinsa innslátt</translation>
 <translation id="8681886425883659911">Lokað er fyrir auglýsingar á vefsvæðum sem eru þekkt fyrir að birta ágengar eða villandi auglýsingar</translation>
