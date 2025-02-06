@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/canvas.h"
@@ -472,7 +473,10 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
   }
 #endif
   id = border_color_id_.value_or(id);
-  auto bubble_border = std::make_unique<BubbleBorder>(arrow_, shadow_type, id);
+
+  auto bubble_border = std::make_unique<BubbleBorder>(arrow_, shadow_type);
+  bubble_border->SetColor(id);
+
   const MenuConfig& menu_config = MenuConfig::instance();
   bubble_border->set_md_shadow_elevation(
       content_view_->GetMenuItem()->GetParentMenuItem()

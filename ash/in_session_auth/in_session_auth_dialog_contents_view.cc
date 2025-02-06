@@ -98,8 +98,8 @@ InSessionAuthDialogContentsView::InSessionAuthDialogContentsView(
       .SetCollapseMargins(true);
 
   auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW,
-      ui::kColorPrimaryBackground);
+      views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW);
+  border->SetColor(ui::kColorPrimaryBackground);
   border->SetCornerRadius(kCornerRadius);
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));
