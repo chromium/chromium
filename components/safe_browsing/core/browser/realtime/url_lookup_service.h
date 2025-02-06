@@ -127,6 +127,9 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   void MaybeLogProtegoPingCookieHistograms(bool request_had_cookie,
                                            bool was_first_request,
                                            bool sent_with_token) override;
+  void MaybeFillReferringWebApk(
+      const internal::ReferringAppInfo& referring_app_info,
+      RTLookupRequest& request) override;
 
   // Called when the access token is obtained from |token_fetcher_|.
   void OnGetAccessToken(

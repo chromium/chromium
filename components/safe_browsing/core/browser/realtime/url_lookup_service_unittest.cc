@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -17,6 +18,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/test_safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -188,11 +190,13 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   bool CanSendRTSampleRequest() {
     return rt_service_->CanSendRTSampleRequest();
   }
-  std::unique_ptr<RTLookupRequest> FillRequestProto(const GURL& url,
-                                                    bool is_sampled_report) {
-    return rt_service_->FillRequestProto(url, is_sampled_report,
-                                         SessionID::InvalidValue(),
-                                         /*referring_app_info=*/std::nullopt);
+  std::unique_ptr<RTLookupRequest> FillRequestProto(
+      const GURL& url,
+      bool is_sampled_report,
+      std::optional<internal::ReferringAppInfo> referring_app_info =
+          std::nullopt) {
+    return rt_service_->FillRequestProto(
+        url, is_sampled_report, SessionID::InvalidValue(), referring_app_info);
   }
   std::unique_ptr<RTLookupResponse> GetCachedRealTimeUrlVerdict(
       const GURL& url) {
@@ -397,6 +401,82 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillRequestProto) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     EXPECT_TRUE(result->population().is_under_advanced_protection());
 #endif
+  }
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestFillReferringAppInfo) {
+  // The features kAddReferringAppInfoToProtegoPings and
+  // kAddReferringWebApkToProtegoPings are relevant to this functionality, but
+  // the actual check for the feature state is earlier (not in
+  // RealTimeUrlLookupService).
+  EnableRealTimeUrlLookup({}, {});
+  struct {
+    bool is_enhanced_protection;
+    bool has_referring_webapk_start_url;
+    bool expect_has_referring_app_info;
+    bool expect_has_referring_webapk;
+  } kTestCases[] = {
+      {
+          .is_enhanced_protection = true,
+          .has_referring_webapk_start_url = true,
+          .expect_has_referring_app_info = true,
+          .expect_has_referring_webapk = true,
+      },
+      {
+          .is_enhanced_protection = true,
+          .has_referring_webapk_start_url = false,
+          .expect_has_referring_app_info = true,
+          .expect_has_referring_webapk = false,
+      },
+      {
+          .is_enhanced_protection = false,
+          .has_referring_webapk_start_url = true,
+          .expect_has_referring_app_info = false,
+          .expect_has_referring_webapk = false,
+      },
+      {
+          .is_enhanced_protection = false,
+          .has_referring_webapk_start_url = false,
+          .expect_has_referring_app_info = false,
+          .expect_has_referring_webapk = false,
+      },
+  };
+  GURL url("https://example.test");
+  GURL webapk_start_url("https://webapp.test");
+  GURL webapk_manifest_id("https://webapp.test/id");
+  for (const auto& test_case : kTestCases) {
+    SetSafeBrowsingState(&test_pref_service_,
+                         test_case.is_enhanced_protection
+                             ? SafeBrowsingState::ENHANCED_PROTECTION
+                             : SafeBrowsingState::STANDARD_PROTECTION);
+    internal::ReferringAppInfo referring_app_info;
+    if (test_case.has_referring_webapk_start_url) {
+      referring_app_info.referring_webapk_start_url = webapk_start_url;
+      referring_app_info.referring_webapk_manifest_id = webapk_manifest_id;
+    }
+    for (bool is_sampled_report : {true, false}) {
+      SCOPED_TRACE(base::StringPrintf(
+          "is_enhanced_protection: %d; has_referring_webapk_start_url: %d; "
+          "is_sampled_report: %d",
+          test_case.is_enhanced_protection,
+          test_case.has_referring_webapk_start_url, is_sampled_report));
+      auto result =
+          FillRequestProto(url, is_sampled_report, referring_app_info);
+      EXPECT_EQ(result->has_referring_app_info(),
+                test_case.expect_has_referring_app_info);
+      if (result->has_referring_app_info()) {
+        EXPECT_EQ(result->referring_app_info().has_referring_webapk(),
+                  test_case.expect_has_referring_webapk);
+      }
+      if (test_case.expect_has_referring_webapk) {
+        EXPECT_EQ(
+            result->referring_app_info().referring_webapk().start_url_origin(),
+            "webapp.test");
+        EXPECT_EQ(
+            result->referring_app_info().referring_webapk().id_or_start_path(),
+            "id");
+      }
+    }
   }
 }
 
@@ -966,7 +1046,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {
         RTLookupRequest request_proto;
         ASSERT_TRUE(GetRequestProto(request, &request_proto));
 
-        EXPECT_EQ(3, request_proto.version());
+        EXPECT_EQ(4, request_proto.version());
         // Check referrer chain is attached.
         EXPECT_EQ(2, request_proto.referrer_chain().size());
         EXPECT_EQ(kTestUrl, request_proto.referrer_chain().Get(0).url());
@@ -1024,7 +1104,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         RTLookupRequest request_proto;
         ASSERT_TRUE(GetRequestProto(request, &request_proto));
 
-        EXPECT_EQ(3, request_proto.version());
+        EXPECT_EQ(4, request_proto.version());
         EXPECT_EQ(2, request_proto.referrer_chain().size());
         // The first entry is sanitized because it is triggered in a
         // subframe.
@@ -1108,7 +1188,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         RTLookupRequest request_proto;
         ASSERT_TRUE(GetRequestProto(request, &request_proto));
-        EXPECT_EQ(3, request_proto.version());
+        EXPECT_EQ(4, request_proto.version());
         EXPECT_EQ(2, request_proto.referrer_chain().size());
         // Check referrer chain is not sanitized.
         EXPECT_EQ(kTestSubframeUrl,
@@ -1188,7 +1268,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         RTLookupRequest request_proto;
         ASSERT_TRUE(GetRequestProto(request, &request_proto));
 
-        EXPECT_EQ(3, request_proto.version());
+        EXPECT_EQ(4, request_proto.version());
         EXPECT_EQ(2, request_proto.referrer_chain().size());
         // The first referrer chain is sanitized.
         EXPECT_EQ("", request_proto.referrer_chain().Get(0).url());
@@ -1280,7 +1360,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
         RTLookupRequest request_proto;
         ASSERT_TRUE(GetRequestProto(request, &request_proto));
 
-        EXPECT_EQ(3, request_proto.version());
+        EXPECT_EQ(4, request_proto.version());
         EXPECT_EQ(2, request_proto.referrer_chain().size());
         // Check the first referrer chain is sanitized because it's logged
         // before real time URL lookup is enabled.
@@ -1459,7 +1539,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestSendSampledRequest) {
         RTLookupRequest request_proto;
         ASSERT_TRUE(GetRequestProto(request, &request_proto));
 
-        EXPECT_EQ(3, request_proto.version());
+        EXPECT_EQ(4, request_proto.version());
         EXPECT_EQ(2, request_proto.report_type());
         EXPECT_EQ(1, request_proto.frame_type());
       }));

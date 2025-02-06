@@ -69,6 +69,8 @@ message RTLookupRequest {
   //   * Client supports referrer chains.
   // Version 3:
   //   * Client support the |report_type| and |frame_type| fields.
+  // Version 4:
+  //   * Client may include |referring_webapk| in |referring_app_info| field.
   optional int32 version = 6 [default = 0];
 
   // The operating system of the client.

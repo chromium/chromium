@@ -20,7 +20,9 @@
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/browser/utils/safe_browsing_web_app_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/unified_consent/pref_names.h"
@@ -293,6 +295,20 @@ void RealTimeUrlLookupService::MaybeLogProtegoPingCookieHistograms(
     base::StrAppend(&histogram_name, {".SignedOutEsbUser"});
     base::UmaHistogramBoolean(histogram_name, request_had_cookie);
   }
+}
+
+void RealTimeUrlLookupService::MaybeFillReferringWebApk(
+    const internal::ReferringAppInfo& referring_app_info,
+    RTLookupRequest& request) {
+  CHECK(request.has_referring_app_info());
+  std::optional<SafeBrowsingWebAppKey> webapk =
+      GetSafeBrowsingWebAppKey(referring_app_info.referring_webapk_start_url,
+                               referring_app_info.referring_webapk_manifest_id);
+  if (!webapk) {
+    return;
+  }
+  *request.mutable_referring_app_info()->mutable_referring_webapk() =
+      std::move(*webapk);
 }
 
 }  // namespace safe_browsing
