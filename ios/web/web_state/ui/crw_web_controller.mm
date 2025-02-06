@@ -1459,6 +1459,9 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 - (WKWebView*)UIHandler:(CRWWKUIHandler*)UIHandler
     createWebViewWithConfiguration:(WKWebViewConfiguration*)configuration
                        forWebState:(web::WebState*)webState {
+  // Opening a new window must consume the user interaction.
+  _userInteractionState.SetLastUserInteraction(nullptr);
+
   CRWWebController* webController =
       web::WebStateImpl::FromWebState(webState)->GetWebController();
   DCHECK(!webController || webState->HasOpener());
