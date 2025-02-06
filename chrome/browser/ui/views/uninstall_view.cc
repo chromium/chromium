@@ -126,7 +126,7 @@ void UninstallView::SetupControls() {
 void UninstallView::OnDialogAccepted() {
   *user_selection_ = content::RESULT_CODE_NORMAL_EXIT;
   if (delete_profile_->GetChecked()) {
-    *user_selection_ = chrome::RESULT_CODE_UNINSTALL_DELETE_PROFILE;
+    *user_selection_ = CHROME_RESULT_CODE_UNINSTALL_DELETE_PROFILE;
   }
   if (change_default_browser_ && change_default_browser_->GetChecked()) {
     BrowsersMap::const_iterator i = browsers_->begin();
@@ -138,7 +138,7 @@ void UninstallView::OnDialogAccepted() {
 }
 
 void UninstallView::OnDialogCancelled() {
-  *user_selection_ = chrome::RESULT_CODE_UNINSTALL_USER_CANCEL;
+  *user_selection_ = CHROME_RESULT_CODE_UNINSTALL_USER_CANCEL;
 }
 
 size_t UninstallView::GetItemCount() const {

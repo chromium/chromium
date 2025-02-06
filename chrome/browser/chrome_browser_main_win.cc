@@ -484,15 +484,15 @@ int DoUninstallTasks(bool chrome_still_running) {
   // check once again after user acknowledges Uninstall dialog.
   if (chrome_still_running) {
     ShowCloseBrowserFirstMessageBox();
-    return chrome::RESULT_CODE_UNINSTALL_CHROME_ALIVE;
+    return CHROME_RESULT_CODE_UNINSTALL_CHROME_ALIVE;
   }
   int result = chrome::ShowUninstallBrowserPrompt();
   if (browser_util::IsBrowserAlreadyRunning()) {
     ShowCloseBrowserFirstMessageBox();
-    return chrome::RESULT_CODE_UNINSTALL_CHROME_ALIVE;
+    return CHROME_RESULT_CODE_UNINSTALL_CHROME_ALIVE;
   }
 
-  if (result != chrome::RESULT_CODE_UNINSTALL_USER_CANCEL) {
+  if (result != CHROME_RESULT_CODE_UNINSTALL_USER_CANCEL) {
     // The following actions are just best effort.
     VLOG(1) << "Executing uninstall actions";
     // Remove shortcuts targeting chrome.exe or chrome_proxy.exe.
@@ -771,7 +771,7 @@ int ChromeBrowserMainPartsWin::HandleIconsCommands(
     return content::RESULT_CODE_NORMAL_EXIT;
   }
   // We don't hide icons so we shouldn't do anything special to show them
-  return chrome::RESULT_CODE_UNSUPPORTED_PARAM;
+  return CHROME_RESULT_CODE_UNSUPPORTED_PARAM;
 }
 
 // static

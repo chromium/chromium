@@ -714,7 +714,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
 #else
     const int chrome_exit_code = WEXITSTATUS(exit_code);
 #endif
-    if (chrome_exit_code == chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED ||
+    if (chrome_exit_code == CHROME_RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED ||
         chrome_exit_code == content::RESULT_CODE_NORMAL_EXIT) {
       return Status(kSessionNotCreated,
                     "probably user data directory is already in use, "

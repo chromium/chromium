@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   int exit_code;
   ASSERT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
                                              &exit_code));
-  ASSERT_EQ(chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED, exit_code);
+  ASSERT_EQ(CHROME_RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED, exit_code);
 }
 
 // TODO(jackhou): Enable this test once it works on OSX. It currently does not
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   int exit_code;
   ASSERT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
                                              &exit_code));
-  ASSERT_EQ(chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED, exit_code);
+  ASSERT_EQ(CHROME_RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED, exit_code);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -375,13 +375,15 @@ InstallStatus IsChromeActiveOrUserCancelled(
   if (LaunchChromeAndWait(installer_state.target_path(), options, &exit_code)) {
     VLOG(1) << "chrome.exe launched for uninstall confirmation returned: "
             << exit_code;
-    if ((exit_code == chrome::RESULT_CODE_UNINSTALL_CHROME_ALIVE) ||
-        (exit_code == chrome::RESULT_CODE_UNINSTALL_USER_CANCEL) ||
-        (exit_code == content::RESULT_CODE_HUNG))
+    if ((exit_code == CHROME_RESULT_CODE_UNINSTALL_CHROME_ALIVE) ||
+        (exit_code == CHROME_RESULT_CODE_UNINSTALL_USER_CANCEL) ||
+        (exit_code == content::RESULT_CODE_HUNG)) {
       return installer::UNINSTALL_CANCELLED;
+    }
 
-    if (exit_code == chrome::RESULT_CODE_UNINSTALL_DELETE_PROFILE)
+    if (exit_code == CHROME_RESULT_CODE_UNINSTALL_DELETE_PROFILE) {
       return installer::UNINSTALL_DELETE_PROFILE;
+    }
   } else {
     PLOG(ERROR) << "Failed to launch chrome.exe for uninstall confirmation.";
   }

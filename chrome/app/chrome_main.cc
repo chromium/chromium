@@ -200,7 +200,7 @@ int ChromeMain(int argc, const char** argv) {
   if (headless::IsHeadlessMode()) {
     if (command_line->GetArgs().size() > 1) {
       LOG(ERROR) << "Multiple targets are not supported in headless mode.";
-      return chrome::RESULT_CODE_UNSUPPORTED_PARAM;
+      return CHROME_RESULT_CODE_UNSUPPORTED_PARAM;
     }
     headless_mode_handle = headless::InitHeadlessMode();
   } else {
@@ -221,7 +221,8 @@ int ChromeMain(int argc, const char** argv) {
 
   int rv = content::ContentMain(std::move(params));
 
-  if (chrome::IsNormalResultCode(static_cast<chrome::ResultCode>(rv)))
+  if (IsNormalResultCode(static_cast<ResultCode>(rv))) {
     return content::RESULT_CODE_NORMAL_EXIT;
+  }
   return rv;
 }
