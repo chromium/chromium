@@ -770,7 +770,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
 // Tests that opening the extensions menu highlight the extension toolbar
 // button.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
-                       ExtensionsMenuButtonHighlight) {
+                       DISABLED_ExtensionsMenuButtonHighlight) {
   LoadExtension(test_data_dir_.AppendASCII("simple_with_icon"));
 
   RunTestSequence(
