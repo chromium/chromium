@@ -229,6 +229,7 @@ android_library("content_full_java") {
     ":content_jni_headers",
     ":is_ready_to_pay_service_aidl",
     "//content/browser:client_data_json_generated_enum",
+    "//content/browser:transfer_input_to_viz_result_enum",
     "//content/browser/accessibility:content_browser_accessibility_java_enums_srcjar",
     "//content/browser/sms:sms_provider_gms_backend_enum",
     "//content/public/browser:bluetooth_chooser_event_javagen",

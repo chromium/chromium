@@ -3331,6 +3331,7 @@ source_set("browser") {
     deps += [
       ":fontations_name_table_ffi",
       ":reflection_jni_headers",
+      ":transfer_input_to_viz_result_enum",
       "//cc/slim",
       "//components/tracing:graphics_provider",
       "//content/public/android:browser_jni",
@@ -3648,6 +3649,9 @@ group("for_content_tests") {
 if (is_android) {
   java_cpp_enum("client_data_json_generated_enum") {
     sources = [ "webauth/client_data_json.h" ]
+  }
+  java_cpp_enum("transfer_input_to_viz_result_enum") {
+    sources = [ "renderer_host/input/transfer_input_to_viz_result.h" ]
   }
 }
 

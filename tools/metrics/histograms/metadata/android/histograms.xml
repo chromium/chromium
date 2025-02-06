@@ -2295,6 +2295,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InputOnViz.Browser.TransferInputToVizResult"
+    enum="TransferInputToVizResult" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    The metric is only recorded when transfer of input sequence from Browser to
+    Viz is supported.
+
+    It records the result of transferring input sequence from Browser. The
+    sequence can be handled by Browser/Viz based on various factors like if Ime
+    is active, or touch selection is active, etc.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputOnViz.InputReceiverCreationResult"
     enum="CreateAndroidInputReceiverResult" expires_after="2025-06-30">
   <owner>kartarsingh@google.com</owner>

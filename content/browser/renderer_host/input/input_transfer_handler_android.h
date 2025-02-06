@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "content/browser/renderer_host/input/transfer_input_to_viz_result.h"
 #include "content/common/content_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/events/android/motion_event_android.h"
@@ -36,7 +37,7 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
     virtual ~JniDelegate() = default;
     // `raw_x` is the point's x coordinate in pixels in coordinate space of the
     // device display similar to MotionEvent.getRawX.
-    virtual bool MaybeTransferInputToViz(int surface_id, float raw_x) = 0;
+    virtual int MaybeTransferInputToViz(int surface_id, float raw_x) = 0;
   };
 
   explicit InputTransferHandlerAndroid(
@@ -54,6 +55,8 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
       "Android.InputOnViz.Browser.TouchMovesSeenAfterTransfer";
   static constexpr const char* kEventsAfterTransferHistogram =
       "Android.InputOnViz.Browser.EventsAfterTransfer";
+  static constexpr const char* kTransferInputToVizResultHistogram =
+      "Android.InputOnViz.Browser.TransferInputToVizResult";
 
   bool touch_transferred() { return touch_transferred_; }
   bool FilterRedundantDownEvent(const ui::MotionEvent& event);

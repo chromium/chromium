@@ -1799,6 +1799,20 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="TABLET_BUTTON_ANIMATION_IN_PROGRESS"/>
 </enum>
 
+<enum name="TransferInputToVizResult">
+  <int value="0" label="SuccessfullyTransferred"/>
+  <int value="1" label="InputTransferHandlerNotFoundInMap"/>
+  <int value="2" label="NonFingerToolType"/>
+  <int value="3" label="VizInitializationNotComplete"/>
+  <int value="4" label="SelectionHandlesActive"/>
+  <int value="5" label="CanTriggerBackGesture"/>
+  <int value="6" label="ImeIsActive"/>
+  <int value="7" label="RequestedByEmbedder"/>
+  <int value="8" label="SystemServerDidNotTransfer"/>
+  <int value="9" label="kBrowserTokenChanged"/>
+  <int value="10" label="kMultipleBrowserWindowsOpen"/>
+</enum>
+
 <enum name="UrlTargetType">
   <int value="0" label="URL"/>
   <int value="1" label="Search"/>
