@@ -49,8 +49,6 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -74,9 +72,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/browser/download/download_stats.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -150,12 +146,18 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/skyvault/skyvault_rename_handler.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "components/safe_browsing/content/browser/download/download_stats.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #endif
 
 using content::BrowserThread;
@@ -530,12 +532,14 @@ void ChromeDownloadManagerDelegate::SetDownloadManager(DownloadManager* dm) {
 
   download_manager_ = dm;
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
   if (sb_service && !profile_->IsOffTheRecord()) {
     // Include this download manager in the set monitored by safe browsing.
     sb_service->AddDownloadManager(dm);
   }
+#endif
 
   if (download_manager_) {
     download_manager_->AddObserver(this);
@@ -701,6 +705,7 @@ bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFile(
 #endif
 
   bool should_open = download_prefs_->IsAutoOpenEnabled(url, path);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   int64_t file_type_uma_value =
       safe_browsing::FileTypePolicies::GetInstance()->UmaValueForFile(path);
   if (should_open) {
@@ -710,6 +715,7 @@ bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFile(
     base::UmaHistogramSparse("SBClientDownload.AutoOpenDisabledFileType",
                              file_type_uma_value);
   }
+#endif
 
   return should_open;
 }
@@ -1074,6 +1080,7 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
 void ChromeDownloadManagerDelegate::SanitizeSavePackageResourceName(
     base::FilePath* filename,
     const GURL& source_url) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::FileTypePolicies* file_type_policies =
       safe_browsing::FileTypePolicies::GetInstance();
 
@@ -1085,6 +1092,7 @@ void ChromeDownloadManagerDelegate::SanitizeSavePackageResourceName(
   base::FilePath default_filename = base::FilePath::FromUTF8Unsafe(
       l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME));
   *filename = filename->AddExtension(default_filename.BaseName().value());
+#endif
 }
 
 void ChromeDownloadManagerDelegate::SanitizeDownloadParameters(
@@ -2075,8 +2083,9 @@ void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(
   DCHECK(download_item);
   DCHECK(download_item->IsSavePackageDownload());
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_MAC)) &&                                                 \
+    BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   std::optional<enterprise_connectors::AnalysisSettings> settings =
       safe_browsing::DeepScanningRequest::ShouldUploadBinary(download_item);
 

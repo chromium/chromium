@@ -35,14 +35,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_dangerous_file_dialog.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_dialogs.h"
@@ -59,7 +57,6 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -96,6 +93,12 @@
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -179,6 +182,7 @@ void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
       origin, handle_type, std::move(callback), web_contents);
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void ShowFileSystemAccessDangerousFileDialogOnUIThread(
     content::GlobalRenderFrameHostId frame_id,
     const url::Origin& origin,
@@ -207,6 +211,7 @@ void ShowFileSystemAccessDangerousFileDialogOnUIThread(
   ShowFileSystemAccessDangerousFileDialog(origin, path_info,
                                           std::move(callback), web_contents);
 }
+#endif
 
 #if BUILDFLAG(IS_WIN)
 bool ContainsInvalidDNSCharacter(base::FilePath::StringType hostname) {
@@ -495,6 +500,7 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
   return true;
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void DoSafeBrowsingCheckOnUIThread(
     content::GlobalRenderFrameHostId frame_id,
     std::unique_ptr<content::FileSystemAccessWriteItem> item,
@@ -533,7 +539,7 @@ void DoSafeBrowsingCheckOnUIThread(
       std::move(item), std::move(callback));
 #else
   std::move(callback).Run(safe_browsing::DownloadCheckResult::UNKNOWN);
-#endif
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 
 ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult
@@ -574,6 +580,7 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
   }
   NOTREACHED();
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 std::string GenerateLastPickedDirectoryKey(const std::string& id) {
   return id.empty() ? kDefaultLastPickedDirectoryKey
@@ -591,6 +598,7 @@ std::string_view GetGrantKeyFromGrantType(GrantType type) {
                                    : kPermissionReadableKey;
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 safe_browsing::DownloadFileType::DangerLevel GetFileTypeDangerLevel(
     const base::FilePath& path,
     const url::Origin& origin,
@@ -598,6 +606,7 @@ safe_browsing::DownloadFileType::DangerLevel GetFileTypeDangerLevel(
   return safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
       path, origin.GetURL(), profile->GetPrefs());
 }
+#endif
 
 std::string StringOrEmpty(const std::string* s) {
   return s ? *s : std::string();
@@ -1717,9 +1726,13 @@ bool ChromeFileSystemAccessPermissionContext::CanObtainWritePermission(
 bool ChromeFileSystemAccessPermissionContext::IsFileTypeDangerous(
     const base::FilePath& path,
     const url::Origin& origin) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   return GetFileTypeDangerLevel(path, origin,
                                 Profile::FromBrowserContext(profile_)) ==
          safe_browsing::DownloadFileType::DANGEROUS;
+#else
+  return false;
+#endif
 }
 
 void ChromeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
@@ -1857,6 +1870,7 @@ void ChromeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
     content::GlobalRenderFrameHostId frame_id,
     base::OnceCallback<void(AfterWriteCheckResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -1873,6 +1887,15 @@ void ChromeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
               },
               base::SequencedTaskRunner::GetCurrentDefault(),
               std::move(callback))));
+#else
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::OnceCallback<void(AfterWriteCheckResult result)> callback) {
+            std::move(callback).Run(AfterWriteCheckResult::kAllow);
+          },
+          std::move(callback)));
+#endif
 }
 
 base::expected<void, std::string>
@@ -1935,6 +1958,7 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
     return;
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // If attempting to save a file with a dangerous extension, prompt the user
   // to make them confirm they actually want to save the file.
   if (handle_type == HandleType::kFile && user_action == UserAction::kSave) {
@@ -1955,6 +1979,7 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
       return;
     }
   }
+#endif
 
   std::move(callback).Run(SensitiveEntryResult::kAllowed);
 }

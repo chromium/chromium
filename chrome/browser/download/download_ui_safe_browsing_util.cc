@@ -9,7 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
@@ -17,6 +17,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #endif
 
 namespace {
@@ -68,12 +72,14 @@ bool CanUserTurnOnSafeBrowsing(Profile* profile) {
 void RecordDownloadDangerPromptHistogram(
     const std::string& proceed_or_shown_suffix,
     const download::DownloadItem& item) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   int64_t file_type_uma_value =
       safe_browsing::FileTypePolicies::GetInstance()->UmaValueForFile(
           item.GetTargetFilePath());
   base::UmaHistogramSparse(
       GetDangerPromptHistogramName(proceed_or_shown_suffix, item),
       file_type_uma_value);
+#endif
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

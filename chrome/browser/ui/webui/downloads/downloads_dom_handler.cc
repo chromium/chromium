@@ -39,7 +39,6 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -72,6 +71,10 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#endif
 
 using content::BrowserThread;
 
@@ -155,10 +158,12 @@ void MaybeReportBypassAction(download::DownloadItem* file,
   if (action != WarningAction::PROCEED && action != WarningAction::DISCARD) {
     return;
   }
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   SendSafeBrowsingDownloadReport(
       safe_browsing::ClientSafeBrowsingReportRequest::
           DANGEROUS_DOWNLOAD_RECOVERY,
       /*did_proceed=*/action == WarningAction::PROCEED, file);
+#endif
 }
 
 // Triggers a Trust and Safety sentiment survey (if enabled). Should be called
@@ -608,8 +613,10 @@ void DownloadsDOMHandler::DeepScan(const std::string& id) {
     return;
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   LogDeepScanEvent(download,
                    safe_browsing::DeepScanEvent::kPromptAcceptedFromWebUI);
+#endif
   DownloadItemWarningData::AddWarningActionEvent(
       download, DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
       DownloadItemWarningData::WarningAction::ACCEPT_DEEP_SCAN);
@@ -649,11 +656,13 @@ void DownloadsDOMHandler::ReviewDangerousRequiringGesture(
   }
 
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_REVIEW_DANGEROUS);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   download::DownloadItem* download = GetDownloadByStringId(id);
   if (download) {
     DownloadItemModel model(download);
     model.ReviewScanningVerdict(GetWebUIWebContents());
   }
+#endif
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

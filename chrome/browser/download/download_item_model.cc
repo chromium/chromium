@@ -36,8 +36,6 @@
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -47,7 +45,6 @@
 #include "components/download/public/common/download_item_rename_handler.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/consent_level.h"
@@ -78,6 +75,12 @@
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #endif
 
 using DangerUiPattern = DownloadUIModel::DangerUiPattern;
@@ -711,9 +714,11 @@ bool DownloadItemModel::IsCommandEnabled(
       // filename. Don't base an "Always open" decision based on it. Also
       // exclude extensions.
       return download_->CanOpenDownload() &&
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
              safe_browsing::FileTypePolicies::GetInstance()
                  ->IsAllowedToOpenAutomatically(
                      download_->GetTargetFilePath()) &&
+#endif
              !download_crx_util::IsExtensionDownload(*download_);
     case DownloadCommands::PAUSE:
       return !download_->IsSavePackageDownload() &&
@@ -831,6 +836,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #if BUILDFLAG(FULL_SAFE_BROWSING)
       CompleteSafeBrowsingScan();
 #endif
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
       if (download_->GetDangerType() ==
               download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING ||
           download_->GetDangerType() ==
@@ -842,6 +848,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
         LogDeepScanEvent(download_,
                          safe_browsing::DeepScanEvent::kPromptBypassed);
       }
+#endif
       [[fallthrough]];
     case DownloadCommands::KEEP:
       if (IsInsecure()) {
@@ -899,13 +906,16 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       DownloadUIModel::ExecuteCommand(download_commands, command);
       break;
     case DownloadCommands::DEEP_SCAN: {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
       safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
           download_,
           DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
           /*password=*/std::nullopt);
+#endif
       break;
     }
     case DownloadCommands::CANCEL_DEEP_SCAN: {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
       DownloadCoreService* download_core_service =
           DownloadCoreServiceFactory::GetForBrowserContext(
               content::DownloadItemUtils::GetBrowserContext(download_));
@@ -917,12 +927,14 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       delegate->CheckClientDownloadDone(
           download_->GetId(),
           safe_browsing::DownloadCheckResult::PROMPT_FOR_SCANNING);
+#endif
       break;
     }
   }
 }
 
 TailoredWarningType DownloadItemModel::GetTailoredWarningType() const {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (!base::FeatureList::IsEnabled(safe_browsing::kDownloadTailoredWarnings)) {
     return TailoredWarningType::kNoTailoredWarning;
   }
@@ -946,6 +958,7 @@ TailoredWarningType DownloadItemModel::GetTailoredWarningType() const {
     }
     return TailoredWarningType::kCookieTheft;
   }
+#endif
 
   return TailoredWarningType::kNoTailoredWarning;
 }

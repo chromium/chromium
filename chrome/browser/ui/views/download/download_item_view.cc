@@ -37,8 +37,6 @@
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
@@ -103,6 +101,11 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
 
 namespace {
 
@@ -828,6 +831,7 @@ void DownloadItemView::UpdateLabels() {
     warning_label_->SizeToFit(GetLabelWidth(*warning_label_));
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   deep_scanning_label_->SetVisible(mode_ ==
                                    download::DownloadItemMode::kDeepScanning);
   if (deep_scanning_label_->GetVisible()) {
@@ -843,6 +847,7 @@ void DownloadItemView::UpdateLabels() {
     StyleFilename(*deep_scanning_label_, filename_offset, filename.length());
     deep_scanning_label_->SizeToFit(GetLabelWidth(*deep_scanning_label_));
   }
+#endif
 }
 
 void DownloadItemView::UpdateButtons() {
@@ -1313,7 +1318,9 @@ void DownloadItemView::ShowContextMenuImpl(
 }
 
 void DownloadItemView::OpenDownloadDuringAsyncScanning() {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   model_->CompleteSafeBrowsingScan();
+#endif
   model_->SetOpenWhenComplete(true);
 }
 

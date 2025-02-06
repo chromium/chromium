@@ -31,8 +31,6 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -45,10 +43,15 @@
 #include "components/download/public/common/download_stats.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#endif
 
 namespace {
 
@@ -288,8 +291,10 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
       break;
     }
     case DownloadCommands::REVIEW:
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
       model->ReviewScanningVerdict(
           browser_->tab_strip_model()->GetActiveWebContents());
+#endif
       break;
     case DownloadCommands::RETRY:
       RetryDownload(model.get(), command);

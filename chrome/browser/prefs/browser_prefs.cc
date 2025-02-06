@@ -162,7 +162,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
-#include "components/safe_browsing/content/common/file_type_policies_prefs.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -553,6 +553,10 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_profile_configuration.h"
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/common/file_type_policies_prefs.h"
 #endif
 
 namespace {
@@ -2022,7 +2026,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   settings::ResetSettingsHandler::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::file_type::RegisterProfilePrefs(registry);
+#endif
   safe_browsing::RegisterProfilePrefs(registry);
   SearchPrefetchService::RegisterProfilePrefs(registry);
   blocked_content::SafeBrowsingTriggeredPopupBlocker::RegisterProfilePrefs(
