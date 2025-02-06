@@ -80,6 +80,7 @@ public class TabGridDialogViewTest {
     private RelativeLayout mTabGridDialogContainer;
     private FrameLayout.LayoutParams mContainerParams;
     private TabGridDialogView mTabGridDialogView;
+    private ScrimManager mScrimManager;
 
     @BeforeClass
     public static void setupSuite() {
@@ -105,8 +106,8 @@ public class TabGridDialogViewTest {
                     mAnimationCardView =
                             mTabGridDialogView.findViewById(R.id.dialog_animation_card_view);
                     mBackgroundFrameView = mTabGridDialogView.findViewById(R.id.dialog_frame);
-                    ScrimManager scrimManager = new ScrimManager(sActivity, mTestParent);
-                    mTabGridDialogView.setupScrimManager(scrimManager);
+                    mScrimManager = new ScrimManager(sActivity, mTestParent);
+                    mTabGridDialogView.setupScrimManager(mScrimManager);
                     mTabGridDialogView.setScrimClickRunnable(() -> {});
 
                     mMinMargin =
@@ -606,6 +607,22 @@ public class TabGridDialogViewTest {
                     mTabGridDialogView.dispatchTouchEvent(event);
                 });
         assertTrue(isFocusCleared[0]);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetScrimClickRunnable() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGridDialogView.showDialog();
+                    mTabGridDialogView.setScrimClickRunnable(() -> {});
+                    mTabGridDialogView.hideDialog();
+                });
+        CriteriaHelper.pollInstrumentationThread(
+                () ->
+                        Criteria.checkThat(
+                                mScrimManager.getScrimVisibilitySupplier().get(),
+                                Matchers.is(false)));
     }
 
     private void mockDialogStatus(boolean isShowing) {
