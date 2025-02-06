@@ -291,9 +291,12 @@ void KeywordProvider::Start(const AutocompleteInput& input,
     // When creating an exact match (either for the keyword itself, no
     // remaining query or an extension keyword, possibly with remaining
     // input), allow the match to be the default match when appropriate.
-    matches_.push_back(CreateAutocompleteMatch(
+    auto match = CreateAutocompleteMatch(
         template_url, input, keyword.length(), remaining_input,
-        input.allow_exact_keyword_match(), -1, false));
+        input.allow_exact_keyword_match(), -1, false);
+    if (match.destination_url.is_empty() || match.destination_url.is_valid()) {
+      matches_.push_back(std::move(match));
+    }
 
     // Having extension-provided suggestions appear outside keyword mode can
     // be surprising, so only query for suggestions when in keyword mode.
@@ -306,8 +309,12 @@ void KeywordProvider::Start(const AutocompleteInput& input,
   } else {
     for (TemplateURLService::TemplateURLVector::const_iterator i(turls.begin());
          (i != turls.end()) && (matches_.size() < provider_max_matches_); ++i) {
-      matches_.push_back(CreateAutocompleteMatch(
-          *i, input, keyword.length(), remaining_input, false, -1, false));
+      auto match = CreateAutocompleteMatch(*i, input, keyword.length(),
+                                           remaining_input, false, -1, false);
+      if (match.destination_url.is_empty() ||
+          match.destination_url.is_valid()) {
+        matches_.push_back(std::move(match));
+      }
     }
   }
 }
