@@ -57,8 +57,10 @@ namespace payments {
 
 constexpr std::string_view kTestUrl = "https://site.example/";
 constexpr std::string_view kBnplInitialUrl = "https://www.bnplinitialurl.com/";
-constexpr std::string_view kBnplSuccessUrl = "https://www.bnplsuccess.com/";
-constexpr std::string_view kBnplFailureUrl = "https://www.bnplfailure.com/";
+constexpr std::string_view kBnplSuccessUrlPrefix =
+    "https://www.bnplsuccess.com/";
+constexpr std::string_view kBnplFailureUrlPrefix =
+    "https://www.bnplfailure.com/";
 constexpr std::string_view kTestContextToken = "Test context token";
 constexpr std::string_view kVcn3dsFlowEventsHistogramName =
     "Autofill.Vcn3ds.FlowEvents";
@@ -99,8 +101,8 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
       window_manager().InitVcn3dsAuthentication(std::move(context));
     } else if (name.find("Bnpl") != std::string::npos) {
       PaymentsWindowManager::BnplContext context;
-      context.success_url = GURL(kBnplSuccessUrl);
-      context.failure_url = GURL(kBnplFailureUrl);
+      context.success_url_prefix = GURL(kBnplSuccessUrlPrefix);
+      context.failure_url_prefix = GURL(kBnplFailureUrlPrefix);
       context.initial_url = GURL(kBnplInitialUrl);
       context.completion_callback = bnpl_popup_closed_callback_.Get();
       window_manager().InitBnplFlow(std::move(context));
@@ -798,7 +800,9 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   // Navigate to the URL that denotes success inside of the BNPL pop-up.
   GetPopupWebContents()->OpenURL(
-      content::OpenURLParams(GURL(kBnplSuccessUrl), content::Referrer(),
+      content::OpenURLParams(GURL(std::string(kBnplSuccessUrlPrefix) +
+                                  "testqueryparam?param1=true"),
+                             content::Referrer(),
                              WindowOpenDisposition::CURRENT_TAB,
                              ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
                              /*is_renderer_initiated=*/false),
@@ -824,7 +828,9 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   // Navigate to the URL that denotes failure inside of the BNPL pop-up.
   GetPopupWebContents()->OpenURL(
-      content::OpenURLParams(GURL(kBnplFailureUrl), content::Referrer(),
+      content::OpenURLParams(GURL(std::string(kBnplFailureUrlPrefix) +
+                                  "testqueryparam?param1=true"),
+                             content::Referrer(),
                              WindowOpenDisposition::CURRENT_TAB,
                              ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
                              /*is_renderer_initiated=*/false),
@@ -855,6 +861,35 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                              WindowOpenDisposition::CURRENT_TAB,
                              ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
                              /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  ClosePopup();
+
+  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_TRUE(
+      test_api(window_manager()).GetMostRecentUrlNavigation().is_empty());
+  EXPECT_FALSE(test_api(window_manager()).GetBnplContext().has_value());
+}
+
+// Test that the BNPL pop-up is shown correctly, and on close the completion
+// callback is triggered with a "user closed" result if the flow was closed and
+// the URL contained the success URL prefix, but the success URL prefix was not
+// its prefix.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_UrlIsNotAPrefix) {
+  ShowUi("Bnpl");
+  EXPECT_TRUE(VerifyUi());
+
+  EXPECT_CALL(bnpl_popup_closed_callback_,
+              Run(PaymentsWindowManager::BnplFlowResult::kUserClosed));
+
+  // Navigate to the URL that denotes the BNPL pop-up has not completed yet.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(
+          GURL("somestring" + std::string(kBnplSuccessUrlPrefix)),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+          /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
   ClosePopup();
