@@ -20,7 +20,7 @@ import sys
 # constants.
 def name_to_constant(str):
   return 'k' + ''.join(
-    re.sub('[^\w\s]', '', s.capitalize()) for s in str.split())
+    re.sub(r'[^\w\s]', '', s.capitalize()) for s in str.split())
 
 # The enum constant's name of an entity type.
 def entity_name(entity, qualified = True):
