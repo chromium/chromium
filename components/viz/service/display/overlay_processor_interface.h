@@ -36,7 +36,7 @@
 #endif
 
 namespace gpu {
-class SharedImageInterface;
+class SharedImageManager;
 }
 
 namespace viz {
@@ -121,7 +121,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       gpu::SurfaceHandle surface_handle,
       const OutputSurface::Capabilities& capabilities,
       DisplayCompositorMemoryAndTaskController* display_controller,
-      gpu::SharedImageInterface* shared_image_interface,
+      gpu::SharedImageManager* shared_image_manager,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings);
 

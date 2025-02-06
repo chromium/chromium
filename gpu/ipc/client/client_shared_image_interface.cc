@@ -95,11 +95,6 @@ void ClientSharedImageInterface::Flush() {
   }
 }
 
-scoped_refptr<gfx::NativePixmap> ClientSharedImageInterface::GetNativePixmap(
-    const gpu::Mailbox& mailbox) {
-  return proxy_->GetNativePixmap(mailbox);
-}
-
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle,

@@ -562,13 +562,6 @@ void SharedImageInterfaceProxy::RegisterSysmemBufferCollection(
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-scoped_refptr<gfx::NativePixmap> SharedImageInterfaceProxy::GetNativePixmap(
-    const gpu::Mailbox& mailbox) {
-  // Clients outside of the GPU process cannot obtain the backing NativePixmap
-  // for SharedImages.
-  return nullptr;
-}
-
 void SharedImageInterfaceProxy::AddReferenceToSharedImage(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {

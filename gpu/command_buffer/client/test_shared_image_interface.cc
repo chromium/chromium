@@ -428,11 +428,6 @@ void TestSharedImageInterface::Flush() {
   DoFlush();
 }
 
-scoped_refptr<gfx::NativePixmap> TestSharedImageInterface::GetNativePixmap(
-    const Mailbox& mailbox) {
-  return nullptr;
-}
-
 bool TestSharedImageInterface::CheckSharedImageExists(
     const Mailbox& mailbox) const {
   base::AutoLock locked(lock_);

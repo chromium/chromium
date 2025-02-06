@@ -356,18 +356,6 @@ class GPU_EXPORT SharedImageInterface
   // Flush the SharedImageInterface, issuing any deferred IPCs.
   virtual void Flush() = 0;
 
-#if !BUILDFLAG(IS_NACL)
-  // Returns the NativePixmap backing |mailbox|. This is a privileged API. Only
-  // the callers living inside the GPU process are able to retrieve the
-  // NativePixmap; otherwise null is returned. Also returns null if the
-  // SharedImage doesn't exist or is not backed by a NativePixmap. The caller is
-  // not expected to read from or write into the provided NativePixmap because
-  // it can be modified at any time. The primary purpose of this method is to
-  // facilitate pageflip testing on the viz thread.
-  virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap(
-      const gpu::Mailbox& mailbox) = 0;
-#endif
-
   // Informs that existing |mailbox| with the specified metadata can be passed
   // to DestroySharedImage().
   virtual scoped_refptr<ClientSharedImage> NotifyMailboxAdded(

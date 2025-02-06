@@ -103,8 +103,6 @@ class TestSharedImageInterface : public SharedImageInterface {
   void WaitSyncToken(const SyncToken& sync_token) override;
 
   void Flush() override;
-  scoped_refptr<gfx::NativePixmap> GetNativePixmap(
-      const Mailbox& mailbox) override;
 
   void CreateSharedImagePool(
       const SharedImagePoolId& pool_id,

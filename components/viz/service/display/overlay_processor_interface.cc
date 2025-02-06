@@ -93,7 +93,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     gpu::SurfaceHandle surface_handle,
     const OutputSurface::Capabilities& capabilities,
     DisplayCompositorMemoryAndTaskController* display_controller,
-    gpu::SharedImageInterface* shared_image_interface,
+    gpu::SharedImageManager* shared_image_manager,
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings) {
   // If we are offscreen, we don't have overlay support.
@@ -128,21 +128,21 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     return std::make_unique<OverlayProcessorStub>();
 #endif  // #if !BUILDFLAG(IS_CASTOS)
 
-  gpu::SharedImageInterface* sii = nullptr;
+  gpu::SharedImageManager* manager = nullptr;
   auto* overlay_manager = ui::OzonePlatform::GetInstance()->GetOverlayManager();
   std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates;
   if (overlay_manager) {
     overlay_candidates =
         overlay_manager->CreateOverlayCandidates(surface_handle);
     if (overlay_manager->allow_sync_and_real_buffer_page_flip_testing()) {
-      sii = shared_image_interface;
-      CHECK(shared_image_interface);
+      manager = shared_image_manager;
+      CHECK(shared_image_manager);
     }
   }
 
   return std::make_unique<OverlayProcessorOzone>(
       std::move(overlay_candidates),
-      std::move(renderer_settings.overlay_strategies), sii);
+      std::move(renderer_settings.overlay_strategies), manager);
 
 #elif BUILDFLAG(IS_ANDROID)
   DCHECK(display_controller);
