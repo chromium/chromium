@@ -9410,6 +9410,7 @@
                     "name": "ExpandCompositedCullRect",
                     "params": {
                         "dpr_coef": "1",
+                        "pixels": "4000",
                         "small_scroller_opt": "true"
                     },
                     "enable_features": [
