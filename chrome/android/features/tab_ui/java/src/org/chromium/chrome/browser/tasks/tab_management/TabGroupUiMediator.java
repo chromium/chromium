@@ -326,7 +326,6 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
 
     @Override
     public void onThemeColorChanged(int color, boolean shouldAnimate) {
-        mVisibilityController.setBottomControlsColor(color);
         mModel.set(TabGroupUiProperties.BACKGROUND_COLOR, color);
         mBackgroundColorSupplier.set(color);
     }
