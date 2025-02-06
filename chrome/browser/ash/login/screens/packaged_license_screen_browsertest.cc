@@ -110,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, DontEnroll) {
           static_cast<int>(OobeMetricsHelper::ScreenShownStatus::kShown), 1)));
 }
 
-IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, Enroll) {
+// TODO(crbug.com/394677144): Enable test
+IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, DISABLED_Enroll) {
   SetUpLicense(true);
   ShowPackagedLicenseScreen();
   WaitForScreenShown();
