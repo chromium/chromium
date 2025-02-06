@@ -79,7 +79,8 @@ class GlicWindowResizeAnimationTest : public InProcessBrowserTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ExpandsWidgetSize) {
-  window_controller().Toggle(nullptr);
+  window_controller().Toggle(nullptr, /*prevent_close=*/false,
+                             InvocationSource::kOsButton);
   ASSERT_TRUE(window_controller().GetGlicWidget());
 
   gfx::Rect test_initial_bounds =
@@ -106,7 +107,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ExpandsWidgetSize) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ShrinksWidgetSize) {
-  window_controller().Toggle(nullptr);
+  window_controller().Toggle(nullptr, /*prevent_close=*/false,
+                             InvocationSource::kOsButton);
   ASSERT_TRUE(window_controller().GetGlicWidget());
 
   gfx::Rect test_initial_bounds =
@@ -134,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ShrinksWidgetSize) {
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest,
                        MovesAndChangesWidgetSize) {
-  window_controller().Toggle(browser());
+  window_controller().Toggle(browser(), /*prevent_close=*/false,
+                             InvocationSource::kOsButton);
   ASSERT_TRUE(window_controller().GetGlicWidget());
 
   gfx::Rect test_initial_bounds =

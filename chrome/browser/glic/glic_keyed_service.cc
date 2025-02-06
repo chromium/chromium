@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/border_view.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -59,14 +60,15 @@ void GlicKeyedService::Shutdown() {
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
-                                bool prevent_close) {
+                                bool prevent_close,
+                                InvocationSource source) {
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to
   // this method should already have been removed.
   CHECK(GlicEnabling::IsEnabledForProfile(profile_));
 
   profile_manager_->SetActiveGlic(this);
-  window_controller_->Toggle(bwi, prevent_close);
+  window_controller_->Toggle(bwi, prevent_close, source);
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
@@ -111,7 +113,8 @@ void GlicKeyedService::DidSelectProfile(Profile* profile) {
   if (profile && profile != profile_) {
     GlicKeyedService* service =
         GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-    service->ToggleUI(nullptr);
+    service->ToggleUI(nullptr, /*prevent_close=*/true,
+                      InvocationSource::kProfilePicker);
   }
 }
 

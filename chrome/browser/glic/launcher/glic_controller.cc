@@ -13,15 +13,15 @@ namespace glic {
 GlicController::GlicController() = default;
 GlicController::~GlicController() = default;
 
-void GlicController::Toggle() {
-  ToggleUI();
+void GlicController::Toggle(InvocationSource source) {
+  ToggleUI(/*prevent_close=*/false, source);
 }
 
-void GlicController::Show() {
-  ToggleUI(/*prevent_close=*/true);
+void GlicController::Show(InvocationSource source) {
+  ToggleUI(/*prevent_close=*/true, source);
 }
 
-void GlicController::ToggleUI(bool prevent_close) {
+void GlicController::ToggleUI(bool prevent_close, InvocationSource source) {
   Profile* profile =
       glic::GlicProfileManager::GetInstance()->GetProfileForLaunch();
   if (!profile) {
@@ -33,8 +33,7 @@ void GlicController::ToggleUI(bool prevent_close) {
 
   GlicKeyedService* glic_keyed_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-
-  glic_keyed_service->ToggleUI(nullptr, prevent_close);
+  glic_keyed_service->ToggleUI(nullptr, prevent_close, source);
 }
 
 }  // namespace glic

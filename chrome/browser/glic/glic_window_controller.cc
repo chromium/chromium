@@ -296,7 +296,8 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
-                                  bool prevent_close) {
+                                  bool prevent_close,
+                                  InvocationSource source) {
   // If `bwi` is non-null, the glic button was clicked on a specific window and
   // glic should be attached to that window. Otherwise glic was invoked from the
   // hotkey or other OS-level entrypoint.
@@ -383,7 +384,7 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
       } else {
         // Hotkey when neither attached browser nor glic are active: open
         // detached.
-        CloseAndReopenDetached();
+        CloseAndReopenDetached(source);
       }
       return;
     }
@@ -395,12 +396,12 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
     // Currently in the process of showing the widget, allow that to finish.
     return;
   } else {
-    Show(new_attached_browser);
+    Show(new_attached_browser, source);
   }
 }
 
 void GlicWindowController::ShowDetachedForTesting() {
-  Show(nullptr);
+  Show(nullptr, InvocationSource::kOsHotkey);
 }
 
 void GlicWindowController::WebUiStateChanged(mojom::WebUiState new_state) {
@@ -412,7 +413,7 @@ void GlicWindowController::WebUiStateChanged(mojom::WebUiState new_state) {
   }
 }
 
-void GlicWindowController::Show(Browser* browser) {
+void GlicWindowController::Show(Browser* browser, InvocationSource source) {
   // At this point State must be kClosed, and all glic window state must be
   // unset.
   CHECK(!attached_browser_);
@@ -859,16 +860,19 @@ void GlicWindowController::Close() {
     state_ = State::kCloseAnimation;
     GetGlicView()->web_view()->SetWebContents(nullptr);
     GlicButton* glic_button = GetGlicButton(attached_browser_);
-    AnimateBounds(glic_button->GetBoundsWithInset(),
-                  base::Milliseconds(kAnimationDurationMs),
-                  base::BindOnce(&GlicWindowController::CloseFinish,
-                                 GetWeakPtr(), reopen_detached));
+    AnimateBounds(
+        glic_button->GetBoundsWithInset(),
+        base::Milliseconds(kAnimationDurationMs),
+        base::BindOnce(&GlicWindowController::CloseFinish, GetWeakPtr(),
+                       reopen_detached, closing_to_reopen_detached_source_));
   } else {
-    CloseFinish(reopen_detached);
+    CloseFinish(reopen_detached, closing_to_reopen_detached_source_);
   }
 }
 
-void GlicWindowController::CloseFinish(bool reopen_detached) {
+void GlicWindowController::CloseFinish(
+    bool reopen_detached,
+    std::optional<InvocationSource> reopen_detached_source) {
   if (state_ == State::kClosed) {
     return;
   }
@@ -894,20 +898,22 @@ void GlicWindowController::CloseFinish(bool reopen_detached) {
   }
 
   if (reopen_detached) {
-    Show(nullptr);
+    Show(nullptr, *reopen_detached_source);
   }
 }
 
 void GlicWindowController::ForceClose() {
-  CloseFinish(/*reopen_detached=*/false);
+  CloseFinish(/*reopen_detached=*/false,
+              /*reopen_detached_source=*/std::nullopt);
 }
 
-void GlicWindowController::CloseAndReopenDetached() {
+void GlicWindowController::CloseAndReopenDetached(InvocationSource source) {
   if (state_ != State::kOpen) {
     return;
   }
 
   state_ = State::kClosingToReopenDetached;
+  closing_to_reopen_detached_source_ = source;
   Close();
 }
 

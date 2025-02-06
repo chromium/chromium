@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_WINDOW_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_GLIC_WINDOW_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -13,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_web_client_access.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -76,7 +79,9 @@ class GlicWindowController : public views::WidgetObserver {
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
-  void Toggle(BrowserWindowInterface* browser, bool prevent_close = false);
+  void Toggle(BrowserWindowInterface* browser,
+              bool prevent_close,
+              InvocationSource source);
 
   // Attaches glic to the last focused Chrome window.
   void Attach();
@@ -227,10 +232,10 @@ class GlicWindowController : public views::WidgetObserver {
   // Creates the glic view, waits for the web client to initialize, and then
   // shows the glic window. If `browser` is non-nullptr then glic will be
   // attached to the browser. Otherwise glic will be detached.
-  void Show(Browser* browser);
+  void Show(Browser* browser, InvocationSource source);
 
   // Close the widget and reopen in detached mode.
-  void CloseAndReopenDetached();
+  void CloseAndReopenDetached(InvocationSource source);
 
   void AuthCheckDoneBeforeShow(base::WeakPtr<Browser> browser_for_attachment,
                                AuthController::BeforeShowResult result);
@@ -248,7 +253,8 @@ class GlicWindowController : public views::WidgetObserver {
   void ShowFinish();
 
   // Finishes closing off the widget after running the closing animation.
-  void CloseFinish(bool reopen_detached);
+  void CloseFinish(bool reopen_detached,
+                   std::optional<InvocationSource> reopen_detached_source);
 
   // Called when the Detach() animation ends.
   void DetachFinished();
@@ -392,6 +398,9 @@ class GlicWindowController : public views::WidgetObserver {
   base::TimeTicks show_start_time_;
   // Web client's operation modes.
   mojom::WebClientMode starting_mode_;
+
+  // Only set when State = kClosingToReopenDetached
+  std::optional<InvocationSource> closing_to_reopen_detached_source_;
 
   std::unique_ptr<ScopedGlicButtonIndicator> scoped_glic_button_indicator_;
 

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_cookie_synchronizer.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_handler.h"
 #include "chrome/browser/glic/glic_profile_configuration.h"
@@ -55,7 +56,9 @@ class GlicKeyedService : public KeyedService {
   // Show, summon or activate the panel, or close it if it's already active and
   // prevent_close is false. If glic_button_view is non-null, attach the panel
   // to that view's Browser.
-  void ToggleUI(BrowserWindowInterface* bwi, bool prevent_close = false);
+  void ToggleUI(BrowserWindowInterface* bwi,
+                bool prevent_close,
+                InvocationSource source);
 
   GlicMetrics* metrics() { return metrics_.get(); }
   GlicWindowController& window_controller() { return *window_controller_; }

@@ -9,8 +9,9 @@ source_set("launcher") {
     "glic_launcher_configuration.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
+    "//chrome/browser/glic:enum",
     "//chrome/browser/profiles:profile",
     "//components/prefs",
     "//ui/base",

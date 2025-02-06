@@ -103,14 +103,14 @@ GlicStatusIcon::~GlicStatusIcon() {
 }
 
 void GlicStatusIcon::OnStatusIconClicked() {
-  controller_->Toggle();
+  controller_->Toggle(InvocationSource::kOsButton);
 }
 
 void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
   auto* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
   switch (command_id) {
     case IDC_GLIC_STATUS_ICON_MENU_SHOW: {
-      controller_->Show();
+      controller_->Show(InvocationSource::kOsButtonMenu);
       base::RecordAction(base::UserMetricsAction(
           "GlicOsEntrypoint.ContextMenuSelection.OpenGlic"));
       break;
