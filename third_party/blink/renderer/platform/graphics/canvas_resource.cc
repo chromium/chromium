@@ -340,9 +340,6 @@ void CanvasResourceSharedBitmap::NotifyResourceLost() {
 void CanvasResourceSharedBitmap::UploadSoftwareRenderingResults(
     SkSurface* sk_surface) {
   auto image = sk_surface->makeImageSnapshot();
-  if (!image) {
-    return;
-  }
 
   SkImageInfo image_info = CreateSkImageInfo();
   auto scoped_mapping = shared_image_->Map();
