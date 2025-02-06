@@ -172,9 +172,6 @@ class BASE_EXPORT FilePath {
 
   using CharType = StringType::value_type;
   using StringViewType = std::basic_string_view<CharType>;
-  // DEPRECATED. Use `StringViewType` in new code.
-  // TODO(thestig): Remove.
-  using StringPieceType = StringViewType;
 
   // Null-terminated array of separators used to separate components in paths.
   // Each character in this array is a valid separator, but kSeparators[0] is
