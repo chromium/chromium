@@ -1477,3 +1477,8 @@ crbug.com/382173821 [ Mac11 ] wpt_internal/hid/hid_requestDevice.https.window.ht
 crbug.com/382173821 [ Mac12 ] wpt_internal/hid/hid_requestDevice.https.window.html [ Slow ]
 
 crbug.com/387577507 virtual/composite-clip-path-animation/paint/invalidation/svg/invalid-clip-path-crash.html [ Slow ]
+
+# Gardener 2025-02-06
+crbug.com/394756111 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.serviceworker.html [ Slow ]
+crbug.com/394756111 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.sharedworker.html [ Slow ]
+crbug.com/394756111 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.worker.html [ Slow ]
