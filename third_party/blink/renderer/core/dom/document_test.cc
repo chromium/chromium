@@ -1999,6 +1999,7 @@ TEST_F(DocumentTest, LifecycleState_DirtyStyle_NoBody) {
             DocumentLifecycle::kVisualUpdatePending);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 class TestPaymentLinkHandler
     : public payments::facilitated::mojom::blink::PaymentLinkHandler {
  public:
@@ -2033,7 +2034,6 @@ class TestPaymentLinkHandler
   base::OnceClosure on_link_handled_callback_;
 };
 
-#if BUILDFLAG(IS_ANDROID)
 TEST_F(DocumentTest, PaymentLinkNotHandled_PaymentRel) {
   TestPaymentLinkHandler test_payment_link_handler;
 
