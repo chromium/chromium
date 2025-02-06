@@ -364,7 +364,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling fuzztest
   # and whatever else without interference from each other.
-  'fuzztest_revision': 'cce277bad2fa51c335efc60f2fb3d251008648c4',
+  'fuzztest_revision': 'c013c002d68438c8a87138e08ec4e74bd13e2449',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling domato
   # and whatever else without interference from each other.
