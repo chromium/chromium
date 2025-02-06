@@ -13,9 +13,9 @@ namespace glic::prefs {
 // Boolean pref that enables or disables the launcher.
 inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
 
-// Dictionary pref that keeps track of the registered hotkey for Glic.
-inline constexpr char kGlicLauncherGlobalHotkey[] =
-    "glic.launcher_global_hotkey";
+// String pref that keeps track of the non-localized version of the registered
+// hotkey for Glic.
+inline constexpr char kGlicLauncherHotkey[] = "glic.launcher_hotkey";
 
 // ************* PROFILE PREFS ***************
 // Prefs below are tied to a user profile
