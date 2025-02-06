@@ -1899,8 +1899,9 @@ void PrefetchContainer::AddClientHintsHeaders(
   if (is_javascript_enabled_) {
     // Historically, `AddClientHintsHeadersToPrefetchNavigation` added
     // Client Hints headers iff `is_javascript_enabled_`, so the `if` block here
-    // is to persist the behavior. However, it is worth revisiting if we really
-    // want to allow prefetch for non-Javascript enabled profile/origins.
+    // is to persist the behavior.
+    // TODO(crbug.com/394716357): Revisit if we really want to allow prefetch
+    // for non-Javascript enabled profile/origins.
     AddClientHintsHeadersToPrefetchNavigation(
         origin, &client_hints_headers, browser_context, client_hints_delegate,
         is_ua_override_on);

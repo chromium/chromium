@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -228,7 +229,8 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   // `SearchPrefetchService::MaybePrefetchURL()` should be already prohibiting
   // this.
   CHECK(profile->GetPrefs() &&
-        profile->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled));
+            profile->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled),
+        base::NotFatalUntil::M136);
 
   AddClientHintsHeadersToPrefetchNavigation(
       prefetch_origin, &(resource_request->headers), profile,
