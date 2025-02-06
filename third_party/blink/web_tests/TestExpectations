@@ -2710,6 +2710,7 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] external/wpt/css/css-overflow/scroll-marker-group-keeps-active-in-view.html [ Failure ]
 crbug.com/394331189 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?7-8 [ Crash Failure ]
 crbug.com/394331189 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/popup-unsafe-none-with-same-origin.https.html [ Crash ]
 crbug.com/393523568 external/wpt/css/css-text/line-breaking/segment-break-transformation-currency-001.html [ Failure ]

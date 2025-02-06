@@ -314250,7 +314250,7 @@
       []
      ],
      "bluetooth-test.js": [
-      "e98fb454c9da155c37dc0a93737adb7b00618df7",
+      "a771abbd51b625d669e510f7e70c9f633b3cffa1",
       []
      ],
      "health-thermometer-iframe.html": [
@@ -456621,17 +456621,17 @@
     ]
    },
    "bluetooth": {
-    "legacy": {
+    "bidi": {
      "adapter": {
       "adapter-absent-getAvailability.https.window.js": [
-       "55f4a675da158ac8cd116ea4346c39ff11195f21",
+       "419a9d411dfed5b7796bcaabfe9a0324036546be",
        [
-        "bluetooth/legacy/adapter/adapter-absent-getAvailability.https.window.html",
+        "bluetooth/bidi/adapter/adapter-absent-getAvailability.https.window.html",
         {
          "script_metadata": [
           [
            "script",
-           "/resources/testdriver.js"
+           "/resources/testdriver.js?feature=bidi"
           ],
           [
            "script",
@@ -456645,45 +456645,22 @@
            "script",
            "/bluetooth/resources/bluetooth-fake-devices.js"
           ]
-         ]
-        }
-       ]
-      ],
-      "adapter-added-getAvailability.https.window.js": [
-       "f8e25b2ac2fc48b865ce7f9e3702a7688f89dbc3",
-       [
-        "bluetooth/legacy/adapter/adapter-added-getAvailability.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/resources/testdriver.js"
-          ],
-          [
-           "script",
-           "/resources/testdriver-vendor.js"
-          ],
-          [
-           "script",
-           "/bluetooth/resources/bluetooth-test.js"
-          ],
-          [
-           "script",
-           "/bluetooth/resources/bluetooth-fake-devices.js"
-          ]
+         ],
+         "testdriver_features": [
+          "bidi"
          ]
         }
        ]
       ],
       "adapter-powered-off-getAvailability.https.window.js": [
-       "1ffcd3bb096cebd80c34d5c57cadc8c00a128d2a",
+       "9bf10801bb72f58be9e77228afc06707b2df8a0b",
        [
-        "bluetooth/legacy/adapter/adapter-powered-off-getAvailability.https.window.html",
+        "bluetooth/bidi/adapter/adapter-powered-off-getAvailability.https.window.html",
         {
          "script_metadata": [
           [
            "script",
-           "/resources/testdriver.js"
+           "/resources/testdriver.js?feature=bidi"
           ],
           [
            "script",
@@ -456697,14 +456674,79 @@
            "script",
            "/bluetooth/resources/bluetooth-fake-devices.js"
           ]
+         ],
+         "testdriver_features": [
+          "bidi"
          ]
         }
        ]
       ],
       "adapter-powered-on-getAvailability.https.window.js": [
-       "84c7982d2146b8660d098e21c1c30496a189549a",
+       "6ffba254d8a80cb574738802f9bd4e6360f4d159",
        [
-        "bluetooth/legacy/adapter/adapter-powered-on-getAvailability.https.window.html",
+        "bluetooth/bidi/adapter/adapter-powered-on-getAvailability.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js?feature=bidi"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ],
+         "testdriver_features": [
+          "bidi"
+         ]
+        }
+       ]
+      ],
+      "cross-origin-iframe-getAvailability.sub.https.window.js": [
+       "fd638b55561d383dcb95f9444f60e39876156020",
+       [
+        "bluetooth/bidi/adapter/cross-origin-iframe-getAvailability.sub.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js?feature=bidi"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ],
+         "testdriver_features": [
+          "bidi"
+         ]
+        }
+       ]
+      ]
+     }
+    },
+    "legacy": {
+     "adapter": {
+      "adapter-added-getAvailability.https.window.js": [
+       "f8e25b2ac2fc48b865ce7f9e3702a7688f89dbc3",
+       [
+        "bluetooth/legacy/adapter/adapter-added-getAvailability.https.window.html",
         {
          "script_metadata": [
           [
@@ -456757,32 +456799,6 @@
        "ca0b51f47dc6807b79a861d85ea5a7f2549e691a",
        [
         "bluetooth/legacy/adapter/adapter-removed-getAvailability.https.window.html",
-        {
-         "script_metadata": [
-          [
-           "script",
-           "/resources/testdriver.js"
-          ],
-          [
-           "script",
-           "/resources/testdriver-vendor.js"
-          ],
-          [
-           "script",
-           "/bluetooth/resources/bluetooth-test.js"
-          ],
-          [
-           "script",
-           "/bluetooth/resources/bluetooth-fake-devices.js"
-          ]
-         ]
-        }
-       ]
-      ],
-      "cross-origin-iframe-getAvailability.sub.https.window.js": [
-       "54abfbb5cefcb364be4c01f34e40a62ca49156d7",
-       [
-        "bluetooth/legacy/adapter/cross-origin-iframe-getAvailability.sub.https.window.html",
         {
          "script_metadata": [
           [
@@ -497959,7 +497975,7 @@
       ]
      ],
      "dashed-function-cycles.tentative.html": [
-      "18558c5cc8a681cacc826f4dcc485fe502ced6c9",
+      "3eddd42801cde0fd6a935bc1451be9a8a23f41bb",
       [
        null,
        {}
@@ -497973,7 +497989,7 @@
       ]
      ],
      "local-attr-substitution.html": [
-      "74b7986306b62f9009c36c3632d4af8bd3876b75",
+      "575372a96696f6c01870c345d6981b36cca257b0",
       [
        null,
        {}
@@ -649862,7 +649878,7 @@
       ]
      ],
      "observe-animated-image.tentative.html": [
-      "cf7d262b0f842a020fa9ee94fd05669c62d1edd0",
+      "1ca4c7fe1953e16bcd3b9eb9525591a7ecd3f4cc",
       [
        null,
        {}
@@ -817606,6 +817622,13 @@
      ],
      "font-size-adjust-003.xht": [
       "1886ccc6bfdb027b797efe69f127f41bc6aa46f8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "font-variant-caps-invalidation-container-sizing.html": [
+      "54a00dc360fac3beb6c8b4fb2e8ccf372b3c5cea",
       [
        null,
        {}
