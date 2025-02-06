@@ -13,8 +13,8 @@
 #import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
-#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 #import "ios/chrome/common/credential_provider/constants.h"
@@ -41,6 +41,8 @@
 #import "ios/chrome/credential_provider_extension/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 #import "ios/components/credential_provider_extension/password_util.h"
+
+using app_group::UserDefaultsStringForKey;
 
 namespace {
 
@@ -540,14 +542,14 @@ enum class PasskeyCreationEligibility {
 
 // Returns the gaia ID associated with the current account.
 - (NSString*)gaia {
-  return [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserID()];
+  return UserDefaultsStringForKey(
+      AppGroupUserDefaultsCredentialProviderUserID(), /*default_value=*/@"");
 }
 
 // Returns the email address associated with the current account.
 - (NSString*)userEmail {
-  return [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+  return UserDefaultsStringForKey(
+      AppGroupUserDefaultsCredentialProviderUserEmail(), /*default_value=*/@"");
 }
 
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
@@ -815,8 +817,9 @@ enum class PasskeyCreationEligibility {
     });
   };
 
-  NSString* validationID = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
+  NSString* validationID = UserDefaultsStringForKey(
+      AppGroupUserDefaultsCredentialProviderManagedUserID(),
+      /*default_value=*/nil);
   if (validationID) {
     [self.accountVerificator
         validateValidationID:validationID
@@ -1125,7 +1128,7 @@ enum class PasskeyCreationEligibility {
   NSString* userEmail;
   if (purpose == PasskeyWelcomeScreenPurpose::kEnroll) {
     userEmail = [self userEmail];
-    if (!userEmail) {
+    if (!userEmail.length) {
       // TODO(crbug.com/381284523): When on M135, show generic alert screen
       // instead.
       [self showSignedOutUserAlert];

@@ -52,4 +52,10 @@ void ClearAppGroupSandbox() {
   ClearAppGroupUserDefaults(app_group::CommonApplicationGroup());
 }
 
+NSString* UserDefaultsStringForKey(NSString* key, NSString* default_value) {
+  NSString* string = [app_group::GetGroupUserDefaults() stringForKey:key];
+  // Returns the string if it is non nil. Returns `default_value` otherwise.
+  return string ?: default_value;
+}
+
 }  // namespace app_group
