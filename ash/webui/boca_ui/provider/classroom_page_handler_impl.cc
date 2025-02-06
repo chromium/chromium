@@ -244,6 +244,7 @@ ClassroomPageHandlerImpl::CreateRequestSender() {
   std::vector<std::string> scopes = {
       GaiaConstants::kClassroomReadOnlyRostersOAuth2Scope,
       GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
+      GaiaConstants::kClassroomReadOnlyCourseWorkStudentsOAuth2Scope,
       GaiaConstants::kClassroomProfileEmailOauth2Scope,
       GaiaConstants::kClassroomProfilePhotoUrlScope,
   };
