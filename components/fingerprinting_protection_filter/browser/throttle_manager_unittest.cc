@@ -285,8 +285,11 @@ class ThrottleManagerTest
                                         bool is_dry_run = false) {
     if (is_incognito) {
       if (is_enabled) {
-        scoped_feature_list_.InitAndEnableFeature(
-            features::kEnableFingerprintingProtectionFilterInIncognito);
+        scoped_feature_list_.InitWithFeaturesAndParameters(
+            /*enabled_features=*/
+            {{features::kEnableFingerprintingProtectionFilterInIncognito,
+              {{"enable_console_logging", "true"}}}},
+            /*disabled_features=*/{});
       } else {
         scoped_feature_list_.InitAndDisableFeature(
             features::kEnableFingerprintingProtectionFilterInIncognito);
@@ -296,7 +299,8 @@ class ThrottleManagerTest
         scoped_feature_list_.InitWithFeaturesAndParameters(
             /*enabled_features=*/
             {{features::kEnableFingerprintingProtectionFilter,
-              {{"activation_level", "enabled"}}}},
+              {{"activation_level", "enabled"},
+               {"enable_console_logging", "true"}}}},
             /*disabled_features=*/{});
       } else if (is_enabled && is_dry_run) {
         scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -538,12 +542,21 @@ TEST_P(ThrottleManagerEnabledTest,
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
   CreateAgentForHost(main_rfh());
   ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  EXPECT_TRUE(rfh_tester->GetConsoleMessages().empty());
 
   // A disallowed subframe navigation should be successfully filtered.
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
+
+  // Check that an informational message is printed to the console the first
+  // time something is blocked on the page.
+  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
+  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
+            kDisallowFirstResourceConsoleMessage);
 
   // Check test ukm recorder contains event with expected metrics.
   const auto& entries = test_ukm_recorder.GetEntriesByName(
@@ -604,6 +617,11 @@ TEST_P(ThrottleManagerEnabledTest, ActivateMainFrameAndDoNotFilterDryRun) {
   // But they should still be activated.
   ExpectActivationSignalForFrame(child, /*expect_activation=*/true);
 
+  // Nothing should be printed to the console if nothing is blocked on a page.
+  EXPECT_TRUE(content::RenderFrameHostTester::For(main_rfh())
+                  ->GetConsoleMessages()
+                  .empty());
+
   // Check test ukm recorder contains event with expected metrics.
   const auto& entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::FingerprintingProtection::kEntryName);
@@ -626,6 +644,9 @@ TEST_P(ThrottleManagerEnabledTest,
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
   CreateAgentForHost(main_rfh());
   ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  EXPECT_TRUE(rfh_tester->GetConsoleMessages().empty());
 
   // A disallowed subframe navigation via redirect should be successfully
   // filtered.
@@ -638,6 +659,12 @@ TEST_P(ThrottleManagerEnabledTest,
                 navigation_simulator(),
                 GURL("https://www.example.com/disallowed.html"))
                 .action());
+
+  // Check that an informational message is printed to the console the first
+  // time something is blocked on the page.
+  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
+  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
+            kDisallowFirstResourceConsoleMessage);
 }
 
 TEST_P(ThrottleManagerEnabledTest,
@@ -661,6 +688,11 @@ TEST_P(ThrottleManagerEnabledTest,
   content::RenderFrameHost* child =
       navigation_simulator()->GetFinalRenderFrameHost();
   ExpectActivationSignalForFrame(child, /*expect_activation=*/true);
+
+  // Nothing should be printed to the console if nothing is blocked on a page.
+  EXPECT_TRUE(content::RenderFrameHostTester::For(main_rfh())
+                  ->GetConsoleMessages()
+                  .empty());
 }
 
 // This should fail if the throttle manager notifies the delegate twice of a
@@ -671,16 +703,29 @@ TEST_P(ThrottleManagerEnabledTest,
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
   CreateAgentForHost(main_rfh());
   ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  EXPECT_TRUE(rfh_tester->GetConsoleMessages().empty());
 
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/1/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
 
+  // Check that an informational message is printed to the console the first
+  // time something is blocked on the page.
+  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
+  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
+            kDisallowFirstResourceConsoleMessage);
+
   CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/2/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
+
+  // Blocking a second subframe navigation within a single page should not
+  // result in a second console message.
+  EXPECT_EQ(rfh_tester->GetConsoleMessages().size(), 1ul);
 }
 
 TEST_P(ThrottleManagerEnabledTest,
@@ -948,12 +993,21 @@ TEST_P(ThrottleManagerEnabledTest,
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
   CreateAgentForHost(main_rfh());
   ExpectActivationSignalForFrame(main_rfh(), /*expect_activation=*/true);
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  EXPECT_TRUE(rfh_tester->GetConsoleMessages().empty());
 
   // A disallowed fenced frame navigation should be successfully filtered.
   CreateFencedFrameWithTestNavigation(
       GURL("https://www.example.com/disallowed.html"), main_rfh());
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
             SimulateStartAndGetResult(navigation_simulator()).action());
+
+  // Check that an informational message is printed to the console the first
+  // time something is blocked on the page.
+  ASSERT_FALSE(rfh_tester->GetConsoleMessages().empty());
+  EXPECT_EQ((rfh_tester->GetConsoleMessages())[0],
+            kDisallowFirstResourceConsoleMessage);
 }
 
 TEST_P(ThrottleManagerEnabledTest,
