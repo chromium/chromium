@@ -15,6 +15,7 @@ blink_modules_sources("hid") {
     "hid_input_report_event.cc",
     "hid_input_report_event.h",
   ]
+  deps = [ "//services/device/public/cpp:device_features" ]
 }
 
 source_set("unit_tests") {

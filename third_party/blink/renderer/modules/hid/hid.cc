@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "services/device/public/cpp/device_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -109,11 +110,14 @@ HID::HID(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       service_(navigator.GetExecutionContext()),
       receiver_(this, navigator.GetExecutionContext()) {
-  auto* context = GetExecutionContext();
-  if (context) {
-    feature_handle_for_scheduler_ = context->GetScheduler()->RegisterFeature(
-        SchedulingPolicy::Feature::kWebHID,
-        {SchedulingPolicy::DisableBackForwardCache()});
+  if (!base::FeatureList::IsEnabled(
+          features::kWebHidAttributeAllowsBackForwardCache)) {
+    auto* context = GetExecutionContext();
+    if (context) {
+      feature_handle_for_scheduler_ = context->GetScheduler()->RegisterFeature(
+          SchedulingPolicy::Feature::kWebHID,
+          {SchedulingPolicy::DisableBackForwardCache()});
+    }
   }
 }
 

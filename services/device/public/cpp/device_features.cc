@@ -33,6 +33,12 @@ BASE_FEATURE(kWebUsbBlocklist,
              "WebUSBBlocklist",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, accessing the navigator.hid attribute does not prevent the
+// frame from entering the back forward cache.
+BASE_FEATURE(kWebHidAttributeAllowsBackForwardCache,
+             "WebHidAttributeAllowsBackForwardCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // Enable integration with the Windows system-level location permission.
 BASE_FEATURE(kWinSystemLocationPermission,
