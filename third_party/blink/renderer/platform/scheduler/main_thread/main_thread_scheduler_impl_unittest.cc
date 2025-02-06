@@ -301,8 +301,6 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
  public:
   using MainThreadSchedulerImpl::ControlTaskQueue;
   using MainThreadSchedulerImpl::DefaultTaskQueue;
-  using MainThreadSchedulerImpl::OnIdlePeriodEnded;
-  using MainThreadSchedulerImpl::OnIdlePeriodStarted;
   using MainThreadSchedulerImpl::OnPendingTasksChanged;
   using MainThreadSchedulerImpl::V8TaskQueue;
 

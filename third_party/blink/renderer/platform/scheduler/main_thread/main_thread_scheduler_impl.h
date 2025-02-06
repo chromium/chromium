@@ -493,8 +493,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       base::TimeTicks now,
       base::TimeDelta* next_long_idle_period_delay_out) override;
   void IsNotQuiescent() override {}
-  void OnIdlePeriodStarted() override;
-  void OnIdlePeriodEnded() override;
   void OnPendingTasksChanged(bool has_tasks) override;
 
   void DispatchRequestBeginMainFrameNotExpected(bool has_tasks);
@@ -781,12 +779,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     ~AnyThread();
 
     PendingUserInput::Monitor pending_input_monitor;
-    base::TimeTicks last_idle_period_end_time;
     UserModel user_model;
     TraceableState<bool, TracingCategory::kInfo> awaiting_touch_start_response;
     TraceableState<bool, TracingCategory::kInfo>
         awaiting_discrete_input_response;
-    TraceableState<bool, TracingCategory::kInfo> in_idle_period;
     TraceableState<bool, TracingCategory::kInfo>
         begin_main_frame_on_critical_path;
     TraceableState<bool, TracingCategory::kInfo>
