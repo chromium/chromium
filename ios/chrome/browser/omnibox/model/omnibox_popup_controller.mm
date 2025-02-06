@@ -12,8 +12,11 @@
 
 #pragma mark - OmniboxAutocomplete event
 
-- (void)updateWithResults:(const AutocompleteResult&)results {
-  [self.delegate popupController:self didUpdateResults:results];
+- (void)newResultsAvailable:(const AutocompleteResult&)results
+                  isOnFocus:(BOOL)isOnFocus {
+  [self.delegate popupControllerDidUpdateSuggestions:self
+                                      hasSuggestions:!results.empty()
+                                           isOnFocus:isOnFocus];
 }
 
 - (void)updateWithSortedResults:(const AutocompleteResult&)results {

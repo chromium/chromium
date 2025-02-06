@@ -23,8 +23,10 @@ class AutocompleteResult;
 
 #pragma mark - OmniboxAutocomplete event
 
-/// Updates the omnibox popup with `result`.
-- (void)updateWithResults:(const AutocompleteResult&)results;
+/// Notifies the popup that new results are available.
+/// `isOnFocus`: Whether the omnibox is being focused.
+- (void)newResultsAvailable:(const AutocompleteResult&)results
+                  isOnFocus:(BOOL)isOnFocus;
 
 /// Updates the omnibox popup with sorted`result`.
 - (void)updateWithSortedResults:(const AutocompleteResult&)results;
