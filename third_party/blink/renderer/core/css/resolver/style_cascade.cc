@@ -1975,6 +1975,11 @@ KleeneValue StyleCascade::EvalIfStyleFeature(
   AtomicString property_name(feature.Name());
   CustomProperty property(property_name, GetDocument());
 
+  // Check for a cycle with custom property in the style condition.
+  if (resolver.DetectCycle(property)) {
+    return KleeneValue::kFalse;
+  }
+
   LookupAndApply(property, resolver);
   CSSVariableData* computed = GetVariableData(property);
 
@@ -2067,7 +2072,6 @@ bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,
                                  CascadeResolver& resolver,
                                  const CSSParserContext& context,
                                  TokenSequence& out) {
-  // TODO(crbug.com/346977961):  Handle cycles.
   stream.ConsumeWhitespace();
   bool eval_result = EvalIfCondition(stream, resolver, context);
   while (!eval_result) {
