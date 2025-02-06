@@ -10820,7 +10820,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="867329473311423817">Com permissão para gerenciar janelas em todas as suas telas</translation>
 <translation id="8673383193459449849">Problema no servidor</translation>
 <translation id="8674903726754070732">Infelizmente, seu computador está configurado com um ID de hardware mal formado. Isso impede que o ChromeOS seja atualizado com as correções de segurança mais recentes e, por isso, ele <ph name="BEGIN_BOLD" />pode ficar vulnerável a ataques maliciosos<ph name="END_BOLD" />.</translation>
-<translation id="8675657007450883866">Os sites usam esse recurso para entrar no modo de tela cheia automaticamente. Normalmente, entrar no modo de tela cheia exige interação do usuário.</translation>
+<translation id="8675657007450883866">Com esse recurso, os sites entram no modo de tela cheia automaticamente. Normalmente, entrar nesse modo exige interação do usuário.</translation>
 <translation id="8675704450909805533">O instalador não encontrou um destino válido para instalar o <ph name="DEVICE_OS" />.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Vídeo}one{# vídeo}other{# vídeos}}</translation>
 <translation id="8676276370198826499">Inscreva-se no <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
