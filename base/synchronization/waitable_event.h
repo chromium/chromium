@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -178,7 +179,10 @@ class BASE_EXPORT WaitableEvent {
 
 #if BUILDFLAG(IS_WIN)
   win::ScopedHandle handle_;
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_APPLE) && (!BUILDFLAG(IS_IOS) || !BUILDFLAG(USE_BLINK))
+  // iOS which supports blink must use the posix variant since opening
+  // mach_ports is prevented inside sandbox profiles.
+  //
   // Peeks the message queue named by |port| and returns true if a message
   // is present and false if not. If |dequeue| is true, the messsage will be
   // drained from the queue. If |dequeue| is false, the queue will only be
