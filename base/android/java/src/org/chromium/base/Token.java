@@ -4,6 +4,9 @@
 
 package org.chromium.base;
 
+import android.os.Bundle;
+
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.errorprone.annotations.DoNotMock;
@@ -20,6 +23,9 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("base::android")
 @DoNotMock("This is a simple value object.")
 public final class Token extends TokenBase {
+    private static final String KEY_LOW = "low";
+    private static final String KEY_HIGH = "high";
+
     /** Returns a new random token using the native implementation. */
     public static Token createRandom() {
         return TokenJni.get().createRandom();
@@ -55,6 +61,28 @@ public final class Token extends TokenBase {
     @Override
     public String toString() {
         return String.format("%016X%016X", mHigh, mLow);
+    }
+
+    /**
+     * Converts this Token's data into a bundle {@link Bundle}.
+     *
+     * @return the bundle {@link Bundle} stores the Token's high and low values.
+     */
+    public Bundle toBundle() {
+        Bundle bundle = new Bundle();
+        bundle.putLong(KEY_HIGH, getHigh());
+        bundle.putLong(KEY_LOW, getLow());
+        return bundle;
+    }
+
+    /**
+     * @param bundle Bundle to be parsed.
+     * @return the deserialized Token object or null if the bundle is invalid.
+     */
+    public static @Nullable Token maybeCreateFromBundle(@Nullable Bundle bundle) {
+        if (bundle == null) return null;
+        if (!bundle.containsKey(KEY_HIGH) || !bundle.containsKey(KEY_LOW)) return null;
+        return new Token(bundle.getLong(KEY_HIGH), bundle.getLong(KEY_LOW));
     }
 
     @NativeMethods

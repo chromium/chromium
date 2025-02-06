@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.renderer_host.ChromeNavigationUiData;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -256,6 +257,13 @@ public class IntentHandler {
     /** A boolean to indicate whether the intent should launch only app specific history */
     public static final String EXTRA_APP_SPECIFIC_HISTORY =
             "org.chromium.chrome.browser.app_specific_history";
+
+    /**
+     * {@link TabGroupMetadata} object used for transferring tab group data between windows during
+     * tab group drag drop.
+     */
+    public static final String EXTRA_TAB_GROUP_METADATA =
+            "org.chromium.chrome.browser.tab_group_metadata";
 
     public static final String EXTRA_SKIP_PRECONNECT =
             "org.chromium.chrome.browser.skip_preconnect";
@@ -1377,8 +1385,29 @@ public class IntentHandler {
     }
 
     /**
+     * Sets the The {@link TabGroupMetadata} for tab group drag drop to transfer tan group data
+     * between windows.
+     *
+     * @param intent The Intent to be set.
+     */
+    public static void setTabGroupMetadata(Intent intent, TabGroupMetadata tabGroupMetadata) {
+        intent.putExtra(EXTRA_TAB_GROUP_METADATA, tabGroupMetadata.toBundle());
+    }
+
+    /**
+     * @param intent An Intent to be checked.
+     * @return The {@link TabGroupMetadata} for tab group drag drop to transfer tab group data
+     *     between windows.
+     */
+    public static @Nullable TabGroupMetadata getTabGroupMetadata(Intent intent) {
+        Bundle bundle = IntentUtils.safeGetBundleExtra(intent, EXTRA_TAB_GROUP_METADATA);
+        return TabGroupMetadata.maybeCreateFromBundle(bundle);
+    }
+
+    /**
      * Creates an Intent that will launch a ChromeTabbedActivity on the new tab page. The Intent
      * will be trusted and therefore able to launch Incognito tabs.
+     *
      * @param context A {@link Context} to access class and package information.
      * @param incognito Whether the tab should be opened in Incognito.
      * @return The {@link Intent} to launch.
