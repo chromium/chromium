@@ -109,6 +109,11 @@ class RenderViewContextMenuObserver {
   // command that is supported by other observers.
   virtual void CommandWillBeExecuted(int command_id) {}
 
+  // Called when a user selects the specified context-menu item but the command
+  // is blocked from executing, including command that is supported by other
+  // observers.
+  virtual void CommandBlocked(int command_id) {}
+
   virtual void OnMenuClosed() {}
 
   virtual void OnContextMenuShown(const content::ContextMenuParams& params,

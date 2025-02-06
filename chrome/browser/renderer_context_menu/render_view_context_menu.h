@@ -155,6 +155,9 @@ class RenderViewContextMenu
   }
 #endif
 
+  void AddObserverForTesting(RenderViewContextMenuObserver* observer);
+  void RemoveObserverForTesting(RenderViewContextMenuObserver* observer);
+
  protected:
   Profile* GetProfile() const;
 
