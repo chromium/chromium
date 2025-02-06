@@ -4692,6 +4692,13 @@ enum WebFeature {
   kV8AISummarizer_ExpectedContextLanguages_AttributeGetter = 5306,
   kV8AISummarizer_OutputLanguage_AttributeGetter = 5307,
   kNestedScrollMarkers = 5308,
+  kV8GeolocationCoordinates_Latitude_AttributeGetter = 5309,
+  kV8GeolocationCoordinates_Longitude_AttributeGetter = 5310,
+  kV8GeolocationCoordinates_Altitude_AttributeGetter = 5311,
+  kV8GeolocationCoordinates_Accuracy_AttributeGetter = 5312,
+  kV8GeolocationCoordinates_AltitudeAccuracy_AttributeGetter = 5313,
+  kV8GeolocationCoordinates_Heading_AttributeGetter = 5314,
+  kV8GeolocationCoordinates_Speed_AttributeGetter = 5315,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
