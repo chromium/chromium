@@ -221,16 +221,44 @@ int SpeechRecognitionManagerImpl::CreateSession(
   base::UmaHistogramBoolean(kWebSpeechAudioUseAudioForwarderHistogram,
                             audio_forwarder_config.has_value());
 
-  // If on-device speech recognition must be used but is not available, throw a
-  // language-not-supported error and don't create the session.
-  if (UseOnDeviceSpeechRecognition(config) &&
-      !IsOnDeviceSpeechRecognitionAvailable(config)) {
+  // Initialize the error to be none.
+  media::mojom::SpeechRecognitionErrorCode error =
+      media::mojom::SpeechRecognitionErrorCode::kNone;
+
+  if (UseOnDeviceSpeechRecognition(config)) {
+    // Set the error if on-device speech recognition must be used but is not
+    // available.
+    if (!IsOnDeviceSpeechRecognitionAvailable(config)) {
+      error = media::mojom::SpeechRecognitionErrorCode::kLanguageNotSupported;
+    }
+  } else {
+    // Set the error if on-device speech recognition is not used but recognition
+    // context is set.
+    if (config.recognition_context.has_value()) {
+      error = media::mojom::SpeechRecognitionErrorCode::
+          kRecognitionContextNotSupported;
+    }
+  }
+
+  // Throw the error and do not create the session if error is found.
+  if (error != media::mojom::SpeechRecognitionErrorCode::kNone) {
     mojo::Remote<media::mojom::SpeechRecognitionSessionClient> client(
         std::move(client_remote));
-    client->ErrorOccurred(media::mojom::SpeechRecognitionError::New(
-        media::mojom::SpeechRecognitionErrorCode::kLanguageNotSupported,
-        media::mojom::SpeechAudioErrorDetails::kNone));
-    client->Ended();
+    if (client.is_bound()) {
+      client->ErrorOccurred(media::mojom::SpeechRecognitionError::New(
+          error, media::mojom::SpeechAudioErrorDetails::kNone));
+      client->Ended();
+    } else if (config.event_listener) {
+      // The client may have been moved into the event_listener such as what
+      // SpeechRecognitionDispatcherHost does, so throw the error there.
+      config.event_listener.get()->OnRecognitionError(
+          session_id, media::mojom::SpeechRecognitionError(
+                          error, media::mojom::SpeechAudioErrorDetails::kNone));
+      config.event_listener.get()->OnRecognitionEnd(session_id);
+    } else {
+      // At least a client should be have been informed of the error.
+      NOTREACHED();
+    }
     return session_id;
   }
 

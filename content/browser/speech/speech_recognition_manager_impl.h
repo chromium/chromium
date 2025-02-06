@@ -110,8 +110,9 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   SpeechRecognitionManagerDelegate* delegate() const { return delegate_.get(); }
 
  protected:
-  // BrowserMainLoop is the only one allowed to instantiate this class.
+  // Only BrowserMainLoop and tests are allowed to instantiate this class.
   friend class BrowserMainLoop;
+  friend class SpeechRecognitionManagerImplTest;
 
   // Needed for deletion on the IO thread.
   friend std::default_delete<SpeechRecognitionManagerImpl>;
