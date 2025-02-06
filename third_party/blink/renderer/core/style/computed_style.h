@@ -1087,27 +1087,27 @@ class ComputedStyle final : public ComputedStyleBase {
     return (track_direction == kForColumns) ? GridTemplateColumns()
                                             : GridTemplateRows();
   }
-
-  // In the following masonry methods, `TrackStart` and `TrackEnd`,
-  // `track_direction` should be the same orientation as masonry's track
-  // direction. Otherwise, the positions should be auto.
   const GridPosition& TrackStart(
+      const ComputedStyle& parent_style,
       GridTrackSizingDirection track_direction) const {
-    if (IsDisplayMasonryBox()) {
-      DCHECK(track_direction == MasonryTrackSizingDirection());
+    if (IsDisplayMasonryBox(parent_style.Display())) {
+      DCHECK_EQ(track_direction, parent_style.MasonryTrackSizingDirection())
+          << "Masonry containers have a single grid axis, we shouldn't try to "
+             "get the track start in the stacking axis.";
       return MasonryTrackStart();
     }
-    const bool is_for_columns = track_direction == kForColumns;
-    return is_for_columns ? GridColumnStart() : GridRowStart();
+    return (track_direction == kForColumns) ? GridColumnStart()
+                                            : GridRowStart();
   }
-
-  const GridPosition& TrackEnd(GridTrackSizingDirection track_direction) const {
-    if (IsDisplayMasonryBox()) {
-      DCHECK(track_direction == MasonryTrackSizingDirection());
+  const GridPosition& TrackEnd(const ComputedStyle& parent_style,
+                               GridTrackSizingDirection track_direction) const {
+    if (IsDisplayMasonryBox(parent_style.Display())) {
+      DCHECK_EQ(track_direction, parent_style.MasonryTrackSizingDirection())
+          << "Masonry containers have a single grid axis, we shouldn't try to "
+             "get the track end in the stacking axis.";
       return MasonryTrackEnd();
     }
-    const bool is_for_columns = track_direction == kForColumns;
-    return is_for_columns ? GridColumnEnd() : GridRowEnd();
+    return (track_direction == kForColumns) ? GridColumnEnd() : GridRowEnd();
   }
 
   // Writing mode utility functions.
@@ -1626,7 +1626,6 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsDisplayTableBox() const { return IsDisplayTableBox(Display()); }
   bool IsDisplayFlexibleBox() const { return IsDisplayFlexibleBox(Display()); }
   bool IsDisplayGridBox() const { return IsDisplayGridBox(Display()); }
-  bool IsDisplayMasonryBox() const { return IsDisplayMasonryBox(Display()); }
   bool IsDisplayFlexibleOrGridBox() const {
     return IsDisplayFlexibleBox(Display()) || IsDisplayGridBox(Display());
   }
