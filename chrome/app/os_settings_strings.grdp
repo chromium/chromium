@@ -1036,7 +1036,7 @@
     Help me read
   </message>
   <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_READ_DESCRIPTION" desc="The description of the toggle to enable/disable Help Me Read in ChromeOS settings.">
-    Summarize content or ask follow-up questions.
+    Summarize content, simplify complex language, or ask questions.
   </message>
   <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE" desc="The label of the toggle to enable/disable Help Me Write in ChromeOS settings.">
     Help me write
