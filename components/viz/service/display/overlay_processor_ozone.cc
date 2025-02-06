@@ -227,10 +227,10 @@ bool AllowColorSpaceCombination(
 OverlayProcessorOzone::OverlayProcessorOzone(
     std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates,
     std::vector<OverlayStrategy> available_strategies,
-    gpu::SharedImageManager* shared_image_manager)
+    std::unique_ptr<PixmapProvider> pixmap_provider)
     : overlay_candidates_(std::move(overlay_candidates)),
       available_strategies_(std::move(available_strategies)),
-      shared_image_manager_(shared_image_manager) {
+      pixmap_provider_(std::move(pixmap_provider)) {
   for (OverlayStrategy strategy : available_strategies_) {
     switch (strategy) {
       case OverlayStrategy::kFullscreen:
@@ -315,7 +315,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
       // TODO(crbug.com/40153057): Fuchsia claims support for presenting primary
       // plane as overlay, but does not provide a mailbox. Handle this case.
 #if !BUILDFLAG(IS_FUCHSIA)
-      if (shared_image_manager_) {
+      if (pixmap_provider_) {
         bool result = SetNativePixmapForCandidate(&(*ozone_surface_iterator),
                                                   primary_plane->mailbox,
                                                   /*is_primary=*/true);
@@ -385,7 +385,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
         continue;
       }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-      if (shared_image_manager_) {
+      if (pixmap_provider_) {
         bool result = SetNativePixmapForCandidate(&(*ozone_surface_iterator),
                                                   surface_iterator->mailbox,
                                                   /*is_primary=*/false);
@@ -517,9 +517,9 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     ui::OverlaySurfaceCandidate* candidate,
     const gpu::Mailbox& mailbox,
     bool is_primary) {
-  DCHECK(shared_image_manager_);
+  DCHECK(pixmap_provider_);
   scoped_refptr<gfx::NativePixmap> native_pixmap =
-      shared_image_manager_->GetNativePixmap(mailbox);
+      pixmap_provider_->GetNativePixmap(mailbox);
 
   if (!native_pixmap) {
     // SharedImage creation and destruction happens on a different
@@ -544,5 +544,7 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
   candidate->native_pixmap_unique_id = mailbox.ToU32();
   return true;
 }
+
+OverlayProcessorOzone::PixmapProvider::~PixmapProvider() = default;
 
 }  // namespace viz

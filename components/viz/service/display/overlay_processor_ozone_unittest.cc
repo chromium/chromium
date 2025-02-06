@@ -87,7 +87,7 @@ class FakeNativePixmap : public gfx::NativePixmap {
   gfx::BufferFormat format_;
 };
 
-class MockSharedImageManager : public gpu::SharedImageManager {
+class MockPixmapProvider : public OverlayProcessorOzone::PixmapProvider {
  public:
   MOCK_METHOD1(GetNativePixmap,
                scoped_refptr<gfx::NativePixmap>(const gpu::Mailbox& mailbox));
@@ -115,20 +115,21 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
 
-  // Initialize a MockSharedImageManager that returns a NativePixmap with
+  // Initialize a MockPixmapProvider that returns a NativePixmap with
   // matching params to the primary plane.
-  MockSharedImageManager manager;
+  auto pixmap_provider = std::make_unique<MockPixmapProvider>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
                                              gfx::BufferFormat::BGRA_8888);
   scoped_refptr<gfx::NativePixmap> candidate_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
                                              gfx::BufferFormat::BGRA_8888);
-  EXPECT_CALL(manager, GetNativePixmap(_))
+  EXPECT_CALL(*pixmap_provider, GetNativePixmap(_))
       .WillOnce(Return(primary_plane_pixmap))
       .WillOnce(Return(candidate_pixmap));
   OverlayProcessorOzone processor(
-      std::make_unique<FakeOverlayCandidatesOzone>(), {}, &manager);
+      std::make_unique<FakeOverlayCandidatesOzone>(), {},
+      std::move(pixmap_provider));
 
   processor.CheckOverlaySupport(&primary_plane, &candidates);
 
@@ -154,16 +155,16 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
 
-  // Initialize a MockSharedImageManager that returns a NativePixmap with
+  // Initialize a MockPixmapProvider that returns a NativePixmap with
   // a different buffer format than that of the primary plane.
-  MockSharedImageManager manager;
-  ;
+  auto pixmap_provider = std::make_unique<MockPixmapProvider>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size, gfx::BufferFormat::R_8);
-  EXPECT_CALL(manager, GetNativePixmap(_))
+  EXPECT_CALL(*pixmap_provider, GetNativePixmap(_))
       .WillOnce(Return(primary_plane_pixmap));
   OverlayProcessorOzone processor(
-      std::make_unique<FakeOverlayCandidatesOzone>(), {}, &manager);
+      std::make_unique<FakeOverlayCandidatesOzone>(), {},
+      std::move(pixmap_provider));
 
   processor.CheckOverlaySupport(&primary_plane, &candidates);
 
@@ -189,21 +190,22 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
 
-  // Initialize a MockSharedImageManager that returns a NativePixmap with
+  // Initialize a MockPixmapProvider that returns a NativePixmap with
   // matching params to the primary plane.
-  MockSharedImageManager manager;
+  auto pixmap_provider = std::make_unique<MockPixmapProvider>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
                                              gfx::BufferFormat::BGRA_8888);
   scoped_refptr<gfx::NativePixmap> candidate_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
                                              gfx::BufferFormat::BGRA_8888);
-  ON_CALL(manager, GetNativePixmap(primary_plane.mailbox))
+  ON_CALL(*pixmap_provider, GetNativePixmap(primary_plane.mailbox))
       .WillByDefault(Return(primary_plane_pixmap));
-  ON_CALL(manager, GetNativePixmap(candidate.mailbox))
+  ON_CALL(*pixmap_provider, GetNativePixmap(candidate.mailbox))
       .WillByDefault(Return(candidate_pixmap));
   OverlayProcessorOzone processor(
-      std::make_unique<FakeOverlayCandidatesOzone>(), {}, &manager);
+      std::make_unique<FakeOverlayCandidatesOzone>(), {},
+      std::move(pixmap_provider));
 
   // In Chrome OS, we don't allow the promotion of the candidate if the
   // ContentColorUsage is different from the primary plane (e.g., SDR vs. HDR).

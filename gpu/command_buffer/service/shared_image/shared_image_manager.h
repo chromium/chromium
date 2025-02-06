@@ -156,9 +156,7 @@ class GPU_GLES2_EXPORT SharedImageManager
   // expected to read from or write into the provided NativePixmap because it
   // can be modified by the client at any time. The primary purpose of this
   // method is to facilitate pageflip testing on the viz thread.
-  // NOTE: virtual for testing.
-  virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap(
-      const gpu::Mailbox& mailbox);
+  scoped_refptr<gfx::NativePixmap> GetNativePixmap(const gpu::Mailbox& mailbox);
 
 #if BUILDFLAG(IS_WIN)
   const scoped_refptr<DXGISharedHandleManager>& dxgi_shared_handle_manager()
