@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v1.2.0...chromium-bidi-v1.3.0) (2025-02-05)
+
+
+### Features
+
+* emit `browsingContext.navigationCommitted` event ([#3057](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3057)) ([58be24c](https://github.com/GoogleChromeLabs/chromium-bidi/commit/58be24cfa09a04f6cf7d1068cfe697baee32298b))
+* implement user context subscriptions ([#3039](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3039)) ([7decf27](https://github.com/GoogleChromeLabs/chromium-bidi/commit/7decf27c36bc0a6b8d268472e260920300d49db2))
+* support UserContext in PreloadScripts ([#3072](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3072)) ([dd2c9c0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/dd2c9c0ee62f761903c20c6d83ea2c0afaa7bf73))
+
+
+### Bug Fixes
+
+* group clicks in action ([#3052](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3052)) ([c2d7fe3](https://github.com/GoogleChromeLabs/chromium-bidi/commit/c2d7fe3e1d6c93718f7279dd05bc5a7051281c54))
+
 ## [1.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v1.1.0...chromium-bidi-v1.2.0) (2025-01-28)
 
 
