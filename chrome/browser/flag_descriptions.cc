@@ -3503,11 +3503,6 @@ const char kSyncAutofillWalletCredentialDataName[] =
 const char kSyncAutofillWalletCredentialDataDescription[] =
     "When enabled, allows syncing of the autofill wallet credential data type.";
 
-const char kSyncAutofillWalletUsageDataName[] =
-    "Sync Autofill Wallet Usage Data";
-const char kSyncAutofillWalletUsageDataDescription[] =
-    "When enabled, allows syncing of the autofill wallet usage data type.";
-
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

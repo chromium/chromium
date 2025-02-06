@@ -2025,9 +2025,6 @@ extern const char kSystemKeyboardLockDescription[];
 extern const char kSyncAutofillWalletCredentialDataName[];
 extern const char kSyncAutofillWalletCredentialDataDescription[];
 
-extern const char kSyncAutofillWalletUsageDataName[];
-extern const char kSyncAutofillWalletUsageDataDescription[];
-
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 

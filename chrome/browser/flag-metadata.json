@@ -8267,11 +8267,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "sync-autofill-wallet-usage-data",
-    "owners": [ "alexandertekle@google.com", "treib@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "sync-enable-bookmarks-in-transport-mode",
     "owners": [ "msalama@chromium.org", "uno-desktop@google.com" ],
     "expiry_milestone": 136
