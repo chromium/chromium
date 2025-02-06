@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupMember;
@@ -53,21 +54,23 @@ public class SharedImageTilesCoordinator {
      * @param context The Android context used to inflate the views.
      * @param type The {@link SharedImageTilesType} of the SharedImageTiles.
      * @param color The {@link SharedImageTilesColor} of the SharedImageTiles.
-     * @param dataSharingService Used to fetch tab group data.
+     * @param dataSharingService Used to access UI delegate.
+     * @param collaborationService Used to fetch collaboration group data.
      */
     public SharedImageTilesCoordinator(
             Context context,
             @SharedImageTilesType int type,
             SharedImageTilesColor color,
-            @NonNull DataSharingService dataSharingService) {
+            @NonNull DataSharingService dataSharingService,
+            @NonNull CollaborationService collaborationService) {
         mModel =
                 new PropertyModel.Builder(SharedImageTilesProperties.ALL_KEYS)
                         .with(SharedImageTilesProperties.TYPE, type)
                         .with(SharedImageTilesProperties.COLOR_STYLE, color)
                         .build();
         mContext = context;
-        mDataSharingService = dataSharingService;
         mType = type;
+        mDataSharingService = dataSharingService;
 
         mView =
                 (SharedImageTilesView)

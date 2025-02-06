@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -63,6 +64,7 @@ public class TabGroupRowMediatorUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
     @Mock private PaneManager mPaneManager;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private ModalDialogManager mModalDialogManager;
@@ -110,6 +112,7 @@ public class TabGroupRowMediatorUnitTest {
                         mTabGroupModelFilter,
                         mTabGroupSyncService,
                         mDataSharingService,
+                        mCollaborationService,
                         mPaneManager,
                         mTabGroupUiActionHandler,
                         mModalDialogManager,

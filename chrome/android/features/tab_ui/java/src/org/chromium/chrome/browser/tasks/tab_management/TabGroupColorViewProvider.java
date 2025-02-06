@@ -44,6 +44,7 @@ public class TabGroupColorViewProvider implements Destroyable {
     private final @NonNull Context mContext;
     private final boolean mIsIncognito;
     private final @Nullable DataSharingService mDataSharingService;
+    private final @NonNull CollaborationService mCollaborationService;
     private final @Nullable TransitiveSharedGroupObserver mTransitiveSharedGroupObserver;
 
     private @NonNull Token mTabGroupId;
@@ -73,13 +74,14 @@ public class TabGroupColorViewProvider implements Destroyable {
         mTabGroupId = tabGroupId;
         mIsIncognito = isIncognito;
         mColorId = colorId;
+        mCollaborationService = collaborationService;
 
         boolean servicesExist = tabGroupSyncService != null && dataSharingService != null;
-        if (servicesExist && collaborationService.getServiceStatus().isAllowedToJoin()) {
+        if (servicesExist && mCollaborationService.getServiceStatus().isAllowedToJoin()) {
             mDataSharingService = dataSharingService;
             mTransitiveSharedGroupObserver =
                     new TransitiveSharedGroupObserver(
-                            tabGroupSyncService, dataSharingService, collaborationService);
+                            tabGroupSyncService, dataSharingService, mCollaborationService);
             mTransitiveSharedGroupObserver.setTabGroupId(tabGroupId);
             mTransitiveSharedGroupObserver
                     .getGroupMembersSupplier()
@@ -228,7 +230,8 @@ public class TabGroupColorViewProvider implements Destroyable {
                                 SharedImageTilesColor.Style.TAB_GROUP,
                                 ColorPickerUtils.getTabGroupColorPickerItemColor(
                                         mContext, mColorId, mIsIncognito)),
-                        mDataSharingService);
+                        mDataSharingService,
+                        mCollaborationService);
         mSharedImageTilesCoordinator.fetchImagesForCollaborationId(collaborationId);
 
         View view = mSharedImageTilesCoordinator.getView();

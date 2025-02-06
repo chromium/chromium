@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -73,7 +74,8 @@ public class TabGroupListMediator {
     private final TabGroupModelFilter mFilter;
     private final FaviconResolver mFaviconResolver;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
-    private final @Nullable DataSharingService mDataSharingService;
+    private final @NonNull DataSharingService mDataSharingService;
+    private final @NonNull CollaborationService mCollaborationService;
     private final IdentityManager mIdentityManager;
     private final PaneManager mPaneManager;
     private final TabGroupUiActionHandler mTabGroupUiActionHandler;
@@ -193,6 +195,7 @@ public class TabGroupListMediator {
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param dataSharingService Used to fetch shared group data.
+     * @param collaborationService Used to fetch collaboration group data.
      * @param messagingBackendService Used to fetch tab group related messages.
      * @param identityManager Used to fetch current account information.
      * @param paneManager Used switch panes to show details of a group.
@@ -208,7 +211,8 @@ public class TabGroupListMediator {
             TabGroupModelFilter filter,
             FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @Nullable DataSharingService dataSharingService,
+            @NonNull DataSharingService dataSharingService,
+            @NonNull CollaborationService collaborationService,
             @NonNull MessagingBackendService messagingBackendService,
             IdentityManager identityManager,
             PaneManager paneManager,
@@ -223,6 +227,7 @@ public class TabGroupListMediator {
         mFaviconResolver = faviconResolver;
         mTabGroupSyncService = tabGroupSyncService;
         mDataSharingService = dataSharingService;
+        mCollaborationService = collaborationService;
         mMessagingBackendService = messagingBackendService;
         mIdentityManager = identityManager;
         mPaneManager = paneManager;
@@ -235,9 +240,7 @@ public class TabGroupListMediator {
         if (mTabGroupSyncService != null) {
             mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
         }
-        if (mDataSharingService != null) {
-            mDataSharingService.addObserver(mDataSharingObserver);
-        }
+        mDataSharingService.addObserver(mDataSharingObserver);
         mSyncService.addSyncStateChangedListener(mSyncStateChangeListener);
         mMessagingBackendService.addPersistentMessageObserver(mPersistentMessageObserver);
 
@@ -252,9 +255,7 @@ public class TabGroupListMediator {
         if (mTabGroupSyncService != null) {
             mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
         }
-        if (mDataSharingService != null) {
-            mDataSharingService.removeObserver(mDataSharingObserver);
-        }
+        mDataSharingService.removeObserver(mDataSharingObserver);
         mSyncService.removeSyncStateChangedListener(mSyncStateChangeListener);
         mCallbackController.destroy();
         mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
@@ -359,6 +360,7 @@ public class TabGroupListMediator {
                             mFilter,
                             mTabGroupSyncService,
                             mDataSharingService,
+                            mCollaborationService,
                             mPaneManager,
                             mTabGroupUiActionHandler,
                             mModalDialogManager,

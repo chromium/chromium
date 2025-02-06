@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.GroupData;
@@ -54,6 +55,7 @@ class TabGroupRowMediator {
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final TabGroupSyncService mTabGroupSyncService;
     private final DataSharingService mDataSharingService;
+    private final CollaborationService mCollaborationService;
     private final PaneManager mPaneManager;
     private final TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final ModalDialogManager mModalDialogManager;
@@ -69,6 +71,7 @@ class TabGroupRowMediator {
      * @param tabGroupModelFilter Used to read current tab groups.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param dataSharingService Used to fetch shared group data.
+     * @param collaborationService Used to fetch collaboration group data.
      * @param paneManager Used switch panes to show details of a group.
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
      * @param modalDialogManager Used to show error dialogs.
@@ -83,6 +86,7 @@ class TabGroupRowMediator {
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupSyncService tabGroupSyncService,
             DataSharingService dataSharingService,
+            CollaborationService collaborationService,
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
             ModalDialogManager modalDialogManager,
@@ -96,6 +100,7 @@ class TabGroupRowMediator {
         mTabGroupSyncService = tabGroupSyncService;
         mPaneManager = paneManager;
         mDataSharingService = dataSharingService;
+        mCollaborationService = collaborationService;
         mTabGroupUiActionHandler = tabGroupUiActionHandler;
         mModalDialogManager = modalDialogManager;
         mActionConfirmationManager = actionConfirmationManager;
@@ -187,7 +192,8 @@ class TabGroupRowMediator {
                                 mContext,
                                 SharedImageTilesType.DEFAULT,
                                 new SharedImageTilesColor(SharedImageTilesColor.Style.DYNAMIC),
-                                mDataSharingService);
+                                mDataSharingService,
+                                mCollaborationService);
             }
             mSharedImageTilesCoordinator.fetchImagesForCollaborationId(
                     mSavedTabGroup.collaborationId);

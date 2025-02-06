@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -131,6 +132,7 @@ public class TabGroupListMediatorUnitTest {
     @Mock private TabList mComprehensiveModel;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
     @Mock private IdentityManager mIdentityManager;
     @Mock private PaneManager mPaneManager;
     @Mock private FaviconResolver mFaviconResolver;
@@ -193,6 +195,7 @@ public class TabGroupListMediatorUnitTest {
                 mFaviconResolver,
                 mTabGroupSyncService,
                 mDataSharingService,
+                mCollaborationService,
                 mMessagingBackendService,
                 mIdentityManager,
                 mPaneManager,
