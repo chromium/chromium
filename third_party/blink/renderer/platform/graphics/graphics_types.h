@@ -176,23 +176,6 @@ enum LineJoin {
   kBevelJoin = SkPaint::kBevel_Join
 };
 
-enum TextBaseline {
-  kAlphabeticTextBaseline,
-  kTopTextBaseline,
-  kMiddleTextBaseline,
-  kBottomTextBaseline,
-  kIdeographicTextBaseline,
-  kHangingTextBaseline
-};
-
-enum TextAlign {
-  kStartTextAlign,
-  kEndTextAlign,
-  kLeftTextAlign,
-  kCenterTextAlign,
-  kRightTextAlign
-};
-
 enum TextPaintOrder { kFillStroke, kStrokeFill };
 
 enum TextDrawingMode {
@@ -369,12 +352,6 @@ PLATFORM_EXPORT bool ParseLineCap(const WTF::String&, LineCap&);
 
 PLATFORM_EXPORT WTF::String LineJoinName(LineJoin);
 PLATFORM_EXPORT bool ParseLineJoin(const WTF::String&, LineJoin&);
-
-PLATFORM_EXPORT WTF::String TextAlignName(TextAlign);
-PLATFORM_EXPORT bool ParseTextAlign(const WTF::String&, TextAlign&);
-
-PLATFORM_EXPORT WTF::String TextBaselineName(TextBaseline);
-PLATFORM_EXPORT bool ParseTextBaseline(const WTF::String&, TextBaseline&);
 
 PLATFORM_EXPORT WTF::String ImageDataStorageFormatName(ImageDataStorageFormat);
 
