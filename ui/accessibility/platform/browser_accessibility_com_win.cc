@@ -88,7 +88,7 @@ void BrowserAccessibilityComWin::OnReferenced() {
 
 void BrowserAccessibilityComWin::OnDereferenced() {
   TRACE_EVENT("accessibility", "OnDereferenced",
-              perfetto::TerminatingFlow::FromPointer(this));
+              perfetto::Flow::FromPointer(this));
 }
 
 //

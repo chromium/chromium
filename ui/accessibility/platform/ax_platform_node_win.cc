@@ -333,6 +333,8 @@ AXPlatformNode* AXPlatformNode::FromNativeViewAccessible(
 AXPlatformNodeWin::AXPlatformNodeWin() = default;
 
 AXPlatformNodeWin::~AXPlatformNodeWin() {
+  TRACE_EVENT("accessibility", "~AXPlatformNodeWin",
+              perfetto::TerminatingFlow::FromPointer(this));
   ClearOwnRelations();
 }
 
@@ -597,6 +599,7 @@ gfx::Vector2d AXPlatformNodeWin::CalculateUIAScrollPoint(
 //
 
 void AXPlatformNodeWin::Dispose() {
+  TRACE_EVENT("accessibility", "Dispose", perfetto::Flow::FromPointer(this));
   Release();
 }
 
@@ -7691,10 +7694,12 @@ ULONG AXPlatformNodeWin::InternalAddRef() {
 
 ULONG AXPlatformNodeWin::InternalRelease() {
   // As above, infer that the instance is no longer being used for some COM-ish
-  // purpose when the refcount drops back down to 1 (if it has yet to be
-  // disposed) or 0 (if it has been).
+  // purpose when the refcount drops back down to 1 if it has yet to be
+  // disposed. For cases where the instance was disposed while there were
+  // outstanding references, `OnDereferenced()` will not be called before
+  // destruction.
   const auto ref_count = SequenceAffineComObjectRoot::InternalRelease();
-  if (ref_count == (delegate_ ? 1 : 0)) {
+  if (delegate_ && ref_count == 1) {
     OnDereferenced();
   }
   return ref_count;
@@ -7708,7 +7713,7 @@ void AXPlatformNodeWin::OnReferenced() {
 
 void AXPlatformNodeWin::OnDereferenced() {
   TRACE_EVENT("accessibility", "OnDereferenced",
-              perfetto::TerminatingFlow::FromPointer(this));
+              perfetto::Flow::FromPointer(this));
 }
 
 bool AXPlatformNodeWin::IsPlatformCheckable() const {
