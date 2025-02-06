@@ -1786,6 +1786,39 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   std::move(success_callback).Run(true);
 }
 
+TEST_F(MessagingBackendServiceImplTest,
+       LeavingCollaborationDoesNotResultInNotifications) {
+  CreateAndInitializeService();
+  SetupInstantMessageDelegate();
+  AddPersistentMessageObserver();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+
+  // Mimic that the user has just left the group.
+  EXPECT_CALL(*mock_data_sharing_service_,
+              IsLeavingGroup(Eq(collaboration_group_id)))
+      .WillRepeatedly(Return(true));
+
+  // Remove the group which results due to leaving the collaboration. There
+  // should be no instant, persistent or db message.
+  EXPECT_CALL(*mock_instant_message_delegate_, DisplayInstantaneousMessage)
+      .Times(0);
+  EXPECT_CALL(mock_persistent_message_observer_, DisplayPersistentMessage)
+      .Times(0);
+  EXPECT_CALL(*unowned_messaging_backend_store_, AddMessage).Times(0);
+  tg_notifier_observer_->OnTabGroupRemoved(tab_group,
+                                           tab_groups::TriggerSource::REMOTE);
+}
+
 TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {
   CreateAndInitializeService();
   SetupInstantMessageDelegate();

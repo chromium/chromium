@@ -227,6 +227,12 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
       const GroupId& group_id,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) = 0;
 
+  // Returns whether the current user has attempted to leave a group in the
+  // current session that they had joined before. This is different than if the
+  // member is removed from the group by someone else. Returns true for the
+  // entire current session even after leave attempt has been committed.
+  virtual bool IsLeavingGroup(const GroupId& group_id) = 0;
+
   // Returns group events since the DataSharingService was started. This is
   // similar to events exposed to Observers, but allows to collect changes by
   // observer that were created after DataSharingService was started.
