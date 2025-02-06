@@ -2235,7 +2235,7 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
     return;
   }
 
-  const sync_pb::BnplIssuerDetails& bnpl_issuer =
+  const sync_pb::BnplCreationOption& bnpl_issuer =
       payment_instrument_creation_option.buy_now_pay_later_option();
   std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
   eligible_price_ranges.reserve(bnpl_issuer.eligible_price_range_size());

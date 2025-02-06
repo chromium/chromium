@@ -335,6 +335,11 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillWalletSpecifics& proto) {
   VISIT(payment_instrument_creation_option);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::BnplCreationOption& proto) {
+  VISIT(issuer_id);
+  VISIT_REP(eligible_price_range);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::BnplIssuerDetails& proto) {
   VISIT(issuer_id);
   VISIT_REP(eligible_price_range);

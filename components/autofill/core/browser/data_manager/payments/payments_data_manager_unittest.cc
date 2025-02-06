@@ -3601,7 +3601,7 @@ TEST_F(PaymentsDataManagerTest,
   sync_pb::PaymentInstrumentCreationOption creation_option;
   creation_option.set_id("1234");
 
-  sync_pb::BnplIssuerDetails* bnpl_option =
+  sync_pb::BnplCreationOption* bnpl_option =
       creation_option.mutable_buy_now_pay_later_option();
   bnpl_option->set_issuer_id("issuer_id");
 
@@ -3624,7 +3624,8 @@ TEST_F(PaymentsDataManagerTest,
   payments_data_manager().Refresh();
   WaitForOnPaymentsDataChanged();
 
-  // Must match the BnplIssuerDetails in the payment instrument creation option.
+  // Must match the BnplCreationOption in the payment instrument creation
+  // option.
   std::vector<BnplIssuer> want_bnpl_issuers = {
       BnplIssuer(/*instrument_id=*/std::nullopt, "issuer_id",
                  {BnplIssuer::EligiblePriceRange(/*currency= */ "USD",
