@@ -25,12 +25,12 @@ BASE_FEATURE(kEnableBandAKAnonEnforcement,
 // Enable parsing private aggregation contributions from B&A response.
 BASE_FEATURE(kEnableBandAPrivateAggregation,
              "EnableBandAPrivateAggregation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable parsing forDebuggingOnly reports from B&A response, for down sampling.
 BASE_FEATURE(kEnableBandASampleDebugReports,
              "EnableBandASampleDebugReports",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable parsing triggered updates from B&A response.
 BASE_FEATURE(kEnableBandATriggeredUpdates,
