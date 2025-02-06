@@ -42,12 +42,7 @@ BASE_FEATURE(kFeatureParamWithCache,
 // introduces too much latency.
 BASE_FEATURE(kUseRustJsonParser,
              "UseRustJsonParser",
-#if BUILDFLAG(IS_ANDROID)
-             FEATURE_DISABLED_BY_DEFAULT
-#else
-             FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_ANDROID)
-);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 // If true, use the Rust JSON parser in-thread; otherwise, it runs in a thread
 // pool.
@@ -55,7 +50,7 @@ BASE_FEATURE_PARAM(bool,
                    kUseRustJsonParserInCurrentSequence,
                    &kUseRustJsonParser,
                    "UseRustJsonParserInCurrentSequence",
-                   false);
+                   true);
 
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
