@@ -108,11 +108,12 @@ struct AttributeInstance::CompareByType {
   }
 };
 
-// An entity instance is a set of attribute instances with additional metadata.
-// The type is an EntityType.
+// An entity instance is a non-empty set of attribute instances with additional
+// metadata. The type is an EntityType.
 class EntityInstance final {
  public:
-  EntityInstance(EntityType type_name,
+  // `attributes` must be non-empty and their type must be identical to `type`.
+  EntityInstance(EntityType type,
                  base::flat_set<AttributeInstance,
                                 AttributeInstance::CompareByType> attributes,
                  base::Uuid guid,

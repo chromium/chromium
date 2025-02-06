@@ -92,6 +92,10 @@ std::optional<EntityInstance> ValidateInstance(
     return *entity_type != a.type().entity_type();
   });
 
+  if (attributes.empty()) {
+    return std::nullopt;
+  }
+
   return EntityInstance(*entity_type, std::move(attributes), std::move(guid),
                         std::move(nickname), date_modified);
 }

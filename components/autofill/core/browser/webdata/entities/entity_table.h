@@ -86,6 +86,9 @@ class EntityTable : public WebDatabaseTable {
   // - At least one of the necessary-attributes constraints from the schema is
   //   satisfied.
   std::vector<EntityInstance> GetEntityInstances() const;
+
+ private:
+  friend class EntityTableTestApi;
 };
 
 }  // namespace autofill
