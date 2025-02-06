@@ -305,11 +305,11 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
     // Encode the buffer copy
     wgpu::CommandEncoder encoder = dawn_device_.CreateCommandEncoder();
     {
-      wgpu::ImageCopyTexture src_copy_view = {};
+      wgpu::TexelCopyTextureInfo src_copy_view = {};
       src_copy_view.origin = {0, 0, 0};
       src_copy_view.texture = src_texture;
 
-      wgpu::ImageCopyBuffer dst_copy_view = {};
+      wgpu::TexelCopyBufferInfo dst_copy_view = {};
       dst_copy_view.buffer = dst_buffer;
       dst_copy_view.layout.bytesPerRow = 256;
       dst_copy_view.layout.offset = 0;

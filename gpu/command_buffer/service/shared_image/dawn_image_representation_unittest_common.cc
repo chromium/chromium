@@ -21,12 +21,12 @@ void CopyTexelToBuffer(const wgpu::CommandEncoder& encoder,
                        uint32_t x,
                        uint32_t y,
                        const wgpu::Buffer& buffer) {
-  wgpu::ImageCopyBuffer buffer_copy;
+  wgpu::TexelCopyBufferInfo buffer_copy;
   buffer_copy.buffer = buffer;
   buffer_copy.layout =
-      wgpu::TextureDataLayout{.bytesPerRow = kBufferSizeMinAlignment};
+      wgpu::TexelCopyBufferLayout{.bytesPerRow = kBufferSizeMinAlignment};
 
-  wgpu::ImageCopyTexture texture_copy;
+  wgpu::TexelCopyTextureInfo texture_copy;
   texture_copy.texture = texture;
   texture_copy.mipLevel = 0;
   texture_copy.origin = wgpu::Origin3D{.x = x, .y = y, .z = 0};

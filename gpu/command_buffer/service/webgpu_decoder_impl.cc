@@ -697,7 +697,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       wgpu::CommandEncoder encoder =
           device_.CreateCommandEncoder(&command_encoder_desc);
-      wgpu::ImageCopyBuffer buffer_copy = {
+      wgpu::TexelCopyBufferInfo buffer_copy = {
           .layout =
               {
                   .bytesPerRow = bytes_per_row,
@@ -705,7 +705,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
               },
           .buffer = buffer.Get(),
       };
-      wgpu::ImageCopyTexture texture_copy = {
+      wgpu::TexelCopyTextureInfo texture_copy = {
           .texture = texture_,
       };
       wgpu::Extent3D extent = {
@@ -739,10 +739,10 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       };
       wgpu::Buffer buffer = device_.CreateBuffer(&buffer_desc);
 
-      wgpu::ImageCopyTexture texture_copy = {
+      wgpu::TexelCopyTextureInfo texture_copy = {
           .texture = texture_,
       };
-      wgpu::ImageCopyBuffer buffer_copy = {
+      wgpu::TexelCopyBufferInfo buffer_copy = {
           .layout =
               {
                   .bytesPerRow = bytes_per_row,

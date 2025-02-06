@@ -636,12 +636,12 @@ TEST_P(WebGPUMailboxTextureTest, WriteToMailboxThenReadFromIt) {
     buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
     wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
 
-    wgpu::ImageCopyTexture copy_src = {};
+    wgpu::TexelCopyTextureInfo copy_src = {};
     copy_src.texture = texture;
     copy_src.mipLevel = 0;
     copy_src.origin = {0, 0, 0};
 
-    wgpu::ImageCopyBuffer copy_dst = {};
+    wgpu::TexelCopyBufferInfo copy_dst = {};
     copy_dst.buffer = readback_buffer;
     copy_dst.layout.offset = 0;
     copy_dst.layout.bytesPerRow = 256;
@@ -712,12 +712,12 @@ TEST_P(WebGPUMailboxTextureTest,
   buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
   wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
 
-  wgpu::ImageCopyTexture copy_src = {};
+  wgpu::TexelCopyTextureInfo copy_src = {};
   copy_src.texture = texture;
   copy_src.mipLevel = 0;
   copy_src.origin = {0, 0, 0};
 
-  wgpu::ImageCopyBuffer copy_dst = {};
+  wgpu::TexelCopyBufferInfo copy_dst = {};
   copy_dst.buffer = readback_buffer;
   copy_dst.layout.offset = 0;
   copy_dst.layout.bytesPerRow = 256;
@@ -766,12 +766,12 @@ TEST_P(WebGPUMailboxTextureTest,
   buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
   wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
 
-  wgpu::ImageCopyTexture copy_src = {};
+  wgpu::TexelCopyTextureInfo copy_src = {};
   copy_src.texture = texture;
   copy_src.mipLevel = 0;
   copy_src.origin = {0, 0, 0};
 
-  wgpu::ImageCopyBuffer copy_dst = {};
+  wgpu::TexelCopyBufferInfo copy_dst = {};
   copy_dst.buffer = readback_buffer;
   copy_dst.layout.offset = 0;
   copy_dst.layout.bytesPerRow = 256;
@@ -819,12 +819,12 @@ TEST_P(WebGPUMailboxTextureTest, PassDiscardWhenAssociatingReadOnlyMailbox) {
   buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
   wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
 
-  wgpu::ImageCopyTexture copy_src = {};
+  wgpu::TexelCopyTextureInfo copy_src = {};
   copy_src.texture = texture;
   copy_src.mipLevel = 0;
   copy_src.origin = {0, 0, 0};
 
-  wgpu::ImageCopyBuffer copy_dst = {};
+  wgpu::TexelCopyBufferInfo copy_dst = {};
   copy_dst.buffer = readback_buffer;
   copy_dst.layout.offset = 0;
   copy_dst.layout.bytesPerRow = 256;
@@ -873,12 +873,12 @@ TEST_P(WebGPUMailboxTextureTest,
   buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
   wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
 
-  wgpu::ImageCopyTexture copy_src = {};
+  wgpu::TexelCopyTextureInfo copy_src = {};
   copy_src.texture = texture;
   copy_src.mipLevel = 0;
   copy_src.origin = {0, 0, 0};
 
-  wgpu::ImageCopyBuffer copy_dst = {};
+  wgpu::TexelCopyBufferInfo copy_dst = {};
   copy_dst.buffer = readback_buffer;
   copy_dst.layout.offset = 0;
   copy_dst.layout.bytesPerRow = 256;
@@ -930,12 +930,12 @@ TEST_P(WebGPUMailboxTextureTest,
   buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
   wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
 
-  wgpu::ImageCopyTexture copy_src = {};
+  wgpu::TexelCopyTextureInfo copy_src = {};
   copy_src.texture = texture;
   copy_src.mipLevel = 0;
   copy_src.origin = {0, 0, 0};
 
-  wgpu::ImageCopyBuffer copy_dst = {};
+  wgpu::TexelCopyBufferInfo copy_dst = {};
   copy_dst.buffer = readback_buffer;
   copy_dst.layout.offset = 0;
   copy_dst.layout.bytesPerRow = 256;
@@ -1053,12 +1053,12 @@ TEST_P(WebGPUMailboxTextureTest,
   buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
   wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
 
-  wgpu::ImageCopyTexture copy_src = {};
+  wgpu::TexelCopyTextureInfo copy_src = {};
   copy_src.texture = texture;
   copy_src.mipLevel = 0;
   copy_src.origin = {0, 0, 0};
 
-  wgpu::ImageCopyBuffer copy_dst = {};
+  wgpu::TexelCopyBufferInfo copy_dst = {};
   copy_dst.buffer = readback_buffer;
   copy_dst.layout.offset = 0;
   copy_dst.layout.bytesPerRow = 256;
@@ -1130,12 +1130,12 @@ TEST_P(
   buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
   wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
 
-  wgpu::ImageCopyTexture copy_src = {};
+  wgpu::TexelCopyTextureInfo copy_src = {};
   copy_src.texture = texture;
   copy_src.mipLevel = 0;
   copy_src.origin = {0, 0, 0};
 
-  wgpu::ImageCopyBuffer copy_dst = {};
+  wgpu::TexelCopyBufferInfo copy_dst = {};
   copy_dst.buffer = readback_buffer;
   copy_dst.layout.offset = 0;
   copy_dst.layout.bytesPerRow = 256;
@@ -1210,10 +1210,10 @@ TEST_P(WebGPUMailboxTextureTest, ErrorWhenUsingTextureAfterDissociate) {
          GetParam().format == viz::SinglePlaneFormat::kRGBA_F16);
   dst_desc.format = ToDawnFormat(GetParam().format);
 
-  wgpu::ImageCopyTexture src_image = {};
+  wgpu::TexelCopyTextureInfo src_image = {};
   src_image.texture = texture;
 
-  wgpu::ImageCopyTexture dst_image = {};
+  wgpu::TexelCopyTextureInfo dst_image = {};
   dst_image.texture = device_.CreateTexture(&dst_desc);
 
   wgpu::Extent3D extent = {1, 1};
