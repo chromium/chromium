@@ -113,6 +113,7 @@ CommandBufferStub::CommandBufferStub(
     : channel_(channel),
       context_type_(init_params.attribs.context_type),
       active_url_(init_params.active_url),
+      context_label_(init_params.label),
       initialized_(false),
       use_virtualized_gl_context_(false),
       command_buffer_id_(command_buffer_id),
@@ -151,6 +152,10 @@ void CommandBufferStub::ExecuteDeferredRequest(
   if (!operation.is_context_current())
     return;
 
+  if (!context_label_.empty()) {
+    TRACE_EVENT_BEGIN0("gpu", TRACE_STR_COPY(context_label_.c_str()));
+  }
+
   switch (params.which()) {
     case mojom::DeferredCommandBufferRequestParams::Tag::kAsyncFlush: {
       auto& flush = *params.get_async_flush();
@@ -172,6 +177,10 @@ void CommandBufferStub::ExecuteDeferredRequest(
           params.get_set_default_framebuffer_shared_image()->needs_stencil);
       break;
     }
+  }
+
+  if (!context_label_.empty()) {
+    TRACE_EVENT_END0("gpu", TRACE_STR_COPY(context_label_.c_str()));
   }
 }
 

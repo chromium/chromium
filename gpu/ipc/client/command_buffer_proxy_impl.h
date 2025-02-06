@@ -95,7 +95,8 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   ContextResult Initialize(CommandBufferProxyImpl* share_group,
                            gpu::SchedulingPriority stream_priority,
                            const gpu::ContextCreationAttribs& attribs,
-                           const GURL& active_url);
+                           const GURL& active_url = GURL(),
+                           const std::string_view label = "");
 
   void OnDisconnect();
 

@@ -257,6 +257,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   ContextType context_type_;
   ContextUrl active_url_;
+  std::string context_label_;
 
   bool initialized_;
   bool use_virtualized_gl_context_;
