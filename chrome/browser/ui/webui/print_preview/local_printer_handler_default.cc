@@ -84,12 +84,12 @@ PrinterList LocalPrinterHandlerDefault::EnumeratePrintersOnBlockingTaskRunner(
   mojom::ResultCode result = print_backend->EnumeratePrinters(printer_list);
   base::UmaHistogramTimes("PrintPreview.EnumeratePrintersTime",
                           base::TimeTicks::Now() - query_start_time);
-  if (result == mojom::ResultCode::kSuccess) {
-    PRINTER_LOG(EVENT) << "Enumerated " << printer_list.size() << " printer(s)";
-  } else {
+  if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Failure enumerating local printers, result: "
                        << result;
+    return PrinterList();
   }
+  PRINTER_LOG(EVENT) << "Enumerated " << printer_list.size() << " printer(s)";
   return printer_list;
 }
 
@@ -119,14 +119,12 @@ LocalPrinterHandlerDefault::FetchCapabilitiesOnBlockingTaskRunner(
       print_backend->GetPrinterBasicInfo(device_name, &basic_info);
   base::UmaHistogramTimes("PrintPreview.FetchCapabilitiesTime",
                           base::TimeTicks::Now() - query_start_time);
-  if (result == mojom::ResultCode::kSuccess) {
-    PRINTER_LOG(EVENT) << "Got basic info for " << device_name;
-  } else {
+  if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Invalid printer when getting basic info for "
                        << device_name << ", result: " << result;
     return base::Value::Dict();
   }
-
+  PRINTER_LOG(EVENT) << "Got basic info for " << device_name;
   return GetSettingsOnBlockingTaskRunner(
       device_name, basic_info, std::move(user_defined_papers), print_backend);
 }
