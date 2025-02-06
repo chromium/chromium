@@ -39,10 +39,7 @@ using base::trace_event::MemoryDumpLevelOfDetail;
 namespace cc {
 
 ResourcePool::Backing::Backing() = default;
-ResourcePool::Backing::~Backing() = default;
-
-ResourcePool::GpuBacking::GpuBacking() = default;
-ResourcePool::GpuBacking::~GpuBacking() {
+ResourcePool::Backing::~Backing() {
   if (!shared_image) {
     return;
   }
@@ -51,14 +48,9 @@ ResourcePool::GpuBacking::~GpuBacking() {
   } else if (mailbox_sync_token.HasData()) {
     shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
   }
-}
 
-ResourcePool::SoftwareBacking::SoftwareBacking() = default;
-ResourcePool::SoftwareBacking::~SoftwareBacking() {
-  DCHECK(shared_image);
-
-  shared_image->UpdateDestructionSyncToken(mailbox_sync_token);
   shared_image.reset();
+
   // DestroySharedImage is a DeferredRequest, so it doesn't trigger IPC
   // itself. We need a flush here to trigger IPC. Without the flush, there
   // will be memory regressions in tiles.
@@ -66,6 +58,12 @@ ResourcePool::SoftwareBacking::~SoftwareBacking() {
     shared_image_interface->Flush();
   }
 }
+
+ResourcePool::GpuBacking::GpuBacking() = default;
+ResourcePool::GpuBacking::~GpuBacking() = default;
+
+ResourcePool::SoftwareBacking::SoftwareBacking() = default;
+ResourcePool::SoftwareBacking::~SoftwareBacking() = default;
 
 namespace {
 
