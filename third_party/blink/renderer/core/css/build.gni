@@ -307,6 +307,8 @@ blink_core_sources_css = [
   "css_style_rule.h",
   "css_style_sheet.cc",
   "css_style_sheet.h",
+  "css_superellipse_value.cc",
+  "css_superellipse_value.h",
   "css_supports_rule.cc",
   "css_supports_rule.h",
   "css_syntax_component.h",
