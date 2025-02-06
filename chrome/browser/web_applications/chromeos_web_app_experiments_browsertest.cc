@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -46,9 +47,17 @@ static_assert(BUILDFLAG(IS_CHROMEOS), "For Chrome OS only");
 namespace web_app {
 
 class ChromeOsWebAppExperimentsBrowserTest
-    : public WebAppNavigationBrowserTest {
+    : public WebAppNavigationBrowserTest,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
  public:
-  ChromeOsWebAppExperimentsBrowserTest() = default;
+  ChromeOsWebAppExperimentsBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
+    enabled_features.emplace_back(chromeos::features::kUploadOfficeToCloud,
+                                  base::FieldTrialParams());
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
   ~ChromeOsWebAppExperimentsBrowserTest() override = default;
 
   // WebAppNavigationBrowserTest:
@@ -89,11 +98,10 @@ class ChromeOsWebAppExperimentsBrowserTest
   GURL extended_scope_page_;
   // This has no effect in Lacros, the feature is enabled via
   // `chromeos::BrowserInitParams` instead.
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kUploadOfficeToCloud};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
                        OutOfScopeBarRemoval) {
   // Check that the out of scope banner doesn't show after navigating to the
   // different scope in the web app window.
@@ -106,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
 // Lacros + Ash.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
                        LinkCaptureScopeExtension) {
   // Turn on link capturing for the web app.
   apps_util::SetSupportedLinksPreferenceAndWait(profile(), app_id_);
@@ -123,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
       extended_scope_page_);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
                        IgnoreManifestColor) {
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   EXPECT_FALSE(app_browser->app_controller()->GetThemeColor().has_value());
@@ -144,6 +152,12 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
   EXPECT_EQ(app_browser->app_controller()->GetThemeColor(),
             SkColorSetARGB(0xFF, 0x0, 0xFF, 0x0));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeOsWebAppExperimentsBrowserTest,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
+    apps::test::LinkCapturingVersionToString);
 
 class ChromeOsWebAppExperimentsNavigationBrowserTest
     : public ChromeOsWebAppExperimentsBrowserTest {
@@ -201,7 +215,7 @@ class ChromeOsWebAppExperimentsNavigationBrowserTest
 
 // Test that submitting a POST form in the app's window doesn't result in
 // leaving that window.
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        PostForm) {
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   content::WebContents* app_web_contents =
@@ -237,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 
 // Test that submitting a POST form to an app-controlled URL, happening in a
 // window opened via target=_blank, ends up in a new app window.
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        PostFormInBlankWindow) {
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   content::WebContents* app_web_contents =
@@ -274,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 
 // Test that opening a target=_blank window with an app-controlled URL ends up
 // in a new app window.
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        OpenAsBlankWindow) {
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   content::WebContents* app_web_contents =
@@ -301,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 
 // Test that opening an empty target=_blank window and then navigating it as
 // target=_top to an app-controlled URL ends up in a new app window.
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        OpenTopWindowInBlankWindow) {
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   content::WebContents* app_web_contents =
@@ -329,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 
 // Test that submitting a form that redirects to the app-controlled URL results
 // in launching that app - if it's marked as "open supported links".
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        OutOfScopeFormAndRedirectToPreferred) {
   ASSERT_TRUE(https_server().Start());
   // Start from a blank page - the form below will be added to it.
@@ -354,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 
 // Opposite to the previous test, verifies that the app is NOT launched if it's
 // not marked as "open supported links".
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        OutOfScopeFormAndRedirectToNotPreferred) {
   ASSERT_TRUE(https_server().Start());
   // The link capturing is turned on by default; simulate the user opt-out here.
@@ -381,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 
 // Test that clicking a noreferrer noopener target=_blank link to an
 // out-of-scope URL results in opening a browser tab.
-IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        NoopenerNoreferrerBlankLinkToOutOfScope) {
   ASSERT_TRUE(https_server().Start());
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
@@ -402,6 +416,12 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
                 ->GetVisibleURL(),
             target_url);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeOsWebAppExperimentsNavigationBrowserTest,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
+    apps::test::LinkCapturingVersionToString);
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 

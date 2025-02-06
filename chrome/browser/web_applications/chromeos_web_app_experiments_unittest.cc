@@ -9,6 +9,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,7 +49,10 @@ void ExpectDefaultScopeExtensions(const ScopeExtensions& scope_extensions) {
 }
 }  // namespace
 
-class ChromeOsWebAppExperimentsTest : public testing::Test {
+class ChromeOsWebAppExperimentsTest
+    : public testing::Test,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
  protected:
   ChromeOsWebAppExperimentsTest() = default;
   ChromeOsWebAppExperimentsTest(const ChromeOsWebAppExperimentsTest&) = delete;
@@ -61,7 +65,10 @@ class ChromeOsWebAppExperimentsTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ChromeOsWebAppExperimentsTest, GetScopeExtensions_NotM365) {
+TEST_P(ChromeOsWebAppExperimentsTest, GetScopeExtensions_NotM365) {
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
+
   const std::string web_app_id = "test_id";
   ScopeExtensions scope_extensions =
       ChromeOsWebAppExperiments::GetScopeExtensions(web_app_id);
@@ -69,10 +76,11 @@ TEST_F(ChromeOsWebAppExperimentsTest, GetScopeExtensions_NotM365) {
   EXPECT_TRUE(scope_extensions.empty());
 }
 
-TEST_F(ChromeOsWebAppExperimentsTest,
+TEST_P(ChromeOsWebAppExperimentsTest,
        GetScopeExtensions_M365FinchFlagDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      chromeos::features::kMicrosoft365ScopeExtensions);
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()),
+      /*disabled_features=*/{chromeos::features::kMicrosoft365ScopeExtensions});
 
   ScopeExtensions scope_extensions =
       ChromeOsWebAppExperiments::GetScopeExtensions(ash::kMicrosoft365AppId);
@@ -80,10 +88,14 @@ TEST_F(ChromeOsWebAppExperimentsTest,
   ExpectDefaultScopeExtensions(scope_extensions);
 }
 
-TEST_F(ChromeOsWebAppExperimentsTest,
+TEST_P(ChromeOsWebAppExperimentsTest,
        GetScopeExtensions_M365FinchFlagDefaultParams) {
-  scoped_feature_list_.InitAndEnableFeature(
-      chromeos::features::kMicrosoft365ScopeExtensions);
+  std::vector<base::test::FeatureRefAndParams> enabled_features =
+      apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
+  enabled_features.emplace_back(
+      chromeos::features::kMicrosoft365ScopeExtensions,
+      base::FieldTrialParams());
+  scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 
   ScopeExtensions scope_extensions =
       ChromeOsWebAppExperiments::GetScopeExtensions(ash::kMicrosoft365AppId);
@@ -91,15 +103,18 @@ TEST_F(ChromeOsWebAppExperimentsTest,
   ExpectDefaultScopeExtensions(scope_extensions);
 }
 
-TEST_F(ChromeOsWebAppExperimentsTest,
+TEST_P(ChromeOsWebAppExperimentsTest,
        GetScopeExtensions_M365FinchFlagParamsSingleValue) {
   const std::string scope_extension_urls = "https://example.com";
   const std::string scope_extension_domains = "https://domain.com";
 
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+  std::vector<base::test::FeatureRefAndParams> enabled_features =
+      apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
+  enabled_features.emplace_back(base::test::FeatureRefAndParams(
       chromeos::features::kMicrosoft365ScopeExtensions,
       {{kM365UrlsFinchParamName, scope_extension_urls},
-       {kM365DomainsFinchParamName, scope_extension_domains}});
+       {kM365DomainsFinchParamName, scope_extension_domains}}));
+  scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 
   ScopeExtensions scope_extensions =
       ChromeOsWebAppExperiments::GetScopeExtensions(ash::kMicrosoft365AppId);
@@ -108,7 +123,7 @@ TEST_F(ChromeOsWebAppExperimentsTest,
                           scope_extensions);
 }
 
-TEST_F(ChromeOsWebAppExperimentsTest,
+TEST_P(ChromeOsWebAppExperimentsTest,
        GetScopeExtensions_M365FinchFlagParamsMultipleValues) {
   const std::string scope_extension_urls =
       "https://example.com,http://example2.com , "
@@ -116,10 +131,13 @@ TEST_F(ChromeOsWebAppExperimentsTest,
   const std::string scope_extension_domains =
       "https://domain.com      , https://domain2.org";
 
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+  std::vector<base::test::FeatureRefAndParams> enabled_features =
+      apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
+  enabled_features.emplace_back(base::test::FeatureRefAndParams(
       chromeos::features::kMicrosoft365ScopeExtensions,
       {{kM365UrlsFinchParamName, scope_extension_urls},
-       {kM365DomainsFinchParamName, scope_extension_domains}});
+       {kM365DomainsFinchParamName, scope_extension_domains}}));
+  scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 
   ScopeExtensions scope_extensions =
       ChromeOsWebAppExperiments::GetScopeExtensions(ash::kMicrosoft365AppId);
@@ -130,16 +148,19 @@ TEST_F(ChromeOsWebAppExperimentsTest,
                           scope_extensions);
 }
 
-TEST_F(ChromeOsWebAppExperimentsTest,
+TEST_P(ChromeOsWebAppExperimentsTest,
        GetScopeExtensions_M365FinchFlagParamsInvalid) {
   const std::string scope_extension_urls =
       "xyz://abc.def///,https://example.com,about://blank,https://example2.com";
   const std::string scope_extension_domains = "invalid_test,https://domain.com";
 
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+  std::vector<base::test::FeatureRefAndParams> enabled_features =
+      apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
+  enabled_features.emplace_back(base::test::FeatureRefAndParams(
       chromeos::features::kMicrosoft365ScopeExtensions,
       {{kM365UrlsFinchParamName, scope_extension_urls},
-       {kM365DomainsFinchParamName, scope_extension_domains}});
+       {kM365DomainsFinchParamName, scope_extension_domains}}));
+  scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 
   ScopeExtensions scope_extensions =
       ChromeOsWebAppExperiments::GetScopeExtensions(ash::kMicrosoft365AppId);
@@ -148,16 +169,19 @@ TEST_F(ChromeOsWebAppExperimentsTest,
                           {"https://domain.com"}, scope_extensions);
 }
 
-TEST_F(ChromeOsWebAppExperimentsTest,
+TEST_P(ChromeOsWebAppExperimentsTest,
        GetScopeExtensions_M365FinchFlagParamsDomainStartsWithDot) {
   const std::string scope_extension_urls = "https://example.com/";
   const std::string scope_extension_domains =
       "https://domain.com,https://.domain2.com";
 
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+  std::vector<base::test::FeatureRefAndParams> enabled_features =
+      apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
+  enabled_features.emplace_back(base::test::FeatureRefAndParams(
       chromeos::features::kMicrosoft365ScopeExtensions,
       {{kM365UrlsFinchParamName, scope_extension_urls},
-       {kM365DomainsFinchParamName, scope_extension_domains}});
+       {kM365DomainsFinchParamName, scope_extension_domains}}));
+  scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 
   ScopeExtensions scope_extensions =
       ChromeOsWebAppExperiments::GetScopeExtensions(ash::kMicrosoft365AppId);
@@ -166,16 +190,19 @@ TEST_F(ChromeOsWebAppExperimentsTest,
                           scope_extensions);
 }
 
-TEST_F(ChromeOsWebAppExperimentsTest,
+TEST_P(ChromeOsWebAppExperimentsTest,
        GetScopeExtensions_M365FinchFlagParamsCommaInUrl) {
   const std::string scope_extension_urls =
       "https://example.com/?abc,treated_as_new_value";
   const std::string scope_extension_domains = "https://domain.com";
 
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+  std::vector<base::test::FeatureRefAndParams> enabled_features =
+      apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
+  enabled_features.emplace_back(base::test::FeatureRefAndParams(
       chromeos::features::kMicrosoft365ScopeExtensions,
       {{kM365UrlsFinchParamName, scope_extension_urls},
-       {kM365DomainsFinchParamName, scope_extension_domains}});
+       {kM365DomainsFinchParamName, scope_extension_domains}}));
+  scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 
   ScopeExtensions scope_extensions =
       ChromeOsWebAppExperiments::GetScopeExtensions(ash::kMicrosoft365AppId);
@@ -184,14 +211,17 @@ TEST_F(ChromeOsWebAppExperimentsTest,
                           scope_extensions);
 }
 
-TEST_F(ChromeOsWebAppExperimentsTest,
+TEST_P(ChromeOsWebAppExperimentsTest,
        GetScopeExtensions_M365FinchFlagParamsUrlsOnly) {
   const std::string scope_extension_urls =
       "https://example.com,https://example2.com";
 
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+  std::vector<base::test::FeatureRefAndParams> enabled_features =
+      apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
+  enabled_features.emplace_back(base::test::FeatureRefAndParams(
       chromeos::features::kMicrosoft365ScopeExtensions,
-      {{kM365UrlsFinchParamName, scope_extension_urls}});
+      {{kM365UrlsFinchParamName, scope_extension_urls}}));
+  scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 
   ScopeExtensions scope_extensions =
       ChromeOsWebAppExperiments::GetScopeExtensions(ash::kMicrosoft365AppId);
@@ -202,14 +232,17 @@ TEST_F(ChromeOsWebAppExperimentsTest,
                           scope_extensions);
 }
 
-TEST_F(ChromeOsWebAppExperimentsTest,
+TEST_P(ChromeOsWebAppExperimentsTest,
        GetScopeExtensions_M365FinchFlagParamsDomainsOnly) {
   const std::string scope_extension_domains =
       "https://domain.com,https://domain2.com";
 
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+  std::vector<base::test::FeatureRefAndParams> enabled_features =
+      apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
+  enabled_features.emplace_back(base::test::FeatureRefAndParams(
       chromeos::features::kMicrosoft365ScopeExtensions,
-      {{kM365DomainsFinchParamName, scope_extension_domains}});
+      {{kM365DomainsFinchParamName, scope_extension_domains}}));
+  scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 
   ScopeExtensions scope_extensions =
       ChromeOsWebAppExperiments::GetScopeExtensions(ash::kMicrosoft365AppId);
@@ -219,5 +252,12 @@ TEST_F(ChromeOsWebAppExperimentsTest,
                           {"https://domain.com", "https://domain2.com"},
                           scope_extensions);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeOsWebAppExperimentsTest,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
+    apps::test::LinkCapturingVersionToString);
 
 }  // namespace web_app
