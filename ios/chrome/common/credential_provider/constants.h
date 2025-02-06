@@ -12,10 +12,8 @@ NSURL* CredentialProviderSharedArchivableStoreURL();
 
 // Key for the app group user defaults containing the managed user ID, which can
 // be validated in the extension.
+// This is non-nil iff the user's account is managed (e.g. by an enterprise).
 NSString* AppGroupUserDefaultsCredentialProviderManagedUserID();
-
-// Key for the app group user defaults containing the managed user email.
-NSString* AppGroupUserDefaultsCredentialProviderManagedUserEmail();
 
 // Key for the app group user defaults containing the current user ID.
 NSString* AppGroupUserDefaultsCredentialProviderUserID();
