@@ -4092,6 +4092,7 @@ TEST_F(AutofillMetricsTest, LogVerificationStatusesOfAddressTokens) {
 
 // Verify that we correctly log metrics tracking the duration of form fill.
 TEST_F(AutofillMetricsTest, FormFillDuration) {
+  base::TimeTicks beginning = base::TimeTicks::Now();
   FormData empty_form = CreateForm(
       {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
        CreateTestFormField("Email", "email", "", FormControlType::kInputText),
@@ -4122,8 +4123,11 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
     SCOPED_TRACE("Test 1 - no interaction, fields are prefilled");
     base::HistogramTester histogram_tester;
     SeeForm(empty_form);
+    ASSERT_EQ(base::TimeTicks::Now(), beginning);
     task_environment_.FastForwardBy(base::Microseconds(17));
+    ASSERT_EQ(base::TimeTicks::Now(), beginning + base::Microseconds(17));
     SubmitForm(filled_form);
+    ASSERT_EQ(base::TimeTicks::Now(), beginning + base::Microseconds(17));
 
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromLoad.WithAutofill", 0);
