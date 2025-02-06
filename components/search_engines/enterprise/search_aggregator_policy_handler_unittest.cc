@@ -42,6 +42,7 @@ struct TestSearchAggregator {
   const char* search_url;
   const char* suggest_url;
   const char* icon_url;
+  const bool require_shortcut;
   // If not-zero, the ID of the error message expected in the policy error map.
   const int expected_error_msg_id;
 };
@@ -53,6 +54,15 @@ TestSearchAggregator kValidTestSearchAggregator = {
     .search_url = "https://work.com/{searchTerms}",
     .suggest_url = "https://work.com/suggest",
     .icon_url = "https://work.com/favicon.ico",
+};
+
+TestSearchAggregator kValidTestSearchAggregatorWithRequireShortcut = {
+    .name = "work name",
+    .shortcut = "work",
+    .search_url = "https://work.com/{searchTerms}",
+    .suggest_url = "https://work.com/suggest",
+    .icon_url = "https://work.com/favicon.ico",
+    .require_shortcut = true,
 };
 
 TestSearchAggregator kValidTestSearchAggregatorNoIcon = {
@@ -325,6 +335,43 @@ TEST(SearchAggregatorPolicyHandlerTest, Valid) {
                policy::POLICY_SOURCE_CLOUD,
                base::Value(std::move(policy_value)), nullptr);
 
+  PolicyErrorMap errors;
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_TRUE(errors.empty());
+
+  PrefValueMap prefs;
+  handler.ApplyPolicySettings(policies, &prefs);
+  base::Value* providers = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
+      &providers));
+  ASSERT_NE(providers, nullptr);
+  ASSERT_TRUE(providers->is_list());
+  EXPECT_THAT(
+      providers->GetList(),
+      ElementsAre(
+          IsNonFeaturedSearchAggregatorEntry(kValidTestSearchAggregator),
+          IsFeaturedSearchAggregatorEntry(kValidTestSearchAggregator)));
+}
+
+TEST(SearchAggregatorPolicyHandlerTest, ValidWithRequireShortcut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kEnableSearchAggregatorPolicy);
+
+  SearchAggregatorPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  base::Value::Dict entry =
+      GeneratePolicyEntry(kValidTestSearchAggregatorWithRequireShortcut);
+  policies.Set(key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(entry)),
+               nullptr);
+
+  // Currently, 'require_shortcut' has no effect on the policy behavior.
+  // As a result, the applied policy should be the same as the valid version.
   PolicyErrorMap errors;
   ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_TRUE(errors.empty());
