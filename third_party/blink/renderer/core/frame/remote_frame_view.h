@@ -70,7 +70,6 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   bool GetIntrinsicSizingInfo(NaturalSizingInfo&) const override;
 
   void SetIntrinsicSizeInfo(const NaturalSizingInfo& size_info);
-  bool HasIntrinsicSizingInfo() const override;
 
   bool CanThrottleRendering() const override;
   void VisibilityForThrottlingChanged() override;

@@ -445,10 +445,6 @@ bool RemoteFrameView::GetIntrinsicSizingInfo(
   return true;
 }
 
-bool RemoteFrameView::HasIntrinsicSizingInfo() const {
-  return has_intrinsic_sizing_info_;
-}
-
 uint32_t RemoteFrameView::Print(const gfx::Rect& rect,
                                 cc::PaintCanvas* canvas) const {
 #if BUILDFLAG(ENABLE_PRINTING)

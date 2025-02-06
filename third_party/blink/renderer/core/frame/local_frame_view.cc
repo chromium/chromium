@@ -1064,10 +1064,6 @@ bool LocalFrameView::GetIntrinsicSizingInfo(
   return false;
 }
 
-bool LocalFrameView::HasIntrinsicSizingInfo() const {
-  return EmbeddedReplacedContent();
-}
-
 void LocalFrameView::UpdateGeometry() {
   LayoutEmbeddedContent* layout = GetLayoutEmbeddedContent();
   if (!layout)
