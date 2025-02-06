@@ -11,9 +11,11 @@
 @interface IdentityViewItem : NSObject
 
 @property(nonatomic, copy) NSString* userEmail;
+@property(nonatomic, copy) NSString* userFullName;
 @property(nonatomic, copy) NSString* gaiaID;
 @property(nonatomic, copy) UIImage* avatar;
 @property(nonatomic, copy) NSString* accessibilityIdentifier;
+@property(nonatomic, assign) BOOL managed;
 
 @end
 

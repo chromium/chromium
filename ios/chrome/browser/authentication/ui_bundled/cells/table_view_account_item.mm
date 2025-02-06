@@ -57,6 +57,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
     [cell setStatusView:nil];
     cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
+  [cell showManagementIcon:self.managed];
 
   cell.userInteractionEnabled = self.mode == TableViewAccountModeEnabled;
   if (self.mode != TableViewAccountModeDisabled) {

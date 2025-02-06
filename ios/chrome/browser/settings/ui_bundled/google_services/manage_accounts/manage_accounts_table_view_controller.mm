@@ -142,6 +142,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   item.mode = TableViewAccountModeNonTappable;
   item.accessoryType = UITableViewCellAccessoryNone;
   item.accessibilityTraits = UIAccessibilityTraitStaticText;
+  item.managed = identityViewItem.managed;
 }
 
 - (TableViewItem*)removeAccountItemWithIdentityViewItem:
