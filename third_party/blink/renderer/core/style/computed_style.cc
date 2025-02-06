@@ -426,6 +426,9 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
        old_style.InlinifiesChildren() != new_style.InlinifiesChildren())) {
     return Difference::kDescendantAffecting;
   }
+  if (old_style.ScrollMarkerGroupNone() != new_style.ScrollMarkerGroupNone()) {
+    return Difference::kDescendantAffecting;
+  }
   // TODO(crbug.com/1213888): Only recalc affected descendants.
   if (DiffAffectsContainerQueries(old_style, new_style)) {
     return Difference::kDescendantAffecting;

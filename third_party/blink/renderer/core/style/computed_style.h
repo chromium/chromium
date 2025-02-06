@@ -386,6 +386,10 @@ class ComputedStyle final : public ComputedStyleBase {
     //
     // The container-name property affects which container is queried by
     // rules matching descedant elements.
+    //
+    // If scroll-marker-group property changes from/to "none" on scroller, we
+    // should
+    // remove all ::scroll-marker pseudo elements from the scroller's subtree.
     kDescendantAffecting,
   };
   CORE_EXPORT static Difference ComputeDifference(
