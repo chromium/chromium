@@ -535,16 +535,8 @@ EmeConfig::Rule KeySystemsImpl::GetContentTypeConfigRule(
   SupportedCodecs key_system_codec_mask = key_system_info->GetSupportedCodecs();
   SupportedCodecs key_system_hw_secure_codec_mask =
       key_system_info->GetSupportedHwSecureCodecs();
-
-  // Check that the container is supported by the key system. (This check is
-  // necessary because |codecs| may be empty.)
   SupportedCodecs mime_type_codec_mask =
       GetCodecMaskForMimeType(container_mime_type);
-  if ((key_system_codec_mask & mime_type_codec_mask) == 0) {
-    DVLOG(2) << "Container " << container_mime_type << " not supported by "
-             << key_system;
-    return EmeConfig::UnsupportedRule();
-  }
 
   // Check that the codecs are supported by the key system and container based
   // on the following rule:
