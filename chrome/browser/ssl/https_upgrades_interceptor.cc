@@ -414,7 +414,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   network_context->IsHSTSActiveForHost(
       tentative_resource_request.url.host(),
       tentative_resource_request.trusted_params->isolation_info
-          .IsMainFrameRequest(),
+          .IsOutermostMainFrameRequest(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(query_complete_callback),
           /*is_hsts_active_for_host=*/false));

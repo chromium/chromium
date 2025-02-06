@@ -344,7 +344,8 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
           request->context()->transport_security_state()) {
     upgrade_decision = hsts->GetSSLUpgradeDecision(
         url.host(),
-        /*is_top_level_nav=*/request->isolation_info().IsMainFrameRequest(),
+        /*is_top_level_nav=*/
+        request->isolation_info().IsOutermostMainFrameRequest(),
         request->net_log());
   }
 
