@@ -395,6 +395,30 @@ TEST(RegistrationFetcherParamTest, InvalidUrl) {
   ASSERT_EQ(params.size(), 0U);
 }
 
+TEST(RegistrationFetcherParamTest, NonSecureUrl) {
+  // HTTP is not allowed for the registration URL.
+  {
+    const GURL http_url("http://www.example.com/registration");
+    scoped_refptr<net::HttpResponseHeaders> response_headers =
+        CreateHeaders("startsession", "(ES256 RS256)", "c1", "auth");
+    std::vector<RegistrationFetcherParam> params =
+        RegistrationFetcherParam::CreateIfValid(http_url,
+                                                response_headers.get());
+    EXPECT_TRUE(params.empty());
+  }
+
+  // But localhost is okay.
+  {
+    const GURL localhost_url("http://localhost:8080/registration");
+    scoped_refptr<net::HttpResponseHeaders> response_headers =
+        CreateHeaders("startsession", "(ES256 RS256)", "c1", "auth");
+    std::vector<RegistrationFetcherParam> params =
+        RegistrationFetcherParam::CreateIfValid(localhost_url,
+                                                response_headers.get());
+    EXPECT_FALSE(params.empty());
+  }
+}
+
 TEST(RegistrationFetcherParamTest, HasUrlEncoded) {
   const GURL registration_request("https://www.example.com/registration");
   scoped_refptr<net::HttpResponseHeaders> response_headers = CreateHeaders(
