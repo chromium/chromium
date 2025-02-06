@@ -734,7 +734,7 @@
   {
     "name": "autofill-enable-verve-card-support",
     "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "autofill-highlight-only-changed-value-in-preview-mode",
