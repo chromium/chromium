@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Lens.Overlay.ContextualSuggest.ZPS.PageContentType.{PageContentType}.ShownInSession"
+    name="Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.{PageContentType}.ShownInSession"
     enum="Boolean" expires_after="2025-05-06">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Lens.Overlay.ContextualSuggest.ZPS.PageContentType.{PageContentType}.SuggestionUsedInSession"
+    name="Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.{PageContentType}.SuggestionUsedInSession"
     enum="Boolean" expires_after="2025-05-06">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
