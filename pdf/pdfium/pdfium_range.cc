@@ -91,24 +91,31 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
   cached_screen_rects_point_ = point;
   cached_screen_rects_zoom_ = zoom;
 
+  if (char_count_ == 0) {
+    return cached_screen_rects_;
+  }
+
+  FPDF_TEXTPAGE text_page = page_->GetTextPage();
+  if (!text_page) {
+    return cached_screen_rects_;
+  }
+
   int char_index = char_index_;
   int char_count = char_count_;
-  if (char_count == 0)
-    return cached_screen_rects_;
 
   AdjustForBackwardsRange(char_index, char_count);
   DCHECK_GE(char_index, 0) << " start: " << char_index_
                            << " count: " << char_count_;
-  DCHECK_LT(char_index, FPDFText_CountChars(page_->GetTextPage()))
+  DCHECK_LT(char_index, FPDFText_CountChars(text_page))
       << " start: " << char_index_ << " count: " << char_count_;
 
-  int count = FPDFText_CountRects(page_->GetTextPage(), char_index, char_count);
+  int count = FPDFText_CountRects(text_page, char_index, char_count);
   for (int i = 0; i < count; ++i) {
     double left;
     double top;
     double right;
     double bottom;
-    FPDFText_GetRect(page_->GetTextPage(), i, &left, &top, &right, &bottom);
+    FPDFText_GetRect(text_page, i, &left, &top, &right, &bottom);
     gfx::Rect rect =
         page_->PageToScreen(point, zoom, left, top, right, bottom, orientation);
     if (rect.IsEmpty())
