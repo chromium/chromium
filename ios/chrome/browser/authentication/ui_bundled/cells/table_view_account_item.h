@@ -61,6 +61,9 @@ typedef NS_ENUM(NSInteger, TableViewAccountMode) {
 // Same as `setStatusView`, except the argument is an image.
 - (void)setStatusViewWithImage:(UIImage*)statusImage;
 
+// Shows or hides the enterprise building icon.
+- (void)showManagementIcon:(BOOL)show;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_CELLS_TABLE_VIEW_ACCOUNT_ITEM_H_

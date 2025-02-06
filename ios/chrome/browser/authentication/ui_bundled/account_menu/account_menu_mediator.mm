@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
@@ -110,7 +111,7 @@
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
     _diplayedAccountErrorType = syncer::SyncService::UserActionableError::kNone;
-    [self updateIdentities];
+    [self updateIdentitiesIfAllowed];
     // By default, if the mediator was not involved in stopping the account
     // menu, it mean the coordinator was directly interupted.
     self.signinCoordinatorResult = SigninCoordinatorResultInterrupted;
@@ -157,6 +158,22 @@
 - (UIImage*)imageForGaiaID:(NSString*)gaiaID {
   return _accountManagerService->GetIdentityAvatarWithIdentity(
       [self identityForGaiaID:gaiaID], IdentityAvatarSize::TableViewIcon);
+}
+
+- (BOOL)isGaiaIDManaged:(NSString*)gaiaID {
+  id<SystemIdentity> identity = [self identityForGaiaID:gaiaID];
+  if (std::optional<BOOL> managed = IsIdentityManaged(identity);
+      managed.has_value()) {
+    return managed.value();
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  FetchManagedStatusForIdentity(identity, base::BindOnce(^(bool managed) {
+                                  if (managed) {
+                                    [weakSelf updateIdentitiesIfAllowed];
+                                  }
+                                }));
+  return NO;
 }
 
 - (NSString*)primaryAccountEmail {
@@ -218,7 +235,7 @@
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       _primaryIdentity = _authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin);
-      [self updateIdentities];
+      [self updateIdentitiesIfAllowed];
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       if (_authenticationService->IsAccountSwitchInProgress()) {
@@ -494,22 +511,20 @@
 #pragma mark - Private
 
 - (void)handleIdentityListChanged {
-  if (_blockUpdates) {
-    return;
-  }
-  [self updateIdentities];
+  [self updateIdentitiesIfAllowed];
 }
 
 - (void)handleIdentityUpdated {
-  if (_blockUpdates) {
-    return;
-  }
-  [self updateIdentities];
+  [self updateIdentitiesIfAllowed];
 }
 
 // Updates the identity list in `_identities`, and sends an notification to
 // the consumer.
-- (void)updateIdentities {
+- (void)updateIdentitiesIfAllowed {
+  if (_blockUpdates) {
+    return;
+  }
+
   NSArray<id<SystemIdentity>>* identitiesOnDevice =
       signin::GetIdentitiesOnDevice(_identityManager, _accountManagerService);
 
@@ -565,7 +580,7 @@
   }
   [self.consumer switchingStopped];
   _blockUpdates = NO;
-  [self updateIdentities];
+  [self updateIdentitiesIfAllowed];
   [self onSyncStateChanged];
 }
 
