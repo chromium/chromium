@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
 // The struct follows the explainer in
@@ -35,9 +36,11 @@ struct AIWriterCreateOptions {
   AIWriterTone tone;
   AIWriterFormat format;
   AIWriterLength length;
-  array<string> expected_input_languages;
-  array<string> expected_context_languages;
-  string output_language;
+
+  // Creation fails if a model is not available for specified languages.
+  array<AILanguageCode> expected_input_languages;
+  array<AILanguageCode> expected_context_languages;
+  AILanguageCode output_language;
 };
 
 // Interface for AIWriter that can stream the output string.

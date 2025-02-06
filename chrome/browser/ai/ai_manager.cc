@@ -42,6 +42,7 @@
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
@@ -55,6 +56,8 @@
 namespace {
 
 constexpr float kDefaultMaxTemperature = 2.0f;
+
+using blink::mojom::AILanguageCodePtr;
 
 // Checks if the model path configured via command line is valid.
 bool IsModelPathValid(const std::string& model_path_str) {
@@ -132,12 +135,15 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
   NOTREACHED();
 }
 
+// TODO(crbug.com/394841624): Consider using the model execution config instead
+// of using the hardcoded list.
 // Checks for supported language code options (currently just "en").
-bool SupportedLanguages(const std::vector<std::string>& input,
-                        const std::vector<std::string>& context,
-                        const std::string& output) {
-  auto supported = [](const std::string& l) {
-    return l.empty() || language::ExtractBaseLanguage(l) == "en";
+bool SupportedLanguages(const std::vector<AILanguageCodePtr>& input,
+                        const std::vector<AILanguageCodePtr>& context,
+                        const AILanguageCodePtr& output) {
+  auto supported = [](const AILanguageCodePtr& language) {
+    return language->code.empty() ||
+           language::ExtractBaseLanguage(language->code) == "en";
   };
   return std::ranges::all_of(input, supported) &&
          std::ranges::all_of(context, supported) && supported(output);

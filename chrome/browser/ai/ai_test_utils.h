@@ -141,6 +141,10 @@ class AITestUtils {
       const optimization_guide::proto::WritingAssistanceApiOptions&
           expected_options,
       const std::string& expected_input);
+
+  // Converts string language codes to AILanguageCode mojo struct.
+  static std::vector<blink::mojom::AILanguageCodePtr> ToMojoLanguageCodes(
+      const std::vector<std::string>& language_codes);
 };
 
 #endif  // CHROME_BROWSER_AI_AI_TEST_UTILS_H_

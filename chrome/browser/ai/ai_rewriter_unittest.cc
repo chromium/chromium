@@ -29,6 +29,9 @@ constexpr char kSharedContextString[] = "test shared context";
 constexpr char kContextString[] = "test context";
 constexpr char kInputString[] = "input string";
 
+using blink::mojom::AILanguageCode;
+using blink::mojom::AILanguageCodePtr;
+
 class MockCreateRewriterClient
     : public blink::mojom::AIManagerCreateRewriterClient {
  public:
@@ -76,9 +79,9 @@ blink::mojom::AIRewriterCreateOptionsPtr GetDefaultOptions() {
       kSharedContextString, blink::mojom::AIRewriterTone::kAsIs,
       blink::mojom::AIRewriterFormat::kAsIs,
       blink::mojom::AIRewriterLength::kAsIs,
-      /*expected_input_languages=*/std::vector<std::string>(),
-      /*expected_context_languages=*/std::vector<std::string>(),
-      /*output_language=*/std::string());
+      /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
+      /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
+      /*output_language=*/AILanguageCode::New(""));
 }
 
 std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
@@ -95,9 +98,9 @@ class AIRewriterTest : public AITestUtils::AITestBase {
                             blink::mojom::AIRewriterLength length) {
     const auto options = blink::mojom::AIRewriterCreateOptions::New(
         kSharedContextString, tone, format, length,
-        /*expected_input_languages=*/std::vector<std::string>(),
-        /*expected_context_languages=*/std::vector<std::string>(),
-        /*output_language=*/std::string());
+        /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
+        /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
+        /*output_language=*/AILanguageCode::New(""));
 
     EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillOnce(testing::Invoke([&](optimization_guide::
@@ -365,9 +368,11 @@ TEST_F(AIRewriterTest, CanCreateSupportedLanguages) {
       .WillRepeatedly(testing::Return(
           optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
   auto options = GetDefaultOptions();
-  options->output_language = "en";
-  options->expected_input_languages = {"en-US", ""};
-  options->expected_context_languages = {"en-GB", ""};
+  options->output_language = AILanguageCode::New("en");
+  options->expected_input_languages =
+      AITestUtils::ToMojoLanguageCodes({"en-US", ""});
+  options->expected_context_languages =
+      AITestUtils::ToMojoLanguageCodes({"en-GB", ""});
   base::MockCallback<AIManager::CanCreateRewriterCallback> callback;
   EXPECT_CALL(callback,
               Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
@@ -378,9 +383,11 @@ TEST_F(AIRewriterTest, CanCreateSupportedLanguages) {
 TEST_F(AIRewriterTest, CanCreateUnsupportedLanguages) {
   SetupMockOptimizationGuideKeyedService();
   auto options = GetDefaultOptions();
-  options->output_language = "es-ES";
-  options->expected_input_languages = {"en", "fr", "jp"};
-  options->expected_context_languages = {"ar", "zh", "hi"};
+  options->output_language = AILanguageCode::New("es-ES");
+  options->expected_input_languages =
+      AITestUtils::ToMojoLanguageCodes({"en", "fr", "ja"});
+  options->expected_context_languages =
+      AITestUtils::ToMojoLanguageCodes({"ar", "zh", "hi"});
   base::MockCallback<AIManager::CanCreateRewriterCallback> callback;
   EXPECT_CALL(
       callback,

@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
 // The enumerations and struct follows the explainer in
@@ -36,9 +37,11 @@ struct AIRewriterCreateOptions {
   AIRewriterTone tone;
   AIRewriterFormat format;
   AIRewriterLength length;
-  array<string> expected_input_languages;
-  array<string> expected_context_languages;
-  string output_language;
+
+  // Creation fails if a model is not available for specified languages.
+  array<AILanguageCode> expected_input_languages;
+  array<AILanguageCode> expected_context_languages;
+  AILanguageCode output_language;
 };
 
 // Interface for AIRewriter that can stream the output string.
