@@ -718,6 +718,7 @@
 <translation id="1486486872607808064">আপনি যে <ph name="APP_NAME" />-এর জন্য একটি পাসকি তৈরি করতে চান সেই ডিভাইসে একটি ক্যামেরা দিয়ে এই QR কোডটি স্ক্যান করুন।</translation>
 <translation id="1486616492435615702">ড্রাফ্ট তৈরি করুন বা আগে থাকা কাজ রিফাইন করুন।</translation>
 <translation id="1487335504823219454">চালু - কাস্টম সেটিংস</translation>
+<translation id="1489101155914355052">এই ডকুমেন্টের জন্য সাজেশন তৈরি করা হচ্ছে…</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" />এর জন্য প্রতীক্ষারত...</translation>
 <translation id="1494349716233667318">সাইট আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করার অনুমতি চাইতে পারে</translation>
 <translation id="1494429729245089920">ভার্চুয়াল মেশিন "<ph name="VM_NAME" />" আগে থেকেই আছে, তবে সঠিক <ph name="APP_NAME" /> ভার্চুয়াল মেশিন বলে মনে হচ্ছে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
@@ -2931,6 +2932,7 @@
 <translation id="3013652227108802944">বন্ধ আছে • এই এক্সটেনশন Chrome ওয়েব স্টোরের নীতি লঙ্ঘন করে</translation>
 <translation id="301525898020410885">আপনার প্রতিষ্ঠান ভাষা সেট করেছে</translation>
 <translation id="3015639418649705390">এখনই রিলঞ্চ করুন</translation>
+<translation id="3015651504578568463">তুলনা করার নতুন টেবিলে ট্যাব যোগ করুন</translation>
 <translation id="3016381065346027039">লগ ফাঁকা আছে</translation>
 <translation id="3019023222666709803">অ্যারো টুল</translation>
 <translation id="3019285239893817657">সাবপেজ বোতাম</translation>
@@ -4746,6 +4748,7 @@
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />-এ কপি করুন</translation>
 <translation id="4305817255990598646">পাল্টান</translation>
 <translation id="4306119971288449206">অ্যাপ "<ph name="CONTENT_TYPE" />" কন্টেন্ট-প্রকার সহ হওয়া উচিত</translation>
+<translation id="4306810703452026910">Chrome, এই সাইট থেকে আসা বিজ্ঞপ্তি স্প্যাম হিসেবে ফ্ল্যাগ করা বন্ধ করবে</translation>
 <translation id="4307992518367153382">বুনিয়াদি</translation>
 <translation id="4309165024397827958">লোকেশন অ্যাক্সেস করার অনুমতি আছে এমন Android অ্যাপ ও পরিষেবাকে আপনার ডিভাইসের লোকেশন ব্যবহার করার অনুমতি দিন। Google সময়ান্তরে লোকেশন ডেটা সংগ্রহ করতে এবং লোকেশন নির্ধারণের নির্ভুলতা ও লোকেশন ভিত্তিক পরিষেবার উন্নতি করার জন্য ব্যবহারকারীর পরিচয় গোপন রেখে ব্যবহার করতে পারে।</translation>
 <translation id="4309183709806093061">এছাড়াও সিস্টেম অডিও শেয়ার করুন। প্রতিক্রিয়া প্রতিরোধ করার জন্য এই ডিভাইসটি মিউট করা হবে।</translation>
@@ -5058,6 +5061,7 @@
 <translation id="4540409690203718935">Google Password Manager ব্যবহার করা যাচ্ছে না। কয়েক মিনিট পরে আবার চেষ্টা করুন</translation>
 <translation id="4540780316273593836">কিছু সমস্যা হয়েছে</translation>
 <translation id="4541123282641193691">আপনার অ্যাকাউন্ট যাচাই করা যায়নি। আবার চেষ্টা করুন অথবা Chromebook রিস্টার্ট করুন।</translation>
+<translation id="4541396589393395475">এই ফিচার আপনার সংস্থা বন্ধ করে দিয়েছে</translation>
 <translation id="4541505619120536051">সব সময় খুলবে</translation>
 <translation id="4541662893742891060">এই প্রোফাইলে কানেক্ট করা যায়নি। প্রযুক্তিগত সহায়তা পেতে, আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="4541706525461326392">প্রোফাইল সরানো হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
@@ -5655,6 +5659,7 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">স্ক্রিন কাস্ট করুন</translation>
 <translation id="496185450405387901">এই অ্যাপটি আপনার অ্যাডমিনিস্ট্রেটর ইনস্টল করে দিয়েছেন।</translation>
+<translation id="4963079328730030450">আপনার প্রতিষ্ঠান এই বিষয়টি কন্ট্রোল করে যে, এইসব ফিচারের মাধ্যমে সংগ্রহ করা ডেটা কীভাবে ব্যবহার করা হতে পারে।</translation>
 <translation id="4963603093937263654">আপনার <ph name="DEVICE_NAME" />-এ বিজ্ঞপ্তি পাওয়ার সুবিধা চালু করা আছে কিনা তা নিশ্চিত করুন</translation>
 <translation id="4963789650715167449">বর্তমান ট্যাব সরান</translation>
 <translation id="4964455510556214366">সাজানোর ব্যবস্থা</translation>
@@ -5689,6 +5694,7 @@
 <translation id="4989966318180235467">&amp;পশ্চাদপট পৃষ্ঠা পরিদর্শন করুন</translation>
 <translation id="4990673372047946816">কোনও ক্যামেরা উপলভ্য নেই</translation>
 <translation id="4991420928586866460">উপরের-সারির কীগুলিকে ফাংশন কী হিসেবে ব্যবহার করুন</translation>
+<translation id="4991873517942703737">এই ডকুমেন্ট সম্পর্কে জিজ্ঞেস করুন</translation>
 <translation id="4992443049233195791">Microsoft 365 ফাইল সেটিংস</translation>
 <translation id="4992458225095111526">পাওয়ারওয়াশ নিশ্চিত করুন</translation>
 <translation id="4992473555164495036">আপনার অ্যাডমিনিস্ট্রেটর উপলভ্য ইনপুট পদ্ধতিগুলি সীমাবদ্ধ করেছেন।</translation>
@@ -6033,6 +6039,7 @@
     <ph name="DEVICE_TYPE" /> হিসেবে দেখা যাচ্ছে...</translation>
 <translation id="523862956770478816">সাইট সংক্রান্ত অনুমতি</translation>
 <translation id="5240931875940563122">Android ফোন দিয়ে সাইন-ইন করুন</translation>
+<translation id="5241689948221696942">কিছু প্রোডাক্টের জন্য, তুলনার সারণী সম্পূর্ণ ওয়েবের বিভিন্ন জায়গা থেকে রিভিউয়ের সারসংক্ষেপ তৈরি করে</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" সক্ষম করবেন?</translation>
 <translation id="5243522832766285132">কয়েক মুহূর্তের মধ্যে আবার চেষ্টা করুন</translation>
 <translation id="5244234799035360187">এখন Files অ্যাপে OneDrive দেখা যাবে</translation>
@@ -6178,6 +6185,7 @@
 <translation id="535123479159372765">অন্য ডিভাইস থেকে টেক্সট কপি করা হয়েছে</translation>
 <translation id="5352033265844765294">Time Stamping</translation>
 <translation id="5352257124367865087">সাইট সংক্রান্ত অনুমতি ম্যানেজ করুন</translation>
+<translation id="5352535894553509810">তুলনা করার নতুন টেবিলে ট্যাব যোগ করুন</translation>
 <translation id="5353252989841766347">Chrome থেকে পাসওয়ার্ড রপ্তানি করুন</translation>
 <translation id="5353769147530541973">নিষ্ক্রিয় করে তুলতে তালিকা থেকে <ph name="SITE_NAME" /> সরিয়ে দিন</translation>
 <translation id="5355099869024327351">আপনাকে বিজ্ঞপ্তি দেখানোর জন্য অ্যাসিস্ট্যান্টকে অনুমতি দিন</translation>
@@ -8040,6 +8048,7 @@
 <translation id="6713233729292711163">অফিস প্রোফাইল যোগ করুন</translation>
 <translation id="6713441551032149301">ফাংশন 'কী' এবং উপরের সারির সিস্টেম 'কী'-এর মধ্যে পরিবর্তন করার জন্য লঞ্চার 'কী' প্রেস করে ধরে থাকুন</translation>
 <translation id="6713668088933662563">কখনই এই ভাষাগুলি অনুবাদ করার প্রস্তাব দেবেন না</translation>
+<translation id="6714871567554212732"><ph name="GROUP_NAME" /> সম্পর্কে আরও বিবরণ দেখুন</translation>
 <translation id="6715735940363172819">ওয়েবসাইটকে আপনার মাইক্রোফোন ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="6715803357256707211">আপনার Linux অ্যাপ ইনস্টল করার সময় কোনও একটি সমস্যা হয়েছে। বিস্তারিত জানতে বিজ্ঞপ্তিতে ক্লিক করুন।</translation>
 <translation id="6716049856796700977">অন্য কিছু আপনার লোকেশন ব্যবহার করতে পারবে না। তবে, আপনার IP অ্যাড্রেসের মাধ্যমে অ্যাপ ও ওয়েবসাইটে এখনও আপনার লোকেশন দেখা যেতে পারে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -8457,6 +8466,7 @@
 <translation id="7001036685275644873">Linux অ্যাপ ও ফাইল ব্যাক-আপ নেওয়া হচ্ছে</translation>
 <translation id="7001066449188684145"><ph name="PRINTER_NAME" />-এ প্রিন্ট করতে পরিচয় যাচাই করতে হবে। অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="7001397294201412227">ফোন, ট্যাবলেট বা নিরাপত্তা কী ব্যবহার করুন</translation>
+<translation id="7001556399332161712">সার্চ ইঞ্জিন ও সাজেশন</translation>
 <translation id="7003339318920871147">ওয়েব ডেটাবেসসমূহ</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT}টি ফাইল}one{{COUNT}টি ফাইল}other{{COUNT}টি ফাইল}}</translation>
 <translation id="7003644704445046755">খুব ভাল কোয়ালিটির <ph name="LANGUAGE" /> ভাষার ভয়েস ফাইল ডাউনলোড করা হয়েছে</translation>
@@ -9920,6 +9930,7 @@
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> উত্তর দিচ্ছে না।</translation>
 <translation id="8044899503464538266">মন্থর</translation>
 <translation id="8045253504249021590">Google ড্যাশবোর্ড মারফত সিঙ্ক থামানো হয়েছে।</translation>
+<translation id="8045752459073395242">অফিসে জেনারেটিভ AI ব্যবহার সম্পর্কে আরও জানুন</translation>
 <translation id="8045923671629973368">অ্যাপ্লিকেশান আইডি বা ওয়েবস্টোরের URL লিখুন</translation>
 <translation id="804786196054284061">এন্ড ইউজার লাইসেন্স এগ্রিমেন্ট</translation>
 <translation id="8048596485169033655">মূল নোড অ্যানোটেশন ফাইল ডাউনলোড করা হচ্ছে… <ph name="PERCENT" />%</translation>

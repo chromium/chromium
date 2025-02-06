@@ -1165,6 +1165,7 @@
 <translation id="3076865167425975822">অপারেটিং সিস্টেম</translation>
 <translation id="3080254622891793721">গ্রাফিক</translation>
 <translation id="3082007635241601060">উপলভ্য হলে পছন্দমতো ডিসকাউন্ট খুঁজে পেতে Google-কে আপনার কার্ট ব্যবহার করতে দিন</translation>
+<translation id="3086269988715347183">আপনি আগে <ph name="BLOCKED_URL" /> ওয়েবসাইটকে অনুমতি দেননি</translation>
 <translation id="3086579638707268289">ওয়েবে আপনার অ্যাক্টিভিটি নজরে রাখা হচ্ছে</translation>
 <translation id="3087734570205094154">নিচে</translation>
 <translation id="3090667236485488075">গ্লাস</translation>
@@ -1240,6 +1241,7 @@
 <translation id="3203025201812691413">URL খালি রাখা যাবে না</translation>
 <translation id="320323717674993345">পেমেন্ট বাতিল করুন</translation>
 <translation id="3203366800380907218">ওয়েব থেকে</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> ওয়েবসাইটে প্রাপ্তবয়স্কদের জন্য উপযুক্ত কন্টেন্ট থাকতে পারে</translation>
 <translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
 <translation id="3208701679386778924">একটি রিপোর্ট পাঠান যাতে ChromeOS-এর আপডেট আমরা আরও উন্নত করতে পারি।</translation>
 <translation id="3209034400446768650">পৃষ্ঠাটির মাধ্যমে টাকা চার্জ করা হতে পারে</translation>
@@ -2349,6 +2351,7 @@
 <translation id="5138227688689900538">কম দেখুন</translation>
 <translation id="5143309888746105072">আপনি ব্রাউজ করাকালীন আপনার অ্যাক্টিভিটি ট্র্যাক করার জন্য সাইটগুলি যে থার্ড-পার্টি কুকি ব্যবহার করে, Chromium তা ব্লক করে দেয়।
             <ph name="NEW_LINE" />সাইটের ফিচার কাজ না করলে <ph name="START_LINK" />সাময়িকভাবে থার্ড-পার্টি কুকি ব্যবহারের অনুমতি দিয়ে দেখুন<ph name="END_LINK" />।</translation>
+<translation id="5144613843429436866">এই সাইটের জন্য আপনি <ph name="PERMISSION" />-এর অনুমতি দিয়েছেন</translation>
 <translation id="5145883236150621069">নীতি প্রতিক্রিয়ার মধ্যে ত্রুটি কোড উপস্থিত</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />-এর বিজ্ঞপ্তি ব্লক করা হয়েছে</translation>
 <translation id="514704532284964975"><ph name="URL" /> আপনার ফোনে ট্যাপ করেন এমন NFC ডিভাইসে তথ্য দেখতে এবং পরিবর্তন করতে চায়</translation>
@@ -2972,6 +2975,7 @@
 <translation id="6254436959401408446">এই পৃষ্ঠাটি খোলার জন্য পর্যাপ্ত মেমরি নেই</translation>
 <translation id="625463612687472648">অনুমতি বন্ধ করুন</translation>
 <translation id="6259156558325130047">&amp;পুনর্বিন্যাসকে আবার করুন</translation>
+<translation id="6259282549512536479">আপনি আগে <ph name="BLOCKED_URL" /> ওয়েবসাইটকে ব্লক করেছিলেন</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> বুকমার্কগুলি</translation>
 <translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
 <translation id="6264485186158353794">সুরক্ষাতে ফিরুন</translation>
@@ -4404,6 +4408,7 @@
 <translation id="8792621596287649091">আপনি নিজের <ph name="ORG_NAME" /> অ্যাকাউন্টের অ্যাক্সেস হারাতে পারেন অথবা আপনার পরিচয় চুরি হয়ে যেতে পারে। Chromium এখনই আপনার পাসওয়ার্ড পরিবর্তন করার আর্জি জানাচ্ছে।</translation>
 <translation id="8792626944327216835">মাইক্রোফোন</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> আপনার ব্রাউজারে Chrome Enterprise কানেক্টর চালু করেছে। এই কানেক্টর আপনার কিছু ডেটা অ্যাক্সেস করতে পারবে।</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> সেটিংস</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
 <translation id="8800034312320686233">সাইট কি কাজ করছে না?</translation>
 <translation id="8805819170075074995">তালিকার এন্ট্রি "<ph name="LANGUAGE_ID" />": এন্ট্রিটি SpellcheckLanguage নীতিতেও অন্তর্ভুক্ত থাকার জন্য এটি অগ্রাহ্য করা হয়েছে।</translation>

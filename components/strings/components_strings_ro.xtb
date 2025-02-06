@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">Sisteme de operare</translation>
 <translation id="3080254622891793721">Grafică</translation>
 <translation id="3082007635241601060">Permite ca Google să utilizeze coșurile tale de cumpărături pentru a găsi reduceri personalizate dacă sunt disponibile</translation>
+<translation id="3086269988715347183">Nu ai mai aprobat <ph name="BLOCKED_URL" /> până acum</translation>
 <translation id="3086579638707268289">Activitatea ta de pe web este monitorizată</translation>
 <translation id="3087734570205094154">Jos</translation>
 <translation id="3090667236485488075">Sticlă</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3203025201812691413">Adresa URL trebuie completată</translation>
 <translation id="320323717674993345">Anulează plata</translation>
 <translation id="3203366800380907218">De pe web</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> poate să includă conținut destinat adulților</translation>
 <translation id="3207960819495026254">Marcată</translation>
 <translation id="3208701679386778924">Trimite un raport ca să putem îmbunătăți actualizările ChromeOS pe viitor.</translation>
 <translation id="3209034400446768650">Pagina poate percepe o taxă</translation>
@@ -2973,6 +2975,7 @@
 <translation id="6254436959401408446">Nu există suficientă memorie pentru a deschide pagina</translation>
 <translation id="625463612687472648">Anulează permisiunea</translation>
 <translation id="6259156558325130047">&amp;Repetați reordonarea</translation>
+<translation id="6259282549512536479">Ai blocat anterior <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872">Marcaje <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Descarcă oricum</translation>
 <translation id="6264485186158353794">Înapoi la zona sigură</translation>

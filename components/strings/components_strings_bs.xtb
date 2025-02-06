@@ -1164,7 +1164,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3076865167425975822">Operativni sistemi</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Dozvolite Googleu da koristi vaša kolica i pronađe personalizirane popuste kada su dostupni</translation>
-<translation id="3086269988715347183">Do sad niste odobrili <ph name="BLOCKED_URL" /></translation>
+<translation id="3086269988715347183">Do sada niste odobrili <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Neko nadzire vašu aktivnost na webu</translation>
 <translation id="3087734570205094154">Dolje</translation>
 <translation id="3090667236485488075">Staklo</translation>
@@ -1240,7 +1240,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3203025201812691413">URL ne može biti prazan</translation>
 <translation id="320323717674993345">Otkaži plaćanje</translation>
 <translation id="3203366800380907218">S interneta</translation>
-<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> može imati sadržaj za odrasle</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> možda ima sadržaj za odrasle</translation>
 <translation id="3207960819495026254">Označeno</translation>
 <translation id="3208701679386778924">Pošaljite izvještaj da možemo poboljšati daljnja ažuriranja sistema ChromeOS.</translation>
 <translation id="3209034400446768650">Stranica se možda naplaćuje</translation>
@@ -2350,7 +2350,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5138227688689900538">Prikaži manje</translation>
 <translation id="5143309888746105072">Chromium blokira da web lokacije koriste kolačiće trećih strana da vas prate dok pregledate.
             <ph name="NEW_LINE" />Ako funkcije web lokacije ne funkcioniraju, <ph name="START_LINK" />pokušajte s privremenim dozvoljavanjem kolačića trećih strana<ph name="END_LINK" />.</translation>
-<translation id="5144613843429436866">Za ovu web-lokaciju odobrili ste dopuštenje <ph name="PERMISSION" /></translation>
+<translation id="5144613843429436866">Dali ste odobrenje "<ph name="PERMISSION" />" ovoj web lokaciji</translation>
 <translation id="5145883236150621069">Odgovor na pravilo sadrži kȏd greške</translation>
 <translation id="5146995429444047494">Obavještenja za <ph name="ORIGIN" /> su blokirana</translation>
 <translation id="514704532284964975"><ph name="URL" /> želi pregledati i mijenjati informacije na NFC uređajima koje dodirnete telefonom</translation>
@@ -4408,7 +4408,7 @@ Dodatni detalji:
 <translation id="8792621596287649091">Možete izgubiti pristup svom <ph name="ORG_NAME" /> računu ili doživjeti krađu identiteta. Chromium preporučuje da odmah promijenite lozinku.</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">Domena <ph name="ENROLLMENT_DOMAIN" /> je uključila Konektore Chromea za preduzeća u vašem pregledniku. Pomoću tih konektora je moguće pristupiti nekim vašim podacima.</translation>
-<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> postavke</translation>
+<translation id="8796062699363039080">Postavke sistema <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Zadano</translation>
 <translation id="8800034312320686233">Web lokacija ne funkcionira?</translation>
 <translation id="8805819170075074995">Unos na listi "<ph name="LANGUAGE_ID" />": Unos je zanemaren jer je uključen i u pravilo SpellcheckLanguage.</translation>

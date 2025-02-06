@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">ഓപ്പറേറ്റിംഗ് സിസ്റ്റങ്ങൾ</translation>
 <translation id="3080254622891793721">ഗ്രാഫിക്</translation>
 <translation id="3082007635241601060">വ്യക്തിപരമാക്കിയ കിഴിവുകൾ ലഭ്യമാകുമ്പോൾ അവ കണ്ടെത്തുന്നതിന് നിങ്ങളുടെ കാർട്ടുകൾ ഉപയോഗിക്കാൻ Google-നെ അനുവദിക്കുക</translation>
+<translation id="3086269988715347183">നിങ്ങൾ <ph name="BLOCKED_URL" /> എന്നതിനെ നേരത്തെ അംഗീകരിച്ചിട്ടില്ല</translation>
 <translation id="3086579638707268289">വെബിലുള്ള നിങ്ങളുടെ ആക്റ്റിവിറ്റി നിരീക്ഷണത്തിലാണ്</translation>
 <translation id="3087734570205094154">താഴെ</translation>
 <translation id="3090667236485488075">ഗ്ലാസ്</translation>
@@ -1238,6 +1239,7 @@
 <translation id="3203025201812691413">URL ശൂന്യമായിരിക്കരുത്</translation>
 <translation id="320323717674993345">പേയ്‌മെന്റ് റദ്ദാക്കുക</translation>
 <translation id="3203366800380907218">വെബിൽ നിന്ന്</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> എന്നതിൽ മുതിർന്നവർക്കുള്ള ഉള്ളടക്കം ഉണ്ടായിരിക്കാം</translation>
 <translation id="3207960819495026254">ബുക്ക്‌മാർക്കുചെയ്‌തു</translation>
 <translation id="3208701679386778924">റിപ്പോർട്ട് അയയ്‌ക്കുക, അതുവഴി ഞങ്ങൾക്ക് ഭാവിയിലെ ChromeOS അപ്‌ഡേറ്റുകൾ മെച്ചപ്പെടുത്താനാകും.</translation>
 <translation id="3209034400446768650">പേജ് പണം ഈടാക്കിയേക്കാം</translation>
@@ -2972,6 +2974,7 @@
 <translation id="6254436959401408446">ഈ പേജ് തുറക്കാൻ മതിയായ മെമ്മറി ഇല്ല</translation>
 <translation id="625463612687472648">അനുവദിക്കുന്നത് നിർത്തുക</translation>
 <translation id="6259156558325130047">&amp;പുനഃക്രമീകരിക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
+<translation id="6259282549512536479"><ph name="BLOCKED_URL" /> എന്നത് നിങ്ങൾ മുമ്പ് ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="6264376385120300461">എന്തായാലും ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="6264485186158353794">തിരികെ സുരക്ഷയിലേക്ക്</translation>

@@ -2131,6 +2131,10 @@
 <translation id="2462332841984057083">Steam қолданбасы бұрыннан реттеліп жатыр. Реттеу аяқталғанша күтіңіз.</translation>
 <translation id="2462724976360937186">Сертификат беру ұйымының негізгі идентификаторы</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> енгізілді</translation>
+<translation id="2464075479326723132">Microsoft SharePoint пен OneDrive қызметтеріндегі ең соңғы іс-әрекеттеріңізге оңай оралуыңыз үшін, ұсынылған файлдар көрсетіледі.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Параметрлерді карта мәзірінде реттеуге, басқа опцияларды "Chrome-ды бейімдеу" бөлімінен көруге болады.</translation>
 <translation id="2464079411014186876">Балмұздақ</translation>
 <translation id="2467755475704469005">Құрылғы анықталмады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525"><ph name="OWNER_FIRST_NAME" /> және тағы <ph name="NUM_OTHER_MEMBERS" /> адам қосылған қойындылар тобына қосылыңыз</translation>
@@ -3991,6 +3995,7 @@
 <translation id="3787434344076711519">Аударма орындалып жатыр</translation>
 <translation id="3788301286821743879">Kiosk қолданбасы іске қосылмады.</translation>
 <translation id="3788401245189148511">Мына артықшылықтарға ие:</translation>
+<translation id="3789432704615470433">SharePoint және OneDrive файлдары</translation>
 <translation id="3789841737615482174">Орнату</translation>
 <translation id="3790417903123637354">Бірдеңе дұрыс болмады. Кейінірек қайталап көріңіз</translation>
 <translation id="379082410132524484">Картаңыздың мерзімі біткен</translation>
@@ -4729,6 +4734,7 @@
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> құрылғысына көшіру</translation>
 <translation id="4305817255990598646">Ауысу</translation>
 <translation id="4306119971288449206">Қолданбаларға "<ph name="CONTENT_TYPE" />" контентімен қызмет көрсетілуі керек</translation>
+<translation id="4306810703452026910">Chrome браузері осы сайттан келетін хабарландыруларды спам деп белгілеуді тоқтатады.</translation>
 <translation id="4307992518367153382">Негізгілер</translation>
 <translation id="4309165024397827958">Орынды анықтау рұқсаты бар Android қолданбалары мен қызметтерінің құрылғыңыздың локация мәліметін пайдалануына рұқсат беріңіз. Google қызметі локация дәлдігі мен орынға негізделген қызметтерді жақсарту үшін геодеректі жүйелі түрде жинап, оларды анонимді түрде қолдана алады.</translation>
 <translation id="4309183709806093061">Жүйе аудиосын да бөлісіңіз. Дауыстап айтылмауы үшін, құрылғының дыбысы өшіріледі.</translation>
@@ -6177,6 +6183,7 @@
 <translation id="5360150013186312835">Құралдар тақтасында көрсету</translation>
 <translation id="5362741141255528695">Жеке негізгі файлды таңдаңыз.</translation>
 <translation id="536278396489099088">ChromeOS жүйесінің күйі мен есептері</translation>
+<translation id="5362916924854054326">SharePoint және OneDrive файлдарын көрсетпеу</translation>
 <translation id="5363109466694494651">Powerwash және Қайтару</translation>
 <translation id="5365881113273618889">Сіз таңдаған қалтада құпия файлдар бар. "<ph name="APP_NAME" />" қолданбасына қалтадағы деректерді тұрақты жазу мүмкіндігін бергіңіз келе ме?</translation>
 <translation id="536638840841140142">Жоқ</translation>
@@ -8020,6 +8027,7 @@
 <translation id="6713233729292711163">Жұмыс профилін қосу</translation>
 <translation id="6713441551032149301">Функция пернелері мен жүйенің жоғарғы жол пернелері арасында ауысу үшін іске қосу тақтасы пернесін басып тұрыңыз</translation>
 <translation id="6713668088933662563">Бұл тілдерді аударуды ешқашан ұсынбау</translation>
+<translation id="6714871567554212732"><ph name="GROUP_NAME" /> туралы қосымша мәліметтерді көру</translation>
 <translation id="6715735940363172819">Қолданбаларға микрофоныңызды пайдалануға рұқсат берілмеген.</translation>
 <translation id="6715803357256707211">Linux қолданбасын орнату кезінде қате кетті. Толық ақпарат алу үшін хабарландыруды басыңыз.</translation>
 <translation id="6716049856796700977">Локацияңызды ештеңе пайдалана алмайды. Дегенмен локацияңыз қолданбалар мен веб-сайттарға IP мекенжайыңыз арқылы көрініп тұруы мүмкін. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
@@ -10754,6 +10762,10 @@
 <translation id="865936634714975126">Жүктелетін бетте бет түрлерін таңдау үшін URL мекенжайына сұрау параметрін қосыңыз. Мысалы: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> контактілері</translation>
 <translation id="8659609431223166673">Терезе төмен жылжытылды</translation>
+<translation id="8660288500924118793">Outlook Calendar-дағы келесі іс-шараға оңай өту үшін сізге күнтізбе көрсетіледі.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Параметрлерді карта мәзірінде реттеуге, басқа опцияларды "Chrome-ды бейімдеу" бөлімінен көруге болады.</translation>
 <translation id="8661290697478713397">Сілтемені Инко&amp;гнито терезесінде ашу</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> сайтына кіру</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> желісіне қосылу</translation>

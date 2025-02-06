@@ -1159,6 +1159,7 @@
 <translation id="3076865167425975822">ఆపరేటింగ్ సిస్టమ్‌లు</translation>
 <translation id="3080254622891793721">గ్రాఫిక్</translation>
 <translation id="3082007635241601060">వ్యక్తిగతీకరించిన డిస్కౌంట్‌లు అందుబాటులో ఉన్నప్పుడు కనుగొనడానికి, మీ కార్ట్‌లను ఉపయోగించడానికి Googleకు అనుమతినివ్వండి</translation>
+<translation id="3086269988715347183">మీరు ఇంతకు ముందు <ph name="BLOCKED_URL" />‌ను ఆమోదించలేదు</translation>
 <translation id="3086579638707268289">వెబ్‌లో మీ యాక్టివిటీ పర్యవేక్షించబడుతోంది</translation>
 <translation id="3087734570205094154">దిగువ</translation>
 <translation id="3090667236485488075">గ్లాస్</translation>
@@ -1234,6 +1235,7 @@
 <translation id="3203025201812691413">URL ఖాళీగా ఉండకూడదు</translation>
 <translation id="320323717674993345">పేమెంట్‌ను రద్దు చేయండి</translation>
 <translation id="3203366800380907218">వెబ్ నుండి</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" />లో పెద్దవారికి మాత్రమే తగిన కంటెంట్ ఉండవచ్చు</translation>
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3208701679386778924">దయచేసి రిపోర్ట్‌ను పంపండి, తద్వారా మేము మరిన్ని ChromeOS అప్‌డేట్‌లను మెరుగుపరచగలము.</translation>
 <translation id="3209034400446768650">పేజీ, నగదును ఛార్జ్ చేయవచ్చు</translation>
@@ -2968,6 +2970,7 @@
 <translation id="6254436959401408446">ఈ పేజీని తెరవడానికి తగినంత మెమరీ లేదు</translation>
 <translation id="625463612687472648">అనుమతించడాన్ని ఆపివేయండి</translation>
 <translation id="6259156558325130047">&amp;మళ్లీ క్రమం చేయడాన్ని రిపీట్‌ చేయి</translation>
+<translation id="6259282549512536479">మీరు ఇదివరకే <ph name="BLOCKED_URL" />‌ను బ్లాక్ చేశారు</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> బుక్‌మార్క్‌లు</translation>
 <translation id="6264376385120300461">ఏదేమైనా డౌన్‌లోడ్ చేయండి</translation>
 <translation id="6264485186158353794">భద్రతకు తిరిగి వెళ్ళు</translation>

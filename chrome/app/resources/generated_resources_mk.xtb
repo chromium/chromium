@@ -718,6 +718,7 @@
 <translation id="1486486872607808064">Скенирајте го QR-кодов со камера на уредот каде што сакате да создадете криптографски клуч за <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Создајте нацрт или рафинирајте постојна ставка.</translation>
 <translation id="1487335504823219454">Вклучено - приспособени поставки</translation>
+<translation id="1489101155914355052">Се генерираат предлози за документов…</translation>
 <translation id="1493892686965953381">Се чека <ph name="LOAD_STATE_PARAMETER" />…</translation>
 <translation id="1494349716233667318">Сајтовите може да прашуваат дали да ги користат фонтовите инсталирани на уредот</translation>
 <translation id="1494429729245089920">Постои виртуелна машина „<ph name="VM_NAME" />“, но се чини дека не е важечки тип виртуелна машина <ph name="APP_NAME" />. Контактирајте со администраторот.</translation>
@@ -2931,6 +2932,7 @@
 <translation id="3013652227108802944">Исклучено • екстензијава ги прекршува правилата на „Веб-продавницата на Chrome“</translation>
 <translation id="301525898020410885">Вашата организација го поставува јазикот</translation>
 <translation id="3015639418649705390">Рестартирај сега</translation>
+<translation id="3015651504578568463">Додајте картичка во нова табела за споредба</translation>
 <translation id="3016381065346027039">Нема записи во евиденцијата</translation>
 <translation id="3019023222666709803">Алатка за стрелка</translation>
 <translation id="3019285239893817657">Копче за подредена страница</translation>
@@ -5656,6 +5658,7 @@
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Емитувај го екранот</translation>
 <translation id="496185450405387901">Апликацијава ја инсталирал вашиот администратор.</translation>
+<translation id="4963079328730030450">Вашата организација контролира како може да се користат податоците што ги прибираат функцииве.</translation>
 <translation id="4963603093937263654">Погрижете се да бидат вклучени известувањата на уредот <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Отстранете ја тековната картичка</translation>
 <translation id="4964455510556214366">Распоред</translation>
@@ -5690,6 +5693,7 @@
 <translation id="4989966318180235467">Страница за проверка на &amp;заднина</translation>
 <translation id="4990673372047946816">Не е достапна камера</translation>
 <translation id="4991420928586866460">Сметајте дека копчињата во најгорниот ред се функциски копчиња</translation>
+<translation id="4991873517942703737">Прашајте за документов</translation>
 <translation id="4992443049233195791">Поставки за датотеките Microsoft 365</translation>
 <translation id="4992458225095111526">Потврди фабричко ресетирање</translation>
 <translation id="4992473555164495036">Администраторот ги ограничил достапните методи за внесување.</translation>
@@ -6180,6 +6184,7 @@
 <translation id="535123479159372765">Текст копиран од друг уред</translation>
 <translation id="5352033265844765294">Временско означување</translation>
 <translation id="5352257124367865087">Управувајте со дозволите за сајтот</translation>
+<translation id="5352535894553509810">Додајте картичка во нова табела за споредба</translation>
 <translation id="5353252989841766347">Извоз на лозинки од Chrome</translation>
 <translation id="5353769147530541973">Отстранете ја ставката <ph name="SITE_NAME" /> од списокот со картички за да ја деактивирате</translation>
 <translation id="5355099869024327351">Овозможува „Помошникот“ да ви прикажува известувања</translation>
@@ -8458,6 +8463,7 @@
 <translation id="7001036685275644873">Се прави копија на апликациите и датотеките на Linux</translation>
 <translation id="7001066449188684145">Потребна е идентификација за да печатите на <ph name="PRINTER_NAME" />. Контактирајте со администраторот.</translation>
 <translation id="7001397294201412227">Користете телефон, таблет или безбедносен клуч</translation>
+<translation id="7001556399332161712">Пребарување и предлози</translation>
 <translation id="7003339318920871147">Веб бази на податоци</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} датотека}one{{COUNT} датотека}other{{COUNT} датотеки}}</translation>
 <translation id="7003644704445046755">Преземени се гласовни датотеки на <ph name="LANGUAGE" /> со висок квалитет</translation>
@@ -9920,6 +9926,7 @@
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не одговара.</translation>
 <translation id="8044899503464538266">Бавно</translation>
 <translation id="8045253504249021590">Синхронизацијата беше запрена преку „Контролната табла на Google“.</translation>
+<translation id="8045752459073395242">Дознајте повеќе за користењето на генеративната AI на работа</translation>
 <translation id="8045923671629973368">Внеси ID на апликација или URL на веб-продавница</translation>
 <translation id="804786196054284061">Договор за лиценца со краен корисник</translation>
 <translation id="8048596485169033655">Се преземаат датотеките со прибелешки за главниот нод… <ph name="PERCENT" /> %</translation>

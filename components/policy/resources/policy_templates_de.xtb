@@ -4701,6 +4701,19 @@ Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder n
 <translation id="4534500438517478692">Name der Android-Einschränkung:</translation>
 <translation id="4541530620466526913">Lokale Gerätekonten</translation>
 <translation id="4542255783284620926">Hinzufügen eines verwalteten Kontos als sekundäres Konto unter Chrome OS (bei laufender Sitzung) blockieren</translation>
+<translation id="4543338637126011529">Wenn diese Richtlinie konfiguriert ist, wird eine Liste isolierter Web-Apps (IWAs) angegeben, die automatisch installiert werden.
+      IWAs sind Anwendungen mit nützlichen Sicherheitsfunktionen, die normalen Webseiten nicht zur Verfügung stehen. Sie sind in einem signierten Web Bundle verpackt. Der öffentliche Schlüssel des signierten Web Bundles wird verwendet, um eine Web-Bundle-ID zu erstellen, mit der die IWA identifiziert wird.
+      Bisher funktioniert diese Richtlinie nur bei verwalteten Gastsitzungen.
+
+      Jedes Listenelement der Richtlinie ist ein Objekt, das zwei Pflichtfelder hat: das Update-Manifest „<ph name="URL_LABEL" />“ und die Web-Bundle‑ID der isolierten Web-App.
+
+      Jedes Element kann auch diese optionalen Felder enthalten:
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />: Der Name des Release-/Updatekanals der IWA. Wenn die Richtlinie nicht konfiguriert ist, wird „default“ verwendet.
+
+        * <ph name="PINNED_VERSION_OPTION" />: Eine bestimmte Version, die installiert werden soll. Das System versucht, diese Version zu installieren, sofern sie im angegebenen Updatekanal verfügbar ist. Wenn eine IWA in einer bestimmten Version angepinnt wird, verhindert das standardmäßig, dass sie über diese Version hinaus aktualisiert wird. Zum Loslösen muss dieses Feld entfernt werden.
+
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />: Ermöglicht die Installation älterer Versionen der IWA. Dazu muss das Feld „pinned_version“ festgelegt sein. Wenn es nicht angegeben oder auf „<ph name="FALSE" />“ festgelegt ist, ist ein Downgrade für diese IWA deaktiviert.</translation>
 <translation id="4543502256674577024">Einstellungen für die Geräteaktualisierung</translation>
 <translation id="454585952814397564">Normale Priorität für den Audioprozess verwenden</translation>
 <translation id="4546641664653711266">Diese Richtlinie kommt nur vorübergehend zum Einsatz und wird in M127 entfernt.

@@ -1165,6 +1165,7 @@
 <translation id="3076865167425975822">Аперацыйныя сістэмы</translation>
 <translation id="3080254622891793721">Графіка</translation>
 <translation id="3082007635241601060">Дайце Google доступ да вашых кошыкаў, каб вам паказваліся персаналізаваныя скідкі пры іх з’яўленні</translation>
+<translation id="3086269988715347183">Вы не ўхвалялі вэб-сайт <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Вашы дзеянні ў інтэрнэце адсочваюцца</translation>
 <translation id="3087734570205094154">Знізу</translation>
 <translation id="3090667236485488075">Шкло</translation>
@@ -1240,6 +1241,7 @@
 <translation id="3203025201812691413">Укажыце URL-адрас</translation>
 <translation id="320323717674993345">Скасаваць плацеж</translation>
 <translation id="3203366800380907218">З інтэрнэту</translation>
+<translation id="3207830513221832868">Вэб-сайт <ph name="BLOCKED_URL" /> можа ўтрымліваць змесціва для дарослых</translation>
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3208701679386778924">Адпраўце справаздачу, каб мы маглі палепшыць будучыя абнаўленні ChromeOS.</translation>
 <translation id="3209034400446768650">На старонцы могуць спаганяцца грошы</translation>
@@ -2972,6 +2974,7 @@
 <translation id="6254436959401408446">Недастаткова памяці, каб адкрыць гэту старонку</translation>
 <translation id="625463612687472648">Адклікаць дазвол</translation>
 <translation id="6259156558325130047">&amp;Паўтарыць змяненне парадку</translation>
+<translation id="6259282549512536479">Вы заблакіравалі вэб-сайт <ph name="BLOCKED_URL" /> раней</translation>
 <translation id="6263376278284652872">Закладкі <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Усё роўна спампаваць</translation>
 <translation id="6264485186158353794">Назад да бяспечнага карыстання</translation>

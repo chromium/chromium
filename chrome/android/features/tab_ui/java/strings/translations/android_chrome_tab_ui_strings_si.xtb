@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> පටිත්තක් සමූහගත කළා</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්}one{පටිති <ph name="TABS_COUNT_MANY" /> ක්}other{පටිති <ph name="TABS_COUNT_MANY" /> ක්}}</translation>
+<translation id="1909810060368225529">සටහන: මෙම බෙදා ගත් පටිති සමූහයේ වෙනස්කම් සැමට දෘශ්‍යමාන වේ. ඔබේ බෙදා ගත් පටිති සමූහ වලට සියලු දෙනාටම වෙනස්කම් කළ හැක</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{තෝරන ලද <ph name="TABS_COUNT_ONE" /> පටිත්තක් පිටුසන් කරන්න}one{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" />ක් පිටුසන් කරන්න}other{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" />ක් පිටුසන් කරන්න}}</translation>
 <translation id="2118649612461486615">වෙළඳසැල් තොරතුරු</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ඔබේ වසන ලද පටිති සහ සමූහ මෑත පටිති කොටසින් සහ පටිති සමූහ කොටසින් නැවත විවෘත කළ හැක. ඔබේ අප්‍රකට පටිත්ත නොතිබෙනු ඇත.}one{ඔබේ වසන ලද පටිති සහ සමූහ මෑත පටිති කොටසින් සහ පටිති සමූහ කොටසින් නැවත විවෘත කළ හැක. ඔබේ අප්‍රකට පටිති #ක් නොතිබෙනු ඇත.}other{ඔබේ වසන ලද පටිති සහ සමූහ මෑත පටිති කොටසින් සහ පටිති සමූහ කොටසින් නැවත විවෘත කළ හැක. ඔබේ අප්‍රකට පටිති #ක් නොතිබෙනු ඇත.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">ඔබ ඔබේ පටිති සමූහය මෙහි සොයා ගනියි</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> තෝරන ලද පටිත්තක් සමූහගත නොකරන්න}one{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" /> සමූහගත නොකරන්න}other{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" /> සමූහගත නොකරන්න}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්}one{පටිති <ph name="TABS_COUNT_MANY" />ක්}other{පටිති <ph name="TABS_COUNT_MANY" />ක්}}</translation>
+<translation id="6499296376514955580">බෙදා ගත් පටිති සමූහ වෙනස්කම් පිළිබඳ දැන්වීම වසා ඇත</translation>
 <translation id="6527303717912515753">බෙදාගන්න</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{දින 1කට පසු}one{දින <ph name="DAY_COUNT_MANY" />කට පසු}other{දින <ph name="DAY_COUNT_MANY" />කට පසු}}</translation>
 <translation id="6549021453810473782">වෙළඳසැල් තොරතුරු බලන්න</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">පටිත්ත වමට ගෙන යන්න</translation>
+<translation id="6589356853295569750">බෙදා ගත් පටිති සමූහ වෙනස්කම් පිළිබඳ දැන්වීම සම්පූර්ණ උසින් විවෘත කර ඇත</translation>
 <translation id="6590332670428149473"><ph name="TITLE_OF_GROUP" /> බෙදා ගත් පටිති සමූහය සඳහා පටිති සමූහ ක්‍රියා මෙනුව විවෘත කරන්න, වර්ණය <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">මට පෙන්වන්න</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" />ක් පටිත්තක් වෙනස් කරන ලදි}one{පටිති <ph name="MANY_CHANGED" />ක් වෙනස් කරන ලදි}other{පටිති <ph name="MANY_CHANGED" />ක් වෙනස් කරන ලදි}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> තෝරන ලද පටිත්තක් බෙදා ගන්න}one{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" />ක් බෙදා ගන්න}other{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" />ක් බෙදා ගන්න}}</translation>
 <translation id="7773714564112603605">පටිත්ත ඉවත් කර සමූහය මකන්න</translation>
 <translation id="7792771145871471484">යෝජනා සමාලෝචන කරන්න.</translation>
+<translation id="7792860826279960128">අර්ධ උසින් බෙදා ගත් පටිති සමූහ වෙනස්කම් පිළිබඳ දැනුම්දීම</translation>
 <translation id="7825973332242257878">පටිති සමූහ</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> තේරූ පටිත්ත සමූහ කරන්න}one{තේරූ පටිති <ph name="TABS_COUNT_MANY" /> සමූහ කරන්න}other{තේරූ පටිති <ph name="TABS_COUNT_MANY" /> සමූහ කරන්න}}</translation>
 <translation id="7853202427316060426">ක්‍රියාකාරකම</translation>

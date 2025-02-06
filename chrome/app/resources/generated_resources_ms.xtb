@@ -2147,6 +2147,10 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2462332841984057083">Steam telah disediakan. Tunggu persediaan selesai.</translation>
 <translation id="2462724976360937186">ID Kekunci Pihak Berkuasa Pensijilan</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ditambahkan</translation>
+<translation id="2464075479326723132">Anda melihat fail yang disyorkan untuk membantu anda kembali kepada aktiviti terbaharu anda dengan mudah dalam Microsoft SharePoint dan OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Anda boleh mengurus tetapan daripada menu kad atau melihat lebih banyak pilihan dalam Sesuaikan Chrome.</translation>
 <translation id="2464079411014186876">Aiskrim</translation>
 <translation id="2467755475704469005">Tiada peranti dikesan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Sertai Kumpulan Tab dengan <ph name="OWNER_FIRST_NAME" /> dan <ph name="NUM_OTHER_MEMBERS" /> Ahli yang Lain</translation>
@@ -4009,6 +4013,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3787434344076711519">Menunggu terjemahan</translation>
 <translation id="3788301286821743879">Aplikasi kios tidak dapat dilancarkan.</translation>
 <translation id="3788401245189148511">Item boleh:</translation>
+<translation id="3789432704615470433">Fail SharePoint dan OneDrive</translation>
 <translation id="3789841737615482174">Pasang</translation>
 <translation id="3790417903123637354">Kesilapan telah berlaku. Cuba lagi nanti</translation>
 <translation id="379082410132524484">Kad anda telah tamat tempoh</translation>
@@ -6198,6 +6203,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5360150013186312835">Tunjukkan dalam Bar Alat</translation>
 <translation id="5362741141255528695">Pilih fail kunci persendirian.</translation>
 <translation id="536278396489099088">Laporan dan Keadaan Sistem ChromeOS</translation>
+<translation id="5362916924854054326">Jangan tunjukkan fail SharePoint dan OneDrive</translation>
 <translation id="5363109466694494651">Powerwash dan Berbalik</translation>
 <translation id="5365881113273618889">Folder yang anda pilih mengandungi fail sensitif. Adakah anda pasti anda mahu memberi "<ph name="APP_NAME" />" akses tulis kekal kepada folder ini?</translation>
 <translation id="536638840841140142">Tiada</translation>
@@ -10783,6 +10789,10 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="865936634714975126">Tambahkan parameter pertanyaan dalam URL untuk memilih jenis semasa pemuatan halaman. Contoh: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kenalan <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Tetingkap dialihkan ke bawah</translation>
+<translation id="8660288500924118793">Anda melihat kalendar anda untuk menavigasi acara anda yang seterusnya dalam Outlook dengan mudah.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        Anda boleh mengurus tetapan daripada menu kad atau melihat lebih banyak pilihan dalam Sesuaikan Chrome.</translation>
 <translation id="8661290697478713397">Buka Pautan dalam Tetingkap Inko&amp;gnito</translation>
 <translation id="8662474268934425487">Log masuk ke <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Sertai rangkaian <ph name="TYPE" /></translation>

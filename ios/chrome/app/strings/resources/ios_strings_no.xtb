@@ -23,6 +23,7 @@
 <translation id="1066060668811609597">Administrer synkronisering</translation>
 <translation id="1076421457278169141">Koden er skannet</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} fane}other{{count} faner}}</translation>
+<translation id="1082554859195167538">Produktanmeldelser for deg</translation>
 <translation id="1084365883616172403">Facebook-innlegget er fullført.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> kunne ikke åpnes</translation>
 <translation id="1086468407802688066">Kontoen <ph name="USER_EMAIL" /> administreres av <ph name="HOSTED_DOMAIN" />, som kan se visse typer informasjon. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -342,6 +343,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2384692388811649784">Skjul inkognitofaner</translation>
 <translation id="2386793615875593361">1 er valgt</translation>
 <translation id="2390457533592708044">Skjul «<ph name="MODULE_NAME" />»</translation>
+<translation id="2393230427496852974">Les hva folk sier</translation>
 <translation id="2394659309569789395">Åpne nettstedet likevel</translation>
 <translation id="2403129868389095715">Pakken kan ikke leveres</translation>
 <translation id="2410754283952462441">Velg en konto</translation>
@@ -454,6 +456,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2894757982205307093">Ny fane i gruppen</translation>
 <translation id="2902312830803030883">Flere handlinger</translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> gjenbrukte passord som kan utgjøre en sikkerhetsrisiko.</translation>
+<translation id="29153882450867370">Skjul «Spor prisen»</translation>
 <translation id="291754862089661335">Plassér QR-/strekkoden i denne rammen.</translation>
 <translation id="2918688092312652908">Merk som ulest</translation>
 <translation id="2920866371965792875">For å se oppdateringer fra dette nettstedet, følg det her.</translation>
@@ -905,6 +908,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4989065233040279145">Velg hvor du vil lagre <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Farge på fanegruppe: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiér passordet</translation>
+<translation id="5012914568031465281">Kunne ikke spore prisen.</translation>
 <translation id="5016420433031926653">Send til <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">De siste 15 minuttene</translation>
 <translation id="5020732097997376541">Trykk på «Lens-ikonet»</translation>
@@ -1667,8 +1671,10 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8211406090763984747">Tilkoblingen er sikker</translation>
 <translation id="8214293972734702249">Festet – <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Se versjonen uten nett på en ny fane</translation>
+<translation id="8221665793629393739">Påminnelse om å besøke nettsiden igjen</translation>
 <translation id="8230355548492839438">Finn forrige</translation>
 <translation id="8232956427053453090">Behold dataene</translation>
+<translation id="8238711781852526820">Skjul «Prissporing»</translation>
 <translation id="8258999165172757081">Lagt til</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="82619448491672958">Se andre faner</translation>
@@ -1789,6 +1795,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8717864919010420084">Kopiér linken</translation>
 <translation id="8722229818691036192">Kontoer på denne enheten</translation>
 <translation id="8722649775263832315">Trykk eller marker for å søke på hva som helst med Google Lens</translation>
+<translation id="8723088494871522141">Skjul «Produktanmeldelser for deg»</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8728922029615312208">Lukk alle</translation>
 <translation id="8730621377337864115">Ferdig</translation>

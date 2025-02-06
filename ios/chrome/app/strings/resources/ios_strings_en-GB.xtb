@@ -358,6 +358,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Your browser looks good</translation>
 <translation id="2473876017985765807">You already saved a password for <ph name="WEBSITE" /></translation>
+<translation id="247430852844518481">You can set a reminder to revisit this page later</translation>
 <translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2484459871750294497">How do I enable this feature?</translation>
@@ -668,6 +669,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="398604237578616937">Signed in as <ph name="USER_EMAIL" />. Open account menu.</translation>
 <translation id="3986739045730058129">Go to tab</translation>
 <translation id="3992684624889376114">About this page</translation>
+<translation id="3993594519743675442">Hide Set a reminder</translation>
 <translation id="3994422733891749358">Choose the notifications that you want to receive</translation>
 <translation id="3994522032746736727">Sign in as <ph name="EMAIL" /></translation>
 <translation id="3994911892367422121">GOT IT</translation>
@@ -688,6 +690,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4054572406751135230">Keep up with news, sports and more.</translation>
 <translation id="4070132839822635162">Don't sign in</translation>
 <translation id="4094361089640885693">Easily track prices and get price insights.</translation>
+<translation id="4099756562043439968">Set a reminder</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
 <translation id="4111985840824673503">Mark all read</translation>
 <translation id="411254640334432676">Download failed.</translation>

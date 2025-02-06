@@ -25,6 +25,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Lue lisää<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> välilehti lisätty ryhmään</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
+<translation id="1909810060368225529">Huom. Tähän jaettuun välilehtiryhmään tehdyt muutokset näkyvät kaikille. Kaikki voivat tehdä muutoksia jaettuihin välilehtiryhmiin</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Aseta <ph name="TABS_COUNT_ONE" /> valittu välilehti kirjanmerkiksi}other{Aseta <ph name="TABS_COUNT_MANY" /> valittua välilehteä kirjanmerkeiksi}}</translation>
 <translation id="2118649612461486615">Kaupan tiedot</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista. Incognito-välilehti ei ole käytettävissä.}other{Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista. # incognito-välilehteä ei ole käytettävissä.}}</translation>
@@ -126,11 +127,13 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="6381032505162537930">Näet välilehtiryhmäsi täällä</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Poista <ph name="TABS_COUNT_ONE" /> valitun välilehden ryhmittely}other{Poista <ph name="TABS_COUNT_MANY" /> valitun välilehden ryhmittely}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
+<translation id="6499296376514955580">Ilmoitus jaetun välilehtiryhmän muutoksista suljettu</translation>
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 päivän päästä}other{<ph name="DAY_COUNT_MANY" /> päivän päästä}}</translation>
 <translation id="6549021453810473782">Katso kaupan tiedot</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Siirrä välilehti vasemmalle</translation>
+<translation id="6589356853295569750">Ilmoitus jaetun välilehtiryhmän muutoksista avattu koko näytön kokoisena</translation>
 <translation id="6590332670428149473">Avaa välilehtiryhmän toimintovalikko jaetulle välilehtiryhmälle <ph name="TITLE_OF_GROUP" />, värinä <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Näytä</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> välilehteä muutettu}other{<ph name="MANY_CHANGED" /> välilehteä muutettu}}</translation>
@@ -157,6 +160,7 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Jaa <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Jaa <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="7773714564112603605">Poista välilehti ja ryhmä</translation>
 <translation id="7792771145871471484">Tarkista ehdotukset.</translation>
+<translation id="7792860826279960128">Ilmoitus jaetun välilehtiryhmän muutoksista puoliksi avattuna</translation>
 <translation id="7825973332242257878">Välilehtiryhmät</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Lisää <ph name="TABS_COUNT_ONE" /> valittu välilehti ryhmäksi}other{Lisää <ph name="TABS_COUNT_MANY" /> valittua välilehteä ryhmäksi}}</translation>
 <translation id="7853202427316060426">Tapahtumat</translation>

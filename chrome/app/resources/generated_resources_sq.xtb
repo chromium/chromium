@@ -716,6 +716,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1486486872607808064">Skano këtë kod QR me një kamerë në pajisjen ku dëshiron të krijosh një çelës kalimi për <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Krijo një draft ose rafino punën ekzistuese.</translation>
 <translation id="1487335504823219454">Aktive - cilësimet e personalizuara</translation>
+<translation id="1489101155914355052">Po gjenerohen sugjerime për këtë dokument…</translation>
 <translation id="1493892686965953381">Po pret për <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Sajtet mund të kërkojnë të përdorin fontet e instaluara në pajisjen tënde</translation>
 <translation id="1494429729245089920">Pajisja virtuale "<ph name="VM_NAME" />" ekziston, por me sa duket nuk është një pajisje virtuale e vlefshme <ph name="APP_NAME" />. Kontakto me administratorin tënd.</translation>
@@ -781,6 +782,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1542524755306892917">Kjo lejon që "Asistenti i Google" të ofrojë përgjigje të personalizuara kur <ph name="SUPERVISED_USER_NAME" /> bën pyetje.</translation>
 <translation id="1543284117603151572">Të importuar nga Edge</translation>
 <translation id="1543538514740974167">Si të mbërrish këtu më shpejt</translation>
+<translation id="154420222899071768">Fjalëkalimi yt nuk është përditësuar, por mund të jesh ende në gjendje të qasesh te sajti me fjalëkalimin tënd të vjetër</translation>
 <translation id="1544588554445317666">Provo të përdorësh një emër më të shkurtër skedari ose ta ruash atë në një dosje tjetër</translation>
 <translation id="1545177026077493356">Modaliteti automatik "Kioskë"</translation>
 <translation id="1545749641540134597">Skano kodin QR</translation>
@@ -1935,6 +1937,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2328561734797404498">Rinise pajisjen tënde për të përdorur <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Kur je në modalitetin "I fshehtë", sajtet mund të përdorin kuki vetëm për të parë aktivitetin tënd të shfletimit në sajtin e tyre. Kukit fshihen në fund të sesionit të fshehtë.</translation>
 <translation id="2329597144923131178">Identifikohu për të marrë faqeshënuesit, historikun, fjalëkalimet dhe cilësime të tjera në të gjitha pajisjet e tua.</translation>
+<translation id="2331334586452217517">Përmbajtjet nga ky sajt dërgohen te Google dhe mund të shikohen nga shqyrtues njerëzorë. Rreth <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Pajisjet e ruajtura te <ph name="PRIMARY_EMAIL" /> nuk mund të ngarkohen. Kontrollo lidhjen e internetit dhe provo përsëri.</translation>
 <translation id="2332131598580221120">Shiko në dyqan</translation>
 <translation id="2332515770639153015">"Shfletimi i sigurt i përmirësuar" është aktiv</translation>
@@ -2913,6 +2916,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3013652227108802944">Joaktive • Kjo shtesë shkel politikën e "Dyqanit të uebit të Chrome"</translation>
 <translation id="301525898020410885">Gjuha caktohet nga organizata jote</translation>
 <translation id="3015639418649705390">Hape përsëri tani</translation>
+<translation id="3015651504578568463">Shto skedën te tabela e re e krahasimit</translation>
 <translation id="3016381065346027039">Asnjë regjistrim në evidencë</translation>
 <translation id="3019023222666709803">Vegla e shigjetës</translation>
 <translation id="3019285239893817657">Butoni i nënfaqes</translation>
@@ -3825,6 +3829,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="369489984217678710">Fjalëkalimet dhe të dhëna të tjera të identifikimit</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Kontrollet e sigurisë përfunduan. Të dhënat e tua do të ngarkohen.}=1{Kontrollet e sigurisë përfunduan. Skedari yt do të ngarkohet.}other{Kontrollet e sigurisë përfunduan. Skedarët e tu do të ngarkohen.}}</translation>
 <translation id="3695339288331169103">Nga <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
+<translation id="3696309329332791122">Kontrollo fjalëkalimin tënd</translation>
 <translation id="369736917241079046">nisësi + shigjeta majtas</translation>
 <translation id="3697716475445175867">e fundit e hapur</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Mund ta ndalosh këtë sajt që të dërgojë njoftime në të ardhmen.}other{Mund t'i ndalosh këto sajte që të dërgojnë njoftime në të ardhmen.}}</translation>
@@ -5633,6 +5638,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Ekrani i transmetimit</translation>
 <translation id="496185450405387901">Ky aplikacion është instaluar nga administratori yt.</translation>
+<translation id="4963079328730030450">Organizata jote kontrollon se si mund të përdoren të dhënat e mbledhura nga këto veçori.</translation>
 <translation id="4963603093937263654">Sigurohu që njoftimet janë të aktivizuara në pajisjen tënde <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Hiqe skedën aktuale</translation>
 <translation id="4964455510556214366">Sistemimi</translation>
@@ -5667,6 +5673,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4989966318180235467">Inspekto &amp;faqen e sfondit</translation>
 <translation id="4990673372047946816">Nuk ka asnjë kamerë të disponueshme</translation>
 <translation id="4991420928586866460">Trajtoji tastet e rreshtit të sipërm si taste të funksioneve</translation>
+<translation id="4991873517942703737">Pyet rreth këtij dokumenti</translation>
 <translation id="4992443049233195791">Cilësimet për skedarët e Microsoft 365</translation>
 <translation id="4992458225095111526">Konfirmo Powerwash</translation>
 <translation id="4992473555164495036">Administratori yt ka kufizuar mënyrat e mundshme të shkrimit.</translation>
@@ -6155,6 +6162,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="535123479159372765">Teksti u kopjua nga pajisja tjetër</translation>
 <translation id="5352033265844765294">Stampimi i orës</translation>
 <translation id="5352257124367865087">Menaxho lejet e sajtit</translation>
+<translation id="5352535894553509810">Shto skedën te tabela e re e krahasimit</translation>
 <translation id="5353252989841766347">Eksporto fjalëkalimet nga Chrome</translation>
 <translation id="5353769147530541973">Hiq <ph name="SITE_NAME" /> nga lista e skedave për ta bërë joaktive</translation>
 <translation id="5355099869024327351">Lejo që "Asistenti" të të shfaqë njoftime</translation>
@@ -7560,6 +7568,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6383382161803538830">Modaliteti i leximit nuk ofrohet në këtë faqe</translation>
 <translation id="638418309848716977">Lidhjet e mbështetura</translation>
 <translation id="6384275966486438344">Ndryshoji cilësimet e kërkimit në: <ph name="SEARCH_HOST" /></translation>
+<translation id="6384512202164833048">{NUM_GROUPS,plural, =1{Mbaje këtë grup për të shtuar skeda më vonë ose fshije atë nëse nuk të nevojitet më.}other{Mbaji këto grupe për të shtuar skeda më vonë ose fshiji ato nëse nuk të nevojiten më.}}</translation>
 <translation id="6385149369087767061">Lidhu me internetin dhe provo sërish</translation>
 <translation id="6385382178401976503">Karta: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Paralajmërim! Regjistrimi i detajuar është i aktivizuar; regjistrat më poshtë mund të përfshijnë URL ose informacione të tjera delikate. Rishiko dhe sigurohu që nuk e ke problem dorëzimin e këtyre informacioneve.</translation>
@@ -8430,6 +8439,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7001036685275644873">Po rezervon aplikacionet dhe skedarët Linux</translation>
 <translation id="7001066449188684145">Për të printuar te <ph name="PRINTER_NAME" /> kërkohet identifikimi. Kontakto me administratorin tënd.</translation>
 <translation id="7001397294201412227">Përdor një telefon ose tablet, ose çelësin e sigurisë</translation>
+<translation id="7001556399332161712">Kërkimi dhe sugjerimet</translation>
 <translation id="7003339318920871147">Bazat e të dhënave në ueb</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} skedar}other{{COUNT} skedarë}}</translation>
 <translation id="7003644704445046755">Skedarët e zërit në <ph name="LANGUAGE" /> me cilësi të lartë u shkarkuan</translation>
@@ -9173,6 +9183,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7552846755917812628">Provo këshillat e mëposhtme:</translation>
 <translation id="7553012839257224005">Po kontrollon kontejnerin e Linux</translation>
 <translation id="7553242001898162573">Fut fjalëkalimin</translation>
+<translation id="7554342082838376298">Ndryshimi i automatizuar i fjalëkalimit</translation>
 <translation id="755472745191515939">Administratori yt nuk e lejon këtë gjuhë</translation>
 <translation id="7554791636758816595">Skedë e re</translation>
 <translation id="7556033326131260574">Smart Lock nuk mund ta verifikonte llogarinë. Shkruaj fjalëkalimin tënd për të hyrë.</translation>
@@ -9890,6 +9901,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> nuk përgjigjet.</translation>
 <translation id="8044899503464538266">I ngadaltë</translation>
 <translation id="8045253504249021590">Sinkronizimi është ndaluar nëpërmjet "Panelit të Google".</translation>
+<translation id="8045752459073395242">Mëso më shumë rreth përdorimit të IA-së gjeneruese në punë</translation>
 <translation id="8045923671629973368">Fut ID-në e aplikacionit ose URL-në e dyqanit të uebit</translation>
 <translation id="804786196054284061">Marrëveshje Licence për Përdoruesin</translation>
 <translation id="8048596485169033655">Po shkarkohen skedarët e shënimeve të nyjës kryesore… <ph name="PERCENT" />%</translation>

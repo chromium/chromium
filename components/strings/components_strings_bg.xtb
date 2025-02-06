@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">Операционни системи</translation>
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3082007635241601060">Позволете на Google да използва кошниците ви, за да намира персонализирани отстъпки, когато са налични</translation>
+<translation id="3086269988715347183">Досега не сте одобрявали <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Активността ви в мрежата се наблюдава</translation>
 <translation id="3087734570205094154">Най-долу</translation>
 <translation id="3090667236485488075">Стъкло</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3203025201812691413">URL адресът трябва да се попълни</translation>
 <translation id="320323717674993345">Анулиране на плащането</translation>
 <translation id="3203366800380907218">От мрежата</translation>
+<translation id="3207830513221832868">На адрес <ph name="BLOCKED_URL" /> може да има съдържание за възрастни</translation>
 <translation id="3207960819495026254">С отметка</translation>
 <translation id="3208701679386778924">Моля, изпратете сигнал, за да можем допълнително да подобрим актуализациите за ChromeOS.</translation>
 <translation id="3209034400446768650">Страницата може да ви таксува</translation>
@@ -2348,6 +2350,7 @@
 <translation id="5138227688689900538">Показване на по-малко</translation>
 <translation id="5143309888746105072">Chromium блокира използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.
             <ph name="NEW_LINE" />Ако функциите на сайта не работят, <ph name="START_LINK" />временно разрешете „бисквитките“ на трети страни<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Разрешихте достъп до <ph name="PERMISSION" /> за този сайт</translation>
 <translation id="5145883236150621069">В отговора за правилото присъства код на грешка</translation>
 <translation id="5146995429444047494">Известията за <ph name="ORIGIN" /> са блокирани</translation>
 <translation id="514704532284964975"><ph name="URL" /> иска да чете и променя информацията на устройствата с NFC, които докосвате с телефона си</translation>
@@ -2972,6 +2975,7 @@
 <translation id="6254436959401408446">Няма достатъчно памет за отваряне на тази страница</translation>
 <translation id="625463612687472648">Оттегляне на разрешението</translation>
 <translation id="6259156558325130047">&amp;Възстановяване на пренареждането</translation>
+<translation id="6259282549512536479">По-рано блокирахте <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872">Отметки от <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Изтегляне въпреки това</translation>
 <translation id="6264485186158353794">Назад към безопасната страница</translation>
@@ -4404,6 +4408,7 @@
 <translation id="8792621596287649091">Възможно е да загубите достъп до профила си в/ъв <ph name="ORG_NAME" /> или самоличността ви да бъде открадната. Chromium препоръчва да промените паролата си сега.</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685">Домейнът <ph name="ENROLLMENT_DOMAIN" /> е включил Chrome Enterprise Connectors в браузъра ви. Тези конектори имат достъп до някои от данните ви.</translation>
+<translation id="8796062699363039080">Настройки за <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">По подразбиране</translation>
 <translation id="8800034312320686233">Сайтът не работи?</translation>
 <translation id="8805819170075074995">Списъчен запис „<ph name="LANGUAGE_ID" />“: Записът е пренебрегнат, защото е включен и в правилото SpellcheckLanguage.</translation>

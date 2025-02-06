@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">Λειτουργικά συστήματα</translation>
 <translation id="3080254622891793721">Γραφικά</translation>
 <translation id="3082007635241601060">Να επιτρέπεται στην Google να χρησιμοποιεί τα καλάθια σας για να βρίσκει εξατομικευμένες εκπτώσεις όταν είναι διαθέσιμες</translation>
+<translation id="3086269988715347183">Δεν έχετε εγκρίνει τον ιστότοπο <ph name="BLOCKED_URL" /> στο παρελθόν</translation>
 <translation id="3086579638707268289">Η δραστηριότητά σας στον ιστό παρακολουθείται</translation>
 <translation id="3087734570205094154">Κάτω</translation>
 <translation id="3090667236485488075">Γυαλί</translation>
@@ -1234,10 +1235,12 @@
 <translation id="3194737229810486521">Ο ιστότοπος <ph name="URL" /> θέλει να αποθηκεύσει μόνιμα δεδομένα στη συσκευή σας</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> στο <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Μπορεί να ζητά να γνωρίζει πότε χρησιμοποιείτε ενεργά αυτήν τη συσκευή.</translation>
+<translation id="3201482403106004262">Προέκυψε σφάλμα με την έρευνα.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και μετά Enter για να διαχειριστείτε τις πληροφορίες που συγχρονίζετε από τις ρυθμίσεις Chrome</translation>
 <translation id="3203025201812691413">Το URL δεν μπορεί να είναι κενό</translation>
 <translation id="320323717674993345">Ακύρωση πληρωμής</translation>
 <translation id="3203366800380907218">Από τον ιστό</translation>
+<translation id="3207830513221832868">Ο ιστότοπος <ph name="BLOCKED_URL" /> μπορεί να περιέχει περιεχόμενο για ενηλίκους</translation>
 <translation id="3207960819495026254">Προστέθηκε στους σελιδοδείκτες</translation>
 <translation id="3208701679386778924">Στείλτε μια αναφορά για να μπορέσουμε να βελτιώσουμε περισσότερο τις ενημερώσεις του ChromeOS.</translation>
 <translation id="3209034400446768650">Η σελίδα ενδέχεται να σας χρεώσει</translation>
@@ -2349,6 +2352,7 @@
 <translation id="5138227688689900538">Εμφάνιση λιγότερων</translation>
 <translation id="5143309888746105072">Το Chromium δεν επιτρέπει στους ιστοτόπους να χρησιμοποιούν cookie τρίτου μέρους που σας παρακολουθούν καθώς περιηγείστε.
             <ph name="NEW_LINE" />Εάν οι λειτουργίες ιστοτόπου δεν λειτουργούν, <ph name="START_LINK" />δοκιμάστε να επιτρέψετε προσωρινά τα cookie τρίτου μέρους<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Έχετε επιτρέψει την άδεια <ph name="PERMISSION" /> για αυτόν τον ιστότοπο</translation>
 <translation id="5145883236150621069">Βρέθηκε κωδικός σφάλματος στην απόκριση πολιτικής</translation>
 <translation id="5146995429444047494">Οι ειδοποιήσεις για την προέλευση <ph name="ORIGIN" /> έχουν αποκλειστεί</translation>
 <translation id="514704532284964975">Η διεύθυνση <ph name="URL" /> θέλει να βλέπει και να αλλάζει πληροφορίες για συσκευές NFC που πατάτε με το τηλέφωνό σας</translation>
@@ -2973,6 +2977,7 @@
 <translation id="6254436959401408446">Δεν υπάρχει αρκετή μνήμη για το άνοιγμα αυτής της σελίδας</translation>
 <translation id="625463612687472648">Να μην επιτρέπεται πλέον</translation>
 <translation id="6259156558325130047">&amp;Επανάληψη αναδιάταξης</translation>
+<translation id="6259282549512536479">Είχατε αποκλείσει τον ιστότοπο <ph name="BLOCKED_URL" /> στο παρελθόν</translation>
 <translation id="6263376278284652872">Σελιδοδείκτες <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Να γίνει η λήψη ούτως ή άλλως</translation>
 <translation id="6264485186158353794">Πίσω στην ασφάλεια</translation>
@@ -4406,6 +4411,7 @@
 <translation id="8792621596287649091">Μπορεί να χάσετε την πρόσβαση στον λογαριασμό σας <ph name="ORG_NAME" /> ή να πέσετε θύμα κλοπής στοιχείων ταυτότητας. Το Chromium συνιστά να αλλάξετε τον κωδικό πρόσβασής σας τώρα.</translation>
 <translation id="8792626944327216835">μικρόφωνο</translation>
 <translation id="8793655568873652685">Το <ph name="ENROLLMENT_DOMAIN" /> ενεργοποίησε το Chrome Enterprise Connectors στο πρόγραμμα περιήγησής σας. Αυτές οι εφαρμογές σύνδεσης έχουν πρόσβαση σε ορισμένα από τα δεδομένα σας.</translation>
+<translation id="8796062699363039080">Ρυθμίσεις <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8800034312320686233">Δεν λειτουργεί ο ιστότοπος;</translation>
 <translation id="8805819170075074995">Καταχώριση λίστας "<ph name="LANGUAGE_ID" />": Η καταχώριση παραβλέπεται επειδή περιλαμβάνεται επίσης στην πολιτική SpellcheckLanguage.</translation>
@@ -4626,6 +4632,7 @@
 <translation id="9192361865877479444">Μέταλλο (Ματ)</translation>
 <translation id="9192947025498305328">Καθαρή ομορφιά</translation>
 <translation id="9199905725844810519">Η εκτύπωση αποκλείστηκε</translation>
+<translation id="9201904868909900493">Άνοιγμα έρευνας…</translation>
 <translation id="9204089334327209740">Μόλις ολοκληρωθεί η μεταφόρτωση, μπορείτε να τροποποιήσετε τα αρχεία σας στο <ph name="CLOUD_PROVIDER" />. Ο τοπικός αποθηκευτικός χώρος, συμπεριλαμβανομένων τυχόν αρχείων στον κάδο, θα καταργηθεί αυτόματα.</translation>
 <translation id="9205078245616868884">Τα δεδομένα σας είναι κρυπτογραφημένα με τη δική σας φράση πρόσβασης συγχρονισμού. Πληκτρολογήστε την για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="920643408853370361">Ταξιδιωτική ασφάλεια</translation>

@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1384959399684842514">Lataus keskeytettiin.</translation>
 <translation id="1396327438254055134">Salli sivuston käyttää V8-optimoijaa.</translation>
+<translation id="1409338233051621926">Valitse Sovellukset ja sitten Oletussovellukset</translation>
 <translation id="1415402041810619267">URL näkyy lyhennettynä</translation>
 <translation id="1415855080660575082">Salli Chromen jakaa viimeaikaiset välilehdet laitteelle, jotta näet ne laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän päälle tai pois päältä Chromen asetuksista.</translation>
 <translation id="1448064542941920355">Vähennä zoomausta</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Älä käytä tummaa teemaa sivustoilla</translation>
 <translation id="2606760465469169465">Vahvista automaattisesti</translation>
 <translation id="2621115761605608342">Salli JavaScript tietyllä sivustolla.</translation>
+<translation id="2626708220538466178">Oletusselaimen alapaneeli suljettu</translation>
 <translation id="2653659639078652383">Lähetä</translation>
 <translation id="2677748264148917807">Poistu</translation>
 <translation id="2682367912565197520">Poista tallennettu zoomaustaso</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Mykistä ääniä toistavat sivustot</translation>
 <translation id="3602290021589620013">Esikatselu</translation>
 <translation id="3628308229821498208">Ehdotetut haut</translation>
+<translation id="3658847490588580244">Oletusselainsyöte</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sivusto osoitteen <ph name="RWS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}other{<ph name="RWS_MEMBERS_COUNT" /> sivustoa osoitteen <ph name="RWS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}}</translation>
 <translation id="3697164069658504920">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää USB-laitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää USB-laitteita.</translation>
 <translation id="3707034683772193706">Avaamasi sivusto voi tallentaa pienen määrän tietoja Chromeen tarkistaakseen, ettet ole botti</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Poista ja nollaa luvat</translation>
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>
 <translation id="4670064810192446073">Virtuaalitodellisuus</translation>
+<translation id="4672315773691449562">Valitse Selainsovellus ja sitten Chrome</translation>
 <translation id="4676059169848868271">Salli, että <ph name="APP_NAME" /> voi seurata käsien liikettä, laittamalla käsien liikkeen seuranta päälle myös <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Liike- tai valotunnistimet</translation>
 <translation id="4755971844837804407">Kun tämä on päällä, sivustot voivat näyttää sinulle mitä tahansa mainoksia. Kun tämä on pois päältä, sivustoilla ei voi näkyä häiritseviä tai harhaanjohtavia mainoksia.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Sallittu (suositus)</translation>
 <translation id="8609465669617005112">Siirrä ylös</translation>
 <translation id="8617611086246832542">Kun tämä on päällä, näet verkkosivustojen tietokonenäkymän. Kun tämä on pois päältä, näet sivustojen mobiilinäkymän.</translation>
+<translation id="8670078035093027626">Oletusselaimen alapaneeli avattu koko näytön kokoisena</translation>
 <translation id="8676316391139423634">Kun tämä on päällä, sivustot voivat pyytää lupaa seurata käsiäsi. Kun tämä on pois päältä, sivustot eivät voi seurata käsiäsi.</translation>
 <translation id="8676374126336081632">Tyhjennä teksti</translation>
 <translation id="8681886425883659911">Mainokset estetään sivustoilla, joiden tiedetään näyttävän häiritseviä tai harhaanjohtavia mainoksia</translation>

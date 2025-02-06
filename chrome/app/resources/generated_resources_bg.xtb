@@ -717,6 +717,7 @@
 <translation id="1486486872607808064">Сканирайте този QR код с камерата на устройството, на което искате да създадете ключ за достъп за <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Създаване на чернова или прецизиране на съществуващ текст.</translation>
 <translation id="1487335504823219454">Включено – персонализирани настройки</translation>
+<translation id="1489101155914355052">Генерират се предложения за този документ…</translation>
 <translation id="1493892686965953381">Изчаква се <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Сайтовете могат да искат разрешение да използват шрифтовете, инсталирани на устройството ви</translation>
 <translation id="1494429729245089920">Виртуалната машина „<ph name="VM_NAME" />“ съществува, но изглежда, че не е валидна виртуална машина за <ph name="APP_NAME" />. Моля, обърнете се към администратора си.</translation>
@@ -2926,6 +2927,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3013652227108802944">Изключено • Това разширение нарушава правилата на уеб магазина на Chrome</translation>
 <translation id="301525898020410885">Езикът е зададен от организацията ви</translation>
 <translation id="3015639418649705390">Рестартиране сега</translation>
+<translation id="3015651504578568463">Добавяне на раздела към нова таблица за сравнение</translation>
 <translation id="3016381065346027039">Няма записи в регистрационния файл</translation>
 <translation id="3019023222666709803">Инструмент за стрелка</translation>
 <translation id="3019285239893817657">Бутон за подстраница</translation>
@@ -4742,6 +4744,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4305402730127028764">Копиране на <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Превключване</translation>
 <translation id="4306119971288449206">Приложенията трябва да се показват с тип съдържание „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4306810703452026910">Chrome ще спре да означава известията от този сайт като спам</translation>
 <translation id="4307992518367153382">Основни положения</translation>
 <translation id="4309165024397827958">Позволете на приложенията и услугите за Android да ползват местоположението на устройството ви, ако имат съответното разрешение. Google може периодично да събира информация за местоположението и да я използва по анонимен начин с цел подобряване на точността му и базиращите се на него услуги.</translation>
 <translation id="4309183709806093061">Споделяне и на системния звук. Това устройство ще бъде заглушено с цел предотвратяване на акустична обратна връзка.</translation>
@@ -5054,6 +5057,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4540409690203718935">Няма връзка с Google Мениджър на пароли. Опитайте отново след няколко минути</translation>
 <translation id="4540780316273593836">Нещо се обърка</translation>
 <translation id="4541123282641193691">Профилът ви не бе потвърден. Моля, опитайте отново или рестартирайте своя Chromebook.</translation>
+<translation id="4541396589393395475">Тази функция е деактивирана от организацията ви</translation>
 <translation id="4541505619120536051">Да, винаги</translation>
 <translation id="4541662893742891060">Не може да се установи връзка с този потребителски профил. За техническа поддръжка се обърнете към оператора си.</translation>
 <translation id="4541706525461326392">Профилът за мобилна мрежа се премахва. Това може да отнеме няколко минути.</translation>
@@ -5651,6 +5655,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Предаване на екрана</translation>
 <translation id="496185450405387901">Това приложение е инсталирано от администратора ви.</translation>
+<translation id="4963079328730030450">Организацията ви контролира начина, по който може да се използват данните, събрани от тези функции.</translation>
 <translation id="4963603093937263654">Уверете се, че известията са включени на устройството ви <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Премахване на текущия раздел</translation>
 <translation id="4964455510556214366">Подредба</translation>
@@ -5685,6 +5690,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4989966318180235467">Инспектиране на &amp;фоновата страница</translation>
 <translation id="4990673372047946816">Няма налична камера</translation>
 <translation id="4991420928586866460">Третиране на клавишите от най-горния ред като функционални</translation>
+<translation id="4991873517942703737">Задайте въпрос за този документ</translation>
 <translation id="4992443049233195791">Настройки за файловете на Microsoft 365</translation>
 <translation id="4992458225095111526">Потвърждаване на извършването на Powerwash</translation>
 <translation id="4992473555164495036">Администраторът ви е ограничил наличните методи на въвеждане.</translation>
@@ -6029,6 +6035,7 @@ Chrome Root Program има доверие, и постоянно се подла
     Вижда се като <ph name="DEVICE_TYPE" />...</translation>
 <translation id="523862956770478816">Разрешения за сайтове</translation>
 <translation id="5240931875940563122">Вход с телефон с Android</translation>
+<translation id="5241689948221696942">За някои продукти таблиците за сравнение обобщават отзиви от мрежата</translation>
 <translation id="5242724311594467048">Да се активира ли <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5243522832766285132">Моля, опитайте отново след малко</translation>
 <translation id="5244234799035360187">OneDrive вече ще се показва в приложението „Файлове“</translation>
@@ -6174,6 +6181,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="535123479159372765">Текст, копиран от друго устройство</translation>
 <translation id="5352033265844765294">Поставяне на времево клеймо</translation>
 <translation id="5352257124367865087">Управление на разрешенията за сайтовете</translation>
+<translation id="5352535894553509810">Добавяне на раздела към нова таблица за сравнение</translation>
 <translation id="5353252989841766347">Експортиране на пароли от Chrome</translation>
 <translation id="5353769147530541973">Премахнете елемента <ph name="SITE_NAME" /> от списъка с раздели, за да стане неактивен</translation>
 <translation id="5355099869024327351">Разрешаване на Асистент да ви показва известия</translation>
@@ -8034,6 +8042,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6713233729292711163">Добавяне на служебен потребителски профил</translation>
 <translation id="6713441551032149301">Натиснете и задръжте клавиша за стартовия панел, за да превключвате между функционалните клавиши и системните клавиши от най-горния ред</translation>
 <translation id="6713668088933662563">Никога да не се предлага превод за тези езици</translation>
+<translation id="6714871567554212732">Вижте още подробности за „<ph name="GROUP_NAME" />“</translation>
 <translation id="6715735940363172819">На уебсайтовете е забранено да използват микрофона ви</translation>
 <translation id="6715803357256707211">Възникна грешка при инсталирането на приложението за Linux. За подробности кликнете върху известието.</translation>
 <translation id="6716049856796700977">Местоположението ви не може да се използва, но е възможно да е видимо за приложенията и уебсайтовете чрез IP адреса ви. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -8451,6 +8460,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7001036685275644873">Създава се резервно копие на приложенията и файловете за Linux</translation>
 <translation id="7001066449188684145">За отпечатване чрез <ph name="PRINTER_NAME" /> се изисква идентификация. Моля, обърнете се към администратора си.</translation>
 <translation id="7001397294201412227">Използване на телефон, таблет или ключ за сигурност</translation>
+<translation id="7001556399332161712">Търсене и предложения</translation>
 <translation id="7003339318920871147">Уеб бази от данни</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} файл}other{{COUNT} файла}}</translation>
 <translation id="7003644704445046755">Изтеглени са гласови файлове на <ph name="LANGUAGE" /> с високо качество</translation>
@@ -9915,6 +9925,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не реагира.</translation>
 <translation id="8044899503464538266">Бавно</translation>
 <translation id="8045253504249021590">Синхронизирането е спряно чрез Google Табло за управление.</translation>
+<translation id="8045752459073395242">Научете повече за използването на генеративен AI на работното място</translation>
 <translation id="8045923671629973368">Въведете идентификационен номер на приложение или URL адрес в уеб магазина</translation>
 <translation id="804786196054284061">Лицензионно споразумение с крайния потребител</translation>
 <translation id="8048596485169033655">Файловете с пояснения за основния възел се изтеглят… <ph name="PERCENT" />%</translation>

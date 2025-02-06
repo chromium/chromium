@@ -25,6 +25,7 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />További információ<ph name="END_LINK1" />.</translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> lap csoportosítva</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap}other{<ph name="TABS_COUNT_MANY" /> lap}}</translation>
+<translation id="1909810060368225529">Figyelem: A megosztott lapcsoport módosításai mindenki számára láthatók. Bárki módosíthatja a megosztott lapcsoportokat</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kiválasztott lap felvétele a könyvjelzők közé}other{<ph name="TABS_COUNT_MANY" /> kiválasztott lap felvétele a könyvjelzők közé}}</translation>
 <translation id="2118649612461486615">Üzletadatok</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban. Az inkognitó lap nem lesz hozzáférhető.}other{A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban. # inkognitó lap nem lesz hozzáférhető.}}</translation>
@@ -126,11 +127,13 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="6381032505162537930">Itt láthatja majd a lapcsoportjait</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap csoportosításának megszüntetése}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap csoportosításának megszüntetése}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap}other{<ph name="TABS_COUNT_MANY" /> lap}}</translation>
+<translation id="6499296376514955580">A megosztott lapcsoportok módosításairól szóló értesítés bezárva</translation>
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 nap után}other{<ph name="DAY_COUNT_MANY" /> nap után}}</translation>
 <translation id="6549021453810473782">Üzletadatok megtekintése</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Lap mozgatása balra</translation>
+<translation id="6589356853295569750">A megosztott lapcsoportok módosításairól szóló értesítés teljes magasságban megnyitva</translation>
 <translation id="6590332670428149473">A(z) <ph name="TITLE_OF_GROUP" /> nevű, <ph name="COLOR_NAME" /> színű megosztott lapcsoport műveleti menüjének megnyitása.</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> lap módosítva}other{<ph name="MANY_CHANGED" /> lap módosítva}}</translation>
@@ -157,6 +160,7 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kiválasztott lap megosztása}other{<ph name="TABS_COUNT_MANY" /> kiválasztott lap megosztása}}</translation>
 <translation id="7773714564112603605">Lap eltávolítása és csoport törlése</translation>
 <translation id="7792771145871471484">Javaslatok áttekintése.</translation>
+<translation id="7792860826279960128">Értesítés a megosztott lapcsoport félmagasságban megjelenő változásairól</translation>
 <translation id="7825973332242257878">Lapcsoportok</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap csoportba helyezése}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap csoportba helyezése}}</translation>
 <translation id="7853202427316060426">Aktivitás</translation>

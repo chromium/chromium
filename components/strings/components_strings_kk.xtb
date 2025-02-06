@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">Операциялық жүйелер</translation>
 <translation id="3080254622891793721">Кескін</translation>
 <translation id="3082007635241601060">Жекелендірілген жеңілдіктер қолжетімді болғанда, оларды табу үшін Google-ға себеттеріңізді қолдануға рұқсат етіңіз.</translation>
+<translation id="3086269988715347183">Бұрын <ph name="BLOCKED_URL" /> веб-сайтын мақұлдамағансыз.</translation>
 <translation id="3086579638707268289">Интернеттегі әрекетіңіз қадағаланып жатыр</translation>
 <translation id="3087734570205094154">Астына</translation>
 <translation id="3090667236485488075">Шыны</translation>
@@ -1238,6 +1239,7 @@
 <translation id="3203025201812691413">URL бос болмауы керек</translation>
 <translation id="320323717674993345">Төлемнен бас тарту</translation>
 <translation id="3203366800380907218">Интернеттен</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> веб-сайтында ересектерге арналған контент болуы мүмкін.</translation>
 <translation id="3207960819495026254">Бетбелгі қойылған</translation>
 <translation id="3208701679386778924">Қосымша ChromeOS жаңартуларын жақсарта алуымыз үшін есеп жіберіңіз.</translation>
 <translation id="3209034400446768650">Бұл бет ақылы болуы мүмкін</translation>
@@ -2972,6 +2974,7 @@
 <translation id="6254436959401408446">Бұл бетті ашу үшін жад жеткіліксіз</translation>
 <translation id="625463612687472648">Рұқсат беруді тоқтату</translation>
 <translation id="6259156558325130047">&amp;Қайта ретке келтіру әрекетін қайталау</translation>
+<translation id="6259282549512536479">Бұған дейін <ph name="BLOCKED_URL" /> веб-сайтын блоктағансыз.</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> бетбелгілері</translation>
 <translation id="6264376385120300461">Сонда да жүктеп алу</translation>
 <translation id="6264485186158353794">Қауіпсіз аймаққа қайту</translation>

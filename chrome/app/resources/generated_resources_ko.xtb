@@ -4747,6 +4747,7 @@
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" />(으)로 복사</translation>
 <translation id="4305817255990598646">전환</translation>
 <translation id="4306119971288449206">앱은 '<ph name="CONTENT_TYPE" />' 콘텐츠 유형으로 제공되어야 합니다</translation>
+<translation id="4306810703452026910">Chrome에서 더 이상 이 사이트의 알림을 스팸으로 표시하지 않습니다.</translation>
 <translation id="4307992518367153382">기본설정</translation>
 <translation id="4309165024397827958">위치 정보 액세스 권한이 있는 Android 앱과 서비스가 기기의 위치를 사용하도록 허용합니다. Google에서는 위치 정확도와 위치 기반 서비스를 개선하기 위해 위치 데이터를 주기적으로 수집하여 익명으로 사용할 수 있습니다.</translation>
 <translation id="4309183709806093061">시스템 오디오도 공유합니다. 오디오 피드백을 방지하기 위해 이 기기는 음소거됩니다.</translation>
@@ -8044,6 +8045,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6713233729292711163">직장 프로필 추가</translation>
 <translation id="6713441551032149301">런처 키를 길게 눌러 기능 키와 시스템 맨 위 키 간에 전환</translation>
 <translation id="6713668088933662563">다음 언어 번역 제공 안 함</translation>
+<translation id="6714871567554212732"><ph name="GROUP_NAME" />에 대한 세부정보 더보기</translation>
 <translation id="6715735940363172819">웹사이트에서 마이크를 사용할 수 없습니다.</translation>
 <translation id="6715803357256707211">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다. 알림을 클릭하면 자세한 정보를 확인할 수 있습니다.</translation>
 <translation id="6716049856796700977">어디에서도 내 위치를 사용할 수 없습니다. 하지만 앱과 웹사이트에서 IP 주소를 통해 내 위치를 확인할 수는 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>

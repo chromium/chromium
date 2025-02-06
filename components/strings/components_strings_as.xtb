@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">অপাৰেটিং ছিষ্টেম</translation>
 <translation id="3080254622891793721">গ্ৰাফিক</translation>
 <translation id="3082007635241601060">ব্যক্তিগতকৃত ৰেহাইসমূহ উপলব্ধ হ’লে সেইবোৰ বিচাৰিবলৈ Googleক আপোনাৰ কাৰ্টখন ব্যৱহাৰ কৰিবলৈ দিয়ক</translation>
+<translation id="3086269988715347183">আপুনি আগতে <ph name="BLOCKED_URL" />ত অনুমোদন জনোৱা নাই</translation>
 <translation id="3086579638707268289">ৱেবত আপোনাৰ কাৰ্যকলাপ নিৰীক্ষণ কৰি থকা হৈছে</translation>
 <translation id="3087734570205094154">একেবাৰে তলি</translation>
 <translation id="3090667236485488075">কাচ</translation>
@@ -1237,6 +1238,7 @@
 <translation id="3203025201812691413">URL খালী থাকিব নোৱাৰে</translation>
 <translation id="320323717674993345">পৰিশোধ বাতিল কৰক</translation>
 <translation id="3203366800380907218">ৱেবৰ পৰা</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" />ত প্ৰাপ্তবয়স্ক লোকৰ সমল থাকিব পাৰে</translation>
 <translation id="3207960819495026254">বুকমার্ক কৰা হৈছে</translation>
 <translation id="3208701679386778924">অনুগ্ৰহ কৰি এটা মতামত সম্বলিত ৰিপ’ৰ্ট পঠিয়াওক যাতে আমি ChromeOSৰ অনাগত আপডে’টসমূহ উন্নত কৰিব পাৰোঁ।</translation>
 <translation id="3209034400446768650">পৃষ্ঠাখনে মাচুল হিচাপে টকা ল’ব পাৰে</translation>
@@ -2968,6 +2970,7 @@
 <translation id="6254436959401408446">এই পৃষ্ঠাটো খুলিবলৈ পর্যাপ্ত মেম’ৰি নাই</translation>
 <translation id="625463612687472648">অনুমতি দিয়াটো বন্ধ কৰক</translation>
 <translation id="6259156558325130047">&amp;পুনৰ ক্ৰমবদ্ধ কৰাটো ৰিডু কৰক</translation>
+<translation id="6259282549512536479">আপুনি আগতে <ph name="BLOCKED_URL" /> অৱৰোধ কৰিছে</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />ৰ বুকমার্ক</translation>
 <translation id="6264376385120300461">তথাপি ডাউনল’ড কৰক</translation>
 <translation id="6264485186158353794">পূৰ্বৱৰ্তী পৃষ্ঠাটোলৈ উভতি যাওক</translation>

@@ -25,6 +25,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Få flere oplysninger<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> fane blev grupperet</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}one{<ph name="TABS_COUNT_MANY" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
+<translation id="1909810060368225529">Bemærk! Ændringer af denne delte fanegruppe er synlige for alle. Alle kan ændre dine delte fanegrupper</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Gem <ph name="TABS_COUNT_ONE" /> valgt fane som bogmærke}one{Gem <ph name="TABS_COUNT_MANY" /> valgt faner som bogmærke}other{Gem <ph name="TABS_COUNT_MANY" /> valgte faner som bogmærker}}</translation>
 <translation id="2118649612461486615">Butiksinfo</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. Din inkognitofane er ikke tilgængelig.}one{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. # inkognitofane er ikke tilgængelig.}other{Dine lukkede faner og grupper kan åbnes igen via sektionerne Seneste faner og Fanegrupper. # inkognitofaner er ikke tilgængelige.}}</translation>
@@ -126,11 +127,13 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="6381032505162537930">Her kan du se dine fanegrupper</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ophæv grupperingen af <ph name="TABS_COUNT_ONE" /> valgt fane}one{Ophæv grupperingen af <ph name="TABS_COUNT_MANY" /> valgt fane}other{Ophæv grupperingen af <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}one{<ph name="TABS_COUNT_MANY" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
+<translation id="6499296376514955580">Meddelelse om ændringer af en delt fanegruppe er lukket</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Efter 1 dag}one{Efter <ph name="DAY_COUNT_MANY" /> dag}other{Efter <ph name="DAY_COUNT_MANY" /> dage}}</translation>
 <translation id="6549021453810473782">Se butiksinfo</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Flyt fane til venstre</translation>
+<translation id="6589356853295569750">Meddelelse om ændringer af en delt fanegruppe er åbnet i fuld højde</translation>
 <translation id="6590332670428149473">Åbn handlingsmenuen for fanegrupper for den delte fanegruppe <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Lad mig se</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> fane blev ændret}one{<ph name="MANY_CHANGED" /> fane blev ændret}other{<ph name="MANY_CHANGED" /> faner blev ændret}}</translation>
@@ -157,6 +160,7 @@ Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph na
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Del <ph name="TABS_COUNT_ONE" /> valgt fane}one{Del <ph name="TABS_COUNT_MANY" /> valgt fane}other{Del <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="7773714564112603605">Fjern fane, og slet gruppe</translation>
 <translation id="7792771145871471484">Gennemgå forslagene.</translation>
+<translation id="7792860826279960128">Meddelelse om ændringer af en delt fanegruppe er åbnet i halv højde</translation>
 <translation id="7825973332242257878">Fanegrupper</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Gruppér <ph name="TABS_COUNT_ONE" /> valgt fane}one{Gruppér <ph name="TABS_COUNT_MANY" /> valgt fane}other{Gruppér de <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="7853202427316060426">Aktivitet</translation>

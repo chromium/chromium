@@ -4899,6 +4899,19 @@ No tiene efecto si la habilitas, la dejas vacía o no la configuras.</translatio
 <translation id="4534500438517478692">Nombre de restricción de Android:</translation>
 <translation id="4541530620466526913">Cuentas locales del dispositivo</translation>
 <translation id="4542255783284620926">Bloquear la adición de una cuenta administrada como cuenta secundaria en ChromeOS (cuando se ha iniciado sesión)</translation>
+<translation id="4543338637126011529">Si estableces la política, se especificará una lista de apps web aisladas (IWA) que se instalan de manera silenciosa.
+      Las IWA son apps que tienen propiedades de seguridad útiles que no están disponibles para las páginas web normales. Se agrupan en un paquete web firmado. La clave pública del paquete web firmado se usa para crear el ID del paquete web que identifica la IWA.
+      Hasta ahora, esta política solo funciona para las sesiones de invitado administradas.
+
+      Cada elemento de la lista de la política es un objeto que tiene dos campos obligatorios: el manifiesto de actualización <ph name="URL_LABEL" /> y el ID del paquete web de la app web aislada.
+
+      Cada elemento también puede incluir estos campos opcionales:
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />: El nombre del canal de actualización o lanzamiento de la IWA. Si no lo estableces, se usa el valor "default".
+
+        * <ph name="PINNED_VERSION_OPTION" />: Una versión específica para instalar. El sistema intentará instalar esta versión si está disponible en el canal de actualización especificado. De forma predeterminada, fijar una IWA a una versión específica impide que se actualice más allá de esa versión. Para dejar de fijarla, quita este campo.
+
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />: Habilita la instalación de versiones anteriores de IWA. Para ello, debes establecer el campo "pinned_version". Si no lo proporcionas o lo estableces como <ph name="FALSE" />, se inhabilita el cambio a una versión anterior para esa IWA.</translation>
 <translation id="4543502256674577024">Configuración de actualización del dispositivo</translation>
 <translation id="454585952814397564">Usa la prioridad normal para el proceso de audio</translation>
 <translation id="4546641664653711266">Esta es una política temporal que se quitará en la versión M127.
@@ -5648,6 +5661,7 @@ Esta política solo será válida si la máquina está inscrita en <ph name="CLO
 <translation id="5030415914668947893">Permitir la recopilación de métricas con URL</translation>
 <translation id="5033070732967197381">Permitir solicitudes a la API de WebAuthn en sitios con certificados TLS rotos</translation>
 <translation id="5034504101537897433">Habilitar los informes de fallos del dispositivo</translation>
+<translation id="5035980227219807711">Inhabilitar el aprovisionamiento de certificados de cliente para los navegadores</translation>
 <translation id="5036013147560568855">Versión del protocolo de provisión de certificados. La configuración predeterminada es 1. 1 es el protocolo "estático". 2 es el protocolo "dinámico".</translation>
 <translation id="5036559232677914717">Si estableces la política, podrás especificar el comportamiento del sistema al iniciar el navegador. Si desactivas esta configuración, equivale a no establecerla, dado que debe especificarse el comportamiento de <ph name="PRODUCT_NAME" /> al iniciarse.
 
@@ -8955,6 +8969,7 @@ del servidor TLS.
 
 El valor de la política es una lista de certificados X.509 codificados en base64. Cualquier
 certificado con una SPKI (SubjectPublicKeyInfo) que coincida no será de confianza.</translation>
+<translation id="7174997120839381414">Habilitar el aprovisionamiento de certificados de cliente para los navegadores</translation>
 <translation id="717630378807352957">Permite todas las impresoras del archivo de configuración.</translation>
 <translation id="7177293255621000064">Si estableces la política como verdadera, no estará disponible en el navegador de archivos ningún tipo de medios de almacenamiento (unidades de memoria flash USB, discos duros externos, tarjetas de memoria SD y de otros tipos, almacenamiento óptico, etc.). Si estableces la política como falsa o no la estableces, los usuarios podrán usar el almacenamiento externo en su dispositivo.
 
@@ -9433,6 +9448,7 @@ Si dejas la política vacía, no se permitirán excepciones a <ph name="FLOATING
       Si inhabilitas la política, se inhabilitará la conversión de unidades de Respuestas rápidas.</translation>
 <translation id="7584363090329234690">Permitir Generative AI VC Background sin mejorar los modelos de IA</translation>
 <translation id="7585312329612243723">Habilitar el flujo de certificación de <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para una lista de las URLs en los navegadores administrados</translation>
+<translation id="7586199729147257934">Habilita el aprovisionamiento de certificados de cliente para navegadores administrados</translation>
 <translation id="7587345076013230465">Notificar al usuario que debe seleccionar el certificado de cliente cada vez que la política de selección automática coincida con varios certificados en la pantalla de acceso</translation>
 <translation id="7587921466180902617">Habilitar la prueba interna de Screencast para los usuarios de Family Link</translation>
 <translation id="7595074040612182185">Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que pueden mostrar imágenes.
@@ -10528,6 +10544,9 @@ Los certificados deben estar codificados en base64.</translation>
 <translation id="8399825694820904218">Si asignas un número a la política, <ph name="PRODUCT_NAME" /> mostrará un mensaje durante esa cantidad de milisegundos y, luego, abrirá un navegador alternativo.
 
 Si no estableces la política o la estableces con el valor "0", la navegación a una URL desginada la abrirá de inmediato en un navegador alternativo.</translation>
+<translation id="8400225642589806131">Si estableces esta política como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" /> (valor 1), <ph name="PRODUCT_NAME" /> solicitará un certificado de cliente del servidor de administración de dispositivos para una sesión de navegador administrada. Este certificado estará disponible, p. ej., para conexiones mTLS.
+
+Si estableces esta política como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (valor 0) o no la estableces, <ph name="PRODUCT_NAME" /> no podrá solicitar el certificado de cliente. Si ya se aprovisionó el certificado de cliente administrado de un navegador debido a que esta política ya estaba habilitada, no se borrará, pero no estará disponible para las conexiones mTLS y no se renovará cuando venza.</translation>
 <translation id="8402079500086185021">Abrir siempre archivos PDF de forma externa</translation>
 <translation id="8402357110539568621">Habilita la función de accesibilidad del teclado virtual.
 

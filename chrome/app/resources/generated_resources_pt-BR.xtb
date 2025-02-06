@@ -718,6 +718,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1486486872607808064">Leia este QR code com uma câmera no dispositivo em que você quer criar uma chave de acesso para <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Crie um rascunho ou refine um trabalho.</translation>
 <translation id="1487335504823219454">Sincronização ativada - configurações personalizadas</translation>
+<translation id="1489101155914355052">Gerando sugestões para este documento…</translation>
 <translation id="1493892686965953381">Aguardando <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Os sites podem pedir para usar as fontes instaladas no dispositivo</translation>
 <translation id="1494429729245089920">A máquina virtual "<ph name="VM_NAME" />" existe, mas não parece ser válida para o app <ph name="APP_NAME" />. Entre em contato com o administrador.</translation>
@@ -2930,6 +2931,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3013652227108802944">Desativada • A extensão viola a política da Chrome Web Store</translation>
 <translation id="301525898020410885">O idioma foi definido pela organização</translation>
 <translation id="3015639418649705390">Reiniciar agora</translation>
+<translation id="3015651504578568463">Adicionar guia a nova tabela de comparação</translation>
 <translation id="3016381065346027039">Nenhuma entrada de registro</translation>
 <translation id="3019023222666709803">Ferramenta de seta</translation>
 <translation id="3019285239893817657">Botão de subpágina</translation>
@@ -4746,6 +4748,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Alternar</translation>
 <translation id="4306119971288449206">Os apps precisam ser veiculados com o tipo de conteúdo "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4306810703452026910">O Chrome não vai mais marcar as notificações desse site como spam</translation>
 <translation id="4307992518367153382">Básicas</translation>
 <translation id="4309165024397827958">Permita que apps e serviços do Android com permissão de localização usem o local do dispositivo. O Google pode coletar dados de local periodicamente e os usar de forma anônima para melhorar a precisão de local e os serviços com base em localização.</translation>
 <translation id="4309183709806093061">Compartilhar também o áudio do sistema. Este dispositivo vai ser silenciado para evitar feedback.</translation>
@@ -5656,6 +5659,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Transmitir tela</translation>
 <translation id="496185450405387901">Este app foi instalado pelo seu administrador.</translation>
+<translation id="4963079328730030450">Sua organização controla como os dados coletados por esses recursos podem ser usados.</translation>
 <translation id="4963603093937263654">As notificações precisam estar ativadas no <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Remover guia atual</translation>
 <translation id="4964455510556214366">Organização</translation>
@@ -5690,6 +5694,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4989966318180235467">Inspecionar página de &amp;fundo</translation>
 <translation id="4990673372047946816">Nenhuma câmera disponível</translation>
 <translation id="4991420928586866460">Tratar teclas de linha superior como teclas de função</translation>
+<translation id="4991873517942703737">Perguntar sobre este documento</translation>
 <translation id="4992443049233195791">Configurações de arquivo do Microsoft 365</translation>
 <translation id="4992458225095111526">Confirmar powerwash</translation>
 <translation id="4992473555164495036">O administrador limitou os métodos de entrada disponíveis.</translation>
@@ -6180,6 +6185,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="535123479159372765">Texto copiado de outro dispositivo</translation>
 <translation id="5352033265844765294">Carimbo de data/hora</translation>
 <translation id="5352257124367865087">Gerenciar permissões de sites</translation>
+<translation id="5352535894553509810">Adicionar guia a nova tabela de comparação</translation>
 <translation id="5353252989841766347">Exportar senhas do Chrome</translation>
 <translation id="5353769147530541973">Remover <ph name="SITE_NAME" /> da lista de guias para deixar o site inativo</translation>
 <translation id="5355099869024327351">Permitir que o Assistente mostre notificações</translation>
@@ -8042,6 +8048,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6713233729292711163">Adicionar perfil de trabalho</translation>
 <translation id="6713441551032149301">Segure a tecla de acesso rápido para alternar entre as teclas de função e as da linha de cima do sistema</translation>
 <translation id="6713668088933662563">Nunca oferecer a opção de traduzir estes idiomas</translation>
+<translation id="6714871567554212732">Veja mais detalhes sobre <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Os sites não podem usar seu microfone</translation>
 <translation id="6715803357256707211">Ocorreu um erro durante a instalação do aplicativo Linux. Clique na notificação para ver mais detalhes.</translation>
 <translation id="6716049856796700977">Nada pode usar seu local. No entanto, seu local ainda poderá ficar visível para apps e sites usando seu endereço IP. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -8459,6 +8466,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7001036685275644873">Fazendo backup dos apps e arquivos do Linux</translation>
 <translation id="7001066449188684145">A identificação é necessária para imprimir com a <ph name="PRINTER_NAME" />. Entre em contato com o administrador.</translation>
 <translation id="7001397294201412227">Usar um smartphone, tablet ou chave de segurança</translation>
+<translation id="7001556399332161712">Pesquisa e sugestões</translation>
 <translation id="7003339318920871147">Bancos de dados da web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} arquivo}one{{COUNT} arquivo}other{{COUNT} arquivos}}</translation>
 <translation id="7003644704445046755">O download dos arquivos de voz em <ph name="LANGUAGE" /> de alta qualidade foi concluído</translation>
@@ -9923,6 +9931,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> não está respondendo.</translation>
 <translation id="8044899503464538266">Lento</translation>
 <translation id="8045253504249021590">A sincronização foi interrompida por meio do Painel do Google.</translation>
+<translation id="8045752459073395242">Saiba mais sobre como usar a IA generativa no trabalho</translation>
 <translation id="8045923671629973368">Informe o ID do aplicativo ou o URL da loja on-line</translation>
 <translation id="804786196054284061">Contrato de licença do usuário final</translation>
 <translation id="8048596485169033655">Baixando os arquivos de anotações do nó principal… <ph name="PERCENT" />%</translation>
@@ -10800,7 +10809,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="867329473311423817">Com permissão para gerenciar janelas em todas as suas telas</translation>
 <translation id="8673383193459449849">Problema no servidor</translation>
 <translation id="8674903726754070732">Infelizmente, seu computador está configurado com um ID de hardware mal formado. Isso impede que o ChromeOS seja atualizado com as correções de segurança mais recentes e, por isso, ele <ph name="BEGIN_BOLD" />pode ficar vulnerável a ataques maliciosos<ph name="END_BOLD" />.</translation>
-<translation id="8675657007450883866">Os sites usam esse recurso para entrar no modo de tela cheia automaticamente. Normalmente, entrar no modo de tela cheia exige interação do usuário.</translation>
+<translation id="8675657007450883866">Com esse recurso, os sites entram no modo de tela cheia automaticamente. Normalmente, entrar nesse modo exige interação do usuário.</translation>
 <translation id="8675704450909805533">O instalador não encontrou um destino válido para instalar o <ph name="DEVICE_OS" />.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Vídeo}one{# vídeo}other{# vídeos}}</translation>
 <translation id="8676276370198826499">Inscreva-se no <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

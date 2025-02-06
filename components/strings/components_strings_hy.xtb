@@ -1240,6 +1240,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> կայքն ուզում է ձեր սարքում մեծ ծավալով տվյալներ մշտապես պահել</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> տպիչ <ph name="SERVER_NAME" />֊ում</translation>
 <translation id="3197136577151645743">Կարող է հայցել թույլտվություն՝ տեղեկանալու, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը</translation>
+<translation id="3201482403106004262">Հարցման հետ կապված սխալ առաջացավ</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Համաժամացվող տեղեկությունները Chrome-ի կարգավորումներում կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="3203025201812691413">URL-ը չի կարող դատարկ լինել</translation>
 <translation id="320323717674993345">Չեղարկել վճարումը</translation>
@@ -2354,6 +2355,7 @@
 <translation id="5138227688689900538">Ցույց տալ ավելի քիչ</translation>
 <translation id="5143309888746105072">Chromium-ն արգելում է կայքերին օգտագործել երրորդ կողմի քուքիներ՝ ձեր գործողությունները դիտարկիչում հետագծելու համար։
             <ph name="NEW_LINE" />Եթե կայքի գործառույթները չեն աշխատում, <ph name="START_LINK" />փորձեք ժամանակավորապես թույլատրել երրորդ կողմի քուքիները<ph name="END_LINK" />։</translation>
+<translation id="5144613843429436866">Դուք տրամադրել եք <ph name="PERMISSION" />ի օգտագործման թույտվություն այս կայքի համար</translation>
 <translation id="5145883236150621069">Քաղաքականությունն ստուգելիս սխալի կոդ է վերադարձվել</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> կայքի ծանուցումներն արգելափակված են</translation>
 <translation id="514704532284964975">Կայքին (<ph name="URL" />) անհրաժեշտ է տեսնել և փոփոխել տեղեկությունները NFC սարքերում, որոնց հպում եք ձեր հեռախոսով</translation>
@@ -4411,6 +4413,7 @@
 <translation id="8792621596287649091">Հնարավոր է՝ չկարողանաք օգտագործել <ph name="ORG_NAME" /> հաշիվը, կամ ինչ-որ մեկը կարող է հափշտակել ձեր անձնական տվյալները։ Խորհուրդ ենք տալիս փոխել գաղտնաբառը։</translation>
 <translation id="8792626944327216835">խոսափող</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> կայքը միացրել է Chrome Enterprise Connectors-ը ձեր դիտարկիչում։ Այս միակցիչներին հասանելի են ձեզ պատկանող որոշ տվյալներ։</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" />-ի կարգավորումներ</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
 <translation id="8800034312320686233">Կայքը չի՞ աշխատում</translation>
 <translation id="8805819170075074995">«<ph name="LANGUAGE_ID" />» ցանկի տարր․ անտեսված է, քանի որ այն արդեն ներառված է SpellcheckLanguage կանոնում։</translation>
@@ -4630,6 +4633,7 @@
 <translation id="9192361865877479444">Մետաղ (անփայլ)</translation>
 <translation id="9192947025498305328">Էկոլոգիապես մաքուր կոսմետիկա</translation>
 <translation id="9199905725844810519">Տպումն արգելափակված է</translation>
+<translation id="9201904868909900493">Հարցումը բացվում է…</translation>
 <translation id="9204089334327209740">Երբ վերբեռնումն ավարտվի, դուք կարող եք փոփոխել ձեր ֆայլերը <ph name="CLOUD_PROVIDER" />-ում։ Լոկալ պահոցը, այդ թվում՝ աղբարկղի ֆայլերը, ավտոմատ կհեռացվեն։</translation>
 <translation id="9205078245616868884">Ձեր տվյալները գաղտնագրվել են ձեր համաժամացման անցաբառով: Համաժամացման համար մուտքագրեք անցաբառը:</translation>
 <translation id="920643408853370361">Ճանապարհորդական ապահովագրություն</translation>

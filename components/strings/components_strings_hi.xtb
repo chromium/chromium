@@ -2348,6 +2348,7 @@
 <translation id="5138227688689900538">कम दिखाएं</translation>
 <translation id="5143309888746105072">Chromium, साइटों को तीसरे पक्ष की कुकी इस्तेमाल करने से रोकता है, ताकि वे आपको ब्राउज़ करते समय ट्रैक न कर सकें.
             <ph name="NEW_LINE" />अगर साइट की सुविधाएं काम नहीं कर रही हैं, तो <ph name="START_LINK" />तीसरे पक्ष की कुकी को कुछ समय के लिए अनुमति देकर देखें<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">आपने इस साइट के लिए, <ph name="PERMISSION" /> इस्तेमाल करने की अनुमति दी है</translation>
 <translation id="5145883236150621069">नीति प्रतिसाद में गड़बड़ी कोड मौजूद है</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> के लिए सूचनाओं को ब्लॉक किया गया है</translation>
 <translation id="514704532284964975"><ph name="URL" /> को इस बात की अनुमति चाहिए कि जब आप अपने फ़ोन से एनएफ़सी की सुविधा वाले डिवाइसों पर टैप करें, तब वह उन पर मौजूद जानकारी देख सके और उसमें बदलाव कर सके.</translation>
@@ -2376,7 +2377,7 @@
 <translation id="519422657042045905">व्याख्या की सुविधा उपलब्ध नहीं है</translation>
 <translation id="5200063972779787617">खाते में पता सेव करें</translation>
 <translation id="5201306358585911203">इस पेज पर एम्बेड किए गए पेज का कहना है कि</translation>
-<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, उपलब्ध कार्रवाइयों को ब्राउज़ करने के लिए Tab दबाएं. इसके बाद, चुनी गई कार्रवाई करने के लिए, Enter दबाएं.</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, उपलब्ध कार्रवाइयों में से किसी को चुनने के लिए Tab दबाएं. इसके बाद, चुनी गई कार्रवाई करने के लिए, Enter दबाएं.</translation>
 <translation id="5205222826937269299">नाम ज़रूरी है</translation>
 <translation id="5206392433295093945">बेडरूम</translation>
 <translation id="5209670883520018268">ट्रे 20</translation>
@@ -4405,6 +4406,7 @@
 <translation id="8792621596287649091">आपके <ph name="ORG_NAME" /> खाते का एक्सेस खो सकता है या आपकी पहचान चोरी हो सकती है. क्रोमियम आपको अभी अपना पासवर्ड बदलने का सुझाव देता है.</translation>
 <translation id="8792626944327216835">माइक्रोफ़ोन</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ने आपके ब्राउज़र पर Chrome Enterprise Connectors चालू कर दिया है. इस सेटिंग की मदद से आपके कुछ डेटा को ऐक्सेस किया जा सकता है.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> की सेटिंग</translation>
 <translation id="8798099450830957504">डिफ़ॉल्ट</translation>
 <translation id="8800034312320686233">साइट काम नहीं कर रही है?</translation>
 <translation id="8805819170075074995">सूची एंट्री "<ph name="LANGUAGE_ID" />": एंट्री को अनदेखा किया गया क्योंकि इसे SpellcheckLanguage नीति में भी शामिल किया गया है.</translation>

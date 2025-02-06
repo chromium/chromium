@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" />টি ট্যাব, গ্রুপ করা হয়েছে</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব}}</translation>
+<translation id="1909810060368225529">বিজ্ঞপ্তি: এই শেয়ার করা ট্যাব গ্রুপে করা পরিবর্তন সবাই দেখতে পাবেন। আপনার শেয়ার করা ট্যাব গ্রুপে প্রত্যেকে পরিবর্তন করতে পারবেন</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি বেছে নেওয়া ট্যাব বুকমার্ক করুন}one{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া ট্যাব বুকমার্ক করুন}other{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া ট্যাব বুকমার্ক করুন}}</translation>
 <translation id="2118649612461486615">স্টোর সংক্রান্ত তথ্য</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{আপনার বন্ধ করে দেওয়া ট্যাব ও গ্রুপ, 'সাম্প্রতিক' ট্যাব ও ট্যাব গ্রুপ বিভাগ থেকে আবার খোলা যাবে। আপনার 'ছদ্মবেশী' ট্যাবের সুবিধা উপলভ্য হবে না।}one{আপনার বন্ধ করে দেওয়া ট্যাব ও গ্রুপ, 'সাম্প্রতিক' ট্যাব ও ট্যাব গ্রুপ বিভাগ থেকে আবার খোলা যাবে। আপনার #টি 'ছদ্মবেশী' ট্যাবের সুবিধা উপলভ্য হবে না।}other{আপনার বন্ধ করে দেওয়া ট্যাব ও গ্রুপ, 'সাম্প্রতিক' ট্যাব ও ট্যাব গ্রুপ বিভাগ থেকে আবার খোলা যাবে। আপনার #টি 'ছদ্মবেশী' ট্যাবের সুবিধা উপলভ্য হবে না।}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">আপনার ট্যাব গ্রুপ এখানে দেখতে পাবেন</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{বেছে নেওয়া <ph name="TABS_COUNT_ONE" />টি ট্যাব আনগ্রুপ করুন}one{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব আনগ্রুপ করুন}other{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব আনগ্রুপ করুন}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব}}</translation>
+<translation id="6499296376514955580">শেয়ার করা ট্যাব গ্রুপে করা পরিবর্তন সম্পর্কে বিজ্ঞপ্তি বন্ধ আছে</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{১ দিন পরে}one{<ph name="DAY_COUNT_MANY" /> দিন পরে}other{<ph name="DAY_COUNT_MANY" /> দিন পরে}}</translation>
 <translation id="6549021453810473782">স্টোর সংক্রান্ত তথ্য দেখুন</translation>
 <translation id="6557858706263317126">আরও <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">বাঁদিকে ট্যাব সরান</translation>
+<translation id="6589356853295569750">শেয়ার করা ট্যাব গ্রুপে করা পরিবর্তন সম্পর্কে বিজ্ঞপ্তি সম্পূর্ণ স্ক্রিন জুড়ে দেখানো হচ্ছে</translation>
 <translation id="6590332670428149473"><ph name="COLOR_NAME" /> রঙের ট্যাব গ্রুপ <ph name="TITLE_OF_GROUP" />-এর জন্য শেয়ার করা ট্যাব গ্রুপের অ্যাকশন মেনু খুলুন।</translation>
 <translation id="6615455863669487791">আমাকে দেখান</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" />টি ট্যাব পরিবর্তন করা হয়েছে}one{<ph name="MANY_CHANGED" />টি ট্যাব পরিবর্তন করা হয়েছে}other{<ph name="MANY_CHANGED" />টি ট্যাব পরিবর্তন করা হয়েছে}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{বেছে নেওয়া <ph name="TABS_COUNT_ONE" />টি ট্যাব শেয়ার করুন}one{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব শেয়ার করুন}other{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব শেয়ার করুন}}</translation>
 <translation id="7773714564112603605">ট্যাব সরান ও গ্রুপ মুছে দিন</translation>
 <translation id="7792771145871471484">সাজেশন পর্যালোচনা করুন।</translation>
+<translation id="7792860826279960128">শেয়ার করা ট্যাব গ্রুপে করা পরিবর্তন সম্পর্কে বিজ্ঞপ্তি অর্ধেক স্ক্রিন জুড়ে দেখানো হচ্ছে</translation>
 <translation id="7825973332242257878">ট্যাব গ্রুপ</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{বেছে নেওয়া <ph name="TABS_COUNT_ONE" />টি ট্যাব গ্রুপ করুন}one{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব গ্রুপ করুন}other{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব গ্রুপ করুন}}</translation>
 <translation id="7853202427316060426">ক্রিয়াকলাপ</translation>

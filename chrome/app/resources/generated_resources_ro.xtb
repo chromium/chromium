@@ -4734,6 +4734,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4305402730127028764">Copiază pe <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Comută</translation>
 <translation id="4306119971288449206">Aplicațiile trebuie să fie difuzate utilizând antetul content-type „<ph name="CONTENT_TYPE" />”</translation>
+<translation id="4306810703452026910">Chrome nu va mai semnala notificările de la acest site ca spam</translation>
 <translation id="4307992518367153382">Elemente de bază</translation>
 <translation id="4309165024397827958">Permite ca serviciile și aplicațiile pentru Android cu permisiune pentru locație să folosească locația dispozitivului. Google poate să culeagă periodic date despre locație și să le folosească în mod anonim pentru a îmbunătăți precizia localizării și a serviciilor bazate pe locație.</translation>
 <translation id="4309183709806093061">Permite accesul și la conținutul audio de pe sistem. Sunetul dispozitivului va fi dezactivat pentru a evita feedbackul audio.</translation>
@@ -8030,6 +8031,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6713233729292711163">Adaugă un profil de serviciu</translation>
 <translation id="6713441551032149301">Ține apăsată tasta lansator pentru a comuta între tastele de funcții și tastele de sistem de pe rândul de sus</translation>
 <translation id="6713668088933662563">Nu oferi niciodată traducerea acestor limbi</translation>
+<translation id="6714871567554212732">Vezi mai multe detalii despre <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Site-urile nu au permisiunea de a folosi microfonul</translation>
 <translation id="6715803357256707211">A apărut o eroare în timpul instalării aplicației Linux. Dă clic pe notificare pentru detalii.</translation>
 <translation id="6716049856796700977">Nimic nu îți poate folosi locația. Cu toate acestea, locația poate fi vizibilă pentru aplicații și site-uri prin adresa IP. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>

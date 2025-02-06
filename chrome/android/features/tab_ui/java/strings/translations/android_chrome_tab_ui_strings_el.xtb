@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Μάθετε περισσότερα<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Ομαδοποιήθηκε <ph name="TABS_COUNT_ONE" /> καρτέλα</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> καρτέλα}other{<ph name="TABS_COUNT_MANY" /> καρτέλες}}</translation>
+<translation id="1909810060368225529">Σημείωση: Οι αλλαγές σε αυτή την κοινόχρηστη ομάδα καρτελών είναι ορατές σε όλους. Όλοι μπορούν να κάνουν αλλαγές στις κοινόχρηστες ομάδες καρτελών</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Δημιουργία σελιδοδείκτη για <ph name="TABS_COUNT_ONE" /> επιλεγμένη καρτέλα}other{Δημιουργία σελιδοδείκτη για <ph name="TABS_COUNT_MANY" /> επιλεγμένες καρτέλες}}</translation>
 <translation id="2118649612461486615">Πληροφορίες καταστήματος</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Μπορείτε να ανοίξετε ξανά τις καρτέλες και τις ομάδες που κλείσατε από την ενότητα Πρόσφατες καρτέλες και την ενότητα Ομάδες καρτελών. Η καρτέλα ανώνυμης περιήγησης δεν θα είναι διαθέσιμη.}other{Μπορείτε να ανοίξετε ξανά τις καρτέλες και τις ομάδες που κλείσατε από την ενότητα Πρόσφατες καρτέλες και την ενότητα Ομάδες καρτελών. Οι # καρτέλες ανώνυμης περιήγησης δεν θα είναι διαθέσιμες.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">Εδώ θα βρείτε τις ομάδες καρτελών</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Κατάργηση ομαδοποίησης <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κατάργηση ομαδοποίησης <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> καρτέλα}other{<ph name="TABS_COUNT_MANY" /> καρτέλες}}</translation>
+<translation id="6499296376514955580">Η ειδοποίηση σχετικά με τις αλλαγές στην κοινόχρηστη ομάδα καρτελών έκλεισε</translation>
 <translation id="6527303717912515753">Κοινοποίηση</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Μετά από μία ημέρα}other{Μετά από <ph name="DAY_COUNT_MANY" /> ημέρες}}</translation>
 <translation id="6549021453810473782">Προβολή πληροφοριών καταστήματος</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Μετακίνηση καρτέλας αριστερά</translation>
+<translation id="6589356853295569750">Η ειδοποίηση σχετικά με τις αλλαγές στην κοινόχρηστη ομάδα καρτελών άνοιξε σε πλήρες ύψος</translation>
 <translation id="6590332670428149473">Άνοιγμα του μενού ενεργειών ομάδας καρτελών για την κοινόχρηστη ομάδα καρτελών <ph name="TITLE_OF_GROUP" />, με χρώμα <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Εμφάνιση</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Άλλαξε <ph name="ONE_CHANGED" /> καρτέλα}other{Άλλαξαν <ph name="MANY_CHANGED" /> καρτέλες}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Κοινοποίηση <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κοινοποίηση <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="7773714564112603605">Κατάργηση καρτέλας και διαγραφή ομάδας</translation>
 <translation id="7792771145871471484">Έλεγχος των προτάσεων.</translation>
+<translation id="7792860826279960128">Ειδοποίηση σχετικά με τις αλλαγές στην κοινόχρηστη ομάδα καρτελών στο μισό ύψος</translation>
 <translation id="7825973332242257878">Ομάδες καρτελών</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Ομαδοποίηση <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Ομαδοποίηση <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="7853202427316060426">Δραστηριότητα</translation>

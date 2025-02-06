@@ -716,6 +716,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1486486872607808064">Escanea este código QR coa cámara do dispositivo no que queiras crear unha clave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Crea borradores ou púe o traballo que xa teñas feito.</translation>
 <translation id="1487335504823219454">Activado: configuración personalizada</translation>
+<translation id="1489101155914355052">Xerando suxestións para este documento…</translation>
 <translation id="1493892686965953381">Agardando por <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Os sitios poden pedirche permiso para utilizar os tipos de letra instalados no dispositivo</translation>
 <translation id="1494429729245089920">A máquina virtual <ph name="VM_NAME" /> existe, pero parece que non é unha máquina virtual válida de <ph name="APP_NAME" />. Fala coa persoa administradora.</translation>
@@ -783,6 +784,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1542524755306892917">Esta opción permite que o Asistente de Google forneza respostas adaptadas cando <ph name="SUPERVISED_USER_NAME" /> lle faga preguntas.</translation>
 <translation id="1543284117603151572">Importados de Edge</translation>
 <translation id="1543538514740974167">Accede aquí máis rápido</translation>
+<translation id="154420222899071768">Non se actualizou o teu contrasinal, pero deberías poder seguindo acceder ao sitio co contrasinal antigo</translation>
 <translation id="1544588554445317666">Proba a poñerlle ao ficheiro un nome máis curto ou a gardalo nun cartafol distinto</translation>
 <translation id="1545177026077493356">Modo de quiosco automático</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
@@ -1936,6 +1938,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2328561734797404498">Reinicia o teu dispositivo para utilizar <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Estás no modo de incógnito, os sitios só poden utilizar as cookies para consultar a actividade de navegación que levaches a cabo no seu propio sitio. As cookies elimínanse ao final da sesión do modo mencionado.</translation>
 <translation id="2329597144923131178">Inicia sesión para ter os marcadores, o historial, os contrasinais e o resto da túa configuración en todos os teus dispositivos.</translation>
+<translation id="2331334586452217517">O contido deste sitio enviarase a Google e poderá someterse a un proceso de revisión por parte do noso equipo. Acerca de <ph name="PASSWORD_CHANGE" />.</translation>
 <translation id="2332115969598251205">Non se puideron cargar os dispositivos gardados en <ph name="PRIMARY_EMAIL" />. Comproba a conexión a Internet e téntao de novo.</translation>
 <translation id="2332131598580221120">Ver na tenda</translation>
 <translation id="2332515770639153015">Está activada a función Navegación segura mellorada</translation>
@@ -2914,6 +2917,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3013652227108802944">Desactivada • Esta extensión infrinxe a política de Chrome Web Store</translation>
 <translation id="301525898020410885">A túa organización define o idioma</translation>
 <translation id="3015639418649705390">Reiniciar agora</translation>
+<translation id="3015651504578568463">Engadir pestana á nova táboa comparativa</translation>
 <translation id="3016381065346027039">O rexistro está baleiro</translation>
 <translation id="3019023222666709803">Ferramenta de frechas</translation>
 <translation id="3019285239893817657">Botón de subpáxina</translation>
@@ -3831,6 +3835,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="369489984217678710">Contrasinais e outros datos de inicio de sesión</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Xa se realizaron as comprobacións de seguranza. Agora cargaranse os teus datos.}=1{Xa se realizaron as comprobacións de seguranza. Agora cargarase o teu ficheiro.}other{Xa se realizaron as comprobacións de seguranza. Agora cargaranse os teus ficheiros.}}</translation>
 <translation id="3695339288331169103">De <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
+<translation id="3696309329332791122">Comprobar o contrasinal</translation>
 <translation id="369736917241079046">menú de aplicacións + frecha esquerda</translation>
 <translation id="3697716475445175867">última apertura</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Podes evitar que este sitio envíe notificacións no futuro.}other{Podes evitar que estes sitios envíen notificacións no futuro.}}</translation>
@@ -5043,6 +5048,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4540409690203718935">Non se puido acceder ao xestor de contrasinais de Google. Téntao de novo dentro duns minutos</translation>
 <translation id="4540780316273593836">Produciuse un erro</translation>
 <translation id="4541123282641193691">Non se puido verificar a túa conta. Téntao de novo ou reinicia o Chromebook.</translation>
+<translation id="4541396589393395475">A túa organización desactivou esta función</translation>
 <translation id="4541505619120536051">Abrir sempre</translation>
 <translation id="4541662893742891060">Non se puido establecer conexión con este perfil. Para obter asistencia técnica, ponte en contacto co teu operador.</translation>
 <translation id="4541706525461326392">Quitando perfil. Esta acción pode tardar uns minutos.</translation>
@@ -5640,6 +5646,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />, <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Enviar pantalla</translation>
 <translation id="496185450405387901">O teu administrador instalou esta aplicación.</translation>
+<translation id="4963079328730030450">A túa organización controla como se poden usar os datos recompilados por estas funcións.</translation>
 <translation id="4963603093937263654">Asegúrate de ter as notificacións activadas no dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="4963789650715167449">Quitar pestana actual</translation>
 <translation id="4964455510556214366">Disposición</translation>
@@ -5674,6 +5681,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4989966318180235467">Inspeccionar &amp;páxina en segundo plano</translation>
 <translation id="4990673372047946816">Non hai ningunha cámara dispoñible</translation>
 <translation id="4991420928586866460">Tratar as teclas da fila superior como teclas de función</translation>
+<translation id="4991873517942703737">Fai unha pregunta sobre este documento</translation>
 <translation id="4992443049233195791">Configuración dos ficheiros de Microsoft 365</translation>
 <translation id="4992458225095111526">Confirmar powerwash</translation>
 <translation id="4992473555164495036">O administrador limitou os métodos de introdución de texto dispoñibles.</translation>
@@ -6018,6 +6026,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
     Visible como <ph name="DEVICE_TYPE" />…</translation>
 <translation id="523862956770478816">Permisos de sitios</translation>
 <translation id="5240931875940563122">Iniciar sesión cun teléfono Android</translation>
+<translation id="5241689948221696942">No caso dalgúns produtos, as táboas comparativas resumen recensións da Web</translation>
 <translation id="5242724311594467048">Queres activar <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5243522832766285132">Téntao de novo nuns minutos</translation>
 <translation id="5244234799035360187">OneDrive agora mostrarase na aplicación Ficheiros</translation>
@@ -6163,6 +6172,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="535123479159372765">Copiouse o texto desde outro dispositivo</translation>
 <translation id="5352033265844765294">Marca de tempo</translation>
 <translation id="5352257124367865087">Xestionar permisos dos sitios</translation>
+<translation id="5352535894553509810">Engadir pestana á nova táboa comparativa</translation>
 <translation id="5353252989841766347">Exportar contrasinais de Chrome</translation>
 <translation id="5353769147530541973">Quitar <ph name="SITE_NAME" /> da lista de pestanas para desactivala</translation>
 <translation id="5355099869024327351">Permite que o Asistente che mostre notificacións</translation>
@@ -7565,6 +7575,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6383382161803538830">O modo de lectura non se pode usar nesta páxina</translation>
 <translation id="638418309848716977">Ligazóns compatibles</translation>
 <translation id="6384275966486438344">Cambiar a túa configuración de busca a: <ph name="SEARCH_HOST" /></translation>
+<translation id="6384512202164833048">{NUM_GROUPS,plural, =1{Mantén este grupo para engadir pestanas máis adiante ou elimínao se xa non o necesitas.}other{Mantén estes grupos para engadir pestanas máis adiante ou elimínaos se xa non os necesitas.}}</translation>
 <translation id="6385149369087767061">Conéctate a Internet e téntao de novo</translation>
 <translation id="6385382178401976503">Tarxeta: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Advertencia: O rexistro detallado está activado. É posible que entre os rexistros seguintes se inclúan URL ou outra información confidencial. Revisa a información e asegúrate de que queres enviala.</translation>
@@ -8435,6 +8446,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7001036685275644873">Creando copia de seguranza das aplicacións e dos ficheiros de Linux</translation>
 <translation id="7001066449188684145">É necesario identificarse para enviar documentos á impresora <ph name="PRINTER_NAME" />. Ponte en contacto co teu administrador.</translation>
 <translation id="7001397294201412227">Usar un teléfono, tableta ou chave de seguranza</translation>
+<translation id="7001556399332161712">Busca e suxestións</translation>
 <translation id="7003339318920871147">Bases de datos web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ficheiro}other{{COUNT} ficheiros}}</translation>
 <translation id="7003644704445046755">Descargáronse os ficheiros de voz de alta calidade en <ph name="LANGUAGE" /></translation>
@@ -9178,6 +9190,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7552846755917812628">Proba os seguintes consellos:</translation>
 <translation id="7553012839257224005">Comprobando contedor de Linux</translation>
 <translation id="7553242001898162573">Introduce o teu contrasinal</translation>
+<translation id="7554342082838376298">Cambio de contrasinal automatizado</translation>
 <translation id="755472745191515939">O teu administrador non admite este idioma</translation>
 <translation id="7554791636758816595">Nova pestana</translation>
 <translation id="7556033326131260574">Smart Lock non puido verificar a túa conta. Escribe o teu contrasinal para acceder.</translation>
@@ -9896,6 +9909,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8044262338717486897">A aplicación <ph name="LINUX_APP_NAME" /> non responde.</translation>
 <translation id="8044899503464538266">Lento</translation>
 <translation id="8045253504249021590">Detívose a sincronización a través do Panel de control de Google.</translation>
+<translation id="8045752459073395242">Máis información sobre o uso da IA xenerativa no traballo</translation>
 <translation id="8045923671629973368">Introduce o código da aplicación ou o URL de almacenamento web.</translation>
 <translation id="804786196054284061">Contrato de licenza de usuario final</translation>
 <translation id="8048596485169033655">Descargando ficheiros de anotación do nó principal… <ph name="PERCENT" /> %</translation>

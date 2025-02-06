@@ -5661,6 +5661,7 @@ Esta política só é eficaz quando a máquina está registrada na <ph name="CLO
 <translation id="5030415914668947893">Permitir a coleta de métricas inseridas no URL</translation>
 <translation id="5033070732967197381">Permitir solicitações da API WebAuthn em sites com certificados TLS corrompidos.</translation>
 <translation id="5034504101537897433">Ativar relatórios de erros do dispositivo</translation>
+<translation id="5035980227219807711">Desativar o provisionamento de certificados do cliente para navegadores</translation>
 <translation id="5036013147560568855">Versão do protocolo de provisionamento de certificado. O valor padrão é 1, que é o protocolo "estático". 2 é o protocolo "dinâmico".</translation>
 <translation id="5036559232677914717">A definição desta política permite especificar o comportamento do sistema na inicialização. Desativar essa configuração é o mesmo que não defini-la, já que o <ph name="PRODUCT_NAME" /> precisa ter um comportamento de inicialização especificado.
 
@@ -8953,6 +8954,7 @@ Desativar a política faz com que os usuários não possam ignorar o login autom
 
 O valor da política é uma lista de certificados X.509 codificados em base64. Os
 certificados com SPKI (SubjectPublicKeyInfo) correspondentes não serão considerados confiáveis.</translation>
+<translation id="7174997120839381414">Ativar o provisionamento de certificados do cliente para navegadores</translation>
 <translation id="717630378807352957">Permitir todas as impressoras do arquivo de configuração.</translation>
 <translation id="7177293255621000064">Definir a política como verdadeira torna todos os tipos de mídia de armazenamento externo (como pen drives, discos rígidos externos, cartões SD e outros cartões de memória, armazenamento óptico etc.) indisponíveis no navegador de arquivos. Definir a política como falsa ou deixá-la sem definição significa que os usuários podem usar o armazenamento externo no dispositivo.
 
@@ -9430,6 +9432,7 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
       Se a política for desativada, a conversão de unidades das Respostas rápidas ficará desativada.</translation>
 <translation id="7584363090329234690">Permitir o segundo plano de IA generativa para videochamadas sem melhorar os modelos de IA</translation>
 <translation id="7585312329612243723">Ativar o fluxo de atestado do <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs em navegadores gerenciados</translation>
+<translation id="7586199729147257934">Permite o provisionamento de certificados do cliente para navegadores gerenciados</translation>
 <translation id="7587345076013230465">Pedir para o usuário selecionar o certificado do cliente sempre que a política de seleção automática corresponder a vários certificados na tela de login</translation>
 <translation id="7587921466180902617">Ativar o dogfood do Screencast para usuários do Family Link</translation>
 <translation id="7595074040612182185">Se a política for definida, será possível criar uma lista de padrões de URL que especificam sites que podem mostrar imagens.
@@ -10511,6 +10514,9 @@ Os certificados precisam ser codificados em Base64.</translation>
 <translation id="8399825694820904218">Se a política for definida como um número, o <ph name="PRODUCT_NAME" /> vai mostrar uma mensagem de milésimos de segundo para o número e abrirá um navegador alternativo.
 
 Se ela não for definida ou for definida como "0", a navegação para um URL designado vai abri-lo imediatamente em um navegador alternativo.</translation>
+<translation id="8400225642589806131">Se a política for definida como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" /> (valor 1), o <ph name="PRODUCT_NAME" /> vai solicitar um certificado do cliente ao servidor do gerenciamento de dispositivos para uma sessão de navegador gerenciada. Esse certificado será disponibilizado para conexões mTLS, por exemplo.
+
+Se a política for definida como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (valor 0) ou deixada sem definição, o <ph name="PRODUCT_NAME" /> não vai solicitar o certificado do cliente. Esta política foi ativada anteriormente. Assim, se o certificado do cliente gerenciado de um navegador já tiver sido provisionado, ele não será excluído, mas não vai ficar disponível para conexões mTLS nem será renovado quando expirar.</translation>
 <translation id="8402079500086185021">Sempre abrir arquivos em PDF externamente</translation>
 <translation id="8402357110539568621">Ativar o recurso de acessibilidade do teclado virtual.
 

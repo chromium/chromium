@@ -23,6 +23,7 @@
 <translation id="1066060668811609597">Gestisci la sincronizzazione</translation>
 <translation id="1076421457278169141">Scansione del codice eseguita</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} scheda}other{{count} schede}}</translation>
+<translation id="1082554859195167538">Recensioni prodotto per te</translation>
 <translation id="1084365883616172403">Pubblicazione su Facebook completata.</translation>
 <translation id="1085677983426914530">Impossibile aprire <ph name="FILENAME" /></translation>
 <translation id="1086468407802688066">L'account <ph name="USER_EMAIL" /> è gestito da <ph name="HOSTED_DOMAIN" />, che può visualizzare alcune informazioni. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -342,6 +343,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2384692388811649784">Nascondi le schede di navigazione in incognito</translation>
 <translation id="2386793615875593361">Una selezionata</translation>
 <translation id="2390457533592708044">Nascondi "<ph name="MODULE_NAME" />"</translation>
+<translation id="2393230427496852974">Leggi cosa dicono le persone</translation>
 <translation id="2394659309569789395">Apri comunque il sito</translation>
 <translation id="2403129868389095715">Il pacco non può essere consegnato</translation>
 <translation id="2410754283952462441">Scegli un account</translation>
@@ -358,6 +360,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2468132863574325555">Drive</translation>
 <translation id="2468444275314013497">Il tuo browser è protetto</translation>
 <translation id="2473876017985765807">Hai già salvato una password per <ph name="WEBSITE" /></translation>
+<translation id="247430852844518481">Puoi impostare un promemoria per tornare a questa pagina più tardi</translation>
 <translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2482878487686419369">Notifiche</translation>
 <translation id="2484459871750294497">Come faccio ad attivare questa funzionalità?</translation>
@@ -453,6 +456,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2894757982205307093">Nuova scheda nel gruppo</translation>
 <translation id="2902312830803030883">Altre azioni</translation>
 <translation id="2905479111267140204">Hai <ph name="NUMBER_OF_PASSWORDS" /> password riutilizzate che potrebbero mettere a rischio la tua sicurezza.</translation>
+<translation id="29153882450867370">Nascondi "Monitora prezzo"</translation>
 <translation id="291754862089661335">Posiziona il codice a barre o QR all'interno di quest'area</translation>
 <translation id="2918688092312652908">Segna come da leggere</translation>
 <translation id="2920866371965792875">Per vedere aggiornamenti di questo sito, seguilo qui.</translation>
@@ -904,6 +908,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4989065233040279145">Scegli dove salvare <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Colore del gruppo di schede: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Copia password</translation>
+<translation id="5012914568031465281">Impossibile monitorare il prezzo.</translation>
 <translation id="5016420433031926653">Invia a <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Ultimi 15 minuti</translation>
 <translation id="5020732097997376541">Tocca l'icona di "Lens"</translation>
@@ -1666,8 +1671,10 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8211406090763984747">La connessione è sicura</translation>
 <translation id="8214293972734702249">Scheda bloccata: <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Visualizza versione offline in una nuova scheda</translation>
+<translation id="8221665793629393739">Il tuo promemoria per rivedere</translation>
 <translation id="8230355548492839438">Trova precedente</translation>
 <translation id="8232956427053453090">Conserva i dati</translation>
+<translation id="8238711781852526820">Nascondi "Monitoraggio del prezzo"</translation>
 <translation id="8258999165172757081">Aggiunto</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="82619448491672958">Vedi altre schede</translation>
@@ -1788,6 +1795,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8717864919010420084">Copia link</translation>
 <translation id="8722229818691036192">Account su questo dispositivo</translation>
 <translation id="8722649775263832315">Tocca o evidenzia per cercare qualsiasi cosa con Google Lens</translation>
+<translation id="8723088494871522141">Nascondi "Recensioni prodotto per te"</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8728922029615312208">Chiudi tutte</translation>
 <translation id="8730621377337864115">Fine</translation>

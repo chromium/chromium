@@ -4730,6 +4730,7 @@
 <translation id="4305402730127028764">複製到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="4305817255990598646">切換</translation>
 <translation id="4306119971288449206">應用程式的內容類型應設為「<ph name="CONTENT_TYPE" />」</translation>
+<translation id="4306810703452026910">Chrome 不會再將來自這個網站的通知標示為垃圾訊息</translation>
 <translation id="4307992518367153382">基本選項</translation>
 <translation id="4309165024397827958">允許具有位置存取權的 Android 應用程式和服務使用您裝置的位置資訊。Google 可能會定期蒐集位置資料，並以匿名方式使用這類資料，藉此提高定位精確度及改善適地性服務。</translation>
 <translation id="4309183709806093061">一併分享系統音訊。這部裝置將設為靜音，以避免音訊回授。</translation>
@@ -8020,6 +8021,7 @@
 <translation id="6713233729292711163">新增工作資料夾</translation>
 <translation id="6713441551032149301">按住啟動器按鍵可以切換功能鍵和系統最上排按鍵</translation>
 <translation id="6713668088933662563">一律不顯示翻譯以下語言的選項</translation>
+<translation id="6714871567554212732">查看「<ph name="GROUP_NAME" />」的詳細資訊</translation>
 <translation id="6715735940363172819">未授權網站使用麥克風</translation>
 <translation id="6715803357256707211">安裝 Linux 應用程式的過程中發生錯誤。如需詳細資料，請按一下通知。</translation>
 <translation id="6716049856796700977">所有應用程式、網站和系統服務都無法使用你的位置資訊。不過，應用程式和網站仍可透過 IP 位址取得你的位置資訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>

@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> टैब ग्रुप में शामिल किया गया</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
+<translation id="1909810060368225529">सूचना: शेयर किए गए इस टैब ग्रुप में किए जाने वाले बदलाव, सभी लोगों को दिखेंगे. आपके शेयर किए गए टैब ग्रुप में, सभी लोग बदलाव कर सकते हैं</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> टैब को बुकमार्क करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> टैब को बुकमार्क करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को बुकमार्क करें}}</translation>
 <translation id="2118649612461486615">स्टोर की जानकारी</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, गुप्त टैब आपको इन सेक्शन में नहीं दिखेगा.}one{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, # गुप्त टैब आपको इन सेक्शन में नहीं दिखेगा.}other{बंद किए गए टैब और ग्रुप, 'हाल ही के टैब' सेक्शन और 'टैब ग्रुप' सेक्शन में जाकर फिर से खोले जा सकते हैं. हालांकि, # गुप्त टैब आपको इन सेक्शन में नहीं दिखेंगे.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">आपको अपने टैब ग्रुप यहां दिखेंगे</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब को ग्रुप से अलग करें}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप से अलग करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब ग्रुप से अलग करें}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
+<translation id="6499296376514955580">शेयर किए गए टैब ग्रुप में बदलावों की सूचना वाली विंडो बंद हो गई है</translation>
 <translation id="6527303717912515753">शेयर करें</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 दिन बाद}one{<ph name="DAY_COUNT_MANY" /> दिन बाद}other{<ph name="DAY_COUNT_MANY" /> दिनों बाद}}</translation>
 <translation id="6549021453810473782">स्टोर की जानकारी देखें</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">टैब को बाईं ओर ले जाएं</translation>
+<translation id="6589356853295569750">शेयर किए गए टैब ग्रुप में बदलावों की सूचना वाली विंडो पूरी स्क्रीन पर दिख रही है</translation>
 <translation id="6590332670428149473"><ph name="COLOR_NAME" /> रंग में मौजूद शेयर किए गए टैब ग्रुप <ph name="TITLE_OF_GROUP" /> के लिए, टैब ग्रुप का ऐक्शन मेन्यू खोलें.</translation>
 <translation id="6615455863669487791">मुझे दिखाएं</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> टैब बदला गया}one{<ph name="MANY_CHANGED" /> टैब बदला गया}other{<ph name="MANY_CHANGED" /> टैब बदले गए}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> टैब शेयर करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> टैब शेयर करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब शेयर करें}}</translation>
 <translation id="7773714564112603605">टैब हटाएं और ग्रुप मिटाएं</translation>
 <translation id="7792771145871471484">सुझावों की समीक्षा करें.</translation>
+<translation id="7792860826279960128">शेयर किए गए टैब ग्रुप में बदलावों की सूचना वाली विंडो आधी स्क्रीन पर दिख रही है</translation>
 <translation id="7825973332242257878">टैब ग्रुप</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब का ग्रुप बनाएं}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब का ग्रुप बनाएं}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब का ग्रुप बनाएं}}</translation>
 <translation id="7853202427316060426">गतिविधि</translation>

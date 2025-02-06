@@ -717,6 +717,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1486486872607808064">Scannez ce QR code avec l'appareil photo de l'appareil sur lequel vous voulez créer une clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Créez un brouillon ou améliorez un travail existant.</translation>
 <translation id="1487335504823219454">Activée – Paramètres personnalisés</translation>
+<translation id="1489101155914355052">Génération de suggestions pour ce document…</translation>
 <translation id="1493892686965953381">En attente de <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Les sites peuvent demander à utiliser les polices installées sur votre appareil</translation>
 <translation id="1494429729245089920">La machine virtuelle "<ph name="VM_NAME" />" existe, mais elle ne semble pas être une machine virtuelle <ph name="APP_NAME" /> valide. Veuillez contacter votre administrateur.</translation>
@@ -2918,6 +2919,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3013652227108802944">Désactivée • Cette extension ne respecte pas les règles du Chrome Web Store</translation>
 <translation id="301525898020410885">La langue est définie par votre organisation</translation>
 <translation id="3015639418649705390">Relancer maintenant</translation>
+<translation id="3015651504578568463">Ajouter un onglet au nouveau tableau comparatif</translation>
 <translation id="3016381065346027039">Aucune entrée de journal</translation>
 <translation id="3019023222666709803">Outil Flèche</translation>
 <translation id="3019285239893817657">Bouton pour accéder à la sous-page</translation>
@@ -5640,6 +5642,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">Caster l'écran</translation>
 <translation id="496185450405387901">Cette application a été installée par votre administrateur.</translation>
+<translation id="4963079328730030450">Votre organisation contrôle la manière dont les données collectées par ces fonctionnalités peuvent être utilisées.</translation>
 <translation id="4963603093937263654">Vérifiez que les notifications sont bien activées sur votre <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Supprimer l'onglet actuel</translation>
 <translation id="4964455510556214366">Organisation</translation>
@@ -5674,6 +5677,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4989966318180235467">Inspecter la page d'&amp;arrière-plan</translation>
 <translation id="4990673372047946816">Aucune caméra disponible</translation>
 <translation id="4991420928586866460">Considérer les touches de la rangée supérieure comme des touches de fonction</translation>
+<translation id="4991873517942703737">Poser une question sur ce document</translation>
 <translation id="4992443049233195791">Paramètres des fichiers Microsoft 365</translation>
 <translation id="4992458225095111526">Confirmer la réinitialisation Powerwash</translation>
 <translation id="4992473555164495036">Votre administrateur a limité les modes de saisie disponibles.</translation>
@@ -6163,6 +6167,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="535123479159372765">Texte copié depuis un autre appareil</translation>
 <translation id="5352033265844765294">Enregistrement des informations de date</translation>
 <translation id="5352257124367865087">Gérer les autorisations des sites</translation>
+<translation id="5352535894553509810">Ajouter un onglet au nouveau tableau comparatif</translation>
 <translation id="5353252989841766347">Exporter des mots de passe depuis Chrome</translation>
 <translation id="5353769147530541973">Supprimer <ph name="SITE_NAME" /> de la liste d'onglets pour le rendre inactif</translation>
 <translation id="5355099869024327351">Autoriser l'Assistant à proposer des notifications</translation>
@@ -8442,6 +8447,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7001036685275644873">Sauvegarde des applications et fichiers Linux</translation>
 <translation id="7001066449188684145">Identification requise pour imprimer sur <ph name="PRINTER_NAME" />. Veuillez contacter votre administrateur.</translation>
 <translation id="7001397294201412227">Utiliser un téléphone, une tablette ou une clé de sécurité</translation>
+<translation id="7001556399332161712">Recherches et suggestions</translation>
 <translation id="7003339318920871147">Bases de données Web</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} fichier}one{{COUNT} fichier}other{{COUNT} fichiers}}</translation>
 <translation id="7003644704445046755">Fichiers de voix <ph name="LANGUAGE" /> de haute qualité téléchargés</translation>
@@ -9906,6 +9912,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8044262338717486897">L'application <ph name="LINUX_APP_NAME" /> ne répond pas.</translation>
 <translation id="8044899503464538266">Lente</translation>
 <translation id="8045253504249021590">La synchronisation a été arrêtée via Google Dashboard.</translation>
+<translation id="8045752459073395242">En savoir plus sur l'utilisation de l'IA générative au travail</translation>
 <translation id="8045923671629973368">Saisissez l'ID de l'application ou l'URL du Chrome Web Store</translation>
 <translation id="804786196054284061">Contrat de licence utilisateur final</translation>
 <translation id="8048596485169033655">Téléchargement des fichiers d'annotation du nœud principal… (<ph name="PERCENT" /> %)</translation>

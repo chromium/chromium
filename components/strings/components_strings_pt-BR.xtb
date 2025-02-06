@@ -1164,6 +1164,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3076865167425975822">Sistemas operacionais</translation>
 <translation id="3080254622891793721">Gráfico</translation>
 <translation id="3082007635241601060">Autorize que o Google use seus carrinhos para encontrar descontos personalizados, quando disponíveis</translation>
+<translation id="3086269988715347183">Você nunca aprovou <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Sua atividade na Web está sendo monitorada</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3090667236485488075">Vidro</translation>
@@ -1239,6 +1240,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3203025201812691413">O URL não pode ficar em branco</translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
 <translation id="3203366800380907218">Da Web</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> pode ter conteúdo para maiores</translation>
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
 <translation id="3208701679386778924">Envie um relatório para que possamos melhorar as atualizações do ChromeOS.</translation>
 <translation id="3209034400446768650">Esta página pode emitir cobranças em dinheiro</translation>
@@ -1869,7 +1871,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="425582637250725228">É possível que as alterações feitas não sejam salvas.</translation>
 <translation id="4258748452823770588">Assinatura inválida</translation>
 <translation id="4261046003697461417">Não é possível fazer anotações em documentos protegidos</translation>
-<translation id="4265872034478892965">Permitido pelo administrador</translation>
+<translation id="4265872034478892965">Com permissão do administrador</translation>
 <translation id="4269029136757623689">Ventiladores domésticos</translation>
 <translation id="4269264543938335308">Trajes de banho</translation>
 <translation id="4269599248168651462">O certificado do servidor é emitido para um nome não exclusivo.</translation>
@@ -2399,7 +2401,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5239623327352565343">Acesso à localização permitido</translation>
 <translation id="5241048084654737238">Confirmação de que não foi possível salvar as informações do cartão</translation>
 <translation id="5242610955375133957">Filme seco</translation>
-<translation id="5243004157379865295">Atualizar o endereço</translation>
+<translation id="5243004157379865295">Atualizar endereço</translation>
 <translation id="5244521145258281926">Botão "Gerenciar Conta do Google". Ative para gerenciar suas informações, sua privacidade e sua segurança na sua Conta do Google</translation>
 <translation id="5244732203286792411">Carregando…
     Isso pode levar um minuto.</translation>
@@ -2973,6 +2975,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6254436959401408446">Não há memória suficiente para abrir essa página</translation>
 <translation id="625463612687472648">Parar de permitir</translation>
 <translation id="6259156558325130047">&amp;Refazer reordenar</translation>
+<translation id="6259282549512536479">Você bloqueou <ph name="BLOCKED_URL" /> anteriormente</translation>
 <translation id="6263376278284652872">Favoritos de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Fazer o download mesmo assim</translation>
 <translation id="6264485186158353794">Voltar à segurança</translation>
