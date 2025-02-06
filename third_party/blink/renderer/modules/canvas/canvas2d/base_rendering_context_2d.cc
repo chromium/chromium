@@ -279,9 +279,7 @@ BaseRenderingContext2D::BaseRenderingContext2D(
       path2d_use_paint_cache_(
           base::FeatureList::IsEnabled(features::kPath2DPaintCache)
               ? UsePaintCache::kEnabled
-              : UsePaintCache::kDisabled) {
-  state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>());
-}
+              : UsePaintCache::kDisabled) {}
 
 BaseRenderingContext2D::~BaseRenderingContext2D() {
   UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Canvas.MaximumStateStackDepth",
@@ -1137,60 +1135,6 @@ void BaseRenderingContext2D::setMiterLimit(double limit) {
                                                 limit);
   }
   state.SetMiterLimit(ClampTo<float>(limit));
-}
-
-double BaseRenderingContext2D::shadowOffsetX() const {
-  return GetState().ShadowOffset().x();
-}
-
-void BaseRenderingContext2D::setShadowOffsetX(double x) {
-  if (!std::isfinite(x))
-    return;
-  CanvasRenderingContext2DState& state = GetState();
-  if (state.ShadowOffset().x() == x) {
-    return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetX,
-                                                x);
-  }
-  state.SetShadowOffsetX(ClampTo<float>(x));
-}
-
-double BaseRenderingContext2D::shadowOffsetY() const {
-  return GetState().ShadowOffset().y();
-}
-
-void BaseRenderingContext2D::setShadowOffsetY(double y) {
-  if (!std::isfinite(y))
-    return;
-  CanvasRenderingContext2DState& state = GetState();
-  if (state.ShadowOffset().y() == y) {
-    return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetY,
-                                                y);
-  }
-  state.SetShadowOffsetY(ClampTo<float>(y));
-}
-
-double BaseRenderingContext2D::shadowBlur() const {
-  return GetState().ShadowBlur();
-}
-
-void BaseRenderingContext2D::setShadowBlur(double blur) {
-  if (!std::isfinite(blur) || blur < 0)
-    return;
-  CanvasRenderingContext2DState& state = GetState();
-  if (state.ShadowBlur() == blur) {
-    return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowBlur,
-                                                blur);
-  }
-  state.SetShadowBlur(ClampTo<float>(blur));
 }
 
 String BaseRenderingContext2D::shadowColor() const {
@@ -3237,14 +3181,13 @@ V8CanvasFontVariantCaps BaseRenderingContext2D::fontVariantCaps() const {
 }
 
 void BaseRenderingContext2D::Trace(Visitor* visitor) const {
-  visitor->Trace(state_stack_);
   visitor->Trace(dispatch_context_lost_event_timer_);
   visitor->Trace(dispatch_context_restored_event_timer_);
   visitor->Trace(try_restore_context_event_timer_);
   visitor->Trace(color_cache_);
   visitor->Trace(webgpu_access_texture_);
   visitor->Trace(placed_elements_);
-  CanvasPath::Trace(visitor);
+  CanvasRecordingContext2D::Trace(visitor);
 }
 
 BaseRenderingContext2D::UsageCounters::UsageCounters()
