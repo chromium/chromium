@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
@@ -1133,6 +1134,19 @@ void NativeWidgetMac::OnDidChangeFocus(View* focused_before,
     ns_window_host_->text_input_host()->SetTextInputClient(
         new_text_input_client);
   }
+}
+
+void NativeWidgetMac::OnFocusManagerDestroying(FocusManager* focus_manager) {
+  // TODO(crbug.com/348369180): An observer of FocusManager is still observing
+  // the manager on the manager's destruction. NativeWidgetMac is the suspect.
+  CHECK_EQ(focus_manager, focus_manager_);
+  focus_manager->RemoveFocusChangeListener(this);
+
+  // Log the widget name in crash key.
+  static crash_reporter::CrashKeyString<32> window_info_key("widgetName");
+  crash_reporter::ScopedCrashKeyString scopedWindowKey(&window_info_key, name_);
+
+  base::debug::DumpWithoutCrashing();
 }
 
 ui::EventDispatchDetails NativeWidgetMac::DispatchKeyEventPostIME(

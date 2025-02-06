@@ -43,6 +43,8 @@ FocusManager::~FocusManager() {
   if (focused_view_) {
     focused_view_->RemoveObserver(this);
   }
+  focus_change_listeners_.Notify(&FocusChangeListener::OnFocusManagerDestroying,
+                                 this);
 }
 
 bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
