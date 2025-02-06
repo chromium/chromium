@@ -163,24 +163,6 @@ class WebAppRegistrar {
       const GURL& url,
       const WebAppFilter& filter) const;
 
-  // This struct can be used `FindBestAppWithUrlInScope` and possible future
-  // methods to filter apps.
-  struct AppFilterOptions {
-    // TODO(crbug.com/341337420): Change this to default true.
-    bool include_extended_scope = false;
-  };
-
-  // DEPRECATED: Use `FindBestAppWithUrlInScope(GURL, WebAppFilter)` instead.
-  // Returns the app id of an app in the registry in one of the given
-  // `allowed_states` and the longest scope that is a prefix of `url`. Will
-  // CHECK-fail if `allowed_states` is empty.
-  // The 'best' criteria is a combination of the following:
-  // - The length of the scope of the potential controlling app.
-  std::optional<webapps::AppId> FindBestAppWithUrlInScope(
-      const GURL& url,
-      std::initializer_list<proto::InstallState> allowed_states,
-      AppFilterOptions options) const;
-
   // Finds all apps that have scopes that are nested within the given
   // `outer_scope`, and match the specified filter.
   std::vector<webapps::AppId> FindAllAppsNestedInUrl(

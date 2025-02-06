@@ -210,10 +210,16 @@ void ManifestUpdateManager::MaybeUpdate(
     return;
   }
 
-  if (!app_id.has_value() ||
-      !provider_->registrar_unsafe().IsInstallState(
-          *app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                    proto::INSTALLED_WITH_OS_INTEGRATION})) {
+  if (!app_id.has_value() || !provider_->registrar_unsafe().AppMatches(
+                                 *app_id, WebAppFilter::InstalledInChrome())) {
+    NotifyResult(url, app_id, ManifestUpdateResult::kNoAppInScope);
+    return;
+  }
+
+  // Skip the cases when the app's scope and the site mismatch e.g. scope
+  // extensions.
+  if (provider_->registrar_unsafe().GetUrlInAppScopeScore(
+          url.spec(), app_id.value()) == 0) {
     NotifyResult(url, app_id, ManifestUpdateResult::kNoAppInScope);
     return;
   }
