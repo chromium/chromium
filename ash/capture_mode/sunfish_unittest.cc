@@ -1109,8 +1109,8 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
   auto* container_widget = session_test_api.GetActionContainerWidget();
   ASSERT_TRUE(container_widget->IsVisible());
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
-  auto* search_button =
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton);
+  auto* search_button = session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton);
   gfx::Rect search_button_bounds(search_button->GetBoundsInScreen());
 
   // Set the type to `kVideo`. Test the buttons are hidden.
@@ -1137,8 +1137,8 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
   WaitForCaptureModeWidgetsVisible();
   EXPECT_TRUE(container_widget->IsVisible());
   EXPECT_EQ(session_test_api.GetActionButtons().size(), 1u);
-  search_button =
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton);
+  search_button = session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton);
   ASSERT_TRUE(search_button);
   EXPECT_TRUE(search_button->GetVisible());
   search_button_bounds = search_button->GetBoundsInScreen();
@@ -1161,8 +1161,8 @@ TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
   WaitForCaptureModeWidgetsVisible();
   EXPECT_TRUE(container_widget->IsVisible());
   EXPECT_EQ(session_test_api.GetActionButtons().size(), 1u);
-  EXPECT_TRUE(
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
+  EXPECT_TRUE(session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton));
 
   // Set the source to `kWindow`. Test the buttons are hidden.
   controller->SetSource(CaptureModeSource::kWindow);
@@ -1289,8 +1289,8 @@ TEST_F(SunfishTest, SearchActionButton) {
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForCaptureModeWidgetsVisible();
   ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
-  EXPECT_TRUE(
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
+  EXPECT_TRUE(session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton));
 
   // Click on the "Search" button. Test we end capture mode.
   LeftClickOn(session_test_api.GetActionButtons()[0]);
@@ -1630,8 +1630,8 @@ TEST_F(SunfishTest, RecordSearchButtonShownAndPressed) {
   histogram_tester.ExpectBucketCount(kSearchButtonPressedHistogram, true, 0);
 
   // Click on the search button.
-  LeftClickOn(
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
+  LeftClickOn(session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton));
   WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
   EXPECT_TRUE(controller->search_results_panel_widget());
 
@@ -1681,8 +1681,8 @@ TEST_F(SunfishTest, RecordSearchResultsPanelEntryType) {
 
   // Click on the search button to perform an image search and open
   // the search results panel.
-  LeftClickOn(
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
+  LeftClickOn(session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton));
   WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
   ASSERT_TRUE(controller->search_results_panel_widget());
 
@@ -1973,7 +1973,7 @@ TEST_F(SunfishTest, KeyboardNavigationActionButtons) {
   // We should now be focused on the "Copy Text" button, even though the focus
   // index is still 0.
   ActionButtonView* copy_text_button = session_test_api.GetActionButtons()[0];
-  EXPECT_EQ(copy_text_button, session_test_api.GetButtonWithViewID(
+  EXPECT_EQ(copy_text_button, session_test_api.GetActionButtonByViewId(
                                   ActionButtonViewID::kCopyTextButton));
   EXPECT_TRUE(
       CaptureModeSessionFocusCycler::HighlightHelper::Get(copy_text_button)
@@ -2000,7 +2000,7 @@ TEST_F(SunfishTest, KeyboardNavigationActionButtons) {
   // We should now be focused on the newest test button.
   ActionButtonView* smart_action_button =
       session_test_api.GetActionButtons()[2];
-  EXPECT_EQ(smart_action_button, session_test_api.GetButtonWithViewID(
+  EXPECT_EQ(smart_action_button, session_test_api.GetActionButtonByViewId(
                                      ActionButtonViewID::kSmartActionsButton));
   EXPECT_TRUE(
       CaptureModeSessionFocusCycler::HighlightHelper::Get(smart_action_button)
@@ -2048,8 +2048,8 @@ TEST_F(SunfishTest, PanelStackingOrder) {
   WaitForCaptureModeWidgetsVisible();
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  LeftClickOn(
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
+  LeftClickOn(session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton));
   WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
   panel_widget = controller->search_results_panel_widget();
   ASSERT_TRUE(panel_widget);
@@ -2127,7 +2127,7 @@ TEST_F(SunfishTest, RestartDefaultModeReShowsActionButton) {
   // Test the Search button is shown.
   auto* search_button =
       CaptureModeSessionTestApi(controller->capture_mode_session())
-          .GetButtonWithViewID(ActionButtonViewID::kSearchButton);
+          .GetActionButtonByViewId(ActionButtonViewID::kSearchButton);
   ASSERT_TRUE(search_button);
   EXPECT_TRUE(search_button->GetVisible());
 
@@ -2144,8 +2144,8 @@ TEST_F(SunfishTest, RestartDefaultModeReShowsActionButton) {
   auto* capture_button =
       session_test_api.GetCaptureLabelView()->capture_button_container();
   ASSERT_TRUE(capture_button->GetVisible());
-  search_button =
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton);
+  search_button = session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton);
   ASSERT_TRUE(search_button);
   EXPECT_TRUE(search_button->GetVisible());
 }
@@ -2169,7 +2169,8 @@ TEST_F(SunfishTest, CopyTextButtonShownForDetectedText) {
       controller->capture_mode_session());
   // Copy text button should have been created.
   const ActionButtonView* copy_text_button =
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kCopyTextButton);
+      session_test_api.GetActionButtonByViewId(
+          ActionButtonViewID::kCopyTextButton);
   ASSERT_TRUE(copy_text_button);
   // Clipboard should currently be empty.
   std::u16string clipboard_data;
@@ -2202,7 +2203,8 @@ TEST_F(SunfishTest, CopyTextButtonShownForLensDetectedText) {
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   const ActionButtonView* copy_text_button =
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kCopyTextButton);
+      session_test_api.GetActionButtonByViewId(
+          ActionButtonViewID::kCopyTextButton);
   ASSERT_TRUE(copy_text_button);
 
   // The clipboard should currently be empty.
@@ -2278,8 +2280,8 @@ TEST_F(SunfishTest, SearchButtonNotShownWhenOffline) {
   auto* session =
       static_cast<CaptureModeSession*>(controller->capture_mode_session());
   CaptureModeSessionTestApi session_test_api(session);
-  EXPECT_FALSE(
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
+  EXPECT_FALSE(session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton));
   ActionButtonContainerView::ErrorView* error_view =
       session_test_api.GetActionContainerErrorView();
   ASSERT_TRUE(error_view);
@@ -2329,8 +2331,8 @@ TEST_F(SunfishTest, PressingSearchButtonShowsErrorIfOffline) {
   auto* session =
       static_cast<CaptureModeSession*>(controller->capture_mode_session());
   CaptureModeSessionTestApi session_test_api(session);
-  ActionButtonView* search_button =
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton);
+  ActionButtonView* search_button = session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton);
   ASSERT_TRUE(search_button);
 
   // Simulate the network disconnecting before clicking on the search button.
@@ -2445,8 +2447,8 @@ TEST_F(SunfishDisplayMetricsTest, DISABLED_RefreshPanelBoundsInDefaultMode) {
                           /*release_mouse=*/true, /*verify_region=*/true);
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  auto* search_button =
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton);
+  auto* search_button = session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kSearchButton);
   ASSERT_TRUE(search_button);
   LeftClickOn(search_button);
   WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
@@ -2537,7 +2539,7 @@ class ScannerTest : public AshTestBase {
 
     CaptureModeSessionTestApi session_test_api(
         controller->capture_mode_session());
-    ActionButtonView* action_button = session_test_api.GetButtonWithViewID(
+    ActionButtonView* action_button = session_test_api.GetActionButtonByViewId(
         ActionButtonViewID::kSmartActionsButton);
     EXPECT_TRUE(action_button);
     return action_button;
@@ -3055,7 +3057,8 @@ TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
       controller->capture_mode_session());
   // Copy text button should have been created.
   const ActionButtonView* copy_text_button =
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kCopyTextButton);
+      session_test_api.GetActionButtonByViewId(
+          ActionButtonViewID::kCopyTextButton);
   ASSERT_TRUE(copy_text_button);
   // Clipboard should currently be empty.
   std::u16string clipboard_data;
@@ -3090,7 +3093,7 @@ TEST_F(ScannerTest, RestartDefaultModeReshowsCopyTextButton) {
   // Copy text button should have been created.
   ActionButtonView* copy_text_button =
       CaptureModeSessionTestApi(controller->capture_mode_session())
-          .GetButtonWithViewID(ActionButtonViewID::kCopyTextButton);
+          .GetActionButtonByViewId(ActionButtonViewID::kCopyTextButton);
   ASSERT_TRUE(copy_text_button);
 
   // Exit then re-enter capture mode session.
@@ -3113,8 +3116,8 @@ TEST_F(ScannerTest, RestartDefaultModeReshowsCopyTextButton) {
   auto* capture_button =
       session_test_api.GetCaptureLabelView()->capture_button_container();
   ASSERT_TRUE(capture_button->GetVisible());
-  copy_text_button =
-      session_test_api.GetButtonWithViewID(ActionButtonViewID::kCopyTextButton);
+  copy_text_button = session_test_api.GetActionButtonByViewId(
+      ActionButtonViewID::kCopyTextButton);
   ASSERT_TRUE(copy_text_button);
 }
 
@@ -3135,7 +3138,7 @@ TEST_F(ScannerTest, NoCopyTextButtonIfNoDetectedText) {
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  EXPECT_FALSE(session_test_api.GetButtonWithViewID(
+  EXPECT_FALSE(session_test_api.GetActionButtonByViewId(
       ActionButtonViewID::kCopyTextButton));
 }
 
@@ -3159,7 +3162,7 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChanges) {
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  EXPECT_FALSE(session_test_api.GetButtonWithViewID(
+  EXPECT_FALSE(session_test_api.GetActionButtonByViewId(
       ActionButtonViewID::kCopyTextButton));
 }
 
@@ -3190,7 +3193,7 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChangesByFineTuneNoop) {
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  EXPECT_FALSE(session_test_api.GetButtonWithViewID(
+  EXPECT_FALSE(session_test_api.GetActionButtonByViewId(
       ActionButtonViewID::kCopyTextButton));
 }
 
@@ -3240,7 +3243,7 @@ TEST_F(ScannerTest,
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
 
-  EXPECT_TRUE(session_test_api.GetButtonWithViewID(
+  EXPECT_TRUE(session_test_api.GetActionButtonByViewId(
       ActionButtonViewID::kSmartActionsButton));
 }
 
@@ -3267,7 +3270,7 @@ TEST_F(ScannerTest,
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
 
-  EXPECT_FALSE(session_test_api.GetButtonWithViewID(
+  EXPECT_FALSE(session_test_api.GetActionButtonByViewId(
       ActionButtonViewID::kSmartActionsButton));
 }
 
@@ -3356,7 +3359,7 @@ TEST_F(ScannerTest, SmartActionsButtonShownWhenOnDeviceOcrDisabled) {
   EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
               FetchActionsForImage)
       .WillOnce(WithArg<1>(InvokeFuture(fetch_actions_future)));
-  LeftClickOn(session_test_api.GetButtonWithViewID(
+  LeftClickOn(session_test_api.GetActionButtonByViewId(
       ActionButtonViewID::kSmartActionsButton));
   WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
 
@@ -3424,7 +3427,7 @@ TEST_F(ScannerTest, PressingSmartActionsButtonShowsErrorIfOffline) {
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   const ActionButtonView* smart_actions_button =
-      session_test_api.GetButtonWithViewID(
+      session_test_api.GetActionButtonByViewId(
           ActionButtonViewID::kSmartActionsButton);
   ASSERT_TRUE(smart_actions_button);
 
@@ -3458,7 +3461,7 @@ TEST_F(ScannerTest, SmartActionsButtonShownForDetectedTextRecordsHistogram) {
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   // Smart actions button should have been created.
-  EXPECT_TRUE(session_test_api.GetButtonWithViewID(
+  EXPECT_TRUE(session_test_api.GetActionButtonByViewId(
       ActionButtonViewID::kSmartActionsButton));
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
@@ -3485,7 +3488,7 @@ TEST_F(
       controller->capture_mode_session());
   // Smart actions button should have been created.
   const ActionButtonView* smart_actions_button =
-      session_test_api.GetButtonWithViewID(
+      session_test_api.GetActionButtonByViewId(
           ActionButtonViewID::kSmartActionsButton);
   ASSERT_TRUE(smart_actions_button);
 
@@ -3547,7 +3550,7 @@ TEST_F(ScannerTest, CaptureLabelHiddenWhilePerformingCaptureForScanner) {
   detect_text_future.Take().Run("detected text");
   // Smart actions button should have been created.
   const ActionButtonView* smart_actions_button =
-      session_test_api.GetButtonWithViewID(
+      session_test_api.GetActionButtonByViewId(
           ActionButtonViewID::kSmartActionsButton);
   ASSERT_TRUE(smart_actions_button);
 
@@ -3582,7 +3585,7 @@ TEST_F(ScannerTest,
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   const ActionButtonView* smart_actions_button =
-      session_test_api.GetButtonWithViewID(
+      session_test_api.GetActionButtonByViewId(
           ActionButtonViewID::kSmartActionsButton);
   ASSERT_TRUE(smart_actions_button);
 
@@ -3623,7 +3626,7 @@ TEST_F(ScannerTest,
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   const ActionButtonView* smart_actions_button =
-      session_test_api.GetButtonWithViewID(
+      session_test_api.GetActionButtonByViewId(
           ActionButtonViewID::kSmartActionsButton);
   ASSERT_TRUE(smart_actions_button);
 
@@ -3787,7 +3790,7 @@ TEST_F(ScannerTest, DisclaimerAcceptContinuesScannerSession) {
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   const ActionButtonView* smart_actions_button =
-      session_test_api.GetButtonWithViewID(
+      session_test_api.GetActionButtonByViewId(
           ActionButtonViewID::kSmartActionsButton);
   ASSERT_TRUE(smart_actions_button);
 
@@ -3885,7 +3888,7 @@ TEST_F(ScannerTest, DisclaimerDeclinedGoesBackToScreenshotMode) {
 
   smart_actions_button =
       CaptureModeSessionTestApi(controller->capture_mode_session())
-          .GetButtonWithViewID(ActionButtonViewID::kSmartActionsButton);
+          .GetActionButtonByViewId(ActionButtonViewID::kSmartActionsButton);
   ASSERT_TRUE(smart_actions_button);
   LeftClickOn(smart_actions_button);
   EXPECT_TRUE(CaptureModeSessionTestApi(controller->capture_mode_session())

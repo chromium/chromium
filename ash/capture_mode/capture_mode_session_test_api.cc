@@ -154,7 +154,7 @@ std::vector<ActionButtonView*> CaptureModeSessionTestApi::GetActionButtons()
   return action_buttons;
 }
 
-ActionButtonView* CaptureModeSessionTestApi::GetButtonWithViewID(
+ActionButtonView* CaptureModeSessionTestApi::GetActionButtonByViewId(
     ActionButtonViewID id) const {
   raw_ptr<ActionButtonContainerView> container =
       session_->action_container_view_;

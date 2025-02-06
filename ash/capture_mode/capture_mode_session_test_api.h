@@ -94,7 +94,7 @@ class CaptureModeSessionTestApi {
   std::vector<ActionButtonView*> GetActionButtons() const;
 
   // Returns the action button with view ID `id`, or nullptr if there is none.
-  ActionButtonView* GetButtonWithViewID(ActionButtonViewID id) const;
+  ActionButtonView* GetActionButtonByViewId(ActionButtonViewID id) const;
 
   ActionButtonContainerView::ErrorView* GetActionContainerErrorView() const;
 
