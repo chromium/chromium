@@ -3730,7 +3730,8 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, PRE_TestSetup) {
 // Checks that either the ProfilePicker or a browser window is open at startup.
 // Except with switches::kNoStartupWindow, for which neither the picker nor a
 // browser is open.
-IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, TestSetup) {
+// TODO(crbug.com/394713545): Flaky on all of Win/Mac/Linux
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, DISABLED_TestSetup) {
   ProfilePickerSetup setup_param = GetParam();
 
   // Check the ProfilePicker.
