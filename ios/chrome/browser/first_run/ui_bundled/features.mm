@@ -42,4 +42,17 @@ bool IsAnimatedDefaultBrowserPromoInFREEnabled() {
          !base::FeatureList::IsEnabled(first_run::kUpdatedFirstRunSequence);
 }
 
+const char kAnimatedDefaultBrowserPromoInFREExperimentType[] =
+    "AnimatedDefaultBrowserPromoInFREExperimentType";
+
+AnimatedDefaultBrowserPromoInFREExperimentType
+AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled() {
+  return static_cast<AnimatedDefaultBrowserPromoInFREExperimentType>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          kAnimatedDefaultBrowserPromoInFRE,
+          kAnimatedDefaultBrowserPromoInFREExperimentType, /*default_value=*/
+          static_cast<int>(AnimatedDefaultBrowserPromoInFREExperimentType::
+                               kAnimationWithActionButtons)));
+}
+
 }  // namespace first_run
