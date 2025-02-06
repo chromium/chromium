@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
 // The enumerations and struct follows the explainer in
@@ -37,13 +38,10 @@ struct AISummarizerCreateOptions {
   AISummarizerFormat format;
   AISummarizerLength length;
 
-  // TODO(crbug.com/394238800): Use a struct to wrap the language code and
-  // update it for all Writing Assistance APIs.
-  // BCP 47 language codes requested for input, context, and output text.
   // Creation fails if a model is not available for specified languages.
-  array<string> expected_input_languages;
-  array<string> expected_context_languages;
-  string output_language;
+  array<AILanguageCode> expected_input_languages;
+  array<AILanguageCode> expected_context_languages;
+  AILanguageCode output_language;
 };
 
 // A summarizer to summarize a given article

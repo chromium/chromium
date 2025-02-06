@@ -16,8 +16,8 @@ namespace blink {
 class NGShapeCacheTest : public FontTestBase {
  protected:
   void SetUp() override {
-    Font font = test::CreateAhemFont(100);
-    cache = MakeGarbageCollected<NGShapeCache>(font.PrimaryFont());
+    Font* font = test::CreateAhemFont(100);
+    cache = MakeGarbageCollected<NGShapeCache>(font->PrimaryFont());
   }
   Persistent<NGShapeCache> cache;
 };

@@ -17,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -61,6 +62,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/webid/login_status_account.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -429,6 +432,22 @@ class WebIdBrowserTest : public ContentBrowserTest {
 class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+  InMemoryFederatedPermissionContext* sharing_context() {
+    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
+    return static_cast<InMemoryFederatedPermissionContext*>(
+        context->GetFederatedIdentityPermissionContext());
+  }
+};
+
+class WebIdLightweightFedcmBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::test::FeatureRef> features;
+    features.push_back(features::kFedCmLightweightMode);
+    scoped_feature_list_.InitWithFeatures(features, {});
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
@@ -942,7 +961,6 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest, IdpSignoutToplevel) {
   ASSERT_TRUE(value.has_value());
   EXPECT_FALSE(*value);
 }
-
 // Verify that IDP sign-in/out headers work in subresources.
 IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest,
                        IdpSigninAndOutSubresource) {
@@ -2165,6 +2183,46 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Failure) {
   EXPECT_EQ(0ul, metrics_parameters_.count("turnaround_time"));
   EXPECT_EQ("301", metrics_parameters_["error_code"]);
   EXPECT_EQ("false", metrics_parameters_["did_show_ui"]);
+}
+
+// Verify that IDP sign-in via JS works.
+IN_PROC_BROWSER_TEST_F(WebIdLightweightFedcmBrowserTest,
+                       IdpSigninTopLevelSetViaJs) {
+  GURL configURL = GURL(BaseIdpUrl());
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  EXPECT_TRUE(NavigateToURL(shell(), configURL));
+
+  EXPECT_FALSE(sharing_context()
+                   ->GetIdpSigninStatus(url::Origin::Create(configURL))
+                   .has_value());
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), configURL));
+  base::RunLoop run_loop;
+
+  sharing_context()->SetIdpStatusClosureForTesting(run_loop.QuitClosure());
+
+  static constexpr char script[] = R"(
+    (async () => {
+      await navigator.login.setStatus("logged-in", {accounts: [
+        {id: "12345", name: "User", email: "user@idp.example"}
+      ]});
+      return true;
+    })()
+  )";
+
+  EXPECT_EQ(true, EvalJs(shell(), script));
+  run_loop.Run();
+
+  std::optional<bool> value =
+      sharing_context()->GetIdpSigninStatus(url::Origin::Create(configURL));
+  ASSERT_TRUE(value.has_value());
+  EXPECT_TRUE(*value);
+
+  std::vector<blink::common::webid::LoginStatusAccount> accounts =
+      sharing_context()->GetAccountProfiles(url::Origin::Create(configURL));
+  ASSERT_EQ(1U, accounts.size());
+  EXPECT_EQ("12345", accounts[0].id);
+  EXPECT_EQ("User", accounts[0].name);
+  EXPECT_EQ("user@idp.example", accounts[0].email);
 }
 
 }  // namespace content

@@ -20,13 +20,9 @@ namespace blink {
 namespace {
 class FontsHolder : public GarbageCollected<FontsHolder> {
  public:
-  void Trace(Visitor* visitor) const {
-    for (const Font& font : fonts) {
-      font.Trace(visitor);
-    }
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(fonts); }
 
-  std::vector<Font> fonts;
+  HeapVector<Member<Font>> fonts;
 };
 }  // namespace
 
@@ -62,7 +58,7 @@ class TextMetricsTest : public FontTestBase {
 
   void TearDown() override {}
 
-  const Font& GetFont(FontType type) const { return fonts_holder->fonts[type]; }
+  const Font* GetFont(FontType type) const { return fonts_holder->fonts[type]; }
 
   FontCachePurgePreventer font_cache_purge_preventer;
   Persistent<FontsHolder> fonts_holder;

@@ -615,10 +615,10 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --use-angle=swiftshader --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--test-filter=conformance/rendering/gl-drawelements.html",
-          "--jobs=3"
+          "--jobs=3",
+          "--test-filter=conformance/rendering/gl-drawelements.html"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

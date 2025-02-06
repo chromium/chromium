@@ -89,7 +89,7 @@ void SetIdpSigninStatus(content::BrowserContext* context,
     return;
   }
   delegate->SetIdpSigninStatus(
-      origin, status == blink::mojom::IdpSigninStatus::kSignedIn);
+      origin, status == blink::mojom::IdpSigninStatus::kSignedIn, std::nullopt);
 }
 
 std::optional<std::string> ComputeConsoleMessageForHttpResponseCode(
@@ -157,12 +157,12 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
     // FedCmIdpSigninStatusMode::METRICS_ONLY mode in order to better emulate
     // FedCmIdpSigninStatusMode::ENABLED behavior.
     if (!does_idp_have_failing_signin_status) {
-      permission_delegate->SetIdpSigninStatus(idp_origin, true);
+      permission_delegate->SetIdpSigninStatus(idp_origin, true, std::nullopt);
     }
   } else {
     RecordIdpSignOutNetError(fetch_status.response_code);
     // Ensures that we only fetch accounts unconditionally once.
-    permission_delegate->SetIdpSigninStatus(idp_origin, false);
+    permission_delegate->SetIdpSigninStatus(idp_origin, false, std::nullopt);
   }
 }
 

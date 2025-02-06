@@ -401,9 +401,9 @@ void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder,
 void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyleBuilder& builder) {
   DCHECK_EQ(builder.Display(), EDisplay::kInlineBlock);
   // Set box sizes
-  const Font& font = builder.GetFont();
-  DCHECK(font.GetFontDescription().IsVerticalBaseline());
-  const auto one_em = ComputedStyle::ComputedFontSizeAsFixed(builder.GetFont());
+  const Font* font = builder.GetFont();
+  DCHECK(font->GetFontDescription().IsVerticalBaseline());
+  const auto one_em = ComputedStyle::ComputedFontSizeAsFixed(*font);
   const auto line_height = builder.FontHeight();
   const auto size =
       LengthSize(Length::Fixed(line_height), Length::Fixed(one_em));
@@ -435,7 +435,7 @@ void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyleBuilder& builder) {
   builder.UpdateFontOrientation();
 
 #if DCHECK_IS_ON()
-  DCHECK_EQ(builder.GetFont().GetFontDescription().Orientation(),
+  DCHECK_EQ(builder.GetFont()->GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
   const ComputedStyle* cloned_style = builder.CloneStyle();
   LayoutTextCombine::AssertStyleIsValid(*cloned_style);

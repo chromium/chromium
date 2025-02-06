@@ -94,6 +94,12 @@ class AuraContext::NativeCursorManager : public wm::NativeCursorManager {
     NOTIMPLEMENTED();
   }
 
+  void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      wm::NativeCursorManagerDelegate* delegate) override {
+    NOTIMPLEMENTED();
+  }
+
   void SetMouseEventsEnabled(
       bool enabled,
       wm::NativeCursorManagerDelegate* delegate) override {

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth_page_handler.h"
 
+#include "base/test/mock_callback.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class MicrosoftAuthPageHandlerTest : public testing::Test {
@@ -47,19 +49,50 @@ class MicrosoftAuthPageHandlerTest : public testing::Test {
 };
 
 TEST_F(MicrosoftAuthPageHandlerTest, DismissAndRestoreModule) {
-  const char kMicrosoftAuthLastDismissedTimePrefName[] =
-      "NewTabPage.MicrosoftAuthentication.LastDimissedTime";
-
-  EXPECT_EQ(pref_service().GetTime(kMicrosoftAuthLastDismissedTimePrefName),
+  ASSERT_EQ(pref_service().GetTime(
+                MicrosoftAuthPageHandler::kLastDismissedTimePrefName),
             base::Time());
 
   handler().DismissModule();
 
-  EXPECT_EQ(pref_service().GetTime(kMicrosoftAuthLastDismissedTimePrefName),
+  EXPECT_EQ(pref_service().GetTime(
+                MicrosoftAuthPageHandler::kLastDismissedTimePrefName),
             base::Time::Now());
 
   handler().RestoreModule();
 
-  EXPECT_EQ(pref_service().GetTime(kMicrosoftAuthLastDismissedTimePrefName),
+  EXPECT_EQ(pref_service().GetTime(
+                MicrosoftAuthPageHandler::kLastDismissedTimePrefName),
             base::Time());
 }
+
+class MicrosoftAuthPageHandlerShowModuleTest
+    : public MicrosoftAuthPageHandlerTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  bool ShouldShow() const { return GetParam(); }
+};
+
+TEST_P(MicrosoftAuthPageHandlerShowModuleTest, ShouldShowModule_False) {
+  handler().DismissModule();
+
+  base::MockCallback<ntp::authentication::mojom::MicrosoftAuthPageHandler::
+                         ShouldShowModuleCallback>
+      should_show_module_callback;
+  bool show;
+  EXPECT_CALL(should_show_module_callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&show](bool show_arg) { show = std::move(show_arg); }));
+
+  if (ShouldShow()) {
+    task_environment().AdvanceClock(MicrosoftAuthPageHandler::kDismissDuration);
+  }
+  handler().ShouldShowModule(should_show_module_callback.Get());
+
+  EXPECT_EQ(ShouldShow(), show);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MicrosoftAuthPageHandlerShowModuleTest,
+                         ::testing::Bool());

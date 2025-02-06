@@ -52,8 +52,9 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
     return {{::features::kPwaNavigationCapturing,
              {{::features::kNavigationCapturingDefaultState.name,
                "reimpl_default_off"}}}};
+  } else {
+    return {{}, {}};
   }
-  return {{::apps::features::kLinkCapturingUiUpdate, {}}};
 #else
   // TODO(crbug.com/351775835): Integrate testing for all enum states of
   // `CapturingState`.
@@ -111,15 +112,6 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
           /*override_captures_by_default=*/true, /*use_v2=*/true);
 #endif
   }
-}
-
-std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX() {
-  CHECK_IS_TEST();
-#if BUILDFLAG(IS_CHROMEOS)
-  return {::apps::features::kLinkCapturingUiUpdate};
-#else
-  return {::features::kPwaNavigationCapturing};
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 base::expected<void, std::string> EnableLinkCapturingByUser(

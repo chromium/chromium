@@ -68,11 +68,15 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
 
   auto SimulateGlicHotkey() {
     // TODO: Actually implement the hotkey when we know what it is.
-    return Do([this]() { window_controller().Toggle(nullptr); });
+    return Do([this]() {
+      window_controller().Toggle(nullptr, /*prevent_close=*/false,
+                                 InvocationSource::kOsHotkey);
+    });
   }
 
   auto SimulateOpenMenuItem() {
-    return Do([this]() { glic_controller_->Show(); });
+    return Do(
+        [this]() { glic_controller_->Show(InvocationSource::kOsButtonMenu); });
   }
 
  private:

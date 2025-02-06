@@ -66,7 +66,6 @@ void BlockingSequenceRunner::RunAllTasks() {
 
 BlockingSequenceRunner::Sequence::Sequence(Scheduler* scheduler)
     : TaskGraph::Sequence(scheduler->task_graph(),
-                          base::DoNothing(),
                           /*validation_runner=*/{}),
       scheduler_(scheduler) {}
 

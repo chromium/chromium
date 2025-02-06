@@ -3307,7 +3307,7 @@ int Internals::selectPopupItemStyleFontHeight(Node* node, int item_index) {
       select->ItemComputedStyle(*select->GetListItems()[item_index]);
 
   if (item_style) {
-    const SimpleFontData* font_data = item_style->GetFont().PrimaryFont();
+    const SimpleFontData* font_data = item_style->GetFont()->PrimaryFont();
     DCHECK(font_data);
     return font_data ? font_data->GetFontMetrics().Height() : 0;
   }

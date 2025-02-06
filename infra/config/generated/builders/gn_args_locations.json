@@ -652,6 +652,7 @@
     "android_optional_gpu_tests_rel": "try/android_optional_gpu_tests_rel/gn-args.json",
     "gpu-fyi-cq-android-arm64": "try/gpu-fyi-cq-android-arm64/gn-args.json",
     "gpu-fyi-try-android-a13-32": "try/gpu-fyi-try-android-a13-32/gn-args.json",
+    "gpu-fyi-try-android-a23-32": "try/gpu-fyi-try-android-a23-32/gn-args.json",
     "gpu-fyi-try-android-m-nexus-5x-64": "try/gpu-fyi-try-android-m-nexus-5x-64/gn-args.json",
     "gpu-fyi-try-android-nvidia-shield-tv": "try/gpu-fyi-try-android-nvidia-shield-tv/gn-args.json",
     "gpu-fyi-try-android-p-pixel-2-32": "try/gpu-fyi-try-android-p-pixel-2-32/gn-args.json",

@@ -8,7 +8,9 @@
 #include <optional>
 #include <string>
 
+#include "base/types/optional_ref.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/origin.h"
 
 namespace content {
@@ -18,6 +20,11 @@ class BrowserContext;
 namespace url {
 class Origin;
 }
+
+namespace blink::common::webid {
+struct LoginStatusAccount;
+struct LoginStatusOptions;
+}  // namespace blink::common::webid
 
 // Context for storing whether the browser has observed the user signing into
 // an identity provider by observing the IdP-SignIn-Status HTTP header.
@@ -36,12 +43,23 @@ class FederatedIdentityIdentityProviderSigninStatusContext
   // std::nullopt if there isn't a stored sign-in status.
   std::optional<bool> GetSigninStatus(const url::Origin& identity_provider);
 
-  // Stores the sign-in status for the passed-in `identity_provider`.
-  void SetSigninStatus(const url::Origin& identity_provider,
-                       bool signin_status);
+  // Returns the stored profile information for the passed-in
+  // `identity_provider`. If the signin status is false or no profile
+  // information was stored, returns an empty vector.
+  std::vector<blink::common::webid::LoginStatusAccount> GetAccountProfiles(
+      const url::Origin& identity_provider);
+
+  void SetSigninStatus(
+      const url::Origin& identity_provider,
+      bool signin_status,
+      base::optional_ref<const blink::common::webid::LoginStatusOptions>
+          options);
 
   // permissions::ObjectPermissionContextBase:
   std::string GetKeyForObject(const base::Value::Dict& object) override;
+
+  // permissions::ObjectPermissionContextBase:
+  void FlushScheduledSaveSettingsCalls();
 
  private:
   // permissions::ObjectPermissionContextBase:

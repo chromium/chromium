@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -95,7 +96,7 @@ void GlicFreController::AcceptFre(Profile* profile) {
   if (Browser* new_attached_browser =
           chrome::FindLastActiveWithProfile(profile)) {
     glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(
-        new_attached_browser);
+        new_attached_browser, /*prevent_close=*/true, InvocationSource::kFre);
   }
 }
 

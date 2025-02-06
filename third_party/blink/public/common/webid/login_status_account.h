@@ -26,9 +26,7 @@ struct BLINK_COMMON_EXPORT LoginStatusAccount {
                      const std::string& name,
                      base::optional_ref<const std::string> given_name,
                      base::optional_ref<const GURL> picture_url);
-  LoginStatusAccount(const LoginStatusAccount& account);
   ~LoginStatusAccount();
-  LoginStatusAccount& operator=(const LoginStatusAccount&);
   bool operator==(const LoginStatusAccount& account) const;
 
   // STL strings are used here in accordance with the exceptions described in

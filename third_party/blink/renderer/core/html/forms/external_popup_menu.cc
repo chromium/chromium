@@ -332,7 +332,7 @@ void ExternalPopupMenu::GetPopupMenuInfo(
       owner_element.GetDocument().GetFrame()->GetPage()->PageScaleFactor() /
       GetDprForSizeAdjustment(owner_element);
   *font_size = static_cast<int>(
-      menu_style.GetFont().GetFontDescription().ComputedSize() * scale);
+      menu_style.GetFont()->GetFontDescription().ComputedSize() * scale);
   *selected_item = ToExternalPopupMenuItemIndex(
       owner_element.SelectedListIndex(), owner_element);
 

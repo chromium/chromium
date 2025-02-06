@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 
@@ -27,16 +28,19 @@ namespace {
 const int kMockDownloadPreparationTimeMillisecond = 300;
 const int kMockModelSizeBytes = 3000;
 
+using blink::mojom::AILanguageCodePtr;
+
 // TODO(crbug.com/394109104): This is duplicated from chrome AIManager in order
 // to keep the consistent wpt results run from CQ, which currently only supports
 // running wpt_internal/ tests on content_shell, using content EchoAIManager.
 // If there is enough divergence in two AI Managers' code, it should be
 // refactored to share the common code or use subclasses.
-bool SupportedLanguages(const std::vector<std::string>& input,
-                        const std::vector<std::string>& context,
-                        const std::string& output) {
-  auto supported = [](const std::string& l) {
-    return l.empty() || language::ExtractBaseLanguage(l) == "en";
+bool SupportedLanguages(const std::vector<AILanguageCodePtr>& input,
+                        const std::vector<AILanguageCodePtr>& context,
+                        const AILanguageCodePtr& output) {
+  auto supported = [](const AILanguageCodePtr& language) {
+    return language->code.empty() ||
+           language::ExtractBaseLanguage(language->code) == "en";
   };
   return std::ranges::all_of(input, supported) &&
          std::ranges::all_of(context, supported) && supported(output);

@@ -5,6 +5,7 @@
 #include "ui/aura/test/test_cursor_client.h"
 
 #include "ui/aura/client/cursor_client_observer.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/display.h"
@@ -54,6 +55,12 @@ void TestCursorClient::SetCursorSize(ui::CursorSize cursor_size) {}
 
 ui::CursorSize TestCursorClient::GetCursorSize() const {
   return ui::CursorSize::kNormal;
+}
+
+void TestCursorClient::SetLargeCursorSizeInDip(int large_cursor_size_in_dip) {}
+
+int TestCursorClient::GetLargeCursorSizeInDip() const {
+  return ui::kDefaultLargeCursorSize;
 }
 
 void TestCursorClient::SetCursorColor(SkColor color) {}

@@ -41,18 +41,25 @@ class LayoutSVGInlineText final : public LayoutText {
   }
   const Font& ScaledFont() const {
     NOT_DESTROYED();
-    return scaled_font_;
+    if (!scaled_font_) {
+      scaled_font_ = MakeGarbageCollected<Font>();
+    }
+    return *scaled_font_;
   }
   void UpdateScaledFont();
-  static void ComputeNewScaledFontForStyle(const LayoutObject&,
-                                           float& scaling_factor,
-                                           Font& scaled_font);
+  static const Font* ComputeNewScaledFontForStyle(const LayoutObject&,
+                                                  float& scaling_factor);
 
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutSVGInlineText";
   }
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
+
+  void Trace(Visitor* visitor) {
+    visitor->Trace(scaled_font_);
+    LayoutText::Trace(visitor);
+  }
 
  private:
   void TextDidChange() override;
@@ -76,7 +83,7 @@ class LayoutSVGInlineText final : public LayoutText {
   gfx::RectF VisualRectInLocalSVGCoordinates() const final;
 
   float scaling_factor_;
-  Font scaled_font_;
+  mutable Member<const Font> scaled_font_;
 };
 
 template <>

@@ -45,8 +45,6 @@ std::string LinkCapturingVersionToString(
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
     LinkCapturingFeatureVersion version);
 
-std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX();
-
 // Enables link capturing as if the user did it from the app settings page.
 // Returns the error description if there was an error.
 base::expected<void, std::string> EnableLinkCapturingByUser(

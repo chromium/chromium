@@ -9,10 +9,10 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --use-angle=swiftshader",
           "--enforce-browser-version",
-          "--xvfb",
-          "--jobs=4"
+          "--jobs=4",
+          "--xvfb"
         ],
         "isolate_profile_data": true,
         "merge": {

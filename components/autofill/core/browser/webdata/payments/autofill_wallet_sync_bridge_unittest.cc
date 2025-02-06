@@ -219,12 +219,13 @@ std::string WalletMaskedIbanSpecificsAsDebugString(
   return output.str();
 }
 
-std::string BnplIssuerDetailsAsDebugString(
-    const sync_pb::BnplIssuerDetails& bnpl_issuer_details) {
+std::string BnplCreationOptionAsDebugString(
+    const sync_pb::BnplCreationOption& bnpl_creation_option) {
   std::ostringstream output;
-  output << "[issuer_id: " << bnpl_issuer_details.issuer_id()
+  output << "[issuer_id: " << bnpl_creation_option.issuer_id()
          << ", eligible_price_range: {";
-  for (auto eligible_price_range : bnpl_issuer_details.eligible_price_range()) {
+  for (auto eligible_price_range :
+       bnpl_creation_option.eligible_price_range()) {
     output << "[currency: " << eligible_price_range.currency()
            << ", min_price_in_micros: "
            << eligible_price_range.min_price_in_micros()
@@ -242,7 +243,7 @@ std::string WalletPaymentInstrumentCreationOptionAsDebugString(
   if (specifics.payment_instrument_creation_option()
           .has_buy_now_pay_later_option()) {
     output << ", buy_now_pay_later_option: {"
-           << BnplIssuerDetailsAsDebugString(
+           << BnplCreationOptionAsDebugString(
                   specifics.payment_instrument_creation_option()
                       .buy_now_pay_later_option())
            << "}";

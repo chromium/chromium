@@ -710,7 +710,7 @@ void extractCrashValueFromPartitionKey(
   if (host_data_view.is_null()) {
     crash_value.append("no_host");
   } else {
-    crash_value.append(host_data_view.storage());
+    crash_value.append(host_data_view.storage(), host_data_view.size());
   }
 
   mojo::StringDataView scheme_data_view;
@@ -719,7 +719,7 @@ void extractCrashValueFromPartitionKey(
   if (scheme_data_view.is_null()) {
     crash_value.append("no_scheme");
   } else {
-    crash_value.append(scheme_data_view.storage());
+    crash_value.append(scheme_data_view.storage(), scheme_data_view.size());
   }
 
   mojo_base::mojom::UnguessableTokenDataView nonce_if_opaque_data_view;

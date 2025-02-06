@@ -95,7 +95,6 @@ aggregate_vector_icons("components_vector_icons") {
     "file_download_off_chrome_refresh.icon",
     "fingerprint.icon",
     "fingerprint_off.icon",
-    "fit_screen.icon",
     "folder.icon",
     "folder_chrome_refresh.icon",
     "folder_managed_refresh.icon",

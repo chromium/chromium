@@ -21,6 +21,7 @@ class SharedURLLoaderFactory;
 }
 
 namespace policy {
+enum class PolicyFetchReason;
 class CloudPolicyClient;
 }  // namespace policy
 
@@ -55,6 +56,7 @@ class DMClient {
 
   // Fetch policies using the DM token from storage.
   virtual void FetchPolicies(
+      policy::PolicyFetchReason reason,
       scoped_refptr<EnterpriseCompanionEventLogger> logger,
       StatusCallback callback) = 0;
 };

@@ -1,0 +1,11 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+struct AILanguageCode {
+  // BCP 47 language code used for the Built-in AI APIs.
+  // This code may be hardcoded in Chrome or passed from the JS API.
+  string code;
+};

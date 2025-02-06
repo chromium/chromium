@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/modules/ai/ai_writer_factory.h"
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_writer_create_options.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/ai_writer.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -78,9 +80,10 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
             ToMojoAIWriterTone(options->tone()),
             ToMojoAIWriterFormat(options->format()),
             ToMojoAIWriterLength(options->length()),
-            options->getExpectedInputLanguagesOr({}),
-            options->getExpectedContextLanguagesOr({}),
-            options->getOutputLanguageOr(g_empty_string)));
+            ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
+            ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
+            mojom::blink::AILanguageCode::New(
+                options->getOutputLanguageOr(g_empty_string))));
   }
   ~CreateWriterClient() override = default;
 
@@ -155,9 +158,10 @@ ScriptPromise<V8AICapabilityAvailability> AIWriterFactory::availability(
           ToMojoAIWriterTone(options->tone()),
           ToMojoAIWriterFormat(options->format()),
           ToMojoAIWriterLength(options->length()),
-          options->getExpectedInputLanguagesOr({}),
-          options->getExpectedContextLanguagesOr({}),
-          options->getOutputLanguageOr(g_empty_string)),
+          ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
+          ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
+          mojom::blink::AILanguageCode::New(
+              options->getOutputLanguageOr(g_empty_string))),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8AICapabilityAvailability>* resolver,
              AIWriterFactory* factory,

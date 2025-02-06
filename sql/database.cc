@@ -1515,8 +1515,6 @@ SqliteResultCode Database::ExecuteAndReturnResultCode(
     while (base::IsAsciiWhitespace(*sql)) {
       sql++;
     }
-    // Do not use multi-statement with Execute(...).
-    CHECK(!*sql);
   }
 
   // Most calls to Execute() modify the database.  The main exceptions would be

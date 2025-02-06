@@ -1741,7 +1741,6 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ExternalIntentsFeatures.TRUSTED_CLIENT_GESTURE_BYPASS_NAME})
     public void testRedirectToTrustedCaller() throws Exception {
         final String url = mTestServer.getURL(HELLO_PAGE);
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();

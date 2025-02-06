@@ -16,7 +16,7 @@ float ComputeTextWidth(const StringView& text, const ComputedStyle& style) {
   }
   // TODO(crbug.com/1229581): Re-implement this without TextRun.
   bool directional_override = style.RtlOrdering() == EOrder::kVisual;
-  return style.GetFont().Width(
+  return style.GetFont()->Width(
       TextRun(text, BidiParagraph::BaseDirectionForStringOrLtr(text),
               directional_override));
 }

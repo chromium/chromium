@@ -5625,6 +5625,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDynamicSafeAreaInsetsSupportedByCCDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(features::kDynamicSafeAreaInsetsSupportedByCC)},
+    {"css-safe-area-max-inset", flag_descriptions::kCSSSafeAreaMaxInsetName,
+     flag_descriptions::kCSSSafeAreaMaxInsetDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kCSSSafeAreaMaxInset)},
     {"bottom-browser-controls-refactor",
      flag_descriptions::kBottomBrowserControlsRefactorName,
      flag_descriptions::kBottomBrowserControlsRefactorDescription, kOsAndroid,
@@ -8326,6 +8329,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          webnn::mojom::features::kExperimentalWebMachineLearningNeuralNetwork)},
 
+#if BUILDFLAG(IS_WIN)
+    {"webnn-directml", flag_descriptions::kWebNNDirectMLName,
+     flag_descriptions::kWebNNDirectMLDescription, kOsWin,
+     FEATURE_VALUE_TYPE(webnn::mojom::features::kWebNNDirectML)},
+#endif  // BUILDFLAG(IS_WIN)
+
     {"one-time-permission", flag_descriptions::kOneTimePermissionName,
      flag_descriptions::kOneTimePermissionDescription, kOsAll,
      FEATURE_VALUE_TYPE(permissions::features::kOneTimePermission)},
@@ -8509,11 +8518,6 @@ const FeatureEntry kFeatureEntries[] = {
          kPhotoPickerAdoptionStudyFeatureVariations,
          "MediaPickerAdoption")},
 #endif  // BUILDFLAG(IS_ANDROID)
-
-    {"privacy-sandbox-ads-apis",
-     flag_descriptions::kPrivacySandboxAdsAPIsOverrideName,
-     flag_descriptions::kPrivacySandboxAdsAPIsOverrideDescription, kOsAll,
-     SINGLE_VALUE_TYPE(switches::kEnablePrivacySandboxAdsApis)},
 
     {"privacy-sandbox-internals",
      flag_descriptions::kPrivacySandboxInternalsName,

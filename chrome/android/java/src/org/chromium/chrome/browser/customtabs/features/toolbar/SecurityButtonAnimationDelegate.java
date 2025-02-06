@@ -20,11 +20,11 @@ public class SecurityButtonAnimationDelegate {
     public static final int SLIDE_DURATION_MS = 200;
     public static final int FADE_DURATION_MS = 150;
 
-    private final ImageButton mSecurityButton;
     private final View mSecurityIconOffsetTarget;
     private final AnimatorSet mSecurityButtonShowAnimator;
     private final AnimatorSet mSecurityButtonHideAnimator;
     private final ObjectAnimator mTranslateLeft;
+    private ImageButton mSecurityButton;
     private int mSecurityButtonWidth;
 
     public SecurityButtonAnimationDelegate(
@@ -77,12 +77,21 @@ public class SecurityButtonAnimationDelegate {
     }
 
     /**
+     * Sets the security button to animate.
+     *
+     * @param securityButton The security {@link ImageButton}.
+     */
+    void setSecurityButton(ImageButton securityButton) {
+        mSecurityButton = securityButton;
+    }
+
+    /**
      * Sets the width of the security button to properly offset the url bar. This should be set once
      * we know whether the security icon is nested or not.
      *
      * @param width The width of the security button in pixels.
      */
-    public void setSecurityButtonWidth(int width) {
+    void setSecurityButtonWidth(int width) {
         mSecurityButtonWidth = width;
         mTranslateLeft.setFloatValues(-mSecurityButtonWidth);
     }

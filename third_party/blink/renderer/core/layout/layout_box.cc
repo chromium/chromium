@@ -179,9 +179,9 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
   float float_result = char_width * factor;
 
   float max_char_width = 0.f;
-  const Font& font = box.StyleRef().GetFont();
-  if (layout_text_control::HasValidAvgCharWidth(font)) {
-    max_char_width = font.PrimaryFont()->MaxCharWidth();
+  const Font* font = box.StyleRef().GetFont();
+  if (layout_text_control::HasValidAvgCharWidth(*font)) {
+    max_char_width = font->PrimaryFont()->MaxCharWidth();
   }
 
   // For text inputs, IE adds some extra width.
@@ -293,7 +293,7 @@ LogicalSize ThemePartIntrinsicSize(const LayoutBox& box,
 LayoutUnit ListBoxDefaultItemHeight(const LayoutBox& box) {
   constexpr int kDefaultPaddingBottom = 1;
 
-  const SimpleFontData* font_data = box.StyleRef().GetFont().PrimaryFont();
+  const SimpleFontData* font_data = box.StyleRef().GetFont()->PrimaryFont();
   if (!font_data)
     return LayoutUnit();
   return LayoutUnit(font_data->GetFontMetrics().Height() +
@@ -351,7 +351,7 @@ LayoutUnit MenuListIntrinsicBlockSize(const HTMLSelectElement& select,
                                       const LayoutBox& box) {
   if (!box.StyleRef().HasEffectiveAppearance())
     return kIndefiniteSize;
-  const SimpleFontData* font_data = box.StyleRef().GetFont().PrimaryFont();
+  const SimpleFontData* font_data = box.StyleRef().GetFont()->PrimaryFont();
   DCHECK(font_data);
   const LayoutBox* inner_box = select.InnerElement().GetLayoutBox();
   return (font_data ? font_data->GetFontMetrics().Height() : 0) +
@@ -3058,7 +3058,7 @@ PhysicalRect LayoutBox::LocalCaretRect(int caret_offset) const {
   // giant tall-as-window insertion point
   //
   // FIXME: ignoring :first-line, missing good reason to take care of
-  const SimpleFontData* font_data = StyleRef().GetFont().PrimaryFont();
+  const SimpleFontData* font_data = StyleRef().GetFont()->PrimaryFont();
   LayoutUnit font_height =
       LayoutUnit(font_data ? font_data->GetFontMetrics().Height() : 0);
   if (font_height > size.block_size || (!IsAtomicInlineLevel() && !IsTable())) {

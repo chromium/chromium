@@ -18,8 +18,8 @@ FontDescription FontStyleResolver::ComputeFont(
   FontBuilder builder(nullptr);
 
   FontDescription fontDescription;
-  Font font(fontDescription, font_selector);
-  CSSToLengthConversionData::FontSizes font_sizes(10, 10, &font, 1);
+  Font* font = MakeGarbageCollected<Font>(fontDescription, font_selector);
+  CSSToLengthConversionData::FontSizes font_sizes(10, 10, font, 1);
   CSSToLengthConversionData::LineHeightSize line_height_size;
   CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
   CSSToLengthConversionData::ContainerSizes container_sizes;

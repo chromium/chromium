@@ -44,6 +44,8 @@ class TestCursorClient : public aura::client::CursorClient {
   void HideCursor() override;
   void SetCursorSize(ui::CursorSize cursor_size) override;
   ui::CursorSize GetCursorSize() const override;
+  void SetLargeCursorSizeInDip(int large_cursor_size_in_dip) override;
+  int GetLargeCursorSizeInDip() const override;
   void SetCursorColor(SkColor color) override;
   SkColor GetCursorColor() const override;
   bool IsCursorVisible() const override;

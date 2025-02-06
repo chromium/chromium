@@ -40,9 +40,7 @@ include_rules = [
   "+chrome/browser/ui/tabs/tab_enums.h",
   "+chrome/browser/ui/tabs/tab_strip_model_delegate.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
-  "+chrome/test/base/browser_with_test_window_test.h",
   "+chrome/test/base/in_process_browser_test.h",
-  "+chrome/test/base/testing_browser_process.h",
   "+chrome/test/base/testing_profile.h",
   "+chrome/test/base/testing_profile_manager.h",
   "+chrome/browser/ash/settings/device_settings_service.h",
@@ -56,7 +54,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "on_task_locked_session_navigation_throttle_browsertest.cc": [
+  "on_task_locked_session_navigation_throttle_interactive_ui_test.cc": [
+      "+chrome/browser/ui/browser_commands.h",
+      "+chrome/browser/ui/browser_navigator_params.h",
+      "+chrome/browser/ui/test/test_browser_closed_waiter.h",
+      "+chrome/test/base/interactive_test_utils.h",
       "+chrome/test/base/ui_test_utils.h",
   ],
   "on_task_locked_session_window_tracker_browsertest.cc": [

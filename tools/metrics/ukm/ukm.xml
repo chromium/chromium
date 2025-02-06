@@ -15664,6 +15664,41 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="OptimizationGuide.AnnotatedPageContent">
+  <owner>chrome-intelligence-core@google.com</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>khushalsagar@chromium.org</owner>
+  <summary>
+    Metrics on the page content extracted from all frames in the page. The
+    extraction can happen multiple times during the pageload to re-compute the
+    changes, and each extraction will record the metrics.
+  </summary>
+  <metric name="ExtractionLatency">
+    <summary>
+      Page content extraction latency. The time taken to extract across all
+      frames in the page.
+    </summary>
+  </metric>
+  <metric name="NodeCount">
+    <summary>
+      Number of nodes in the page content.
+    </summary>
+  </metric>
+  <metric name="TotalSize">
+    <summary>
+      Total size of the extracted page content.
+    </summary>
+  </metric>
+  <metric name="WordsCount">
+    <summary>
+      Number of words in the web page. The searchable text (visible and
+      invisible folded text) in the page is broken down by whitespace to get the
+      word count.
+    </summary>
+  </metric>
+</event>
+
 <event name="OptimizationGuide.AnnotatedPdfContent">
   <owner>chrome-intelligence-core@google.com</owner>
   <owner>rajendrant@chromium.org</owner>

@@ -290,11 +290,12 @@ TEST_F(CursorWindowControllerTest, ScaleUsesCorrectAssets) {
 TEST_F(CursorWindowControllerTest, DSF) {
   const auto& cursor_shape_client = aura::client::GetCursorShapeClient();
 
-  auto cursor_test = [&](ui::Cursor cursor, float size, float cursor_scale) {
+  auto cursor_test = [&](ui::Cursor cursor, float large_cursor_size_in_dip) {
     const float dsf =
         display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
-    SCOPED_TRACE(testing::Message() << cursor.type() << " at scale " << dsf
-                                    << " and size " << size);
+    SCOPED_TRACE(testing::Message()
+                 << cursor.type() << " at scale " << dsf << " and size "
+                 << large_cursor_size_in_dip);
 
     cursor_window_controller()->SetCursor(cursor);
     const std::optional<ui::CursorData> cursor_data =
@@ -309,16 +310,18 @@ TEST_F(CursorWindowControllerTest, DSF) {
     const gfx::ImageSkiaRep& rep = GetCursorImage().GetRepresentation(dsf);
     EXPECT_EQ(rep.scale(), dsf);
 
-    const gfx::Size kOriginalCursorSize =
+    const gfx::Size original_cursor_size_in_dip =
         // ImageSkiaRep::GetWidth() uses static_cast<int>.
         gfx::ToFlooredSize(gfx::ConvertSizeToDips(
             gfx::SkISizeToSize(cursor_data->bitmaps[0].dimensions()),
-            cursor_scale));
-    const gfx::Size kCursorSize =
-        size != 0 ? gfx::Size(size, size) : kOriginalCursorSize;
+            cursor_data->scale_factor));
+    const gfx::Size cursor_size_in_dip =
+        large_cursor_size_in_dip != 0
+            ? gfx::Size(large_cursor_size_in_dip, large_cursor_size_in_dip)
+            : original_cursor_size_in_dip;
     // Scaling operations and conversions between dp and px can cause rounding
     // errors. We accept rounding errors <= sqrt(1+1).
-    EXPECT_LE(DistanceBetweenSizes(GetCursorImage().size(), kCursorSize),
+    EXPECT_LE(DistanceBetweenSizes(GetCursorImage().size(), cursor_size_in_dip),
               sqrt(2));
 
     // TODO(hferreiro): the cursor hotspot for non-custom cursors cannot be
@@ -327,16 +330,17 @@ TEST_F(CursorWindowControllerTest, DSF) {
     // `CursorLoader::GetCursorData` uses `ui::GetSupportedResourceScaleFactor`,
     // and 2x cursor hotspots are not just twice the 1x hotspots.
     if (cursor.type() == CursorType::kCustom) {
-      const gfx::Point kHotspot = gfx::ToFlooredPoint(
-          gfx::ConvertPointToDips(cursor_data->hotspot, cursor_scale));
-      const float rescale =
-          static_cast<float>(kCursorSize.width()) / kOriginalCursorSize.width();
+      const gfx::Point hotspot_in_dip =
+          gfx::ToFlooredPoint(gfx::ConvertPointToDips(
+              cursor_data->hotspot, cursor_data->scale_factor));
+      const float rescale = static_cast<float>(cursor_size_in_dip.height()) /
+                            original_cursor_size_in_dip.height();
       // Scaling operations and conversions between dp and px can cause rounding
       // errors. We accept rounding errors <= sqrt(1+1).
-      EXPECT_LE(
-          DistanceBetweenPoints(GetCursorHotPoint(),
-                                gfx::ScaleToCeiledPoint(kHotspot, rescale)),
-          sqrt(2));
+      ASSERT_LE(DistanceBetweenPoints(
+                    GetCursorHotPoint(),
+                    gfx::ScaleToCeiledPoint(hotspot_in_dip, rescale)),
+                sqrt(2));
     }
 
     // The cursor window should have the same size as the cursor.
@@ -354,22 +358,20 @@ TEST_F(CursorWindowControllerTest, DSF) {
                             ->GetPrimaryDisplay()
                             .device_scale_factor();
 
-      for (const int size : {0, 32, 64, 128}) {
-        cursor_manager->SetCursorSize(size == 0 ? ui::CursorSize::kNormal
-                                                : ui::CursorSize::kLarge);
-        Shell::Get()->SetLargeCursorSizeInDip(size);
+      for (const int large_cursor_size_in_dip : {0, 32, 64, 128}) {
+        cursor_manager->SetCursorSize(large_cursor_size_in_dip == 0
+                                          ? ui::CursorSize::kNormal
+                                          : ui::CursorSize::kLarge);
+        Shell::Get()->SetLargeCursorSizeInDip(large_cursor_size_in_dip);
 
         // Default cursor.
-        cursor_test(CursorType::kPointer, size,
-                    // Use the nearest resource scale factor.
-                    ui::GetScaleForResourceScaleFactor(
-                        ui::GetSupportedResourceScaleFactor(dsf)));
+        cursor_test(CursorType::kPointer, large_cursor_size_in_dip);
 
         // Custom cursor. Custom cursors are always scaled at the device scale
         // factor. See `WebCursor::GetNativeCursor`.
         cursor_test(ui::Cursor::NewCustom(gfx::test::CreateBitmap(/*size=*/20),
                                           gfx::Point(10, 10), dsf),
-                    size, dsf);
+                    large_cursor_size_in_dip);
       }
     }
   }
@@ -380,17 +382,53 @@ TEST_F(CursorWindowControllerTest, DSF) {
 TEST_F(CursorWindowControllerTest, ShouldEnableCursorCompositing) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
+  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  const float dsf = 2.0f;
+  display.set_device_scale_factor(dsf);
+  display.set_maximum_cursor_size(gfx::Size(128, 128));
+  const gfx::SizeF display_maximum_cursor_size_in_dip =
+      gfx::ConvertSizeToDips(display.maximum_cursor_size(), dsf);
 
   // Cursor compositing is disabled by default.
   SetCursorCompositionEnabled(false);
   EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
 
-  // Enable large cursor, cursor compositing should be enabled.
+  // Enable high contrast feature, cursor compositing should be enabled.
+  prefs->SetBoolean(prefs::kAccessibilityHighContrastEnabled, true);
+  EXPECT_TRUE(cursor_window_controller()->is_cursor_compositing_enabled());
+
+  // Disable high contrast feature, cursor compositing should be disabled.
+  prefs->SetBoolean(prefs::kAccessibilityHighContrastEnabled, false);
+  EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
+
+  // Enable docked magnifier feature, cursor compositing should be enabled.
+  prefs->SetBoolean(prefs::kDockedMagnifierEnabled, true);
+  EXPECT_TRUE(cursor_window_controller()->is_cursor_compositing_enabled());
+
+  // Disable docked magnifier feature, cursor compositing should be disabled.
+  prefs->SetBoolean(prefs::kDockedMagnifierEnabled, false);
+  EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
+
+  // Enable large cursor, cursor compositing should be enabled only if
+  // the target large cursor size is larger than current display's maximum
+  // cursor size.
+  cursor_window_controller()->SetDisplay(display);
+  cursor_window_controller()->SetLargeCursorSizeInDip(
+      display_maximum_cursor_size_in_dip.height() + 1);
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
   EXPECT_TRUE(cursor_window_controller()->is_cursor_compositing_enabled());
 
   // Disable large cursor, cursor compositing should be disabled.
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, false);
+  EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
+
+  // Re-enable large cursor, since large cursor size is smaller than display's
+  // maximum cursor size, cursor should use hardware compositing instead of
+  // software compositing.
+  cursor_window_controller()->SetDisplay(display);
+  cursor_window_controller()->SetLargeCursorSizeInDip(
+      display_maximum_cursor_size_in_dip.height() - 1);
+  prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
   EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
 }
 

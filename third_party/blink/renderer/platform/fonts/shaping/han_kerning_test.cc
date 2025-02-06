@@ -14,7 +14,7 @@
 
 namespace blink {
 
-Font CreateNotoCjk() {
+Font* CreateNotoCjk() {
   return blink::test::CreateTestFont(
       AtomicString("Noto Sans CJK"),
       blink::test::BlinkWebTestsFontsTestDataPath(
@@ -25,8 +25,8 @@ Font CreateNotoCjk() {
 class HanKerningTest : public testing::Test {};
 
 TEST_F(HanKerningTest, MayApply) {
-  Font noto_cjk = CreateNotoCjk();
-  const SimpleFontData* noto_cjk_data = noto_cjk.PrimaryFont();
+  Font* noto_cjk = CreateNotoCjk();
+  const SimpleFontData* noto_cjk_data = noto_cjk->PrimaryFont();
   EXPECT_TRUE(noto_cjk_data);
   scoped_refptr<LayoutLocale> ja =
       LayoutLocale::CreateForTesting(AtomicString("ja"));
@@ -53,8 +53,8 @@ TEST_F(HanKerningTest, MayApply) {
 }
 
 TEST_F(HanKerningTest, FontDataHorizontal) {
-  Font noto_cjk = CreateNotoCjk();
-  const SimpleFontData* noto_cjk_data = noto_cjk.PrimaryFont();
+  Font* noto_cjk = CreateNotoCjk();
+  const SimpleFontData* noto_cjk_data = noto_cjk->PrimaryFont();
   EXPECT_TRUE(noto_cjk_data);
   scoped_refptr<LayoutLocale> ja =
       LayoutLocale::CreateForTesting(AtomicString("ja"));
@@ -87,8 +87,8 @@ TEST_F(HanKerningTest, FontDataHorizontal) {
 }
 
 TEST_F(HanKerningTest, FontDataVertical) {
-  Font noto_cjk = CreateNotoCjk();
-  const SimpleFontData* noto_cjk_data = noto_cjk.PrimaryFont();
+  Font* noto_cjk = CreateNotoCjk();
+  const SimpleFontData* noto_cjk_data = noto_cjk->PrimaryFont();
   EXPECT_TRUE(noto_cjk_data);
   scoped_refptr<LayoutLocale> ja =
       LayoutLocale::CreateForTesting(AtomicString("ja"));
@@ -148,8 +148,8 @@ TEST_F(HanKerningTest, FontDataSizeError) {
   const float computed_size = specified_size * 1.25f;
   font_description.SetComputedSize(computed_size);
   font_description.SetFontSmoothing(FontSmoothingMode::kAntialiased);
-  Font font(font_description);
-  const SimpleFontData* primary_font = font.PrimaryFont();
+  Font* font = MakeGarbageCollected<Font>(font_description);
+  const SimpleFontData* primary_font = font->PrimaryFont();
 
   SkString name;
   primary_font->PlatformData().Typeface()->getPostScriptName(&name);
@@ -159,7 +159,7 @@ TEST_F(HanKerningTest, FontDataSizeError) {
 
   scoped_refptr<LayoutLocale> locale =
       LayoutLocale::CreateForTesting(AtomicString("ja"));
-  HanKerning::FontData data(*font.PrimaryFont(), *locale, true);
+  HanKerning::FontData data(*font->PrimaryFont(), *locale, true);
   EXPECT_TRUE(data.has_alternate_spacing);
   EXPECT_EQ(data.type_for_dot, HanKerning::CharType::kClose);
   EXPECT_EQ(data.type_for_colon, HanKerning::CharType::kMiddle);
@@ -169,8 +169,8 @@ TEST_F(HanKerningTest, FontDataSizeError) {
 #endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(HanKerningTest, ResetFeatures) {
-  Font noto_cjk = CreateNotoCjk();
-  const SimpleFontData* noto_cjk_data = noto_cjk.PrimaryFont();
+  Font* noto_cjk = CreateNotoCjk();
+  const SimpleFontData* noto_cjk_data = noto_cjk->PrimaryFont();
   EXPECT_TRUE(noto_cjk_data);
   FontFeatures features;
   features.Append({{{'T', 'E', 'S', 'T'}, 1}, 0, static_cast<unsigned>(-1)});
@@ -178,8 +178,8 @@ TEST_F(HanKerningTest, ResetFeatures) {
   const String text(u"国）（国");
   {
     HanKerning han_kerning(text, 0, text.length(), *noto_cjk_data,
-                           noto_cjk.GetFontDescription(), HanKerning::Options(),
-                           &features);
+                           noto_cjk->GetFontDescription(),
+                           HanKerning::Options(), &features);
     EXPECT_EQ(features.size(), 2u);
   }
   EXPECT_EQ(features.size(), 1u);

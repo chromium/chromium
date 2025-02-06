@@ -59,8 +59,8 @@ TSAN_TEST(FontObjectThreadedTest, GetDefaultFontData) {
       ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
       font_description.SetGenericFamily(family_type);
 
-      Font font = Font(font_description);
-      ASSERT_TRUE(font.PrimaryFont());
+      Font* font = MakeGarbageCollected<Font>(font_description);
+      ASSERT_TRUE(font->PrimaryFont());
     }
   });
 }
@@ -68,16 +68,16 @@ TSAN_TEST(FontObjectThreadedTest, GetDefaultFontData) {
 // This test passes by not crashing TSAN.
 TSAN_TEST(FontObjectThreadedTest, FontSelector) {
   RunOnThreads([]() {
-    Font font = CreateTestFont(AtomicString("Ahem"),
-                               test::CoreTestDataPath("Ahem.ttf"), 16);
+    CreateTestFont(AtomicString("Ahem"), test::CoreTestDataPath("Ahem.ttf"),
+                   16);
   });
 }
 
 TSAN_TEST(FontObjectThreadedTest, TextIntercepts) {
   callbacks_per_thread_ = 10;
   RunOnThreads([]() {
-    Font font = CreateTestFont(AtomicString("Ahem"),
-                               test::CoreTestDataPath("Ahem.ttf"), 16);
+    Font* font = CreateTestFont(AtomicString("Ahem"),
+                                test::CoreTestDataPath("Ahem.ttf"), 16);
     // A sequence of LATIN CAPITAL LETTER E WITH ACUTE and LATIN SMALL LETTER P
     // characters. E ACUTES are squares above the baseline in Ahem, while p's
     // are rectangles below the baseline.
@@ -86,7 +86,7 @@ TSAN_TEST(FontObjectThreadedTest, TextIntercepts) {
     String ahem_above_below_baseline{
         base::span(ahem_above_below_baseline_string)};
     ShapeResult* shape_result = HarfBuzzShaper(ahem_above_below_baseline)
-                                    .Shape(&font, TextDirection::kLtr);
+                                    .Shape(font, TextDirection::kLtr);
     TextFragmentPaintInfo text_paint_info{
         ahem_above_below_baseline, 0, ahem_above_below_baseline.length(),
         ShapeResultView::Create(shape_result)};
@@ -95,8 +95,8 @@ TSAN_TEST(FontObjectThreadedTest, TextIntercepts) {
     Vector<Font::TextIntercept> text_intercepts;
 
     // 4 intercept ranges for below baseline p glyphs in the test string
-    font.GetTextIntercepts(text_paint_info, default_paint,
-                           below_baseline_bounds, text_intercepts);
+    font->GetTextIntercepts(text_paint_info, default_paint,
+                            below_baseline_bounds, text_intercepts);
     EXPECT_EQ(text_intercepts.size(), 4u);
     for (auto text_intercept : text_intercepts) {
       EXPECT_GT(text_intercept.end_, text_intercept.begin_);
@@ -104,8 +104,8 @@ TSAN_TEST(FontObjectThreadedTest, TextIntercepts) {
 
     std::tuple<float, float> above_baseline_bounds = std::make_tuple(-4, -2);
     // 5 intercept ranges for the above baseline E ACUTE glyphs
-    font.GetTextIntercepts(text_paint_info, default_paint,
-                           above_baseline_bounds, text_intercepts);
+    font->GetTextIntercepts(text_paint_info, default_paint,
+                            above_baseline_bounds, text_intercepts);
     EXPECT_EQ(text_intercepts.size(), 5u);
     for (auto text_intercept : text_intercepts) {
       EXPECT_GT(text_intercept.end_, text_intercept.begin_);
@@ -121,14 +121,14 @@ TSAN_TEST(FontObjectThreadedTest, WordShaperTest) {
     ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
     font_description.SetGenericFamily(FontDescription::kStandardFamily);
 
-    Font font = Font(font_description);
-    ASSERT_TRUE(font.CanShapeWordByWord());
+    Font* font = MakeGarbageCollected<Font>(font_description);
+    ASSERT_TRUE(font->CanShapeWordByWord());
     ShapeCache* cache = MakeGarbageCollected<ShapeCache>();
 
     TextRun text_run(base::byte_span_from_cstring("ABC DEF."));
 
     const ShapeResult* result = nullptr;
-    CachingWordShapeIterator iter(cache, text_run, &font);
+    CachingWordShapeIterator iter(cache, text_run, font);
 
     ASSERT_TRUE(iter.Next(&result));
     EXPECT_EQ(0u, result->StartIndex());

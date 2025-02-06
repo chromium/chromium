@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_LAUNCHER_GLIC_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_LAUNCHER_GLIC_CONTROLLER_H_
 
+#include "chrome/browser/glic/glic_enums.h"
+
 namespace glic {
 
 // This class is owned by GlicBackgroundModeManager and is responsible for
@@ -18,14 +20,14 @@ class GlicController {
   GlicController& operator=(const GlicController&) = delete;
 
   // Toggles the glic UI.
-  virtual void Toggle();
+  virtual void Toggle(InvocationSource source);
 
   // Shows the glic UI.
-  virtual void Show();
+  virtual void Show(InvocationSource source);
 
  private:
   // Helper that implements both Toggle and Show.
-  void ToggleUI(bool prevent_close = false);
+  void ToggleUI(bool prevent_close, InvocationSource source);
 };
 
 }  // namespace glic

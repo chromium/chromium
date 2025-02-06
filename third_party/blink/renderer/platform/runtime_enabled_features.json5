@@ -1520,6 +1520,20 @@
       status: "stable",
     },
     {
+      // Experimental support for the Direct Sockets API in Service Workers.
+      // https://github.com/WICG/direct-sockets
+      name: "DirectSocketsInServiceWorkers",
+      status: "test",
+      depends_on: ["DirectSockets"],
+    },
+    {
+      // Experimental support for the Direct Sockets API in Shared Workers.
+      // https://github.com/WICG/direct-sockets
+      name: "DirectSocketsInSharedWorkers",
+      status: "test",
+      depends_on: ["DirectSockets"],
+    },
+    {
       // Disables anti-aliasing for the Ahem font. Anti-aliasing this font breaks a
       // significant amount of WPT test expectations.
       name: "DisableAhemAntialias",

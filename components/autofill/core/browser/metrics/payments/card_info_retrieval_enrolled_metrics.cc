@@ -15,4 +15,10 @@ void LogCardInfoRetrievalEnrolledFormEventMetric(
       "Autofill.FormEvents.CreditCard.CardInfoRetrievalEnrolled", event);
 }
 
+void LogCardInfoRetrievalEnrolledUnmaskResult(
+    CardInfoRetrievalEnrolledUnmaskResult unmask_result) {
+  base::UmaHistogramEnumeration("Autofill.CardInfoRetrievalEnrolled.Result",
+                                unmask_result);
+}
+
 }  // namespace autofill::autofill_metrics

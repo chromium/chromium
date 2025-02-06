@@ -437,6 +437,17 @@ interface CookieManager {
   // Delete a cookie. Returns true if a cookie was deleted.
   DeleteCanonicalCookie(CanonicalCookie cookie) => (bool success);
 
+  // Returns true if a site has cookies in a separate partition than the
+  // current site's partition.
+  // If a nullopt is returned, it means either the partition key wasn't set
+  // or the cookie store isn't fully initialized yet.
+  // Note: Calls here do not follow normal sequencing rules. The results
+  // are processed and returned to the caller as soon as requests
+  // are received.
+  SiteHasCookieInOtherPartition(SchemefulSite schemeful_site,
+                                CookiePartitionKey? partition_key)
+                                  => (bool? site_has_cookie_in_other_partition);
+
   // Delete a set of cookies matching the passed filter.
   // Returns the number of cookies deleted.
   DeleteCookies(CookieDeletionFilter filter) => (uint32 num_deleted);

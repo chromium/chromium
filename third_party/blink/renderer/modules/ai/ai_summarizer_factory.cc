@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_summarizer_factory.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_summarizer.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
@@ -95,9 +97,10 @@ class CreateSummarizerClient
             ToMojoSummarizerType(options_->type()),
             ToMojoSummarizerFormat(options_->format()),
             ToMojoSummarizerLength(options_->length()),
-            options_->getExpectedInputLanguagesOr({}),
-            options_->getExpectedContextLanguagesOr({}),
-            options_->getOutputLanguageOr(g_empty_string)));
+            ToMojoLanguageCodes(options_->getExpectedInputLanguagesOr({})),
+            ToMojoLanguageCodes(options_->getExpectedContextLanguagesOr({})),
+            mojom::blink::AILanguageCode::New(
+                options_->getOutputLanguageOr(g_empty_string))));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -177,9 +180,10 @@ ScriptPromise<V8AICapabilityAvailability> AISummarizerFactory::availability(
           ToMojoSummarizerType(options->type()),
           ToMojoSummarizerFormat(options->format()),
           ToMojoSummarizerLength(options->length()),
-          options->getExpectedInputLanguagesOr({}),
-          options->getExpectedContextLanguagesOr({}),
-          options->getOutputLanguageOr(g_empty_string)),
+          ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
+          ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
+          mojom::blink::AILanguageCode::New(
+              options->getOutputLanguageOr(g_empty_string))),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8AICapabilityAvailability>* resolver,
              AISummarizerFactory* factory,

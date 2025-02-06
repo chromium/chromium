@@ -25,12 +25,13 @@ namespace safe_browsing {
 class SafeBrowsingPrefChangeHandler {
  public:
   SafeBrowsingPrefChangeHandler();
-  ~SafeBrowsingPrefChangeHandler();
+  virtual ~SafeBrowsingPrefChangeHandler();
 
   // Handles notifying the user when necessary. The type of notification shown
   // depends on the platform and whether the user is currently on the security
-  // settings page.
-  void MaybeShowEnhancedProtectionSettingChangeNotification(Profile* profile);
+  // settings page. Virtual for tests.
+  virtual void MaybeShowEnhancedProtectionSettingChangeNotification(
+      Profile* profile);
 
  private:
 #if BUILDFLAG(IS_ANDROID)

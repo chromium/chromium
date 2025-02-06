@@ -347,11 +347,11 @@ TEST_F(CSSPrimitiveValueTest, ComputeMethodsWithLengthResolver) {
         sign, degs, CSSMathOperator::kMultiply);
     CSSPrimitiveValue* value = CSSMathFunctionValue::Create(expression);
 
-    Font font;
+    Font* font = MakeGarbageCollected<Font>();
     CSSToLengthConversionData length_resolver =
         CSSToLengthConversionData(/*element=*/nullptr);
     length_resolver.SetFontSizes(
-        CSSToLengthConversionData::FontSizes(10.0f, 10.0f, &font, 1.0f));
+        CSSToLengthConversionData::FontSizes(10.0f, 10.0f, font, 1.0f));
     EXPECT_EQ(10.0, value->ComputeDegrees(length_resolver));
     EXPECT_EQ("calc(sign(-1em + 12px) * 10deg)", value->CustomCSSText());
   }
@@ -425,10 +425,10 @@ TEST_F(CSSPrimitiveValueTest, ComputeValueToCanonicalUnit) {
           node_20_px, node_2_em, CSSMathOperator::kSubtract);
   auto* function = CSSMathFunctionValue::Create(node_sub);
 
-  Font font;
+  Font* font = MakeGarbageCollected<Font>();
   CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   length_resolver.SetFontSizes(
-      CSSToLengthConversionData::FontSizes(10.0f, 10.0f, &font, 1.0f));
+      CSSToLengthConversionData::FontSizes(10.0f, 10.0f, font, 1.0f));
 
   EXPECT_EQ(function->ComputeValueInCanonicalUnit(length_resolver), 0);
   EXPECT_EQ(numeric_percentage->ComputeValueInCanonicalUnit(length_resolver),

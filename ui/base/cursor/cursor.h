@@ -23,6 +23,10 @@ namespace ui {
 
 inline constexpr SkColor kDefaultCursorColor = SK_ColorBLACK;
 
+inline constexpr int kDefaultLargeCursorSize = 64;
+inline constexpr int kMinLargeCursorSize = 25;
+inline constexpr int kMaxLargeCursorSize = 128;
+
 struct COMPONENT_EXPORT(UI_BASE_CURSOR) CursorData {
  public:
   CursorData();

@@ -300,9 +300,10 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
 #endif
 }
 
+// TODO(crbug.com/394677144): Enable test
 // Test that first run experience opens Help App with launch source query param.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithFirstRunEnabled,
-                       HelpAppV2FirstRunLaunch) {
+                       DISABLED_HelpAppV2FirstRunLaunch) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
   GURL expected_trusted_frame_url =

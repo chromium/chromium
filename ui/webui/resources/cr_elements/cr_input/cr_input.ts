@@ -93,7 +93,6 @@ export class CrInputElement extends CrLitElement {
 
       errorMessage: {type: String},
       errorRole_: {type: String},
-      displayErrorMessage_: {type: String},
 
       /**
        * This is strictly used internally for styling, do not attempt to use

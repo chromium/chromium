@@ -1545,6 +1545,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.CardInfoRetrievalEnrolled.Result"
+    enum="CardInfoRetrievalEnrolledUnmaskResult" expires_after="2025-07-01">
+  <owner>jialihuang@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the result of a card info retrieval enrolled card unmasking process
+    when the unmasking is finished (whether it succeeded or otherwise reason of
+    the failure).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CardUnmask.ScreenLockCheckBox.InitialState"
     enum="CheckBoxStatus" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>

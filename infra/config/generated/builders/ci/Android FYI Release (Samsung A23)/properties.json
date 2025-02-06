@@ -66,6 +66,12 @@
           "project": "chromium"
         }
       ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "gpu-fyi-try-android-a23-32",
+          "group": "tryserver.chromium.android"
+        }
+      ],
       "targets_spec_directory": "src/infra/config/generated/builders/ci/Android FYI Release (Samsung A23)/targets"
     }
   },

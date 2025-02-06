@@ -24,6 +24,8 @@ using ::testing::NiceMock;
 
 namespace {
 
+using blink::mojom::AILanguageCode;
+using blink::mojom::AILanguageCodePtr;
 using optimization_guide::MockSession;
 using optimization_guide::proto::SummarizeRequest;
 using optimization_guide::proto::SummarizerOutputFormat;
@@ -37,9 +39,9 @@ blink::mojom::AISummarizerCreateOptionsPtr GetDefaultOptionsWithoutLanguageInfo(
     blink::mojom::AISummarizerLength length) {
   return blink::mojom::AISummarizerCreateOptions::New(
       shared_context, type, format, length,
-      /*expected_input_languages=*/std::vector<std::string>(),
-      /*expected_context_languages=*/std::vector<std::string>(),
-      /*output_language=*/std::string());
+      /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
+      /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
+      /*output_language=*/AILanguageCode::New(""));
 }
 
 blink::mojom::AISummarizerCreateOptionsPtr GetDefaultOptions() {
@@ -346,11 +348,11 @@ TEST_F(AISummarizerUnitTest, CanCreateSupportedLanguages) {
       .WillRepeatedly(testing::Return(
           optimization_guide::OnDeviceModelEligibilityReason::kSuccess));
   auto options = GetDefaultOptions();
-  options->output_language = "en";
-  options->expected_input_languages = {"en-US", ""};
-  options->output_language = "en";
-  options->expected_input_languages = {"en-US", ""};
-  options->expected_context_languages = {"en-GB", ""};
+  options->output_language = AILanguageCode::New("en");
+  options->expected_input_languages =
+      AITestUtils::ToMojoLanguageCodes({"en-US", ""});
+  options->expected_context_languages =
+      AITestUtils::ToMojoLanguageCodes({"en-GB", ""});
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
   EXPECT_CALL(callback,
               Run(blink::mojom::ModelAvailabilityCheckResult::kReadily));
@@ -361,9 +363,11 @@ TEST_F(AISummarizerUnitTest, CanCreateSupportedLanguages) {
 TEST_F(AISummarizerUnitTest, CanCreateUnsupportedLanguages) {
   SetupMockOptimizationGuideKeyedService();
   auto options = GetDefaultOptions();
-  options->output_language = "es-ES";
-  options->expected_input_languages = {"en", "fr", "jp"};
-  options->expected_context_languages = {"ar", "zh", "hi"};
+  options->output_language = AILanguageCode::New("es-ES");
+  options->expected_input_languages =
+      AITestUtils::ToMojoLanguageCodes({"en", "fr", "ja"});
+  options->expected_context_languages =
+      AITestUtils::ToMojoLanguageCodes({"ar", "zh", "hi"});
   base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
   EXPECT_CALL(
       callback,

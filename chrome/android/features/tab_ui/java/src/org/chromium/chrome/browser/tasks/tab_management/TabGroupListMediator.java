@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.IS_ICON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_IDENTIFIER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.DEFAULT_MESSAGE_IDENTIFIER;
@@ -331,6 +332,7 @@ public class TabGroupListMediator {
                             .with(
                                     DISMISS_BUTTON_CONTENT_DESCRIPTION,
                                     dismissButtonContextDescription)
+                            .with(IS_ICON_VISIBLE, false)
                             .with(CARD_TYPE, MESSAGE)
                             .with(MESSAGING_BACKEND_SERVICE_ID, messageId)
                             .build();

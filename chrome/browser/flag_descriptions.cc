@@ -2459,6 +2459,12 @@ const char kExperimentalWebMachineLearningNeuralNetworkDescription[] =
     "Enables additional, experimental features in Web Machine Learning Neural "
     "Network (WebNN) API. Requires the \"WebNN API\" flag to be enabled.";
 
+const char kWebNNDirectMLName[] = "DirectML backend for WebNN";
+const char kWebNNDirectMLDescription[] =
+    "Enables using DirectML for GPU and "
+    "NPU inference with the WebNN API. Disabling this flag enables a "
+    "fallback to TFLite.";
+
 const char kSystemProxyForSystemServicesName[] =
     "Enable system-proxy for selected system services";
 const char kSystemProxyForSystemServicesDescription[] =
@@ -3029,12 +3035,6 @@ const char kEnableOmniboxClientSearchPrefetchDescription[] =
 const char kPriceChangeModuleName[] = "Price Change Module";
 const char kPriceChangeModuleDescription[] =
     "Show a module with price drops of open tabs on new tab page.";
-
-const char kPrivacySandboxAdsAPIsOverrideName[] = "Privacy Sandbox Ads APIs";
-const char kPrivacySandboxAdsAPIsOverrideDescription[] =
-    "Enables Privacy Sandbox APIs: Attribution Reporting, Fledge, Topics, "
-    "Fenced Frames, Shared Storage, Private Aggregation, and their associated "
-    "features.";
 
 const char kPrivacySandboxAdsApiUxEnhancementsName[] =
     "Privacy Sandbox Ads API UX Enhancements";
@@ -4355,6 +4355,10 @@ const char kDynamicSafeAreaInsetsSupportedByCCDescription[] =
     "Dynamically change the safe area insets on the compositor thread as "
     "browser controls are shown or hidden during scroll. "
     "Requires DynamicSafeAreaInsets to also be enabled.";
+
+const char kCSSSafeAreaMaxInsetName[] = "CSSSafeAreaMaxInset";
+const char kCSSSafeAreaMaxInsetDescription[] =
+    "Enables CSS engine support for the env(safe-area-max-inset-*) variables.";
 
 const char kEducationalTipModuleName[] = "Educational Tip Module";
 const char kEducationalTipModuleDescription[] =

@@ -6,12 +6,12 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_extent_3d_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_data_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_origin_2d_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_origin_3d_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_programmable_stage.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texel_copy_buffer_layout.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texel_copy_texture_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_doublesequence_gpucolordict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpuautolayoutmode_gpupipelinelayout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpuextent3ddict_unsignedlongenforcerangesequence.h"
@@ -161,8 +161,8 @@ bool ConvertToDawn(const V8GPUOrigin2D* in,
   }
 }
 
-bool ConvertToDawn(const GPUImageCopyTexture* in,
-                   wgpu::ImageCopyTexture* out,
+bool ConvertToDawn(const GPUTexelCopyTextureInfo* in,
+                   wgpu::TexelCopyTextureInfo* out,
                    ExceptionState& exception_state) {
   DCHECK(in);
   DCHECK(in->texture());
@@ -179,8 +179,9 @@ bool ConvertToDawn(const GPUImageCopyTexture* in,
 // wgpu::kCopyStrideUndefined (0xFFFF'FFFF). Blink must make sure that an
 // actual value of 0xFFFF'FFFF coming in from JS is not treated as
 // wgpu::kCopyStrideUndefined, so it injects an error in that case.
-const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
-                                      wgpu::TextureDataLayout* dawn_layout) {
+const char* ValidateTexelCopyBufferLayout(
+    const GPUTexelCopyBufferLayout* webgpu_layout,
+    wgpu::TexelCopyBufferLayout* dawn_layout) {
   DCHECK(webgpu_layout);
 
   uint32_t bytesPerRow = 0;

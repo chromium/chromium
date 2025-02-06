@@ -283,10 +283,11 @@ using CSSFilterTest = TestWithParam<FilterTestParams>;
 TEST_P(CSSFilterTest, CreatesFilterOperationsFromCSSFilter) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
+  Font* font = MakeGarbageCollected<Font>();
   EXPECT_THAT(
       CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
           String(GetParam().filter), CHECK_DEREF(scope.GetExecutionContext()),
-          /*style_resolution_host=*/nullptr, Font())
+          /*style_resolution_host=*/nullptr, font)
           .Operations(),
       ElementsAreArray(GetParam().expected_ops));
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -324,7 +325,7 @@ TEST(CSSResolutionTest,
       MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
   // Pre-condition for using style resolution for fonts.
   ASSERT_NE(canvas->GetDocument().GetFrame(), nullptr);
-  Font font(FontStyleResolver::ComputeFont(
+  Font* font = MakeGarbageCollected<Font>(FontStyleResolver::ComputeFont(
       *CSSParser::ParseFont("10px sans-serif", scope.GetExecutionContext()),
       canvas->GetFontSelector()));
   EXPECT_THAT(
@@ -349,7 +350,7 @@ TEST(CSSResolutionTest,
       CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
           String("drop-shadow(1em 1em 0 black)"),
           CHECK_DEREF(scope.GetExecutionContext()),
-          /*style_resolution_host=*/nullptr, Font())
+          /*style_resolution_host=*/nullptr, MakeGarbageCollected<Font>())
           .Operations(),
       // Font sized is assumed to be 16px when no style resolution is available.
       ElementsAreArray(

@@ -618,7 +618,7 @@
   {
     "name": "autofill-enable-cvc-storage-and-filling",
     "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "autofill-enable-cvc-storage-and-filling-enhancement",
@@ -734,7 +734,7 @@
   {
     "name": "autofill-enable-verve-card-support",
     "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "autofill-highlight-only-changed-value-in-preview-mode",
@@ -1796,6 +1796,11 @@
     "name": "css-gamut-mapping",
     "owners": ["ccameron@google.com", "aaronhk@google.com", "chrome-canvas-team@google.com"],
     "expiry_milestone": 126
+  },
+  {
+    "name": "css-safe-area-max-inset",
+    "owners": ["skobes@chromium.org"],
+    "expiry_milestone": 137
   },
   {
     "name": "cups-ipp-printing-backend",
@@ -7076,19 +7081,11 @@
     "expiry_milestone": 137
   },
   {
-    "name": "privacy-sandbox-ads-apis",
-    "owners": [
-      "johnidel@chromium.org",
-      "jkarlin@chromium.org",
-      "pauljensen@chromium.org"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "privacy-sandbox-enrollment-overrides",
     "owners": [
       "lbrady@chromium.org",
       "shivanisha@chromium.org"],
-    "expiry_milestone": 134
+    "expiry_milestone": 146
   },
   {
     "name": "privacy-sandbox-equalized-prompt-buttons",
@@ -8248,7 +8245,7 @@
   {
     "name": "sync-autofill-wallet-credential-data",
     "owners": [ "koulvipul@google.com", "treib@chromium.org", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "sync-enable-bookmarks-in-transport-mode",
@@ -9283,6 +9280,11 @@
     "name": "web-share",
     "owners": [ "mhochk@microsoft.com", "ericwilligers@google.com", "hatalat@microsoft.com" ],
     "expiry_milestone": 135
+  },
+  {
+    "name": "webnn-directml",
+    "owners": [ "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],
+    "expiry_milestone": 146
   },
   {
     "name": "webpage-alternative-text-zoom",

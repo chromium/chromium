@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.profiles;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 
 /** Wrapper that allows passing a ProfileKey reference around in the Java layer. */
+@NullMarked
 public class ProfileKey implements SimpleFactoryKeyHandle {
     /** Whether this wrapper corresponds to an off the record ProfileKey. */
     private final boolean mIsOffTheRecord;

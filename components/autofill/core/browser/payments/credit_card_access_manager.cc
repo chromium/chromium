@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/card_info_retrieval_enrolled_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
@@ -1404,6 +1405,13 @@ void CreditCardAccessManager::OnNonInteractiveAuthenticationSuccess(
             ? PaymentsRpcCardType::kVirtualCard
             : PaymentsRpcCardType::kServerCard,
         autofill_metrics::ServerCardUnmaskFlowType::kRiskBased);
+
+    if (card_->card_info_retrieval_enrollment_state() ==
+        CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled) {
+      autofill_metrics::LogCardInfoRetrievalEnrolledUnmaskResult(
+          autofill_metrics::CardInfoRetrievalEnrolledUnmaskResult::
+              kRiskBasedUnmasked);
+    }
 
     if (!card_->cvc().empty()) {
       autofill_metrics::LogCvcFilling(

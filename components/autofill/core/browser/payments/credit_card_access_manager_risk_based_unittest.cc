@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
+#include "components/autofill/core/browser/metrics/payments/card_info_retrieval_enrolled_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_base.h"
@@ -558,6 +559,11 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.ServerCard.Result.RiskBased",
       autofill_metrics::ServerCardUnmaskResult::kRiskBasedUnmasked, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardInfoRetrievalEnrolled.Result",
+      autofill_metrics::CardInfoRetrievalEnrolledUnmaskResult::
+          kRiskBasedUnmasked,
+      1);
 }
 
 // Test the yellow path flow when the masked server card enrolled in card info

@@ -611,8 +611,17 @@ message PaymentInstrumentCreationOption {
   optional string id = 1;
 
   oneof creation_option {
-    BnplIssuerDetails buy_now_pay_later_option = 2;
+    BnplCreationOption buy_now_pay_later_option = 2;
   }
+}
+
+// Buy Now Pay Later details that the user is eligible to create an instrument
+// from.
+message BnplCreationOption {
+  // Unique identifier for the BNPL partner. Example: 'affirm'.
+  optional string issuer_id = 1;
+  // Eligible price range that the BNPL issuer supports.
+  repeated EligiblePriceRange eligible_price_range = 2;
 }
 
 // Details the eligible price range that a BNPL issuer supports. Server

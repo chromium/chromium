@@ -16,3 +16,9 @@ feature kExperimentalWebMachineLearningNeuralNetwork {
   const string name = "ExperimentalWebMachineLearningNeuralNetwork";
   const bool default_state = false;
 };
+
+// Enables the DirectML backend for WebNN.
+feature kWebNNDirectML {
+  const string name = "WebNNDirectML";
+  const bool default_state = true;
+};

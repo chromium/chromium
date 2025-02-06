@@ -188,8 +188,8 @@ CSSToLengthConversionData::LineHeightSize::LineHeightSize(
           style.SpecifiedLineHeight(),
           root_style ? root_style->SpecifiedLineHeight()
                      : style.SpecifiedLineHeight(),
-          &style.GetFont(),
-          root_style ? &root_style->GetFont() : &style.GetFont(),
+          style.GetFont(),
+          root_style ? root_style->GetFont() : style.GetFont(),
           style.EffectiveZoom(),
           root_style ? root_style->EffectiveZoom() : style.EffectiveZoom()) {}
 

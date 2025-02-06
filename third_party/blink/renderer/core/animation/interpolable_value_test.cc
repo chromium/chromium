@@ -178,11 +178,11 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
   using enum CSSMathExpressionNode::Flag;
   using Flags = CSSMathExpressionNode::Flags;
 
-  Font font;
+  Font* font = MakeGarbageCollected<Font>();
   CSSToLengthConversionData length_resolver =
       CSSToLengthConversionData(/*element=*/nullptr);
   length_resolver.SetFontSizes(
-      CSSToLengthConversionData::FontSizes(10.0f, 10.0f, &font, 1.0f));
+      CSSToLengthConversionData::FontSizes(10.0f, 10.0f, font, 1.0f));
 
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);

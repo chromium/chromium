@@ -286,7 +286,7 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
   // differences that are permitted during an animation.
   // The FontFaceCache version number may be increased without forcing a style
   // recalc (see crbug.com/471079).
-  if (!base_computed_style->GetFont().IsFallbackValid()) {
+  if (!base_computed_style->GetFont()->IsFallbackValid()) {
     exclusions.insert(DebugField::font_);
   }
 
@@ -2791,7 +2791,7 @@ FilterOperations StyleResolver::ComputeFilterOperations(
     const Font& font,
     const CSSValue& filter_value) {
   ComputedStyleBuilder parent_builder = CreateComputedStyleBuilder();
-  parent_builder.SetFont(font);
+  parent_builder.SetFont(const_cast<Font*>(&font));
   const ComputedStyle* parent = parent_builder.TakeStyle();
 
   StyleResolverState state(GetDocument(), *element,
@@ -2966,9 +2966,9 @@ StyleRuleList* StyleResolver::CollectMatchingRulesFromUnconnectedRuleSet(
 // Font properties are also handled by FontStyleResolver outside the main
 // thread. If you add/remove properties here, make sure they are also properly
 // handled by FontStyleResolver.
-Font StyleResolver::ComputeFont(Element& element,
-                                const ComputedStyle& style,
-                                const CSSPropertyValueSet& property_set) {
+Font* StyleResolver::ComputeFont(Element& element,
+                                 const ComputedStyle& style,
+                                 const CSSPropertyValueSet& property_set) {
   static const CSSProperty* properties[6] = {
       &GetCSSPropertyFontSize(),        &GetCSSPropertyFontFamily(),
       &GetCSSPropertyFontStretch(),     &GetCSSPropertyFontStyle(),
@@ -3359,17 +3359,17 @@ void StyleResolver::PropagateStyleToViewport() {
 #undef PROPAGATE_VALUE
 #undef PROPAGATE_FROM
 
-static Font ComputeInitialLetterFont(const ComputedStyle& style,
-                                     const ComputedStyle& paragraph_style) {
+static Font* ComputeInitialLetterFont(const ComputedStyle& style,
+                                      const ComputedStyle& paragraph_style) {
   const StyleInitialLetter& initial_letter = style.InitialLetter();
   DCHECK(!initial_letter.IsNormal());
-  const Font& font = style.GetFont();
+  Font* font = style.GetFont();
 
-  const FontMetrics& metrics = font.PrimaryFont()->GetFontMetrics();
+  const FontMetrics& metrics = font->PrimaryFont()->GetFontMetrics();
   const float cap_height = metrics.CapHeight();
   const float line_height = paragraph_style.ComputedLineHeight();
   const float cap_height_of_para =
-      paragraph_style.GetFont().PrimaryFont()->GetFontMetrics().CapHeight();
+      paragraph_style.GetFont()->PrimaryFont()->GetFontMetrics().CapHeight();
 
   // See https://drafts.csswg.org/css-inline/#sizing-initial-letter
   const float desired_cap_height =
@@ -3381,9 +3381,10 @@ static Font ComputeInitialLetterFont(const ComputedStyle& style,
   adjusted_font_description.SetComputedSize(adjusted_font_size);
   adjusted_font_description.SetSpecifiedSize(adjusted_font_size);
   while (adjusted_font_size > 1) {
-    Font actual_font(adjusted_font_description, font.GetFontSelector());
+    Font* actual_font = MakeGarbageCollected<Font>(adjusted_font_description,
+                                                   font->GetFontSelector());
     const float actual_cap_height =
-        actual_font.PrimaryFont()->GetFontMetrics().CapHeight();
+        actual_font->PrimaryFont()->GetFontMetrics().CapHeight();
     if (actual_cap_height <= desired_cap_height) {
       return actual_font;
     }

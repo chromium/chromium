@@ -163,13 +163,12 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
 
 void LayoutSVGInlineText::UpdateScaledFont() {
   NOT_DESTROYED();
-  ComputeNewScaledFontForStyle(*this, scaling_factor_, scaled_font_);
+  scaled_font_ = ComputeNewScaledFontForStyle(*this, scaling_factor_);
 }
 
-void LayoutSVGInlineText::ComputeNewScaledFontForStyle(
+const Font* LayoutSVGInlineText::ComputeNewScaledFontForStyle(
     const LayoutObject& layout_object,
-    float& scaling_factor,
-    Font& scaled_font) {
+    float& scaling_factor) {
   const ComputedStyle& style = layout_object.StyleRef();
 
   // Alter font-size to the right on-screen value to avoid scaling the glyphs
@@ -178,8 +177,12 @@ void LayoutSVGInlineText::ComputeNewScaledFontForStyle(
       SVGLayoutSupport::CalculateScreenFontSizeScalingFactor(&layout_object);
   if (!scaling_factor) {
     scaling_factor = 1;
-    scaled_font = style.GetFont();
-    return;
+    // This is a hack. TextDecorationInfo's constructor wants to compare
+    // Font objects _by pointer_ to verify that it's a true override;
+    // otherwise, it sets the underline the wrong place. So we need to
+    // give it a pointer that is distinct from style.GetFont(), even though
+    // it contains the same information.
+    return MakeGarbageCollected<Font>(*style.GetFont());
   }
 
   const FontDescription& unscaled_font_description = style.GetFontDescription();
@@ -191,8 +194,8 @@ void LayoutSVGInlineText::ComputeNewScaledFontForStyle(
       &document, scaling_factor, unscaled_font_description.IsAbsoluteSize(),
       unscaled_font_description.SpecifiedSize(), kDoNotApplyMinimumForFontSize);
   if (scaled_font_size == unscaled_font_description.ComputedSize()) {
-    scaled_font = style.GetFont();
-    return;
+    // See above.
+    return MakeGarbageCollected<Font>(*style.GetFont());
   }
 
   FontDescription font_description = unscaled_font_description;
@@ -203,8 +206,8 @@ void LayoutSVGInlineText::ComputeNewScaledFontForStyle(
   font_description.SetWordSpacing(font_description.WordSpacing() *
                                   scaling_factor / zoom);
 
-  scaled_font =
-      Font(font_description, document.GetStyleEngine().GetFontSelector());
+  return MakeGarbageCollected<Font>(
+      font_description, document.GetStyleEngine().GetFontSelector());
 }
 
 gfx::RectF LayoutSVGInlineText::VisualRectInLocalSVGCoordinates() const {

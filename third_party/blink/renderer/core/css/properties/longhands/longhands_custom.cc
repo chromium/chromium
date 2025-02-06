@@ -4057,7 +4057,7 @@ void FontFamily::ApplyInherit(StyleResolverState& state) const {
   state.GetFontBuilder().SetFamilyDescription(
       state.ParentFontDescription().GetFamilyDescription());
   CSSFontSelector* selector = static_cast<CSSFontSelector*>(
-      state.ParentStyle()->GetFont().GetFontSelector());
+      state.ParentStyle()->GetFont()->GetFontSelector());
   const TreeScope* tree_scope = selector ? selector->GetTreeScope() : nullptr;
   state.GetFontBuilder().SetFamilyTreeScope(tree_scope);
 }

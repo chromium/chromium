@@ -263,17 +263,6 @@ base::Time TabLifecycleUnitSource::TabLifecycleUnit::GetLastFocusedTime()
   return last_focused_time_;
 }
 
-base::ProcessHandle TabLifecycleUnitSource::TabLifecycleUnit::GetProcessHandle()
-    const {
-  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
-  if (!main_frame)
-    return base::ProcessHandle();
-  content::RenderProcessHost* process = main_frame->GetProcess();
-  if (!process)
-    return base::ProcessHandle();
-  return process->GetProcess().Handle();
-}
-
 LifecycleUnit::SortKey TabLifecycleUnitSource::TabLifecycleUnit::GetSortKey()
     const {
   return SortKey(last_focused_time_ticks_);
@@ -305,11 +294,6 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Load() {
   web_contents()->GetController().LoadIfNecessary();
   web_contents()->Focus();
   return true;
-}
-
-int TabLifecycleUnitSource::TabLifecycleUnit::
-    GetEstimatedMemoryFreedOnDiscardKB() const {
-  return GetPrivateMemoryKB(GetProcessHandle());
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(

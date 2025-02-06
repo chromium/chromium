@@ -187,6 +187,7 @@ import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibility
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
@@ -1615,16 +1616,14 @@ public class RootUiCoordinator
                         mActivityTabProvider,
                         new AiAssistantService());
 
-        if (ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
-            DiscountsButtonController discountsButtonController =
-                    new DiscountsButtonController(
-                            mActivity,
-                            mActivityTabProvider,
-                            mModalDialogManagerSupplier.get(),
-                            this::getCommerceBottomSheetContentController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.DISCOUNTS, discountsButtonController);
-        }
+        DiscountsButtonController discountsButtonController =
+                new DiscountsButtonController(
+                        mActivity,
+                        mActivityTabProvider,
+                        mModalDialogManagerSupplier.get(),
+                        this::getCommerceBottomSheetContentController);
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.DISCOUNTS, discountsButtonController);
 
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.SHARE, shareButtonController);
@@ -1688,7 +1687,8 @@ public class RootUiCoordinator
     @Nullable
     private CommerceBottomSheetContentController getCommerceBottomSheetContentController() {
         if (mCommerceBottomSheetContentCoordinator == null
-                && ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
+                && CommerceFeatureUtils.isDiscountInfoApiEnabled(
+                        ShoppingServiceFactory.getForProfile(mProfileSupplier.get()))) {
             mCommerceBottomSheetContentCoordinator =
                     new CommerceBottomSheetContentCoordinator(mActivity, mBottomSheetController);
         }

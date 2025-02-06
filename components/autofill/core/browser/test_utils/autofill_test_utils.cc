@@ -1194,7 +1194,7 @@ CreatePaymentInstrumentCreationOptionWithBnplIssuer(const std::string& id) {
   sync_pb::PaymentInstrumentCreationOption payment_instrument_creation_option;
   payment_instrument_creation_option.set_id(id);
 
-  sync_pb::BnplIssuerDetails* bnpl_option =
+  sync_pb::BnplCreationOption* bnpl_option =
       payment_instrument_creation_option.mutable_buy_now_pay_later_option();
   bnpl_option->set_issuer_id("issuer_id");
 

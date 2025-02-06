@@ -121,7 +121,7 @@ LogicalRect ComputeTextInkBounds(const ShapeResultView& shape_result,
   // Calculation of `ascent` should be as same as
   // `NGTextFragmentPainter::Paint()`
   const FontMetrics& font_metrics =
-      style.GetFont().PrimaryFont()->GetFontMetrics();
+      style.GetFont()->PrimaryFont()->GetFontMetrics();
   const int ascent = font_metrics.Ascent();
   if (out_baseline)
     *out_baseline = LayoutUnit(ascent);

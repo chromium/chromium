@@ -37,12 +37,11 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutBlockFlow {
   float DesiredWidth() const;
   String GetTextContent() const;
 
-  // Compressed font
   const Font* CompressedFont() const {
     NOT_DESTROYED();
-    return has_compressed_font_ ? &compressed_font_ : nullptr;
+    return compressed_font_;
   }
-  void SetCompressedFont(const Font& font);
+  void SetCompressedFont(const Font* font);
 
   // Scaling
 
@@ -129,11 +128,7 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutBlockFlow {
   std::optional<float> scale_x_;
 
   // |compressed_font_| hold width variant of |StyleRef().GetFont()|.
-  //
-  // NOTE: This doesn't use a std::optional to avoid a potentially racy branch
-  // within the Trace method.
-  Font compressed_font_;
-  bool has_compressed_font_ = false;
+  Member<const Font> compressed_font_;
 };
 
 // static

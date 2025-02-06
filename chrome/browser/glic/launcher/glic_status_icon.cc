@@ -22,20 +22,27 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/glic_resources.h"
 #include "glic_status_icon.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {
 gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
-  return gfx::CreateVectorIcon(
-      kGlicButtonIcon,
-      (native_theme->ShouldUseDarkColorsForSystemIntegratedUI())
-          ? SK_ColorWHITE
-          : SK_ColorBLACK);
+#if BUILDFLAG(IS_WIN)
+  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      native_theme->ShouldUseDarkColorsForSystemIntegratedUI()
+          ? IDR_GLIC_GLIC_STATUS_ICON_DARK_PNG
+          : IDR_GLIC_GLIC_STATUS_ICON_LIGHT_PNG);
+#else
+  // On Mac and Linux, theming is handled by the system and does not require
+  // different images for light/dark mode.
+  return gfx::CreateVectorIcon(kGlicButtonIcon, SK_ColorWHITE);
+#endif
 }
 }  // namespace
 
@@ -59,7 +66,6 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   //  Set a vector icon for proper themeing on Linux.
   status_icon_->SetIcon(kGlicButtonIcon);
 #else
-  native_theme_observer_.Observe(native_theme);
   // Linux doesn't activate icon on click so no need to observe.
   status_icon_->AddObserver(this);
 #endif
@@ -67,7 +73,14 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   if (features::kGlicStatusIconOpenMenuWithSecondaryClick.Get()) {
     status_icon_->SetOpenMenuWithSecondaryClick(true);
   }
+  // This sets the NSImage template property which makes the icon light/dark
+  // based on contrast with the wallpaper.
   status_icon_->SetImageTemplate(true);
+#endif
+#if BUILDFLAG(IS_WIN)
+  // Observe the native theme so we can update the image for the icon to reflect
+  // light/dark mode.
+  native_theme_observer_.Observe(native_theme);
 #endif
 
   std::unique_ptr<StatusIconMenuModel> menu = CreateStatusIconMenu();
@@ -90,14 +103,14 @@ GlicStatusIcon::~GlicStatusIcon() {
 }
 
 void GlicStatusIcon::OnStatusIconClicked() {
-  controller_->Toggle();
+  controller_->Toggle(InvocationSource::kOsButton);
 }
 
 void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
   auto* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
   switch (command_id) {
     case IDC_GLIC_STATUS_ICON_MENU_SHOW: {
-      controller_->Show();
+      controller_->Show(InvocationSource::kOsButtonMenu);
       base::RecordAction(base::UserMetricsAction(
           "GlicOsEntrypoint.ContextMenuSelection.OpenGlic"));
       break;

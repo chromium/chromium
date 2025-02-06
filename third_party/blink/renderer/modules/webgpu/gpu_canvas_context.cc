@@ -752,11 +752,11 @@ void GPUCanvasContext::CopyToSwapTexture() {
     device_->AddSingletonWarning(GPUSingletonWarning::kNonPreferredFormat);
   }
 
-  wgpu::ImageCopyTexture source = {
+  wgpu::TexelCopyTextureInfo source = {
       .texture = texture_->GetHandle(),
       .aspect = wgpu::TextureAspect::All,
   };
-  wgpu::ImageCopyTexture destination = {
+  wgpu::TexelCopyTextureInfo destination = {
       .texture = swap_texture_->GetHandle(),
       .aspect = wgpu::TextureAspect::All,
   };
@@ -831,11 +831,11 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
                            reservation.id, reservation.generation,
                            static_cast<uint64_t>(usage),
                            dst_client_si->mailbox());
-  wgpu::ImageCopyTexture source = {
+  wgpu::TexelCopyTextureInfo source = {
       .texture = texture,
       .aspect = wgpu::TextureAspect::All,
   };
-  wgpu::ImageCopyTexture destination = {
+  wgpu::TexelCopyTextureInfo destination = {
       .texture = reserved_texture,
       .aspect = wgpu::TextureAspect::All,
   };

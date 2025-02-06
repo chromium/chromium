@@ -12,7 +12,6 @@
 namespace blink {
 
 class ExceptionState;
-class GPUImageCopyBuffer;
 class GPUCommandBuffer;
 class GPUCommandBufferDescriptor;
 class GPUCommandEncoderDescriptor;
@@ -20,7 +19,8 @@ class GPUComputePassDescriptor;
 class GPUComputePassEncoder;
 class GPURenderPassDescriptor;
 class GPURenderPassEncoder;
-class GPUImageCopyTexture;
+class GPUTexelCopyBufferInfo;
+class GPUTexelCopyTextureInfo;
 
 class GPUCommandEncoder : public DawnObject<wgpu::CommandEncoder> {
   DEFINE_WRAPPERTYPEINFO();
@@ -53,16 +53,16 @@ class GPUCommandEncoder : public DawnObject<wgpu::CommandEncoder> {
     GetHandle().CopyBufferToBuffer(src->GetHandle(), src_offset,
                                    dst->GetHandle(), dst_offset, size);
   }
-  void copyBufferToTexture(GPUImageCopyBuffer* source,
-                           GPUImageCopyTexture* destination,
+  void copyBufferToTexture(GPUTexelCopyBufferInfo* source,
+                           GPUTexelCopyTextureInfo* destination,
                            const V8GPUExtent3D* copy_size,
                            ExceptionState& exception_state);
-  void copyTextureToBuffer(GPUImageCopyTexture* source,
-                           GPUImageCopyBuffer* destination,
+  void copyTextureToBuffer(GPUTexelCopyTextureInfo* source,
+                           GPUTexelCopyBufferInfo* destination,
                            const V8GPUExtent3D* copy_size,
                            ExceptionState& exception_state);
-  void copyTextureToTexture(GPUImageCopyTexture* source,
-                            GPUImageCopyTexture* destination,
+  void copyTextureToTexture(GPUTexelCopyTextureInfo* source,
+                            GPUTexelCopyTextureInfo* destination,
                             const V8GPUExtent3D* copy_size,
                             ExceptionState& exception_state);
   void pushDebugGroup(String groupLabel) {

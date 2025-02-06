@@ -63,8 +63,8 @@ class MockStatusTray : public StatusTray {
 
 class MockGlicController : public GlicController {
  public:
-  MOCK_METHOD0(Toggle, void());
-  MOCK_METHOD0(Show, void());
+  MOCK_METHOD1(Toggle, void(InvocationSource));
+  MOCK_METHOD1(Show, void(InvocationSource));
 };
 
 }  // namespace

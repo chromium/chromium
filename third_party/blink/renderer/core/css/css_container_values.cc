@@ -45,6 +45,8 @@ void CSSContainerValues::Trace(Visitor* visitor) const {
   visitor->Trace(container_sizes_);
   visitor->Trace(font_style_);
   visitor->Trace(root_font_style_);
+  visitor->Trace(font_sizes_);
+  visitor->Trace(line_height_size_);
   MediaValuesDynamic::Trace(visitor);
 }
 

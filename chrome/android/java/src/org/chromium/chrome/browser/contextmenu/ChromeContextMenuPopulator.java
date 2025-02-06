@@ -26,7 +26,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -211,67 +210,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         }
     }
 
-    // Used to record the UMA histogram Android.CustomTabs.ContextMenu.UrlScheme. These don't
-    // need to be a comprehensive list of schemes since what we are interested in is the relative
-    // volume of data scheme.
-    // Since these values are persisted to logs, they should never be renumbered or reused.
-    // LINT.IfChange(UrlScheme)
-    @VisibleForTesting
-    @IntDef({
-        UrlScheme.UNKNOWN_SCHEME,
-        UrlScheme.HTTP_SCHEME,
-        UrlScheme.HTTPS_SCHEME,
-        UrlScheme.FILE_SCHEME,
-        UrlScheme.FTP_SCHEME,
-        UrlScheme.DATA_SCHEME,
-        UrlScheme.JAVASCRIPT_SCHEME,
-        UrlScheme.CHROME_SCHEME,
-        UrlScheme.BLOB_SCHEME,
-        UrlScheme.CONTENT_SCHEME,
-        UrlScheme.INTENT_SCHEME,
-    })
-    public @interface UrlScheme {
-        int UNKNOWN_SCHEME = 0;
-        int HTTP_SCHEME = 1;
-        int HTTPS_SCHEME = 2;
-        int FILE_SCHEME = 3;
-        int FTP_SCHEME = 4;
-        int DATA_SCHEME = 5;
-        int JAVASCRIPT_SCHEME = 6;
-        int CHROME_SCHEME = 7;
-        int BLOB_SCHEME = 8;
-        int CONTENT_SCHEME = 9;
-        int INTENT_SCHEME = 10;
-        int COUNT = 11;
-    }
-
-    // LINT.ThenChange(/tools/metrics/histograms/metadata/custom_tabs/enums.xml:CustomTabsUrlScheme)
-
-    private static @UrlScheme int schemeForUrl(String scheme) {
-        if (scheme.equals(UrlConstants.HTTP_SCHEME)) {
-            return UrlScheme.HTTP_SCHEME;
-        } else if (scheme.equals(UrlConstants.HTTPS_SCHEME)) {
-            return UrlScheme.HTTPS_SCHEME;
-        } else if (scheme.equals(UrlConstants.FILE_SCHEME)) {
-            return UrlScheme.FILE_SCHEME;
-        } else if (scheme.equals(UrlConstants.FTP_SCHEME)) {
-            return UrlScheme.FTP_SCHEME;
-        } else if (scheme.equals(UrlConstants.DATA_SCHEME)) {
-            return UrlScheme.DATA_SCHEME;
-        } else if (scheme.equals(UrlConstants.JAVASCRIPT_SCHEME)) {
-            return UrlScheme.JAVASCRIPT_SCHEME;
-        } else if (scheme.equals(UrlConstants.CHROME_SCHEME)) {
-            return UrlScheme.CHROME_SCHEME;
-        } else if (scheme.equals(UrlConstants.BLOB_SCHEME)) {
-            return UrlScheme.BLOB_SCHEME;
-        } else if (scheme.equals(UrlConstants.CONTENT_SCHEME)) {
-            return UrlScheme.CONTENT_SCHEME;
-        } else if (scheme.equals(UrlConstants.INTENT_SCHEME)) {
-            return UrlScheme.INTENT_SCHEME;
-        }
-        return UrlScheme.UNKNOWN_SCHEME;
-    }
-
     /**
      * Builds a {@link ChromeContextMenuPopulator}.
      *
@@ -350,15 +288,15 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 }
                 if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)
                         && EphemeralTabCoordinator.isSupported()) {
-                    mShowEphemeralTabNewLabel = shouldTriggerEphemeralTabHelpUi();
-                    if (mMode == ContextMenuMode.CUSTOM_TAB) {
-                        @UrlScheme int enumScheme = schemeForUrl(mParams.getUrl().getScheme());
-                        RecordHistogram.recordEnumeratedHistogram(
-                                "CustomTabs.ContextMenu.UrlScheme", enumScheme, UrlScheme.COUNT);
+                    boolean showNewLabel = shouldTriggerEphemeralTabHelpUi();
+                    boolean isDataUrl =
+                            mParams.getUrl().getScheme().equals(UrlConstants.DATA_SCHEME);
+                    if (!(mMode == ContextMenuMode.CUSTOM_TAB && isDataUrl)) {
+                        // Do not show the item if CCT opens data: url as it could potentially
+                        // cause a security issue.
+                        linkGroup.add(createListItem(Item.OPEN_IN_EPHEMERAL_TAB, showNewLabel));
+                        mShowEphemeralTabNewLabel = showNewLabel;
                     }
-
-                    linkGroup.add(
-                            createListItem(Item.OPEN_IN_EPHEMERAL_TAB, mShowEphemeralTabNewLabel));
                 }
             }
             if (!MailTo.isMailTo(mParams.getLinkUrl().getSpec())

@@ -12,6 +12,9 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "content/public/browser/browser_context.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "third_party/blink/public/common/webid/login_status_account.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/origin.h"
 
 FederatedIdentityPermissionContext::FederatedIdentityPermissionContext(
@@ -155,9 +158,17 @@ std::optional<bool> FederatedIdentityPermissionContext::GetIdpSigninStatus(
   return idp_signin_context_->GetSigninStatus(idp_origin);
 }
 
+std::vector<blink::common::webid::LoginStatusAccount>
+FederatedIdentityPermissionContext::GetAccountProfiles(
+    const url::Origin& identity_provider) {
+  return idp_signin_context_->GetAccountProfiles(identity_provider);
+}
+
 void FederatedIdentityPermissionContext::SetIdpSigninStatus(
     const url::Origin& idp_origin,
-    bool idp_signin_status) {
+    bool idp_signin_status,
+    base::optional_ref<const blink::common::webid::LoginStatusOptions>
+        options) {
   std::optional<bool> old_idp_signin_status = GetIdpSigninStatus(idp_origin);
   // We always notify if idp_signin_status is true because the list of logged
   // in accounts may have changed.
@@ -165,7 +176,8 @@ void FederatedIdentityPermissionContext::SetIdpSigninStatus(
     return;
   }
 
-  idp_signin_context_->SetSigninStatus(idp_origin, idp_signin_status);
+  idp_signin_context_->SetSigninStatus(idp_origin, idp_signin_status, options);
+
   for (IdpSigninStatusObserver& observer : idp_signin_status_observer_list_) {
     observer.OnIdpSigninStatusReceived(idp_origin, idp_signin_status);
   }
@@ -196,5 +208,5 @@ void FederatedIdentityPermissionContext::OnAccountsInCookieUpdated(
       !accounts_in_cookie_jar_info.GetValidSignedInAccounts().empty();
   GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   url::Origin origin = url::Origin::Create(gaia_url);
-  SetIdpSigninStatus(origin, logged_in);
+  SetIdpSigninStatus(origin, logged_in, std::nullopt);
 }

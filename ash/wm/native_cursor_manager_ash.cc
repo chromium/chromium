@@ -121,6 +121,22 @@ void NativeCursorManagerAsh::SetCursorSize(
       ->SetCursorSize(cursor_size);
 }
 
+void NativeCursorManagerAsh::SetLargeCursorSizeInDip(
+    int large_cursor_size_in_dip,
+    ::wm::NativeCursorManagerDelegate* delegate) {
+  cursor_loader_.SetLargeCursorSizeInDip(large_cursor_size_in_dip);
+  delegate->CommitLargeCursorSizeInDip(large_cursor_size_in_dip);
+
+  // Sets the cursor to reflect the large cursor size change immediately.
+  if (delegate->IsCursorVisible()) {
+    SetCursor(delegate->GetCursor(), delegate);
+  }
+
+  Shell::Get()
+      ->window_tree_host_manager()
+      ->cursor_window_controller()
+      ->SetLargeCursorSizeInDip(large_cursor_size_in_dip);
+}
 void NativeCursorManagerAsh::SetVisibility(
     bool visible,
     ::wm::NativeCursorManagerDelegate* delegate) {

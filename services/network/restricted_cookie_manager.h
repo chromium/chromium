@@ -219,6 +219,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);
 
+  // Schedules a new shared memory invalidation task if appropriate. Called
+  // every time the full cookie list is retrieved.
+  void UpdateSharedMemoryVersionInvalidationTimer(
+      const std::vector<net::CookieWithAccessResult>& cookies);
+
   // Reports the result of setting the cookie to |network_context_client_|, and
   // invokes the user callback.
   void SetCanonicalCookieResult(
@@ -346,6 +351,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   base::RetainingOneShotTimer cookies_access_timer_;
 
   mojo::SharedMemoryVersionController shared_memory_version_controller_;
+  base::OneShotTimer shared_memory_invalidation_timer_;
 
   base::WeakPtrFactory<RestrictedCookieManager> weak_ptr_factory_{this};
 };

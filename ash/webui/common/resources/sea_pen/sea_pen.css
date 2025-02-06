@@ -140,8 +140,14 @@ iron-icon[icon^='personalization-shared-illo:'] {
 }
 
 #searchButtons cr-button {
+  height: 36px;
   margin: 0 4px;
   padding-inline-end: 16px;
+}
+
+#searchButtons p {
+  position: relative;
+  top: 1px;
 }
 
 #inspireMeAnimation {

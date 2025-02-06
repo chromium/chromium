@@ -322,7 +322,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorPaymentsFeedbackTipIcon] = {ui::kColorAlertMediumSeverityIcon};
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   mixer[kColorPaymentsGooglePayLogo] = {dark_mode ? SK_ColorWHITE
-                                                  : gfx::kGoogleGrey700};
+                                                  : gfx::kGoogleGrey800};
 #endif
   mixer[kColorPaymentsPromoCodeBackground] = {
       dark_mode ? SkColorSetA(gfx::kGoogleGreen300, 0x1F)

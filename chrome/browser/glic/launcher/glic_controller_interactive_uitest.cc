@@ -32,14 +32,15 @@ IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Toggle) {
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   ASSERT_FALSE(glic_keyed_service->window_controller().IsShowing());
 
-  RunTestSequence(ObserveState(test::internal::kGlicWindowControllerState,
-                               std::ref(window_controller())),
-                  Do([this]() { glic_controller().Toggle(); }),
-                  WaitForState(test::internal::kGlicWindowControllerState,
-                               GlicWindowController::State::kOpen),
-                  Do([this]() { glic_controller().Toggle(); }),
-                  WaitForState(test::internal::kGlicWindowControllerState,
-                               GlicWindowController::State::kClosed), );
+  RunTestSequence(
+      ObserveState(test::internal::kGlicWindowControllerState,
+                   std::ref(window_controller())),
+      Do([this]() { glic_controller().Toggle(InvocationSource::kOsButton); }),
+      WaitForState(test::internal::kGlicWindowControllerState,
+                   GlicWindowController::State::kOpen),
+      Do([this]() { glic_controller().Toggle(InvocationSource::kOsButton); }),
+      WaitForState(test::internal::kGlicWindowControllerState,
+                   GlicWindowController::State::kClosed), );
 }
 
 IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Show) {
@@ -49,14 +50,15 @@ IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Show) {
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   ASSERT_FALSE(glic_keyed_service->window_controller().IsShowing());
 
-  RunTestSequence(ObserveState(test::internal::kGlicWindowControllerState,
-                               std::ref(window_controller())),
-                  Do([this]() { glic_controller().Show(); }),
-                  WaitForState(test::internal::kGlicWindowControllerState,
-                               GlicWindowController::State::kOpen),
-                  Do([this]() { glic_controller().Show(); }),
-                  WaitForState(test::internal::kGlicWindowControllerState,
-                               GlicWindowController::State::kOpen));
+  RunTestSequence(
+      ObserveState(test::internal::kGlicWindowControllerState,
+                   std::ref(window_controller())),
+      Do([this]() { glic_controller().Show(InvocationSource::kOsButton); }),
+      WaitForState(test::internal::kGlicWindowControllerState,
+                   GlicWindowController::State::kOpen),
+      Do([this]() { glic_controller().Show(InvocationSource::kOsButton); }),
+      WaitForState(test::internal::kGlicWindowControllerState,
+                   GlicWindowController::State::kOpen));
 }
 
 }  // namespace glic

@@ -328,7 +328,7 @@ FilterOperations StyleBuilderConverter::ConvertFilterOperations(
 
 FilterOperations StyleBuilderConverter::ConvertOffscreenFilterOperations(
     const CSSValue& value,
-    const Font& font) {
+    const Font* font) {
   return FilterOperationResolver::CreateOffscreenFilterOperations(value, font);
 }
 
@@ -728,7 +728,7 @@ float MathScriptScaleFactor(StyleResolverState& state) {
   int exponent = b - a;
   float scaleFactor = 1.0;
   if (const SimpleFontData* font_data =
-          state.ParentStyle()->GetFont().PrimaryFont()) {
+          state.ParentStyle()->GetFont()->PrimaryFont()) {
     HarfBuzzFace* parent_harfbuzz_face =
         font_data->PlatformData().GetHarfBuzzFace();
     if (OpenTypeMathSupport::HasMathData(parent_harfbuzz_face)) {

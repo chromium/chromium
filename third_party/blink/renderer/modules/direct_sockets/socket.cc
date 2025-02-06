@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
@@ -88,24 +89,35 @@ bool Socket::CheckContextAndPermissions(ScriptState* script_state,
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  if (!execution_context->IsIsolatedContext() ||
-      !execution_context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Frame is not sufficiently isolated to use Direct Sockets.");
-    return false;
+  if (execution_context->IsWindow()) {
+    if (!execution_context->IsIsolatedContext() ||
+        !execution_context->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "Frame is not sufficiently isolated to use Direct Sockets.");
+      return false;
+    }
+    if (!execution_context->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::kDirectSockets)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "Permissions-Policy: direct-sockets are disabled.");
+      return false;
+    }
+    return true;
+  } else if (execution_context->IsWorkerGlobalScope()) {
+    if (!execution_context->CrossOriginIsolatedCapability() ||
+        !execution_context->IsIsolatedContext()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "Frame is not sufficiently isolated to use Direct Sockets.");
+      return false;
+    }
+    return true;
+  } else {
+    NOTREACHED();
   }
-
-  if (!execution_context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kDirectSockets)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Permissions-Policy: direct-sockets are disabled.");
-    return false;
-  }
-
-  return true;
 }
 
 // static

@@ -832,7 +832,6 @@ targets.mixin(
 targets.mixin(
     name = "gpu_integration_test_expected_color_args",
     args = [
-        # TODO(crbug.com/391899126): Remove argument it's not used in expected_color.
         "--dont-restore-color-profile-after-test",
         "--test-machine-name",
         "${buildername}",
@@ -1062,6 +1061,20 @@ targets.mixin(
     name = "gpu_force_angle_metal",
     args = [
         "--extra-browser-args=--use-angle=metal",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_force_angle_swiftshader",
+    args = [
+        "--extra-browser-args=--use-angle=swiftshader",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_force_angle_vulkan",
+    args = [
+        "--extra-browser-args=--use-angle=vulkan",
     ],
 )
 

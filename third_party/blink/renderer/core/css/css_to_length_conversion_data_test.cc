@@ -62,6 +62,7 @@ class CSSToLengthConversionDataTest : public PageTestBase {
 
   struct DataOptions {
     STACK_ALLOCATED();
+
    public:
     // The zoom to apply to :root.
     std::optional<float> css_zoom;
@@ -348,16 +349,16 @@ TEST_F(CSSToLengthConversionDataTest, Flags) {
 
 TEST_F(CSSToLengthConversionDataTest, ConversionWithoutPrimaryFont) {
   FontDescription font_description;
-  Font font(font_description);
-  font.NullifyPrimaryFontForTesting();
+  Font* font = MakeGarbageCollected<Font>(font_description);
+  font->NullifyPrimaryFontForTesting();
 
-  ASSERT_FALSE(font.PrimaryFont());
+  ASSERT_FALSE(font->PrimaryFont());
 
   CSSToLengthConversionData data(/*element=*/nullptr);
   CSSToLengthConversionData::FontSizes font_sizes(
-      /* em */ 16.0f, /* rem */ 16.0f, &font, /* font_zoom */ 1.0f);
+      /* em */ 16.0f, /* rem */ 16.0f, font, /* font_zoom */ 1.0f);
   CSSToLengthConversionData::LineHeightSize line_height_size(
-      Length::Fixed(16.0f), &font, /* font_zoom */ 1.0f);
+      Length::Fixed(16.0f), font, /* font_zoom */ 1.0f);
   data.SetFontSizes(font_sizes);
   data.SetLineHeightSize(line_height_size);
 

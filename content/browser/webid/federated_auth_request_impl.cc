@@ -50,8 +50,10 @@
 #include "crypto/sha2.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "url/gurl.h"
 
 using base::Value;
 using blink::mojom::DisconnectStatus;
@@ -1107,7 +1109,8 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
 
 void FederatedAuthRequestImpl::SetIdpSigninStatus(
     const url::Origin& idp_origin,
-    blink::mojom::IdpSigninStatus status) {
+    blink::mojom::IdpSigninStatus status,
+    const std::optional<blink::common::webid::LoginStatusOptions>& options) {
   if (render_frame_host().IsNestedWithinFencedFrame()) {
     RecordSetLoginStatusIgnoredReason(
         FedCmSetLoginStatusIgnoredReason::kInFencedFrame);
@@ -1123,8 +1126,16 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
         FedCmSetLoginStatusIgnoredReason::kCrossOrigin);
     return;
   }
-  permission_delegate_->SetIdpSigninStatus(
-      idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn);
+
+  if (!IsFedCmLightweightModeEnabled()) {
+    permission_delegate_->SetIdpSigninStatus(
+        idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn,
+        std::nullopt);
+  } else {
+    permission_delegate_->SetIdpSigninStatus(
+        idp_origin, status == blink::mojom::IdpSigninStatus::kSignedIn,
+        options);
+  }
 }
 
 void FederatedAuthRequestImpl::RegisterIdP(const GURL& idp,

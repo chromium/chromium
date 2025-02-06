@@ -285,6 +285,14 @@ class FaviconDatabase {
   static int ToPersistedIconType(favicon_base::IconType icon_type);
   static favicon_base::IconType FromPersistedIconType(int icon_type);
 
+  // Returns the first PageUrlType for an icon mapping entry with
+  // `page_url` and `icon_url` or nullopt if not found. This assumes that the
+  // `icon_type` for a pair of urls is unique, if it is not unique the first
+  // result is returned. This is only exposed for testing.
+  std::optional<PageUrlType> GetFirstPageUrlTypeForTesting(
+      const GURL& page_url,
+      const GURL& icon_url);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, RetainDataForPageUrls);
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest,
@@ -295,7 +303,12 @@ class FaviconDatabase {
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, Version6);
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, Version7);
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, Version8);
+  FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, Version9);
   FRIEND_TEST_ALL_PREFIXES(FaviconDatabaseTest, WildSchema);
+
+  // `page_url_type` is stored as an int representation of the enum.
+  static int ToPersistedPageUrlType(PageUrlType page_url_type);
+  static PageUrlType FromPersistedPageUrlType(int page_url_type);
 
   // Open database on a given filename. If the file does not exist,
   // it is created.
@@ -311,6 +324,9 @@ class FaviconDatabase {
 
   // Helper function to handle cleanup on upgrade failures.
   sql::InitStatus CantUpgradeToVersion(int cur_version);
+
+  // Adds column for `page_url_type` to `icon_mapping` table.
+  bool UpgradeToVersion9();
 
   // Returns true if the `favicons` database is missing a column.
   bool IsFaviconDBStructureIncorrect();

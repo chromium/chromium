@@ -349,8 +349,8 @@ bool ListMarker::IsMarkerImage(const LayoutObject& marker) const {
 
 LayoutUnit ListMarker::WidthOfSymbol(const ComputedStyle& style,
                                      const AtomicString& list_style) {
-  const Font& font = style.GetFont();
-  const SimpleFontData* font_data = font.PrimaryFont();
+  const Font* font = style.GetFont();
+  const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
     return LayoutUnit();
@@ -413,7 +413,7 @@ std::pair<LayoutUnit, LayoutUnit> ListMarker::InlineMarginsForOutside(
       case ListStyleCategory::kNone:
         break;
       case ListStyleCategory::kSymbol: {
-        const SimpleFontData* font_data = marker_style.GetFont().PrimaryFont();
+        const SimpleFontData* font_data = marker_style.GetFont()->PrimaryFont();
         DCHECK(font_data);
         if (!font_data)
           return {};
@@ -440,7 +440,7 @@ PhysicalRect ListMarker::RelativeSymbolMarkerRect(
     const ComputedStyle& style,
     const AtomicString& list_style,
     LayoutUnit width) {
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
     return PhysicalRect();

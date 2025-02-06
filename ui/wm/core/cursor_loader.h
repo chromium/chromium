@@ -43,11 +43,18 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
   // Returns true if the cursor needs to be reset.
   bool SetDisplay(const display::Display& display);
 
+  // Sets the size of the mouse cursor icon.
+  void SetSize(ui::CursorSize size);
+
   // Returns the size of the currently loaded cursor.
   ui::CursorSize size() const { return size_; }
 
-  // Sets the size of the mouse cursor icon.
-  void SetSize(ui::CursorSize size);
+  // Sets the large cursor size in dip. Only used when
+  // `size` is `ui::CursorSize::kLarge`.
+  void SetLargeCursorSizeInDip(int large_cursor_size_in_dip);
+
+  // Returns the large cursor size in dip.
+  int large_cursor_size_in_dip() const { return large_cursor_size_in_dip_; }
 
   // Sets the color of the cursor.
   void SetColor(SkColor color);
@@ -62,6 +69,7 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
  private:
   // Resets the cursor cache.
   void UnloadCursors();
+  void ApplyColorAndLargeSize(ui::CursorData& data_in_and_out) const;
   scoped_refptr<ui::PlatformCursor> CursorFromType(ui::mojom::CursorType type);
   scoped_refptr<ui::PlatformCursor> LoadCursorFromAsset(
       ui::mojom::CursorType type);
@@ -87,6 +95,9 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader
 
   // The preferred size of the mouse cursor icon.
   ui::CursorSize size_ = ui::CursorSize::kNormal;
+
+  // The target cursor size in dip for large cursor.
+  int large_cursor_size_in_dip_ = ui::kDefaultLargeCursorSize;
 
   // The current color set to the mouse cursor icon.
   SkColor color_ = ui::kDefaultCursorColor;

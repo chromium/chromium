@@ -778,7 +778,7 @@ const Font& FragmentItem::ScaledFont() const {
   if (const auto* svg_inline_text =
           DynamicTo<LayoutSVGInlineText>(GetLayoutObject()))
     return svg_inline_text->ScaledFont();
-  return Style().GetFont();
+  return *Style().GetFont();
 }
 
 String FragmentItem::ToString() const {

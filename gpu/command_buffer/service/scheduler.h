@@ -237,12 +237,6 @@ class GPU_EXPORT Scheduler {
 
     using TaskGraph::Sequence::AddTask;
 
-    uint32_t AddTask(base::OnceClosure task_closure,
-                     std::vector<SyncToken> wait_fences,
-                     const SyncToken& release,
-                     ReportingCallback report_callback) override
-        EXCLUSIVE_LOCKS_REQUIRED(lock());
-
     // Returns the next order number and closure. Sets running state to RUNNING.
     uint32_t BeginTask(base::OnceClosure* task_closure) override
         EXCLUSIVE_LOCKS_REQUIRED(lock());
@@ -258,6 +252,9 @@ class GPU_EXPORT Scheduler {
     void ContinueTask(base::OnceClosure task_closure) override
         EXCLUSIVE_LOCKS_REQUIRED(lock());
 
+    void OnFrontTaskUnblocked(uint32_t order_num) override
+        EXCLUSIVE_LOCKS_REQUIRED(lock());
+
     SchedulingPriority current_priority() const
         EXCLUSIVE_LOCKS_REQUIRED(lock()) {
       return current_priority_;
@@ -267,8 +264,6 @@ class GPU_EXPORT Scheduler {
     friend class Scheduler;
 
     enum RunningState { IDLE, SCHEDULED, RUNNING };
-
-    void OnFrontTaskUnblocked() EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // If the sequence is enabled. Sequences are disabled/enabled based on when
     // the command buffer is descheduled/scheduled.

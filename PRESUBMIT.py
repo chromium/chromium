@@ -4451,7 +4451,7 @@ def _CheckChangeForIpcSecurityOwners(input_api, output_api):
         # matching the above patterns, which trigger false positives.
         'third_party/crashpad/*',
         'third_party/blink/renderer/platform/bindings/*',
-        'third_party/protobuf/benchmarks/python/*',
+        'third_party/protobuf/*',
         'third_party/win_build_output/*',
         # Enum-only mojoms used for web metrics, so no security review needed.
         'third_party/blink/public/mojom/use_counter/metrics/*',

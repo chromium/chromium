@@ -136,3 +136,16 @@ void AITestUtils::CheckWritingAssistanceApiRequest(
             expected_options.output_length());
   EXPECT_EQ(request->rewrite_text(), expected_input);
 }
+
+// static
+std::vector<blink::mojom::AILanguageCodePtr> AITestUtils::ToMojoLanguageCodes(
+    const std::vector<std::string>& language_codes) {
+  std::vector<blink::mojom::AILanguageCodePtr> result;
+  result.reserve(language_codes.size());
+  std::ranges::transform(
+      language_codes, std::back_inserter(result),
+      [](const std::string& language_code) {
+        return blink::mojom::AILanguageCode::New(language_code);
+      });
+  return result;
+}

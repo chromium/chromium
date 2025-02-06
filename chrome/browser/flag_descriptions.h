@@ -1417,6 +1417,9 @@ extern const char kWebMachineLearningNeuralNetworkDescription[];
 extern const char kExperimentalWebMachineLearningNeuralNetworkName[];
 extern const char kExperimentalWebMachineLearningNeuralNetworkDescription[];
 
+extern const char kWebNNDirectMLName[];
+extern const char kWebNNDirectMLDescription[];
+
 extern const char kNotificationSchedulerName[];
 extern const char kNotificationSchedulerDescription[];
 
@@ -1755,9 +1758,6 @@ extern const char kPrerender2Description[];
 
 extern const char kPriceChangeModuleName[];
 extern const char kPriceChangeModuleDescription[];
-
-extern const char kPrivacySandboxAdsAPIsOverrideName[];
-extern const char kPrivacySandboxAdsAPIsOverrideDescription[];
 
 extern const char kPrivacySandboxAdsApiUxEnhancementsName[];
 extern const char kPrivacySandboxAdsApiUxEnhancementsDescription[];
@@ -2540,6 +2540,9 @@ extern const char kDynamicSafeAreaInsetsOnScrollDescription[];
 
 extern const char kDynamicSafeAreaInsetsSupportedByCCName[];
 extern const char kDynamicSafeAreaInsetsSupportedByCCDescription[];
+
+extern const char kCSSSafeAreaMaxInsetName[];
+extern const char kCSSSafeAreaMaxInsetDescription[];
 
 extern const char kEdgeToEdgeBottomChinName[];
 extern const char kEdgeToEdgeBottomChinDescription[];

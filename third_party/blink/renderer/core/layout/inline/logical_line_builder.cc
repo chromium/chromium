@@ -380,7 +380,7 @@ InlineBoxState* LogicalLineBuilder::PlaceAtomicInline(
   } else {
     // The metrics should be as text instead of atomic inline box.
     const auto& style = layout_object->Parent()->StyleRef();
-    box->ComputeTextMetrics(style, style.GetFont(), baseline_type_);
+    box->ComputeTextMetrics(style, *style.GetFont(), baseline_type_);
     // Note: |item_result->spacing_before| is non-zero if this |item_result|
     // is |LayoutTextCombine| and after CJK character.
     // See "text-combine-justify.html".
@@ -560,7 +560,7 @@ void LogicalLineBuilder::PlaceListMarker(const InlineItem& item,
                                          InlineItemResult* item_result) {
   if (quirks_mode_) [[unlikely]] {
     box_states_->LineBoxState().EnsureTextMetrics(
-        *item.Style(), item.Style()->GetFont(), baseline_type_);
+        *item.Style(), *item.Style()->GetFont(), baseline_type_);
   }
 }
 

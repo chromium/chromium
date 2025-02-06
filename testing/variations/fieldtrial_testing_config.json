@@ -9410,6 +9410,7 @@
                     "name": "ExpandCompositedCullRect",
                     "params": {
                         "dpr_coef": "1",
+                        "pixels": "4000",
                         "small_scroller_opt": "true"
                     },
                     "enable_features": [
@@ -18392,26 +18393,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FledgeAuctionDownloaderStaleWhileRevalidate"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ProtectedAudienceBAndAPrivateAggregationAndSampleDebugReports": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableBandAPrivateAggregation",
-                        "EnableBandASampleDebugReports"
                     ]
                 }
             ]

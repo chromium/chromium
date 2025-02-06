@@ -17,6 +17,7 @@
 #include "chrome/enterprise_companion/event_logger.h"
 #include "chrome/enterprise_companion/telemetry_logger/telemetry_logger.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/policy_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,7 +34,8 @@ class MockDMClient final : public DMClient {
               (override));
   MOCK_METHOD(void,
               FetchPolicies,
-              (scoped_refptr<EnterpriseCompanionEventLogger> event_logger,
+              (policy::PolicyFetchReason reason,
+               scoped_refptr<EnterpriseCompanionEventLogger> event_logger,
                StatusCallback callback),
               (override));
 };
@@ -86,7 +88,8 @@ TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesSuccess) {
         std::move(callback).Run(EnterpriseCompanionStatus::Success());
       });
   EXPECT_CALL(*mock_dm_client_, FetchPolicies)
-      .WillOnce([](scoped_refptr<EnterpriseCompanionEventLogger>,
+      .WillOnce([](policy::PolicyFetchReason,
+                   scoped_refptr<EnterpriseCompanionEventLogger>,
                    StatusCallback callback) {
         std::move(callback).Run(EnterpriseCompanionStatus::Success());
       });
@@ -98,6 +101,7 @@ TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesSuccess) {
 
   base::RunLoop run_loop;
   service->FetchPolicies(
+      policy::PolicyFetchReason::kTest,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
@@ -123,6 +127,7 @@ TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesRegistrationFail) {
 
   base::RunLoop run_loop;
   service->FetchPolicies(
+      policy::PolicyFetchReason::kTest,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
             policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
@@ -139,7 +144,8 @@ TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesFail) {
         std::move(callback).Run(EnterpriseCompanionStatus::Success());
       });
   EXPECT_CALL(*mock_dm_client_, FetchPolicies)
-      .WillOnce([](scoped_refptr<EnterpriseCompanionEventLogger>,
+      .WillOnce([](policy::PolicyFetchReason,
+                   scoped_refptr<EnterpriseCompanionEventLogger>,
                    StatusCallback callback) {
         std::move(callback).Run(
             EnterpriseCompanionStatus::FromDeviceManagementStatus(
@@ -153,6 +159,7 @@ TEST_F(EnterpriseCompanionServiceTest, FetchPoliciesFail) {
 
   base::RunLoop run_loop;
   service->FetchPolicies(
+      policy::PolicyFetchReason::kTest,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
             policy::DM_STATUS_HTTP_STATUS_ERROR));

@@ -7065,6 +7065,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.PartitionedCookiesExcluded"
+    enum="BooleanEnabled" expires_after="2025-08-01">
+  <owner>avvall@chromium.org</owner>
+  <owner>bewise@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether or not partitioned cookies are omitted from the current
+    site. This means that there are cookies in the cookie jar with separate
+    partition keys.
+
+    This is recorded when Android developers get cookies using the CookieManager
+    API if the WebViewPartitionedCookiesExcluded flag is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.PrimaryCpuAbiBitness"
     enum="PrimaryCpuAbiBitness" expires_after="2025-04-30">
   <owner>tasak@google.com</owner>

@@ -13,6 +13,8 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -531,6 +533,30 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       "Where A = http://127.0.0.1/\n"
       "      B = http://baz.com/",
       v.DepictFrameTree(tab->GetPrimaryFrameTree().root()));
+}
+
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieNotReadableAfterExpiry) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL http_url = embedded_test_server()->GetURL("example.test", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+  WebContentsImpl* web_contents_http =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHost* frame = web_contents_http->GetPrimaryMainFrame();
+
+  SetCookieFromJS(frame, "c=1;Max-Age=1");
+  SetCookieFromJS(frame, "d=1;Max-Age=7200");
+  EXPECT_EQ("c=1; d=1", GetCookieFromJS(frame));
+
+  // If cookies properly expire and become unavailable this test will terminate.
+  // If they do not the test will time out. The earliest expiry from the cookies
+  // is used so the short expiry from c is expected to be used.
+  std::string cookie;
+  do {
+    cookie = GetCookieFromJS(frame);
+    base::PlatformThread::Sleep(base::Milliseconds(100));
+  } while (cookie != "d=1");
 }
 
 // Cookies for an eTLD should be stored (via JS) if they match the URL host,

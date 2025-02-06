@@ -1558,7 +1558,7 @@ TEST_F(
 
   sync_pb::PaymentInstrumentCreationOption creation_option_2 =
       test::CreatePaymentInstrumentCreationOptionWithBnplIssuer(/*id=*/"1234");
-  sync_pb::BnplIssuerDetails* bnpl_2 =
+  sync_pb::BnplCreationOption* bnpl_2 =
       creation_option_2.mutable_buy_now_pay_later_option();
   bnpl_2->set_issuer_id("different_issuer_id");
   std::vector<sync_pb::PaymentInstrumentCreationOption> creation_options_2 = {

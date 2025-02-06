@@ -57,6 +57,9 @@ bool IsFedCmFlexibleFieldsEnabled();
 // Whether showing filtered accounts is enabled.
 bool IsFedCmShowFilteredAccountsEnabled();
 
+// Whether lightweight FedCM credentials are enabled.
+bool IsFedCmLightweightModeEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

@@ -37,10 +37,8 @@
 .command-entry {
   align-items: start;
   display: flex;
-  /* Makes top/bottom spacing of each row more even, while leaving
-     space for cr-input error message in between rows. */
-  margin-bottom: -8px;
-  padding-top: 16px;
+  min-height: var(--cr-section-min-height);
+  padding-top: var(--cr-section-vertical-padding);
 }
 
 .command-name {

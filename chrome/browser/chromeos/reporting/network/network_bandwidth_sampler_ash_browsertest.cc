@@ -134,8 +134,10 @@ IN_PROC_BROWSER_TEST_F(NetworkBandwidthSamplerBrowserTest,
       affiliation_mixin_.account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(NetworkBandwidthSamplerBrowserTest,
-                       DoesNotReportNetworkBandwidthWhenSettingDisabled) {
+// TODO(crbug.com/394677144): Enable test
+IN_PROC_BROWSER_TEST_F(
+    NetworkBandwidthSamplerBrowserTest,
+    DISABLED_DoesNotReportNetworkBandwidthWhenSettingDisabled) {
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   SetDeviceSettingValue(false);
 

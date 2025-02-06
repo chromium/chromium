@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/process/process_handle.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -22,9 +21,6 @@ std::string SerializeOriginIntoDatabaseKey(const url::Origin& origin);
 // Indicates if |url| should have an entry in the local site characteristics
 // database.
 bool URLShouldBeStoredInLocalDatabase(const GURL& url);
-
-// Get the private memory footprint (in KB) for the process.
-int GetPrivateMemoryKB(base::ProcessHandle handle);
 
 // Returns the TabLifecycleUnitSource indirectly owned by g_browser_process.
 TabLifecycleUnitSource* GetTabLifecycleUnitSource();

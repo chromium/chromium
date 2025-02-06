@@ -37,6 +37,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -400,7 +401,8 @@ void TabStripActionContainer::OnGlicNudgeButtonClicked() {
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicKeyedServiceFactory::GetGlicKeyedService(
       tab_strip_controller_->GetProfile())
-      ->ToggleUI(tab_strip_controller_->GetBrowserWindowInterface());
+      ->ToggleUI(tab_strip_controller_->GetBrowserWindowInterface(),
+                 /*prevent_close=*/true, glic::InvocationSource::kNudge);
 #endif  // BUILDFLAG(ENABLE_GLIC)
   ExecuteHideTabStripNudge(glic_nudge_button_);
 }

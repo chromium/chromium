@@ -274,8 +274,19 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
       return true;
   }
 
-  return prefs->GetBoolean(prefs::kAccessibilityLargeCursorEnabled) ||
-         prefs->GetBoolean(prefs::kAccessibilityHighContrastEnabled) ||
+  if (prefs->GetBoolean(prefs::kAccessibilityLargeCursorEnabled)) {
+    // If current display's cursor plane size (i.e. maximum cursor size) is
+    // larger than the large cursor size, then large cursor can be drawn
+    // using hardware plane. Otherwise, software compositing is needed
+    // for cursor.
+    if (gfx::ConvertSizeToDips(display_.maximum_cursor_size(),
+                               display_.device_scale_factor())
+            .height() < large_cursor_size_in_dip_) {
+      return true;
+    }
+  }
+
+  return prefs->GetBoolean(prefs::kAccessibilityHighContrastEnabled) ||
          prefs->GetBoolean(prefs::kDockedMagnifierEnabled);
 }
 
@@ -307,9 +318,6 @@ void CursorWindowController::UpdateContainer() {
 }
 
 void CursorWindowController::SetDisplay(const display::Display& display) {
-  if (!is_cursor_compositing_enabled_)
-    return;
-
   // TODO(oshima): Do not update the composition cursor when crossing
   // display in unified desktop mode for now. crbug.com/517222.
   if (Shell::Get()->display_manager()->IsInUnifiedMode() &&
@@ -321,6 +329,10 @@ void CursorWindowController::SetDisplay(const display::Display& display) {
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
   if (!root_window)
     return;
+
+  if (!is_cursor_compositing_enabled_) {
+    return;
+  }
 
   SetContainer(RootWindowController::ForWindow(root_window)
                    ->GetContainer(kShellWindowId_MouseCursorContainer));

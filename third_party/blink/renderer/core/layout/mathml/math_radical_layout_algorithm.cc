@@ -16,7 +16,7 @@ namespace blink {
 namespace {
 
 bool HasBaseGlyphForRadical(const ComputedStyle& style) {
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   return font_data && font_data->GlyphForCharacter(kSquareRootCharacter);
 }
 
@@ -126,7 +126,7 @@ const LayoutResult* MathRadicalLayoutAlgorithm::Layout() {
     float target_size = base_ascent + base_descent + vertical.vertical_gap +
                         vertical.rule_thickness;
     const ShapeResult* shape_result =
-        shaper.Shape(&Style().GetFont(), target_size, &surd_metrics);
+        shaper.Shape(Style().GetFont(), target_size, &surd_metrics);
     const ShapeResultView* shape_result_view =
         ShapeResultView::Create(shape_result);
     LayoutUnit operator_inline_offset = index_inline_size +

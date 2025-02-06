@@ -264,14 +264,6 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
                IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
                &kMediaToolbarButtonChromeRefreshIcon,
                kToolbarMediaButtonElementId, kToolbarMediaBubbleElementId),
-           /*is_section_end=*/false),
-       ToolbarController::ResponsiveElementInfo(
-           ToolbarController::ElementIdInfo(
-               kToolbarDownloadButtonElementId,
-               IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS,
-               &kDownloadToolbarButtonChromeRefreshIcon,
-               kToolbarDownloadButtonElementId,
-               kToolbarDownloadBubbleElementId),
            /*is_section_end=*/true),
        ToolbarController::ResponsiveElementInfo(
            ToolbarController::ElementIdInfo(kToolbarNewTabButtonElementId,
@@ -298,9 +290,8 @@ std::vector<ui::ElementIdentifier>
 ToolbarController::GetDefaultOverflowOrder() {
   return std::vector<ui::ElementIdentifier>(
       {kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId,
-       kToolbarMediaButtonElementId, kToolbarDownloadButtonElementId,
-       kToolbarNewTabButtonElementId, kToolbarForwardButtonElementId,
-       kToolbarAvatarButtonElementId});
+       kToolbarMediaButtonElementId, kToolbarNewTabButtonElementId,
+       kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId});
 }
 
 // Every activate identifier should have an action name in order to emit
@@ -313,7 +304,6 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
       identifier_to_action_name_map({
           {kToolbarAvatarButtonElementId, "AvatarButton"},
           {kToolbarChromeLabsButtonElementId, "ChromeLabsButton"},
-          {kToolbarDownloadButtonElementId, "DownloadButton"},
           {kExtensionsMenuButtonElementId, "ExtensionsMenuButton"},
           {kToolbarForwardButtonElementId, "ForwardButton"},
           {kToolbarHomeButtonElementId, "HomeButton"},
@@ -331,6 +321,7 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
           {kActionShowAddressesBubbleOrPage,
            "PinnedShowAddressesBubbleOrPageButton"},
           {kActionShowChromeLabs, "PinnedShowChromeLabsButton"},
+          {kActionShowDownloads, "PinnedShowDownloadsButton"},
           {kActionShowPasswordsBubbleOrPage,
            "PinnedShowPasswordsBubbleOrPageButton"},
           {kActionShowPaymentsBubbleOrPage,

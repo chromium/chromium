@@ -45,15 +45,15 @@ class PaletteInterpolationTest : public FontTestBase {
   void SetUp() override {
     FontDescription::VariantLigatures ligatures;
 
-    Font color_palette_font = blink::test::CreateTestFont(
+    Font* color_palette_font = blink::test::CreateTestFont(
         AtomicString("Ahem"), pathToColorPalettesTestFont(), 16, &ligatures);
     color_palette_typeface_ =
-        sk_ref_sp(color_palette_font.PrimaryFont()->PlatformData().Typeface());
+        sk_ref_sp(color_palette_font->PrimaryFont()->PlatformData().Typeface());
 
-    Font non_color_font = blink::test::CreateTestFont(
+    Font* non_color_font = blink::test::CreateTestFont(
         AtomicString("Ahem"), pathToNonColorTestFont(), 16, &ligatures);
     non_color_ahem_typeface_ =
-        sk_ref_sp(non_color_font.PrimaryFont()->PlatformData().Typeface());
+        sk_ref_sp(non_color_font->PrimaryFont()->PlatformData().Typeface());
   }
 
   void ExpectColorsEqualInSRGB(

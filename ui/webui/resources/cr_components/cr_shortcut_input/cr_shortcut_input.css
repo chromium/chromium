@@ -25,6 +25,14 @@
   --cr-input-readonly-opacity: 1;
 }
 
+#input:not([invalid]) {
+  --cr-input-error-display: none;
+}
+
+#edit {
+  margin-inline-start: var(--cr-icon-ripple-padding);
+}
+
 :host-context([dir='rtl']) #clear {
   left: -2px;
   right: inherit;

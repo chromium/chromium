@@ -1049,10 +1049,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 minimizeHighlighted);
     }
 
-    private static boolean shouldNestSecurityIcon() {
-        return ChromeFeatureList.sCctNestedSecurityIcon.isEnabled();
-    }
-
     /** Custom tab-specific implementation of the LocationBar interface. */
     @VisibleForTesting
     public class CustomTabLocationBar
@@ -1256,7 +1252,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
             int securityButtonId =
                     shouldNestSecurityIcon() ? R.id.security_icon : R.id.security_button;
-            mSecurityButton = container.findViewById(securityButtonId);
+            mSecurityButton = mLocationBarFrameLayout.findViewById(securityButtonId);
             mSecurityButton.setVisibility(INVISIBLE);
 
             // If the security icon is nested, only the url bar should be offset by it.
@@ -1273,6 +1269,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             shouldNestSecurityIcon()
                                     ? R.dimen.custom_tabs_security_icon_width
                                     : R.dimen.location_bar_icon_width);
+
             addButtonsVisibilityUpdater();
         }
 
@@ -1372,7 +1369,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         public void onNativeLibraryReady() {
             mSecurityButton.setOnClickListener(v -> showPageInfo());
-            if (!mOmniboxEnabled && shouldNestSecurityIcon()) {
+            if (shouldNestSecurityIcon()) {
                 mTitleUrlContainer.setOnClickListener(v -> showPageInfo());
                 // The title and url are independently focusable for accessibility. Set
                 // AccessibilityNodeInfo on each to indicate they respond to clicks / long clicks
@@ -1990,6 +1987,19 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             info.setEditable(false);
                         }
                     });
+            updateAnimationsForOmnibox();
+        }
+
+        private void updateAnimationsForOmnibox() {
+            mSecurityButton = mLocationBarFrameLayout.findViewById(R.id.security_button);
+            mSecurityButton.setVisibility(VISIBLE);
+            mLocationBarFrameLayout.findViewById(R.id.security_icon).setVisibility(GONE);
+            mAnimDelegate.setSecurityButton(mSecurityButton);
+            mAnimDelegate.setSecurityButtonWidth(0);
+        }
+
+        private boolean shouldNestSecurityIcon() {
+            return ChromeFeatureList.sCctNestedSecurityIcon.isEnabled() && !mOmniboxEnabled;
         }
     }
 

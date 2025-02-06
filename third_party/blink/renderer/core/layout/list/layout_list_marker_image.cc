@@ -21,7 +21,7 @@ LayoutListMarkerImage* LayoutListMarkerImage::CreateAnonymous(
 
 PhysicalSize LayoutListMarkerImage::DefaultSize() const {
   NOT_DESTROYED();
-  const SimpleFontData* font_data = StyleRef().GetFont().PrimaryFont();
+  const SimpleFontData* font_data = StyleRef().GetFont()->PrimaryFont();
   DCHECK(font_data);
   if (!font_data) {
     return PhysicalSize(LayoutUnit(kDefaultWidth), LayoutUnit(kDefaultHeight));

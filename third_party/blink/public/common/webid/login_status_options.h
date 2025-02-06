@@ -20,9 +20,8 @@ struct BLINK_COMMON_EXPORT LoginStatusOptions {
   LoginStatusOptions();
   LoginStatusOptions(std::vector<LoginStatusAccount> accounts,
                      const std::optional<base::TimeDelta>& expiration);
-  LoginStatusOptions(const LoginStatusOptions& account);
   ~LoginStatusOptions();
-  LoginStatusOptions& operator=(const LoginStatusOptions&);
+
   bool operator==(const LoginStatusOptions& account) const;
 
   // List of accounts associated with the login status

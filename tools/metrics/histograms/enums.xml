@@ -14148,6 +14148,7 @@ from previous Chrome versions.
   <int value="10405060" label="BluetoothSessionizedMetrics:disabled"/>
   <int value="10458238" label="disable-print-preview-simplify"/>
   <int value="10511293" label="LensOverlaySimplifiedSelection:enabled"/>
+  <int value="10929486" label="WebNNDirectML:disabled"/>
   <int value="11698808" label="enable-dom-distiller-button-animation"/>
   <int value="11924259"
       label="AutofillEnableUpdateVirtualCardEnrollment:enabled"/>
@@ -17062,6 +17063,7 @@ from previous Chrome versions.
       label="SyncChromeOSExplicitPassphraseSharing:enabled"/>
   <int value="1180722846" label="OculusVR:disabled"/>
   <int value="1181056275" label="enable-cloud-backup"/>
+  <int value="1181468134" label="CSSSafeAreaMaxInset:disabled"/>
   <int value="1181825084" label="NewDragSpecInLauncher:enabled"/>
   <int value="1182356056" label="MacV2GPUSandbox:enabled"/>
   <int value="1183125644" label="DiscoFeedEndpoint:enabled"/>
@@ -18719,6 +18721,7 @@ from previous Chrome versions.
   <int value="1804170680" label="PdfCr23:enabled"/>
   <int value="1804190628"
       label="AuthenticateUsingUserConsentVerifierInteropApi:disabled"/>
+  <int value="1805180852" label="CSSSafeAreaMaxInset:enabled"/>
   <int value="1805582881" label="VcRetouchInferenceBackend:enabled"/>
   <int value="1805706414" label="PerformanceInterventionUI:disabled"/>
   <int value="1805859042"
@@ -19310,6 +19313,7 @@ from previous Chrome versions.
   <int value="2024172900" label="KidsManagementUrlClassification:disabled"/>
   <int value="2024298022"
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:disabled"/>
+  <int value="2024746269" label="WebNNDirectML:enabled"/>
   <int value="2025344937" label="SyncAndroidPromosWithIllustration:disabled"/>
   <int value="2025618564" label="AutofillShowAutocompleteDeleteButton:enabled"/>
   <int value="2027013221"

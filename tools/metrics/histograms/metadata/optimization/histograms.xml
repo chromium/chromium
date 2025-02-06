@@ -497,6 +497,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.AnnotatedPageContent.ComputeMetricsLatency"
+    units="microseconds" expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Records the duration for computing metrics from the AnnotatedPageContent
+    proto.
+
+    Note that clients without high-resolution clocks will report 0.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.AnnotatedPageContent.TotalNodeCount"
     units="nodes" expires_after="2025-12-15">
   <owner>khushalsagar@chromium.org</owner>
@@ -515,6 +527,16 @@ chromium-metrics-reviews@google.com.
     Records the size of AnnotatedPageContent proto extracted from 1 WebContents
     instance. Recorded once per extraction. Reversioned the bucket size to 10KB
     up to 5MB in Jan 2025.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.AnnotatedPageContent.TotalWordCount"
+    units="words" expires_after="2025-12-15">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Records the number of words of AnnotatedPageContent proto extracted from 1
+    WebContents instance. Recorded once per extraction. Max of 100k words.
   </summary>
 </histogram>
 

@@ -18,6 +18,17 @@ namespace favicon {
 using FaviconBitmapID = int64_t;  // Identifier for a bitmap in a favicon.
 using IconMappingID = int64_t;    // For page url and icon mapping.
 
+// The type of a `page_url` added to the database.
+// NOTE: These values are stored in the favicon database, DO NOT REORDER or
+// REUSE values.
+enum class PageUrlType {
+  // A regular page. This is the default.
+  kRegular = 0,
+
+  // The `page_url` in the icon mapping is for a redirect.
+  kRedirect,
+};
+
 // Used for the mapping between the page and icon.
 struct IconMapping {
   IconMapping();

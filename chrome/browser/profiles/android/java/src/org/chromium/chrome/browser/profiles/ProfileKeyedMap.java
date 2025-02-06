@@ -5,10 +5,11 @@
 package org.chromium.chrome.browser.profiles;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,9 +28,10 @@ import java.util.function.Function;
  *
  * @param <T> The type of object being mapped to the Profile.
  */
+@NullMarked
 public class ProfileKeyedMap<T> {
     /** Indicates no cleanup action is required when destroying an object in the map. */
-    public static final Callback NO_REQUIRED_CLEANUP_ACTION = null;
+    public static final @Nullable Callback NO_REQUIRED_CLEANUP_ACTION = null;
 
     /** Uses to determine what Profile reference should be used and stored in the map. */
     @IntDef({ProfileSelection.OWN_INSTANCE, ProfileSelection.REDIRECTED_TO_ORIGINAL})
@@ -46,7 +48,7 @@ public class ProfileKeyedMap<T> {
     @ProfileSelection private final int mProfileSelection;
     private final @Nullable Callback<T> mDestroyAction;
 
-    private ProfileManager.Observer mProfileManagerObserver;
+    private ProfileManager.@Nullable Observer mProfileManagerObserver;
 
     /**
      * Creates a map of Profile -> Object that handles automatically cleaning up when the profiles

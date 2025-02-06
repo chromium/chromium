@@ -50,7 +50,7 @@ struct ScriptsVerticalParameters {
 ScriptsVerticalParameters GetScriptsVerticalParameters(
     const ComputedStyle& style) {
   ScriptsVerticalParameters parameters;
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   if (!font_data)
     return parameters;
   auto x_height = font_data->GetFontMetrics().XHeight();

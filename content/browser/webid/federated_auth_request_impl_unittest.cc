@@ -42,6 +42,7 @@
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
@@ -843,12 +844,15 @@ class TestPermissionDelegate : public NiceMock<MockPermissionDelegate> {
     return (it != idp_signin_statuses_.end()) ? it->second : std::nullopt;
   }
 
-  void SetIdpSigninStatus(const url::Origin& idp_origin,
-                          bool idp_signin_status) override {
+  void SetIdpSigninStatus(
+      const url::Origin& idp_origin,
+      bool idp_signin_status,
+      base::optional_ref<const blink::common::webid::LoginStatusOptions>
+          options) override {
     idp_signin_statuses_[idp_origin] = idp_signin_status;
     // Call parent so that EXPECT_CALL() works.
-    NiceMock<MockPermissionDelegate>::SetIdpSigninStatus(idp_origin,
-                                                         idp_signin_status);
+    NiceMock<MockPermissionDelegate>::SetIdpSigninStatus(
+        idp_origin, idp_signin_status, std::nullopt);
   }
 };
 
@@ -3872,7 +3876,7 @@ TEST_F(FederatedAuthRequestImplTest, ReorderMultipleAccounts) {
 // IdpSigninStatus bit.
 TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestFirstTimeFetchSuccess) {
   EXPECT_CALL(*test_permission_delegate_,
-              SetIdpSigninStatus(OriginFromString(kProviderUrlFull), true))
+              SetIdpSigninStatus(OriginFromString(kProviderUrlFull), true, _))
       .Times(1);
 
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
@@ -3889,7 +3893,7 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestFirstTimeFetchSuccess) {
 TEST_F(FederatedAuthRequestImplTest,
        IdpSigninStatusTestFirstTimeFetchNoFailureUi) {
   EXPECT_CALL(*test_permission_delegate_,
-              SetIdpSigninStatus(OriginFromString(kProviderUrlFull), false))
+              SetIdpSigninStatus(OriginFromString(kProviderUrlFull), false, _))
       .Times(1);
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
@@ -4284,7 +4288,7 @@ TEST_F(
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = std::nullopt;
   EXPECT_CALL(*test_permission_delegate_,
-              SetIdpSigninStatus(OriginFromString(kProviderUrlFull), true));
+              SetIdpSigninStatus(OriginFromString(kProviderUrlFull), true, _));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
