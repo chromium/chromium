@@ -109,6 +109,9 @@ const char* JobTypeToRequestType(
     case DeviceManagementService::JobConfiguration::
         TYPE_POLICY_AGENT_REGISTRATION:
       return dm_protocol::kValueRequestRegisterPolicyAgent;
+    case DeviceManagementService::JobConfiguration::
+        TYPE_DETERMINE_PROMOTION_ELIGIBILITY:
+      return dm_protocol::kValueRequestDeterminePromotionEligibility;
   }
   NOTREACHED() << "Invalid job type " << type;
 }

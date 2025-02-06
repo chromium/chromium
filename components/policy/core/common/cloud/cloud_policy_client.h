@@ -502,6 +502,8 @@ class POLICY_EXPORT CloudPolicyClient {
   // policy client and notify observers.
   void UpdateServiceAccount(const std::string& account_email);
 
+  virtual void DeterminePromotionEligibility(ResultCallback callback);
+
   // Adds an observer to be called back upon policy and state changes.
   void AddObserver(Observer* observer);
 
@@ -742,6 +744,9 @@ class POLICY_EXPORT CloudPolicyClient {
   void OnClientCertProvisioningRequestResponse(
       ClientCertProvisioningRequestCallback callback,
       DMServerJobResult result);
+
+  void OnPromotionEligibilityDetermined(ResultCallback callback,
+                                       DMServerJobResult result);
 
   // Callback for `UploadFmRegistrationToken` request.
   void OnUploadFmRegistrationTokenResponse(ResultCallback callback,

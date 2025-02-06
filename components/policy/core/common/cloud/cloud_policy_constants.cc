@@ -81,6 +81,8 @@ const char kValueRequestCertProvisioningRequest[] = "client_cert_provisioning";
 const char kValueRequestChromeProfileReport[] = "chrome_profile_report";
 const char kValueRequestFmRegistrationTokenUpload[] =
     "fm_registration_token_upload";
+const char kValueRequestDeterminePromotionEligibility[] =
+    "promotion_eligibility";
 
 const char kChromeDevicePolicyType[] = "google/chromeos/device";
 #if BUILDFLAG(IS_CHROMEOS)

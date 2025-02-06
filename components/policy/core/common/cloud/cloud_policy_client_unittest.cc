@@ -2229,9 +2229,8 @@ TEST_F(CloudPolicyClientTest, UploadPolicyValidationReport) {
   client_->UploadPolicyValidationReport(
       CloudPolicyValidatorBase::VALIDATION_VALUE_WARNING, issues, kStore,
       policy_type_, kPolicyToken, result_future.GetCallback());
-
-
   const CloudPolicyClient::Result result = result_future.Get();
+
   EXPECT_TRUE(result.IsSuccess());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::
                 TYPE_UPLOAD_POLICY_VALIDATION_REPORT,
@@ -3270,6 +3269,42 @@ TEST_F(CloudPolicyClientTest, UploadFmRegistrationTokenRequest) {
   EXPECT_TRUE(result.IsSuccess());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::
                 TYPE_UPLOAD_FM_REGISTRATION_TOKEN,
+            job_type_);
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            expected_request.SerializePartialAsString());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
+}
+
+TEST_F(CloudPolicyClientTest, DeterminePromotionEligibilityRequest) {
+  RegisterClient();
+
+  em::DeviceManagementRequest expected_request;
+  expected_request.mutable_determine_promotion_eligibility_request();
+
+  em::DeviceManagementResponse fake_response;
+  em::GetUserEligiblePromotionsResponse* inner_response =
+      fake_response.mutable_get_user_eligible_promotions_response();
+  em::PromotionEligibilityList* promotion_eligibility_list =
+      inner_response->mutable_promotions();
+  promotion_eligibility_list->set_policy_page_promotion(
+      em::PromotionType::CHROME_ENTERPRISE_CORE);
+
+  ExpectAndCaptureJob(fake_response);
+
+  base::test::TestFuture<
+      CloudPolicyClient::Result>
+      result_future;
+
+
+  base::RunLoop run_loop;
+  client_->DeterminePromotionEligibility(
+      result_future.GetCallback().Then(run_loop.QuitClosure())
+      );
+  client_->SetOAuthTokenAsAdditionalAuth(kOAuthToken);
+  run_loop.Run();
+
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::
+                TYPE_DETERMINE_PROMOTION_ELIGIBILITY,
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             expected_request.SerializePartialAsString());

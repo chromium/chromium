@@ -76,6 +76,7 @@ extern const char kValueRequestChromeOsUserReport[];
 extern const char kValueRequestCertProvisioningRequest[];
 extern const char kValueRequestChromeProfileReport[];
 extern const char kValueRequestFmRegistrationTokenUpload[];
+extern const char kValueRequestDeterminePromotionEligibility[];
 
 // Policy type strings for the policy_type field in PolicyFetchRequest.
 extern const char kChromeDevicePolicyType[];
