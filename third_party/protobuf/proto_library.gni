@@ -474,6 +474,22 @@ template("proto_library") {
     # System protoc is not used so it's necessary to build a chromium one.
     inputs = [ _protoc_path ]
     deps = [ _protoc_label ]
+    if (use_prebuilt_instrumented_libraries) {
+      # When prebuilt instrumneted libraries are used, we need to tell that
+      # protoc needs to load the following libraries via BUILD configs so that
+      # siso uploads these files to remote workers.
+      inputs += [
+        "//third_party/instrumented_libs/binaries/msan-chained-origins-noble-lib/lib/libdl.so.2",
+        "//third_party/instrumented_libs/binaries/msan-chained-origins-noble-lib/lib/libpthread.so.0",
+        "//third_party/instrumented_libs/binaries/msan-chained-origins-noble-lib/lib/librt.so.1",
+        "//third_party/instrumented_libs/binaries/msan-chained-origins-noble-lib/lib/libm.so.6",
+        "//third_party/instrumented_libs/binaries/msan-chained-origins-noble-lib/lib/libresolv.so.2",
+        "//third_party/instrumented_libs/binaries/msan-chained-origins-noble-lib/lib/libgcc_s.so.1",
+        "//third_party/instrumented_libs/binaries/msan-chained-origins-noble-lib/lib/libc.so.6",
+        "//$root_build_dir/third_party/instrumented_libs/binaries/msan-chained-origins-noble-lib/lib/ld-linux-x86-64.so.2",
+      ]
+      deps += [ "//third_party/instrumented_libs:ld-linux" ]
+    }
 
     if (enable_js_protobuf) {
       inputs += [ _protoc_gen_js_path ]
