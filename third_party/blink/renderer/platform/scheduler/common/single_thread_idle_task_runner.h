@@ -11,12 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
 namespace scheduler {
@@ -26,15 +27,8 @@ class IdleHelper;
 // tasks have an unbound argument which is bound to a deadline
 // (in base::TimeTicks) when they are run. The idle task is expected to
 // complete by this deadline.
-//
-// This class uses base::RefCountedThreadSafe instead of WTF::ThreadSafe-
-// RefCounted, which is against the general rule for code in platform/
-// (see audit_non_blink_usage.py). This is because SingleThreadIdleTaskRunner
-// is held by MainThreadSchedulerImpl and MainThreadSchedulerImpl is created
-// before WTF (and PartitionAlloc) is initialized.
-// TODO(yutak): Fix this.
 class SingleThreadIdleTaskRunner
-    : public base::RefCountedThreadSafe<SingleThreadIdleTaskRunner> {
+    : public WTF::ThreadSafeRefCounted<SingleThreadIdleTaskRunner> {
  public:
   using IdleTask = base::OnceCallback<void(base::TimeTicks)>;
 
@@ -91,7 +85,7 @@ class SingleThreadIdleTaskRunner
   virtual ~SingleThreadIdleTaskRunner();
 
  private:
-  friend class base::RefCountedThreadSafe<SingleThreadIdleTaskRunner>;
+  friend class WTF::ThreadSafeRefCounted<SingleThreadIdleTaskRunner>;
   friend class IdleHelper;
 
   void RunTask(IdleTask idle_task);
