@@ -106,7 +106,7 @@ BtmCookieMode GetBtmCookieMode(bool is_otr) {
 }
 
 std::string_view GetHistogramSuffix(BtmCookieMode mode) {
-  // Any changes here need to be reflected in BtmCookieMode in
+  // Any changes here need to be reflected in DIPSCookieMode in
   // tools/metrics/histograms/metadata/others/histograms.xml
   switch (mode) {
     case BtmCookieMode::kBlock3PC:
