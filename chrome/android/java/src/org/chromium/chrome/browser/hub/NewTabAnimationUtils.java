@@ -50,29 +50,40 @@ public class NewTabAnimationUtils {
      * @param finalRect The final {@link Rect} in which the {@code initialRect} will be based on.
      *     Its values will be multiplied by {@link #FINAL_SCALE}.
      * @param isRtl Whether the Layout direction is RTL or LTR.
+     * @param isTopAligned Whether the {@code initialRect} starts from the top or from the bottom of
+     *     {@code finalRect}.
      */
-    public static void updateRects(Rect initialRect, Rect finalRect, boolean isRtl) {
-        int x = isRtl ? finalRect.right : finalRect.left;
-        int y = finalRect.top;
-
+    public static void updateRects(
+            Rect initialRect, Rect finalRect, boolean isRtl, boolean isTopAligned) {
         int initialWidth = Math.round(finalRect.width() * INITIAL_SCALE);
         int initialHeight = Math.round(finalRect.height() * INITIAL_SCALE);
         int finalWidth = Math.round(finalRect.width() * FINAL_SCALE);
         int finalHeight = Math.round(finalRect.height() * FINAL_SCALE);
 
+        int x;
         if (isRtl) {
+            x = finalRect.right;
             initialRect.left = x - initialWidth;
             initialRect.right = x;
-            initialRect.bottom = y + initialHeight;
             finalRect.left = finalRect.right - finalWidth;
         } else {
+            x = finalRect.left;
             initialRect.left = x;
             initialRect.right = x + initialWidth;
-            initialRect.bottom = y + initialHeight;
             finalRect.right = x + finalWidth;
         }
 
-        initialRect.top = y;
-        finalRect.bottom = y + finalHeight;
+        int y;
+        if (isTopAligned) {
+            y = finalRect.top;
+            initialRect.top = y;
+            initialRect.bottom = y + initialHeight;
+            finalRect.bottom = y + finalHeight;
+        } else {
+            y = finalRect.bottom;
+            initialRect.top = y - initialHeight;
+            initialRect.bottom = y;
+            finalRect.top = y - finalHeight;
+        }
     }
 }
