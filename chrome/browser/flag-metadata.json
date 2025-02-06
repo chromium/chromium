@@ -34,6 +34,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "account-storage-prefs-themes-search-engines",
+    "owners": [ "ankushkush@google.com", "chrome-sync-dev@google.com" ],
+    "expiry_milestone": 138
+  },
+  {
     "name": "ack-on-surface-activation-when-interactive",
     "owners": [ "vollick@chromium.org", "jonross@chromium.org" ],
     "expiry_milestone": 135

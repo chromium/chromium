@@ -17256,6 +17256,8 @@ from previous Chrome versions.
   <int value="1249215617" label="SelectToSpeakNavigationControl:enabled"/>
   <int value="1249861983" label="WebViewUseMetricsUploadService:disabled"/>
   <int value="1250071868" label="disable-timezone-tracking-option"/>
+  <int value="1250148637"
+      label="account-storage-prefs-themes-search-engines:disabled"/>
   <int value="1250398558" label="NetworkServiceSandbox:enabled"/>
   <int value="1250728565" label="HttpsFirstBalancedMode:enabled"/>
   <int value="1250776846" label="DnsProxyEnableDOH:enabled"/>
@@ -17966,6 +17968,8 @@ from previous Chrome versions.
   <int value="1515472077" label="VirtualKeyboardRoundCorners:disabled"/>
   <int value="1515517391" label="TabGroupDeferRemoteNavigations:disabled"/>
   <int value="1515587927" label="FencedFramesM120FeaturesPart2:disabled"/>
+  <int value="1517756684"
+      label="account-storage-prefs-themes-search-engines:enabled"/>
   <int value="1517863401" label="history-entry-requires-user-gesture"/>
   <int value="1517988103" label="FilesBannerFramework:disabled"/>
   <int value="1518314853" label="OsSettingsDeprecateSyncMetricsToggle:enabled"/>

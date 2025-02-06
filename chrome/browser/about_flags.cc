@@ -4329,6 +4329,21 @@ const FeatureEntry::FeatureVariation kTabSwitcherColorBlendAnimateVariations[] =
       std::size(kTabSwitcherColorBlendAnimateVariation3), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kAccountStoragePrefsThemesAndSearchEnginesFeatures[] =
+    "EnablePreferencesAccountStorage,"
+    "SeparateLocalAndAccountSearchEngines,"
+    "SeparateLocalAndAccountThemes,"
+    "ThemesBatchUpload";
+
+const FeatureEntry::Choice kAccountStoragePrefsThemesAndSearchEnginesChoices[] =
+    {{"Default", "", ""},
+     {"Disabled", "disable-features",
+      kAccountStoragePrefsThemesAndSearchEnginesFeatures},
+     {"Enabled", "enable-features",
+      kAccountStoragePrefsThemesAndSearchEnginesFeatures}};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -11629,6 +11644,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableImprovedGuestProfileMenuDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kEnableImprovedGuestProfileMenu)},
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"account-storage-prefs-themes-search-engines",
+     flag_descriptions::kAccountStoragePrefsThemesAndSearchEnginesName,
+     flag_descriptions::kAccountStoragePrefsThemesAndSearchEnginesDescription,
+     kOsDesktop,
+     MULTI_VALUE_TYPE(kAccountStoragePrefsThemesAndSearchEnginesChoices)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

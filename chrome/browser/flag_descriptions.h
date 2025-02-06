@@ -2846,6 +2846,9 @@ extern const char kOpenXRAndroidSmoothDepthDescription[];
 
 #else  // !BUILDFLAG(IS_ANDROID)
 
+extern const char kAccountStoragePrefsThemesAndSearchEnginesName[];
+extern const char kAccountStoragePrefsThemesAndSearchEnginesDescription[];
+
 extern const char kAllowAllSitesToInitiateMirroringName[];
 extern const char kAllowAllSitesToInitiateMirroringDescription[];
 

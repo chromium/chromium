@@ -4855,6 +4855,14 @@ const char kOpenXRAndroidSmoothDepthDescription[] =
 
 #else  // BUILDFLAG(IS_ANDROID)
 
+const char kAccountStoragePrefsThemesAndSearchEnginesName[] =
+    "Account storage of preferences, themes and search engines";
+const char kAccountStoragePrefsThemesAndSearchEnginesDescription[] =
+    "When enabled, keeps account preferences, themes and search-engines "
+    "separate from the local data. If the user signs out or sync is turned "
+    "off, only the account data is removed while the pre-existing/local data "
+    "is left behind.";
+
 const char kAllowAllSitesToInitiateMirroringName[] =
     "Allow all sites to initiate mirroring";
 const char kAllowAllSitesToInitiateMirroringDescription[] =
