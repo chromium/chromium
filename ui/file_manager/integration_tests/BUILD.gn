@@ -83,6 +83,7 @@ copy("copy_src") {
 copy("from_files_app") {
   sources = [ "../file_manager/common/js/shared_types.ts" ]
   outputs = [ "$preprocess_folder/prod/file_manager/{{source_file_part}}" ]
+  deps = [ "//ui/file_manager:generate_definitions" ]
 }
 
 # All non JS/TS files.
