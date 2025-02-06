@@ -130,6 +130,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   static void ResetCachedFeaturesForTesting();
   static void FlushPreloadScannerThreadForTesting();
 
+  bool HasPendingPreloads();
+
  protected:
   void insert(const String&) final;
   void Append(const String&) override;
@@ -239,8 +241,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       scoped_refptr<PendingPreloads> pending_preloads,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<PendingPreloadData> preload_data);
-
-  bool HasPendingPreloads();
 
   // Returns true if the data should be processed (tokenizer pumped) now. If
   // this returns false, SchedulePumpTokenizer() should be called. This is
