@@ -6850,6 +6850,13 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_TEXT_COPIED_TOAST" desc="The message shown on a toast to indicate text was copied to the user's clipboard from the contents of a screenshot.">
         Text copied to Clipboard
       </message>
+      <!-- TODO: crbug.com/375967525 - Finalize this string and mark it as translateable -->
+      <message name="IDS_ASH_SCREEN_CAPTURE_MORE_ACTIONS_UNAVAILABLE_OFFLINE_ERROR" desc="The error message shown to indicate to the user that some actions (e.g. search) are not available while offline." translateable="false">
+        More actions unavailable offline
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_ACTION_ATTEMPTED_OFFLINE_ERROR" desc="The error message shown if the user is offline while attempting an action that requires an internet connection.">
+        Check your internet and try again
+      </message>
 
       <!-- Scanner -->
       <!-- TODO: crbug.com/375967525 - Finalize these strings and mark them as translateable -->

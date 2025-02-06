@@ -546,6 +546,19 @@ bool ShouldSendRegionSearch(PerformCaptureType capture_type) {
           capture_type == PerformCaptureType::kSearch);
 }
 
+// Returns true if the capture type requires a network connection.
+bool CaptureTypeRequiresNetworkConnection(PerformCaptureType capture_type) {
+  switch (capture_type) {
+    case PerformCaptureType::kCapture:
+    case PerformCaptureType::kTextDetection:
+      return false;
+    case PerformCaptureType::kSearch:
+    case PerformCaptureType::kScanner:
+    case PerformCaptureType::kSunfish:
+      return true;
+  }
+}
+
 // Returns the target panel bounds in screen coordinates.
 gfx::Rect CalculateSearchResultPanelScreenBounds(
     const gfx::Rect& work_area_in_screen,
@@ -1117,6 +1130,13 @@ void CaptureModeController::CaptureScreenshotOfGivenWindow(
 
 void CaptureModeController::PerformCapture(PerformCaptureType capture_type) {
   DCHECK(IsActive());
+
+  if (CaptureTypeRequiresNetworkConnection(capture_type) &&
+      delegate_->IsNetworkConnectionOffline()) {
+    capture_mode_session_->ShowActionContainerError(l10n_util::GetStringUTF16(
+        IDS_ASH_SCREEN_CAPTURE_ACTION_ATTEMPTED_OFFLINE_ERROR));
+    return;
+  }
 
   if (pending_dlp_check_)
     return;

@@ -141,6 +141,9 @@ void NullCaptureModeSession::MaybeShowScannerDisclaimer(
 void NullCaptureModeSession::OnScannerActionsFetched(
     ScannerSession::FetchActionsResponse actions_response) {}
 
+void NullCaptureModeSession::ShowActionContainerError(
+    const std::u16string& error_message) {}
+
 void NullCaptureModeSession::InitInternal() {
   layer()->SetName("NullCaptureModeSession");
 }

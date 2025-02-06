@@ -1496,6 +1496,16 @@ void CaptureModeSession::OnScannerActionsFetched(
   }
 }
 
+void CaptureModeSession::ShowActionContainerError(
+    const std::u16string& error_message) {
+  if (!action_container_widget_) {
+    return;
+  }
+  CHECK(action_container_view_);
+  action_container_view_->ShowErrorView(error_message);
+  UpdateActionContainerWidget();
+}
+
 void CaptureModeSession::OnDisclaimerDeclined() {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kConsentDisclaimerRejected);
@@ -3303,7 +3313,8 @@ CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
   if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected() &&
       features::IsSunfishFeatureEnabled()) {
     if (controller_->IsNetworkConnectionOffline()) {
-      // TODO(crbug.com/391713973): Show an error.
+      ShowActionContainerError(l10n_util::GetStringUTF16(
+          IDS_ASH_SCREEN_CAPTURE_MORE_ACTIONS_UNAVAILABLE_OFFLINE_ERROR));
     } else {
       RecordSearchButtonShown();
       // TODO(crbug.com/388898754): Finalize and translate the search button

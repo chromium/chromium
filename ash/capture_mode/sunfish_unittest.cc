@@ -14,6 +14,7 @@
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/capture_mode/action_button_container_view.h"
 #include "ash/capture_mode/action_button_view.h"
 #include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_button_view.h"
@@ -2272,11 +2273,77 @@ TEST_F(SunfishTest, SearchButtonNotShownWhenOffline) {
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForCaptureModeWidgetsVisible();
 
+  // The search button should not be shown, and an error should be shown
+  // instead.
   auto* session =
       static_cast<CaptureModeSession*>(controller->capture_mode_session());
   CaptureModeSessionTestApi session_test_api(session);
   EXPECT_FALSE(
       session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton));
+  ActionButtonContainerView::ErrorView* error_view =
+      session_test_api.GetActionContainerErrorView();
+  ASSERT_TRUE(error_view);
+  EXPECT_TRUE(error_view->GetVisible());
+}
+
+// Tests that selecting a region in Sunfish mode shows an error when the network
+// connection is offline.
+TEST_F(SunfishTest, SelectingRegionInSunfishModeShowsErrorIfOffline) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  ON_CALL(*test_delegate, IsNetworkConnectionOffline)
+      .WillByDefault(Return(true));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
+
+  // An error should be shown.
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  ActionButtonContainerView::ErrorView* error_view =
+      session_test_api.GetActionContainerErrorView();
+  ASSERT_TRUE(error_view);
+  EXPECT_TRUE(error_view->GetVisible());
+}
+
+// Tests that pressing the search button shows an error when the network
+// connection is offline.
+TEST_F(SunfishTest, PressingSearchButtonShowsErrorIfOffline) {
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  // Simulate the network being online initially, so that the search button
+  // will appear when a region is selected.
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  ON_CALL(*test_delegate, IsNetworkConnectionOffline)
+      .WillByDefault(Return(false));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForCaptureModeWidgetsVisible();
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  ActionButtonView* search_button =
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kSearchButton);
+  ASSERT_TRUE(search_button);
+
+  // Simulate the network disconnecting before clicking on the search button.
+  ON_CALL(*test_delegate, IsNetworkConnectionOffline)
+      .WillByDefault(Return(true));
+  LeftClickOn(search_button);
+
+  // The session should still be active and an error should be shown.
+  ASSERT_TRUE(controller->IsActive());
+  ActionButtonContainerView::ErrorView* error_view =
+      session_test_api.GetActionContainerErrorView();
+  ASSERT_TRUE(error_view);
+  EXPECT_TRUE(error_view->GetVisible());
 }
 
 using SunfishMultiDisplayTest = SunfishTest;

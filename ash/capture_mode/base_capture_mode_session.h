@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_BASE_CAPTURE_MODE_SESSION_H_
 #define ASH_CAPTURE_MODE_BASE_CAPTURE_MODE_SESSION_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -205,6 +206,10 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // buttons corresponding to `actions_response`, or show an error if needed.
   virtual void OnScannerActionsFetched(
       ScannerSession::FetchActionsResponse actions_response) = 0;
+
+  // Shows `error_message` in the action container.
+  virtual void ShowActionContainerError(
+      const std::u16string& error_message) = 0;
 
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;
