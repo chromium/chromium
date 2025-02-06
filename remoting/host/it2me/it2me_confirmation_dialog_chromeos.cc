@@ -76,6 +76,8 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
             ResultCallback callback) override;
 
  private:
+  class Core;
+
   void ShowConfirmationNotification(const std::string& remote_user_email);
   void OnConfirmationNotificationResult(std::optional<int> button_index);
 
@@ -95,11 +97,54 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
     return ui::ImageModel::FromVectorIcon(GetIcon());
   }
 
-  std::unique_ptr<MessageBox> message_box_;
-  ResultCallback callback_;
+  std::unique_ptr<Core> core_;
 
+  ResultCallback callback_;
   DialogStyle style_;
 };
+
+class It2MeConfirmationDialogChromeOS::Core {
+ public:
+  explicit Core(const std::u16string& title_label,
+                const std::u16string& message_label,
+                const std::u16string& ok_label,
+                const std::u16string& cancel_label,
+                const std::optional<ui::ImageModel> icon,
+                ResultCallback callback);
+
+  void ShowConfirmationDialog();
+
+ private:
+  void OnConfirmationDialogResult(MessageBox::Result result);
+
+  ResultCallback callback_;
+  std::unique_ptr<MessageBox> message_box_;
+};
+
+It2MeConfirmationDialogChromeOS::Core::Core(
+    const std::u16string& title_label,
+    const std::u16string& message_label,
+    const std::u16string& ok_label,
+    const std::u16string& cancel_label,
+    const std::optional<ui::ImageModel> icon,
+    ResultCallback callback) {
+  message_box_ = std::make_unique<MessageBox>(
+      title_label, message_label, ok_label, cancel_label, icon,
+      base::BindOnce(
+          &It2MeConfirmationDialogChromeOS::Core::OnConfirmationDialogResult,
+          base::Unretained(this)));
+  callback_ = std::move(callback);
+}
+
+void It2MeConfirmationDialogChromeOS::Core::ShowConfirmationDialog() {
+  message_box_->Show();
+}
+
+void It2MeConfirmationDialogChromeOS::Core::OnConfirmationDialogResult(
+    MessageBox::Result result) {
+  std::move(callback_).Run(result == MessageBox::Result::OK ? Result::OK
+                                                            : Result::CANCEL);
+}
 
 It2MeConfirmationDialogChromeOS::It2MeConfirmationDialogChromeOS(
     DialogStyle style)
@@ -114,12 +159,19 @@ It2MeConfirmationDialogChromeOS::~It2MeConfirmationDialogChromeOS() {
 void It2MeConfirmationDialogChromeOS::Show(const std::string& remote_user_email,
                                            ResultCallback callback) {
   DCHECK(!remote_user_email.empty());
-  callback_ = std::move(callback);
 
   if (base::FeatureList::IsEnabled(
           remoting::features::kEnableCrdSharedSessionToUnattendedDevice)) {
-    ShowConfirmationDialog(remote_user_email);
+    core_ = std::make_unique<It2MeConfirmationDialogChromeOS::Core>(
+        /*title=*/GetTitle(),
+        /*message_label=*/FormatMessage(remote_user_email, style_),
+        /*ok_button_label=*/GetConfirmButtonLabel(),
+        /*cancel_button_label=*/GetDeclineButtonLabel(),
+        /*icon=*/GetDialogIcon(),
+        /*callback=*/std::move(callback));
+    core_->ShowConfirmationDialog();
   } else {
+    callback_ = std::move(callback);
     ShowConfirmationNotification(remote_user_email);
   }
 }
@@ -172,28 +224,6 @@ void It2MeConfirmationDialogChromeOS::OnConfirmationNotificationResult(
       /*by_user=*/false);
 
   std::move(callback_).Run(*button_index == 0 ? Result::CANCEL : Result::OK);
-}
-
-void It2MeConfirmationDialogChromeOS::ShowConfirmationDialog(
-    const std::string& remote_user_email) {
-  message_box_ = std::make_unique<MessageBox>(
-      /*title=*/GetTitle(),
-      /*message_label=*/FormatMessage(remote_user_email, style_),
-      /*ok_button_label=*/GetConfirmButtonLabel(),
-      /*cancel_button_label=*/GetDeclineButtonLabel(),
-      /*icon=*/GetDialogIcon(),
-      /*callback=*/
-      base::BindOnce(
-          &It2MeConfirmationDialogChromeOS::OnConfirmationDialogResult,
-          base::Unretained(this)));
-
-  message_box_->Show();
-}
-
-void It2MeConfirmationDialogChromeOS::OnConfirmationDialogResult(
-    MessageBox::Result result) {
-  std::move(callback_).Run(result == MessageBox::Result::OK ? Result::OK
-                                                            : Result::CANCEL);
 }
 
 std::unique_ptr<It2MeConfirmationDialog>
