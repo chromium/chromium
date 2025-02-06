@@ -18,6 +18,7 @@
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
+#include "components/policy/core/common/policy_types.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
@@ -84,6 +85,9 @@ class Stub final : public mojom::EnterpriseCompanion {
   void FetchPolicies(FetchPoliciesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     service_->FetchPolicies(
+        // TODO(crbug.com/391394116): forward the actual reason once this
+        // function takes an argument for reason.
+        policy::PolicyFetchReason::kUnspecified,
         base::BindOnce([](const EnterpriseCompanionStatus& status) {
           return status.ToMojomStatus();
         }).Then(std::move(callback)));

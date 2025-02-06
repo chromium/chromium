@@ -193,7 +193,8 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
         client_data_delegate_);
   }
 
-  void FetchPolicies(scoped_refptr<EnterpriseCompanionEventLogger> event_logger,
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     scoped_refptr<EnterpriseCompanionEventLogger> event_logger,
                      StatusCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(!pending_callback_);
@@ -219,7 +220,7 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
 
     pending_callback_ = std::move(callback);
     UpdateCachedPolicyInfo();
-    cloud_policy_client_->FetchPolicy(policy::PolicyFetchReason::kUnspecified);
+    cloud_policy_client_->FetchPolicy(reason);
   }
 
   // Overrides for policy::CloudPolicyClient::Observer.

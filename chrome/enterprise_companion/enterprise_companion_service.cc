@@ -20,6 +20,10 @@
 #include "chrome/enterprise_companion/event_logger.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace enterprise_companion {
 
 class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
@@ -42,13 +46,15 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
                            : base::DoNothing())));
   }
 
-  void FetchPolicies(StatusCallback callback) override {
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     StatusCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__;
     dm_client_->RegisterPolicyAgent(
         event_logger_,
         base::BindOnce(&EnterpriseCompanionServiceImpl::OnRegistrationCompleted,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), reason,
+                       std::move(callback)));
   }
 
  private:
@@ -59,6 +65,7 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
   scoped_refptr<EnterpriseCompanionEventLogger> event_logger_;
 
   void OnRegistrationCompleted(
+      policy::PolicyFetchReason reason,
       StatusCallback policy_fetch_callback,
       const EnterpriseCompanionStatus& device_registration_status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -67,7 +74,7 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
       std::move(policy_fetch_callback).Run(device_registration_status);
     } else {
       dm_client_->FetchPolicies(
-          event_logger_,
+          reason, event_logger_,
           std::move(policy_fetch_callback)
               .Then(base::BindOnce(&EnterpriseCompanionEventLogger::Flush,
                                    event_logger_, base::DoNothing())));
