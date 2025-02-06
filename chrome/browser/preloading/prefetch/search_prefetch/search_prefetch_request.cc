@@ -225,13 +225,15 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   resource_request->referrer_policy = net::ReferrerPolicy::NO_REFERRER;
   resource_request->update_first_party_url_on_redirect = true;
 
-  bool js_enabled = profile->GetPrefs() && profile->GetPrefs()->GetBoolean(
-                                               prefs::kWebKitJavascriptEnabled);
+  // `SearchPrefetchService::MaybePrefetchURL()` should be already prohibiting
+  // this.
+  CHECK(profile->GetPrefs() &&
+        profile->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled));
 
   AddClientHintsHeadersToPrefetchNavigation(
       prefetch_origin, &(resource_request->headers), profile,
       profile->GetClientHintsControllerDelegate(),
-      /*is_ua_override_on=*/false, js_enabled);
+      /*is_ua_override_on=*/false);
 
   // Tack an 'Upgrade-Insecure-Requests' header to outgoing navigational
   // requests, as described in

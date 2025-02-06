@@ -929,16 +929,11 @@ void AddPrefetchNavigationRequestClientHintsHeaders(
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
-    bool is_ua_override_on,
-    bool is_javascript_enabled) {
+    bool is_ua_override_on) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context);
 
-  // Since prefetch navigation doesn't have a related frame tree node,
-  // |is_javascript_enabled| is passed in to get whether a typical frame tree
-  // node would support javascript.
-  if (!is_javascript_enabled ||
-      !ShouldAddClientHints(origin, nullptr, delegate)) {
+  if (!ShouldAddClientHints(origin, nullptr, delegate)) {
     return;
   }
 

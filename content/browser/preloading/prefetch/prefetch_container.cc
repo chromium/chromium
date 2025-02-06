@@ -1896,9 +1896,15 @@ void PrefetchContainer::AddClientHintsHeaders(
   // TODO(crbug.com/41497015): Consider supporting UA override mode here
   const bool is_ua_override_on = false;
   net::HttpRequestHeaders client_hints_headers;
-  AddClientHintsHeadersToPrefetchNavigation(
-      origin, &client_hints_headers, browser_context, client_hints_delegate,
-      is_ua_override_on, is_javascript_enabled_);
+  if (is_javascript_enabled_) {
+    // Historically, `AddClientHintsHeadersToPrefetchNavigation` added
+    // Client Hints headers iff `is_javascript_enabled_`, so the `if` block here
+    // is to persist the behavior. However, it is worth revisiting if we really
+    // want to allow prefetch for non-Javascript enabled profile/origins.
+    AddClientHintsHeadersToPrefetchNavigation(
+        origin, &client_hints_headers, browser_context, client_hints_delegate,
+        is_ua_override_on);
+  }
 
   // Merge in the client hints which are suitable to include given this is a
   // prefetch, and potentially a cross-site only. (This logic might need to be
