@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/dns_hosts.h"
 
+#include "base/containers/span.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
@@ -26,16 +22,14 @@ struct ExpectedHostsEntry {
   const char* ip;
 };
 
-void PopulateExpectedHosts(const ExpectedHostsEntry* entries,
-                           size_t num_entries,
+void PopulateExpectedHosts(const base::span<const ExpectedHostsEntry> entries,
                            DnsHosts* expected_hosts_out) {
-  for (size_t i = 0; i < num_entries; ++i) {
-    DnsHostsKey key(entries[i].host, entries[i].family);
+  for (const auto& entry : entries) {
+    DnsHostsKey key(entry.host, entry.family);
     IPAddress& ip_ref = (*expected_hosts_out)[key];
     ASSERT_TRUE(ip_ref.empty());
-    ASSERT_TRUE(ip_ref.AssignFromIPLiteral(entries[i].ip));
-    ASSERT_EQ(ip_ref.size(),
-        (entries[i].family == ADDRESS_FAMILY_IPV4) ? 4u : 16u);
+    ASSERT_TRUE(ip_ref.AssignFromIPLiteral(entry.ip));
+    ASSERT_EQ(ip_ref.size(), (entry.family == ADDRESS_FAMILY_IPV4) ? 4u : 16u);
   }
 }
 
@@ -83,7 +77,7 @@ TEST(DnsHostsTest, ParseHosts) {
   };
 
   DnsHosts expected_hosts, actual_hosts;
-  PopulateExpectedHosts(kEntries, std::size(kEntries), &expected_hosts);
+  PopulateExpectedHosts(kEntries, &expected_hosts);
 
   base::HistogramTester histograms;
   ParseHosts(kContents, &actual_hosts);
@@ -105,7 +99,7 @@ TEST(DnsHostsTest, ParseHosts_CommaIsToken) {
   };
 
   DnsHosts expected_hosts, actual_hosts;
-  PopulateExpectedHosts(kEntries, std::size(kEntries), &expected_hosts);
+  PopulateExpectedHosts(kEntries, &expected_hosts);
   ParseHostsWithCommaModeForTesting(
       kContents, &actual_hosts, PARSE_HOSTS_COMMA_IS_TOKEN);
   ASSERT_EQ(0UL, actual_hosts.size());
@@ -120,7 +114,7 @@ TEST(DnsHostsTest, ParseHosts_CommaIsWhitespace) {
   };
 
   DnsHosts expected_hosts, actual_hosts;
-  PopulateExpectedHosts(kEntries, std::size(kEntries), &expected_hosts);
+  PopulateExpectedHosts(kEntries, &expected_hosts);
   ParseHostsWithCommaModeForTesting(
       kContents, &actual_hosts, PARSE_HOSTS_COMMA_IS_WHITESPACE);
   ASSERT_EQ(expected_hosts, actual_hosts);
@@ -138,7 +132,7 @@ TEST(DnsHostsTest, ParseHosts_CommaModeByPlatform) {
     { "comma2", ADDRESS_FAMILY_IPV4, "127.0.0.1" },
   };
   DnsHosts expected_hosts;
-  PopulateExpectedHosts(kEntries, std::size(kEntries), &expected_hosts);
+  PopulateExpectedHosts(kEntries, &expected_hosts);
   ASSERT_EQ(expected_hosts, actual_hosts);
 #else
   ASSERT_EQ(0UL, actual_hosts.size());
