@@ -8510,11 +8510,6 @@ const FeatureEntry kFeatureEntries[] = {
          "MediaPickerAdoption")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"privacy-sandbox-ads-apis",
-     flag_descriptions::kPrivacySandboxAdsAPIsOverrideName,
-     flag_descriptions::kPrivacySandboxAdsAPIsOverrideDescription, kOsAll,
-     SINGLE_VALUE_TYPE(switches::kEnablePrivacySandboxAdsApis)},
-
     {"privacy-sandbox-internals",
      flag_descriptions::kPrivacySandboxInternalsName,
      flag_descriptions::kPrivacySandboxInternalsDescription, kOsAll,

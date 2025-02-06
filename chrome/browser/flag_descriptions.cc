@@ -3030,12 +3030,6 @@ const char kPriceChangeModuleName[] = "Price Change Module";
 const char kPriceChangeModuleDescription[] =
     "Show a module with price drops of open tabs on new tab page.";
 
-const char kPrivacySandboxAdsAPIsOverrideName[] = "Privacy Sandbox Ads APIs";
-const char kPrivacySandboxAdsAPIsOverrideDescription[] =
-    "Enables Privacy Sandbox APIs: Attribution Reporting, Fledge, Topics, "
-    "Fenced Frames, Shared Storage, Private Aggregation, and their associated "
-    "features.";
-
 const char kPrivacySandboxAdsApiUxEnhancementsName[] =
     "Privacy Sandbox Ads API UX Enhancements";
 const char kPrivacySandboxAdsApiUxEnhancementsDescription[] =

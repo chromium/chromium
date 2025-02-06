@@ -7076,14 +7076,6 @@
     "expiry_milestone": 137
   },
   {
-    "name": "privacy-sandbox-ads-apis",
-    "owners": [
-      "johnidel@chromium.org",
-      "jkarlin@chromium.org",
-      "pauljensen@chromium.org"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "privacy-sandbox-enrollment-overrides",
     "owners": [
       "lbrady@chromium.org",
