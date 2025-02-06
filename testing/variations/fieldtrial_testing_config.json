@@ -13821,21 +13821,6 @@
             ]
         }
     ],
-    "MacPermanentThinController": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FullscreenPermanentThinController"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacPlatformLocationProvider": [
         {
             "platforms": [

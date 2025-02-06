@@ -16,17 +16,6 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace {
-// Workaround for https://crbug.com/1369643
-const double kThinControllerHeight = 0.5;
-
-inline bool IsPermanentThinControllerEnabled() {
-  return base::FeatureList::IsEnabled(
-      remote_cocoa::features::kFullscreenPermanentThinController);
-}
-
-}  // namespace
-
 // A stub NSWindowDelegate class that will be used to map the AppKit controlled
 // NSWindow to the overlay view widget's NSWindow. The delegate will be used to
 // help with input routing.
@@ -230,7 +219,7 @@ ImmersiveModeControllerCocoa::~ImmersiveModeControllerCocoa() {
   StopObservingChildWindows(overlay_window_);
 
   // Rollback the view shuffling from enablement.
-  DisableThinControllerIfNecessary();
+  browser_window_.thinTitlebarViewController.hidden = YES;
   [overlay_content_view_ removeFromSuperview];
   overlay_window_.contentView = overlay_content_view_;
   [immersive_mode_titlebar_view_controller_ removeFromParentViewController];
@@ -258,7 +247,6 @@ void ImmersiveModeControllerCocoa::Init() {
   [overlay_content_view_.centerYAnchor
       constraintEqualToAnchor:overlay_content_view_.superview.centerYAnchor]
       .active = YES;
-  CreateThinControllerIfNecessary();
 }
 
 void ImmersiveModeControllerCocoa::FullscreenTransitionCompleted() {
@@ -614,9 +602,7 @@ void ImmersiveModeControllerCocoa::
 
 void ImmersiveModeControllerCocoa::UpdateThinControllerVisibility() {
   NSTitlebarAccessoryViewController* thin_controller =
-      IsPermanentThinControllerEnabled()
-          ? browser_window_.thinTitlebarViewController
-          : thin_titlebar_view_controller_;
+      browser_window_.thinTitlebarViewController;
   if (last_used_style_ == mojom::ToolbarVisibilityStyle::kNone &&
       immersive_mode_titlebar_view_controller_.revealAmount == 0) {
     // Needed when eventually exiting from content fullscreen and returning
@@ -686,33 +672,6 @@ void ImmersiveModeControllerCocoa::LayoutWindowWithAnchorView(
 
 void ImmersiveModeControllerCocoa::Reanchor() {
   LayoutWindowWithAnchorView(overlay_window_, overlay_content_view_);
-}
-
-void ImmersiveModeControllerCocoa::CreateThinControllerIfNecessary() {
-  if (IsPermanentThinControllerEnabled()) {
-    // In this arm, the thin controller is created in BrowserNativeWidgetWindow
-    // and owned by the window.
-    return;
-  }
-  thin_titlebar_view_controller_ =
-      [[NSTitlebarAccessoryViewController alloc] init];
-  thin_titlebar_view_controller_.view = [[NSView alloc] init];
-  thin_titlebar_view_controller_.view.wantsLayer = YES;
-  thin_titlebar_view_controller_.view.layer.backgroundColor =
-      NSColor.blackColor.CGColor;
-  thin_titlebar_view_controller_.layoutAttribute = NSLayoutAttributeBottom;
-  thin_titlebar_view_controller_.fullScreenMinHeight = kThinControllerHeight;
-  thin_titlebar_view_controller_.hidden = YES;
-  [browser_window_
-      addTitlebarAccessoryViewController:thin_titlebar_view_controller_];
-}
-
-void ImmersiveModeControllerCocoa::DisableThinControllerIfNecessary() {
-  if (IsPermanentThinControllerEnabled()) {
-    browser_window_.thinTitlebarViewController.hidden = YES;
-  } else {
-    [thin_titlebar_view_controller_ removeFromParentViewController];
-  }
 }
 
 }  // namespace remote_cocoa
