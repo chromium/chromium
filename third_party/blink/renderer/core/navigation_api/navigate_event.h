@@ -87,7 +87,7 @@ class NavigateEvent final : public Event,
   }
   void FinalizeNavigationActionPromisesList();
 
-  void Abort(ScriptState* script_state, ScriptValue error);
+  void Abort(ScriptState*, ScriptValue error, CancelNavigationReason);
 
   // FocusedElementChangeObserver implementation:
   void DidChangeFocus() final;

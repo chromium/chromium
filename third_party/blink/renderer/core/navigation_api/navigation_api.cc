@@ -862,7 +862,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       window_->GetFrame()->ConsumeHistoryUserActivation();
     }
     if (!navigate_event->signal()->aborted()) {
-      AbortOngoingNavigation(script_state);
+      AbortOngoingNavigation(script_state,
+                             CancelNavigationReason::kNavigateEvent);
     }
     return DispatchResult::kAbort;
   }
@@ -903,7 +904,7 @@ void NavigationApi::InformAboutCanceledNavigation(
   if (ongoing_navigate_event_) {
     auto* script_state = ToScriptStateForMainWorld(window_->GetFrame());
     ScriptState::Scope scope(script_state);
-    AbortOngoingNavigation(script_state);
+    AbortOngoingNavigation(script_state, reason);
   }
 
   // If this function is being called as part of frame detach, also cleanup any
@@ -996,13 +997,14 @@ void NavigationApi::DidFinishOngoingNavigation() {
   }
 }
 
-void NavigationApi::AbortOngoingNavigation(ScriptState* script_state) {
+void NavigationApi::AbortOngoingNavigation(ScriptState* script_state,
+                                           CancelNavigationReason reason) {
   CHECK(ongoing_navigate_event_);
   ScriptValue error = ScriptValue::From(
       script_state,
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                          "Navigation was aborted"));
-  ongoing_navigate_event_->Abort(script_state, error);
+  ongoing_navigate_event_->Abort(script_state, error, reason);
   ongoing_navigate_event_ = nullptr;
   DidFailOngoingNavigation(error);
 }
