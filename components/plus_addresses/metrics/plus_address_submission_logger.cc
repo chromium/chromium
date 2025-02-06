@@ -66,7 +66,8 @@ bool IsCartOrCheckoutUrl(const GURL& url) {
 }
 
 bool IsPlusAddressCreationSuggestion(SuggestionType suggestion_type) {
-  return suggestion_type == SuggestionType::kCreateNewPlusAddress;
+  return suggestion_type == SuggestionType::kCreateNewPlusAddress ||
+         suggestion_type == SuggestionType::kCreateNewPlusAddressInline;
 }
 
 }  // namespace
