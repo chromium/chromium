@@ -1084,11 +1084,7 @@ bool HttpStreamPool::AttemptManager::
         base::TimeTicks::Now() - dns_resolution_start_time_);
 
     HandleQuicSessionReady(StreamSocketCloseReason::kUsingExistingQuicSession);
-    // Use PostTask() because we could reach here from RequestStream()
-    // synchronously when the DNS resolution finishes immediately.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::CreateQuicStreamAndNotify,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    CreateQuicStreamAndNotify();
     return true;
   }
 
@@ -1128,11 +1124,7 @@ bool HttpStreamPool::AttemptManager::
         base::TimeTicks::Now() - dns_resolution_start_time_);
 
     HandleSpdySessionReady(StreamSocketCloseReason::kUsingExistingSpdySession);
-    // Use PostTask() because we could reach here from RequestStream()
-    // synchronously when the DNS resolution finishes immediately.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::CreateSpdyStreamAndNotify,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    CreateSpdyStreamAndNotify();
     return true;
   }
 
