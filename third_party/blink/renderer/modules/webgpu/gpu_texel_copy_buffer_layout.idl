@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://gpuweb.github.io/gpuweb/#dictdef-GPUImageDataLayout
+// https://gpuweb.github.io/gpuweb/#dictdef-GPUTexelCopyBufferLayout
 
-dictionary GPUImageDataLayout {
+dictionary GPUTexelCopyBufferLayout {
     GPUSize64 offset = 0;
     GPUSize32 bytesPerRow;
     GPUSize32 rowsPerImage;

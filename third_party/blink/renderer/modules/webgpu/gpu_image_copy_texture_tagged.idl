@@ -4,7 +4,7 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-dictionary GPUImageCopyTextureTagged : GPUImageCopyTexture  {
+dictionary GPUImageCopyTextureTagged : GPUTexelCopyTextureInfo  {
     PredefinedColorSpace colorSpace = "srgb";
     boolean premultipliedAlpha = false;
 };

@@ -13,8 +13,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_external_image.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture_tagged.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texel_copy_texture_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -572,9 +572,9 @@ void GPUQueue::WriteBufferImpl(ScriptState* script_state,
 }
 
 void GPUQueue::writeTexture(ScriptState* script_state,
-                            GPUImageCopyTexture* destination,
+                            GPUTexelCopyTextureInfo* destination,
                             const MaybeShared<DOMArrayBufferView>& data,
-                            GPUImageDataLayout* data_layout,
+                            GPUTexelCopyBufferLayout* data_layout,
                             const V8GPUExtent3D* write_size,
                             ExceptionState& exception_state) {
   WriteTextureImpl(script_state, destination, data->ByteSpanMaybeShared(),
@@ -582,9 +582,9 @@ void GPUQueue::writeTexture(ScriptState* script_state,
 }
 
 void GPUQueue::writeTexture(ScriptState* script_state,
-                            GPUImageCopyTexture* destination,
+                            GPUTexelCopyTextureInfo* destination,
                             const DOMArrayBufferBase* data,
-                            GPUImageDataLayout* data_layout,
+                            GPUTexelCopyBufferLayout* data_layout,
                             const V8GPUExtent3D* write_size,
                             ExceptionState& exception_state) {
   WriteTextureImpl(script_state, destination, data->ByteSpanMaybeShared(),
@@ -592,22 +592,22 @@ void GPUQueue::writeTexture(ScriptState* script_state,
 }
 
 void GPUQueue::WriteTextureImpl(ScriptState* script_state,
-                                GPUImageCopyTexture* destination,
+                                GPUTexelCopyTextureInfo* destination,
                                 base::span<const uint8_t> data,
-                                GPUImageDataLayout* data_layout,
+                                GPUTexelCopyBufferLayout* data_layout,
                                 const V8GPUExtent3D* write_size,
                                 ExceptionState& exception_state) {
   wgpu::Extent3D dawn_write_size;
-  wgpu::ImageCopyTexture dawn_destination;
+  wgpu::TexelCopyTextureInfo dawn_destination;
   if (!ConvertToDawn(write_size, &dawn_write_size, device_, exception_state) ||
       !ConvertToDawn(destination, &dawn_destination, exception_state)) {
     return;
   }
 
-  wgpu::TextureDataLayout dawn_data_layout = {};
+  wgpu::TexelCopyBufferLayout dawn_data_layout = {};
   {
     const char* error =
-        ValidateTextureDataLayout(data_layout, &dawn_data_layout);
+        ValidateTexelCopyBufferLayout(data_layout, &dawn_data_layout);
     if (error) {
       device_->InjectError(wgpu::ErrorType::Validation, error);
       return;
@@ -669,7 +669,7 @@ void GPUQueue::copyExternalImageToTexture(
 
   wgpu::Extent3D dawn_copy_size;
   wgpu::Origin2D origin_in_external_image;
-  wgpu::ImageCopyTexture dawn_destination;
+  wgpu::TexelCopyTextureInfo dawn_destination;
   if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(copyImage->origin(), &origin_in_external_image,
                      exception_state) ||
@@ -761,7 +761,7 @@ void GPUQueue::CopyFromVideoElement(
     const wgpu::Extent2D& video_frame_natural_size,
     const wgpu::Origin2D& origin,
     const wgpu::Extent3D& copy_size,
-    const wgpu::ImageCopyTexture& destination,
+    const wgpu::TexelCopyTextureInfo& destination,
     bool dst_premultiplied_alpha,
     PredefinedColorSpace dst_color_space,
     bool flipY) {
@@ -799,7 +799,7 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     StaticBitmapImage* image,
     const wgpu::Origin2D& origin,
     const wgpu::Extent3D& copy_size,
-    const wgpu::ImageCopyTexture& destination,
+    const wgpu::TexelCopyTextureInfo& destination,
     bool dst_premultiplied_alpha,
     PredefinedColorSpace dst_color_space,
     bool flipY) {
@@ -891,7 +891,8 @@ bool GPUQueue::CopyFromCanvasSourceImage(
             image, source_image_info, image_source_copy_rect, noop);
 
     if (mailbox_texture != nullptr) {
-      wgpu::ImageCopyTexture src = {.texture = mailbox_texture->GetTexture()};
+      wgpu::TexelCopyTextureInfo src = {.texture =
+                                            mailbox_texture->GetTexture()};
 
       wgpu::CopyTextureForBrowserOptions options =
           CreateCopyTextureForBrowserOptions(
@@ -1006,7 +1007,7 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     intermediate_buffer.Unmap();
 
     // Start a B2T copy to move contents from buffer to intermediate texture
-    wgpu::ImageCopyBuffer dawn_intermediate_buffer = {
+    wgpu::TexelCopyBufferInfo dawn_intermediate_buffer = {
         .layout =
             {
                 .bytesPerRow = wgpu_bytes_per_row,
@@ -1015,7 +1016,7 @@ bool GPUQueue::CopyFromCanvasSourceImage(
         .buffer = intermediate_buffer,
     };
 
-    wgpu::ImageCopyTexture dawn_intermediate_texture = {
+    wgpu::TexelCopyTextureInfo dawn_intermediate_texture = {
         .texture = intermediate_texture,
         .aspect = wgpu::TextureAspect::All,
     };
@@ -1031,7 +1032,7 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     GetHandle().Submit(1, &commands);
   }
 
-  wgpu::ImageCopyTexture src = {
+  wgpu::TexelCopyTextureInfo src = {
       .texture = intermediate_texture,
   };
   wgpu::CopyTextureForBrowserOptions options =
