@@ -966,6 +966,12 @@ void RenderThreadImpl::RegisterSchemes() {
         chrome_untrusted_scheme);
   }
 
+  if (base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache)) {
+    WebSecurityPolicy::RegisterURLSchemeAsWebUIBundledBytecode(chrome_scheme);
+    WebSecurityPolicy::RegisterURLSchemeAsWebUIBundledBytecode(
+        chrome_untrusted_scheme);
+  }
+
   // devtools:
   WebString devtools_scheme(WebString::FromASCII(kChromeDevToolsScheme));
   WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(devtools_scheme);
