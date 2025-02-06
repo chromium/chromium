@@ -1544,6 +1544,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.LCPP.ImageLoadingPriority.ConfidenceOfActual{PositiveOrNegative}.PerTotalFrequency"
+    units="Count" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records a value (10 * normalized_total_frequency_0_to_9 +
+    normalized_confidence_0_to_9) of ElementLocator per total-frequency that
+    {PositiveOrNegative} actually.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+  <token key="PositiveOrNegative">
+    <variant name="Negative" summary="didn't become LCP"/>
+    <variant name="Positive" summary="became LCP"/>
+  </token>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.LCPP.ImageLoadingPriority.FrequencyOfActual{PositiveOrNegative}"
     units="Count" expires_after="2025-08-01">
   <owner>chikamune@chromium.org</owner>
@@ -1715,6 +1736,32 @@ chromium-metrics-reviews@google.com.
     metric is emitted only for navigations that LCP Critical Path Predictor
     provided non-empty hint data and only when LCPP prediction succeeded.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.LCPP.Subresource.ConfidenceOfActual{PositiveOrNegative}.PerTotalFrequency{Site}.2"
+    units="Count" expires_after="2025-08-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Records a value (10 * normalized_total_frequency_0_to_9 +
+    normalized_confidence_0_to_9) of {Site} subresource url per total-frequency
+    that {PositiveOrNegative} actually.
+
+    The metric is emitted only for navigations that LCP Critical Path Predictor
+    provided non-empty hint data and only when LCP is recorded.
+  </summary>
+  <token key="PositiveOrNegative">
+    <variant name="Negative" summary="was not loaded"/>
+    <variant name="Positive" summary="was actually loaded"/>
+  </token>
+  <token key="Site">
+    <variant name="" summary="same-site and cross-site"/>
+    <variant name=".CrossSite" summary="cross-site"/>
+    <variant name=".SameSite" summary="same-site"/>
+  </token>
 </histogram>
 
 <histogram
