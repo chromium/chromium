@@ -11,15 +11,18 @@
 
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_test_environment.h"
+#include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -33,6 +36,25 @@
 #include "ui/base/interaction/polling_state_observer.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
+
+namespace base {
+// Set up a custom |ScopedObservationTrait| for
+// |GlicWindowController::WebUiStateObserver|.
+template <>
+struct ScopedObservationTraits<glic::GlicWindowController,
+                               glic::GlicWindowController::WebUiStateObserver> {
+  static void AddObserver(
+      glic::GlicWindowController* controller,
+      glic::GlicWindowController::WebUiStateObserver* observer) {
+    controller->AddWebUiStateObserver(observer);
+  }
+  static void RemoveObserver(
+      glic::GlicWindowController* controller,
+      glic::GlicWindowController::WebUiStateObserver* observer) {
+    controller->RemoveWebUiStateObserver(observer);
+  }
+};
+}  // namespace base
 
 namespace glic::test {
 
@@ -49,6 +71,20 @@ class GlicWindowControllerStateObserver
 
 DECLARE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
                                kGlicWindowControllerState);
+
+// Observers the glic app internal state.
+class GlicAppStateObserver : public ui::test::ObservationStateObserver<
+                                 mojom::WebUiState,
+                                 GlicWindowController,
+                                 GlicWindowController::WebUiStateObserver> {
+ public:
+  explicit GlicAppStateObserver(GlicWindowController* controller);
+  ~GlicAppStateObserver() override;
+  // GlicWindowController::WebUiStateObserver
+  void WebUiStateChanged(mojom::WebUiState state) override;
+};
+
+DECLARE_STATE_IDENTIFIER_VALUE(GlicAppStateObserver, kGlicAppState);
 
 }  // namespace internal
 
@@ -119,6 +155,8 @@ class InteractiveGlicTestT : public T {
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
 
+    ForceSigninAndModelExecutionCapability(T::browser()->profile());
+
     Test::embedded_test_server()->ServeFilesFromDirectory(
         base::PathService::CheckedGet(base::DIR_ASSETS)
             .AppendASCII("gen/chrome/test/data/webui/glic/"));
@@ -152,21 +190,8 @@ class InteractiveGlicTestT : public T {
         ::switches::kGlicGuestURL,
         Test::embedded_test_server()->GetURL(path.str()).spec());
 
-    // Mark the glic FRE as accepted by default.
-    // TODO(cuianthony): Move this logic to glic_test_util.h after
-    // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
-    PrefService* const prefs =
-        InProcessBrowserTest::browser()->profile()->GetPrefs();
-    prefs->SetBoolean(prefs::kGlicCompletedFre, true);
     Browser* browser = InProcessBrowserTest::browser();
-    identity_test_environment_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser->profile());
 
-    // Signing in is a prerequisite for Glic.
-    identity_test_environment_adaptor_->identity_test_env()
-        ->MakePrimaryAccountAvailable("test@example.com",
-                                      signin::ConsentLevel::kSync);
     glic_test_environment_ =
         std::make_unique<glic::GlicTestEnvironment>(browser->profile());
   }
@@ -322,8 +347,6 @@ class InteractiveGlicTestT : public T {
 
   base::test::ScopedFeatureList features_;
 
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_environment_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
   std::unique_ptr<glic::GlicTestEnvironment> glic_test_environment_;
   std::map<std::string, std::string> mock_glic_query_params_;

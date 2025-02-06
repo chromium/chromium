@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace content {
@@ -20,7 +21,6 @@ class StoragePartition;
 }  // namespace content
 
 namespace signin {
-class IdentityManager;
 enum class SetAccountsInCookieResult;
 }  // namespace signin
 
@@ -28,7 +28,8 @@ namespace glic {
 
 // Helper to sync cookies to the webview storage partition.
 class GlicCookieSynchronizer
-    : public signin::AccountsCookieMutator::PartitionDelegate {
+    : public signin::AccountsCookieMutator::PartitionDelegate,
+      public signin::IdentityManager::Observer {
  public:
   // Callback with authentication result.
   // Called when webview authentication is finished.
@@ -44,11 +45,15 @@ class GlicCookieSynchronizer
                          bool use_for_fre = false);
   GlicCookieSynchronizer(const GlicCookieSynchronizer&) = delete;
   GlicCookieSynchronizer& operator=(const GlicCookieSynchronizer&) = delete;
-  virtual ~GlicCookieSynchronizer();
+  ~GlicCookieSynchronizer() override;
 
   // Virtual for overriding in tests.
   virtual void CopyCookiesToWebviewStoragePartition(
       base::OnceCallback<void(bool)> callback);
+
+  // signin::IdentityManager::Observer
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  protected:
   // Returns storage partition for this authentication request.
@@ -76,6 +81,10 @@ class GlicCookieSynchronizer
 
   const raw_ptr<content::BrowserContext> context_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      observation_{this};
+
   // Whether to configure the storage partiion for use by the glic FRE webview.
   bool use_for_fre_ = false;
 

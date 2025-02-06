@@ -6,14 +6,18 @@
 
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 bool GlicEnabling::IsEnabledByFlags() {
-  return CheckEnabling() == glic::GlicEnabledStatus::kEnabled;
+  // Check that the feature flags are enabled.
+  return base::FeatureList::IsEnabled(features::kGlic) &&
+         base::FeatureList::IsEnabled(features::kTabstripComboButton);
 }
 
-// static
 bool GlicEnabling::IsProfileEligible(const Profile* profile) {
   CHECK(profile);
   // Glic is supported only in regular profiles, i.e. disable in incognito,
@@ -21,7 +25,6 @@ bool GlicEnabling::IsProfileEligible(const Profile* profile) {
   return IsEnabledByFlags() && profile->IsRegularProfile();
 }
 
-// static
 bool GlicEnabling::IsEnabledForProfile(const Profile* profile) {
   if (!IsProfileEligible(profile)) {
     return false;
@@ -31,13 +34,23 @@ bool GlicEnabling::IsEnabledForProfile(const Profile* profile) {
          static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled);
 }
 
-glic::GlicEnabledStatus GlicEnabling::CheckEnabling() {
-  // Check that the feature flag is enabled.
-  if (!base::FeatureList::IsEnabled(features::kGlic)) {
-    return glic::GlicEnabledStatus::kGlicFeatureFlagDisabled;
+bool GlicEnabling::IsReadyForProfile(Profile* profile) {
+  if (!IsEnabledForProfile(profile)) {
+    return false;
   }
-  if (!base::FeatureList::IsEnabled(features::kTabstripComboButton)) {
-    return glic::GlicEnabledStatus::kTabstripComboButtonDisabled;
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  // Check that profile is not currently paused.
+  CoreAccountInfo core_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (core_account_info.IsEmpty() ||
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          core_account_info.account_id)) {
+    return false;
   }
-  return glic::GlicEnabledStatus::kEnabled;
+
+  // The profile must have completed the FRE to be considered Ready.
+  return profile->GetPrefs()->GetBoolean(glic::prefs::kGlicCompletedFre);
 }

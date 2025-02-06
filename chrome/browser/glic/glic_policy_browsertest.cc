@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/interactive_glic_test.h"
 #include "chrome/browser/glic/launcher/glic_background_mode_manager.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -32,10 +37,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 
-namespace glic {
-class GlicButton;
-}
-
 using glic::prefs::kGlicSettingsPolicy;
 using glic::prefs::SettingsPolicyState;
 
@@ -43,7 +44,49 @@ using policy::PolicyTest;
 
 namespace glic {
 
+class GlicButton;
+
 namespace {
+
+class GlicAppStateObserver : public GlicWindowController::WebUiStateObserver {
+ public:
+  explicit GlicAppStateObserver(GlicWindowController* controller)
+      : GlicAppStateObserver(controller, controller->GetWebUiState()) {}
+
+  explicit GlicAppStateObserver(GlicWindowController* controller,
+                                mojom::WebUiState initial_state) {
+    observation_.Observe(controller);
+    state_ = initial_state;
+  }
+
+  ~GlicAppStateObserver() override { observation_.Reset(); }
+
+  void Wait(mojom::WebUiState state) {
+    waiting_for_state_ = state;
+    if (state_ == waiting_for_state_) {
+      return;
+    }
+    // Run run_loop until the state_ == waiting_for_state_.
+    run_loop_.Run();
+  }
+
+  void WebUiStateChanged(mojom::WebUiState state) override {
+    state_ = state;
+    if (state_ != waiting_for_state_) {
+      return;
+    }
+    run_loop_.Quit();
+    observation_.Reset();
+  }
+
+ private:
+  base::ScopedObservation<GlicWindowController,
+                          GlicWindowController::WebUiStateObserver>
+      observation_{this};
+  mojom::WebUiState state_;
+  mojom::WebUiState waiting_for_state_;
+  base::RunLoop run_loop_;
+};
 
 class GlicPolicyTest : public PolicyTest {
  public:
@@ -70,13 +113,8 @@ class GlicPolicyTest : public PolicyTest {
     g_browser_process->local_state()->SetBoolean(
         glic::prefs::kGlicLauncherEnabled, true);
 
-    // Mark the glic FRE as accepted by default.
-    // TODO(cuianthony): Move this logic to glic_test_util.h after
-    // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetBoolean(prefs::kGlicCompletedFre, true);
-
     profile_1_ = browser()->profile();
+    ForceSigninAndModelExecutionCapability(profile_1_);
 
     // "policy_for_profile_1_" is provider_, setup in PolicyTest.
 
@@ -138,17 +176,6 @@ class GlicPolicyTest : public PolicyTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider>&
   policy_for_profile_2() {
     return policy_for_profile_2_;
-  }
-
-  bool IsShowingUnavailablePanel(Browser* browser) {
-    content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    bool unavailable_panel_showing =
-        !content::EvalJs(web_contents,
-                         "document.getElementById('unavailablePanel')."
-                         "hidden")
-             .ExtractBool();
-    return unavailable_panel_showing;
   }
 
  protected:
@@ -332,16 +359,20 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesBackgroundMode) {
 IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
   GURL glic_url = GURL(chrome::kChromeUIGlicURL);
 
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_1_);
+
   // Navigating to chrome://glic should succeed.
   {
+    GlicAppStateObserver app_observer(&service->window_controller());
     content::TestNavigationObserver observer(glic_url);
     observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
     observer.WaitForNavigationFinished();
     ASSERT_EQ(observer.last_navigation_url(), glic_url);
     ASSERT_TRUE(observer.last_navigation_succeeded());
-
-    EXPECT_FALSE(IsShowingUnavailablePanel(browser()));
+    // WebUi will be in an error state since the mock web client is not setup.
+    app_observer.Wait(mojom::WebUiState::kError);
   }
 
   // Disable the policy.
@@ -351,14 +382,14 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
 
   // Navigate to chrome://glic. The glic page should be unavailable.
   {
+    GlicAppStateObserver app_observer(&service->window_controller());
     content::TestNavigationObserver observer(glic_url);
     observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
     observer.WaitForNavigationFinished();
     ASSERT_EQ(observer.last_navigation_url(), glic_url);
     ASSERT_TRUE(observer.last_navigation_succeeded());
-
-    EXPECT_TRUE(IsShowingUnavailablePanel(browser()));
+    app_observer.Wait(mojom::WebUiState::kUnavailable);
   }
 
   // Re-enable the policy.
@@ -368,14 +399,15 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesWebUi) {
 
   // Navigating to chrome://glic should now succeed again.
   {
+    GlicAppStateObserver app_observer(&service->window_controller());
     content::TestNavigationObserver observer(glic_url);
     observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
     observer.WaitForNavigationFinished();
     ASSERT_EQ(observer.last_navigation_url(), glic_url);
     ASSERT_TRUE(observer.last_navigation_succeeded());
-
-    EXPECT_FALSE(IsShowingUnavailablePanel(browser()));
+    // WebUi will be in an error state since the mock web client is not setup.
+    app_observer.Wait(mojom::WebUiState::kError);
   }
 }
 
@@ -393,16 +425,19 @@ class GlicPolicyDisabledTest : public GlicPolicyTest {
 IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
   GURL glic_url = GURL(chrome::kChromeUIGlicURL);
 
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_1_);
+
   // Glic shouldn't load since it's disabled by policy from startup.
   {
+    GlicAppStateObserver app_observer(&service->window_controller());
     content::TestNavigationObserver observer(glic_url);
     observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
     observer.WaitForNavigationFinished();
     ASSERT_EQ(observer.last_navigation_url(), glic_url);
     ASSERT_TRUE(observer.last_navigation_succeeded());
-
-    EXPECT_TRUE(IsShowingUnavailablePanel(browser()));
+    app_observer.Wait(mojom::WebUiState::kUnavailable);
   }
 
   // Enable the policy at runtime
@@ -412,14 +447,15 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
 
   // Navigating to chrome://glic should now load the webview.
   {
+    GlicAppStateObserver app_observer(&service->window_controller());
     content::TestNavigationObserver observer(glic_url);
     observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), glic_url));
     observer.WaitForNavigationFinished();
     ASSERT_EQ(observer.last_navigation_url(), glic_url);
     ASSERT_TRUE(observer.last_navigation_succeeded());
-
-    EXPECT_FALSE(IsShowingUnavailablePanel(browser()));
+    // WebUi will be in an error state since the mock web client is not setup.
+    app_observer.Wait(mojom::WebUiState::kError);
   }
 }
 
