@@ -57,6 +57,7 @@
 #include "chrome/updater/win/installer/pe_resource.h"
 #include "chrome/updater/win/installer/splash_wnd.h"
 #include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
@@ -426,7 +427,8 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
 
 ProcessExitResult InstallerMain(HMODULE module,
                                 bool& usage_stats_enable,
-                                std::wstring& lang) {
+                                std::wstring& lang,
+                                std::u16string& bundle_name) {
   CHECK(EnableSecureDllLoading());
   EnableProcessHeapMetadataProtection();
 
@@ -461,6 +463,7 @@ ProcessExitResult InstallerMain(HMODULE module,
     usage_stats_enable =
         tag_args->usage_stats_enable.value_or(usage_stats_enable);
     lang = base::UTF8ToWide(tag_args->language);
+    bundle_name = base::UTF8ToUTF16(tag_args->bundle_name);
   }
 
   if (!::IsUserAnAdmin() && IsSystemInstall(scope)) {
@@ -594,8 +597,9 @@ int WMain(HMODULE module) {
   InitializeThreadPool("windows-installer");
   bool usage_stats_enable = false;
   std::wstring lang;
+  std::u16string bundle_name;
   const ProcessExitResult result =
-      InstallerMain(module, usage_stats_enable, lang);
+      InstallerMain(module, usage_stats_enable, lang, bundle_name);
   const DWORD wmain_exit_code = result.exit_code == UPDATER_EXIT_CODE
                                     ? result.windows_error
                                     : result.exit_code;
@@ -611,7 +615,8 @@ int WMain(HMODULE module) {
                      GetLocalizedMetainstallerErrorString(
                          result.exit_code, result.windows_error, lang)
                          .c_str(),
-                     exe_path.BaseName().value().c_str(), 0, 0);
+                     ui::GetInstallerDisplayName(bundle_name).c_str(),
+                     MB_OK | MB_ICONERROR | MB_SETFOREGROUND, 0);
     }
     if (usage_stats_enable) {
       SendPing(result.exit_code, result.windows_error);

@@ -23,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1468,33 +1469,59 @@ TEST_F(IntegrationTest, UpdateAppSucceedsEvenAfterDeletingInterfaces) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTest, MetainstallerSendPing) {
-  ScopedServer test_server(test_commands_);
-  ASSERT_NO_FATAL_FAILURE(ExpectPingRequest(
-      &test_server, kUpdaterAppId,
-      {
-          .event_type = update_client::protocol_request::kEventInstall,
-          .result = 0,
-          .error_code = 73118,  // ExitCode::INVALID_OPTION
-          .extra_code1 = 0,
-      }));
-
-  // Ping only sent when usagestats=1.
-  for (const auto usagestats : {"1", "0"}) {
-    ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
-        "test", /*is_silent_install=*/true,
-        /*tag=*/
-        base::StrCat({"appguid=test&usagestats=", usagestats}),
-        /*child_window_text_to_find=*/{}, /*always_launch_cmd=*/false,
-        /*verify_app_logo_loaded=*/false, /*expect_success=*/false,
-        /*wait_for_the_installer=*/true,
-        /*expected_exit_code=*/73118,
-        /*additional_switches=*/base::Value::List().Append("invalid-switch")));
+class IntegrationMetainstallerTest
+    : public ::testing::WithParamInterface<std::tuple<int, std::string>>,
+      public IntegrationTest {
+ protected:
+  void SetUp() override {
+    IntegrationTest::SetUp();
+    test_server_ = std::make_unique<ScopedServer>(test_commands_);
   }
 
-  ASSERT_NO_FATAL_FAILURE(Install());
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
-  ASSERT_NO_FATAL_FAILURE(Uninstall());
+  void TearDown() override {
+    ASSERT_NO_FATAL_FAILURE(Install());
+    ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+    ASSERT_NO_FATAL_FAILURE(Uninstall());
+
+    IntegrationTest::TearDown();
+  }
+
+  int usagestats() const { return std::get<0>(GetParam()); }
+  std::string appname() const { return std::get<1>(GetParam()); }
+
+  std::unique_ptr<ScopedServer> test_server_;
+  static constexpr char kAppId[] = "test1";
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    IntegrationMetainstallerTestCases,
+    IntegrationMetainstallerTest,
+    ::testing::Combine(::testing::Values(1, 0),
+                       ::testing::Values("&appname=MetainstallerUI%20Test",
+                                         "")));
+
+TEST_P(IntegrationMetainstallerTest, UIAndPings) {
+  if (usagestats()) {
+    ASSERT_NO_FATAL_FAILURE(ExpectPingRequest(
+        test_server_.get(), kUpdaterAppId,
+        {
+            .event_type = update_client::protocol_request::kEventInstall,
+            .result = 0,
+            .error_code = 73118,  // ExitCode::INVALID_OPTION
+            .extra_code1 = 0,
+        }));
+  }
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId, /*is_silent_install=*/appname().empty(),
+      /*tag=*/
+      base::StrCat({"appguid=", kAppId, appname(),
+                    "&usagestats=", base::NumberToString(usagestats())}),
+      /*child_window_text_to_find=*/appname().empty() ? "" : "INVALID_OPTION",
+      /*always_launch_cmd=*/false,
+      /*verify_app_logo_loaded=*/false, /*expect_success=*/false,
+      /*wait_for_the_installer=*/true,
+      /*expected_exit_code=*/73118,
+      /*additional_switches=*/base::Value::List().Append("invalid-switch")));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
