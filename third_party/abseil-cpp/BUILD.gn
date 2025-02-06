@@ -281,9 +281,6 @@ if (absl_build_tests) {
         "absl/base:tracing_internal_strong_test",
         "absl/base:tracing_internal_weak_test",
         "absl/cleanup:cleanup_test",
-
-        # TODO(mbonadei): Fix issue with EXPECT_DEATH and uncomment.
-        # "absl/container:btree_test",
         "absl/container:common_policy_traits_test",
         "absl/container:fixed_array_test",
         "absl/container:flat_hash_map_test",
@@ -349,9 +346,12 @@ if (absl_build_tests) {
         "absl/strings:cord_rep_btree_reader_test",
         "absl/strings:cord_rep_btree_test",
         "absl/strings:cord_rep_crc_test",
+        "absl/strings:cord_test",
         "absl/strings:cordz_functions_test",
+        "absl/strings:cordz_handle_test",
         "absl/strings:cordz_info_statistics_test",
         "absl/strings:cordz_info_test",
+        "absl/strings:cordz_sample_token_test",
         "absl/strings:cordz_test",
         "absl/strings:cordz_update_scope_test",
         "absl/strings:cordz_update_tracker_test",
