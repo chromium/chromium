@@ -4308,6 +4308,20 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
     return true;
   }
 
+  // We need to keep the <select>'s author provided <button> in the tree despite
+  // being ignored in order to use it to calculate a value for the <select>
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+      IsInMenuListSubtree() && IsInert()) {
+    for (auto* ancestor = this;
+         ancestor &&
+         ancestor->RoleValue() != ax::mojom::blink::Role::kMenuListPopup;
+         ancestor = ancestor->ParentObject()) {
+      if (HTMLSelectElement::IsSlottedButton(ancestor->GetNode())) {
+        return true;
+      }
+    }
+  }
+
   if (const Element* owner = node->OwnerShadowHost()) {
     // The ignored state of media controls can change without a layout update.
     // Keep them in the tree at all times so that the serializer isn't
@@ -4604,13 +4618,6 @@ bool AXObject::ComputeCanSetFocusAttribute() {
   if (!IsA<HTMLAreaElement>(elem) &&
       !elem->IsFocusableStyle(Element::UpdateBehavior::kNoneForAccessibility)) {
     return false;
-  }
-
-  // Customizable select: get focusable state from displayed button if present.
-  if (auto* select = DynamicTo<HTMLSelectElement>(elem)) {
-    if (auto* button = select->SlottedButton()) {
-      elem = button;
-    }
   }
 
   // We should not need style updates at this point.

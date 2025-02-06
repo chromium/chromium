@@ -2143,6 +2143,16 @@ HTMLButtonElement* HTMLSelectElement::SlottedButton() const {
   return select_type_->SlottedButton();
 }
 
+// static
+bool HTMLSelectElement::IsSlottedButton(const Node* node) {
+  if (auto* button = DynamicTo<HTMLButtonElement>(node)) {
+    if (auto* select = DynamicTo<HTMLSelectElement>(button->parentNode())) {
+      return button == select->SlottedButton();
+    }
+  }
+  return false;
+}
+
 HTMLElement* HTMLSelectElement::PopoverForAppearanceBase() const {
   return select_type_->PopoverForAppearanceBase();
 }
