@@ -959,6 +959,52 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserBannerPromo.ManuallyDismissed" units="count"
+    expires_after="2025-09-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the default browser banner promo being manually dismissed by the
+    user. The value is how many times the promo has been shown before in this
+    promo session (e.g. the user dismissed the promo after seeing it on 2
+    pages).
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserBannerPromo.PromoSessionEnded"
+    enum="IOSDefaultBrowserBannerPromoPromoSessionEndedReason"
+    expires_after="2025-09-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records when a default browser banner promo session ends and what the cause
+    was.
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserBannerPromo.Shown" units="count"
+    expires_after="2025-09-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the default browser banner promo being shown on one webpage. The
+    value is how many times the promo has been shown before in this promo
+    session (e.g. the user loaded 2 pages with the promo already, so this is the
+    3rd).
+  </summary>
+</histogram>
+
+<histogram name="IOS.DefaultBrowserBannerPromo.Tapped" units="count"
+    expires_after="2025-09-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the default browser banner promo being tapped. The value is how many
+    times the promo has been shown before in this promo session (e.g. the user
+    tapped the promo after seeing it on 2 pages).
+  </summary>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserFullscreenPromo"
     enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-08-05">
   <owner>sebsg@chromium.org</owner>
@@ -1165,6 +1211,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Source">
     <variant name="" summary="Opened from any source"/>
+    <variant name=".BannerPromo" summary="Opened from banner promo"/>
     <variant name=".ExternalAction"
         summary="Opened from external action (URL passed to Chrome with
                  &quot;ChromeExternalAction&quot; as host)"/>

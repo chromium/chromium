@@ -228,6 +228,19 @@ the generic promo launch. -->
   <int value="4" label="Set Up List"/>
 </enum>
 
+<!-- LINT.IfChange(IOSDefaultBrowserBannerPromoPromoSessionEndedReason) -->
+
+<enum name="IOSDefaultBrowserBannerPromoPromoSessionEndedReason">
+  <int value="0" label="Impressions used up"/>
+  <int value="1" label="User manually closed promo"/>
+  <int value="2" label="User tapped promo"/>
+  <int value="3" label="User navigated to SRP"/>
+  <int value="4" label="User navigated to NTP"/>
+  <int value="5" label="Chrome is now default browser"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/default_browser/model/utils.h:IOSDefaultBrowserBannerPromoPromoSessionEndedReason) -->
+
 <enum name="IOSDefaultBrowserFullscreenPromoAction">
   <int value="0" label="Action Button"/>
   <int value="1" label="Cancel"/>

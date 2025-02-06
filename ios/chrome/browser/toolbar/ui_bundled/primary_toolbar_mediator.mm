@@ -56,7 +56,7 @@
       showDefaultBrowserSettingsFromViewController:nil
                                       sourceForUMA:
                                           DefaultBrowserSettingsPageSource::
-                                              kSettings];
+                                              kBannerPromo];
   [_defaultBrowserBannerAppAgent promoTapped];
 }
 
