@@ -10,6 +10,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/permissions_ai.pb.h"
+#include "components/permissions/request_type.h"
 
 namespace permissions {
 
@@ -25,6 +26,7 @@ class GenAiModelHandler
 
   void InquireGenAiOnDeviceModel(
       std::string rendered_text,
+      RequestType request_type,
       base::OnceCallback<
           void(std::optional<optimization_guide::proto::PermissionsAiResponse>)>
           callback);
