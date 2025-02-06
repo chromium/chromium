@@ -55,4 +55,8 @@ const base::FeatureParam<int> kMinWordsPerPassage(&kPassageEmbedder,
                                                   "MinWordsPerPassage",
                                                   5);
 
+const base::FeatureParam<bool> kAllowGpuExecution(&kPassageEmbedder,
+                                                  "AllowGpuExecution",
+                                                  false);
+
 }  // namespace passage_embeddings
