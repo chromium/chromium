@@ -4636,14 +4636,12 @@ targets.bundle(
         "webgl_conformance_swangle_passthrough_tests": [
             targets.mixin(
                 args = [
-                    "--extra-browser-args=--use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough",
                     "--xvfb",
                 ],
                 swarming = targets.swarming(
                     shards = 1,
                 ),
             ),
-            "gpu_integration_test_common_args",
         ],
     },
 )

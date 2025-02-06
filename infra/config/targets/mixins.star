@@ -1066,6 +1066,20 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_force_angle_swiftshader",
+    args = [
+        "--extra-browser-args=--use-angle=swiftshader",
+    ],
+)
+
+targets.mixin(
+    name = "gpu_force_angle_vulkan",
+    args = [
+        "--extra-browser-args=--use-angle=vulkan",
+    ],
+)
+
+targets.mixin(
     name = "gpu_force_command_decoder_validating",
     args = [
         "--extra-browser-args=--use-cmd-decoder=validating",

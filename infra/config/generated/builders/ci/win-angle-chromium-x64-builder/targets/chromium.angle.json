@@ -157,7 +157,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=vulkan --use-cmd-decoder=passthrough --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle --use-angle=vulkan",
           "--enforce-browser-version",
           "--jobs=1"
         ],

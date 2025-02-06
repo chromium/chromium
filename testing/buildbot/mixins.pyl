@@ -215,6 +215,16 @@
       '--extra-browser-args=--use-angle=metal',
     ],
   },
+  'gpu_force_angle_swiftshader': {
+    'args': [
+      '--extra-browser-args=--use-angle=swiftshader',
+    ],
+  },
+  'gpu_force_angle_vulkan': {
+    'args': [
+      '--extra-browser-args=--use-angle=vulkan',
+    ],
+  },
   'gpu_force_command_decoder_passthrough': {
     'args': [
       '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',

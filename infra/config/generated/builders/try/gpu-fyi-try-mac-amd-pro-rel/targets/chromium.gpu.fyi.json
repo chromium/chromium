@@ -458,7 +458,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL --use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite",
           "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_mac_runtimes.json",
@@ -498,7 +498,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL --use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_mac_runtimes.json",
           "--jobs=4"

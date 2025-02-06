@@ -1734,7 +1734,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL --disable-features=SkiaGraphite",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL --use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_mac_runtimes.json",
           "--enable-metal-debug-layers",
@@ -1769,7 +1769,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL --use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_mac_runtimes.json",
           "--enable-metal-debug-layers",
@@ -1804,10 +1804,10 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough --force_high_performance_gpu",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --use-angle=swiftshader --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--test-filter=conformance/rendering/gl-drawelements.html",
-          "--jobs=4"
+          "--jobs=4",
+          "--test-filter=conformance/rendering/gl-drawelements.html"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
