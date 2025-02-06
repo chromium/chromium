@@ -407,6 +407,12 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
             base::Unretained(this), base::UnsafeDangling(web_contents)));
   }
 
+  if (final_result != blink::mojom::MediaStreamRequestResult::OK) {
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(), final_result,
+                            std::move(ui));
+    return;
+  }
+
   std::move(callback).Run(stream_devices_set, final_result, std::move(ui));
 }
 
