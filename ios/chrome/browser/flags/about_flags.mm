@@ -1595,6 +1595,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSKeyboardAccessoryUpgradeName,
      flag_descriptions::kIOSKeyboardAccessoryUpgradeDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSKeyboardAccessoryUpgrade)},
+    {"ios-keyboard-accessory-upgrade-for-ipad",
+     flag_descriptions::kIOSKeyboardAccessoryUpgradeForIPadName,
+     flag_descriptions::kIOSKeyboardAccessoryUpgradeForIPadDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSKeyboardAccessoryUpgradeForIPad)},
     {"ios-keyboard-accessory-upgrade-short-manual-fill-menu",
      flag_descriptions::kIOSKeyboardAccessoryUpgradeShortManualFillMenuName,
      flag_descriptions::

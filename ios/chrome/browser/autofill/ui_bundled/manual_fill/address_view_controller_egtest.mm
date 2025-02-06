@@ -179,7 +179,7 @@ void CheckChipButtonsOfExampleProfile() {
 
 // Opens the address manual fill view when there are no saved addresses and
 // verifies that the address view controller is visible afterwards. Only useful
-// when the `kIOSKeyboardAccessoryUpgrade` feature is enabled.
+// when the Keyboard Accessory Upgrade feature is enabled.
 void OpenAddressManualFillViewWithNoSavedAddresses() {
   // Tap the button to open the expanded manual fill view.
   [[EarlGrey selectElementWithMatcher:AddressManualFillViewButton()]
@@ -654,7 +654,7 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 
 @end
 
-// Rerun all the tests in this file but with kIOSKeyboardAccessoryUpgrade
+// Rerun all the tests in this file but with Keyboard Accessory Upgrade
 // disabled. This will be removed once that feature launches fully, but ensures
 // regressions aren't introduced in the meantime.
 @interface AddressViewControllerKeyboardAccessoryUpgradeDisabledTestCase

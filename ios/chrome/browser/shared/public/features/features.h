@@ -47,6 +47,9 @@ SegmentedDefaultBrowserExperimentTypeEnabled();
 // Feature flag to enable the Keyboard Accessory Upgrade.
 BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgrade);
 
+// Feature flag to enable the Keyboard Accessory Upgrade for iPads.
+BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgradeForIPad);
+
 // Feature flag to enable the Keyboard Accessory Upgrade with a shorter manual
 // fill menu.
 BASE_DECLARE_FEATURE(kIOSKeyboardAccessoryUpgradeShortManualFillMenu);
