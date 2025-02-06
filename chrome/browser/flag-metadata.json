@@ -7088,7 +7088,7 @@
     "owners": [
       "lbrady@chromium.org",
       "shivanisha@chromium.org"],
-    "expiry_milestone": 134
+    "expiry_milestone": 146
   },
   {
     "name": "privacy-sandbox-equalized-prompt-buttons",
