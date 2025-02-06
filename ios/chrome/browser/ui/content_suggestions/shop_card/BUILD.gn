@@ -1,7 +1,12 @@
 source_set("shop_card") {
   sources = [
+    "shop_card_commands.h",
     "shop_card_item.h",
     "shop_card_item.mm",
+    "shop_card_mediator.h",
+    "shop_card_mediator.mm",
+    "shop_card_view.h",
+    "shop_card_view.mm",
   ]
   deps = [
     ":shop_card_data",
@@ -17,4 +22,21 @@ source_set("shop_card_data") {
     "shop_card_data.mm",
   ]
   deps = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "shop_card_mediator+testing.h",
+    "shop_card_mediator_unittest.mm",
+  ]
+  deps = [
+    ":shop_card",
+    "//components/commerce/core:shopping_service_test_support",
+    "//ios/chrome/browser/shared/public/commands:commands",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }
