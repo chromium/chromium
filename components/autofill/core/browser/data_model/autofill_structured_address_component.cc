@@ -1535,10 +1535,6 @@ int AddressComponent::GetStructureVerificationScore() const {
   return result;
 }
 
-std::u16string AddressComponent::GetNormalizedValue() const {
-  return NormalizeValue(GetValue());
-}
-
 std::u16string AddressComponent::GetValueForComparison(
     const AddressComponent& other) const {
   return GetValueForComparison(GetValue(), other);

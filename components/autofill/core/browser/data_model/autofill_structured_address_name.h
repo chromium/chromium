@@ -199,7 +199,6 @@ class AlternativeNameAddressComponent : public AddressComponent {
 
   bool SameAs(const AddressComponent& other) const override;
 
- protected:
   // Returns the value with all Katakana characters converted to Hiragana.
   std::u16string GetValueForComparison(
       const std::u16string& value,
