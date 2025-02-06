@@ -14148,6 +14148,7 @@ from previous Chrome versions.
   <int value="10405060" label="BluetoothSessionizedMetrics:disabled"/>
   <int value="10458238" label="disable-print-preview-simplify"/>
   <int value="10511293" label="LensOverlaySimplifiedSelection:enabled"/>
+  <int value="10929486" label="WebNNDirectML:disabled"/>
   <int value="11698808" label="enable-dom-distiller-button-animation"/>
   <int value="11924259"
       label="AutofillEnableUpdateVirtualCardEnrollment:enabled"/>
@@ -19310,6 +19311,7 @@ from previous Chrome versions.
   <int value="2024172900" label="KidsManagementUrlClassification:disabled"/>
   <int value="2024298022"
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:disabled"/>
+  <int value="2024746269" label="WebNNDirectML:enabled"/>
   <int value="2025344937" label="SyncAndroidPromosWithIllustration:disabled"/>
   <int value="2025618564" label="AutofillShowAutocompleteDeleteButton:enabled"/>
   <int value="2027013221"
