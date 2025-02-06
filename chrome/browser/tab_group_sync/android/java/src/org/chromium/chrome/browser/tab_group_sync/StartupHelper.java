@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -79,6 +80,9 @@ public class StartupHelper {
         // Connect the tab IDs to their sync counterpart. This is an in-memory mapping maintained
         // by {@link TabGroupSyncService}.
         updateTabIdMappings();
+
+        // Notify the service about currently active tab on startup.
+        notifyBackendOfActiveTabOnStartup();
     }
 
     private void closeDeletedGroupsFromTabModel() {
@@ -132,6 +136,25 @@ public class StartupHelper {
         for (LocalTabGroupId tabGroupId : getLocalTabGroupIds()) {
             mRemoteTabGroupMutationHelper.updateTabIdMappingsOnStartup(tabGroupId);
         }
+    }
+
+    /**
+     * Notifies {@link TabGroupSyncService} about the current active tab in the tab model. This is
+     * important to notify once on startup since the observer event {@link
+     * TabModelObserver#didSelectTab} is not fired without a tab switch.
+     */
+    void notifyBackendOfActiveTabOnStartup() {
+        LogUtils.log(TAG, "notifyBackendOfActiveTabOnStartup");
+        Tab activeTab = TabModelUtils.getCurrentTab(mTabGroupModelFilter.getTabModel());
+        if (activeTab == null) return;
+        LocalTabGroupId localTabGroupId =
+                mTabGroupModelFilter.isTabInTabGroup(activeTab)
+                        ? TabGroupSyncUtils.getLocalTabGroupId(activeTab)
+                        : null;
+        if (localTabGroupId == null) return;
+
+        mTabGroupSyncService.onTabSelected(
+                localTabGroupId, activeTab.getId(), activeTab.getTitle());
     }
 
     private Set<LocalTabGroupId> getLocalTabGroupIds() {
