@@ -1,4 +1,12 @@
-<style include="settings-shared cr-icons"></style>
+<style include="settings-shared cr-icons">
+  #keyboardShortcutSetting {
+    align-items: start;
+  }
+
+  #shortcutInput {
+    margin-top: 2px;
+  }
+</style>
 <!-- Glic Policy Disabled - show disabled controls -->
 <template is="dom-if"
     if="[[!isEnabledByPolicy_(prefs.glic.settings_policy.value)]]" restamp>
@@ -23,7 +31,7 @@
         <div id="keyboardShortcut" aria-hidden>$i18n{glicKeyboardShortcut}</div>
         <div class="secondary">$i18n{glicKeyboardShortcutSublabel}</div>
       </div>
-      <cr-shortcut-input id="shortcutInput"
+      <cr-shortcut-input id="shortcutInput" class="cr-padded-text"
           input-aria-label="$i18n{glicKeyboardShortcut}"
           shortcut="[[registeredShortcut_]]"
           allow-ctrl-alt-shortcuts
