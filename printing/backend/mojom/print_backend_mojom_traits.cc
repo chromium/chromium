@@ -97,8 +97,6 @@ bool StructTraits<printing::mojom::PrinterBasicInfoDataView,
     base::debug::DumpWithoutCrashing();
     return false;
   }
-  out->printer_status = data.printer_status();
-  out->is_default = data.is_default();
   if (!data.ReadOptions(&out->options)) {
     base::debug::Alias(&data);
     base::debug::DumpWithoutCrashing();

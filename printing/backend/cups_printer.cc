@@ -148,7 +148,6 @@ class CupsPrinterImpl : public CupsPrinter {
     const cups_dest_t* printer = destination_.get();
 
     printer_info->printer_name = printer->name;
-    printer_info->is_default = printer->is_default;
 
     const std::string info = GetInfo();
     const std::string make_and_model = GetMakeAndModel();
@@ -156,11 +155,6 @@ class CupsPrinterImpl : public CupsPrinter {
     printer_info->display_name = GetDisplayName(printer->name, info);
     printer_info->printer_description =
         GetPrinterDescription(make_and_model, info);
-
-    const char* state = cupsGetOption(kCUPSOptPrinterState,
-                                      printer->num_options, printer->options);
-    if (state)
-      base::StringToInt(state, &printer_info->printer_status);
 
     printer_info->options[kDriverInfoTagName] = make_and_model;
 

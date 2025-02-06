@@ -256,7 +256,7 @@ base::Value::Dict LocalPrinterHandlerChromeos::CapabilityToValue(
       caps->basic_info->id,
       PrinterBasicInfo(
           caps->basic_info->id, caps->basic_info->name,
-          caps->basic_info->description, 0, false,
+          caps->basic_info->description,
           PrinterBasicInfoOptions{
               {kCUPSEnterprisePrinter, caps->basic_info->configured_via_policy
                                            ? kValueTrue

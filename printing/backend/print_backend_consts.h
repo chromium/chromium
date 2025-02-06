@@ -20,7 +20,6 @@ COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptDeviceUri[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptPrinterInfo[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptPrinterLocation[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptPrinterMakeAndModel[];
-COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptPrinterState[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptPrinterType[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptPrinterUriSupported[];
 

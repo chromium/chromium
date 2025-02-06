@@ -14,8 +14,6 @@ struct PrinterBasicInfo {
   string printer_name;
   string display_name;
   string printer_description;
-  int32 printer_status;
-  bool is_default;
   map<string, string> options;
 };
 

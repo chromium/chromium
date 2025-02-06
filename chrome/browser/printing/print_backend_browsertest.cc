@@ -76,15 +76,11 @@ const PrinterBasicInfo kDefaultPrinterInfo(
     /*printer_name=*/kDefaultPrinterName,
     /*display_name=*/"default test printer",
     /*printer_description=*/"Default printer for testing.",
-    /*printer_status=*/0,
-    /*is_default=*/true,
     kDefaultPrintInfoOptions);
 const PrinterBasicInfo kAnotherPrinterInfo(
     /*printer_name=*/kAnotherPrinterName,
     /*display_name=*/"another test printer",
     /*printer_description=*/"Another printer for testing.",
-    /*printer_status=*/5,
-    /*is_default=*/false,
     /*options=*/{});
 
 constexpr int32_t kCopiesMax = 123;
@@ -162,6 +158,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     test_print_backend_->AddValidPrinter(
         kDefaultPrinterName, std::move(default_caps),
         std::make_unique<PrinterBasicInfo>(kDefaultPrinterInfo));
+    test_print_backend_->SetDefaultPrinterName(kDefaultPrinterName);
   }
 
   // Load the test backend with another (non-default) printer.
