@@ -227,18 +227,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.ContextMenu.UrlScheme" enum="CustomTabsUrlScheme"
-    expires_after="2025-07-27">
-  <owner>jinsukkim@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Records the scheme of the URL for which the context menu is shown on Custom
-    Tabs. This histogram is to understand the relative volume of data: scheme
-    with a view to not displaying the menu 'Preview Page' for the scheme if the
-    volume is insignificant. Recorded when the context menu is opened.
-  </summary>
-</histogram>
-
 <histogram base="true" name="CustomTabs.DetachedResourceRequest.Duration"
     units="ms" expires_after="2024-03-17">
   <owner>lizeb@chromium.org</owner>
