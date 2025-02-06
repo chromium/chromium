@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/barrier_callback.h"
 #include "base/containers/span.h"
@@ -138,8 +139,10 @@ net::NetworkTrafficAnnotationTag TrafficAnnotationForFeature(
   }
 }
 
-std::optional<ash::SeaPenImage> ToSeaPenImage(const uint32_t generation_seed,
-                                              const SkBitmap& decoded_bitmap) {
+std::optional<ash::SeaPenImage> ToSeaPenImage(
+    const uint32_t generation_seed,
+    const SkBitmap& decoded_bitmap,
+    const std::string& generative_prompt) {
   base::AssertLongCPUWorkAllowed();
   std::optional<std::vector<uint8_t>> data =
       gfx::JPEGCodec::Encode(decoded_bitmap, /*quality=*/100);
@@ -147,12 +150,13 @@ std::optional<ash::SeaPenImage> ToSeaPenImage(const uint32_t generation_seed,
     return std::nullopt;
   }
   return ash::SeaPenImage(std::string(base::as_string_view(data.value())),
-                          generation_seed);
+                          generation_seed, generative_prompt);
 }
 
 void EncodeBitmap(
     base::OnceCallback<void(std::optional<ash::SeaPenImage>)> callback,
     uint32_t generation_seed,
+    const std::string& generative_prompt,
     const SkBitmap& decoded_bitmap) {
   if (decoded_bitmap.empty()) {
     LOG(WARNING) << "Failed to decode jpg bytes";
@@ -161,7 +165,8 @@ void EncodeBitmap(
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ToSeaPenImage, generation_seed, decoded_bitmap),
+      base::BindOnce(&ToSeaPenImage, generation_seed, decoded_bitmap,
+                     generative_prompt),
       std::move(callback));
 }
 
@@ -178,7 +183,8 @@ void SanitizeJpgBytes(
       data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
       base::BindOnce(&EncodeBitmap, std::move(callback),
-                     output_data.generation_seed()));
+                     output_data.generation_seed(),
+                     output_data.generative_prompt()));
 }
 
 manta::MantaStatusCode GetMantaStatusCodeForEmptyImageResponse(
@@ -211,7 +217,8 @@ std::vector<ash::SeaPenImage> TakeValidImages(
   std::vector<ash::SeaPenImage> filtered_images;
   for (auto& image : optional_images) {
     if (image.has_value() && !image->jpg_bytes.empty()) {
-      filtered_images.emplace_back(std::move(image->jpg_bytes), image->id);
+      filtered_images.emplace_back(std::move(image->jpg_bytes), image->id,
+                                   image->generative_prompt);
     }
   }
   return filtered_images;
@@ -294,10 +301,18 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       return;
     }
 
-    if (query->is_text_query()) {
+    // Clone the query so that the generative prompt never overwrites the stored
+    // value.
+    const ash::personalization_app::mojom::SeaPenQueryPtr& cloned_query =
+        query->Clone();
+    if (ash::features::IsSeaPenPromptRewriteEnabled() &&
+        cloned_query->is_text_query()) {
       CHECK_LE(query->get_text_query().size(),
                ash::personalization_app::mojom::
                    kMaximumGetSeaPenThumbnailsTextBytes);
+      if (!thumbnail.generative_prompt.empty()) {
+        cloned_query->set_text_query(thumbnail.generative_prompt);
+      }
     }
 
     fetch_wallpaper_timer_.Stop();
@@ -313,16 +328,16 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
         FROM_HERE, kRequestTimeout,
         base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperTimeout,
                        fetch_thumbnails_weak_ptr_factory_.GetWeakPtr(),
-                       query->which()));
+                       cloned_query->which()));
 
     manta::proto::Request request =
-        CreateMantaRequest(query, thumbnail.id, /*num_outputs=*/1,
+        CreateMantaRequest(cloned_query, thumbnail.id, /*num_outputs=*/1,
                            GetLargestDisplaySizeLandscape(), feature_name);
     snapper_provider_->Call(
         request, TrafficAnnotationForFeature(feature_name),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperDone,
                        fetch_wallpaper_weak_ptr_factory_.GetWeakPtr(),
-                       base::TimeTicks::Now(), query->which()));
+                       base::TimeTicks::Now(), cloned_query->which()));
   }
 
  private:
