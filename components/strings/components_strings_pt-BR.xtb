@@ -1857,7 +1857,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="425582637250725228">É possível que as alterações feitas não sejam salvas.</translation>
 <translation id="4258748452823770588">Assinatura inválida</translation>
 <translation id="4261046003697461417">Não é possível fazer anotações em documentos protegidos</translation>
-<translation id="4265872034478892965">Permitido pelo administrador</translation>
+<translation id="4265872034478892965">Com permissão do administrador</translation>
 <translation id="4269029136757623689">Ventiladores domésticos</translation>
 <translation id="4269264543938335308">Trajes de banho</translation>
 <translation id="4269599248168651462">O certificado do servidor é emitido para um nome não exclusivo.</translation>
@@ -2377,7 +2377,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5239623327352565343">Acesso à localização permitido</translation>
 <translation id="5241048084654737238">Confirmação de que não foi possível salvar as informações do cartão</translation>
 <translation id="5242610955375133957">Filme seco</translation>
-<translation id="5243004157379865295">Atualizar o endereço</translation>
+<translation id="5243004157379865295">Atualizar endereço</translation>
 <translation id="5244521145258281926">Botão "Gerenciar Conta do Google". Ative para gerenciar suas informações, sua privacidade e sua segurança na sua Conta do Google</translation>
 <translation id="5244732203286792411">Carregando…
     Isso pode levar um minuto.</translation>
