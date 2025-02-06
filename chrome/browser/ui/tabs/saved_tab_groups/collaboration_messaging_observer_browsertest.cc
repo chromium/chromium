@@ -98,7 +98,13 @@ InstantMessage CreateInstantMessage(std::string given_name,
   tab_group_metadata.last_known_title = group_name;
 
   MessageAttribution attribution;
-  attribution.triggering_user = member;
+  if (event == CollaborationEvent::COLLABORATION_MEMBER_ADDED ||
+      event == CollaborationEvent::COLLABORATION_MEMBER_REMOVED) {
+    attribution.affected_user = member;
+  } else {
+    attribution.triggering_user = member;
+  }
+
   attribution.tab_metadata = tab_metadata;
   attribution.tab_group_metadata = tab_group_metadata;
 
@@ -405,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
-                       InstantMessageForCollaborationRemoved) {
+                       InstantMessageForTabGroupRemoved) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   // Observer is initialized
@@ -415,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(CollaborationMessagingObserverBrowserTest,
   base::MockCallback<SuccessCallback> cb;
   std::string test_url = chrome::kChromeUISettingsURL;
   auto message =
-      CreateInstantMessage("User", CollaborationEvent::COLLABORATION_REMOVED,
+      CreateInstantMessage("User", CollaborationEvent::TAB_GROUP_REMOVED,
                            test_url, "Chrome Settings", group_id, "Vacation");
 
   EXPECT_CALL(cb, Run(true));

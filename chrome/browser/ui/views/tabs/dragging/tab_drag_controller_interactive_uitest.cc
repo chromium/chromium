@@ -3497,14 +3497,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
 }
 
 // Home tab can't be detached.
-// TODO(crbug.com/40245163): Enable this test for Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CantDragHomeTab DISABLED_CantDragHomeTab
-#else
-#define MAYBE_CantDragHomeTab CantDragHomeTab
-#endif
+// TODO(crbug.com/40245163): Flaky. Enable this test.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedWebApp,
-                       MAYBE_CantDragHomeTab) {
+                       DISABLED_CantDragHomeTab) {
   // Install tabbed web app.
   webapps::AppId app_id = InstallMockApp(/*add_home_tab=*/true);
   Browser* app_browser =

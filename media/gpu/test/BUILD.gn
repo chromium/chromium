@@ -159,8 +159,10 @@ source_set("test_helpers") {
     "//media:test_support",
   ]
   deps = [
+    "//gpu:test_support",
     "//media/gpu",
     "//mojo/public/cpp/system",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv",
   ]

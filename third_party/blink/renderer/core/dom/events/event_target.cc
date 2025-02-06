@@ -712,11 +712,9 @@ void EventTarget::AddedEventListener(
       if (RuntimeEnabledFeatures::MutationEventsEnabled(context) &&
           (!document || document->SupportsLegacyDOMMutations())) {
         String message_text = String::Format(
-            "Listener added for a '%s' mutation event. This event type is "
-            "deprecated, and will be removed from this browser VERY soon. "
-            "Usage of this event listener will cause performance issues today, "
-            "and represents a large risk of imminent site breakage. Consider "
-            "using MutationObserver instead. See "
+            "Listener added for a '%s' mutation event. This event type is no "
+            "longer supported, and will be removed from this browser VERY "
+            "soon. Consider using MutationObserver instead. See "
             "https://chromestatus.com/feature/5083947249172480 for more "
             "information.",
             event_type.GetString().Utf8().c_str());
@@ -729,33 +727,12 @@ void EventTarget::AddedEventListener(
         Deprecation::CountDeprecation(context, info.listener_feature);
         UseCounter::Count(context, WebFeature::kAnyMutationEventListenerAdded);
       } else {
-        String message_text;
-        // Only show the special trial message if mutation events are disabled
-        // via the feature flag, and not via lack of embedder support.
-        if (!RuntimeEnabledFeatures::MutationEventsEnabled(context) &&
-            RuntimeEnabledFeatures::MutationEventsSpecialTrialMessageEnabled(
-                context)) {
-          message_text = String::Format(
-              "Usage of mutation events (%s) was detected. This event type has "
-              "been deprecated, and an early trial-run of complete removal is "
-              "underway. In this browser, mutation events are currently not "
-              "being fired. If you are a *user* experiencing a problem, please "
-              "report the issue to the operator of the website. If you are a "
-              "site owner, and you think this trial is causing an unexpected "
-              "issue, please report a bug at "
-              "https://issues.chromium.org/issues/"
-              "new?component=1456718&template=1948649. Note that these events "
-              "will stop being fired for ALL USERS starting in version 127, "
-              "which is the next release.",
-              event_type.GetString().Utf8().c_str());
-        } else {
-          message_text = String::Format(
-              "Listener added for a '%s' mutation event. Support for this "
-              "event type has been removed, and this event will no longer be "
-              "fired. See https://chromestatus.com/feature/5083947249172480 "
-              "for more information.",
-              event_type.GetString().Utf8().c_str());
-        }
+        String message_text = String::Format(
+            "Listener added for a '%s' mutation event. Support for this "
+            "event type has been removed, and this event will no longer be "
+            "fired. See https://chromestatus.com/feature/5083947249172480 "
+            "for more information.",
+            event_type.GetString().Utf8().c_str());
         context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kDeprecation,
             mojom::blink::ConsoleMessageLevel::kError, message_text));

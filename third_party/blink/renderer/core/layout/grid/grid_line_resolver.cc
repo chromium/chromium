@@ -390,12 +390,12 @@ bool GridLineResolver::operator==(const GridLineResolver& other) const {
 }
 
 void GridLineResolver::InitialAndFinalPositionsFromStyle(
-    const ComputedStyle& grid_item_style,
+    const ComputedStyle& item_style,
     GridTrackSizingDirection track_direction,
     GridPosition& initial_position,
     GridPosition& final_position) const {
-  initial_position = grid_item_style.TrackStart(track_direction);
-  final_position = grid_item_style.TrackEnd(track_direction);
+  initial_position = item_style.TrackStart(*style_, track_direction);
+  final_position = item_style.TrackEnd(*style_, track_direction);
 
   // We must handle the placement error handling code here instead of in the
   // StyleAdjuster because we don't want to overwrite the specified values.
@@ -706,15 +706,6 @@ wtf_size_t GridLineResolver::SpanSizeFromPositions(
   return span_position.SpanPosition();
 }
 
-wtf_size_t GridLineResolver::SpanSizeForAutoPlacedItem(
-    const ComputedStyle& grid_item_style,
-    GridTrackSizingDirection track_direction) const {
-  GridPosition initial_position, final_position;
-  InitialAndFinalPositionsFromStyle(grid_item_style, track_direction,
-                                    initial_position, final_position);
-  return SpanSizeFromPositions(initial_position, final_position);
-}
-
 int GridLineResolver::ResolveNamedGridLinePosition(
     const GridPosition& position,
     GridPositionSide side) const {
@@ -814,6 +805,7 @@ GridSpan GridLineResolver::ResolveGridPositionsFromStyle(
   GridPosition initial_position, final_position;
   InitialAndFinalPositionsFromStyle(item_style, track_direction,
                                     initial_position, final_position);
+
   const bool initial_should_be_resolved_against_opposite_position =
       initial_position.ShouldBeResolvedAgainstOppositePosition();
   const bool final_should_be_resolved_against_opposite_position =

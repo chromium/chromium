@@ -1057,6 +1057,7 @@ static_library("test_support") {
     "ui/payments/virtual_card_enroll_ui_model_test_api.h",
     "ui/test_autofill_external_delegate.cc",
     "ui/test_autofill_external_delegate.h",
+    "webdata/entities/entity_table_test_api.h",
     "webdata/mock_autofill_webdata_backend.cc",
     "webdata/mock_autofill_webdata_backend.h",
     "webdata/mock_autofill_webdata_service.cc",

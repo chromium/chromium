@@ -30,12 +30,6 @@ struct StructTraits<printing::mojom::PrinterBasicInfoDataView,
       const printing::PrinterBasicInfo& i) {
     return i.printer_description;
   }
-  static int printer_status(const printing::PrinterBasicInfo& i) {
-    return i.printer_status;
-  }
-  static bool is_default(const printing::PrinterBasicInfo& i) {
-    return i.is_default;
-  }
   static const printing::PrinterBasicInfoOptions& options(
       const printing::PrinterBasicInfo& i) {
     return i.options;

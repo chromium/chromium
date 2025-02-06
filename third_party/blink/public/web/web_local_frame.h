@@ -832,12 +832,6 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
                                    bool include_linked_destinations,
                                    bool skip_accelerated_content) = 0;
 
-  // Focus --------------------------------------------------------------
-
-  // Returns whether the keyboard should be suppressed for the currently focused
-  // element.
-  virtual bool ShouldSuppressKeyboardForFocusedElement() = 0;
-
   // Performance --------------------------------------------------------
 
   virtual WebPerformanceMetricsForReporting PerformanceMetricsForReporting()

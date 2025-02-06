@@ -157,6 +157,7 @@ browser_exposed_mojom_targets = [
   "//components/web_package/mojom:mojom",
   "//components/webapps/common:mojo_bindings",
   "//components/webapps/services/web_app_origin_association/public/mojom:mojom",
+  "//components/webui/chrome_urls/mojom:mojo_bindings",
   "//content/browser/attribution_reporting:internals_mojo_bindings",
   "//content/browser/attribution_reporting:mojo_bindings",
   "//content/browser/attribution_reporting:registration_result_mojom",

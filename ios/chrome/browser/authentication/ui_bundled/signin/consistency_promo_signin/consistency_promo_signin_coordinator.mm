@@ -338,8 +338,6 @@
 
 // Starts the sign-in flow.
 - (void)startSignIn {
-  // TODO(crbug.com/375605482): If `self.selectedIdentity` is assigned to a
-  // different profile, switch to that profile instead of signing in.
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:self.selectedIdentity

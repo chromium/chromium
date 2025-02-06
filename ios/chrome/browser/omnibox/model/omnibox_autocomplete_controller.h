@@ -27,16 +27,11 @@ class OmniboxController;
 /// Removes all C++ references.
 - (void)disconnect;
 
-#pragma mark - OmniboxEditModel event
+// Reaction to events from OmniboxEditModel.
+#pragma mark - OmniboxEditModel delegate
 
 /// Updates the popup suggestions.
 - (void)updatePopupSuggestions;
-
-#pragma mark - OmniboxPopup event
-
-/// Request suggestions for a number of visible suggestions.
-- (void)requestResultsWithVisibleSuggestionCount:
-    (NSUInteger)visibleSuggestionCount;
 
 @end
 

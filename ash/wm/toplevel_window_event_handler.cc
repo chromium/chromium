@@ -486,8 +486,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       return;
     }
     case ui::EventType::kGestureTap:
-      if (features::IsPipDoubleTapToResizeEnabled() &&
-          Shell::Get()->pip_controller()->HandleDoubleTap(*event)) {
+      if (Shell::Get()->pip_controller()->HandleDoubleTap(*event)) {
         event->StopPropagation();
         return;
       }
@@ -975,8 +974,7 @@ void ToplevelWindowEventHandler::HandleMousePressed(aura::Window* target,
   if (event->phase() != ui::EP_PRETARGET || !target->delegate())
     return;
 
-  if (features::IsPipDoubleTapToResizeEnabled() &&
-      Shell::Get()->pip_controller()->HandleDoubleTap(*event)) {
+  if (Shell::Get()->pip_controller()->HandleDoubleTap(*event)) {
     event->SetHandled();
     return;
   }

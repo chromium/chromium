@@ -13,6 +13,7 @@ assert(enable_extensions_core)
 # desktop-android build.
 # TODO(https://crbug.com/356905053): Continue moving more here.
 schema_sources_ = [
+  "activity_log_private.json",
   "cookies.json",
   "notifications.idl",
 ]
@@ -38,7 +39,6 @@ if (enable_desktop_android_extensions) {
 if (enable_extensions) {
   schema_sources_ += [
     "accessibility_features.json",
-    "activity_log_private.json",
     "experimental_ai_data.idl",
     "autofill_private.idl",
     "autotest_private.idl",

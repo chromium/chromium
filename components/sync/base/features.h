@@ -38,9 +38,6 @@ BASE_DECLARE_FEATURE(kEnableBatchUploadFromSettings);
 BASE_DECLARE_FEATURE(kUnoPhase2FollowUp);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Controls whether to enable syncing of Autofill Wallet Usage Data.
-BASE_DECLARE_FEATURE(kSyncAutofillWalletUsageData);
-
 // Controls whether to enable syncing of Autofill Wallet Credential Data.
 BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
 

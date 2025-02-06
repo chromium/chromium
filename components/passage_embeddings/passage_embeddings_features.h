@@ -55,6 +55,10 @@ extern const base::FeatureParam<int> kMaxPassagesPerPage;
 // passage extraction algorithm.
 extern const base::FeatureParam<int> kMinWordsPerPassage;
 
+// Specifies whether GPU execution is allowed for execution if there is a GPU
+// for the device.
+extern const base::FeatureParam<bool> kAllowGpuExecution;
+
 }  // namespace passage_embeddings
 
 #endif  // COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_FEATURES_H_

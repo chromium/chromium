@@ -57,11 +57,11 @@ ParseUrlForVcn3ds(const GURL& url,
 PaymentsWindowManager::BnplPopupStatus ParseUrlForBnpl(
     const GURL& url,
     const PaymentsWindowManager::BnplContext& bnpl_context) {
-  if (url == bnpl_context.success_url) {
+  if (url.spec().find(bnpl_context.success_url_prefix.spec()) == 0) {
     return PaymentsWindowManager::BnplPopupStatus::kSuccess;
   }
 
-  if (url == bnpl_context.failure_url) {
+  if (url.spec().find(bnpl_context.failure_url_prefix.spec()) == 0) {
     return PaymentsWindowManager::BnplPopupStatus::kFailure;
   }
 

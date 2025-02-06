@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
@@ -16,7 +15,6 @@
 #include "ash/wm/window_dimmer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
@@ -44,7 +42,7 @@ constexpr gfx::Size kExpectedPipDefaultSize(200, 133);
 
 class PipControllerTest : public AshTestBase {
  public:
-  PipControllerTest() : scoped_feature_list_(features::kPipTuck) {}
+  PipControllerTest() = default;
 
   PipControllerTest(const PipControllerTest&) = delete;
   PipControllerTest& operator=(const PipControllerTest&) = delete;
@@ -66,9 +64,6 @@ class PipControllerTest : public AshTestBase {
     window.get()->Show();
     return window;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class PipControllerTestAPI {
@@ -223,8 +218,7 @@ TEST_F(PipControllerTest, TuckHandleIsShownAtCorrectPosition) {
 class PipToggleResizeFeatureTest : public AshTestBase,
                                    public testing::WithParamInterface<bool> {
  public:
-  PipToggleResizeFeatureTest()
-      : scoped_feature_list_(features::kPipDoubleTapToResize) {}
+  PipToggleResizeFeatureTest() = default;
 
   PipToggleResizeFeatureTest(const PipToggleResizeFeatureTest&) = delete;
   PipToggleResizeFeatureTest& operator=(const PipToggleResizeFeatureTest&) =
@@ -278,9 +272,6 @@ class PipToggleResizeFeatureTest : public AshTestBase,
     event_generator->PressKeyAndModifierKeys(ui::VKEY_X, ui::EF_COMMAND_DOWN);
     event_generator->ReleaseKeyAndModifierKeys(ui::VKEY_X, ui::EF_COMMAND_DOWN);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(PipToggleResizeFeatureTest, TestSingleClick) {

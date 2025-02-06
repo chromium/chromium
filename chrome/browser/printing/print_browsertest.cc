@@ -517,8 +517,7 @@ void PrintBrowserTest::AddPrinter(const std::string& printer_name) {
       printer_name,
       /*display_name=*/"test printer",
       /*printer_description=*/"A printer for testing.",
-      /*printer_status=*/0,
-      /*is_default=*/true, test::kPrintInfoOptions);
+      test::kPrintInfoOptions);
 
   auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
   default_caps->copies_max = kTestPrinterCapabilitiesMaxCopies;
@@ -529,6 +528,7 @@ void PrintBrowserTest::AddPrinter(const std::string& printer_name) {
   test_print_backend_->AddValidPrinter(
       printer_name, std::move(default_caps),
       std::make_unique<PrinterBasicInfo>(printer_info));
+  test_print_backend_->SetDefaultPrinterName(printer_name);
 }
 
 void PrintBrowserTest::SetPrinterNameForSubsequentContexts(

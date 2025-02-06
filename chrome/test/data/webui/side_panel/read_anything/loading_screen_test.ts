@@ -8,6 +8,7 @@ import type {AppElement, SpEmptyStateElement} from 'chrome-untrusted://read-anyt
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {createApp} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -15,7 +16,7 @@ suite('LoadingScreen', () => {
   let app: AppElement;
   let emptyState: SpEmptyStateElement;
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
@@ -23,8 +24,7 @@ suite('LoadingScreen', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
     app.showLoading();
     emptyState =
         app.shadowRoot!.querySelector<SpEmptyStateElement>('sp-empty-state')!;

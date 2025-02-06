@@ -58,14 +58,15 @@ void GlicKeyedService::Shutdown() {
   window_controller_->Shutdown();
 }
 
-void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi) {
+void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
+                                bool prevent_close) {
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to
   // this method should already have been removed.
   CHECK(GlicEnabling::IsEnabledForProfile(profile_));
 
   profile_manager_->SetActiveGlic(this);
-  window_controller_->Toggle(bwi);
+  window_controller_->Toggle(bwi, prevent_close);
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
@@ -103,6 +104,15 @@ GlicPageHandler* GlicKeyedService::GetPageHandler(
     }
   }
   return nullptr;
+}
+
+void GlicKeyedService::DidSelectProfile(Profile* profile) {
+  // If the user selected a different profile, toggle glic in the new profile.
+  if (profile && profile != profile_) {
+    GlicKeyedService* service =
+        GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+    service->ToggleUI(nullptr);
+  }
 }
 
 base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
@@ -163,14 +173,8 @@ void GlicKeyedService::ResizePanel(const gfx::Size& size,
 }
 
 void GlicKeyedService::ShowProfilePicker() {
-  base::OnceCallback<void(Profile*)> callback =
-      base::BindOnce([](Profile* profile) {
-        if (profile) {
-          GlicKeyedService* service =
-              GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-          service->ToggleUI(nullptr);
-        }
-      });
+  base::OnceCallback<void(Profile*)> callback = base::BindOnce(
+      &GlicKeyedService::DidSelectProfile, weak_ptr_factory_.GetWeakPtr());
   ProfilePicker::Show(
       ProfilePicker::Params::ForGlicManager(std::move(callback)));
 }

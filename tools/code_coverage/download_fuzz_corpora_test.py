@@ -58,7 +58,8 @@ class DownloadFuzzCorporaTest(unittest.TestCase):
           _gsutil_mock.return_value = None
           _ParseCommandArgumentsMock.return_value = argparse.Namespace(
               download_dir=self.__class__.fake_download_dir,
-              build_dir=self.__class__.fake_binary_dir)
+              build_dir=self.__class__.fake_binary_dir,
+              corpora_type='libfuzzer')
           unzip_corpora_mock.return_value = None
           download_fuzz_corpora.Main()
           self.assertTrue(

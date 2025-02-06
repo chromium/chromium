@@ -2308,11 +2308,7 @@ enum class ToolbarKind {
 #pragma mark - BrowserViewVisibilityConsumer
 
 - (void)browserViewDidChangeVisibility {
-  // TODO(crbug.com/377763682): This is a temporary fix to avoid a crash.
-  if (!self.browser) {
-    NOTREACHED(base::NotFatalUntil::M133);
-    return;
-  }
+  CHECK(self.browser);
   raw_ptr<TabBasedIPHBrowserAgent> tabBasedIPHBrowserAgent =
       TabBasedIPHBrowserAgent::FromBrowser(self.browser);
   if (!tabBasedIPHBrowserAgent) {

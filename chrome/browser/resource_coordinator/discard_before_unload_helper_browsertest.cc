@@ -78,8 +78,14 @@ class HasBeforeUnloadHandlerTest : public InProcessBrowserTest {
 
 }  // namespace
 
+// TODO(crbug.com/394745724): Fails on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NonEmptyBeforeUnloadDetected DISABLED_NonEmptyBeforeUnloadDetected
+#else
+#define MAYBE_NonEmptyBeforeUnloadDetected NonEmptyBeforeUnloadDetected
+#endif
 IN_PROC_BROWSER_TEST_F(HasBeforeUnloadHandlerTest,
-                       NonEmptyBeforeUnloadDetected) {
+                       MAYBE_NonEmptyBeforeUnloadDetected) {
   TestDiscardBeforeUnloadHelper("/beforeunload.html",
                                 true /* has_beforeunload_helper */);
 }

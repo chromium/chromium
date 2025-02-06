@@ -74,7 +74,7 @@ class CollaborationMessagingObserver
   FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
                            InstantMessageManagesSharing);
   FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
-                           InstantMessageForCollaborationRemoved);
+                           InstantMessageForTabGroupRemoved);
 
   // MessagingBackendService::PersistentMessageObserver
   void OnMessagingBackendServiceInitialized() override;

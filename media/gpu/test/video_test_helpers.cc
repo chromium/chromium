@@ -23,7 +23,9 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/stl_util.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
@@ -607,7 +609,8 @@ AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
       visible_rect_(video_->VisibleRect()),
       natural_size_(natural_size),
       time_stamp_interval_(base::Seconds(/*secs=*/0u)),
-      elapsed_frame_time_(base::Seconds(/*secs=*/0u)) {
+      elapsed_frame_time_(base::Seconds(/*secs=*/0u)),
+      test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
   // If the frame_rate is passed in, then use that timing information
   // to generate timestamps that increment according the frame_rate.
   // Otherwise timestamps will be generated when GetNextFrame() is called
@@ -704,21 +707,22 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
       return nullptr;
     }
 
-    // Create GpuMemoryBuffer from GpuMemoryBufferHandle.
-    gpu::GpuMemoryBufferSupport support;
-    auto gpu_memory_buffer = support.CreateGpuMemoryBufferImplFromHandle(
-        std::move(dup_handle), layout_->coded_size(), *buffer_format,
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    auto shared_image = test_sii_->CreateSharedImage(
+        {viz::GetSharedImageFormat(*buffer_format), layout_->coded_size(),
+         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
+         "AlignedDataHelper"},
+        gpu::kNullSurfaceHandle,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-        base::DoNothing());
-    if (!gpu_memory_buffer) {
-      LOG(ERROR) << "Failed to create GpuMemoryBuffer from "
-                 << "GpuMemoryBufferHandle";
+        std::move(dup_handle));
+    if (!shared_image) {
+      LOG(ERROR) << "Failed to create a mappable shared image.";
       return nullptr;
     }
-
-    return media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        visible_rect_, natural_size_, std::move(gpu_memory_buffer),
-        frame_timestamp);
+    return media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+        base::NullCallback(), visible_rect_, natural_size_, frame_timestamp);
   } else {
     const auto& shmem_region = video_frame_data.shmem_region;
     auto dup_region = shmem_region.Duplicate();

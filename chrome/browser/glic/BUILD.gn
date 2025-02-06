@@ -223,6 +223,7 @@ source_set("interactive_ui_tests") {
     ":impl",
     ":test_support",
     "//chrome/browser",
+    "//chrome/browser/glic/launcher",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support",

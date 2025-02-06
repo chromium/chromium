@@ -4,14 +4,10 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SetDocumentClassVisibilityForPackageCallback;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Provides access to internal AuxiliarySearch implementation parts, if they are available. */
 public interface AuxiliarySearchHooks {
@@ -19,21 +15,9 @@ public interface AuxiliarySearchHooks {
     boolean isEnabled();
 
     /**
-     * Create a AuxiliarySearchController. TODO(https://crbug.com/394046453): Removes this API once
-     * the clank implementation is removed.
-     */
-    @Nullable
-    default AuxiliarySearchController createAuxiliarySearchController(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @Nullable TabModelSelector tabModelSelector) {
-        return null;
-    }
-
-    /**
      * Sets the schema visibility for the requestBuilder.
      *
-     * @param requestBuilder The builder to build a schema.
+     * @param callback The callback to set the document visibilities.
      */
     default void setSchemaTypeVisibilityForPackage(
             @NonNull SetDocumentClassVisibilityForPackageCallback callback) {}
@@ -42,9 +26,6 @@ public interface AuxiliarySearchHooks {
     default boolean isSettingDefaultEnabledByOs() {
         return false;
     }
-
-    /** Sets whether the current device is a tablet. */
-    default void setIsTablet(boolean isTablet) {}
 
     /** Returns the package name of the supported app which reads the donated Tabs. */
     @Nullable

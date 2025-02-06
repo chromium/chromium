@@ -142,6 +142,7 @@ AutofillWalletOfferDelegateFromDataService(
       ->GetControllerDelegate();
 }
 
+#if !BUILDFLAG(IS_IOS)
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 AutofillWalletUsageDataDelegateFromDataService(
     autofill::AutofillWebDataService* service) {
@@ -150,6 +151,7 @@ AutofillWalletUsageDataDelegateFromDataService(
       ->change_processor()
       ->GetControllerDelegate();
 }
+#endif
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 ContactInfoDelegateFromDataService(autofill::AutofillWebDataService* service) {
@@ -512,14 +514,15 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
     }
 
     // Wallet usage data sync depends on Wallet data sync.
-    if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletUsageData) &&
-        !disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
+#if !BUILDFLAG(IS_IOS)
+    if (!disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_USAGE)) {
       controllers.push_back(CreateWalletDataTypeController(
           syncer::AUTOFILL_WALLET_USAGE,
           base::BindRepeating(&AutofillWalletUsageDataDelegateFromDataService),
           sync_service, /*with_transport_mode_support=*/true));
     }
+#endif
 
     // Wallet credential data sync depends on Wallet data sync.
     if (base::FeatureList::IsEnabled(

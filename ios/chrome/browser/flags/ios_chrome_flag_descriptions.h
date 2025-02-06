@@ -715,11 +715,6 @@ extern const char kMostVisitedTilesHorizontalRenderGroupDescription[];
 extern const char kNativeFindInPageName[];
 extern const char kNativeFindInPageDescription[];
 
-// Title and description for the new illustration in the sync opt-in promotion
-// view.
-extern const char kNewSyncOptInIllustrationName[];
-extern const char kNewSyncOptInIllustrationDescription[];
-
 // Title and description for temporary bug fix to broken NTP view hierarhy.
 // TODO(crbug.com/40799579): Remove this when fixed.
 extern const char kNTPViewHierarchyRepairName[];

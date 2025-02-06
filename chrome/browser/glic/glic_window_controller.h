@@ -75,8 +75,8 @@ class GlicWindowController : public views::WidgetObserver {
   ~GlicWindowController() override;
 
   // Show, summon, or activate the panel if needed, or close it if it's already
-  // active.
-  void Toggle(BrowserWindowInterface* browser);
+  // active and prevent_close is false.
+  void Toggle(BrowserWindowInterface* browser, bool prevent_close = false);
 
   // Attaches glic to the last focused Chrome window.
   void Attach();

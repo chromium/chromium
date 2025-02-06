@@ -11405,6 +11405,28 @@
             ]
         }
     ],
+    "HttpCacheNoVarySearch": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HttpCacheNoVarySearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "HttpDiskCachePrewarming": [
         {
             "platforms": [
@@ -12012,21 +12034,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IOSNewFeedPositioning"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSNewSyncOptInIllustration": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NewSyncOptInIllustration"
                     ]
                 }
             ]
@@ -14550,26 +14557,6 @@
                     "name": "Disabled",
                     "disable_features": [
                         "MutationEvents"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MutationEventsSpecialTrialMessage": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MutationEventsSpecialTrialMessage"
                     ]
                 }
             ]
@@ -21378,6 +21365,21 @@
             ]
         }
     ],
+    "SeaPenPromptRewrite": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SeaPenPromptRewrite"
+                    ]
+                }
+            ]
+        }
+    ],
     "SeaPenTextInput": [
         {
             "platforms": [
@@ -23642,21 +23644,18 @@
             ]
         }
     ],
-    "TimedHTMLParserBudget": [
+    "TimedHTMLParserBudgetForAndroid": [
         {
             "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "group_10_500_6_20230911",
+                    "name": "Enabled_10_50_2",
                     "params": {
                         "default-parser-budget": "10ms",
-                        "long-parser-budget": "500ms",
-                        "num-yields-with-default-budget": "6"
+                        "long-parser-budget": "50ms",
+                        "num-yields-with-default-budget": "2"
                     },
                     "enable_features": [
                         "TimedHTMLParserBudget"

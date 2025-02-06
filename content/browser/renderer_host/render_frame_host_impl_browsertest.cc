@@ -750,8 +750,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
     base::HistogramTester histogram_tester;
     EXPECT_TRUE(NavigateToURL(
         shell(), GetTestUrl("render_frame_host", "beforeunload.html")));
+    histogram_tester.ExpectUniqueSample("Navigation.StartAdjustment.AllFrames",
+                                        NavigationStartAdjustmentType::kNone,
+                                        1);
     histogram_tester.ExpectUniqueSample(
-        "Navigation.StartAdjustment", NavigationStartAdjustmentType::kNone, 1);
+        "Navigation.StartAdjustment.MainFrameOnly",
+        NavigationStartAdjustmentType::kNone, 1);
   }
   // Disable the hang monitor, otherwise there will be a race between the
   // beforeunload dialog and the beforeunload hang timer.
@@ -766,7 +770,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
     web_contents()->GetController().Reload(ReloadType::NORMAL, false);
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     histogram_tester.ExpectUniqueSample(
-        "Navigation.StartAdjustment",
+        "Navigation.StartAdjustment.AllFrames",
+        NavigationStartAdjustmentType::kBeforeUnloadHandlers, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.MainFrameOnly",
         NavigationStartAdjustmentType::kBeforeUnloadHandlers, 1);
     histogram_tester.ExpectTotalCount(
         "Navigation.StartAdjustment.BeforeUnloadHandlers", 1);
@@ -789,7 +796,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
     dialog_manager.Run(true, std::u16string());
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     histogram_tester.ExpectUniqueSample(
-        "Navigation.StartAdjustment",
+        "Navigation.StartAdjustment.AllFrames",
+        NavigationStartAdjustmentType::kBeforeUnloadDialog, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.MainFrameOnly",
         NavigationStartAdjustmentType::kBeforeUnloadDialog, 1);
     histogram_tester.ExpectTotalCount(
         "Navigation.StartAdjustment.BeforeUnloadDialog", 1);
@@ -801,6 +811,132 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // there should be no beforeunload dialog.
   shell()->LoadURL(GURL("about:blank"));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+// Test that beforeunload handlers registered in out-of-process iframes can
+// display dialogs, even during renderer-initiated navigations in a process that
+// does not have a beforeunload handler. Also verifies that the correct metrics
+// are recorded.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       BeforeUnloadDialogInOOPIF) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  TestJavaScriptDialogManager dialog_manager;
+  web_contents()->SetDelegate(&dialog_manager);
+
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  // A same-document navigation does not result in an adjustment, nor does it
+  // record an adjustment metric.
+  {
+    base::HistogramTester histogram_tester;
+    TestNavigationObserver nav_observer(web_contents());
+    ASSERT_TRUE(ExecJs(shell(), "location.hash = 'foo';"));
+    nav_observer.WaitForNavigationFinished();
+    histogram_tester.ExpectTotalCount("Navigation.StartAdjustment.AllFrames",
+                                      0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.MainFrameOnly", 0);
+  }
+
+  // Create an out-of-process iframe.
+  GURL subframe_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  {
+    base::HistogramTester histogram_tester;
+    std::string subframe_script = JsReplace(
+        "var f = document.createElement('iframe');"
+        "f.id = 'subframe';"
+        "f.src = $1;"
+        "document.body.append(f);",
+        subframe_url);
+    ASSERT_TRUE(ExecJs(shell(), subframe_script));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    // No adjustment is made on a renderer-initiated navigation that targets a
+    // local frame.
+    histogram_tester.ExpectUniqueSample("Navigation.StartAdjustment.AllFrames",
+                                        NavigationStartAdjustmentType::kNone,
+                                        1);
+    // This does not contribute to MainFrameOnly counts.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.MainFrameOnly", 0);
+  }
+  ASSERT_EQ(1u, root->child_count());
+  FrameTreeNode* child = root->child_at(0u);
+  EXPECT_NE(root->current_frame_host()->GetProcess(),
+            child->current_frame_host()->GetProcess());
+
+  // Navigate the remote iframe to a page with a beforeunload handler.
+  GURL beforeunload_url(embedded_test_server()->GetURL(
+      "b.com", "/render_frame_host/beforeunload.html"));
+  {
+    base::HistogramTester histogram_tester;
+    TestFrameNavigationObserver nav_observer(child->current_frame_host());
+    std::string subframe_script = JsReplace(
+        "iframe = document.querySelector('#subframe');"
+        "iframe.contentWindow.location.href = $1;",
+        beforeunload_url);
+    ASSERT_TRUE(ExecJs(shell(), subframe_script));
+    // It is important to use `Wait` and not `WaitForCommit` here, to allow the
+    // load to finish and the beforeunload handler to be registered with the
+    // browser process. If the next navigation starts in the main frame's
+    // process and reaches the browser process before the beforeunload handler
+    // is registered, the dialog will not be displayed.
+    nav_observer.Wait();
+    EXPECT_TRUE(child->current_frame_host()->GetSuddenTerminationDisablerState(
+        blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler));
+    // A legacy PostTask is used when a renderer-initiated navigation targets a
+    // remote frame that has no beforeunload handler.
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.AllFrames",
+        NavigationStartAdjustmentType::kLegacyPostTask, 1);
+    // This does not contribute to MainFrameOnly counts.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.MainFrameOnly", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.LegacyPostTask", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.LegacyPostTask.Percentage", 1);
+  }
+  EXPECT_NE(root->current_frame_host()->GetProcess(),
+            child->current_frame_host()->GetProcess());
+
+  // Disable hang monitor and grant a user gesture to all frames, so that the
+  // dialog will reliably appear.
+  PrepContentsForBeforeUnloadTest(web_contents(),
+                                  /*trigger_user_activation=*/true);
+  ASSERT_TRUE(child->HasTransientUserActivation());
+
+  // Navigate the iframe from the main frame's process, which doesn't know about
+  // the beforeunload handler. The browser process should check with the
+  // subframe's process and show a beforeunload dialog. If there is no dialog,
+  // the call to Wait will hang.
+  {
+    base::HistogramTester histogram_tester;
+    TestFrameNavigationObserver nav_observer(child->current_frame_host());
+    std::string subframe_script = JsReplace(
+        "iframe = document.querySelector('#subframe');"
+        "iframe.contentWindow.location.href = $1;",
+        subframe_url);
+    ASSERT_TRUE(ExecJs(shell(), subframe_script));
+    dialog_manager.Wait();
+
+    // Answer the dialog.
+    dialog_manager.Run(true, std::u16string());
+    nav_observer.Wait();
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.AllFrames",
+        NavigationStartAdjustmentType::kBeforeUnloadDialog, 1);
+    // This does not contribute to MainFrameOnly counts.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.MainFrameOnly", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.BeforeUnloadDialog", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.StartAdjustment.BeforeUnloadDialog.Percentage", 1);
+  }
 
   web_contents()->SetDelegate(nullptr);
 }
@@ -2175,7 +2311,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, POSTNavigation) {
     // This browser-initiated reload adjusts navigation start time for a legacy
     // PostTask, without any beforeunload handlers present.
     histogram_tester.ExpectUniqueSample(
-        "Navigation.StartAdjustment",
+        "Navigation.StartAdjustment.AllFrames",
+        NavigationStartAdjustmentType::kLegacyPostTask, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.StartAdjustment.MainFrameOnly",
         NavigationStartAdjustmentType::kLegacyPostTask, 1);
     histogram_tester.ExpectTotalCount(
         "Navigation.StartAdjustment.LegacyPostTask", 1);
@@ -2204,7 +2343,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, BackToBackReloads) {
   // should show up in a separate negative time bucket, without a corresponding
   // percentage value.
   histogram_tester.ExpectUniqueSample(
-      "Navigation.StartAdjustment",
+      "Navigation.StartAdjustment.AllFrames",
+      NavigationStartAdjustmentType::kLegacyPostTask, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.StartAdjustment.MainFrameOnly",
       NavigationStartAdjustmentType::kLegacyPostTask, 1);
   histogram_tester.ExpectTotalCount(
       "Navigation.StartAdjustment.LegacyPostTask.Negative", 1);

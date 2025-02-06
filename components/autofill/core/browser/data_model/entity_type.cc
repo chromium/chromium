@@ -68,10 +68,6 @@ FieldType AttributeTypeNameToFieldType(AttributeTypeName a) {
   NOTREACHED();
 }
 
-EntityType AttributeType::entity_type() const {
-  return EntityType(AttributeTypeNameToEntityTypeName(name_));
-}
-
 std::ostream& operator<<(std::ostream& os, AttributeType a) {
   return os << a.name_as_string();
 }

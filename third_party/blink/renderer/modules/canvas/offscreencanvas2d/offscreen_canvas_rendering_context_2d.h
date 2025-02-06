@@ -67,9 +67,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   SkAlphaType GetAlphaType() const override {
     return color_params_.GetAlphaType();
   }
-  SkColorType GetSkColorType() const override {
-    return viz::ToClosestSkColorType(GetSharedImageFormat());
-  }
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return color_params_.GetSharedImageFormat();
   }

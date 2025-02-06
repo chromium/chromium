@@ -3575,8 +3575,7 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
   // header.
   if (!truncated && !entry_->IsDoomed() && cache_->no_vary_search_cache_ &&
       IsNoVarySearchApplicable()) {
-    cache_->no_vary_search_cache_->MaybeInsert(*request_,
-                                               *new_response_->headers);
+    cache_->no_vary_search_cache_->MaybeInsert(*request_, *response.headers);
   }
 
   // When writing headers, we only write the non-transient headers.

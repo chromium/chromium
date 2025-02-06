@@ -94,6 +94,10 @@ class PassageEmbedder : public mojom::PassageEmbedder {
 
   // The number of threads to use for PassagePriority::kPassive.
   uint32_t passive_priority_num_threads_;
+
+  // Whether to allow model execution to run on the GPU if available for the
+  // device.
+  bool allow_gpu_execution_ = false;
 };
 
 }  // namespace passage_embeddings

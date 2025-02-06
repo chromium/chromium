@@ -233,9 +233,6 @@ extern const char kDisableInstanceLimitName[];
 extern const char kDisableInstanceLimitDescription[];
 #endif
 
-extern const char kDownloadWarningImprovementsName[];
-extern const char kDownloadWarningImprovementsDescription[];
-
 extern const char kEnableBenchmarkingName[];
 extern const char kEnableBenchmarkingDescription[];
 extern const char kEnableBenchmarkingChoiceDisabled[];
@@ -801,12 +798,6 @@ extern const char kEnableNetworkLoggingToFileDescription[];
 extern const char kEnableWindowsGamingInputDataFetcherName[];
 extern const char kEnableWindowsGamingInputDataFetcherDescription[];
 
-extern const char kPipDoubleTapToResizeName[];
-extern const char kPipDoubleTapToResizeDescription[];
-
-extern const char kPipTuckName[];
-extern const char kPipTuckDescription[];
-
 extern const char kPrivacyGuideAiSettingsName[];
 extern const char kPrivacyGuideAiSettingsDescription[];
 
@@ -943,6 +934,9 @@ extern const char kBoundaryEventDispatchTracksNodeRemovalDescription[];
 
 extern const char kEnableCssSelectorFragmentAnchorName[];
 extern const char kEnableCssSelectorFragmentAnchorDescription[];
+
+extern const char kEnableImprovedGuestProfileMenuName[];
+extern const char kEnableImprovedGuestProfileMenuDescription[];
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kEnablePreferencesAccountStorageName[];
@@ -1110,9 +1104,6 @@ extern const char kFluentOverlayScrollbarsDescription[];
 
 extern const char kFluentScrollbarsName[];
 extern const char kFluentScrollbarsDescription[];
-
-extern const char kMutationEventsName[];
-extern const char kMutationEventsDescription[];
 
 extern const char kKeyboardFocusableScrollersName[];
 extern const char kKeyboardFocusableScrollersDescription[];
@@ -1780,9 +1771,6 @@ extern const char kPrivacySandboxInternalsDescription[];
 extern const char kPrivacySandboxPrivacyPolicyName[];
 extern const char kPrivacySandboxPrivacyPolicyDescription[];
 
-extern const char kPrivateStateTokensDevUIName[];
-extern const char kPrivateStateTokensDevUIDescription[];
-
 extern const char kProtectedAudiencesConsentedDebugTokenName[];
 extern const char kProtectedAudiencesConsentedDebugTokenDescription[];
 
@@ -1795,9 +1783,6 @@ extern const char kPwaUpdateDialogForAppIconDescription[];
 
 extern const char kRenderDocumentName[];
 extern const char kRenderDocumentDescription[];
-
-extern const char kRelatedWebsiteSetsDevUIName[];
-extern const char kRelatedWebsiteSetsDevUIDescription[];
 
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 extern const char kRustyPngName[];
@@ -2033,9 +2018,6 @@ extern const char kSystemKeyboardLockDescription[];
 
 extern const char kSyncAutofillWalletCredentialDataName[];
 extern const char kSyncAutofillWalletCredentialDataDescription[];
-
-extern const char kSyncAutofillWalletUsageDataName[];
-extern const char kSyncAutofillWalletUsageDataDescription[];
 
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
@@ -2371,9 +2353,6 @@ extern const char kUseIDNA2008NonTransitionalDescription[];
 
 extern const char kEnablePasswordSharingName[];
 extern const char kEnablePasswordSharingDescription[];
-
-extern const char kEnableMantaServiceName[];
-extern const char kEnableMantaServiceDescription[];
 
 extern const char kPredictableReportedQuotaName[];
 extern const char kPredictableReportedQuotaDescription[];
@@ -3703,9 +3682,6 @@ extern const char kEnableKeyboardRewriterFixDescription[];
 
 extern const char kEnableLibinputToHandleTouchpadName[];
 extern const char kEnableLibinputToHandleTouchpadDescription[];
-
-extern const char kEnableNeuralPalmAdaptiveHoldName[];
-extern const char kEnableNeuralPalmAdaptiveHoldDescription[];
 
 extern const char kEnableFakeKeyboardHeuristicName[];
 extern const char kEnableFakeKeyboardHeuristicDescription[];

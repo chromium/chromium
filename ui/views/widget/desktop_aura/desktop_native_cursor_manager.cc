@@ -95,17 +95,15 @@ void DesktopNativeCursorManager::SetMouseEventsEnabled(
   }
 }
 
+void DesktopNativeCursorManager::InitCursorSizeObserver(
+    wm::NativeCursorManagerDelegate* delegate) {
+  NOTREACHED();
+}
+
 void DesktopNativeCursorManager::SetCursorColor(
     SkColor color,
     wm::NativeCursorManagerDelegate* delegate) {
   NOTIMPLEMENTED();
 }
-
-#if BUILDFLAG(IS_WIN)
-void DesktopNativeCursorManager::InitSystemCursorObservers(
-    wm::NativeCursorManagerDelegate* delegate) {
-  NOTREACHED();
-}
-#endif
 
 }  // namespace views

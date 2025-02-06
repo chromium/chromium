@@ -448,5 +448,13 @@ TEST_F(PageActionControllerMockModelTest, TabDeactivation) {
   tab_interface().Deactivate();
 }
 
+TEST_F(PageActionControllerMockModelTest, ShowSuggestionChip) {
+  constexpr int kActionItemId = 0;
+  controller().Initialize(tab_interface(), {kActionItemId});
+  EXPECT_CALL(models().Get(kActionItemId), SetShowSuggestionChip(testing::_))
+      .Times(1);
+  controller().ShowSuggestionChip(kActionItemId);
+}
+
 }  // namespace
 }  // namespace page_actions

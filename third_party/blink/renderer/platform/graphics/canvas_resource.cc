@@ -340,9 +340,6 @@ void CanvasResourceSharedBitmap::NotifyResourceLost() {
 void CanvasResourceSharedBitmap::UploadSoftwareRenderingResults(
     SkSurface* sk_surface) {
   auto image = sk_surface->makeImageSnapshot();
-  if (!image) {
-    return;
-  }
 
   SkImageInfo image_info = CreateSkImageInfo();
   auto scoped_mapping = shared_image_->Map();
@@ -655,11 +652,8 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
     return;
   }
 
-  auto surface = SkSurfaces::WrapPixels(
-      mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()));
-  SkPixmap pixmap;
-  image->peekPixels(&pixmap);
-  surface->writePixels(pixmap, 0, 0);
+  image->readPixels(/*context=*/nullptr,
+                    mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()), 0, 0);
 
   // Unmap the underlying buffer.
   mapping.reset();

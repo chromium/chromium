@@ -1,0 +1,13 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++button ignored invisible name='Open Modal'
+++++++++staticText ignored invisible
+++++++genericContainer
+++++++++dialog
+++++++++++paragraph
+++++++++++++staticText name='The quick brown fox jumps over the lazy dog.'
+++++++++++++++inlineTextBox name='The quick brown fox jumps over the lazy dog.'
+++++++++++button name='Close Modal'
+++++++++++++staticText name='Close Modal'
+++++++++++++++inlineTextBox name='Close Modal'

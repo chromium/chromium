@@ -1150,7 +1150,6 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
   blink::WebTextInputInfo new_info;
   ui::mojom::VirtualKeyboardVisibilityRequest last_vk_visibility_request =
       ui::mojom::VirtualKeyboardVisibilityRequest::NONE;
-  bool always_hide_ime = false;
   std::optional<gfx::Rect> control_bounds;
   std::optional<gfx::Rect> selection_bounds;
   if (frame_widget) {
@@ -1162,7 +1161,6 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
 
     // Check whether the keyboard should always be hidden for the currently
     // focused element.
-    always_hide_ime = frame_widget->ShouldSuppressKeyboardForFocusedElement();
     frame_widget->GetEditContextBoundsInWindow(&control_bounds,
                                                &selection_bounds);
   }
@@ -1178,7 +1176,7 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
       text_input_type_ != new_type || text_input_mode_ != new_mode ||
       text_input_info_ != new_info || !new_info.ime_text_spans.empty() ||
       can_compose_inline_ != new_can_compose_inline ||
-      always_hide_ime_ != always_hide_ime || vk_policy_ != new_vk_policy ||
+      vk_policy_ != new_vk_policy ||
       (new_vk_policy == ui::mojom::VirtualKeyboardPolicy::MANUAL &&
        (last_vk_visibility_request !=
         ui::mojom::VirtualKeyboardVisibilityRequest::NONE)) ||
@@ -1230,7 +1228,6 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     // TODO(changwan): change instances of show_ime_if_needed to
     // show_virtual_keyboard.
     params->show_ime_if_needed = show_virtual_keyboard;
-    params->always_hide_ime = always_hide_ime;
     params->reply_to_request = reply_to_request;
     widget_host_->TextInputStateChanged(std::move(params));
 
@@ -1239,7 +1236,6 @@ void WidgetBase::UpdateTextInputStateInternal(bool show_virtual_keyboard,
     text_input_mode_ = new_mode;
     vk_policy_ = new_vk_policy;
     can_compose_inline_ = new_can_compose_inline;
-    always_hide_ime_ = always_hide_ime;
     text_input_flags_ = new_info.flags;
     frame_control_bounds_ = control_bounds.value_or(gfx::Rect());
     // Selection bounds are not populated in non-EditContext scenarios.

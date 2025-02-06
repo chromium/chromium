@@ -906,11 +906,8 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
 
   if (show_sync_badge) {
     description_container->AddChildView(std::make_unique<SyncImageView>(this));
-  } else if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    description_layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   } else {
-    // If there is no image, the description is centered.
-    description_layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+    description_layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   }
 
   views::Label* label = description_container->AddChildView(
@@ -922,9 +919,7 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred, true));
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  }
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Set sync info description as the name of the parent container, so
   // accessibility tools can read it together with the button text. The role
@@ -935,8 +930,7 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
 
   // Add account card in the signin promo it the user is in the web-only signed
   // in state in the UNO model.
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-      !account.IsEmpty()) {
+  if (!account.IsEmpty()) {
     views::View* account_container =
         sync_info_container_->AddChildView(std::make_unique<views::View>());
     account_container->SetProperty(
@@ -1271,10 +1265,8 @@ void ProfileMenuViewBase::Reset() {
   // Third, add the profile management buttons.
   selectable_profiles_container_ =
       components->AddChildView(std::make_unique<views::View>());
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    profile_mgmt_features_separator_container_ =
-        components->AddChildView(std::make_unique<views::View>());
-  }
+  profile_mgmt_features_separator_container_ =
+      components->AddChildView(std::make_unique<views::View>());
   profile_mgmt_features_container_ =
       components->AddChildView(std::make_unique<views::View>());
   first_profile_button_ = nullptr;

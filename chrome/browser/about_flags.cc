@@ -2705,16 +2705,6 @@ const FeatureEntry::Choice kWebOtpBackendChoices[] = {
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// The choices for --enable-download-warning-improvements. This really should
-// just be a SINGLE_VALUE_TYPE, but it is misleading to have the choices be
-// labeled "Disabled"/"Enabled". So instead this is made to be a
-// MULTI_VALUE_TYPE with choices "Default"/"Enabled".
-const FeatureEntry::Choice kDownloadWarningImprovementsChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flags_ui::kGenericExperimentChoiceEnabled,
-     switches::kEnableDownloadWarningImprovements, ""},
-};
-
 // The choices for --enable-experimental-cookie-features. This really should
 // just be a SINGLE_VALUE_TYPE, but it is misleading to have the choices be
 // labeled "Disabled"/"Enabled". So instead this is made to be a
@@ -5995,9 +5985,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowReadyToPayDebugInfoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(payments::android::kShowReadyToPayDebugInfo)},
 #endif  // BUILDFLAG(IS_ANDROID)
-    {"mutation-events", flag_descriptions::kMutationEventsName,
-     flag_descriptions::kMutationEventsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kMutationEvents)},
     {"keyboard-focusable-scrollers",
      flag_descriptions::kKeyboardFocusableScrollersName,
      flag_descriptions::kKeyboardFocusableScrollersDescription, kOsAll,
@@ -7737,11 +7724,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFastInkForSoftwareCursorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableFastInkForSoftwareCursor)},
 
-    {"enable-neural-palm-adaptive-hold",
-     flag_descriptions::kEnableNeuralPalmAdaptiveHoldName,
-     flag_descriptions::kEnableNeuralPalmAdaptiveHoldDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ui::kEnableNeuralPalmAdaptiveHold)},
-
     {"enable-heatmap-palm-detection",
      flag_descriptions::kEnableHeatmapPalmDetectionName,
      flag_descriptions::kEnableHeatmapPalmDetectionDescription, kOsCrOS,
@@ -7945,15 +7927,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityMouseKeysName,
      flag_descriptions::kAccessibilityMouseKeysDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityMouseKeys)},
-
-    {"enable-pip-double-tap-to-resize",
-     flag_descriptions::kPipDoubleTapToResizeName,
-     flag_descriptions::kPipDoubleTapToResizeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPipDoubleTapToResize)},
-
-    {"enable-pip-tuck", flag_descriptions::kPipTuckName,
-     flag_descriptions::kPipTuckDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPipTuck)},
 
     {"event-based-log-upload", flag_descriptions::kEventBasedLogUpload,
      flag_descriptions::kEventBasedLogUploadDescription, kOsCrOS,
@@ -8531,16 +8504,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxInternalsName,
      flag_descriptions::kPrivacySandboxInternalsDescription, kOsAll,
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxInternalsDevUI)},
-
-    {"private-state-tokens-dev-ui",
-     flag_descriptions::kPrivateStateTokensDevUIName,
-     flag_descriptions::kPrivateStateTokensDevUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivateStateTokensDevUI)},
-
-    {"related-website-sets-dev-ui",
-     flag_descriptions::kRelatedWebsiteSetsDevUIName,
-     flag_descriptions::kRelatedWebsiteSetsDevUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kRelatedWebsiteSetsDevUI)},
 
     {"align-surface-layer-impl-to-pixel-grid",
      flag_descriptions::kAlignSurfaceLayerImplToPixelGridName,
@@ -9320,12 +9283,6 @@ const FeatureEntry kFeatureEntries[] = {
          "IsolateSandboxedIframes" /* trial name */)},
 #endif
 
-    {"download-warning-improvements",
-     flag_descriptions::kDownloadWarningImprovementsName,
-     flag_descriptions::kDownloadWarningImprovementsDescription,
-     kOsLinux | kOsMac | kOsWin | kOsCrOS,
-     MULTI_VALUE_TYPE(kDownloadWarningImprovementsChoices)},
-
     {"reduce-accept-language", flag_descriptions::kReduceAcceptLanguageName,
      flag_descriptions::kReduceAcceptLanguageDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kReduceAcceptLanguage)},
@@ -9642,11 +9599,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncAutofillWalletCredentialDataName,
      flag_descriptions::kSyncAutofillWalletCredentialDataDescription, kOsAll,
      FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletCredentialData)},
-
-    {"sync-autofill-wallet-usage-data",
-     flag_descriptions::kSyncAutofillWalletUsageDataName,
-     flag_descriptions::kSyncAutofillWalletUsageDataDescription, kOsAll,
-     FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletUsageData)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"ui-enable-shared-image-cache-for-gpu",
@@ -10063,10 +10015,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSealKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kSealKey, "")},
 #endif
-
-    {"enable-manta-service", flag_descriptions::kEnableMantaServiceName,
-     flag_descriptions::kEnableMantaServiceDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(manta::features::kMantaService)},
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"esb-download-row-promo",
@@ -11675,6 +11623,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kMarkAllCredentialsAsLeaked)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+    {"enable-improved-guest-profile-menu",
+     flag_descriptions::kEnableImprovedGuestProfileMenuName,
+     flag_descriptions::kEnableImprovedGuestProfileMenuDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kEnableImprovedGuestProfileMenu)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

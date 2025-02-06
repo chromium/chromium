@@ -403,15 +403,8 @@ class NET_EXPORT HostResolver {
     HostResolverSource source = HostResolverSource::ANY;
 
     enum class CacheUsage {
-      // For ResolveHostRequest, results may come from the host cache if
-      // non-stale.
-      //
-      // For ServiceEndpointRequest, stale results may come from the host cache
-      // only as intermediate results (not the final results). Final results
-      // may come from the host cache if non-stale, or may be fresh responses
-      // from resolvers.
-      // TODO(crbug.com/384204936): The name is confusing. Figure out better
-      // name for this mode.
+      // Results may come from the host cache if non-stale, or may be fresh
+      // responses from resolvers.
       ALLOWED,
 
       // Results may come from the host cache even if stale (by expiration or
@@ -421,6 +414,12 @@ class NET_EXPORT HostResolver {
       //
       // For ServiceEndpointRequest, final results could be stale.
       STALE_ALLOWED,
+
+      // Stale results may come from the host cache only as intermediate results
+      // (not the final results). Final results may come from the host cache if
+      // non-stale, or may be fresh responses from resolvers.
+      // Can be used only for ServiceEndpointRequest.
+      STALE_ALLOWED_WHILE_REFRESHING,
 
       // Results will not come from the host cache.
       DISALLOWED,

@@ -909,6 +909,9 @@ data/accessibility/aria/aria-hidden-expected-blink.txt
 data/accessibility/aria/aria-hidden-expected-mac.txt
 data/accessibility/aria/aria-hidden-expected-uia-win.txt
 data/accessibility/aria/aria-hidden-expected-win.txt
+data/accessibility/aria/aria-hidden-focus-after-delay-expected-auralinux.txt
+data/accessibility/aria/aria-hidden-focus-after-delay-expected-blink.txt
+data/accessibility/aria/aria-hidden-focus-after-delay.html
 data/accessibility/aria/aria-hidden-focus-corrections-expected-blink.txt
 data/accessibility/aria/aria-hidden-focus-corrections.html
 data/accessibility/aria/aria-hidden-focused-button-expected-android.txt

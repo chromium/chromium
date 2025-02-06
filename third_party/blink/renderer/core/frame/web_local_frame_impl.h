@@ -323,7 +323,6 @@ class CORE_EXPORT WebLocalFrameImpl final
                            cc::PaintCanvas* canvas,
                            bool include_linked_destinations,
                            bool skip_accelerated_content) override;
-  bool ShouldSuppressKeyboardForFocusedElement() override;
   WebPerformanceMetricsForReporting PerformanceMetricsForReporting()
       const override;
   WebPerformanceMetricsForNestedContexts PerformanceMetricsForNestedContexts()

@@ -558,27 +558,96 @@ static Node getNodeFromBooleanOperation(
   return n;
 }
 
-static Node getNodeFromMemberCallExpr(const clang::CXXMemberCallExpr* get_call,
-                                      const char* member_expr_id,
-                                      const MatchFinder::MatchResult& result) {
+// Removes ".get()" and ".data()" calls when they're no longer needed.
+//
+// Example:
+//   // Given `member_` of type base::raw_ptr<int> being rewritten to
+//   // base::raw_span<int>,
+//   int* ptr = member_.get();
+// is rewritten to
+//   base::span<int> ptr = member_;
+static Node getNodeFromMemberCallExpr(
+    const clang::CXXMemberCallExpr* member_call_expr,
+    const char* member_expr_id,
+    const MatchFinder::MatchResult& result) {
+  // This function handles two cases:
+  //   Case 1) "obj.member_func()" to "obj", and
+  //   Case 2) "obj_ptr->member_func()" to "*obj_ptr".
+
+  clang::SourceRange replacement_range;
+  std::string replacement_text;
+
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::MemberExpr* member_expr =
       result.Nodes.getNodeAs<clang::MemberExpr>(member_expr_id);
-  clang::SourceLocation begin_loc = member_expr->getMemberLoc();
-  size_t member_name_length =
-      member_expr->getMemberDecl()->getName().size() + 2;
-  clang::SourceLocation end_loc =
-      begin_loc.getLocWithOffset(member_name_length);
-  begin_loc = begin_loc.getLocWithOffset(-1);
-  clang::SourceRange replacement_range(begin_loc, end_loc);
+  const bool is_dot_operator = !member_expr->isArrow();
+  if (is_dot_operator) {
+    // Case 1) "obj.member_func()" => "obj"
+    //
+    // Actual rewriting is ".member_func()" to "" (empty string) in order to
+    // minimize conflicts with other rewriting on/around "obj".
+    //
+    // Example -- good case)
+    //   source text: obj.data()
+    //   rewriting1: ".data()" => ""
+    //   rewriting2: "" (at the end of "obj") => ".get()"
+    //   result text: obj.get()
+    //
+    // Example -- bad case)
+    //   source text: obj.data()
+    //   rewriting1: "obj.data()" => "obj"
+    //   rewriting2: "obj" => "obj.get()"
+    //   result text: conflicted range "obj"
 
-  // This deletes the member call expression part. Example:
-  // char* ptr = member_.get(); which is then rewritten to
-  // span<char> ptr = member_;
-  // member_ here is a raw_ptr
+    // `replacement_range` represents ".member_func()".
+    replacement_range = clang::SourceRange(
+        // `member_expr` represents "obj." of "obj.member_func()".
+        member_expr->getEndLoc().getLocWithOffset(-1),
+        // `member_call_expr` represents "obj.member_func(" without
+        // arguments and the closing parenthesis ")".
+        member_call_expr->getEndLoc().getLocWithOffset(1));
+    replacement_text = "";
+  } else {
+    // Case 2) "obj_ptr->member_func()" => "*obj_ptr"
+    //
+    // In order to minimize conflicts with other rewriting, the ideal rewriting
+    // is a pair of two following rewriting:
+    //     "" (at the beginning of "obj_ptr") => "*"
+    //     "->member_func()" => ""
+    // However, it's not easy to produce two Nodes in a single match result,
+    // this function rewrites the whole part at once.
+    // TODO(yukishiino): Don't touch "obj_ptr" in order to avoid conflicts.
+
+    // `member_call_expr` represents "obj_ptr->member_func(" without arguments
+    // and the closing parenthesis ")". We know there must be no argument and
+    // the closing parenthesis must be following without any spaces due to
+    // clang-format. So, by adding 1 offset to the end, it should represent
+    // "obj_ptr->member_func()".
+    replacement_range =
+        clang::SourceRange(member_call_expr->getBeginLoc(),
+                           member_call_expr->getEndLoc().getLocWithOffset(1));
+
+    // `member_expr_text` represents "obj_ptr->".
+    const clang::ASTContext& ast_context = *result.Context;
+    const std::string member_expr_text =
+        clang::Lexer::getSourceText(
+            clang::CharSourceRange::getCharRange(member_expr->getSourceRange()),
+            source_manager, ast_context.getLangOpts())
+            .str();
+    // Put the dereference operator and cut off the arrow operator at the end.
+    //
+    // Because the arrow operator has the second highest operator precedence
+    // and the dereference operator has the third highest operator precedence,
+    // it's very unlikely that the expr needs extra parentheses. So, just adds
+    // the dereference operator at the beginning without adding parentheses.
+    replacement_text =
+        "*" + member_expr_text.substr(0, member_expr_text.length() - 2);
+  }
+
   Node n;
   n.replacements = {
-      GetReplacementDirective(replacement_range, "", source_manager),
+      GetReplacementDirective(replacement_range, replacement_text,
+                              source_manager),
       GetIncludeDirective(replacement_range, source_manager),
   };
   return n;
@@ -1622,7 +1691,7 @@ class Spanifier {
             hasName("operator[]"),
             hasParent(cxxRecordDecl(hasMethod(hasName("size")))))))));
 
-    // t* a = buf.data();
+    // T* a = buf.data();
     auto member_data_call =
         cxxMemberCallExpr(
             callee(functionDecl(

@@ -24,6 +24,11 @@ using ::testing::Return;
 
 namespace {
 
+const int kSuccessfullyTransferred =
+    static_cast<int>(TransferInputToVizResult::kSuccessfullyTransferred);
+// Arbitrary failure reason.
+const int kFailureTransferring = kSuccessfullyTransferred + 1;
+
 class FakeInputTransferHandlerClient final
     : public InputTransferHandlerAndroidClient {
  public:
@@ -41,7 +46,7 @@ class MockJniDelegate : public InputTransferHandlerAndroid::JniDelegate {
  public:
   ~MockJniDelegate() override = default;
 
-  MOCK_METHOD((bool), MaybeTransferInputToViz, (int, float), (override));
+  MOCK_METHOD((int), MaybeTransferInputToViz, (int, float), (override));
 };
 
 ui::MotionEventAndroidJava GetMotionEventAndroid(
@@ -106,7 +111,8 @@ TEST_F(InputTransferHandlerTest, ConsumeEventsIfSequenceTransferred) {
   ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
 
-  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _))
+      .WillOnce(Return(kSuccessfullyTransferred));
   EXPECT_CALL(*input_transfer_handler_client_, SendStateOnTouchTransfer(_))
       .Times(1);
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event));
@@ -120,7 +126,8 @@ TEST_F(InputTransferHandlerTest, ConsumeEventsIfSequenceTransferred) {
       ui::MotionEvent::Action::CANCEL, event_time, event_time, finger_pointer_);
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(cancel_event));
 
-  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _)).WillOnce(Return(false));
+  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _))
+      .WillOnce(Return(kFailureTransferring));
   // New events shouldn't be consumed due the expectation set in line above.
   EXPECT_FALSE(transfer_handler_->OnTouchEvent(down_event));
   EXPECT_FALSE(transfer_handler_->OnTouchEvent(move_event));
@@ -137,7 +144,8 @@ TEST_F(InputTransferHandlerTest, EmitsTouchMovesSeenAfterTransferHistogram) {
 
   for (int touch_moves_seen = 0; touch_moves_seen <= 2; touch_moves_seen++) {
     base::HistogramTester histogram_tester;
-    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _)).WillOnce(Return(true));
+    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _))
+        .WillOnce(Return(kSuccessfullyTransferred));
     EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event));
     for (int ind = 1; ind <= touch_moves_seen; ind++) {
       EXPECT_TRUE(transfer_handler_->OnTouchEvent(move_event));
@@ -171,7 +179,8 @@ TEST_F(InputTransferHandlerTest, EmitsEventsAfterTransferHistogram) {
   for (const auto& [event_action, expected_histogram_sample] :
        event_expected_histogram_pairs) {
     base::HistogramTester histogram_tester;
-    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _)).WillOnce(Return(true));
+    EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _))
+        .WillOnce(Return(kSuccessfullyTransferred));
     EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event));
 
     ui::MotionEventAndroidJava event = GetMotionEventAndroid(
@@ -190,7 +199,8 @@ TEST_F(InputTransferHandlerTest, DoNotConsumeEventsIfSequenceNotTransferred) {
   ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
       ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
 
-  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _)).WillOnce(Return(false));
+  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _))
+      .WillOnce(Return(kFailureTransferring));
   EXPECT_FALSE(transfer_handler_->OnTouchEvent(down_event));
 
   ui::MotionEventAndroidJava move_event = GetMotionEventAndroid(
@@ -223,6 +233,36 @@ TEST_F(InputTransferHandlerTest, DoNotConsumeNonFingerEvents) {
     EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _)).Times(0);
     EXPECT_FALSE(transfer_handler_->OnTouchEvent(down_event));
     EXPECT_FALSE(transfer_handler_->OnTouchEvent(up_event));
+  }
+}
+
+TEST_F(InputTransferHandlerTest, EmitsTransferInputToVizResultHistogram) {
+  for (int transfer_result = 0;
+       transfer_result <= static_cast<int>(TransferInputToVizResult::kMaxValue);
+       transfer_result++) {
+    base::HistogramTester histogram_tester;
+    base::TimeTicks event_time = base::TimeTicks::Now();
+    ui::MotionEventAndroid::Pointer pointer = finger_pointer_;
+    if (transfer_result ==
+        static_cast<int>(TransferInputToVizResult::kNonFingerToolType)) {
+      // Arbitrary non-finger tooltype.
+      pointer.tool_type = static_cast<int>(ui::MotionEvent::ToolType::STYLUS);
+    }
+    ui::MotionEventAndroidJava down_event = GetMotionEventAndroid(
+        ui::MotionEvent::Action::DOWN, event_time, event_time, pointer);
+    ui::MotionEventAndroidJava up_event = GetMotionEventAndroid(
+        ui::MotionEvent::Action::CANCEL, event_time, event_time, pointer);
+    if (transfer_result !=
+        static_cast<int>(TransferInputToVizResult::kNonFingerToolType)) {
+      EXPECT_CALL(*mock_, MaybeTransferInputToViz(_, _))
+          .WillOnce(Return(transfer_result));
+    }
+    transfer_handler_->OnTouchEvent(down_event);
+    transfer_handler_->OnTouchEvent(up_event);
+
+    histogram_tester.ExpectUniqueSample(
+        InputTransferHandlerAndroid::kTransferInputToVizResultHistogram,
+        static_cast<TransferInputToVizResult>(transfer_result), 1);
   }
 }
 

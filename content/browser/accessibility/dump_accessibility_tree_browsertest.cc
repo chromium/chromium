@@ -1236,6 +1236,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaHiddenFocusAfterDelay) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-hidden-focus-after-delay.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaHiddenLabelledBy) {
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-labelled-by.html"));
 }

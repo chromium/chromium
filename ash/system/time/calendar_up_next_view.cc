@@ -5,6 +5,7 @@
 #include "ash/system/time/calendar_up_next_view.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <utility>
 
@@ -65,15 +66,15 @@ class ScrollingAnimation : public gfx::LinearAnimation,
  public:
   explicit ScrollingAnimation(views::View* contents_view,
                               gfx::AnimationContainer* container,
-                              const gfx::Rect start_visible_rect,
-                              const gfx::Rect end_visible_rect)
+                              int start_x,
+                              int end_x)
       : gfx::LinearAnimation(
             gfx::Animation::RichAnimationDuration(base::Milliseconds(200)),
             gfx::LinearAnimation::kDefaultFrameRate,
             this),
         contents_view_(contents_view),
-        start_visible_rect_(start_visible_rect),
-        end_visible_rect_(end_visible_rect) {
+        start_x_(start_x),
+        end_x_(end_x) {
     SetContainer(container);
   }
   ScrollingAnimation(const ScrollingAnimation&) = delete;
@@ -81,17 +82,12 @@ class ScrollingAnimation : public gfx::LinearAnimation,
   ~ScrollingAnimation() override = default;
 
   void AnimateToState(double state) override {
-    gfx::Rect intermediary_rect(
-        start_visible_rect_.x() +
-            (end_visible_rect_.x() - start_visible_rect_.x()) * state,
-        start_visible_rect_.y(), start_visible_rect_.width(),
-        start_visible_rect_.height());
-
-    contents_view_->ScrollRectToVisible(intermediary_rect);
+    contents_view_->ScrollRectToVisible(
+        gfx::Rect(std::lerp(start_x_, end_x_, state), 0, 0, 0));
   }
 
   void AnimationEnded(const gfx::Animation* animation) override {
-    contents_view_->ScrollRectToVisible(end_visible_rect_);
+    contents_view_->ScrollRectToVisible(gfx::Rect(end_x_, 0, 0, 0));
   }
 
   void AnimationCanceled(const gfx::Animation* animation) override {
@@ -101,8 +97,8 @@ class ScrollingAnimation : public gfx::LinearAnimation,
  private:
   // Owned by views hierarchy.
   const raw_ptr<views::View> contents_view_;
-  const gfx::Rect start_visible_rect_;
-  const gfx::Rect end_visible_rect_;
+  const int start_x_;
+  const int end_x_;
 };
 
 std::unique_ptr<views::Button> CreateTodaysEventsButton(
@@ -454,9 +450,7 @@ void CalendarUpNextView::AnimateScrollToShowXCoordinate(const int start_edge,
   }
 
   scrolling_animation_ = std::make_unique<ScrollingAnimation>(
-      content_view_, animation_container_.get(),
-      /*start_visible_rect=*/gfx::Rect(start_edge, 0, 0, 0),
-      /*end_visible_rect=*/gfx::Rect(target_edge, 0, 0, 0));
+      content_view_, animation_container_.get(), start_edge, target_edge);
   scrolling_animation_->Start();
 }
 

@@ -5,7 +5,10 @@
 assert(!is_android, "Page actions are for desktop platforms only")
 
 source_set("page_action") {
-  friend = [ ":unit_tests" ]
+  friend = [
+    ":unit_tests",
+    ":interactive_ui_tests",
+  ]
 
   public = [
     "action_ids.h",
@@ -61,5 +64,25 @@ source_set("unit_tests") {
     ":page_action",
     "//chrome/test:test_support",
     "//ui/events:test_support",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "page_action_interactive_uitest.cc" ]
+
+  deps = [
+    ":page_action",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/test:test_support_ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ui/base:test_support",
+    "//ui/views:test_support",
   ]
 }

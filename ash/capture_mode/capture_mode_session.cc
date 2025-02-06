@@ -1426,7 +1426,8 @@ ActionButtonView* CaptureModeSession::AddActionButton(
 }
 
 void CaptureModeSession::AddSmartActionsButton() {
-  if (active_behavior_->CanShowSmartActionsButton()) {
+  if (active_behavior_->CanShowSmartActionsButton() &&
+      !controller_->IsNetworkConnectionOffline()) {
     RecordScannerFeatureUserState(
         ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown);
     // TODO(crbug.com/375967525): Finalize and translate the smart actions
@@ -1495,6 +1496,16 @@ void CaptureModeSession::OnScannerActionsFetched(
   }
 }
 
+void CaptureModeSession::ShowActionContainerError(
+    const std::u16string& error_message) {
+  if (!action_container_widget_) {
+    return;
+  }
+  CHECK(action_container_view_);
+  action_container_view_->ShowErrorView(error_message);
+  UpdateActionContainerWidget();
+}
+
 void CaptureModeSession::OnDisclaimerDeclined() {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kConsentDisclaimerRejected);
@@ -1521,6 +1532,12 @@ void CaptureModeSession::OnSmartActionsButtonPressed() {
 }
 
 void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
+  if (controller_->IsNetworkConnectionOffline()) {
+    ShowActionContainerError(l10n_util::GetStringUTF16(
+        IDS_ASH_SCREEN_CAPTURE_ACTION_ATTEMPTED_OFFLINE_ERROR));
+    return;
+  }
+
   CHECK(action_container_view_);
   action_container_view_->StartSmartActionsButtonTransition();
 
@@ -1528,7 +1545,7 @@ void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
   auto* scanner_controller = Shell::Get()->scanner_controller();
   CHECK(scanner_controller);
   scanner_controller->StartNewSession();
-  controller_->PerformImageSearch(PerformCaptureType::kScanner);
+  controller_->PerformCapture(PerformCaptureType::kScanner);
 }
 
 void CaptureModeSession::OnScannerActionButtonPressed(
@@ -3301,13 +3318,20 @@ CaptureModeSession::ShowDefaultActionButtonsOrPerformSearch() {
   // Sunfish specifically is enabled to show the Search button.
   if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected() &&
       features::IsSunfishFeatureEnabled()) {
-    RecordSearchButtonShown();
-    capture_mode_util::AddActionButton(
-        base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
-                            weak_ptr_factory_.GetWeakPtr()),
-        u"Search with Lens", &kLensIcon,
-        ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1),
-        ActionButtonViewID::kSearchButton);
+    if (controller_->IsNetworkConnectionOffline()) {
+      ShowActionContainerError(l10n_util::GetStringUTF16(
+          IDS_ASH_SCREEN_CAPTURE_MORE_ACTIONS_UNAVAILABLE_OFFLINE_ERROR));
+    } else {
+      RecordSearchButtonShown();
+      // TODO(crbug.com/388898754): Finalize and translate the search button
+      // text.
+      capture_mode_util::AddActionButton(
+          base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
+                              weak_ptr_factory_.GetWeakPtr()),
+          u"Search with Lens", &kLensIcon,
+          ActionButtonRank(ActionButtonType::kSunfish, /*weight=*/1),
+          ActionButtonViewID::kSearchButton);
+    }
   }
   // TODO: crbug.com/375261308 - Prevent image search when the region stays the
   // same or is within a throttling QPS after a release event.

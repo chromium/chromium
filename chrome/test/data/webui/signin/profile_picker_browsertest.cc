@@ -28,7 +28,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerTest, MainView) {
           "runMochaSuite('ProfilePickerMainViewTest');");
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerTest, ProfilesReordering) {
+// TODO(crbug.com/394729302): enable this
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ProfilesReordering DISABLED_ProfilesReordering
+#else
+#define MAYBE_ProfilesReordering ProfilesReordering
+#endif
+IN_PROC_BROWSER_TEST_F(ProfilePickerTest, MAYBE_ProfilesReordering) {
   RunTest("signin/profile_picker_main_view_test.js",
           "runMochaSuite('ProfilePickerProfilesReorderingTest');");
 }

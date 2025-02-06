@@ -176,7 +176,7 @@ TEST_F(InstantMessageQueueProcessorTest, QueuesMessages) {
   EXPECT_EQ(0, processor()->GetQueueSize());
 
   auto message1 = CreateMessage(CollaborationEvent::COLLABORATION_MEMBER_ADDED);
-  auto message2 = CreateMessage(CollaborationEvent::COLLABORATION_REMOVED);
+  auto message2 = CreateMessage(CollaborationEvent::TAB_GROUP_REMOVED);
   base::MockCallback<SuccessCallback> callback1;
   base::MockCallback<SuccessCallback> callback2;
 

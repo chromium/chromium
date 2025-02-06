@@ -87,11 +87,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
     // State to override the feature with.
     base::FeatureList::OverrideState override_state;
   } chrome_layer_override_info[] = {
-      // Overrides for --enable-download-warning-improvements.
-      {switches::kEnableDownloadWarningImprovements,
-       std::cref(safe_browsing::kDownloadTailoredWarnings),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-
       // Override for --privacy-sandbox-ads-apis.
       {switches::kEnablePrivacySandboxAdsApis,
        std::cref(privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting),

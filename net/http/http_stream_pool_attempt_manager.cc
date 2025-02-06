@@ -4,6 +4,7 @@
 
 #include "net/http/http_stream_pool_attempt_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
@@ -1083,11 +1084,7 @@ bool HttpStreamPool::AttemptManager::
         base::TimeTicks::Now() - dns_resolution_start_time_);
 
     HandleQuicSessionReady(StreamSocketCloseReason::kUsingExistingQuicSession);
-    // Use PostTask() because we could reach here from RequestStream()
-    // synchronously when the DNS resolution finishes immediately.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::CreateQuicStreamAndNotify,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    CreateQuicStreamAndNotify();
     return true;
   }
 
@@ -1127,11 +1124,7 @@ bool HttpStreamPool::AttemptManager::
         base::TimeTicks::Now() - dns_resolution_start_time_);
 
     HandleSpdySessionReady(StreamSocketCloseReason::kUsingExistingSpdySession);
-    // Use PostTask() because we could reach here from RequestStream()
-    // synchronously when the DNS resolution finishes immediately.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::CreateSpdyStreamAndNotify,
-                                  weak_ptr_factory_.GetWeakPtr()));
+    CreateSpdyStreamAndNotify();
     return true;
   }
 
@@ -1711,32 +1704,30 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
 void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify() {
   CHECK(!is_canceling_jobs_);
   CHECK(!is_failing_);
+  CHECK(spdy_session_);
 
-  if (!spdy_session_ || !spdy_session_->IsAvailable()) {
-    // There was an available SPDY session but the session has gone while
-    // notifying to jobs. Do another attempt.
-
-    spdy_session_.reset();
-    CHECK(ssl_config_.has_value());
-    MaybeAttemptConnection();
-    return;
-  }
-
-  // If there are more than one remaining job, post a task to create
-  // HttpStreams for these jobs.
-  if (jobs_.size() > 1) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::CreateSpdyStreamAndNotify,
-                                  weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Note that spdy_session_->IsAvailable() may not be true. Just create
+  // HttpStreams even the session is not available to delegate retry to the
+  // upper layer.
 
   std::set<std::string> dns_aliases =
       http_network_session()->spdy_session_pool()->GetDnsAliasesForSessionKey(
           spdy_session_key());
-  auto http_stream = std::make_unique<SpdyHttpStream>(
-      spdy_session_, net_log().source(), std::move(dns_aliases));
-  NotifyStreamReady(std::move(http_stream), NextProto::kProtoHTTP2);
-  // `this` may be deleted.
+
+  std::vector<std::unique_ptr<SpdyHttpStream>> streams(jobs_.size());
+  std::ranges::generate(streams, [&] {
+    return std::make_unique<SpdyHttpStream>(spdy_session_, net_log().source(),
+                                            dns_aliases);
+  });
+
+  base::WeakPtr<AttemptManager> weak_this = weak_ptr_factory_.GetWeakPtr();
+  while (weak_this && !streams.empty()) {
+    std::unique_ptr<SpdyHttpStream> stream = std::move(streams.back());
+    streams.pop_back();
+    NotifyStreamReady(std::move(stream), NextProto::kProtoHTTP2);
+    // `this` may be deleted.
+  }
+  CHECK(!weak_this || jobs_.empty());
 }
 
 void HttpStreamPool::AttemptManager::CreateQuicStreamAndNotify() {
@@ -1749,21 +1740,23 @@ void HttpStreamPool::AttemptManager::CreateQuicStreamAndNotify() {
           quic_session_alias_key().destination());
   CHECK(quic_session);
 
-  // If there are more than one remaining job, post a task to create
-  // HttpStreams for these jobs.
-  if (jobs_.size() > 1) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&AttemptManager::CreateQuicStreamAndNotify,
-                                  weak_ptr_factory_.GetWeakPtr()));
-  }
-
   std::set<std::string> dns_aliases = quic_session->GetDnsAliasesForSessionKey(
       quic_session_alias_key().session_key());
-  auto http_stream = std::make_unique<QuicHttpStream>(
-      quic_session->CreateHandle(stream_key().destination()),
-      std::move(dns_aliases));
-  NotifyStreamReady(std::move(http_stream), NextProto::kProtoQUIC);
-  // `this` may be deleted.
+
+  std::vector<std::unique_ptr<QuicHttpStream>> streams(jobs_.size());
+  std::ranges::generate(streams, [&] {
+    return std::make_unique<QuicHttpStream>(
+        quic_session->CreateHandle(stream_key().destination()), dns_aliases);
+  });
+
+  base::WeakPtr<AttemptManager> weak_this = weak_ptr_factory_.GetWeakPtr();
+  while (weak_this && !streams.empty()) {
+    std::unique_ptr<QuicHttpStream> stream = std::move(streams.back());
+    streams.pop_back();
+    NotifyStreamReady(std::move(stream), NextProto::kProtoQUIC);
+    // `this` may be deleted.
+  }
+  CHECK(!weak_this || jobs_.empty());
 }
 
 void HttpStreamPool::AttemptManager::NotifyStreamReady(

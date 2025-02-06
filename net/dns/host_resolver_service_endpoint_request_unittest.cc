@@ -1219,7 +1219,11 @@ TEST_F(HostResolverServiceEndpointRequestTest, StaleOnlyAllowedAsIntermediate) {
   PopulateCacheForUrl("https://4slow_ok", stale_endpoints);
   MakeCacheStale();
 
-  Requester requester = CreateRequester("https://4slow_ok");
+  ResolveHostParameters parameters;
+  parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
+      STALE_ALLOWED_WHILE_REFRESHING;
+  Requester requester =
+      CreateRequester("https://4slow_ok", std::move(parameters));
   int rv = requester.Start();
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -1325,8 +1329,8 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   MakeCacheStale();
 
   ResolveHostParameters parameters;
-  parameters.cache_usage =
-      HostResolver::ResolveHostParameters::CacheUsage::ALLOWED;
+  parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
+      STALE_ALLOWED_WHILE_REFRESHING;
   parameters.source = HostResolverSource::LOCAL_ONLY;
   Requester requester = CreateRequester("https://ok", std::move(parameters));
   int rv = requester.Start();
@@ -1348,8 +1352,8 @@ TEST_F(HostResolverServiceEndpointRequestTest, AllowStaleWhileRefreshing) {
   MakeCacheStale();
 
   ResolveHostParameters parameters;
-  parameters.cache_usage =
-      HostResolver::ResolveHostParameters::CacheUsage::ALLOWED;
+  parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
+      STALE_ALLOWED_WHILE_REFRESHING;
   Requester requester = CreateRequester("https://ok", std::move(parameters));
 
   // Start the request. It should provide stale results first.
@@ -1388,8 +1392,8 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   MakeCacheStale();
 
   ResolveHostParameters parameters;
-  parameters.cache_usage =
-      HostResolver::ResolveHostParameters::CacheUsage::ALLOWED;
+  parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
+      STALE_ALLOWED_WHILE_REFRESHING;
   Requester requester =
       CreateRequester("https://4slow_ok", std::move(parameters));
 
@@ -1441,8 +1445,8 @@ TEST_F(HostResolverServiceEndpointRequestTest,
   MakeCacheStale();
 
   ResolveHostParameters parameters;
-  parameters.cache_usage =
-      HostResolver::ResolveHostParameters::CacheUsage::ALLOWED;
+  parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
+      STALE_ALLOWED_WHILE_REFRESHING;
   Requester requester =
       CreateRequester("https://6slow_ok", std::move(parameters));
   requester.CancelRequestOnUpdated();
@@ -1525,8 +1529,8 @@ TEST_F(HostResolverServiceEndpointRequestTest,
       url::SchemeHostPort(GURL("https://ok")));
 
   ResolveHostParameters parameters;
-  parameters.cache_usage =
-      HostResolver::ResolveHostParameters::CacheUsage::ALLOWED;
+  parameters.cache_usage = HostResolver::ResolveHostParameters::CacheUsage::
+      STALE_ALLOWED_WHILE_REFRESHING;
   parameters.secure_dns_policy = SecureDnsPolicy::kBootstrap;
   Requester requester = CreateRequester("https://ok", std::move(parameters));
   int rv = requester.Start();

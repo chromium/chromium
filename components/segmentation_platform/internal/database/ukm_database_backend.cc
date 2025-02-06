@@ -422,6 +422,9 @@ void UkmDatabaseBackend::RestartTransaction() {
   if (!current_transaction_->Begin()) {
     current_transaction_.reset();
   }
+
+  // Forces the wal file to be in sync with the main database.
+  std::ignore = db_.Execute("PRAGMA wal_checkpoint(TRUNCATE)");
 }
 
 }  // namespace segmentation_platform

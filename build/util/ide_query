@@ -77,15 +77,21 @@ def main():
     help=('Output directory, containing args.gn, which specifies the build '
           'configuration.'))
   parser.add_argument('--log-dir', help=('Directory to save log files to.'))
+  parser.add_argument('--format', choices=['proto', 'prototext', 'json'],
+                      default='proto', help=('Output format.'))
   options = parser.parse_args()
 
   this_dir = os.path.dirname(__file__)
   repo_root = os.path.join(this_dir, '..', '..')
 
   targets = []
+  use_prepare = True
   use_prepare_header_only = True
   for source in options.source:
     _, ext = os.path.splitext(source)
+    if ext == '.java':
+        # need to include generated *.jar for java.
+        use_prepare = False
     if ext not in ('.c', '.cc', '.cxx', '.cpp', '.m', '.mm', '.S',
                    '.h', '.hxx', '.hpp', '.inc'):
         use_prepare_header_only = False
@@ -105,10 +111,11 @@ def main():
     # use `-k=0` to build generated files as much as possible.
     args.extend([
         '-k=0',
-        '--prepare',
         '-C',
         options.out_dir,
     ])
+    if use_prepare:
+        args.extend(['--prepare'])
     if options.log_dir:
         args.extend(['-log_dir', options.log_dir])
     args.extend(targets)
@@ -135,6 +142,8 @@ def main():
         # even if build fails, it should report ideanalysis back.
 
   args = ['siso', 'query', 'ideanalysis', '-C', options.out_dir]
+  if options.format:
+      args.extend(['--format', options.format])
   args.extend(targets)
   subprocess.run(args, cwd=repo_root, check=True)
 

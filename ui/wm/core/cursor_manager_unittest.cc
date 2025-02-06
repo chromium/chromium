@@ -361,26 +361,7 @@ TEST_F(CursorManagerTest, TestCursorClientObserver) {
   EXPECT_FALSE(observer_a.is_cursor_visible());
 }
 
-#if BUILDFLAG(IS_WIN)
-TEST_F(CursorManagerTest, SystemCursorVisibilityTest) {
-  // System cursor visibility uses LockCursor()/UnlockCursor() to implement its
-  // behaviour. Make sure this does not crash when
-  // CommitSystemCursorVisibility(true) is called firstly. See
-  // crbug.com/380703583.
-  EXPECT_TRUE(cursor_manager_.IsCursorVisible());
-  cursor_manager_.HideCursor();
-  cursor_manager_.UpdateSystemCursorVisibilityForTest(true);
-  cursor_manager_.ShowCursor();
-  // If the system cursor is invisible, ShowCursor() should not make the
-  // cursor visible.
-  cursor_manager_.UpdateSystemCursorVisibilityForTest(false);
-  cursor_manager_.ShowCursor();
-  EXPECT_FALSE(cursor_manager_.IsCursorVisible());
-  EXPECT_TRUE(cursor_manager_.IsCursorLocked());
-}
-#endif
-
-// This test validates that the cursor visibility state is restored when a
+// This test validates that the cursor visiblity state is restored when a
 // CursorManager instance is destroyed and recreated.
 TEST(CursorManagerCreateDestroyTest, VisibilityTest) {
   // This block ensures that the cursor is hidden when the CursorManager

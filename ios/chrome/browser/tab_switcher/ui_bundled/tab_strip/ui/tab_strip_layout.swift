@@ -770,9 +770,8 @@ class TabStripLayout: UICollectionViewFlowLayout {
     var width =
       tabGroupItem.title?.size(withAttributes: [
         .font: UIFont.systemFont(ofSize: TabStripConstants.GroupItem.fontSize, weight: .medium)
-      ]).width ?? 0
-    width += 2 * TabStripConstants.GroupItem.titleContainerHorizontalMargin
-    width += 2 * TabStripConstants.GroupItem.titleContainerHorizontalPadding
+      ]).width.rounded(.up) ?? 0
+    width += TabStripConstants.GroupItem.minCellWidth
     if let groupItemIdentifier = TabStripItemIdentifier.groupIdentifier(tabGroupItem),
       let indexPath = dataSource?.indexPath(for: groupItemIdentifier),
       let groupCell = collectionView?.cellForItem(at: indexPath) as? TabStripGroupCell

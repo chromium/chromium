@@ -2358,9 +2358,8 @@ _KNOWN_ROBOTS = set(
   ) | set('%s@chops-service-accounts.iam.gserviceaccount.com' % s
           for s in ('bling-autoroll-builder', 'v8-ci-autoroll-builder',
                     'wpt-autoroller', 'chrome-weblayer-builder',
-                    'lacros-version-skew-roller', 'skylab-test-cros-roller',
-                    'infra-try-recipes-tester', 'lacros-tracking-roller',
-                    'lacros-sdk-version-roller', 'chrome-automated-expectation',
+                    'skylab-test-cros-roller', 'infra-try-recipes-tester',
+                    'chrome-automated-expectation',
                     'chromium-automated-expectation', 'chrome-branch-day',
                     'chromium-autosharder')
   ) | set('%s@skia-public.iam.gserviceaccount.com' % s

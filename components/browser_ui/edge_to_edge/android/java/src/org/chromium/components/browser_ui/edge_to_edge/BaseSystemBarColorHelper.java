@@ -57,23 +57,21 @@ public abstract class BaseSystemBarColorHelper implements SystemBarColorHelper {
      * Sets the status bar icons to dark or light based on the luminance of mStatusBarColor to
      * ensure enough contrast.
      */
-    public void updateStatusBarIconColor(View rootView) {
-        // TODO(crbug.com/390261112): Handle coloring Status bar and Nav bar icon colors in
-        //  BaseSystemColorHelper.
+    protected static void updateStatusBarIconColor(View rootView, @ColorInt int statusBarColor) {
         UiUtils.setStatusBarIconColor(
                 rootView,
-                ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(mStatusBarColor)));
+                ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(statusBarColor)));
     }
 
     /**
      * Sets the navigation bar icons to dark or light based on the luminance of mNavBarColor to
      * ensure enough contrast.
      */
-    public void updateNavigationBarIconColor(View rootView) {
-        // TODO(crbug.com/390261112): Handle coloring Status bar and Nav bar icon colors in
-        //  BaseSystemColorHelper.
+    protected static void updateNavigationBarIconColor(
+            View rootView, @ColorInt int navigationBarColor) {
         UiUtils.setNavigationBarIconColor(
-                rootView, ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(mNavBarColor)));
+                rootView,
+                ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(navigationBarColor)));
     }
 
     /** Return the current nav bar divider color tracked by this instance. */

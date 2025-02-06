@@ -57,6 +57,8 @@ struct PassageEmbedderParams {
   uint32 passive_priority_num_threads;
   // The size of the cache to use to limit execution on the same passage.
   uint32 embedder_cache_size;
+  // Whether GPU execution is allowed, if GPU access is available.
+  bool allow_gpu_execution;
 };
 
 // Service for executing on-device embeddings model.

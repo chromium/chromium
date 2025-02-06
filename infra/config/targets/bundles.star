@@ -3551,17 +3551,6 @@ targets.bundle(
     ],
 )
 
-# TODO(crbug.com/364675466): Remove this when Tint IR is launched on macOS.
-targets.bundle(
-    name = "gpu_dawn_integration_gtests_passthrough_macos",
-    targets = [
-        "gpu_common_gtests_passthrough",
-        "gpu_dawn_gtests",
-        "gpu_dawn_gtests_use_tint_ir",
-        "gpu_dawn_gtests_with_validation",
-    ],
-)
-
 targets.bundle(
     name = "gpu_dawn_integration_gtests_passthrough_win_x64",
     targets = [

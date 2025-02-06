@@ -95,15 +95,9 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
   }
 
   printer_info->printer_name = printer.name;
-  printer_info->is_default = printer.is_default;
 
   const char* info_option =
       cupsGetOption(kCUPSOptPrinterInfo, printer.num_options, printer.options);
-
-  const char* state =
-      cupsGetOption(kCUPSOptPrinterState, printer.num_options, printer.options);
-  if (state)
-    base::StringToInt(state, &printer_info->printer_status);
 
   const char* drv_info = cupsGetOption(kCUPSOptPrinterMakeAndModel,
                                        printer.num_options, printer.options);

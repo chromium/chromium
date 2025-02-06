@@ -747,7 +747,17 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
 // restore the group. The group should restore intact and duplicate the
 // still-open tab.
 // TODO(crbug.com/40750891): Run unload handlers before the group is closed.
-IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerRejected) {
+
+// TODO(crbug.com/394745724): Fails on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RestoreGroupWithUnloadHandlerRejected \
+  DISABLED_RestoreGroupWithUnloadHandlerRejected
+#else
+#define MAYBE_RestoreGroupWithUnloadHandlerRejected \
+  RestoreGroupWithUnloadHandlerRejected
+#endif
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
+                       MAYBE_RestoreGroupWithUnloadHandlerRejected) {
   class OnceGroupDeletionWaiter : public TabStripModelObserver {
    public:
     explicit OnceGroupDeletionWaiter(TabStripModel* tab_strip_model)

@@ -11,7 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/optimization_guide/core/tflite_op_resolver.h"
+#include "services/passage_embeddings/passage_embeddings_op_resolver.h"
 #include "third_party/sentencepiece/src/src/sentencepiece_model.pb.h"
 
 namespace {
@@ -63,7 +63,8 @@ PassageEmbedder::PassageEmbedder(
       user_initiated_priority_num_threads_(
           embedder_params->user_initiated_priority_num_threads),
       passive_priority_num_threads_(
-          embedder_params->passive_priority_num_threads) {}
+          embedder_params->passive_priority_num_threads),
+      allow_gpu_execution_(embedder_params->allow_gpu_execution) {}
 
 PassageEmbedder::~PassageEmbedder() = default;
 
@@ -157,7 +158,7 @@ bool PassageEmbedder::BuildExecutionTask() {
 
   // Build a new task from the model bytes and the task priority.
   auto tflite_engine = std::make_unique<tflite::task::core::TfLiteEngine>(
-      std::make_unique<optimization_guide::TFLiteOpResolver>());
+      std::make_unique<PassageEmbeddingsOpResolver>(allow_gpu_execution_));
 
   absl::Status model_load_status = tflite_engine->BuildModelFromFlatBuffer(
       reinterpret_cast<const char*>(embeddings_model_buffer_.data()),

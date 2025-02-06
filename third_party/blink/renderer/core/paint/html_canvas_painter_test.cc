@@ -79,9 +79,7 @@ TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
   attributes.alpha = true;
   CanvasRenderingContext* context =
       element->GetCanvasRenderingContext("2d", attributes);
-  gfx::Size size(300, 200);
-  element->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  element->SetResourceProviderForTesting(nullptr, size);
+  element->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
   ASSERT_EQ(context, element->RenderingContext());
 
   // Force the page to paint.

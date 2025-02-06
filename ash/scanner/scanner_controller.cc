@@ -124,24 +124,29 @@ void ShowActionProgressNotification(
   // Show an infinite loading progress bar.
   optional_fields.progress = -1;
   optional_fields.never_timeout = true;
+  optional_fields.pinned = true;
 
   auto* message_center = message_center::MessageCenter::Get();
   message_center->RemoveNotification(kScannerActionNotificationId,
                                      /*by_user=*/false);
   // TODO: crbug.com/375967525 - Finalize the action notification strings and
   // icon.
-  message_center->AddNotification(CreateSystemNotificationPtr(
-      message_center::NOTIFICATION_TYPE_PROGRESS, kScannerActionNotificationId,
-      action_case == manta::proto::ScannerAction::kCopyToClipboard
-          ? u"Copying text..."
-          : u"Creating...",
-      /*message=*/u"",
-      /*display_source=*/u"", GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kScannerNotifierId,
-                                 NotificationCatalogName::kScannerAction),
-      optional_fields, /*delegate=*/nullptr, kCaptureModeIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL));
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotificationPtr(
+          message_center::NOTIFICATION_TYPE_PROGRESS,
+          kScannerActionNotificationId,
+          action_case == manta::proto::ScannerAction::kCopyToClipboard
+              ? u"Copying text..."
+              : u"Creating...",
+          /*message=*/u"",
+          /*display_source=*/u"", GURL(),
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kScannerNotifierId, NotificationCatalogName::kScannerAction),
+          optional_fields, /*delegate=*/nullptr, kCaptureModeIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL);
+  notification->SetSystemPriority();
+  message_center->AddNotification(std::move(notification));
 }
 
 void RecordExecutePopulatedActionTimer(

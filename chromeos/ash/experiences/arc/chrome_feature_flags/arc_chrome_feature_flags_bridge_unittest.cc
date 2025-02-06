@@ -122,20 +122,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Disabled) {
   EXPECT_EQ(instance()->flags_called_value()->rounded_window_radius, 0);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(
-      ash::features::kPipDoubleTapToResize);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->enable_pip_double_tap);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(
-      ash::features::kPipDoubleTapToResize);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->enable_pip_double_tap);
-}
-
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(arc::kResizeCompat);
   Connect();

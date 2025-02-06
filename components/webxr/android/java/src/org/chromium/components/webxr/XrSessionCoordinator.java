@@ -216,6 +216,15 @@ public class XrSessionCoordinator {
         if (sActiveSessionInstance == null) return;
         assert (sActiveSessionInstance == this);
 
+        // If we have a host activity, shut it down first. Once it actually enters `onStop` we'll
+        // get called again, but this time since our activity is null we'll run the rest of the
+        // function.
+        if (mXrHostActivity != null && mXrHostActivity.get() != null) {
+            mXrHostActivity.get().finish();
+            mXrHostActivity = null;
+            return;
+        }
+
         if (mImmersiveOverlay != null) {
             mImmersiveOverlay.cleanupAndExit();
             mImmersiveOverlay = null;
@@ -227,10 +236,6 @@ public class XrSessionCoordinator {
         mWebContents = null;
         sActiveSessionInstance = null;
         sActiveSessionAvailableSupplier.set(SessionType.NONE);
-        if (mXrHostActivity != null && mXrHostActivity.get() != null) {
-            mXrHostActivity.get().finish();
-            mXrHostActivity = null;
-        }
     }
 
     // Called from XrDelegateImpl and XRHostActivity

@@ -36,8 +36,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/download/download_stats.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -77,6 +76,11 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/browser/download/download_stats.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #endif
 
 using content::BrowserThread;
@@ -324,12 +328,14 @@ base::FilePath DownloadTargetDeterminer::GenerateFileName() const {
       download_->GetURL(), download_->GetContentDisposition(), referrer_charset,
       suggested_filename, sniffed_mime_type, default_filename);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // We don't replace the file extension if sfafe browsing consider the file
   // extension to be unsafe. Just let safe browsing scan the generated file.
   if (safe_browsing::FileTypePolicies::GetInstance()->IsCheckedBinaryFile(
           generated_filename)) {
     return generated_filename;
   }
+#endif
 
   // If no mime type or explicitly specified a name, don't replace file
   // extension.
@@ -1031,12 +1037,14 @@ void DownloadTargetDeterminer::CheckVisitedReferrerBeforeDone(
     bool visited_referrer_before) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(STATE_DETERMINE_INTERMEDIATE_PATH, next_state_);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::RecordDownloadFileTypeAttributes(
       safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
           virtual_path_.BaseName(), download_->GetURL(),
           GetProfile()->GetPrefs()),
       download_->HasUserGesture(), visited_referrer_before,
       GetLastDownloadBypassTimestamp());
+#endif
   danger_level_ = GetDangerLevel(
       visited_referrer_before ? VISITED_REFERRER : NO_VISITS_TO_REFERRER);
   if (danger_level_ != DownloadFileType::NOT_DANGEROUS &&
@@ -1297,6 +1305,7 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
     return DownloadFileType::NOT_DANGEROUS;
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   DownloadFileType::DangerLevel danger_level =
       safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
           virtual_path_.BaseName(), download_->GetURL(),
@@ -1319,6 +1328,11 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
       user_approved_path) {
     // If the "DownloadRestrictions" enterprise policy explicitly disallows the
     // download, don't let the user gesture bypass the dangerous verdict.
+    //
+    // TODO(chlily) Need to verify how DownloadRestrictions policy functions
+    // when there is no Safe Browsing in the build. The policy (or at least
+    // the dangerous file types part of it) should still be active even if
+    // Safe Browsing is unavailable. (!BUILDFLAG(SAFE_BROWSING_AVAILABLE))
     if ((download_restriction == policy::DownloadRestriction::DANGEROUS_FILES ||
          download_restriction ==
              policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES) &&
@@ -1352,6 +1366,9 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
        (download_->HasUserGesture() && visits == VISITED_REFERRER)))
     return DownloadFileType::NOT_DANGEROUS;
   return danger_level;
+#else
+  return DownloadFileType::NOT_DANGEROUS;
+#endif
 }
 
 std::optional<base::Time>

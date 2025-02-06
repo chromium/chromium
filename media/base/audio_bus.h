@@ -17,7 +17,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/media_shmem_export.h"
 

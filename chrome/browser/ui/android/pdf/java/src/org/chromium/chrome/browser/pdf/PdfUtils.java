@@ -30,7 +30,6 @@ import org.chromium.url.GURL;
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 /** Utilities for inline pdf support. */
@@ -316,9 +315,9 @@ public class PdfUtils {
             return null;
         }
         Uri uri = Uri.parse(originalUrl);
-        String encodedUrl = uri.getQueryParameter(UrlConstants.PDF_URL_QUERY_PARAM);
         try {
-            String decodedUrl = URLDecoder.decode(encodedUrl, "UTF-8");
+            // #getQueryParameter has already decoded the url.
+            String decodedUrl = uri.getQueryParameter(UrlConstants.PDF_URL_QUERY_PARAM);
             recordIsPdfDownloadUrlDecoded(true);
             return decodedUrl;
         } catch (Exception e) {

@@ -19,6 +19,7 @@ source_set("color_headers") {
     "color_provider.h",
     "color_provider_manager.h",
     "color_provider_utils.h",
+    "color_variant.h",
   ]
 
   public_deps = [
@@ -26,6 +27,7 @@ source_set("color_headers") {
     ":mojom",
     "//base",
     "//skia",
+    "//third_party/abseil-cpp:absl",
     "//ui/gfx:color_utils",
   ]
 }
@@ -62,6 +64,7 @@ component("color") {
     "color_recipe.h",
     "color_transform.cc",
     "color_transform.h",
+    "color_variant.cc",
   ]
 
   configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
@@ -75,6 +78,8 @@ component("color") {
     "//ui/base:features",
     "//ui/gfx:color_utils",
   ]
+
+  deps = [ "//third_party/abseil-cpp:absl" ]
 
   if (is_mac) {
     sources += [

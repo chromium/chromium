@@ -63,10 +63,6 @@ class GridLineResolver {
 
   bool HasStandaloneAxis(GridTrackSizingDirection track_direction) const;
 
-  wtf_size_t SpanSizeForAutoPlacedItem(
-      const ComputedStyle& grid_item_style,
-      GridTrackSizingDirection track_direction) const;
-
   GridSpan ResolveGridPositionsFromStyle(
       const ComputedStyle& item_style,
       GridTrackSizingDirection track_direction) const;

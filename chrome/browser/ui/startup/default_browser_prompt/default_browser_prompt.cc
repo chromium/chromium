@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_trial.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
@@ -95,6 +96,10 @@ void OnCheckIsDefaultBrowserFinished(
   } else if (state == shell_integration::NOT_DEFAULT &&
              shell_integration::CanSetAsDefaultBrowser() &&
              ShouldShowDefaultBrowserPromptForCurrentVersion()) {
+    // If the user is in the control or an experiment arm, move them into the
+    // synthetic trial cohort.
+    DefaultBrowserPromptTrial::MaybeJoinDefaultBrowserPromptCohort();
+
     chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(profile);
 
     // Only show the prompt if some other program is the user's default browser.

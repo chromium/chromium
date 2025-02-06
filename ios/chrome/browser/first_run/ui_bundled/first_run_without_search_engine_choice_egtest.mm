@@ -72,7 +72,6 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kNewSyncOptInIllustration);
   config.additional_args.push_back(
       "--disable-features=UpdatedFirstRunSequence");
   return config;
@@ -1321,7 +1320,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
               grey_accessibilityID(
                   kPromoStyleHeaderViewBackgroundAccessibilityIdentifier),
               chrome_test_util::ImageViewWithImageNamed(
-                  @"sync_opt_in_background"),
+                  @"history_sync_opt_in_background"),
               grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 }

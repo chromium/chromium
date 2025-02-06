@@ -230,8 +230,7 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   SessionKeysChangeCB session_keys_change_cb_;
   SessionExpirationUpdateCB session_expiration_update_cb_;
 
-  // CDM origin and crash key to be used in crash reporting.
-  const std::string cdm_origin_;
+  // CDM crash key to be used in crash reporting.
   crash_reporter::ScopedCrashKeyString scoped_crash_key_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

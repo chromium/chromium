@@ -162,7 +162,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
-#include "components/safe_browsing/content/common/file_type_policies_prefs.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -555,64 +555,16 @@
 #include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #endif
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/common/file_type_policies_prefs.h"
+#endif
+
 namespace {
 
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 02/2024.
-#if BUILDFLAG(IS_ANDROID)
-constexpr char kSavePasswordsSuspendedByError[] =
-    "profile.save_passwords_suspended_by_error";
-#endif
-constexpr char kSafeBrowsingDeepScanPromptSeen[] =
-    "safebrowsing.deep_scan_prompt_seen";
-constexpr char kSafeBrowsingEsbEnabledTimestamp[] =
-    "safebrowsing.esb_enabled_timestamp";
-
-#if BUILDFLAG(IS_MAC)
-constexpr char kScreenTimeEnabled[] = "policy.screen_time";
-#endif
-
-// Deprecated 02/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr std::array<const char*, 6u>
-    kWelcomeTourTimeBucketsOfFirstInteractions = {
-        "ash.welcome_tour.interaction_time.ExploreApp.first_time_bucket",
-        "ash.welcome_tour.interaction_time.FilesApp.first_time_bucket",
-        "ash.welcome_tour.interaction_time.Launcher.first_time_bucket",
-        "ash.welcome_tour.interaction_time.QuickSettings.first_time_bucket",
-        "ash.welcome_tour.interaction_time.Search.first_time_bucket",
-        "ash.welcome_tour.interaction_time.SettingsApp.first_time_bucket",
-};
-
-// Deprecated 02/2024.
-constexpr char kDiscoverTabSuggestionChipTimesLeftToShow[] =
-    "times_left_to_show_discover_tab_suggestion_chip";
-#endif
-
-// Deprecated 02/2024
-constexpr char kSearchEnginesChoiceProfile[] = "search_engines.choice_profile";
-
-// Deprecated 02/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kHatsUnlockSurveyCycleEndTs[] =
-    "hats_unlock_cycle_end_timestamp";
-constexpr char kHatsUnlockDeviceIsSelected[] = "hats_unlock_device_is_selected";
-constexpr char kHatsSmartLockSurveyCycleEndTs[] =
-    "hats_smartlock_cycle_end_timestamp";
-constexpr char kHatsSmartLockDeviceIsSelected[] =
-    "hats_smartlock_device_is_selected";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 02/2024
-constexpr char kResetCheckDefaultBrowser[] =
-    "browser.should_reset_check_default_browser";
-
 #if BUILDFLAG(IS_WIN)
-// Deprecated 02/2024
-constexpr char kOsCryptAppBoundFixedDataPrefName[] =
-    "os_crypt.app_bound_fixed_data";
 // Deprecated 03/2024
 constexpr char kOsCryptAppBoundFixedData2PrefName[] =
     "os_crypt.app_bound_fixed_data2";
@@ -620,9 +572,6 @@ constexpr char kOsCryptAppBoundFixedData2PrefName[] =
 constexpr char kOsCryptAppBoundFixedData3PrefName[] =
     "os_crypt.app_bound_fixed_data3";
 #endif  // BUILDFLAG(IS_WIN)
-
-// Deprecated 02/2024.
-constexpr char kOfferReaderMode[] = "dom_distiller.offer_reader_mode";
 
 // Deprecated 03/2024.
 constexpr char kPlusAddressLastFetchedTime[] = "plus_address.last_fetched_time";
@@ -1146,18 +1095,7 @@ inline constexpr char kUserAgentClientHintsGREASEUpdateEnabled[] =
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-  // Deprecated 02/2024
-#if BUILDFLAG(IS_MAC)
-  registry->RegisterBooleanPref(kScreenTimeEnabled, true);
-#endif
-
-  // Deprecated 02/2024.
-  registry->RegisterFilePathPref(kSearchEnginesChoiceProfile, base::FilePath());
-
 #if BUILDFLAG(IS_WIN)
-  // Deprecated 02/2024.
-  registry->RegisterStringPref(kOsCryptAppBoundFixedDataPrefName,
-                               std::string());
   // Deprecated 03/2024.
   registry->RegisterStringPref(kOsCryptAppBoundFixedData2PrefName,
                                std::string());
@@ -1259,37 +1197,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-  // Deprecated 02/2024.
-#if BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(kSavePasswordsSuspendedByError, false);
-#endif
-  registry->RegisterBooleanPref(kSafeBrowsingDeepScanPromptSeen, false);
-  registry->RegisterTimePref(kSafeBrowsingEsbEnabledTimestamp, base::Time());
-
-// Deprecated 02/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  for (const char* pref : kWelcomeTourTimeBucketsOfFirstInteractions) {
-    registry->RegisterIntegerPref(pref, -1);
-  }
-
-  // Deprecated 02/2024.
-  registry->RegisterIntegerPref(kDiscoverTabSuggestionChipTimesLeftToShow, 0);
-#endif
-
-  // Deprecated 02/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterInt64Pref(kHatsSmartLockSurveyCycleEndTs, 0);
-  registry->RegisterBooleanPref(kHatsSmartLockDeviceIsSelected, false);
-  registry->RegisterInt64Pref(kHatsUnlockSurveyCycleEndTs, 0);
-  registry->RegisterBooleanPref(kHatsUnlockDeviceIsSelected, false);
-#endif
-
-  // Deprecated 02/2024
-  registry->RegisterBooleanPref(kResetCheckDefaultBrowser, false);
-
-  // Deprecated 02/2024.
-  registry->RegisterBooleanPref(kOfferReaderMode, false);
 
   // Deprecated 03/2024.
   registry->RegisterTimePref(kPlusAddressLastFetchedTime, base::Time());
@@ -2022,7 +1929,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   settings::ResetSettingsHandler::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::file_type::RegisterProfilePrefs(registry);
+#endif
   safe_browsing::RegisterProfilePrefs(registry);
   SearchPrefetchService::RegisterProfilePrefs(registry);
   blocked_content::SafeBrowsingTriggeredPopupBlocker::RegisterProfilePrefs(
@@ -2425,17 +2334,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-// Added 02/2024
-#if BUILDFLAG(IS_MAC)
-  local_state->ClearPref(kScreenTimeEnabled);
-#endif
-
-  // Added 02/2024
-  local_state->ClearPref(kSearchEnginesChoiceProfile);
-
 #if BUILDFLAG(IS_WIN)
-  // Deprecated 02/2024.
-  local_state->ClearPref(kOsCryptAppBoundFixedDataPrefName);
   // Deprecated 03/2024.
   local_state->ClearPref(kOsCryptAppBoundFixedData2PrefName);
   // Deprecated 06/2024.
@@ -2533,11 +2432,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 02/2025.
   local_state->ClearPref(kUserAgentClientHintsGREASEUpdateEnabled);
 
-  // Added 02/2025
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  local_state->ClearPref(prefs::kDefaultBrowserPromptRefreshStudyGroup);
-#endif
-
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2589,34 +2483,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   password_manager_android_util::SetUsesSplitStoresAndUPMForLocal(profile_prefs,
                                                                   profile_path);
 #endif
-
-  // Added 02/2024
-  profile_prefs->ClearPref(kSafeBrowsingDeepScanPromptSeen);
-  profile_prefs->ClearPref(kSafeBrowsingEsbEnabledTimestamp);
-
-  // Added 02/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  for (const char* pref : kWelcomeTourTimeBucketsOfFirstInteractions) {
-    profile_prefs->ClearPref(pref);
-  }
-
-  // Added 02/2024.
-  profile_prefs->ClearPref(kDiscoverTabSuggestionChipTimesLeftToShow);
-#endif
-
-  // Added 02/2024.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile_prefs->ClearPref(kHatsSmartLockSurveyCycleEndTs);
-  profile_prefs->ClearPref(kHatsSmartLockDeviceIsSelected);
-  profile_prefs->ClearPref(kHatsUnlockSurveyCycleEndTs);
-  profile_prefs->ClearPref(kHatsUnlockDeviceIsSelected);
-#endif
-
-  // Added 02/2024
-  profile_prefs->ClearPref(kResetCheckDefaultBrowser);
-
-  // Added 02/2024
-  profile_prefs->ClearPref(kOfferReaderMode);
 
   // Added 03/2024.
   profile_prefs->ClearPref(kPlusAddressLastFetchedTime);

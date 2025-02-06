@@ -44,9 +44,6 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
 
   SkAlphaType GetAlphaType() const override { return kPremul_SkAlphaType; }
-  SkColorType GetSkColorType() const override {
-    return viz::ToClosestSkColorType(GetSharedImageFormat());
-  }
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return GetN32FormatForCanvas();
   }

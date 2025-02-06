@@ -9,7 +9,7 @@ import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AppElement, ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {stubAnimationFrame} from './common.js';
+import {createApp, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -18,7 +18,7 @@ suite('HighlightMenu', () => {
   let toolbar: ReadAnythingToolbarElement;
   let highlightButton: CrIconButtonElement;
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
@@ -27,9 +27,7 @@ suite('HighlightMenu', () => {
     chrome.readingMode.isReadAloudEnabled = true;
     chrome.readingMode.isPhraseHighlightingEnabled = true;
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
-    flush();
+    app = await createApp();
 
     toolbar = app.$.toolbar;
     highlightButton =

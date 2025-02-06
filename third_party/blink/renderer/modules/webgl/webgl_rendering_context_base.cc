@@ -5653,10 +5653,6 @@ SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
   return CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
 }
 
-SkColorType WebGLRenderingContextBase::GetSkColorType() const {
-  return viz::ToClosestSkColorType(GetSharedImageFormat());
-}
-
 viz::SharedImageFormat WebGLRenderingContextBase::GetSharedImageFormat() const {
   if (drawing_buffer_ && drawing_buffer_->StorageFormat() == GL_RGBA16F) {
     return viz::SinglePlaneFormat::kRGBA_F16;

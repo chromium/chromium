@@ -41,6 +41,8 @@ public class InputTransferHandler
     }
     ;
 
+    private static @Nullable Integer sInitialBrowserToken;
+
     private InputTransferToken mBrowserToken;
     private @Nullable InputTransferToken mVizToken;
     private boolean mSelectionHandlesActive;
@@ -53,6 +55,9 @@ public class InputTransferHandler
 
     public InputTransferHandler(
             InputTransferToken browserToken, Delegate delegate, WindowAndroid windowAndroid) {
+        if (sInitialBrowserToken == null) {
+            sInitialBrowserToken = browserToken.hashCode();
+        }
         mBrowserToken = browserToken;
         mDelegate = delegate;
         mWindowAndroid = windowAndroid;
@@ -63,13 +68,13 @@ public class InputTransferHandler
         }
     }
 
-    /** WindowAndroid.SelectionHandlesObserver impl. */
+    // WindowAndroid.SelectionHandlesObserver impl
     @Override
     public void onSelectionHandlesStateChanged(boolean active) {
         mSelectionHandlesActive = active;
     }
 
-    /** InsetObserver.WindowInsetObserver impl. */
+    // InsetObserver.WindowInsetObserver impl
     @Override
     public void onSystemGestureInsetsChanged(int left, int top, int right, int bottom) {
         mSystemGestureInsetLeft = left;
@@ -102,20 +107,33 @@ public class InputTransferHandler
     }
 
     // TODO(crbug.com/393576167): Add integration tests for touch transfer cases.
-    private boolean canTransferInputToViz(float rawX) {
+    private @Nullable Integer canTransferInputToViz(float rawX) {
         // To handle an early touch sequence, where Viz might not have sent back it's
         // TouchTransferToken back to Browser.
         // This also handles multi-window case, where Viz doesn't create InputReceiver for more than
         // one window and as a result `mVizToken` will be null.
         if (mVizToken == null) {
-            return false;
+            if (SurfaceInputTransferHandlerMap.getMap().size() == 1) {
+                return TransferInputToVizResult.VIZ_INITIALIZATION_NOT_COMPLETE;
+            } else {
+                return TransferInputToVizResult.MULTIPLE_BROWSER_WINDOWS_OPEN;
+            }
+        }
+
+        // Browser InputTransfeToken might have changed. On Viz side we aren't destroying
+        // InputReceiver (due to platform bug: b/385124056) which was created with the initial
+        // Browser token. Attempt at transferring touch sequence using new Browser token and old Viz
+        // token would fail, so just early out here instead of making a binder call later.
+        assert sInitialBrowserToken != null;
+        if (sInitialBrowserToken != mBrowserToken.hashCode()) {
+            return TransferInputToVizResult.BROWSER_TOKEN_CHANGED;
         }
 
         // To prevent ordering issues between touch input and text selection commands. On Browser
         // side `FrameWidgetInputHandler` and `WidgetInputHandler` are associated, so this ordering
         // issue doesn't exists.
         if (mSelectionHandlesActive) {
-            return false;
+            return TransferInputToVizResult.SELECTION_HANDLES_ACTIVE;
         }
 
         // Do not transfer if this touch sequence could be converted into a system back or chromium
@@ -123,7 +141,7 @@ public class InputTransferHandler
         // cancel if the sequence was already on Viz. Chromium internal back uses
         // OverscrollController which doesn't get input when touch sequence is being handled on Viz.
         if (canTriggerBackGesture(rawX)) {
-            return false;
+            return TransferInputToVizResult.CAN_TRIGGER_BACK_GESTURE;
         }
 
         // To prevent ordering issues between touch input and ime input. For e.g. if Viz is allowed
@@ -136,15 +154,15 @@ public class InputTransferHandler
                         ContextUtils.getApplicationContext()
                                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm.isAcceptingText()) {
-            return false;
+            return TransferInputToVizResult.IME_IS_ACTIVE;
         }
 
         // Give embedders an opportunity to decide when not to transfer.
         if (!mDelegate.canTransferInputToViz()) {
-            return false;
+            return TransferInputToVizResult.REQUESTED_BY_EMBEDDER;
         }
 
-        return true;
+        return null;
     }
 
     public void setVizToken(InputTransferToken token) {
@@ -152,22 +170,28 @@ public class InputTransferHandler
         mVizToken = token;
     }
 
-    public boolean maybeTransferInputToViz(float rawX) {
-        if (!canTransferInputToViz(rawX)) {
-            return false;
+    public @TransferInputToVizResult int maybeTransferInputToViz(float rawX) {
+        Integer noTransferReason = canTransferInputToViz(rawX);
+        if (noTransferReason != null) {
+            return noTransferReason;
         }
         assert mVizToken != null;
         WindowManager wm =
                 ContextUtils.getApplicationContext().getSystemService(WindowManager.class);
-        return wm.transferTouchGesture(mBrowserToken, mVizToken);
+        if (wm.transferTouchGesture(mBrowserToken, mVizToken)) {
+            return TransferInputToVizResult.SUCCESSFULLY_TRANSFERRED;
+        } else {
+            return TransferInputToVizResult.SYSTEM_SERVER_DID_NOT_TRANSFER;
+        }
     }
 
     @CalledByNative
-    private static boolean maybeTransferInputToViz(int surfaceId, float rawX) {
+    private static @TransferInputToVizResult int maybeTransferInputToViz(
+            int surfaceId, float rawX) {
         InputTransferHandler handler = SurfaceInputTransferHandlerMap.getMap().get(surfaceId);
 
         if (handler == null) {
-            return false;
+            return TransferInputToVizResult.INPUT_TRANSFER_HANDLER_NOT_FOUND_IN_MAP;
         }
 
         return handler.maybeTransferInputToViz(rawX);

@@ -8,7 +8,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText, waitForPlayFromSelection} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText, waitForPlayFromSelection} from './common.js';
 
 suite('WordHighlighting', () => {
   let app: AppElement;
@@ -54,7 +54,7 @@ suite('WordHighlighting', () => {
     ],
   };
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
@@ -62,8 +62,7 @@ suite('WordHighlighting', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
     return microtasksFinished();
   });
@@ -207,8 +206,7 @@ suite('WordHighlighting', () => {
   test('sentence highlight used with espeak voice', async () => {
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi eSpeak'});
-    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
-    await microtasksFinished();
+    await emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
     const sentence = 'Hello, how are you!';
     setSimpleAxTreeWithText(sentence);
     app.updateBoundary(0);

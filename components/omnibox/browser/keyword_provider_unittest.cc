@@ -458,3 +458,21 @@ TEST_F(KeywordProviderTest, DoesNotProvideMatchesOnFocus) {
   kw_provider_->Start(input, false);
   ASSERT_TRUE(kw_provider_->matches().empty());
 }
+
+// Ensure that the KeywordProvider does not return a match based on a custom
+// TemplateURL, which, after substituting user input, has an invalid destination
+// URL.
+TEST_F(KeywordProviderTest, TemplateSchemeKeyword) {
+  TemplateURLData data;
+  data.SetShortName(u"я");
+  data.SetKeyword(u"я://я");
+  data.SetURL("{searchTerms}://{searchTerms}");
+  data.starter_pack_id = 1;
+  client_->GetTemplateURLService()->Add(std::make_unique<TemplateURL>(data));
+
+  TestData<void*> url_cases[] = {
+      {u"я я", 0, {}},
+      {u"я://я", 0, {}},
+  };
+  RunTest<void*>(url_cases, std::size(url_cases), nullptr);
+}

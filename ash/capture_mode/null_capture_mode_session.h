@@ -62,6 +62,7 @@ class ASH_EXPORT NullCaptureModeSession : public BaseCaptureModeSession {
       base::RepeatingClosure accept_callback) override;
   void OnScannerActionsFetched(
       ScannerSession::FetchActionsResponse actions_response) override;
+  void ShowActionContainerError(const std::u16string& error_message) override;
   gfx::Rect GetFeedbackWidgetScreenBounds() const override;
 
  private:

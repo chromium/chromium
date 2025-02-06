@@ -45,7 +45,12 @@ EntityInstance::EntityInstance(
       attributes_(std::move(attributes)),
       guid_(std::move(guid)),
       nickname_(std::move(nickname)),
-      date_modified_(date_modified) {}
+      date_modified_(date_modified) {
+  DCHECK(!attributes_.empty());
+  DCHECK(std::ranges::all_of(attributes_, [this](const AttributeInstance& a) {
+    return type_ == a.type().entity_type();
+  }));
+}
 
 EntityInstance::EntityInstance(const EntityInstance&) = default;
 EntityInstance& EntityInstance::operator=(const EntityInstance&) = default;

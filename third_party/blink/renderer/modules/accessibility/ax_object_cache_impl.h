@@ -1154,6 +1154,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Example, aria-hidden="true" on an element, where focus has gone inside
   // of the element.
   HashSet<AXID> nodes_with_bad_aria_hidden_;
+  // Whether to discard a bad aria-hidden with focus inside of it now, or wait
+  // for the next serialization.
+  bool delay_bad_aria_hidden_focus_repair_ = true;
 
   AXID last_value_change_node_ = ui::AXNodeData::kInvalidAXID;
 

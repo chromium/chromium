@@ -67,7 +67,6 @@ class MockFrameInterfaceFactory : public media::mojom::FrameInterfaceFactory {
   MOCK_METHOD(void, CreateCdmStorage, (mojo::PendingReceiver<BrowserStorage>));
   MOCK_METHOD(bool, GetCdmOrigin, (url::Origin*));
   MOCK_METHOD(void, GetCdmOrigin, (GetCdmOriginCallback));
-  MOCK_METHOD(void, GetPageUkmSourceId, (GetPageUkmSourceIdCallback callback));
   MOCK_METHOD(void, BindEmbedderReceiver, (mojo::GenericPendingReceiver));
 };
 

@@ -153,6 +153,7 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
     NOTREACHED();
   }
   void EndSession() override {}
+  void EndSession(JavaShutdownCallback destroyed_callback) override {}
 
   bool EnsureARCoreLoaded() override { return true; }
 

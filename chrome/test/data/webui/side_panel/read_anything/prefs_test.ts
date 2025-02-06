@@ -8,7 +8,7 @@ import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createAndSetVoices, createSpeechSynthesisVoice, emitEvent, setVoices} from './common.js';
+import {createAndSetVoices, createApp, createSpeechSynthesisVoice, emitEvent, setVoices} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -18,15 +18,14 @@ suite('PrefsTest', () => {
   let app: AppElement;
   let speechSynthesis: FakeSpeechSynthesis;
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
     speechSynthesis = new FakeSpeechSynthesis();
     app.synth = speechSynthesis;
   });
@@ -169,7 +168,7 @@ suite('PrefsTest', () => {
 
       test(
           'onVoicesChanged after settings restored, settings aren\'t updated',
-          () => {
+          async () => {
             chrome.readingMode.getStoredVoice = () => 'Google Shari';
 
             // When there's no voices available, there shouldn't be a speech
@@ -193,7 +192,7 @@ suite('PrefsTest', () => {
             assertTrue(!!selectedVoice);
             assertEquals('Google Shari', selectedVoice.name);
 
-            emitEvent(
+            await emitEvent(
                 app, ToolbarEvent.VOICE,
                 {detail: {selectedVoice: futureSelectedVoice}});
             selectedVoice = app.getSpeechSynthesisVoice();
@@ -305,14 +304,17 @@ suite('PrefsTest', () => {
           assertEquals(defaultVoiceWithLang1, app.getSpeechSynthesisVoice());
         });
 
-        test('uses current voice if there\'s none for this language', () => {
-          app.speechSynthesisLanguage = langWithNoVoices;
-          emitEvent(
-              app, ToolbarEvent.VOICE, {detail: {selectedVoice: otherVoice}});
-          app.enabledLangs = [otherVoice.lang];
-          app.restoreSettingsFromPrefs();
-          assertEquals(otherVoice, app.getSpeechSynthesisVoice());
-        });
+        test(
+            'uses current voice if there\'s none for this language',
+            async () => {
+              app.speechSynthesisLanguage = langWithNoVoices;
+              await emitEvent(
+                  app, ToolbarEvent.VOICE,
+                  {detail: {selectedVoice: otherVoice}});
+              app.enabledLangs = [otherVoice.lang];
+              app.restoreSettingsFromPrefs();
+              assertEquals(otherVoice, app.getSpeechSynthesisVoice());
+            });
 
         test('uses the device default if there\'s no current voice', () => {
           app.speechSynthesisLanguage = langWithNoVoices;

@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.NavigationBarColorProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -385,7 +386,7 @@ class TabbedNavigationBarColorController
         mForceShowDivider = forceShowDivider;
 
         endNavigationBarColorAnimationIfRunning();
-        if (areNavBarColorAnimationsEnabled() && !disableAnimation) {
+        if (shouldEnableNavBarBottomChinColorAnimations() && !disableAnimation) {
             animateNavigationBarColor(currentNavigationBarColor, newNavigationBarColor);
         } else {
             mEdgeToEdgeSystemBarColorHelper.setNavigationBarColor(newNavigationBarColor);
@@ -529,13 +530,24 @@ class TabbedNavigationBarColorController
         return useBottomAttachedUiColor();
     }
 
-    private static boolean areNavBarColorAnimationsEnabled() {
-        return ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
-                && !isNavBarColorAnimationDisabled();
-    }
-
-    private static boolean isNavBarColorAnimationDisabled() {
-        return ChromeFeatureList.sNavBarColorMatchesTabBackgroundColorAnimationDisabled.getValue();
+    private boolean shouldEnableNavBarBottomChinColorAnimations() {
+        // First check the dedicated feature flag.
+        if (!ChromeFeatureList.sNavBarColorAnimation.isEnabled()) {
+            return false;
+        }
+        // Next check whether the bottom chin is enabled.
+        if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
+                && mEdgeToEdgeControllerSupplier.get() != null) {
+            return !ChromeFeatureList.sNavBarColorAnimationDisableBottomChinColorAnimation
+                    .getValue();
+        }
+        // Then check whether e2e everywhere is enabled.
+        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
+            return !ChromeFeatureList.sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation
+                    .getValue();
+        }
+        // Disable animations.
+        return false;
     }
 
     @Override

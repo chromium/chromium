@@ -3156,7 +3156,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   requester_b.WaitForResult();
   EXPECT_THAT(requester_b.result(), Optional(IsOk()));
-  ASSERT_TRUE(spdy_session_pool()->FindAvailableSession(
+  EXPECT_EQ(requester_b.negotiated_protocol(), NextProto::kProtoHTTP2);
+  // The session was already closed so it's not available.
+  ASSERT_FALSE(spdy_session_pool()->FindAvailableSession(
       requester_b.GetStreamKey().CalculateSpdySessionKey(),
       /*enable_ip_based_pooling=*/true, /*is_websocket=*/false,
       NetLogWithSource()));

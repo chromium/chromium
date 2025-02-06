@@ -52,9 +52,10 @@ class GlicKeyedService : public KeyedService {
   // KeyedService
   void Shutdown() override;
 
-  // Show, summon or activate the panel, or close it if it's already active.
-  // If glic_button_view is non-null, attach the panel to that view's Browser.
-  void ToggleUI(BrowserWindowInterface* bwi);
+  // Show, summon or activate the panel, or close it if it's already active and
+  // prevent_close is false. If glic_button_view is non-null, attach the panel
+  // to that view's Browser.
+  void ToggleUI(BrowserWindowInterface* bwi, bool prevent_close = false);
 
   GlicMetrics* metrics() { return metrics_.get(); }
   GlicWindowController& window_controller() { return *window_controller_; }
@@ -155,7 +156,9 @@ class GlicKeyedService : public KeyedService {
 
  private:
   GlicPageHandler* GetPageHandler(const content::WebContents* webui_contents);
-  void OnFocusedTabChanged(const content::WebContents* focused_tab);
+
+  // Callback from ProfilePicker::Show().
+  void DidSelectProfile(Profile* profile);
 
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.

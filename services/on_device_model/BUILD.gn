@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//services/on_device_model/on_device_model.gni")
 import("//third_party/dawn/scripts/dawn_features.gni")
 
@@ -62,4 +63,9 @@ source_set("tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+buildflag_header("ml_internal_buildflags") {
+  header = "ml_internal_buildflags.h"
+  flags = [ "BUILD_WITH_ML_INTERNAL=$enable_ml_internal" ]
 }

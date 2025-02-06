@@ -93,9 +93,6 @@
   <message name="IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON" desc="Button in the profile menu to sign in on Chrome and turn on Sync for a specific web account that is signed in only on the web.">
     Continue as <ph name="ACCOUNT_NAME">$1<ex>John</ex></ph>
   </message>
-  <message name="IDS_PROFILES_DICE_NOT_SYNCING_TITLE" desc="Title of the sync promo account card in the user menu.">
-    Sync is off
-  </message>
   <message name="IDS_PROFILES_DICE_SIGNIN_FIRST_ACCOUNT_BUTTON" desc="Button to sign in and turn on Sync for a specific web account.">
     Sync as <ph name="ACCOUNT_FULL_NAME">$1<ex>John Doe</ex></ph>
   </message>
@@ -110,12 +107,6 @@
   </message>
    <message name="IDS_PROFILES_DICE_SYNC_PAUSED_TITLE" desc="Title of the profile user menu when sync is paused.">
     Sync is paused
-  </message>
-  <message name="IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON" desc="Button in the profile menu to close all windows of the current profile. This is not used for zero windows.">
-    {0, plural,
-    =1 {Close # window}
-    other {Close # windows}
-    }
   </message>
   <message name="IDS_PROFILES_SIGNIN_PROMO" desc="Text describing the benefits of signing in.">
     Sign in to get your bookmarks, history, passwords, and other settings on all your devices.
@@ -146,9 +137,6 @@
     This profile is managed
   </message>
   <if expr="not use_titlecase">
-    <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
-      Other profiles
-    </message>
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
       Your accounts
     </message>
@@ -181,9 +169,6 @@
     </message>
   </if>
   <if expr="use_titlecase">
-    <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
-      Other Profiles
-    </message>
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
       Your Accounts
     </message>

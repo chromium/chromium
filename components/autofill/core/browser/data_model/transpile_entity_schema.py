@@ -56,35 +56,10 @@ def generate_cpp_enums(schema):
 
 # Generates the function implementations.
 def generate_cpp_functions(schema):
-  yield 'bool IsValidEntityTypeName(EntityTypeName t) {'
-  yield '  switch (t) {'
-  for entity in (entity['name'] for entity in schema):
-    yield f'    case {entity_name(entity)}:'
-  yield f'      return true;'
-  yield '  }'
-  yield '  return false;'
-  yield '}'
+  yield 'namespace {'
   yield ''
-  yield 'bool IsValidAttributeTypeName(AttributeTypeName a) {'
-  yield '  switch (a) {'
-  for entity, attribute in ((entity['name'], attribute) for entity in schema for attribute in entity['attributes']):
-    yield f'    case {attribute_name(entity, attribute)}:'
-  yield f'      return true;'
-  yield '  }'
-  yield '  return false;'
-  yield '}'
-  yield ''
-  yield 'EntityTypeName AttributeTypeNameToEntityTypeName(AttributeTypeName a) {'
-  yield '  switch (a) {'
-  for entity, attribute in ((entity['name'], attribute) for entity in schema for attribute in entity['attributes']):
-    yield f'    case {attribute_name(entity, attribute)}:'
-    yield f'      return {entity_name(entity)};'
-  yield '  }'
-  yield '  NOTREACHED();'
-  yield '}'
-  yield ''
-  yield 'std::string_view AttributeType::name_as_string() const {'
-  yield '  switch (name_) {'
+  yield 'constexpr std::string_view AttributeTypeNameToString(AttributeTypeName name) {'
+  yield '  switch (name) {'
   for entity, attribute in ((entity['name'], attribute) for entity in schema for attribute in entity['attributes']):
     yield f'    case {attribute_name(entity, attribute)}:'
     yield f'      return "{attribute}";'
@@ -92,13 +67,56 @@ def generate_cpp_functions(schema):
   yield '  NOTREACHED();'
   yield '}'
   yield ''
-  yield 'std::string_view EntityType::name_as_string() const {'
-  yield '  switch (name_) {'
+  yield 'constexpr std::string_view EntityTypeNameToString(EntityTypeName name) {'
+  yield '  switch (name) {'
   for entity in (entity['name'] for entity in schema):
     yield f'    case {entity_name(entity)}:'
     yield f'      return "{entity}";'
   yield '  }'
   yield '  NOTREACHED();'
+  yield '}'
+  yield ''
+  yield '}  // namespace'
+  yield ''
+  yield 'std::optional<EntityType> StringToEntityType(base::PassKey<EntityTable>, std::string_view entity_type_name) {'
+  yield '  static constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, EntityType>({'
+  yield ',\n'.join('    ' + f'{{EntityTypeNameToString({name}), EntityType({name})}}'
+                   for name in (entity_name(entity['name']) for entity in schema))
+  yield '  });'
+  yield '  auto it = kMap.find(entity_type_name);'
+  yield '  return it != kMap.end() ? std::optional(it->second) : std::nullopt;'
+  yield '}'
+  yield ''
+  yield 'std::optional<AttributeType> StringToAttributeType(base::PassKey<EntityTable>, EntityType entity_type, std::string_view attribute_type_name) {'
+  yield '  switch (entity_type.name()) {'
+  for entity in schema:
+    yield f'    case {entity_name(entity["name"])}: {{'
+    yield '      static constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, AttributeType>({'
+    yield ',\n'.join(f'        {{AttributeTypeNameToString({name}), AttributeType({name})}}'
+                     for name in (attribute_name(entity["name"], attribute) for attribute in entity['attributes']))
+    yield '      });'
+    yield '      auto it = kMap.find(attribute_type_name);'
+    yield '      return it != kMap.end() ? std::optional(it->second) : std::nullopt;'
+    yield f'    }}'
+  yield '  }'
+  yield '  return std::nullopt;'
+  yield '}'
+  yield ''
+  yield 'std::string_view AttributeType::name_as_string() const {'
+  yield '  return AttributeTypeNameToString(name_);'
+  yield '}'
+  yield ''
+  yield 'EntityType AttributeType::entity_type() const {'
+  yield '  switch (name_) {'
+  for entity, attribute in ((entity['name'], attribute) for entity in schema for attribute in entity['attributes']):
+    yield f'    case {attribute_name(entity, attribute)}:'
+    yield f'      return EntityType({entity_name(entity)});'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
+  yield 'std::string_view EntityType::name_as_string() const {'
+  yield '  return EntityTypeNameToString(name_);'
   yield '}'
   yield ''
   yield 'DenseSet<AttributeType> EntityType::attributes() const {'
@@ -181,9 +199,11 @@ def generate_cpp_functions_header(schema, include_guard):
 #include <limits>
 #include <string>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/data_model/entity_type.h"
 #include "components/autofill/core/common/dense_set.h"
 

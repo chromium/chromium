@@ -28,8 +28,8 @@ class EntityInstance;
 // entities             Contains entity instances.
 //
 //   guid               Uniquely identifies the entity instance (primary key).
-//   type               The instance's entity type, represented as integer
-//                      value of the EntityTypeName.
+//   type               The instance's entity type, represented as string
+//                      EntityType::name_as_string().
 //   nickname           The instance's string nickname.
 //   date_modified      The date on which this instance was last modified, in
 //                      time_t.
@@ -38,8 +38,8 @@ class EntityInstance;
 //                      from the `entities` table.
 //
 //   entity_guid        Identifies owning entity instances (it's a foreign key).
-//   type               The instance's attribute type, represented as integer
-//                      value of the AttributeTypeName.
+//   type               The instance's attribute type, represented as string
+//                      AttributeType::name_as_string().
 //   value_encrypted    The encrypted string value of the attribute.
 //   context            The format string of the attribute.
 // -----------------------------------------------------------------------------
@@ -86,6 +86,9 @@ class EntityTable : public WebDatabaseTable {
   // - At least one of the necessary-attributes constraints from the schema is
   //   satisfied.
   std::vector<EntityInstance> GetEntityInstances() const;
+
+ private:
+  friend class EntityTableTestApi;
 };
 
 }  // namespace autofill

@@ -309,8 +309,7 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
     caps->papers.emplace_back("bar", "vendor", gfx::Size(600, 600),
                               gfx::Rect(0, 0, 600, 600));
     auto basic_info = std::make_unique<PrinterBasicInfo>(
-        id, display_name, description,
-        /*printer_status=*/0, is_default, PrinterBasicInfoOptions{});
+        id, display_name, description, PrinterBasicInfoOptions{});
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (SupportFallback()) {
@@ -328,12 +327,18 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
     if (requires_elevated_permissions) {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
       sandboxed_print_backend()->AddAccessDeniedPrinter(id);
+      if (is_default) {
+        sandboxed_print_backend()->SetDefaultPrinterName(id);
+      }
 #else
       NOTREACHED();
 #endif
     } else {
       default_print_backend()->AddValidPrinter(id, std::move(caps),
                                                std::move(basic_info));
+      if (is_default) {
+        default_print_backend()->SetDefaultPrinterName(id);
+      }
     }
   }
 

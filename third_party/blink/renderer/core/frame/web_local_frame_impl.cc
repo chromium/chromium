@@ -3110,17 +3110,6 @@ WebInputMethodController* WebLocalFrameImpl::GetInputMethodController() {
   return &input_method_controller_;
 }
 
-bool WebLocalFrameImpl::ShouldSuppressKeyboardForFocusedElement() {
-  if (!autofill_client_)
-    return false;
-
-  DCHECK(GetFrame()->GetDocument());
-  auto* focused_form_control_element = DynamicTo<HTMLFormControlElement>(
-      GetFrame()->GetDocument()->FocusedElement());
-  return focused_form_control_element &&
-         autofill_client_->ShouldSuppressKeyboard(focused_form_control_element);
-}
-
 void WebLocalFrameImpl::AddMessageToConsoleImpl(
     const WebConsoleMessage& message,
     bool discard_duplicates) {

@@ -47,23 +47,8 @@ namespace {
 BASE_FEATURE(kCoreScheduling,
              "CoreSchedulingEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
-}
 
-void EnableCoreSchedulingIfAvailable() {
-  if (!IsCoreSchedulingAvailable() ||
-      !base::FeatureList::IsEnabled(kCoreScheduling)) {
-    return;
-  }
-
-  // prctl(2) will return EINVAL for unknown functions. We're tolerant to this
-  // and will log an error message for non EINVAL errnos.
-  if (prctl(PR_SET_CORE_SCHED, 1) == -1 &&
-      prctl(PR_SCHED_CORE, PR_SCHED_CORE_CREATE, 0, PIDTYPE_PID, 0) == -1) {
-    PLOG_IF(WARNING, errno != EINVAL) << "Unable to set core scheduling";
-  }
-}
-
-bool IsCoreSchedulingAvailable() {
+bool KernelSupportsCoreScheduling() {
   static const bool kernel_support = []() {
     // Test for kernel 4.19, 5.4 downstream support.
     // Pass bad param `prctl(0x200, 2)`. If it is supported, we will get ERANGE
@@ -91,7 +76,28 @@ bool IsCoreSchedulingAvailable() {
     VLOG(1) << "Core scheduling not supported in kernel";
     return false;
   }();
-  if (!kernel_support) {
+
+  return kernel_support;
+}
+
+}
+
+void EnableCoreSchedulingIfAvailable() {
+  if (!KernelSupportsCoreScheduling() ||
+      !base::FeatureList::IsEnabled(kCoreScheduling)) {
+    return;
+  }
+
+  // prctl(2) will return EINVAL for unknown functions. We're tolerant to this
+  // and will log an error message for non EINVAL errnos.
+  if (prctl(PR_SET_CORE_SCHED, 1) == -1 &&
+      prctl(PR_SCHED_CORE, PR_SCHED_CORE_CREATE, 0, PIDTYPE_PID, 0) == -1) {
+    PLOG_IF(WARNING, errno != EINVAL) << "Unable to set core scheduling";
+  }
+}
+
+bool IsCoreSchedulingAvailable() {
+  if (!KernelSupportsCoreScheduling()) {
     return false;
   }
 

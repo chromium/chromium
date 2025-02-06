@@ -8,7 +8,6 @@
 #include <stdlib.h>
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
 #include "v8/include/v8-external-memory-accounter.h"
 #include "v8/include/v8-isolate.h"
 

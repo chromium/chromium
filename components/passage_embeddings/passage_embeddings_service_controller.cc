@@ -40,6 +40,7 @@ mojom::PassageEmbedderParamsPtr MakeEmbedderParams() {
       kUserInitiatedPriorityNumThreads.Get();
   params->passive_priority_num_threads = kPassivePriorityNumThreads.Get();
   params->embedder_cache_size = kEmbedderCacheSize.Get();
+  params->allow_gpu_execution = kAllowGpuExecution.Get();
   return params;
 }
 

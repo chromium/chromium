@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view_delegate.h"
 #include "components/vector_icons/vector_icons.h"
@@ -36,6 +37,10 @@ namespace {
 constexpr gfx::Size kArrowButtonSize(20, 20);
 constexpr gfx::Insets kArrowButtonInsets(4);
 constexpr int kPaddingBetweenArrowButtonAndTextfield = 10;
+
+bool IsValidContents(const std::u16string& contents) {
+  return !base::TrimWhitespace(contents, base::TRIM_ALL).empty();
+}
 
 }  // namespace
 
@@ -67,7 +72,7 @@ void EditorMenuTextfieldView::Layout(PassKey) {
 void EditorMenuTextfieldView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  arrow_button_->SetVisible(!new_contents.empty());
+  arrow_button_->SetVisible(IsValidContents(new_contents));
 }
 
 bool EditorMenuTextfieldView::HandleKeyEvent(views::Textfield* sender,

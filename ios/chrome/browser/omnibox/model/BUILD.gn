@@ -19,17 +19,3 @@ source_set("model") {
     "//components/omnibox/browser",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "omnibox_autocomplete_controller_unittest.mm" ]
-  deps = [
-    ":model",
-    "//base/test:test_support",
-    "//components/omnibox/browser",
-    "//components/omnibox/browser:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/ocmock",
-  ]
-}

@@ -364,11 +364,6 @@ const char kDisableInstanceLimitDescription[] =
     "Disable limit on number of app instances allowed (current limit is 5).";
 #endif
 
-const char kDownloadWarningImprovementsName[] = "Download Warning Improvements";
-const char kDownloadWarningImprovementsDescription[] =
-    "Enable UI improvements for downloads, download scanning, and download "
-    "warnings. The enabled features are subject to change at any time.";
-
 const char kEnableBenchmarkingName[] = "Enable benchmarking";
 const char kEnableBenchmarkingDescription[] =
     "Sets all features to a fixed state; that is, disables randomization for "
@@ -1532,15 +1527,6 @@ const char kEnableWindowsGamingInputDataFetcherDescription[] =
     "Enable Windows.Gaming.Input by default to provide game controller "
     "support on Windows 10 desktop.";
 
-const char kPipDoubleTapToResizeName[] =
-    "Enable double-tap to resize PiP windows";
-const char kPipDoubleTapToResizeDescription[] =
-    "Enables double-tapping on existing PiP windows to resize "
-    "them depending on its current state, such as minimizing or maximizing.";
-
-const char kPipTuckName[] = "Enable tuck for PiP windows";
-const char kPipTuckDescription[] = "Enables window tucking for PiP windows. ";
-
 const char kPrivacyGuideAiSettingsName[] = "AI settings in Privacy Guide";
 const char kPrivacyGuideAiSettingsDescription[] =
     "Enables the AI settings linkout in the Privacy Guide completion card.";
@@ -1662,6 +1648,12 @@ const char kEnableCssSelectorFragmentAnchorName[] =
 const char kEnableCssSelectorFragmentAnchorDescription[] =
     "Similar to text directives, CSS selector directives can be specified "
     "in a url which is to be scrolled into view and highlighted.";
+
+const char kEnableImprovedGuestProfileMenuName[] =
+    "Enables new design for guest and incognito profile menu";
+const char kEnableImprovedGuestProfileMenuDescription[] =
+    "The design is in line with the regular profiles. The illustration is "
+    "removed.";
 
 const char kRetailCouponsName[] = "Enable to fetch for retail coupons";
 const char kRetailCouponsDescription[] =
@@ -1958,14 +1950,6 @@ const char kFluentOverlayScrollbarsDescription[] =
 const char kFluentScrollbarsName[] = "Fluent scrollbars.";
 const char kFluentScrollbarsDescription[] =
     "Stylizes scrollbars with Microsoft Fluent design.";
-
-const char kMutationEventsName[] =
-    "Enable (deprecated) synchronous mutation events";
-const char kMutationEventsDescription[] =
-    "Mutation Events are a deprecated set of events which cause performance "
-    "issues. Disabling this feature turns off Mutation Events. NOTE: Disabling "
-    "these events can cause breakage on some sites that are still reliant on "
-    "these deprecated features.";
 
 const char kKeyboardFocusableScrollersName[] =
     "Enables keyboard focusable scrollers";
@@ -3070,11 +3054,6 @@ const char kPrivacySandboxInternalsName[] = "Privacy Sandbox Internals Page";
 const char kPrivacySandboxInternalsDescription[] =
     "Enables the chrome://privacy-sandbox-internals debugging page.";
 
-const char kPrivateStateTokensDevUIName[] = "Private State Tokens Dev UI";
-const char kPrivateStateTokensDevUIDescription[] =
-    "Enables the chrome://privacy-sandbox-internals/private-state-tokens page."
-    "Relies on privacy-sandbox-internals also being enabled";
-
 const char kPrivacySandboxPrivacyPolicyName[] =
     "Privacy Sandbox Privacy Policy";
 const char kPrivacySandboxPrivacyPolicyDescription[] =
@@ -3103,11 +3082,6 @@ const char kPwaUpdateDialogForAppIconDescription[] =
 const char kRenderDocumentName[] = "Enable RenderDocument";
 const char kRenderDocumentDescription[] =
     "Enable swapping RenderFrameHosts on same-site navigations";
-
-const char kRelatedWebsiteSetsDevUIName[] = "Related Website Sets Dev UI";
-const char kRelatedWebsiteSetsDevUIDescription[] =
-    "Enables the chrome://privacy-sandbox-internals/related-website-sets page. "
-    "Relies on privacy-sandbox-internals also being enabled.";
 
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)
 const char kRustyPngName[] = "Rust-based PNG image handling";
@@ -3517,11 +3491,6 @@ const char kSyncAutofillWalletCredentialDataName[] =
     "Sync Autofill Wallet Credential Data";
 const char kSyncAutofillWalletCredentialDataDescription[] =
     "When enabled, allows syncing of the autofill wallet credential data type.";
-
-const char kSyncAutofillWalletUsageDataName[] =
-    "Sync Autofill Wallet Usage Data";
-const char kSyncAutofillWalletUsageDataDescription[] =
-    "When enabled, allows syncing of the autofill wallet usage data type.";
 
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
@@ -4012,10 +3981,6 @@ const char kUseIDNA2008NonTransitionalDescription[] =
 const char kEnablePasswordSharingName[] = "Enables password sharing";
 const char kEnablePasswordSharingDescription[] =
     "Enables sharing of password between members of the same family.";
-
-const char kEnableMantaServiceName[] = "Enable Manta Service";
-const char kEnableMantaServiceDescription[] =
-    "Enables the profile keyed Manta service at startup.";
 
 const char kPredictableReportedQuotaName[] = "Predictable Reported Quota";
 const char kPredictableReportedQuotaDescription[] =
@@ -6339,10 +6304,6 @@ const char kEnableKeyboardUsedPalmSuppressionName[] =
     "Use keyboard based palm suppression.";
 const char kEnableKeyboardUsedPalmSuppressionDescription[] =
     "Enable keyboard usage based palm suppression.";
-
-const char kEnableNeuralPalmAdaptiveHoldName[] = "Palm Rejection Adaptive Hold";
-const char kEnableNeuralPalmAdaptiveHoldDescription[] =
-    "Enable adaptive hold in palm rejection.  Not compatible with all devices.";
 
 const char kEnableHeatmapPalmDetectionName[] = "Enable Heatmap Palm Detection";
 const char kEnableHeatmapPalmDetectionDescription[] =

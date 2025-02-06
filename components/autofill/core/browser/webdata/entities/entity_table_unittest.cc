@@ -14,9 +14,12 @@
 #include "components/autofill/core/browser/data_model/entity_instance.h"
 #include "components/autofill/core/browser/data_model/entity_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/webdata/autofill_table_utils.h"
+#include "components/autofill/core/browser/webdata/entities/entity_table_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/webdata/common/web_database.h"
+#include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -144,6 +147,34 @@ TEST_F(EntityTableTest, RemoveEntityInstancesModifiedBetween) {
       instances[0].date_modified() - base::Days(1),
       instances[1].date_modified() + base::Days(1)));
   EXPECT_THAT(table().GetEntityInstances(), IsEmpty());
+}
+
+// Tests that entity instances without any valid attributes are not returned
+// from the database.
+TEST_F(EntityTableTest, GetEntityInstancesSkipsEmptyInstances) {
+  EntityInstance pp = test::GetPassportEntityInstance();
+  EntityInstance lc = test::GetLoyaltyCardEntityInstance();
+  ASSERT_THAT(table().GetEntityInstances(), IsEmpty());
+
+  EXPECT_TRUE(table().AddEntityInstance(pp));
+  EXPECT_TRUE(table().AddEntityInstance(lc));
+  EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, lc));
+
+  // Manipulate the attribute instances: changing their type simulates a change
+  // of the entity schema.
+  sql::Statement s;
+  s.Assign(test_api(table()).db()->GetUniqueStatement(
+      R"(UPDATE attributes
+         SET type = type || 'some-garbage-suffix'
+         WHERE entity_guid = ?)"));
+  s.BindString(0, pp.guid().AsLowercaseString());
+  ASSERT_TRUE(s.Run()) << "The UPDATE failed: "
+                       << test_api(table()).db()->GetErrorMessage()
+                       << " (Check the table and column names in the "
+                          "UpdateBuilder() call above.)";
+  ASSERT_GT(test_api(table()).db()->GetLastChangeCount(), 0);
+
+  EXPECT_THAT(table().GetEntityInstances(), ElementsAre(lc));
 }
 
 }  // namespace

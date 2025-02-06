@@ -233,9 +233,10 @@ class EGLImageBackingFactoryThreadSafeTest
     wgpu::Buffer buffer = device.CreateBuffer(&buffer_desc);
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
-    auto src = wgpu::ImageCopyTexture{.texture = texture, .origin = {0, 0, 0}};
-    auto dst = wgpu::ImageCopyBuffer{.layout = {.bytesPerRow = buffer_stride},
-                                     .buffer = buffer};
+    auto src =
+        wgpu::TexelCopyTextureInfo{.texture = texture, .origin = {0, 0, 0}};
+    auto dst = wgpu::TexelCopyBufferInfo{
+        .layout = {.bytesPerRow = buffer_stride}, .buffer = buffer};
     auto copy_size = wgpu::Extent3D{static_cast<uint32_t>(size.width()),
                                     static_cast<uint32_t>(size.height(), 1)};
     encoder.CopyTextureToBuffer(&src, &dst, &copy_size);

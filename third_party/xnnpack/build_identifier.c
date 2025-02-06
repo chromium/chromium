@@ -7,6 +7,8 @@
 //   Generator: scripts/generate-build-identifier.py
 //
 // The following inputs were used to generate this file.
+// - src/bf16-f32-gemm/gen/bf16-f32-gemm-1x32c2-minmax-asm-amd64-avx512bf16-broadcast.S
+// - src/bf16-f32-gemm/gen/bf16-f32-gemm-7x32c2-minmax-asm-amd64-avx512bf16-broadcast.S
 // - src/configs/hardware-config.c
 // - src/enums/allocation-type.c
 // - src/enums/datatype-strings.c
@@ -34,11 +36,7 @@
 // - src/f16-f32acc-rdsum/gen/f16-f32acc-rdsum-7p7x-f16c-c32.c
 // - src/f16-f32acc-rsum/gen/f16-f32acc-rsum-avx512skx-u64-acc4.c
 // - src/f16-f32acc-rsum/gen/f16-f32acc-rsum-f16c-u32-acc4.c
-// - src/f16-gemm/gen/f16-gemm-1x64-minmax-avx512fp16-broadcast.c
-// - src/f16-gemm/gen/f16-gemm-7x64-minmax-avx512fp16-broadcast.c
 // - src/f16-ibilinear/gen/f16-ibilinear-fma3-c8.c
-// - src/f16-igemm/gen/f16-igemm-1x64-minmax-avx512fp16-broadcast.c
-// - src/f16-igemm/gen/f16-igemm-7x64-minmax-avx512fp16-broadcast.c
 // - src/f16-maxpool/f16-maxpool-9p8x-minmax-f16c-c8.c
 // - src/f16-pavgpool/f16-pavgpool-9p8x-minmax-avx2-c8.c
 // - src/f16-pavgpool/f16-pavgpool-9x-minmax-avx2-c8.c
@@ -169,12 +167,15 @@
 // - src/f32-f16-vcvt/gen/f32-f16-vcvt-sse2-u16.c
 // - src/f32-f16-vcvt/gen/f32-f16-vcvt-sse41-u8.c
 // - src/f32-gemm/gen/f32-gemm-1x16-minmax-avx-broadcast.c
+// - src/f32-gemm/gen/f32-gemm-1x16-minmax-avx512f-broadcast.c
 // - src/f32-gemm/gen/f32-gemm-1x16-minmax-fma3-broadcast.c
 // - src/f32-gemm/gen/f32-gemm-1x16s4-minmax-fma3-broadcast.c
 // - src/f32-gemm/gen/f32-gemm-1x32-minmax-avx512f-broadcast.c
 // - src/f32-gemm/gen/f32-gemm-1x4-minmax-scalar.c
 // - src/f32-gemm/gen/f32-gemm-1x4-relu-scalar.c
 // - src/f32-gemm/gen/f32-gemm-1x4-scalar.c
+// - src/f32-gemm/gen/f32-gemm-1x8-minmax-avx-broadcast.c
+// - src/f32-gemm/gen/f32-gemm-1x8-minmax-fma3-broadcast.c
 // - src/f32-gemm/gen/f32-gemm-1x8-minmax-sse-load1.c
 // - src/f32-gemm/gen/f32-gemm-2x4-minmax-scalar.c
 // - src/f32-gemm/gen/f32-gemm-2x4-relu-scalar.c
@@ -186,21 +187,28 @@
 // - src/f32-gemm/gen/f32-gemm-4x4-minmax-scalar.c
 // - src/f32-gemm/gen/f32-gemm-4x4-relu-scalar.c
 // - src/f32-gemm/gen/f32-gemm-4x4-scalar.c
+// - src/f32-gemm/gen/f32-gemm-4x8-minmax-fma3-broadcast.c
 // - src/f32-gemm/gen/f32-gemm-4x8-minmax-sse-load1.c
 // - src/f32-gemm/gen/f32-gemm-5x16-minmax-avx-broadcast.c
 // - src/f32-gemm/gen/f32-gemm-5x16-minmax-fma3-broadcast.c
+// - src/f32-gemm/gen/f32-gemm-5x8-minmax-avx-broadcast.c
+// - src/f32-gemm/gen/f32-gemm-5x8-minmax-fma3-broadcast.c
+// - src/f32-gemm/gen/f32-gemm-7x16-minmax-avx512f-broadcast.c
 // - src/f32-gemm/gen/f32-gemm-7x32-minmax-avx512f-broadcast.c
 // - src/f32-ibilinear-chw/gen/f32-ibilinear-chw-scalar-p4.c
 // - src/f32-ibilinear-chw/gen/f32-ibilinear-chw-sse-p8.c
 // - src/f32-ibilinear/gen/f32-ibilinear-scalar-c2.c
 // - src/f32-ibilinear/gen/f32-ibilinear-sse-c8.c
 // - src/f32-igemm/gen/f32-igemm-1x16-minmax-avx-broadcast.c
+// - src/f32-igemm/gen/f32-igemm-1x16-minmax-avx512f-broadcast.c
 // - src/f32-igemm/gen/f32-igemm-1x16-minmax-fma3-broadcast.c
 // - src/f32-igemm/gen/f32-igemm-1x16s4-minmax-fma3-broadcast.c
 // - src/f32-igemm/gen/f32-igemm-1x32-minmax-avx512f-broadcast.c
 // - src/f32-igemm/gen/f32-igemm-1x4-minmax-scalar.c
 // - src/f32-igemm/gen/f32-igemm-1x4-relu-scalar.c
 // - src/f32-igemm/gen/f32-igemm-1x4-scalar.c
+// - src/f32-igemm/gen/f32-igemm-1x8-minmax-avx-broadcast.c
+// - src/f32-igemm/gen/f32-igemm-1x8-minmax-fma3-broadcast.c
 // - src/f32-igemm/gen/f32-igemm-1x8-minmax-sse-load1.c
 // - src/f32-igemm/gen/f32-igemm-2x4-minmax-scalar.c
 // - src/f32-igemm/gen/f32-igemm-2x4-relu-scalar.c
@@ -212,9 +220,13 @@
 // - src/f32-igemm/gen/f32-igemm-4x4-minmax-scalar.c
 // - src/f32-igemm/gen/f32-igemm-4x4-relu-scalar.c
 // - src/f32-igemm/gen/f32-igemm-4x4-scalar.c
+// - src/f32-igemm/gen/f32-igemm-4x8-minmax-fma3-broadcast.c
 // - src/f32-igemm/gen/f32-igemm-4x8-minmax-sse-load1.c
 // - src/f32-igemm/gen/f32-igemm-5x16-minmax-avx-broadcast.c
 // - src/f32-igemm/gen/f32-igemm-5x16-minmax-fma3-broadcast-prfm.c
+// - src/f32-igemm/gen/f32-igemm-5x8-minmax-avx-broadcast.c
+// - src/f32-igemm/gen/f32-igemm-5x8-minmax-fma3-broadcast.c
+// - src/f32-igemm/gen/f32-igemm-7x16-minmax-avx512f-broadcast.c
 // - src/f32-igemm/gen/f32-igemm-7x32-minmax-avx512f-broadcast.c
 // - src/f32-maxpool/f32-maxpool-9p8x-minmax-scalar-c1.c
 // - src/f32-maxpool/f32-maxpool-9p8x-minmax-sse-c4.c
@@ -860,20 +872,23 @@
 // - src/u8-vclamp/u8-vclamp-scalar-u4.c
 // - src/u8-vclamp/u8-vclamp-sse2-u64.c
 // - src/x16-packw/gen/x16-packw-x16-gemm-goi-avx2-u16-prfm.c
-// - src/x16-packw/gen/x16-packw-x64-gemm-goi-scalar-int-u4.c
 // - src/x16-transposec/gen/x16-transposec-16x16-reuse-switch-avx2.c
 // - src/x16-transposec/gen/x16-transposec-2x4-scalar-int.c
 // - src/x16-transposec/gen/x16-transposec-8x8-reuse-multi-sse2.c
 // - src/x24-transposec/gen/x24-transposec-1x2-scalar.c
 // - src/x24-transposec/x24-transposec-4x4-ssse3.c
 // - src/x32-packw/gen/x32-packw-x16-gemm-gio-avx-u8.c
+// - src/x32-packw/gen/x32-packw-x16-gemm-gio-avx512f-u8.c
 // - src/x32-packw/gen/x32-packw-x16-gemm-goi-avx-u4.c
+// - src/x32-packw/gen/x32-packw-x16-gemm-goi-avx512f-u4-prfm.c
 // - src/x32-packw/gen/x32-packw-x16s4-gemm-goi-avx-u4.c
 // - src/x32-packw/gen/x32-packw-x2-gemm-goi-scalar-float-u4.c
 // - src/x32-packw/gen/x32-packw-x2c4-gemm-goi-sse2-u4.c
 // - src/x32-packw/gen/x32-packw-x32-gemm-gio-avx512f-u8.c
 // - src/x32-packw/gen/x32-packw-x32-gemm-goi-avx512f-u4-prfm.c
 // - src/x32-packw/gen/x32-packw-x4-gemm-goi-scalar-float-u4.c
+// - src/x32-packw/gen/x32-packw-x8-gemm-gio-avx-u8.c
+// - src/x32-packw/gen/x32-packw-x8-gemm-goi-avx-u4.c
 // - src/x32-packw/gen/x32-packw-x8-gemm-goi-sse2-u4.c
 // - src/x32-transposec/gen/x32-transposec-2x4-scalar-int.c
 // - src/x32-transposec/gen/x32-transposec-8x8-reuse-multi-avx.c
@@ -909,10 +924,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-    1,  80, 140, 209,  11,  70,  27,  98,
-   18, 206, 157,  40,  28, 164,  23,  45,
-  130, 131,  18,   8, 147,  49,  85,  43,
-   83,  53, 152, 105, 176, 155, 245, 108
+   38,  23, 124,  96, 101,  11, 222, 187,
+  163, 126, 136, 251,   2, 136,   1, 239,
+  230,  50, 155,  58,  82,  36,  68, 237,
+  218, 140, 247, 167, 219, 236,   9, 211
 };
 
 size_t xnn_experimental_get_build_identifier_size() {

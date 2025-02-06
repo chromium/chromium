@@ -1,0 +1,6 @@
+[document web] name='done'
+++[section]
+++++[dialog]
+++++++[paragraph]
+++++++++[static] name='The quick brown fox jumps over the lazy dog.'
+++++++[push button] name='Close Modal'

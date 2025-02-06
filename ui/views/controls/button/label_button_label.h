@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/views_export.h"
 
@@ -51,9 +52,9 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
   void OnEnabledChanged();
   void SetColorForEnableState();
 
-  absl::variant<absl::monostate, SkColor, ui::ColorId> requested_enabled_color_;
-  absl::variant<absl::monostate, SkColor, ui::ColorId>
-      requested_disabled_color_;
+  std::optional<ui::ColorVariant> requested_enabled_color_;
+  std::optional<ui::ColorVariant> requested_disabled_color_;
+
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&LabelButtonLabel::OnEnabledChanged,

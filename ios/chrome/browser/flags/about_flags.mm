@@ -2137,10 +2137,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
              kSegmentationPlatformEphemeralCardRanker,
          kEphemeralCardRankerCardOverrideOptions,
          "SegmentationPlatformEphemeralCardRanker")},
-    {"new-sync-opt-in-illustration",
-     flag_descriptions::kNewSyncOptInIllustrationName,
-     flag_descriptions::kNewSyncOptInIllustrationDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kNewSyncOptInIllustration)},
     {"autofill-enable-log-form-events-to-all-parsed-form-types",
      flag_descriptions::kAutofillEnableLogFormEventsToAllParsedFormTypesName,
      flag_descriptions::

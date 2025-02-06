@@ -36,7 +36,6 @@ class COMPONENT_EXPORT(UI_WM) NativeCursorManagerDelegate {
   virtual void CommitCursorColor(SkColor color) = 0;
   virtual void CommitMouseEventsEnabled(bool enabled) = 0;
   virtual void CommitSystemCursorSize(const gfx::Size& cursor_size) = 0;
-  virtual void CommitSystemCursorVisibility(bool visible) = 0;
 };
 
 }  // namespace wm

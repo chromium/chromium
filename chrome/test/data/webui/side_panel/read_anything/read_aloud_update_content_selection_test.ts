@@ -8,7 +8,7 @@ import {PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {waitForPlayFromSelection} from './common.js';
+import {createApp, waitForPlayFromSelection} from './common.js';
 
 suite('ReadAloud_UpdateContentSelection', () => {
   let app: AppElement;
@@ -78,7 +78,7 @@ suite('ReadAloud_UpdateContentSelection', () => {
     },
   };
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
@@ -86,8 +86,7 @@ suite('ReadAloud_UpdateContentSelection', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
     document.onselectionchange = () => {};
     chrome.readingMode.setContentForTesting(axTree, []);
     return microtasksFinished();
