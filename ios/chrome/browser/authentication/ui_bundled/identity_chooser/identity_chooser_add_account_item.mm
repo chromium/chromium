@@ -33,6 +33,7 @@
                       subtitle:nil
                          image:image
                        checked:NO
+                       managed:NO
              identityViewStyle:IdentityViewStyleIdentityChooser
                     titleColor:[UIColor colorNamed:kBlueColor]];
 }

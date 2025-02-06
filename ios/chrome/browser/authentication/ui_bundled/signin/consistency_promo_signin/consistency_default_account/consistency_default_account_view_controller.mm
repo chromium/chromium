@@ -301,7 +301,8 @@ UIFont* GetNavigationBarTitleFont() {
 - (void)showDefaultAccountWithFullName:(NSString*)fullName
                              givenName:(NSString*)givenName
                                  email:(NSString*)email
-                                avatar:(UIImage*)avatar {
+                                avatar:(UIImage*)avatar
+                               managed:(BOOL)managed {
   if (!self.viewLoaded) {
     // Load the view.
     [self view];
@@ -309,7 +310,9 @@ UIFont* GetNavigationBarTitleFont() {
   self.continueAsTitle = l10n_util::GetNSStringF(
       IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, base::SysNSStringToUTF16(givenName));
 
-  [self.identityButtonControl setIdentityName:fullName email:email];
+  [self.identityButtonControl setIdentityName:fullName
+                                        email:email
+                                      managed:managed];
   [self.identityButtonControl setIdentityAvatar:avatar];
 
   // If spinner is active, delay UI updates until stopSpinner() is called.

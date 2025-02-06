@@ -20,6 +20,14 @@
 // |  |Avatar|  Subtitle (email)    |
 // |  +------+                      |
 // +--------------------------------+
+// For managed accounts, this what it will look like.
+// +-------------------------------------------+
+// |  +------+                      +-------+  |
+// |  |      |  Title (name)        |managed|  |
+// |  |Avatar|  Subtitle (email)    |icon   |  |
+// |  +------+                      +-------+  |
+// +-------------------------------------------+
+
 @interface IdentityView : UIView
 
 // Style for the identity view (modify the avatar size, font sizes and some
@@ -38,7 +46,9 @@
 - (void)setAvatar:(UIImage*)avatar;
 
 // Sets the title and subtitle. `subtitle` can be nil.
-- (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle;
+- (void)setTitle:(NSString*)title
+        subtitle:(NSString*)subtitle
+         managed:(BOOL)managed;
 
 // Sets the color of the title.
 - (void)setTitleColor:(UIColor*)color;

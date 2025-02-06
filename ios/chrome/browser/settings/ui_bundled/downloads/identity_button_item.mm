@@ -39,7 +39,8 @@ constexpr CGFloat kDisabledAlpha = 0.5;
   cell.identityButtonControl.identityViewStyle = self.identityViewStyle;
   [cell.identityButtonControl setIdentityAvatar:self.identityAvatar];
   [cell.identityButtonControl setIdentityName:self.identityName
-                                        email:self.identityEmail];
+                                        email:self.identityEmail
+                                      managed:self.identityManaged];
   cell.identityButtonControl.enabled = self.enabled;
   cell.identityButtonControl.alpha = self.enabled ? 1.0 : kDisabledAlpha;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;

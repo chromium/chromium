@@ -17,6 +17,8 @@ source_set("views") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:authentication_constants",
     "//ios/chrome/browser/authentication/ui_bundled/views/resources",
+    "//ios/chrome/browser/shared/public/features:features",
+    "//ios/chrome/browser/shared/ui/symbols:symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

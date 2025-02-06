@@ -20,6 +20,7 @@ typedef NS_ENUM(NSInteger, IdentityButtonControlArrowDirection);
 @property(nonatomic, copy) NSString* identityName;
 @property(nonatomic, copy) NSString* identityEmail;
 @property(nonatomic, copy) NSString* identityGaiaID;
+@property(nonatomic, assign) BOOL identityManaged;
 @property(nonatomic, assign) IdentityButtonControlArrowDirection arrowDirection;
 @property(nonatomic, assign) IdentityViewStyle identityViewStyle;
 

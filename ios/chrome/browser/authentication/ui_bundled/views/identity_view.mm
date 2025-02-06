@@ -7,6 +7,8 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -17,6 +19,7 @@ namespace {
 typedef struct {
   const CGFloat avatarLeadingMargin;
   const CGFloat avatarSize;
+  const CGFloat managementIconTrailingMargin;
   const CGFloat titleOffset;
   const CGFloat minimumTopMargin;
   const CGFloat minimumBottomMargin;
@@ -25,6 +28,7 @@ typedef struct {
 const StyleValues kDefaultStyle = {
     16., /* avatarLeadingMargin */
     40., /* avatarSize */
+    0.,  /* managementIconTrailingMargin */
     4.,  /* titleOffset */
     12., /* minimumTopMargin */
     12., /* minimumBottomMargin */
@@ -33,6 +37,7 @@ const StyleValues kDefaultStyle = {
 const StyleValues kSignInChooseryStyle = {
     24., /* avatarLeadingMargin */
     40., /* avatarSize */
+    0.,  /* managementIconTrailingMargin */
     4.,  /* titleOffset */
     7.,  /* minimumTopMargin */
     7.,  /* minimumBottomMargin */
@@ -41,6 +46,7 @@ const StyleValues kSignInChooseryStyle = {
 const StyleValues kConsistencyStyle = {
     16., /* avatarLeadingMargin */
     30., /* avatarSize */
+    16., /* managementIconTrailingMargin */
     0.,  /* titleOffset */
     10., /* minimumTopMargin */
     8.,  /* minimumBottomMargin */
@@ -48,6 +54,9 @@ const StyleValues kConsistencyStyle = {
 
 // Distances/margins.
 constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
+
+// Point size of enterprise icon in the bottom view.
+constexpr CGFloat kEnterpriseIconPointSize = 20;
 
 }  // namespace
 
@@ -59,6 +68,8 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
 @property(nonatomic, strong) UILabel* title;
 // Contains the email if the name exists, otherwise it is hidden.
 @property(nonatomic, strong) UILabel* subtitle;
+// Management icon.
+@property(nonatomic, strong) UIImageView* managementIconView;
 // Constraints if the name exists.
 @property(nonatomic, strong) NSLayoutConstraint* titleConstraintForNameAndEmail;
 // Constraints if the name doesn't exist.
@@ -72,6 +83,9 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
     NSArray<NSLayoutConstraint*>* avatarSizeConstraints;
 // Leading margin constraint for the avatar.
 @property(nonatomic, strong) NSLayoutConstraint* avatarLeadingMarginConstraint;
+// Leading margin constraint for the management icon.
+@property(nonatomic, strong)
+    NSLayoutConstraint* managementIconTrailingMarginConstraint;
 
 @end
 
@@ -116,6 +130,19 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
     contentView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:contentView];
 
+    // Enterprise icon
+    _managementIconView = [[UIImageView alloc] init];
+    _managementIconView.image = SymbolWithPalette(
+        CustomSymbolWithPointSize(kEnterpriseSymbol, kEnterpriseIconPointSize),
+        @[ [UIColor colorNamed:kStaticGrey600Color] ]);
+    _managementIconView.translatesAutoresizingMaskIntoConstraints = NO;
+    _managementIconView.clipsToBounds = YES;
+    [_managementIconView
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [self addSubview:_managementIconView];
+
     // Layout constraints.
     _avatarLeadingMarginConstraint = [_avatarView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
@@ -134,6 +161,14 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
     ];
     [NSLayoutConstraint activateConstraints:_avatarSizeConstraints];
     AddSameCenterYConstraint(self, _avatarView);
+
+    _managementIconTrailingMarginConstraint = [_managementIconView
+                                                   .trailingAnchor
+        constraintEqualToAnchor:self.trailingAnchor
+                       constant:-kDefaultStyle.managementIconTrailingMargin];
+    _managementIconTrailingMarginConstraint.active = YES;
+    AddSameCenterYConstraint(self, _managementIconView);
+
     AddSameConstraintsToSides(_title, _subtitle,
                               LayoutSides::kLeading | LayoutSides::kTrailing);
     _titleConstraintForNameAndEmail =
@@ -147,7 +182,9 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
       [contentView.leadingAnchor constraintEqualToAnchor:_title.leadingAnchor],
       [contentView.leadingAnchor
           constraintEqualToAnchor:_subtitle.leadingAnchor],
-      [contentView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+      [contentView.trailingAnchor
+          constraintEqualToAnchor:_managementIconView.leadingAnchor
+                         constant:-kHorizontalAvatarLeadingMargin],
       [contentView.topAnchor constraintEqualToAnchor:_title.topAnchor],
       [contentView.bottomAnchor constraintEqualToAnchor:_subtitle.bottomAnchor],
     ]];
@@ -157,6 +194,9 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
           constraintGreaterThanOrEqualToAnchor:self.topAnchor
                                       constant:kDefaultStyle.minimumTopMargin],
       [_title.topAnchor
+          constraintGreaterThanOrEqualToAnchor:self.topAnchor
+                                      constant:kDefaultStyle.minimumTopMargin],
+      [_managementIconView.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.topAnchor
                                       constant:kDefaultStyle.minimumTopMargin],
     ];
@@ -170,8 +210,14 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
           constraintGreaterThanOrEqualToAnchor:_subtitle.bottomAnchor
                                       constant:kDefaultStyle
                                                    .minimumBottomMargin],
+      [self.bottomAnchor
+          constraintGreaterThanOrEqualToAnchor:_managementIconView.bottomAnchor
+                                      constant:kDefaultStyle
+                                                   .minimumBottomMargin],
     ];
     [NSLayoutConstraint activateConstraints:_bottomConstraints];
+
+    _managementIconView.hidden = YES;
     // Initialize the style.
     [self updateStyle];
   }
@@ -192,7 +238,9 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
   }
 }
 
-- (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle {
+- (void)setTitle:(NSString*)title
+        subtitle:(NSString*)subtitle
+         managed:(BOOL)managed {
   DCHECK(title);
   self.title.text = title;
   if (!subtitle.length) {
@@ -205,6 +253,10 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
     self.subtitle.hidden = NO;
     self.subtitle.text = subtitle;
   }
+  self.managementIconView.hidden =
+      !AreSeparateProfilesForManagedAccountsEnabled() || !managed;
+  // Update the style to reflect the management icon changes.
+  [self updateStyle];
 }
 
 - (void)setTitleColor:(UIColor*)color {
@@ -280,6 +332,16 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
     constraint.constant = style->avatarSize;
   }
   self.avatarView.layer.cornerRadius = style->avatarSize / 2.;
+  // Ensure the management icon does not collapse when it is visible but
+  // collapses when hidden.
+  [_managementIconView
+      setContentCompressionResistancePriority:self.managementIconView.hidden
+                                                  ? UILayoutPriorityDefaultLow
+                                                  : UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  self.managementIconTrailingMarginConstraint.constant =
+      self.managementIconView.hidden ? 0.
+                                     : -style->managementIconTrailingMargin;
   for (NSLayoutConstraint* constraint in self.topConstraints) {
     constraint.constant = style->minimumTopMargin;
   }
