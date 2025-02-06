@@ -701,6 +701,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Unsafe state"/>
 </enum>
 
+<enum name="PasswordChangeFlowState">
+  <int value="0" label="Offering password change"/>
+  <int value="1" label="Waiting for privacy notice acceptance"/>
+  <int value="2" label="Checking if user is signed in"/>
+  <int value="3" label="No change password form found"/>
+  <int value="4" label="Changing password"/>
+  <int value="5" label="Password successfully changed"/>
+  <int value="6" label="Password change failed"/>
+</enum>
+
 <enum name="PasswordCheckInteraction">
   <int value="0" label="Check started automatically"/>
   <int value="1" label="Check started manually"/>

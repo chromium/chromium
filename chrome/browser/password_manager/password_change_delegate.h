@@ -17,30 +17,33 @@ class WebContents;
 // This class is responsible for controlling password change process.
 class PasswordChangeDelegate {
  public:
-  // Internal state of a password change flow.
+  // Internal state of a password change flow. Corresponds to
+  // `PasswordChangeFlowState` in enums.xml. These values are persisted to logs.
+  // Entries should not be renumbered and numeric values should never be reused.
   enum class State {
     // Password change is being offered to the user, waiting from the to accept
     // or reject it.
-    kOfferingPasswordChange,
+    kOfferingPasswordChange = 0,
 
     // Waiting for the user to accept privacy notice.
-    kWaitingForAgreement,
+    kWaitingForAgreement = 1,
 
     // Delegate is waiting for change password form to appear.
-    kWaitingForChangePasswordForm,
+    kWaitingForChangePasswordForm = 2,
 
     // Change password form wasn't found.
-    kChangePasswordFormNotFound,
+    kChangePasswordFormNotFound = 3,
 
     // Change password form is detected. Generating and filling password fields.
     // Delegate waits for submission confirmation.
-    kChangingPassword,
+    kChangingPassword = 4,
 
     // Password is successfully updated.
-    kPasswordSuccessfullyChanged,
+    kPasswordSuccessfullyChanged = 5,
 
     // Password change failed.
-    kPasswordChangeFailed,
+    kPasswordChangeFailed = 6,
+    kMaxValue = kPasswordChangeFailed,
   };
 
   // An interface used to notify clients (observers) of delegate state. Register

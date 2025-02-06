@@ -41,6 +41,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   static constexpr base::TimeDelta kChangePasswordFormWaitingTimeout =
       base::Seconds(10);
+  static constexpr char kFinalPasswordChangeStatusHistogram[] =
+      "PasswordManager.FinalPasswordChangeStatus";
 
   PasswordChangeDelegateImpl(GURL change_password_url,
                              std::u16string username,

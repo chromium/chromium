@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -80,6 +81,7 @@ TEST_F(PasswordChangeDelegateImplTest, WaitingForAgreement) {
 }
 
 TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
+  base::HistogramTester histogram_tester;
   prefs()->SetBoolean(
       password_manager::prefs::kPasswordChangeFlowNoticeAgreement, true);
 
@@ -95,6 +97,10 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
 
   EXPECT_EQ(PasswordChangeDelegate::State::kChangePasswordFormNotFound,
             delegate->GetCurrentState());
+  delegate.reset();
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
+      PasswordChangeDelegate::State::kChangePasswordFormNotFound, 1);
 }
 
 TEST_F(PasswordChangeDelegateImplTest, RestartPasswordChange) {
@@ -117,4 +123,43 @@ TEST_F(PasswordChangeDelegateImplTest, RestartPasswordChange) {
   delegate->Restart();
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
             delegate->GetCurrentState());
+}
+
+TEST_F(PasswordChangeDelegateImplTest, MetricsReportedFlowOffered) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
+  std::unique_ptr<PasswordChangeDelegate> delegate =
+      CreateDelegate(test_web_contents.get());
+  delegate.reset();
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
+      PasswordChangeDelegate::State::kOfferingPasswordChange, 1);
+}
+
+TEST_F(PasswordChangeDelegateImplTest,
+       MetricsReportedFlowCanceledInPrivacyNotice) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
+  std::unique_ptr<PasswordChangeDelegate> delegate =
+      CreateDelegate(test_web_contents.get());
+  delegate->StartPasswordChangeFlow();
+  delegate.reset();
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
+      PasswordChangeDelegate::State::kWaitingForAgreement, 1);
+}
+
+TEST_F(PasswordChangeDelegateImplTest,
+       MetricsReportedFlowCanceledDuringSignInCheck) {
+  prefs()->SetBoolean(
+      password_manager::prefs::kPasswordChangeFlowNoticeAgreement, true);
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<content::WebContents> test_web_contents = CreateWebContents();
+  std::unique_ptr<PasswordChangeDelegate> delegate =
+      CreateDelegate(test_web_contents.get());
+  delegate->StartPasswordChangeFlow();
+  delegate.reset();
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
+      PasswordChangeDelegate::State::kWaitingForChangePasswordForm, 1);
 }
