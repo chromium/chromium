@@ -130,7 +130,8 @@ vars = {
   # support for other platforms may be added in the future.
   'checkout_openxr' : 'checkout_win',
 
-  'checkout_traffic_annotation_tools': 'checkout_configuration != "small"',
+  # No traffic annotation tools is no longer used after Aug 2021.
+  'checkout_traffic_annotation_tools': False,
   'checkout_instrumented_libraries': 'checkout_linux and checkout_configuration != "small"',
 
   # By default bot checkouts the WPR archive files only when this
