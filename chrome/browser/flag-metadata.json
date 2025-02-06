@@ -1798,6 +1798,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "css-safe-area-max-inset",
+    "owners": ["skobes@chromium.org"],
+    "expiry_milestone": 137
+  },
+  {
     "name": "cups-ipp-printing-backend",
     "owners": [ "awscreen@chromium.org", "//printing/OWNERS" ],
     "expiry_milestone": 145

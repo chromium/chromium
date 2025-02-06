@@ -17063,6 +17063,7 @@ from previous Chrome versions.
       label="SyncChromeOSExplicitPassphraseSharing:enabled"/>
   <int value="1180722846" label="OculusVR:disabled"/>
   <int value="1181056275" label="enable-cloud-backup"/>
+  <int value="1181468134" label="CSSSafeAreaMaxInset:disabled"/>
   <int value="1181825084" label="NewDragSpecInLauncher:enabled"/>
   <int value="1182356056" label="MacV2GPUSandbox:enabled"/>
   <int value="1183125644" label="DiscoFeedEndpoint:enabled"/>
@@ -18720,6 +18721,7 @@ from previous Chrome versions.
   <int value="1804170680" label="PdfCr23:enabled"/>
   <int value="1804190628"
       label="AuthenticateUsingUserConsentVerifierInteropApi:disabled"/>
+  <int value="1805180852" label="CSSSafeAreaMaxInset:enabled"/>
   <int value="1805582881" label="VcRetouchInferenceBackend:enabled"/>
   <int value="1805706414" label="PerformanceInterventionUI:disabled"/>
   <int value="1805859042"

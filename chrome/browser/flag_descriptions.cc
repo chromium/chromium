@@ -4356,6 +4356,10 @@ const char kDynamicSafeAreaInsetsSupportedByCCDescription[] =
     "browser controls are shown or hidden during scroll. "
     "Requires DynamicSafeAreaInsets to also be enabled.";
 
+const char kCSSSafeAreaMaxInsetName[] = "CSSSafeAreaMaxInset";
+const char kCSSSafeAreaMaxInsetDescription[] =
+    "Enables CSS engine support for the env(safe-area-max-inset-*) variables.";
+
 const char kEducationalTipModuleName[] = "Educational Tip Module";
 const char kEducationalTipModuleDescription[] =
     "Show educational tip module on magic stack in clank";
