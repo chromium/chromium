@@ -304,15 +304,11 @@ std::string AlgorithmToString(SignatureVerifier::SignatureAlgorithm algorithm) {
 }
 
 void MaybeMeasureTpmOperations(UnexportableKeyProvider::Config config) {
-  static BASE_FEATURE(kTpmLatencyMetrics, "TpmLatencyMetrics",
-                      base::FEATURE_ENABLED_BY_DEFAULT);
-  if (base::FeatureList::IsEnabled(kTpmLatencyMetrics)) {
     base::ThreadPool::PostTask(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&MeasureTpmOperationsInternal, std::move(config)));
-  }
 }
 
 }  // namespace crypto
