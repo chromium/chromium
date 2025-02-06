@@ -739,6 +739,11 @@ extern const char kLensOverlayEnableIPadCompatibilityName[] =
 extern const char kLensOverlayEnableIPadCompatibilityDescription[] =
     "When enabled, it allows Lens Overlay to run on iPad devices";
 
+extern const char kLensOverlayEnableLandscapeCompatibilityName[] =
+    "Allow Lens overlay to also run in landscape if the feature is enabled";
+extern const char kLensOverlayEnableLandscapeCompatibilityDescription[] =
+    "When enabled, it allows Lens Overlay to run in landscape orientation";
+
 extern const char kLensOverlayEnableLocationBarEntrypointName[] =
     "Enable Lens overlay location bar entrypoint.";
 extern const char kLensOverlayEnableLocationBarEntrypointDescription[] =

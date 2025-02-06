@@ -315,6 +315,9 @@ BASE_DECLARE_FEATURE(kLensOverlayPriceInsightsCounterfactual);
 // Feature to force allow iPad support of lens overlay.
 BASE_DECLARE_FEATURE(kLensOverlayEnableIPadCompatibility);
 
+// Feature to allow landscape support of lens overlay.
+BASE_DECLARE_FEATURE(kLensOverlayEnableLandscapeCompatibility);
+
 // Feature to open lens overlay navigation in the same tab.
 BASE_DECLARE_FEATURE(kLensOverlayEnableSameTabNavigation);
 

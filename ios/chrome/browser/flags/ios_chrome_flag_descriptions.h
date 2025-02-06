@@ -643,6 +643,10 @@ extern const char kLensOverlayPriceInsightsCounterfactualDescription[];
 extern const char kLensOverlayEnableIPadCompatibilityName[];
 extern const char kLensOverlayEnableIPadCompatibilityDescription[];
 
+// Title and description for the flag to allow lens overlay in landscape.
+extern const char kLensOverlayEnableLandscapeCompatibilityName[];
+extern const char kLensOverlayEnableLandscapeCompatibilityDescription[];
+
 // Title and description for the flag to enable the Lens overlay location bar
 // entrypoint.
 extern const char kLensOverlayEnableLocationBarEntrypointName[];
