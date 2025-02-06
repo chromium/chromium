@@ -54,10 +54,6 @@ _IGNORE_WARNINGS = (
         # https://crbug.com/1441226
         r'PaymentRequest[BH]',
     ]) + ')',
-    # TODO(agrieve): Remove once we update to U SDK.
-    r'OnBackAnimationCallback',
-    # This class was added only in the U PrivacySandbox SDK: crbug.com/333713111
-    r'Missing class android.adservices.common.AdServicesOutcomeReceiver',
     # We enforce that this class is removed via -checkdiscard.
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
     # Happens on internal builds. It's a real failure, but happens in dead code.
@@ -80,9 +76,6 @@ _IGNORE_WARNINGS = (
     # androidx/test/espresso/web/internal/deps/guava/collect/Maps$1.class:"
     # Also happens in espresso core.
     r'Warning in .*:androidx/test/espresso/.*/guava/collect/.*',
-
-    # We are following up in b/290389974
-    r'AppSearchDocumentClassMap\.class:.*Could not inline ServiceLoader\.load',
 )
 
 _BLOCKLISTED_EXPECTATION_PATHS = [
