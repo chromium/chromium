@@ -34,7 +34,7 @@ class RegistrationRequestParam;
 // This class creates a new unexportable key, creates a registration JWT and
 // signs it with the new key, and makes the network request to the DBSC
 // registration endpoint with this signed JWT to get the registration
-// instructions.
+// instructions. It is also used for calling the refresh endpoint.
 class NET_EXPORT RegistrationFetcher {
  public:
   struct NET_EXPORT RegistrationCompleteParams {

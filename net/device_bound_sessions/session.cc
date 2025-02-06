@@ -51,16 +51,17 @@ Session::~Session() = default;
 
 // static
 std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
-                                                GURL url) {
-  if (!url.is_valid() || params.session_id.empty() ||
+                                                const GURL& fetcher_url) {
+  if (!fetcher_url.is_valid() || params.session_id.empty() ||
       params.refresh_url.empty()) {
     return nullptr;
   }
 
-  if (!params.scope.origin.empty() && !url.host().empty() &&
-      url.host() != params.scope.origin &&
+  if (!params.scope.origin.empty() && !fetcher_url.host().empty() &&
+      fetcher_url.host() != params.scope.origin &&
       net::registry_controlled_domains::GetDomainAndRegistry(
-          url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES) !=
+          fetcher_url,
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES) !=
           net::registry_controlled_domains::GetDomainAndRegistry(
               params.scope.origin,
               net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)) {
@@ -71,20 +72,21 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
   // or a relative URL, starting with a "/" to make it origin-relative,
   // and starting with anything else making it current-path-relative to
   // request URL.
-  std::string unescaped_refresh_url = base::UnescapeURLComponent(
+  std::string unescaped_path = base::UnescapeURLComponent(
       params.refresh_url,
       base::UnescapeRule::PATH_SEPARATORS |
           base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
-  GURL refresh_endpoint = url.Resolve(unescaped_refresh_url);
-  if (!refresh_endpoint.is_valid() ||
-      (!refresh_endpoint.SchemeIsCryptographic() &&
-       !IsLocalhost(refresh_endpoint)) ||
-      net::SchemefulSite(refresh_endpoint) != net::SchemefulSite(url)) {
+  GURL candidate_refresh_endpoint = fetcher_url.Resolve(unescaped_path);
+  if (!candidate_refresh_endpoint.is_valid() ||
+      (!candidate_refresh_endpoint.SchemeIsCryptographic() &&
+       !IsLocalhost(candidate_refresh_endpoint)) ||
+      net::SchemefulSite(candidate_refresh_endpoint) !=
+          net::SchemefulSite(fetcher_url)) {
     return nullptr;
   }
-  std::unique_ptr<Session> session(new Session(Id(params.session_id),
-                                               url::Origin::Create(url),
-                                               std::move(refresh_endpoint)));
+  std::unique_ptr<Session> session(
+      new Session(Id(params.session_id), url::Origin::Create(fetcher_url),
+                  std::move(candidate_refresh_endpoint)));
   for (const auto& spec : params.scope.specifications) {
     if (!spec.domain.empty() && !spec.path.empty()) {
       const auto inclusion_result =
@@ -98,8 +100,9 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
 
   for (const auto& cred : params.credentials) {
     if (!cred.name.empty() && !cred.attributes.empty()) {
-      std::optional<CookieCraving> craving = CookieCraving::Create(
-          url, cred.name, cred.attributes, base::Time::Now(), std::nullopt);
+      std::optional<CookieCraving> craving =
+          CookieCraving::Create(fetcher_url, cred.name, cred.attributes,
+                                base::Time::Now(), std::nullopt);
       if (craving) {
         session->cookie_cravings_.push_back(*craving);
       }

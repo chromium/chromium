@@ -70,12 +70,15 @@ class NET_EXPORT SessionService {
   virtual std::optional<Session::Id> GetAnySessionRequiringDeferral(
       URLRequest* request) = 0;
 
-  // Defer a request while refreshing the session.
-  // session_id is the identifier of the session that is required to be
+  // Defer a request and maybe refresh the corresponding session.
+  // `session_id` is the identifier of the session that is required to be
   // refreshed.
+  // This will refresh the corresponding session if: another deferred request
+  // has not already kicked off refresh, the session can be found, and the
+  // associated unexportable key id is valid.
   // Provides two callbacks, will always call one of them:
-  // - The first will query for cookies for the requests again.
-  // - The second to send the request without query for cookies again.
+  // - `restart_callback` queries for cookies for the requests again.
+  // - `continue_callback` sends the request without query for cookies again.
   virtual void DeferRequestForRefresh(
       URLRequest* request,
       Session::Id session_id,

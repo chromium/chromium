@@ -379,7 +379,9 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     });
   }
 
-  // State passed in to constructor
+  //// This section of fields is state passed into the constructor. ////
+  // Refers to the endpoint this class will use when triggering a registration
+  // or refresh request.
   GURL fetcher_endpoint_;
   std::optional<std::string> session_identifier_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
@@ -388,6 +390,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   IsolationInfo isolation_info_;
   std::optional<net::NetLogSource> net_log_source_;
   std::optional<url::Origin> original_request_initiator_;
+  // This is called once the registration or refresh request completes, whether
+  // or not it was successful.
   RegistrationFetcher::RegistrationCompleteCallback callback_;
 
   // Created to fetch data

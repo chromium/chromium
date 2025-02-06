@@ -121,12 +121,18 @@ void SessionServiceImpl::OnLoadSessionsComplete(
 void SessionServiceImpl::OnRegistrationComplete(
     OnAccessCallback on_access_callback,
     std::optional<RegistrationFetcher::RegistrationCompleteParams> params) {
+  // There was a failure attempting to register. Since this specific
+  // registration request did not add a session, no cleanup is needed.
   if (!params) {
     return;
   }
 
   const SchemefulSite site(url::Origin::Create(params->url));
 
+  // It's possible that the session was already added in a previous request,
+  // and that this registration request is used just to terminate that session
+  // with session instruction `"continue": false`. To handle this case, we
+  // attempt to delete the session.
   if (std::holds_alternative<SessionTerminationParams>(params->params)) {
     const SessionTerminationParams& termination_params =
         std::get<SessionTerminationParams>(params->params);
@@ -139,13 +145,13 @@ void SessionServiceImpl::OnRegistrationComplete(
   auto session = Session::CreateIfValid(
       std::move(std::get<SessionParams>(params->params)), params->url);
   if (!session) {
+    // The attempt to create a valid session failed. Since this specific
+    // registration request did not add a session, no cleanup is needed.
     return;
   }
   session->set_unexportable_key_id(std::move(params->key_id));
-
   NotifySessionAccess(on_access_callback, SessionAccess::AccessType::kCreation,
                       site, *session);
-
   AddSession(site, std::move(session));
 }
 
@@ -184,8 +190,6 @@ std::optional<Session::Id> SessionServiceImpl::GetAnySessionRequiringDeferral(
   return std::nullopt;
 }
 
-// Actually send the refresh request, for now continue with sending the deferred
-// request right away.
 void SessionServiceImpl::DeferRequestForRefresh(
     URLRequest* request,
     Session::Id session_id,
@@ -215,7 +219,6 @@ void SessionServiceImpl::DeferRequestForRefresh(
   // Notify the request that it has been deferred for refreshed cookies.
   NotifySessionAccess(request->device_bound_session_access_callback(),
                       SessionAccess::AccessType::kUpdate, site, *session);
-  // Do refresh the session.
   if (needs_refresh) {
     const Session::KeyIdOrError& key_id = session->unexportable_key_id();
     if (!key_id.has_value()) {
@@ -223,6 +226,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
       return;
     }
 
+    // Trigger refreshing the session.
     net::NetLogSource net_log_source_for_refresh = net::NetLogSource(
         net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
     request->net_log().AddEventReferencingSource(
@@ -246,7 +250,7 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
     Session::Id session_id,
     std::optional<RegistrationFetcher::RegistrationCompleteParams>
         refresh_result) {
-  // Refresh succeeded:
+  // If refresh succeeded:
   // 1. update the session by adding a new session and deleting the old one
   // 2. restart the deferred requests.
   //
