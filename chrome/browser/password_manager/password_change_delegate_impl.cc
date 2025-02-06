@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
@@ -217,6 +219,7 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
 
 void PasswordChangeDelegateImpl::StartPasswordChange() {
   CHECK(originator_);
+  flow_start_time_ = base::Time::Now();
   UpdateState(State::kWaitingForChangePasswordForm);
   if (executor_) {
     executor_->OpenURL(
@@ -384,6 +387,8 @@ void PasswordChangeDelegateImpl::UpdateState(
 }
 
 void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
+  base::UmaHistogramMediumTimes("PasswordManager.PasswordChangeTimeOverall",
+                                base::Time::Now() - flow_start_time_);
   if (!result) {
     UpdateState(State::kPasswordChangeFailed);
   } else {
