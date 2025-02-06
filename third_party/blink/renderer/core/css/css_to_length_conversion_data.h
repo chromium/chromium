@@ -96,8 +96,8 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
         : FontSizes(style.SpecifiedFontSize(),
                     root_style ? root_style->SpecifiedFontSize()
                                : style.SpecifiedFontSize(),
-                    &style.GetFont(),
-                    root_style ? &root_style->GetFont() : &style.GetFont(),
+                    style.GetFont(),
+                    root_style ? root_style->GetFont() : style.GetFont(),
                     style.EffectiveZoom(),
                     root_style ? root_style->EffectiveZoom()
                                : style.EffectiveZoom()) {}
@@ -113,13 +113,16 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     float Cap(float zoom) const;
     float Rcap(float zoom) const;
 
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(font_);
+      visitor->Trace(root_font_);
+    }
+
    private:
     float em_ = 0;
     float rem_ = 0;
-    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
-    const Font* font_ = nullptr;
-    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
-    const Font* root_font_ = nullptr;
+    Member<const Font> font_;
+    Member<const Font> root_font_;
     // Font-metrics-based units (ex, ch, ic) are pre-zoomed by a factor of
     // `font_zoom_`.
     float font_zoom_ = 1;
@@ -150,15 +153,18 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     float Lh(float zoom) const;
     float Rlh(float zoom) const;
 
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(font_);
+      visitor->Trace(root_font_);
+    }
+
    private:
     Length line_height_;
     Length root_line_height_;
     // Note that this Font may be different from the instance held
     // by FontSizes (for the same CSSToLengthConversionData object).
-    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
-    const Font* font_ = nullptr;
-    GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707046")
-    const Font* root_font_ = nullptr;
+    Member<const Font> font_ = nullptr;
+    Member<const Font> root_font_ = nullptr;
     // Like ex/ch/ic, lh is also based on font-metrics and is pre-zoomed by
     // a factor of `font_zoom_`.
     float font_zoom_ = 1;

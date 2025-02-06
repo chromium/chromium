@@ -172,7 +172,7 @@ TEST_F(LayoutTextTest, PrewarmFamily) {
   LayoutObject* container = GetLayoutObjectByElementId("container");
   EXPECT_TRUE(container->StyleRef()
                   .GetFont()
-                  .GetFontDescription()
+                  ->GetFontDescription()
                   .Family()
                   .IsPrewarmed());
 }
@@ -194,7 +194,7 @@ TEST_F(LayoutTextTest, PrewarmFontFace) {
   LayoutObject* container = GetLayoutObjectByElementId("container");
   EXPECT_FALSE(container->StyleRef()
                    .GetFont()
-                   .GetFontDescription()
+                   ->GetFontDescription()
                    .Family()
                    .IsPrewarmed());
 }
@@ -212,7 +212,7 @@ TEST_F(LayoutTextTest, PrewarmGenericFamily) {
   LayoutObject* container = GetLayoutObjectByElementId("container");
   EXPECT_TRUE(container->StyleRef()
                   .GetFont()
-                  .GetFontDescription()
+                  ->GetFontDescription()
                   .Family()
                   .IsPrewarmed());
 }

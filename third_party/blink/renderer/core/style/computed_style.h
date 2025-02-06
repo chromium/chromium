@@ -772,7 +772,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Font properties.
   CORE_EXPORT const FontDescription& GetFontDescription() const {
-    return GetFont().GetFontDescription();
+    return GetFont()->GetFontDescription();
   }
   bool HasFontRelativeUnits() const {
     return HasEmUnits() || HasRootFontRelativeUnits() ||
@@ -823,7 +823,7 @@ class ComputedStyle final : public ComputedStyleBase {
     return LayoutUnit::FromFloatRound(font.GetFontDescription().ComputedSize());
   }
   LayoutUnit ComputedFontSizeAsFixed() const {
-    return ComputedFontSizeAsFixed(GetFont());
+    return ComputedFontSizeAsFixed(*GetFont());
   }
 
   // font-size-adjust
@@ -2976,16 +2976,16 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   // font
   void SetFontDescription(const FontDescription& v) {
-    if (GetFont().GetFontDescription() != v) {
-      SetFont(Font(v, GetFont().GetFontSelector()));
+    if (GetFont()->GetFontDescription() != v) {
+      SetFont(MakeGarbageCollected<Font>(v, GetFont()->GetFontSelector()));
     }
   }
   const FontDescription& GetFontDescription() const {
-    return GetFont().GetFontDescription();
+    return GetFont()->GetFontDescription();
   }
   int FontSize() const { return GetFontDescription().ComputedPixelSize(); }
   LayoutUnit FontHeight() const {
-    if (const SimpleFontData* font_data = GetFont().PrimaryFont()) {
+    if (const SimpleFontData* font_data = GetFont()->PrimaryFont()) {
       return LayoutUnit(font_data->GetFontMetrics().Height());
     }
     return LayoutUnit();

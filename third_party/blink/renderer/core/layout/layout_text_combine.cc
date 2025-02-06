@@ -59,13 +59,13 @@ void LayoutTextCombine::AssertStyleIsValid(const ComputedStyle& style) {
   DCHECK_EQ(style.LetterSpacing(), 0.0f);
   DCHECK(!style.HasAppliedTextDecorations());
   DCHECK_EQ(style.TextIndent(), Length::Fixed());
-  DCHECK_EQ(style.GetFont().GetFontDescription().Orientation(),
+  DCHECK_EQ(style.GetFont()->GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
 #endif
 }
 
 float LayoutTextCombine::DesiredWidth() const {
-  DCHECK_EQ(StyleRef().GetFont().GetFontDescription().Orientation(),
+  DCHECK_EQ(StyleRef().GetFont()->GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
   const float one_em = StyleRef().ComputedFontSize();
   if (EnumHasFlags(
@@ -82,7 +82,7 @@ float LayoutTextCombine::DesiredWidth() const {
 }
 
 float LayoutTextCombine::ComputeInlineSpacing() const {
-  DCHECK_EQ(StyleRef().GetFont().GetFontDescription().Orientation(),
+  DCHECK_EQ(StyleRef().GetFont()->GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
   DCHECK(scale_x_);
   const LayoutUnit line_height = StyleRef().GetFontHeight().LineHeight();
@@ -152,8 +152,7 @@ PhysicalRect LayoutTextCombine::ComputeTextBoundsRectForHitTest(
 }
 
 void LayoutTextCombine::ResetLayout() {
-  compressed_font_ = Font();
-  has_compressed_font_ = false;
+  compressed_font_ = nullptr;
   scale_x_.reset();
 }
 
@@ -167,9 +166,9 @@ LayoutUnit LayoutTextCombine::AdjustTextLeftForPaint(
 }
 
 LayoutUnit LayoutTextCombine::AdjustTextTopForPaint(LayoutUnit text_top) const {
-  DCHECK_EQ(StyleRef().GetFont().GetFontDescription().Orientation(),
+  DCHECK_EQ(StyleRef().GetFont()->GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
-  const SimpleFontData& font_data = *StyleRef().GetFont().PrimaryFont();
+  const SimpleFontData& font_data = *StyleRef().GetFont()->PrimaryFont();
   const float internal_leading = font_data.InternalLeading();
   const float half_leading = internal_leading / 2;
   const int ascent = font_data.GetFontMetrics().Ascent();
@@ -207,7 +206,7 @@ bool LayoutTextCombine::NeedsAffineTransformInPaint() const {
 LineRelativeRect LayoutTextCombine::ComputeTextFrameRect(
     const PhysicalOffset paint_offset) const {
   const ComputedStyle& style = Parent()->StyleRef();
-  DCHECK(style.GetFont().GetFontDescription().IsVerticalBaseline());
+  DCHECK(style.GetFont()->GetFontDescription().IsVerticalBaseline());
 
   const LayoutUnit one_em = style.ComputedFontSizeAsFixed();
   const FontHeight text_metrics = style.GetFontHeight();
@@ -219,7 +218,7 @@ LineRelativeRect LayoutTextCombine::ComputeTextFrameRect(
 PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
     const InlineCursor& cursor) const {
   const ComputedStyle& style = Parent()->StyleRef();
-  DCHECK(style.GetFont().GetFontDescription().IsVerticalBaseline());
+  DCHECK(style.GetFont()->GetFontDescription().IsVerticalBaseline());
 
   const LineRelativeRect line_relative_text_rect =
       ComputeTextFrameRect(PhysicalOffset());
@@ -239,7 +238,7 @@ PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
     // |LayoutTextCombine| does not support decorating box, as it is not
     // supported in vertical flow and text-combine is only for vertical flow.
     const LogicalRect decoration_rect = InkOverflow::ComputeDecorationOverflow(
-        cursor, style, style.GetFont(),
+        cursor, style, *style.GetFont(),
         /* offset_in_container */ PhysicalOffset(), ink_overflow,
         /* inline_context */ nullptr, writing_mode);
     ink_overflow.Unite(decoration_rect);
@@ -273,24 +272,23 @@ gfx::Rect LayoutTextCombine::VisualRectForPaint(
 void LayoutTextCombine::SetScaleX(float new_scale_x) {
   DCHECK_GT(new_scale_x, 0.0f);
   DCHECK(!scale_x_.has_value());
-  DCHECK(!has_compressed_font_);
+  DCHECK(!compressed_font_);
   // Note: Even if rounding, e.g. LayoutUnit::FromFloatRound(), we still have
   // gap between painted characters in text-combine-upright-value-all-002.html
   scale_x_ = new_scale_x;
 }
 
-void LayoutTextCombine::SetCompressedFont(const Font& font) {
-  DCHECK(!has_compressed_font_);
+void LayoutTextCombine::SetCompressedFont(const Font* font) {
+  DCHECK(!compressed_font_);
   DCHECK(!scale_x_.has_value());
   compressed_font_ = font;
-  has_compressed_font_ = true;
 }
 
 bool LayoutTextCombine::UsingSyntheticOblique() const {
   return Parent()
       ->StyleRef()
       .GetFont()
-      .GetFontDescription()
+      ->GetFontDescription()
       .IsSyntheticOblique();
 }
 

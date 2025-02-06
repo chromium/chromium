@@ -29,7 +29,7 @@ const ShapeResultTestInfo* TestInfo(const ShapeResult* result) {
 
 class StretchyOperatorShaperTest : public FontTestBase {
  protected:
-  Font CreateMathFont(const String& name, float size = 1000) {
+  Font* CreateMathFont(const String& name, float size = 1000) {
     FontDescription::VariantLigatures ligatures;
     return blink::test::CreateTestFont(
         AtomicString("MathTestFont"),
@@ -41,16 +41,16 @@ class StretchyOperatorShaperTest : public FontTestBase {
 // See blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py and
 // blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h.
 TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
-  Font math = CreateMathFont("stretchy.woff");
+  Font* math = CreateMathFont("stretchy.woff");
 
   StretchyOperatorShaper vertical_shaper(
       kVerticalArrow, OpenTypeMathStretchData::StretchAxis::Vertical);
   StretchyOperatorShaper horizontal_shaper(
       kHorizontalArrow, OpenTypeMathStretchData::StretchAxis::Horizontal);
 
-  auto vertical_arrow = math.PrimaryFont()->GlyphForCharacter(kVerticalArrow);
+  auto vertical_arrow = math->PrimaryFont()->GlyphForCharacter(kVerticalArrow);
   auto horizontal_arrow =
-      math.PrimaryFont()->GlyphForCharacter(kHorizontalArrow);
+      math->PrimaryFont()->GlyphForCharacter(kHorizontalArrow);
 
   // Calculate glyph indices of stretchy operator's parts.
   Vector<UChar32> v, h;
@@ -75,7 +75,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
       // Metrics of horizontal size variants.
       {
         StretchyOperatorShaper::Metrics metrics;
-        horizontal_shaper.Shape(&math, target_size, &metrics);
+        horizontal_shaper.Shape(math, target_size, &metrics);
         EXPECT_NEAR(metrics.advance, (i + 1) * 1000, kSizeError);
         EXPECT_NEAR(metrics.ascent, 1000, kSizeError);
         EXPECT_FLOAT_EQ(metrics.descent, 0);
@@ -85,7 +85,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
 
       {
         StretchyOperatorShaper::Metrics metrics;
-        vertical_shaper.Shape(&math, target_size, &metrics);
+        vertical_shaper.Shape(math, target_size, &metrics);
         EXPECT_NEAR(metrics.advance, 1000, kSizeError);
         EXPECT_NEAR(metrics.ascent, (i + 1) * 1000, kSizeError);
         EXPECT_FLOAT_EQ(metrics.descent, 0);
@@ -93,7 +93,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
 
       // Shaping of horizontal size variants.
       {
-        const ShapeResult* result = horizontal_shaper.Shape(&math, target_size);
+        const ShapeResult* result = horizontal_shaper.Shape(math, target_size);
         EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
         EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(), 1u);
         Glyph expected_variant = i ? h[0] + 2 * i : horizontal_arrow;
@@ -104,7 +104,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
 
       // Shaping of vertical size variants.
       {
-        const ShapeResult* result = vertical_shaper.Shape(&math, target_size);
+        const ShapeResult* result = vertical_shaper.Shape(math, target_size);
         EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
         EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(), 1u);
         Glyph expected_variant = i ? v[0] + 2 * i : vertical_arrow;
@@ -154,7 +154,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
     // Metrics of horizontal assembly.
     {
       StretchyOperatorShaper::Metrics metrics;
-      horizontal_shaper.Shape(&math, target_size, &metrics);
+      horizontal_shaper.Shape(math, target_size, &metrics);
       EXPECT_NEAR(metrics.advance, target_size, kSizeError);
       EXPECT_NEAR(metrics.ascent, 1000, kSizeError);
       EXPECT_FLOAT_EQ(metrics.descent, 0);
@@ -163,7 +163,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
     // Metrics of vertical assembly.
     {
       StretchyOperatorShaper::Metrics metrics;
-      vertical_shaper.Shape(&math, target_size, &metrics);
+      vertical_shaper.Shape(math, target_size, &metrics);
       EXPECT_NEAR(metrics.advance, 1000, kSizeError);
       EXPECT_NEAR(metrics.ascent, target_size, kSizeError);
       EXPECT_FLOAT_EQ(metrics.descent, 0);
@@ -172,7 +172,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
     // Shaping of horizontal assembly.
     // From left to right: h2, h1, h1, h1, ...
     {
-      const ShapeResult* result = horizontal_shaper.Shape(&math, target_size);
+      const ShapeResult* result = horizontal_shaper.Shape(math, target_size);
 
       EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
       EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
@@ -193,7 +193,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
     // Shaping of vertical assembly.
     // From bottom to top: v2, v1, v1, v1, ...
     {
-      const ShapeResult* result = vertical_shaper.Shape(&math, target_size);
+      const ShapeResult* result = vertical_shaper.Shape(math, target_size);
 
       EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
       EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
@@ -215,23 +215,23 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
   {
     // Zero.
     float target_size = 0;
-    horizontal_shaper.Shape(&math, target_size);
-    vertical_shaper.Shape(&math, target_size);
+    horizontal_shaper.Shape(math, target_size);
+    vertical_shaper.Shape(math, target_size);
 
     // Negative.
     target_size = -5500;
-    horizontal_shaper.Shape(&math, target_size);
-    vertical_shaper.Shape(&math, target_size);
+    horizontal_shaper.Shape(math, target_size);
+    vertical_shaper.Shape(math, target_size);
 
     // Max limit.
     target_size = std::numeric_limits<float>::max();
-    horizontal_shaper.Shape(&math, target_size);
-    vertical_shaper.Shape(&math, target_size);
+    horizontal_shaper.Shape(math, target_size);
+    vertical_shaper.Shape(math, target_size);
 
     // Min limit.
     target_size = std::numeric_limits<float>::min();
-    horizontal_shaper.Shape(&math, target_size);
-    vertical_shaper.Shape(&math, target_size);
+    horizontal_shaper.Shape(math, target_size);
+    vertical_shaper.Shape(math, target_size);
 
     // More than the max number of glyphs.
     // The size of an assembly with one non-extender v2/h2 and k - 1 extenders
@@ -240,8 +240,8 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
     // more than the max number of glyphs.
     target_size =
         static_cast<float>(1500 * HarfBuzzRunGlyphData::kMaxGlyphs + 1750);
-    horizontal_shaper.Shape(&math, target_size);
-    vertical_shaper.Shape(&math, target_size);
+    horizontal_shaper.Shape(math, target_size);
+    vertical_shaper.Shape(math, target_size);
   }
 }
 
@@ -252,7 +252,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
 // ascent/descent of the glyphs but vertical assemblies should be normalized to
 // a zero ink descent (see crbug.com/1409380).
 TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
-  Font math = CreateMathFont("stretchy-centered-on-baseline.woff");
+  Font* math = CreateMathFont("stretchy-centered-on-baseline.woff");
 
   StretchyOperatorShaper vertical_shaper(
       kVerticalArrow, OpenTypeMathStretchData::StretchAxis::Vertical);
@@ -270,7 +270,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
   // Metrics of horizontal assembly.
   {
     StretchyOperatorShaper::Metrics metrics;
-    horizontal_shaper.Shape(&math, target_size, &metrics);
+    horizontal_shaper.Shape(math, target_size, &metrics);
     EXPECT_NEAR(metrics.advance, target_size, kSizeError);
     EXPECT_NEAR(metrics.ascent, 500, kSizeError);
     EXPECT_FLOAT_EQ(metrics.descent, 500);
@@ -279,7 +279,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
   // Metrics of vertical assembly.
   {
     StretchyOperatorShaper::Metrics metrics;
-    vertical_shaper.Shape(&math, target_size, &metrics);
+    vertical_shaper.Shape(math, target_size, &metrics);
     EXPECT_NEAR(metrics.advance, 1000, kSizeError);
     EXPECT_NEAR(metrics.ascent, target_size, kSizeError);
     EXPECT_FLOAT_EQ(metrics.descent, 0);
@@ -288,7 +288,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
   // Shaping of horizontal assembly.
   // From left to right: h2, h1, h1, h1, ...
   {
-    const ShapeResult* result = horizontal_shaper.Shape(&math, target_size);
+    const ShapeResult* result = horizontal_shaper.Shape(math, target_size);
 
     EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
     EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
@@ -309,7 +309,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
   // Shaping of vertical assembly.
   // From bottom to top: v2, v1, v1, v1, ...
   {
-    const ShapeResult* result = vertical_shaper.Shape(&math, target_size);
+    const ShapeResult* result = vertical_shaper.Shape(math, target_size);
 
     EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
     EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
@@ -328,7 +328,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
 // See blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py and
 // blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h.
 TEST_F(StretchyOperatorShaperTest, NonBMPCodePoint) {
-  Font math = CreateMathFont("operators.woff");
+  Font* math = CreateMathFont("operators.woff");
 
   StretchyOperatorShaper horizontal_shaper(
       kArabicMathematicalOperatorHahWithDal,
@@ -336,7 +336,7 @@ TEST_F(StretchyOperatorShaperTest, NonBMPCodePoint) {
 
   float target_size = 10000;
   StretchyOperatorShaper::Metrics metrics;
-  horizontal_shaper.Shape(&math, target_size, &metrics);
+  horizontal_shaper.Shape(math, target_size, &metrics);
   EXPECT_NEAR(metrics.advance, target_size, kSizeError);
   EXPECT_NEAR(metrics.ascent, 1000, kSizeError);
   EXPECT_FLOAT_EQ(metrics.descent, 0);
@@ -346,7 +346,7 @@ TEST_F(StretchyOperatorShaperTest, NonBMPCodePoint) {
 // blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h
 TEST_F(StretchyOperatorShaperTest, MathItalicCorrection) {
   {
-    Font math = CreateMathFont(
+    Font* math = CreateMathFont(
         "largeop-displayoperatorminheight2000-2AFF-italiccorrection3000.woff");
     StretchyOperatorShaper shaper(
         kNAryWhiteVerticalBarCodePoint,
@@ -354,17 +354,17 @@ TEST_F(StretchyOperatorShaperTest, MathItalicCorrection) {
 
     // Base size.
     StretchyOperatorShaper::Metrics metrics;
-    shaper.Shape(&math, 0, &metrics);
+    shaper.Shape(math, 0, &metrics);
     EXPECT_EQ(metrics.italic_correction, 0);
 
     // Larger variant.
     float target_size = 2000 - kSizeError;
-    shaper.Shape(&math, target_size, &metrics);
+    shaper.Shape(math, target_size, &metrics);
     EXPECT_EQ(metrics.italic_correction, 3000);
   }
 
   {
-    Font math = CreateMathFont(
+    Font* math = CreateMathFont(
         "largeop-displayoperatorminheight7000-2AFF-italiccorrection5000.woff");
     StretchyOperatorShaper shaper(
         kNAryWhiteVerticalBarCodePoint,
@@ -372,12 +372,12 @@ TEST_F(StretchyOperatorShaperTest, MathItalicCorrection) {
 
     // Base size.
     StretchyOperatorShaper::Metrics metrics;
-    shaper.Shape(&math, 0, &metrics);
+    shaper.Shape(math, 0, &metrics);
     EXPECT_EQ(metrics.italic_correction, 0);
 
     // Glyph assembly.
     float target_size = 7000;
-    shaper.Shape(&math, target_size, &metrics);
+    shaper.Shape(math, target_size, &metrics);
     EXPECT_EQ(metrics.italic_correction, 5000);
   }
 }

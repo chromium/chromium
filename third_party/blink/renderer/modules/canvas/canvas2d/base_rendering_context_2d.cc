@@ -3426,7 +3426,7 @@ void BaseRenderingContext2D::fillTextCluster(
   DrawTextInternal(text_cluster->text(), cluster_x + x, cluster_y + y,
                    CanvasRenderingContext2DState::kFillPaintType, cluster_align,
                    cluster_baseline, text_cluster->begin(), text_cluster->end(),
-                   nullptr, &text_cluster->textMetrics()->GetFont());
+                   nullptr, text_cluster->textMetrics()->GetFont());
 }
 
 void BaseRenderingContext2D::strokeText(const String& text,
@@ -3448,7 +3448,7 @@ void BaseRenderingContext2D::strokeText(const String& text,
                    text.length(), &max_width);
 }
 
-const Font& BaseRenderingContext2D::AccessFont(HTMLCanvasElement* canvas) {
+const Font* BaseRenderingContext2D::AccessFont(HTMLCanvasElement* canvas) {
   const CanvasRenderingContext2DState& state = GetState();
   if (!state.HasRealizedFont()) {
     setFont(state.UnparsedFont());
@@ -3509,9 +3509,9 @@ void BaseRenderingContext2D::DrawTextInternal(
     identifiability_study_helper_.set_encountered_sensitive_ops();
   }
 
-  const Font& font =
-      (cluster_font != nullptr) ? *cluster_font : AccessFont(canvas);
-  const SimpleFontData* font_data = font.PrimaryFont();
+  const Font* font =
+      (cluster_font != nullptr) ? cluster_font : AccessFont(canvas);
+  const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
   if (!font_data) {
     return;
@@ -3534,9 +3534,9 @@ void BaseRenderingContext2D::DrawTextInternal(
   gfx::RectF bounds;
   double font_width = 0;
   if (run_start == 0 && run_end == text.length()) [[likely]] {
-    font_width = font.Width(text_run, &bounds);
+    font_width = font->Width(text_run, &bounds);
   } else {
-    font_width = font.SubRunWidth(text_run, run_start, run_end, &bounds);
+    font_width = font->SubRunWidth(text_run, run_start, run_end, &bounds);
   }
 
   bool use_max_width = (max_width && *max_width < font_width);
@@ -3601,8 +3601,8 @@ void BaseRenderingContext2D::DrawTextInternal(
         Font::DrawType draw_type = (canvas && canvas->IsPrinting())
                                        ? Font::DrawType::kGlyphsAndClusters
                                        : Font::DrawType::kGlyphsOnly;
-        font.DrawBidiText(c, text_run_paint_info, location,
-                          Font::kUseFallbackIfFontNotReady, *flags, draw_type);
+        font->DrawBidiText(c, text_run_paint_info, location,
+                           Font::kUseFallbackIfFontNotReady, *flags, draw_type);
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
@@ -3636,7 +3636,7 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
         canvas, DocumentUpdateReason::kCanvas);
   }
 
-  const Font& font = AccessFont(canvas);
+  const Font* font = AccessFont(canvas);
 
   const CanvasRenderingContext2DState& state = GetState();
   const ComputedStyle* computed_style =

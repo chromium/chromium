@@ -162,25 +162,23 @@ void FontFaceSetDocument::FireDoneEventIfPossible() {
   FireDoneEvent();
 }
 
-bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
-                                           Font& font) {
+const Font* FontFaceSetDocument::ResolveFontStyle(const String& font_string) {
   if (font_string.empty()) {
-    return false;
+    return nullptr;
   }
 
   // Interpret fontString in the same way as the 'font' attribute of
   // CanvasRenderingContext2D.
   auto* parsed_style = CSSParser::ParseFont(font_string, GetExecutionContext());
   if (!parsed_style) {
-    return false;
+    return nullptr;
   }
 
   if (!GetDocument()->documentElement()) {
     auto* font_selector = GetDocument()->GetStyleEngine().GetFontSelector();
     FontDescription description =
         FontStyleResolver::ComputeFont(*parsed_style, font_selector);
-    font = Font(description, font_selector);
-    return true;
+    return MakeGarbageCollected<Font>(description, font_selector);
   }
 
   ComputedStyleBuilder builder =
@@ -196,14 +194,14 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
   builder.SetFontDescription(default_font_description);
   const ComputedStyle* style = builder.TakeStyle();
 
-  font = GetDocument()->GetStyleEngine().ComputeFont(
+  const Font* font = GetDocument()->GetStyleEngine().ComputeFont(
       *GetDocument()->documentElement(), *style, *parsed_style);
 
   // StyleResolver::ComputeFont() should have set the document's FontSelector
   // to |style|.
-  DCHECK_EQ(font.GetFontSelector(), GetFontSelector());
+  DCHECK_EQ(font->GetFontSelector(), GetFontSelector());
 
-  return true;
+  return font;
 }
 
 Document* FontFaceSetDocument::GetDocument() const {

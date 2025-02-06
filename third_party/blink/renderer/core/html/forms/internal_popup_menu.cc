@@ -464,7 +464,7 @@ void InternalPopupMenu::AddElementStyle(ItemIterationContext& context,
 
     const FontDescription& base_font = context.BaseFont();
     const FontDescription& font_description =
-        style->GetFont().GetFontDescription();
+        style->GetFont()->GetFontDescription();
     if (base_font.ComputedPixelSize() != font_description.ComputedPixelSize()) {
       // We don't use FontDescription::specifiedSize() because this element
       // might have its own zoom level.
@@ -757,8 +757,8 @@ void InternalPopupMenu::SetMenuListOptionsBoundsInAXTree(
   Frame* frame = owner_element_->GetDocument().GetFrame();
   while (frame->Owner()) {
     if (auto* frame_view = frame->View()) {
-        gfx::Point frame_point = frame_view->Location();
-        popup_origin.Offset(-frame_point.x(), -frame_point.y());
+      gfx::Point frame_point = frame_view->Location();
+      popup_origin.Offset(-frame_point.x(), -frame_point.y());
     }
     frame = frame->Parent();
   }

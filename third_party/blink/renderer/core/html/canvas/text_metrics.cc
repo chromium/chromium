@@ -82,7 +82,7 @@ void TextMetrics::Trace(Visitor* visitor) const {
 
 TextMetrics::TextMetrics() : baselines_(Baselines::Create()) {}
 
-TextMetrics::TextMetrics(const Font& font,
+TextMetrics::TextMetrics(const Font* font,
                          const TextDirection& direction,
                          const V8CanvasTextBaseline::Enum baseline,
                          const V8CanvasTextAlign::Enum align,
@@ -104,12 +104,12 @@ const ShapeResult* ShapeWord(const TextRun& word_run, const Font& font) {
 }
 }  // namespace
 
-void TextMetrics::Update(const Font& font,
+void TextMetrics::Update(const Font* font,
                          const TextDirection& direction,
                          const V8CanvasTextBaseline::Enum baseline,
                          const V8CanvasTextAlign::Enum align,
                          const String& text) {
-  const SimpleFontData* font_data = font.PrimaryFont();
+  const SimpleFontData* font_data = font->PrimaryFont();
   if (!font_data)
     return;
 
@@ -156,11 +156,11 @@ void TextMetrics::Update(const Font& font,
     float run_width;
     gfx::RectF run_glyph_bounds;
     if (RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
-      run_with_offset.shape_result_ = ShapeWord(text_run, font);
+      run_with_offset.shape_result_ = ShapeWord(text_run, *font);
       run_width = run_with_offset.shape_result_->Width();
       run_glyph_bounds = run_with_offset.shape_result_->ComputeInkBounds();
     } else {
-      run_width = font.Width(text_run, &run_glyph_bounds);
+      run_width = font->Width(text_run, &run_glyph_bounds);
     }
     runs_with_offset_.push_back(run_with_offset);
 
@@ -237,7 +237,7 @@ void TextMetrics::ShapeTextIfNeeded() {
   }
   for (auto& run : runs_with_offset_) {
     TextRun word_run(run.text_, run.direction_, false);
-    run.shape_result_ = ShapeWord(word_run, font_);
+    run.shape_result_ = ShapeWord(word_run, *font_);
   }
   shaping_needed_ = false;
 }
@@ -506,7 +506,7 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
           getTextAlignDelta(clusters_for_run[i].width_, cluster_text_align,
                             direction_),
           getTextBaselineDelta(baseline_y, cluster_text_baseline.AsEnum(),
-                               *font_.PrimaryFont()));
+                               *font_->PrimaryFont()));
       text_cluster->OffsetPosition(-text_align_dx_, 0);
       minimal_clusters.push_back(text_cluster);
     }

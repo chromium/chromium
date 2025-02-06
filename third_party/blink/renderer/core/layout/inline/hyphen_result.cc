@@ -12,7 +12,7 @@ namespace blink {
 void HyphenResult::Shape(const ComputedStyle& style) {
   text_ = style.HyphenString();
   HarfBuzzShaper shaper(text_);
-  shape_result_ = shaper.Shape(&style.GetFont(), style.Direction());
+  shape_result_ = shaper.Shape(style.GetFont(), style.Direction());
 }
 
 }  // namespace blink

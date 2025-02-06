@@ -378,7 +378,7 @@ class FastMinTextContext {
     DCHECK(!locations.Contains(0u));
     DCHECK(!locations.Contains(word.length()));
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
-    // Append 0 to process all parts the same way.
+        // Append 0 to process all parts the same way.
     locations.push_back(0);
     const LayoutUnit hyphen_inline_size = HyphenInlineSize(item_result);
     LayoutUnit max_part_width;
@@ -1552,7 +1552,7 @@ LineBreaker::BreakResult LineBreaker::BreakText(
         : ShapingLineBreaker(result,
                              &line_breaker->break_iterator_,
                              line_breaker->hyphenation_,
-                             &item->Style()->GetFont()),
+                             item->Style()->GetFont()),
           line_breaker_(line_breaker),
           item_(item) {}
 
@@ -1966,11 +1966,11 @@ const ShapeResult* LineBreaker::ShapeText(const InlineItem& item,
   if (!items_data_->segments) {
     RunSegmenter::RunSegmenterRange segment_range =
         InlineItemSegment::UnpackSegmentData(start, end, item.SegmentData());
-    shape_result = shaper_.Shape(&item.Style()->GetFont(), item.Direction(),
+    shape_result = shaper_.Shape(item.Style()->GetFont(), item.Direction(),
                                  start, end, segment_range, options);
   } else {
     shape_result = items_data_->segments->ShapeText(
-        &shaper_, &item.Style()->GetFont(), item.Direction(), start, end,
+        &shaper_, item.Style()->GetFont(), item.Direction(), start, end,
         base::checked_cast<unsigned>(&item - items_data_->items.data()),
         options);
   }
@@ -2854,14 +2854,14 @@ void LineBreaker::HandleControlItem(const InlineItem& item,
     case kTabulationCharacter: {
       DCHECK(item.Style());
       const ComputedStyle& style = *item.Style();
-      if (!style.GetFont().PrimaryFont()) {
+      if (!style.GetFont()->PrimaryFont()) {
         // TODO(crbug.com/561873): PrimaryFont should not be nullptr.
         HandleEmptyText(item, line_info);
         return;
       }
       const ShapeResult* shape_result =
           ShapeResult::CreateForTabulationCharacters(
-              &style.GetFont(), item.Direction(), style.GetTabSize(), position_,
+              style.GetFont(), item.Direction(), style.GetTabSize(), position_,
               item.StartOffset(), item.Length());
       HandleText(item, *shape_result, line_info);
       return;
@@ -4425,7 +4425,7 @@ void LineBreaker::SetCurrentStyle(const ComputedStyle& style) {
       DCHECK_EQ(break_iterator_.Locale(), style.GetFontDescription().Locale());
     }
     ShapeResultSpacing<String> spacing(spacing_.Text(), is_svg_text_);
-    spacing.SetSpacing(style.GetFont().GetFontDescription());
+    spacing.SetSpacing(style.GetFont()->GetFontDescription());
     DCHECK_EQ(spacing.LetterSpacing(), spacing_.LetterSpacing());
     DCHECK_EQ(spacing.WordSpacing(), spacing_.WordSpacing());
 #endif  //  EXPENSIVE_DCHECKS_ARE_ON()

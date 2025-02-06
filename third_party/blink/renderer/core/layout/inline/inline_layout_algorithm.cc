@@ -613,9 +613,9 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info,
 
   const FontHeight line_box_metrics = container_builder_.Metrics();
   FontHeight intrinsic_metrics = line_box_metrics;
-  InlineBoxState::AdjustEdges(
-      line_style, line_style.GetFont(), baseline_type_,
-      should_apply_over, should_apply_under, intrinsic_metrics);
+  InlineBoxState::AdjustEdges(line_style, *line_style.GetFont(), baseline_type_,
+                              should_apply_over, should_apply_under,
+                              intrinsic_metrics);
 
   if (should_apply_start) {
     // Apply `text-box-trim: start` if this is the first formatted line.
@@ -1005,15 +1005,15 @@ bool InlineLayoutAlgorithm::AddAnyClearanceAfterLine(
 
 LayoutUnit InlineLayoutAlgorithm::SetupLineClampEllipsis() {
   DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
-  const Font& font = node_.Style().GetFont();
-  const SimpleFontData* font_data = font.PrimaryFont();
+  const Font* font = node_.Style().GetFont();
+  const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
   String ellipsis_text =
       font_data && font_data->GlyphForCharacter(kHorizontalEllipsisCharacter)
           ? String(base::span_from_ref(kHorizontalEllipsisCharacter))
           : String(u"...");
   HarfBuzzShaper shaper(ellipsis_text);
-  const ShapeResult* shape_result = shaper.Shape(&font, Node().BaseDirection());
+  const ShapeResult* shape_result = shaper.Shape(font, Node().BaseDirection());
   DCHECK(shape_result);
 
   FontHeight text_metrics = font_data->GetFontMetrics().GetFontHeight(

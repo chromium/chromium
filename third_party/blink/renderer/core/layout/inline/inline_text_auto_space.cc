@@ -51,12 +51,13 @@ inline bool MaybeIdeograph(UScriptCode script, StringView text) {
 // previous item's `shape_result_` for this purpose.
 class SpacingApplier {
   STACK_ALLOCATED();
+
  public:
   void SetSpacing(const Vector<wtf_size_t, 16>& offsets,
                   const InlineItem* current_item,
                   const ComputedStyle& style) {
     DCHECK(current_item->TextShapeResult());
-    const float spacing = TextAutoSpace::GetSpacingWidth(&style.GetFont());
+    const float spacing = TextAutoSpace::GetSpacingWidth(style.GetFont());
     auto offset = offsets.begin();
     if (!offsets.empty() && *offset == current_item->StartOffset()) {
       DCHECK(last_item_);

@@ -24,7 +24,7 @@ TSAN_TEST(FilterOperationResolverThreadedTest, SimpleMatrixFilter) {
     ASSERT_TRUE(value);
 
     FontDescription font_description;
-    Font font(font_description);
+    Font* font = MakeGarbageCollected<Font>(font_description);
     FilterOperations fo =
         FilterOperationResolver::CreateOffscreenFilterOperations(*value, font);
     ASSERT_EQ(fo.size(), 1ul);
@@ -41,7 +41,7 @@ TSAN_TEST(FilterOperationResolverThreadedTest, SimpleTransferFilter) {
     ASSERT_TRUE(value);
 
     FontDescription font_description;
-    Font font(font_description);
+    Font* font = MakeGarbageCollected<Font>(font_description);
     FilterOperations fo =
         FilterOperationResolver::CreateOffscreenFilterOperations(*value, font);
     ASSERT_EQ(fo.size(), 1ul);
@@ -59,7 +59,7 @@ TSAN_TEST(FilterOperationResolverThreadedTest, SimpleBlurFilter) {
     ASSERT_TRUE(value);
 
     FontDescription font_description;
-    Font font(font_description);
+    Font* font = MakeGarbageCollected<Font>(font_description);
     FilterOperations fo =
         FilterOperationResolver::CreateOffscreenFilterOperations(*value, font);
     ASSERT_EQ(fo.size(), 1ul);
@@ -76,7 +76,7 @@ TSAN_TEST(FilterOperationResolverThreadedTest, SimpleDropShadow) {
     ASSERT_TRUE(value);
 
     FontDescription font_description;
-    Font font(font_description);
+    Font* font = MakeGarbageCollected<Font>(font_description);
     FilterOperations fo =
         FilterOperationResolver::CreateOffscreenFilterOperations(*value, font);
     ASSERT_EQ(fo.size(), 1ul);
@@ -95,7 +95,7 @@ TSAN_TEST(FilterOperationResolverThreadedTest, CompoundFilter) {
     ASSERT_TRUE(value);
 
     FontDescription font_description;
-    Font font(font_description);
+    Font* font = MakeGarbageCollected<Font>(font_description);
     FilterOperations fo =
         FilterOperationResolver::CreateOffscreenFilterOperations(*value, font);
     EXPECT_FALSE(fo.IsEmpty());

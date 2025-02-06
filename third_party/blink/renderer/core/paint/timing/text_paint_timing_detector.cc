@@ -171,7 +171,7 @@ void TextPaintTimingDetector::RecordAggregatedText(
   // Web font styled node should be rewalkable so that resizing during swap
   // would make the node eligible to be LCP candidate again.
   if (RuntimeEnabledFeatures::WebFontResizeLCPEnabled()) {
-    if (aggregator.StyleRef().GetFont().HasCustomFont()) {
+    if (aggregator.StyleRef().GetFont()->HasCustomFont()) {
       rewalkable_set_.insert(&aggregator);
     }
   }

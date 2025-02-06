@@ -49,8 +49,8 @@ InlineBoxState::InlineBoxState(const InlineBoxState&& state)
     : fragment_start(state.fragment_start),
       item(state.item),
       style(state.style),
+      font(state.font),
       scaled_font(state.scaled_font),
-      has_scaled_font(state.has_scaled_font),
       scaling_factor(state.scaling_factor),
       metrics(state.metrics),
       text_metrics(state.text_metrics),
@@ -66,9 +66,7 @@ InlineBoxState::InlineBoxState(const InlineBoxState&& state)
       include_used_fonts(state.include_used_fonts),
       has_box_placeholder(state.has_box_placeholder),
       needs_box_fragment(state.needs_box_fragment),
-      is_svg_text(state.is_svg_text) {
-  font = has_scaled_font ? &scaled_font : state.font;
-}
+      is_svg_text(state.is_svg_text) {}
 
 void InlineBoxState::ResetStyle(const ComputedStyle& style_ref,
                                 bool is_svg,
@@ -77,14 +75,13 @@ void InlineBoxState::ResetStyle(const ComputedStyle& style_ref,
   is_svg_text = is_svg;
   if (!is_svg_text) {
     scaling_factor = 1.0f;
-    has_scaled_font = false;
-    font = &style->GetFont();
+    scaled_font = nullptr;
+    font = style->GetFont();
     return;
   }
-  has_scaled_font = true;
-  LayoutSVGInlineText::ComputeNewScaledFontForStyle(
-      layout_object, scaling_factor, scaled_font);
-  font = &scaled_font;
+  scaled_font = LayoutSVGInlineText::ComputeNewScaledFontForStyle(
+      layout_object, scaling_factor);
+  font = scaled_font;
   switch (style_ref.AlignmentBaseline()) {
     case EAlignmentBaseline::kAuto:
     case EAlignmentBaseline::kBaseline:
@@ -252,9 +249,10 @@ bool InlineBoxState::CanAddTextOfStyle(const ComputedStyle& text_style) const {
   if (text_style.VerticalAlign() != EVerticalAlign::kBaseline)
     return false;
   DCHECK(style);
-  if (style == &text_style || &style->GetFont() == &text_style.GetFont() ||
-      style->GetFont().PrimaryFont() == text_style.GetFont().PrimaryFont())
+  if (style == &text_style || style->GetFont() == text_style.GetFont() ||
+      style->GetFont()->PrimaryFont() == text_style.GetFont()->PrimaryFont()) {
     return true;
+  }
   return false;
 }
 
@@ -1222,7 +1220,7 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
     case EVerticalAlign::kMiddle:
       baseline_shift = (box->metrics.ascent - box->metrics.descent) / 2;
       if (const SimpleFontData* parent_font_data =
-              parent_box.style->GetFont().PrimaryFont()) {
+              parent_box.style->GetFont()->PrimaryFont()) {
         baseline_shift -= LayoutUnit::FromFloatRound(
             parent_font_data->GetFontMetrics().XHeight() / 2);
       }

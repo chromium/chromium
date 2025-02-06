@@ -71,13 +71,13 @@ TEST_P(TextAutoSpaceTypeTest, Char) {
 
 TEST_F(TextAutoSpaceTest, Unapply) {
   const float size = 40;
-  const Font font = test::CreateAhemFont(size);
+  const Font* font = test::CreateAhemFont(size);
   HarfBuzzShaper shaper(u"01234");
-  ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
+  ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
   EXPECT_THAT(GetAdvances(*result), ElementsAre(size, size, size, size, size));
 
   // Apply auto-spacing.
-  const float spacing = TextAutoSpace::GetSpacingWidth(&font);
+  const float spacing = TextAutoSpace::GetSpacingWidth(font);
   result->ApplyTextAutoSpacing({{2, spacing}, {5, spacing}});
   const float with_spacing = size + spacing;
   EXPECT_THAT(GetAdvances(*result),

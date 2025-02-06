@@ -200,7 +200,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
                   ExceptionState& exception_state) {
     beginLayerImpl(script_state, options, &exception_state);
   }
-  // Pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap.
+  // Pop state stack if top state was pushed by beginLayer, restore state and
+  // draw the bitmap.
   void endLayer(ExceptionState& exception_state);
   int LayerCount() const { return layer_count_; }
   virtual void reset();  // Called by the javascript interface
@@ -588,7 +589,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   virtual HTMLCanvasElement* HostAsHTMLCanvasElement() const;
   virtual OffscreenCanvas* HostAsOffscreenCanvas() const;
   virtual FontSelector* GetFontSelector() const;
-  const Font& AccessFont(HTMLCanvasElement* canvas);
+  const Font* AccessFont(HTMLCanvasElement* canvas);
 
   void WillUseCurrentFont() const;
   virtual bool WillSetFont() const;

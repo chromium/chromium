@@ -407,9 +407,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void SetRuleUsageTracker(StyleRuleUsageTracker*);
 
-  Font ComputeFont(Element& element,
-                   const ComputedStyle& font_style,
-                   const CSSPropertyValueSet& font_properties);
+  const Font* ComputeFont(Element& element,
+                          const ComputedStyle& font_style,
+                          const CSSPropertyValueSet& font_properties);
 
   PendingInvalidations& GetPendingNodeInvalidations() {
     return pending_invalidations_;

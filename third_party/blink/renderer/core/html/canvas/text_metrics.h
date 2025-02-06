@@ -49,7 +49,7 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
 
  public:
   TextMetrics();
-  TextMetrics(const Font& font,
+  TextMetrics(const Font* font,
               const TextDirection& direction,
               V8CanvasTextBaseline::Enum baseline,
               V8CanvasTextAlign::Enum align,
@@ -87,9 +87,10 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
       uint32_t end,
       const TextClusterOptions* options,
       ExceptionState& exception_state);
-  HeapVector<Member<TextCluster>> getTextClusters(const TextClusterOptions* options);
+  HeapVector<Member<TextCluster>> getTextClusters(
+      const TextClusterOptions* options);
 
-  const Font& GetFont() const { return font_; }
+  const Font* GetFont() const { return font_; }
 
   void Trace(Visitor*) const override;
 
@@ -108,7 +109,7 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   };
 
  private:
-  void Update(const Font&,
+  void Update(const Font*,
               const TextDirection& direction,
               V8CanvasTextBaseline::Enum baseline,
               V8CanvasTextAlign::Enum align,
@@ -141,7 +142,7 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   Member<Baselines> baselines_;
 
   // Needed for selection rects, bounding boxes and caret position.
-  Font font_;
+  Member<const Font> font_;
   TextDirection direction_;
   String text_;
 

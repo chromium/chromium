@@ -77,7 +77,7 @@ class CORE_EXPORT FontFaceSet : public EventTarget,
   static const int kDefaultFontSize;
   static const AtomicString& DefaultFontFamily();
 
-  virtual bool ResolveFontStyle(const String&, Font&) = 0;
+  virtual const Font* ResolveFontStyle(const String&) = 0;
   virtual bool InActiveContext() const = 0;
   virtual FontSelector* GetFontSelector() const = 0;
   virtual const HeapLinkedHashSet<Member<FontFace>>& CSSConnectedFontFaceList()

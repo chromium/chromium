@@ -357,10 +357,10 @@ void HighlightPainter::SelectionPaintState::PaintSelectedText(
     const TextPaintStyle& text_style,
     DOMNodeId node_id,
     const AutoDarkMode& auto_dark_mode) {
-  text_painter.PaintSelectedText(fragment_paint_info, selection_status_.start,
-                                 selection_status_.end, text_style,
-                                 selection_style_.style, LineRelativeSelectionRect(),
-                                 node_id, auto_dark_mode);
+  text_painter.PaintSelectedText(
+      fragment_paint_info, selection_status_.start, selection_status_.end,
+      text_style, selection_style_.style, LineRelativeSelectionRect(), node_id,
+      auto_dark_mode);
 }
 
 // Paint the given text range in the given style, suppressing the text proper
@@ -597,7 +597,7 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
         }
         if (StyleableMarkerPainter::ShouldPaintUnderline(styleable_marker)) {
           const SimpleFontData* font_data =
-              originating_style_.GetFont().PrimaryFont();
+              originating_style_.GetFont()->PrimaryFont();
           StyleableMarkerPainter::PaintUnderline(
               styleable_marker, paint_info_.context, box_origin_,
               originating_style_,
@@ -1052,8 +1052,8 @@ void HighlightPainter::PaintHighlightOverlays(
       fragment_paint_info_.shape_result->ExpandRangeToIncludePartialGlyphs(
           &start, &end);
 
-      text_painter_.Paint(fragment_paint_info_.Slice(start, end),
-                          part.style, node_id, foreground_auto_dark_mode_,
+      text_painter_.Paint(fragment_paint_info_.Slice(start, end), part.style,
+                          node_id, foreground_auto_dark_mode_,
                           TextPainter::kTextProperOnly);
     }
 

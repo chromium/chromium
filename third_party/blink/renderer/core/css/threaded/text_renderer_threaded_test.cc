@@ -37,20 +37,20 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
     ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
     font_description.SetGenericFamily(FontDescription::kStandardFamily);
 
-    Font font = Font(font_description);
+    Font* font = MakeGarbageCollected<Font>(font_description);
 
-    const SimpleFontData* font_data = font.PrimaryFont();
+    const SimpleFontData* font_data = font->PrimaryFont();
     ASSERT_TRUE(font_data);
 
     TextRun text_run(text, TextDirection::kLtr,
                      /* directional_override */ false,
                      /* normalize_space */ true);
-    gfx::RectF text_bounds = font.SelectionRectForText(
-        text_run, gfx::PointF(), font.GetFontDescription().ComputedSize(), 0,
+    gfx::RectF text_bounds = font->SelectionRectForText(
+        text_run, gfx::PointF(), font->GetFontDescription().ComputedSize(), 0,
         -1);
 
     // X direction.
-    EXPECT_EQ(78, font.Width(text_run));
+    EXPECT_EQ(78, font->Width(text_run));
     EXPECT_EQ(0, text_bounds.x());
     EXPECT_EQ(78, text_bounds.right());
 
@@ -74,7 +74,7 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
     ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
     font_description.SetGenericFamily(FontDescription::kStandardFamily);
 
-    Font font = Font(font_description);
+    Font* font = MakeGarbageCollected<Font>(font_description);
 
     gfx::PointF location(0, 0);
     TextRun text_run(text, TextDirection::kLtr,
@@ -89,9 +89,9 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
     EXPECT_CALL(mpc, drawTextBlob(_, 0, 0, _)).Times(1);
     EXPECT_CALL(mpc, restoreToCount(17)).WillOnce(Return());
 
-    font.DrawBidiText(&mpc, text_run_paint_info, location,
-                      Font::kUseFallbackIfFontNotReady, flags,
-                      Font::DrawType::kGlyphsAndClusters);
+    font->DrawBidiText(&mpc, text_run_paint_info, location,
+                       Font::kUseFallbackIfFontNotReady, flags,
+                       Font::DrawType::kGlyphsAndClusters);
   });
 }
 

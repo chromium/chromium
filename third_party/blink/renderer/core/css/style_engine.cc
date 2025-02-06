@@ -901,9 +901,10 @@ void StyleEngine::SetRuleUsageTracker(StyleRuleUsageTracker* tracker) {
   }
 }
 
-Font StyleEngine::ComputeFont(Element& element,
-                              const ComputedStyle& font_style,
-                              const CSSPropertyValueSet& font_properties) {
+const Font* StyleEngine::ComputeFont(
+    Element& element,
+    const ComputedStyle& font_style,
+    const CSSPropertyValueSet& font_properties) {
   UpdateActiveStyle();
   return GetStyleResolver().ComputeFont(element, font_style, font_properties);
 }

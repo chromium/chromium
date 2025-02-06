@@ -390,12 +390,12 @@
     },
     {
       name: "font",
-      field_template: "external",
+      field_template: "pointer",
       include_paths: ["third_party/blink/renderer/platform/fonts/font.h"],
       type_name: "Font",
-      field_group: "font",
       inherited: true,
-      default_value: "Font()",
+      default_value: "MakeGarbageCollected<Font>()",
+      wrapper_pointer_name: "Member",
       invalidate: ["reshape"],
     },
     {

@@ -45,7 +45,7 @@ const ComputedStyle* MenuListInnerElement::CustomStyleForLayoutObject(
   if (style_builder.HasInitialLineHeight()) {
     // line-height should be consistent with MenuListIntrinsicBlockSize()
     // in layout_box.cc.
-    const SimpleFontData* font_data = style_builder.GetFont().PrimaryFont();
+    const SimpleFontData* font_data = style_builder.GetFont()->PrimaryFont();
     if (font_data) {
       style_builder.SetLineHeight(
           Length::Fixed(font_data->GetFontMetrics().Height()));

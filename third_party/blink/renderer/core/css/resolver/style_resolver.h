@@ -205,7 +205,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                    const ContainerSelector&,
                                    const TreeScope* selector_tree_scope);
 
-  Font ComputeFont(Element&, const ComputedStyle&, const CSSPropertyValueSet&);
+  Font* ComputeFont(Element&, const ComputedStyle&, const CSSPropertyValueSet&);
 
   // FIXME: Rename to reflect the purpose, like didChangeFontSize or something.
   void InvalidateMatchedPropertiesCache();

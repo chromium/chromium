@@ -140,9 +140,8 @@ void PrepareStrokeGeometry(const TextPainter::SvgTextPaintState& state,
         stroke_scale_factor = state.InlineText().ScalingFactor();
         break;
       case SvgPaintMode::kTextDecoration: {
-        Font scaled_font;
-        LayoutSVGInlineText::ComputeNewScaledFontForStyle(
-            layout_parent, stroke_scale_factor, scaled_font);
+        LayoutSVGInlineText::ComputeNewScaledFontForStyle(layout_parent,
+                                                          stroke_scale_factor);
         DCHECK(stroke_scale_factor);
         break;
       }

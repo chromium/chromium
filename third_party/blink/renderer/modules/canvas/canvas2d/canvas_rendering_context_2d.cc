@@ -614,12 +614,12 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
 
       font_style_builder.SetFontDescription(element_font_description);
       const ComputedStyle* font_style = font_style_builder.TakeStyle();
-      Font font = document.GetStyleEngine().ComputeFont(*element, *font_style,
-                                                        *parsed_style);
+      const Font* font = document.GetStyleEngine().ComputeFont(
+          *element, *font_style, *parsed_style);
 
       // We need to reset Computed and Adjusted size so we skip zoom and
       // minimum font size.
-      FontDescription final_description(font.GetFontDescription());
+      FontDescription final_description(font->GetFontDescription());
       final_description.SetComputedSize(final_description.SpecifiedSize());
       final_description.SetAdjustedSize(final_description.SpecifiedSize());
 
@@ -631,15 +631,15 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
       GetState().SetFont(final_description, Host()->GetFontSelector());
     }
   } else {
-    Font resolved_font;
-    if (!canvas_font_cache->GetFontUsingDefaultStyle(*element, new_font,
-                                                     resolved_font)) {
+    const Font* resolved_font =
+        canvas_font_cache->GetFontUsingDefaultStyle(*element, new_font);
+    if (!resolved_font) {
       return false;
     }
 
     // We need to reset Computed and Adjusted size so we skip zoom and
     // minimum font size for detached canvas.
-    FontDescription final_description(resolved_font.GetFontDescription());
+    FontDescription final_description(resolved_font->GetFontDescription());
     final_description.SetComputedSize(final_description.SpecifiedSize());
     final_description.SetAdjustedSize(final_description.SpecifiedSize());
     GetState().SetFont(final_description, Host()->GetFontSelector());

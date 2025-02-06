@@ -591,7 +591,7 @@ bool LayoutBlock::HasLineIfEmpty() const {
 std::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
   NOT_DESTROYED();
   const ComputedStyle* style = FirstLineStyle();
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style->GetFont()->PrimaryFont();
   if (!font_data)
     return std::nullopt;
   const auto& font_metrics = font_data->GetFontMetrics();

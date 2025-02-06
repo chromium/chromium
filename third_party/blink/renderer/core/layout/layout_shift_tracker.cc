@@ -178,8 +178,9 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
       return false;
     if (object.IsBR())
       return false;
-    if (object.StyleRef().GetFont().ShouldSkipDrawing())
+    if (object.StyleRef().GetFont()->ShouldSkipDrawing()) {
       return false;
+    }
     return true;
   }
 

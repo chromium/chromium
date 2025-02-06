@@ -26,7 +26,7 @@ static const float kReplacementTextRoundedRectOpacity = 0.20f;
 static const float kReplacementTextRoundedRectRadius = 5;
 static const float kReplacementTextTextOpacity = 0.55f;
 
-static Font ReplacementTextFont(const Document* document) {
+static Font* ReplacementTextFont(const Document* document) {
   const AtomicString& family = LayoutThemeFontProvider::SystemFontFamily(
       CSSValueID::kWebkitSmallControl);
   const float size = LayoutThemeFontProvider::SystemFontSize(
@@ -38,8 +38,7 @@ static Font ReplacementTextFont(const Document* document) {
   font_description.SetWeight(kBoldWeightValue);
   font_description.SetSpecifiedSize(size);
   font_description.SetComputedSize(size);
-  Font font(font_description);
-  return font;
+  return MakeGarbageCollected<Font>(font_description);
 }
 
 void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
@@ -63,14 +62,14 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
   BoxDrawingRecorder recorder(context, layout_embedded_object_,
                               paint_info.phase, paint_offset);
 
-  Font font = ReplacementTextFont(&layout_embedded_object_.GetDocument());
-  const SimpleFontData* font_data = font.PrimaryFont();
+  Font* font = ReplacementTextFont(&layout_embedded_object_.GetDocument());
+  const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
     return;
 
   TextRun text_run(layout_embedded_object_.UnavailablePluginReplacementText());
-  gfx::SizeF text_geometry(font.Width(text_run),
+  gfx::SizeF text_geometry(font->Width(text_run),
                            font_data->GetFontMetrics().Height());
 
   PhysicalRect background_rect(
@@ -95,7 +94,7 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
   context.SetFillColor(Color::FromSkColor(
       ScaleAlpha(SK_ColorBLACK, kReplacementTextTextOpacity)));
   context.DrawBidiText(
-      font, text_run,
+      *font, text_run,
       text_rect.origin() +
           gfx::Vector2dF(0, font_data->GetFontMetrics().Ascent()),
       auto_dark_mode);

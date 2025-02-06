@@ -142,13 +142,13 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void SetFont(const FontDescription& passed_font_description,
                FontSelector* selector);
   bool IsFontDirtyForFilter() const;
-  const Font& GetFont() const;
+  const Font* GetFont() const;
   const FontDescription& GetFontDescription() const;
   inline bool HasRealizedFont() const { return realized_font_; }
   void SetUnparsedFont(const String& font) { unparsed_font_ = font; }
   const String& UnparsedFont() const { return unparsed_font_; }
 
-  void SetFontForFilter(const Font& font) { font_for_filter_ = font; }
+  void SetFontForFilter(const Font* font) { font_for_filter_ = font; }
 
   void SetCSSFilter(const CSSValue*);
   void SetUnparsedCSSFilter(const String& filter_string) {
@@ -386,8 +386,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   double line_dash_offset_;
 
   String unparsed_font_;
-  Font font_;
-  Font font_for_filter_;
+  Member<const Font> font_;
+  Member<const Font> font_for_filter_;
 
   enum class FilterState {
     kNone,

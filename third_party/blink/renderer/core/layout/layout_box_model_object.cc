@@ -854,8 +854,8 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   }
   x = std::min(x, (max_x - caret_width).ClampNegativeToZero());
 
-  const Font& font = StyleRef().GetFont();
-  const SimpleFontData* font_data = font.PrimaryFont();
+  const Font* font = StyleRef().GetFont();
+  const SimpleFontData* font_data = font->PrimaryFont();
   LayoutUnit height;
   // crbug.com/595692 This check should not be needed but sometimes
   // primaryFont is null.

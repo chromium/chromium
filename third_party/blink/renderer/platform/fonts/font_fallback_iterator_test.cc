@@ -31,14 +31,14 @@ TEST_P(TestReset, TestResetWithFallbackPriority) {
   const FontFallbackPriority fallback_priorities = TestReset::GetParam();
   FontDescription::VariantLigatures ligatures(
       FontDescription::kDisabledLigaturesState);
-  Font test_font =
+  Font* test_font =
       CreateTestFont(AtomicString("TestFont"),
                      test::PlatformTestDataPath("Ahem.woff"), 100, &ligatures);
 
   FontFallbackIterator fallback_iterator =
-      test_font.CreateFontFallbackIterator(fallback_priorities);
+      test_font->CreateFontFallbackIterator(fallback_priorities);
   FontFallbackIterator fallback_iterator_reset =
-      test_font.CreateFontFallbackIterator(fallback_priorities);
+      test_font->CreateFontFallbackIterator(fallback_priorities);
 
   FontFallbackIterator::HintCharList fallback_chars_hint;
   fallback_iterator_reset.Next(fallback_chars_hint);

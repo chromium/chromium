@@ -238,7 +238,7 @@ void LayoutText::StyleDidChange(StyleDifference diff,
 
   // This is an optimization that kicks off font load before layout.
   if (!TransformedText().ContainsOnlyWhitespaceOrEmpty()) {
-    new_style.GetFont().WillUseFontData(TransformedText());
+    new_style.GetFont()->WillUseFontData(TransformedText());
   }
 
   TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer();

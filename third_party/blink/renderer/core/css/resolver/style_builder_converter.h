@@ -139,7 +139,7 @@ class StyleBuilderConverter {
                                                   const CSSValue&,
                                                   CSSPropertyID);
   static FilterOperations ConvertOffscreenFilterOperations(const CSSValue&,
-                                                           const Font&);
+                                                           const Font*);
   // The template parameter ZeroValue indicates which CSSValueID should be
   // converted to zero.
   template <typename T, CSSValueID ZeroValue = CSSValueID::kNone>
