@@ -63,6 +63,10 @@ bool IsOriginAllowedServerFallback(const GURL& url) {
   if (url == history_url.Resolve(chrome::kChromeUIHistorySyncedTabs)) {
     return true;
   }
+  if (url == GURL(chrome::kChromeUINewTabURL) ||
+      url == GURL(chrome::kChromeUINewTabPageURL)) {
+    return true;
+  }
   return false;
 }
 
