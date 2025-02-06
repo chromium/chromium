@@ -22,8 +22,9 @@
 #endif
 
 namespace {
+// See crbug.com/393349281 and crbug.com/359853518
+const char kMinExpectedVersion[] = "127.15";
 const int kScreenAICleanUpDelayInDays = 30;
-const char kMinExpectedVersion[] = "127.9";
 
 bool IsDeviceCompatible() {
 #if BUILDFLAG(IS_LINUX)
