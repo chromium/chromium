@@ -34,6 +34,10 @@
 #include "media/parsers/h265_parser.h"
 #endif
 
+namespace gpu {
+class TestSharedImageInterface;
+}
+
 namespace media {
 namespace test {
 
@@ -294,6 +298,8 @@ class AlignedDataHelper {
 
   // The frame data returned by GetNextFrame().
   std::vector<VideoFrameData> video_frame_data_;
+
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 // Small helper class to extract video frames from raw data streams.
