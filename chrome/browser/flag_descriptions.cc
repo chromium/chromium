@@ -4675,13 +4675,6 @@ const char kHistoryPaneAndroidName[] = "History Pane Android";
 const char kHistoryPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays History.";
 
-const char kTabGroupCreationDialogAndroidName[] =
-    "Tab Group Creation Dialog Android";
-const char kTabGroupCreationDialogAndroidDescription[] =
-    "Enables showing a dialog for adjusting tab group settings on new tab "
-    "group creations. The dialog will only show for groups created through "
-    "drag and drop or bulk selection merge.";
-
 const char kTabGroupPaneAndroidName[] = "Tab Group Pane Android";
 const char kTabGroupPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays and allows "

@@ -328,7 +328,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSuppressToolbarCapturesAtGestureEnd,
     &kTabDragDropAndroid,
     &kToolbarPhoneCleanup,
-    &kTabGroupCreationDialogAndroid,
     &kTabResumptionModuleAndroid,
     &kTabStateFlatBuffer,
     &kTabStripGroupCollapseAndroid,
@@ -1060,10 +1059,6 @@ BASE_FEATURE(kTabDragDropAndroid,
 
 BASE_FEATURE(kToolbarPhoneCleanup,
              "ToolbarPhoneCleanup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabGroupCreationDialogAndroid,
-             "TabGroupCreationDialogAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStateFlatBuffer,

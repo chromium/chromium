@@ -694,8 +694,7 @@ public class DataSharingTabManager {
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(false);
         if (tab.getTabGroupId() == null) {
-            boolean showUndoSnackBar = false;
-            filter.createSingleTabGroup(tab, showUndoSnackBar);
+            filter.createSingleTabGroup(tab);
         }
         createOrManageFlow(
                 activity,

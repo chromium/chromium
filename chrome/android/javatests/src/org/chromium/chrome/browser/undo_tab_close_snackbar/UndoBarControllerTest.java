@@ -299,8 +299,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(
-                            mTabModel.getTabAt(0), /* notify= */ false);
+                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(0));
                 });
 
         assertNull(getCurrentSnackbar());
@@ -340,10 +339,8 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(
-                            mTabModel.getTabAt(0), /* notify= */ false);
-                    mTabGroupModelFilter.createSingleTabGroup(
-                            mTabModel.getTabAt(1), /* notify= */ false);
+                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(0));
+                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(1));
                 });
 
         assertNull(getCurrentSnackbar());
@@ -425,10 +422,8 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(
-                            mTabModel.getTabAt(0), /* notify= */ false);
-                    mTabGroupModelFilter.createSingleTabGroup(
-                            mTabModel.getTabAt(1), /* notify= */ false);
+                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(0));
+                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(1));
                 });
 
         assertNull(getCurrentSnackbar());
@@ -463,10 +458,8 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.createSingleTabGroup(
-                            mTabModel.getTabAt(0), /* notify= */ false);
-                    mTabGroupModelFilter.createSingleTabGroup(
-                            mTabModel.getTabAt(1), /* notify= */ false);
+                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(0));
+                    mTabGroupModelFilter.createSingleTabGroup(mTabModel.getTabAt(1));
                 });
 
         assertNull(getCurrentSnackbar());

@@ -81,7 +81,7 @@ public class LocalTabGroupMutationHelper {
         int rootId = rootTab.getId();
         updateTabGroupVisuals(tabGroup, rootId);
         if (tabs.size() == 1) {
-            mTabGroupModelFilter.createSingleTabGroup(rootTab, /* notify= */ false);
+            mTabGroupModelFilter.createSingleTabGroup(rootTab);
         } else {
             mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, rootTab, /* notify= */ false);
         }

@@ -181,7 +181,6 @@ BASE_DECLARE_FEATURE(kSuppressToolbarCaptures);
 BASE_DECLARE_FEATURE(kSuppressToolbarCapturesAtGestureEnd);
 BASE_DECLARE_FEATURE(kTabDragDropAndroid);
 BASE_DECLARE_FEATURE(kToolbarPhoneCleanup);
-BASE_DECLARE_FEATURE(kTabGroupCreationDialogAndroid);
 BASE_DECLARE_FEATURE(kTabStateFlatBuffer);
 BASE_DECLARE_FEATURE(kTabStripGroupCollapseAndroid);
 BASE_DECLARE_FEATURE(kTabStripGroupDragDropAndroid);
