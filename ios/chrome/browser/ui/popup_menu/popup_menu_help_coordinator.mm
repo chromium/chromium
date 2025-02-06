@@ -64,8 +64,12 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
 
 // Whether the user is still in the same session as when the history menu item
-// IPH was triggered
+// IPH was triggered.
 @property(nonatomic, assign) BOOL inSessionWithHistoryMenuItemIPH;
+
+// Whether the user is still in the same session as when the Tab Reminders IPH
+// was triggered.
+@property(nonatomic, assign) BOOL inSessionWithTabRemindersIPH;
 
 // The tracker for feature engagement. May return null after the coordinator has
 // been stopped (thus the returned value must be checked for null).
@@ -152,9 +156,22 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 }
 
 - (void)showIPHAfterOpenOfOverflowMenu:(UIViewController*)menu {
+  // If Tab Reminders IPH is active, highlight the Tab Reminder action in the
+  // overflow menu, then reset the in-session flag
+  // (`inSessionWithTabRemindersIPH`) so that the action isn’t highlighted on
+  // future openings unless triggered again by the Tab Reminders bubble IPH.
+  if (self.inSessionWithTabRemindersIPH) {
+    OverflowMenuAction* setTabReminderAction = [self.actionProvider
+        actionForActionType:overflow_menu::ActionType::SetTabReminder];
+    setTabReminderAction.highlighted = YES;
+    self.inSessionWithTabRemindersIPH = NO;
+    return;
+  }
+
   if ([self showHistoryOnOverflowMenuIPHInViewController:menu]) {
     return;
   }
+
   // Only try to show customization IPH if history IPH was not shown.
   [self showCustomizationIPHInMenu:menu];
 }
@@ -454,8 +471,14 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   CHECK(
       send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
 
-  // TODO(crbug.com/389912241): Handle `IPHDismissalReasonType` in this
-  // dismissal logic and ensure subsequent events are logged to the FET.
+  if (IPHDismissalReasonType == IPHDismissalReasonType::kTappedAnchorView ||
+      IPHDismissalReasonType == IPHDismissalReasonType::kTappedIPH) {
+    // If the user interacted with the IPH by tapping on it or its anchor view,
+    // consider this as a successful interaction and set
+    // `inSessionWithTabRemindersIPH` to YES to enable highlighting the
+    // corresponding action in the overflow menu.
+    self.inSessionWithTabRemindersIPH = YES;
+  }
 
   feature_engagement::Tracker* tracker = self.featureEngagementTracker;
 
@@ -563,6 +586,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level <= SceneActivationLevelBackground) {
     self.inSessionWithHistoryMenuItemIPH = NO;
+    self.inSessionWithTabRemindersIPH = NO;
   } else if (level >= SceneActivationLevelForegroundActive) {
     [self prepareToShowPopupMenuIPHs];
   }
@@ -615,8 +639,11 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 - (void)displayPopupMenuIPHBubble:
             (BubbleViewControllerPresenter*)bubblePresenter
                        forFeature:(const base::Feature&)feature {
-  // Skip if a presentation is already in progress.
-  if (self.popupMenuBubblePresenter) {
+  BOOL hasActiveIPHSession =
+      self.inSessionWithHistoryMenuItemIPH || self.inSessionWithTabRemindersIPH;
+
+  // Skip if a bubble presentation or active IPH session is already in progress.
+  if (self.popupMenuBubblePresenter || hasActiveIPHSession) {
     return;
   }
 
