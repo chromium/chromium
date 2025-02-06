@@ -300,6 +300,8 @@ void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
   base::TimeDelta opacity_since_first_frame = timestamp - first_frame_time_;
   opacity_ = GetOpacity(timestamp);
 
+  layer()->SetOpacity(opacity_);
+
   // Don't animate if:
   // - `skip_animation_` is explicitly toggled, or
   // - The animations have exhausted and we haven't started ramping down.
@@ -398,7 +400,7 @@ float BorderView::GetEmphasis(base::TimeDelta delta) const {
   static constexpr base::TimeDelta kRampUpAndSteady =
       kEmphasisRampDuration + kEmphasisDuration;
   if (delta < kRampUpAndSteady) {
-    auto target = static_cast<float>(delta / kRampUpAndSteady);
+    auto target = static_cast<float>(delta / kEmphasisRampDuration);
     return ClampAndInterpolate(gfx::Tween::Type::EASE_OUT, target, 0, 1);
   }
   auto target =
@@ -437,9 +439,8 @@ float BorderView::GetOpacity(base::TimeTicks timestamp) const {
     base::TimeDelta time_since_first_ramp_down_frame =
         timestamp - first_ramp_down_frame_;
     float ramp_down_opacity =
-        static_cast<float>((time_since_first_ramp_down_frame.InMillisecondsF() /
-                            kOpacityRampDownDuration.InMillisecondsF()) *
-                           ramp_up_opacity);
+        static_cast<float>(time_since_first_ramp_down_frame.InMillisecondsF() /
+                           kOpacityRampDownDuration.InMillisecondsF());
 
     return std::clamp(ramp_up_opacity - ramp_down_opacity, 0.0f, 1.0f);
   } else {
