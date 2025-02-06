@@ -441,4 +441,91 @@ TEST_P(ParametrizedGenAiModelHandlerTest,
   histogram_tester.ExpectTotalCount(kResponseParseSuccessHistogram, 1);
 }
 
+TEST_F(GenAiModelHandlerTest, FailForNewSessionIfOldIsStillRunning) {
+  base::HistogramTester histogram_tester;
+  // We will skip model download on the first session here, instantly
+  // returning a valid session.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _));
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+
+  EXPECT_CALL(session_, ExecuteModel(_, _));
+
+  int call_count = 0;
+  genai_model_handler_->InquireGenAiOnDeviceModel(
+      kRenderedText, RequestType::kNotifications,
+      BindOnce(&CallCounter, OwnedRef(call_count)));
+  EXPECT_EQ(call_count, 0);
+
+  base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
+  genai_model_handler_->InquireGenAiOnDeviceModel(
+      kRenderedText, RequestType::kNotifications, future.GetCallback());
+  EXPECT_EQ(future.Take(), std::nullopt);
+
+  histogram_tester.ExpectUniqueSample(kModelAvailableAtInquiryTimeHistogram,
+                                      true, 1);
+
+  // We check for one successfully created session and one failure.
+  EXPECT_THAT(histogram_tester.GetAllSamples(kSessionCreationSuccessHistogram),
+              testing::ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+  histogram_tester.ExpectTotalCount(kSessionCreationTimeHistogram, 1);
+  histogram_tester.ExpectTotalCount(kExecutionDurationHistogram, 0);
+  histogram_tester.ExpectTotalCount(kExecutionSuccessHistogram, 0);
+  histogram_tester.ExpectTotalCount(kResponseParseSuccessHistogram, 0);
+}
+
+TEST_F(GenAiModelHandlerTest, OldSessionGetsNotInterruptedByNewInquiryRequest) {
+  // We will skip model download on the first session here, instantly
+  // returning a valid session.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              AddOnDeviceModelAvailabilityChangeObserver(_, _));
+
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            return std::make_unique<NiceMock<MockSession>>(&session_);
+          }));
+
+  optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+      internal_callback;
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) { internal_callback = std::move(callback); })));
+
+  base::test::TestFuture<std::optional<PermissionsAiResponse>> future_1;
+  genai_model_handler_->InquireGenAiOnDeviceModel(
+      kRenderedText, RequestType::kNotifications, future_1.GetCallback());
+
+  {
+    base::test::TestFuture<std::optional<PermissionsAiResponse>> future;
+    genai_model_handler_->InquireGenAiOnDeviceModel(
+        kRenderedText, RequestType::kNotifications, future.GetCallback());
+    EXPECT_EQ(future.Take(), std::nullopt);
+  }
+
+  base::HistogramTester histogram_tester;
+  PermissionsAiResponse response;
+  response.set_is_permission_relevant(true);
+  auto streaming_response = optimization_guide::StreamingResponse{
+      .response = AnyWrapProto(response), .is_complete = true};
+  internal_callback.Run(OptimizationGuideModelStreamingExecutionResult(
+      base::ok(streaming_response),
+      /*provided_by_on_device=*/true));
+  EXPECT_THAT(future_1.Take(), Optional(EqualsProto(response)));
+  histogram_tester.ExpectTotalCount(kExecutionDurationHistogram, 1);
+  histogram_tester.ExpectTotalCount(kExecutionSuccessHistogram, 1);
+  histogram_tester.ExpectTotalCount(kResponseParseSuccessHistogram, 1);
+}
+
 }  // namespace permissions
