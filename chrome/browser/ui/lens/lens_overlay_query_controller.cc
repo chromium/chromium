@@ -489,18 +489,6 @@ void LensOverlayQueryController::SendPageContentUpdateRequest(
     return;
   }
 
-  if (page_contents_request_sent_) {
-    // Since the page content uses the full image request ID, but this is a new
-    // request, update the latest_full_image_request_data_ with a new request
-    // ID. The only exception is the first page content request, which should
-    // share the same request ID as the first full image request.
-    DCHECK_EQ(latest_full_image_request_data_->sequence_id(), 1);
-    auto request_id = GetNextRequestId(RequestIdUpdateMode::kFullImageRequest);
-    latest_full_image_request_data_ = std::make_unique<LensServerFetchRequest>(
-        std::move(request_id),
-        /*query_start_time=*/base::TimeTicks::Now());
-  }
-
   PrepareAndFetchPageContentRequest();
 }
 
@@ -700,7 +688,8 @@ std::unique_ptr<lens::LensOverlayRequestId>
 LensOverlayQueryController::GetNextRequestId(RequestIdUpdateMode update_mode) {
   std::unique_ptr<lens::LensOverlayRequestId> request_id =
       request_id_generator_->GetNextRequestId(update_mode);
-  latest_encoded_analytics_id_ = request_id_generator_->GetBase32EncodedAnalyticsId();
+  latest_encoded_analytics_id_ =
+      request_id_generator_->GetBase32EncodedAnalyticsId();
   std::string serialized_request_id;
   CHECK(request_id->SerializeToString(&serialized_request_id));
   std::string encoded_request_id;
@@ -861,6 +850,14 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
       GetNextRequestId(RequestIdUpdateMode::kFullImageRequest),
       /*query_start_time=*/base::TimeTicks::Now());
   int current_sequence_id = latest_full_image_request_data_->sequence_id();
+
+  // If this is the first full image request, store the request id for all the
+  // other first batch of requests to use.
+  if (initial_request_id_ == nullptr) {
+    initial_request_id_ = std::make_unique<lens::LensOverlayRequestId>();
+    initial_request_id_->CopyFrom(
+        *latest_full_image_request_data_->request_id_);
+  }
 
   // If there is a pending interaction, we can create and issue it now that the
   // cluster info and full-image request id are available.
@@ -1113,8 +1110,11 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
   }
 
   compression_task_tracker_->TryCancelAll();
-  page_contents_request_sent_ = true;
   page_contents_request_start_time_ = base::TimeTicks::Now();
+
+  // The initial request id should be set by the time we get here. If not, call
+  // below will crash.
+  CHECK(initial_request_id_);
 
   // Post CreatePageContentPayload to a task off the main thread so compression
   // does not throttle the main thread.
@@ -1124,21 +1124,29 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
                      underlying_content_type_, page_url_),
       base::BindOnce(
           &LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(),
+          is_first_page_contents_request_
+              ? *initial_request_id_
+              : *request_id_generator_->GetNextRequestId(
+                    lens::RequestIdUpdateMode::kPageContentRequest)));
+
+  // If this is the second or later page content request, the partial page
+  // content should no longer be considered first.
+  if (!is_first_page_contents_request_) {
+    is_first_partial_page_contents_request_ = false;
+  }
+  // Any subsequent page content requests will be considered non-first.
+  is_first_page_contents_request_ = false;
 }
 
 void LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2(
+    lens::LensOverlayRequestId request_id,
     lens::Payload payload) {
   // Create the request.
   lens::LensOverlayServerRequest request;
   lens::LensOverlayRequestContext request_context;
 
-  // Use the same request ID as the full image request. It is guaranteed to
-  // exist since the full image request was started first.
-  CHECK(latest_full_image_request_data_->request_id_);
-  request_context.mutable_request_id()->CopyFrom(
-      *latest_full_image_request_data_->request_id_);
-
+  request_context.mutable_request_id()->CopyFrom(request_id);
   request_context.mutable_client_context()->CopyFrom(CreateClientContext());
   request.mutable_objects_request()->mutable_request_context()->CopyFrom(
       request_context);
@@ -1216,12 +1224,16 @@ void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
   lens::LensOverlayServerRequest request;
   lens::LensOverlayRequestContext request_context;
 
-  // Use the same request ID as the full image request. It is guaranteed to
-  // exist since the full image request was started first.
-  CHECK(latest_full_image_request_data_->request_id_);
-  request_context.mutable_request_id()->CopyFrom(
-      *latest_full_image_request_data_->request_id_);
-
+  // If this is the first partial page content request, use the initial request
+  // id. Otherwise, use the request id generator.
+  if (is_first_partial_page_contents_request_) {
+    CHECK(initial_request_id_);
+    request_context.mutable_request_id()->CopyFrom(*initial_request_id_);
+  } else {
+    request_context.mutable_request_id()->CopyFrom(
+        *request_id_generator_->GetNextRequestId(
+            lens::RequestIdUpdateMode::kPartialPageContentRequest));
+  }
   request_context.mutable_client_context()->CopyFrom(CreateClientContext());
   request.mutable_objects_request()->mutable_request_context()->CopyFrom(
       request_context);
@@ -1251,6 +1263,8 @@ void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
       CreateOAuthHeadersAndContinue(base::BindOnce(
           &LensOverlayQueryController::PerformPartialPageContentRequest,
           weak_ptr_factory_.GetWeakPtr(), std::move(request)));
+
+  is_first_partial_page_contents_request_ = false;
 }
 
 void LensOverlayQueryController::PerformPartialPageContentRequest(
@@ -1869,7 +1883,8 @@ void LensOverlayQueryController::ResetRequestClusterInfoState() {
   query_controller_state_ = QueryControllerState::kClusterInfoExpired;
   request_id_generator_->ResetRequestId();
   parent_query_sent_ = false;
-  page_contents_request_sent_ = false;
+  is_first_page_contents_request_ = true;
+  is_first_partial_page_contents_request_ = true;
 }
 
 void LensOverlayQueryController::RunSuggestInputsCallback() {

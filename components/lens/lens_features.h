@@ -643,6 +643,12 @@ extern int GetZstdCompressionLevel();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsSimplifiedSelectionEnabled();
 
+
+// Whether to fix the request id for page content upload requests. When enabled,
+// this will not increment the image upload request ID when the page content
+// upload request is sent.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool PageContentUploadRequestIdFixEnabled();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

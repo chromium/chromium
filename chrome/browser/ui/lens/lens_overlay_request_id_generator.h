@@ -13,23 +13,29 @@ namespace lens {
 
 // The update modes for the request id generator.
 enum class RequestIdUpdateMode {
-  // Indicates that the request id should not be modified.
-  kNone = 0,
   // Indicates that the request id should be modified for a full image request,
   // i.e. incrementing the image sequence, sequence id, and creating a new
   // analytics id.
-  kFullImageRequest = 1,
+  kFullImageRequest = 0,
+  // Indicates that the request id should be modified for a page content
+  // request, i.e. incrementing the sequence id and creating a new analytics
+  // id.
+  kPageContentRequest = 1,
+  // Indicates that the request id should be modified for a partial page content
+  // request, i.e. incrementing the sequence id and creating a new analytics
+  // id.
+  kPartialPageContentRequest = 2,
   // Indicates that the request id should be modified for an interaction
   // request, i.e. incrementing the sequence id and creating a new analytics
   // id.
-  kInteractionRequest = 2,
+  kInteractionRequest = 3,
   // Indicates that the request id should be modified for a search url.
   // i.e. just incrementing the sequence id.
-  kSearchUrl = 3,
+  kSearchUrl = 4,
   // Indicates that the request id should be modified for opening in a new tab.
   // i.e. just creating a new analytics id, but not storing it for future
   // updates.
-  kOpenInNewTab = 4,
+  kOpenInNewTab = 5,
 };
 
 // Manages creating lens overlay request IDs. Owned by a single Lens overlay

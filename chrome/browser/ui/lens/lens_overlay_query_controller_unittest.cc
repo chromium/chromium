@@ -1933,12 +1933,66 @@ TEST_F(LensOverlayQueryControllerTest,
   }));
 
   // The new page content request should have a different sequence ID.
-  ASSERT_EQ(query_controller.sent_request_id().sequence_id(), 1);
+  ASSERT_EQ(query_controller.sent_page_content_objects_request()
+                .request_context()
+                .request_id()
+                .image_sequence_id(),
+            2);
   ASSERT_EQ(query_controller.sent_page_content_objects_request()
                 .request_context()
                 .request_id()
                 .sequence_id(),
             2);
+
+  // Send an additional page content update request with a partial page content
+  // request.
+  query_controller.SendPageContentUpdateRequest(
+      kNewFakeContentBytes, lens::MimeType::kPlainText, GURL(kTestPageUrl));
+  query_controller.SendPartialPageContentRequest(kLongPartialContent);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return query_controller.num_page_content_update_requests_sent() == 3;
+  }));
+
+  ASSERT_EQ(query_controller.sent_page_content_objects_request()
+                .request_context()
+                .request_id()
+                .image_sequence_id(),
+            3);
+  ASSERT_EQ(query_controller.sent_page_content_objects_request()
+                .request_context()
+                .request_id()
+                .sequence_id(),
+            3);
+  ASSERT_EQ(query_controller.sent_partial_page_content_objects_request()
+                .request_context()
+                .request_id()
+                .image_sequence_id(),
+            3);
+  ASSERT_EQ(query_controller.sent_partial_page_content_objects_request()
+                .request_context()
+                .request_id()
+                .sequence_id(),
+            4);
+
+  // Send a contextual search query.
+  query_controller.SendContextualTextQuery(
+      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      additional_search_query_params);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return query_controller.num_interaction_requests_sent() == 1; }));
+
+  ASSERT_EQ(query_controller.sent_interaction_request()
+                .request_context()
+                .request_id()
+                .image_sequence_id(),
+            3);
+  ASSERT_EQ(query_controller.sent_interaction_request()
+                .request_context()
+                .request_id()
+                .sequence_id(),
+            5);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -2014,7 +2068,7 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Check the request is correct.
   sent_request = query_controller.sent_partial_page_content_objects_request();
-  ASSERT_EQ(2, sent_request.request_context().request_id().sequence_id());
+  ASSERT_EQ(3, sent_request.request_context().request_id().sequence_id());
   ASSERT_EQ(lens::Payload::REQUEST_TYPE_EARLY_PARTIAL_PDF,
             sent_request.payload().request_type());
   ASSERT_EQ(1, sent_request.payload().partial_pdf_document().pages_size());
