@@ -100,6 +100,7 @@ void PartialFailureSDKDelegateWrapper::OnAllOngoingReadGroupsCompleted() {
     std::move(ongoing_read_groups_callback_)
         .Run(base::unexpected(
             finished_read_group_results_.begin()->second.error()));
+    finished_read_group_results_.clear();
     return;
   }
 
@@ -131,6 +132,7 @@ void PartialFailureSDKDelegateWrapper::OnAllOngoingReadGroupsCompleted() {
     }
   }
   std::move(ongoing_read_groups_callback_).Run(read_groups_result);
+  finished_read_group_results_.clear();
 }
 
 void PartialFailureSDKDelegateWrapper::AddMember(
