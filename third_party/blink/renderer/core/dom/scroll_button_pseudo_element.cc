@@ -6,6 +6,7 @@
 
 #include "cc/input/scroll_snap_data.h"
 #include "cc/input/snap_selection_strategy.h"
+#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -75,7 +76,7 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
                           event.target() == this &&
                           (is_click || is_enter_or_space);
   if (should_intercept) {
-    ScrollableArea* scrollable_area = scroller->GetScrollableArea();
+    PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
 
     LogicalToPhysical<bool> mapping(
         scrolling_element->GetComputedStyle()->GetWritingDirection(),
@@ -83,24 +84,31 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
         GetPseudoId() == kPseudoIdScrollButtonInlineEnd,
         GetPseudoId() == kPseudoIdScrollButtonBlockStart,
         GetPseudoId() == kPseudoIdScrollButtonBlockEnd);
+    gfx::Vector2dF displacement;
     if (mapping.Top()) {
-      scrolling_element->scrollBy(
-          0, -scrollable_area->ScrollStep(ui::ScrollGranularity::kScrollByPage,
-                                          kVerticalScrollbar));
+      displacement.set_y(-scrollable_area->ScrollStep(
+          ui::ScrollGranularity::kScrollByPage, kVerticalScrollbar));
     } else if (mapping.Bottom()) {
-      scrolling_element->scrollBy(
-          0, scrollable_area->ScrollStep(ui::ScrollGranularity::kScrollByPage,
-                                         kVerticalScrollbar));
+      displacement.set_y(scrollable_area->ScrollStep(
+          ui::ScrollGranularity::kScrollByPage, kVerticalScrollbar));
     } else if (mapping.Left()) {
-      scrolling_element->scrollBy(
-          -scrollable_area->ScrollStep(ui::ScrollGranularity::kScrollByPage,
-                                       kHorizontalScrollbar),
-          0);
+      displacement.set_x(-scrollable_area->ScrollStep(
+          ui::ScrollGranularity::kScrollByPage, kHorizontalScrollbar));
     } else if (mapping.Right()) {
-      scrolling_element->scrollBy(
-          scrollable_area->ScrollStep(ui::ScrollGranularity::kScrollByPage,
-                                      kHorizontalScrollbar),
-          0);
+      displacement.set_x(scrollable_area->ScrollStep(
+          ui::ScrollGranularity::kScrollByPage, kHorizontalScrollbar));
+    }
+    if (!displacement.IsZero()) {
+      gfx::PointF current_position = scrollable_area->ScrollPosition();
+      std::unique_ptr<cc::SnapSelectionStrategy> strategy =
+          cc::SnapSelectionStrategy::CreateForEndAndDirection(
+              current_position, displacement,
+              RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
+      gfx::PointF new_position =
+          scrollable_area->GetSnapPositionAndSetTarget(*strategy).value_or(
+              current_position + displacement);
+      scrollable_area->ScrollToAbsolutePosition(
+          new_position, mojom::blink::ScrollBehavior::kAuto);
     }
     GetDocument().SetFocusedElement(this,
                                     FocusParams(SelectionBehaviorOnFocus::kNone,
