@@ -229,6 +229,10 @@ class PrefService;
 // cell.
 - (void)recordCarouselScrolled:(int)scrollDistance;
 
+// Records that an error has occurred when handling `action` requested by the
+// feed.
+- (void)recordFeedHandlingError:(NSString*)action;
+
 // Records the value of the uniformity flag value from Discover.
 - (void)recordUniformityFlagValue:(BOOL)flag;
 
