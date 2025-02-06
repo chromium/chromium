@@ -17,6 +17,7 @@
 @property(nonatomic, strong) NSString* email;
 @property(nonatomic, strong) UIImage* avatar;
 @property(nonatomic, assign) BOOL selected;
+@property(nonatomic, assign) BOOL managed;
 
 - (void)configureIdentityChooser:(TableViewIdentityItem*)item;
 

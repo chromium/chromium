@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -756,6 +757,43 @@ void RootCompositorFrameSinkImpl::DisplayWillDrawAndSwap(
     AggregatedRenderPassList* render_passes) {
   DCHECK(support_->GetHitTestAggregator());
   support_->GetHitTestAggregator()->Aggregate(display_->CurrentSurfaceId());
+
+  if (external_begin_frame_source_ &&
+      external_begin_frame_source_->last_begin_frame_args().IsValid() &&
+      decided_display_interval_.is_positive() &&
+      base::ShouldRecordSubsampledMetric(0.001)) {
+    const BeginFrameArgs& begin_frame_args =
+        external_begin_frame_source_->last_begin_frame_args();
+    constexpr base::TimeDelta kEpsilonTimeDelta = base::Milliseconds(0.5);
+    if ((decided_display_interval_ - base::Hertz(30)).magnitude() <
+        kEpsilonTimeDelta) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ActualIntervalFor30hz",
+          begin_frame_args.interval, base::Milliseconds(0),
+          base::Milliseconds(500), 50);
+    }
+    if ((decided_display_interval_ - base::Hertz(25)).magnitude() <
+        kEpsilonTimeDelta) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ActualIntervalFor25hz",
+          begin_frame_args.interval, base::Milliseconds(0),
+          base::Milliseconds(500), 50);
+    }
+    if ((decided_display_interval_ - base::Hertz(24)).magnitude() <
+        kEpsilonTimeDelta) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ActualIntervalFor24hz",
+          begin_frame_args.interval, base::Milliseconds(0),
+          base::Milliseconds(500), 50);
+    }
+    if ((decided_display_interval_ - base::Hertz(20)).magnitude() <
+        kEpsilonTimeDelta) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ActualIntervalFor20hz",
+          begin_frame_args.interval, base::Milliseconds(0),
+          base::Milliseconds(500), 50);
+    }
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

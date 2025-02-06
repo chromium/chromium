@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN annilys.</translation>
 <translation id="382043424867370667">Papur wal machlud haul</translation>
 <translation id="3824259034819781947">Atodi ffeiliau</translation>
-<translation id="3836587210832263413">Troi ymlaen estyniadau rydych yn ymddiried ynddynt yn unig</translation>
 <translation id="3838338534323494292">Cyfrinair newydd</translation>
 <translation id="3845880861638660475">Pwyswch <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> i gau'r deialog.</translation>
 <translation id="3848280697030027394">tywyllu bysellfwrdd</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Rheoli eich argraffwyr yng ngosodiadau'r argraffydd</translation>
 <translation id="6292095526077353682">Tra'n gwefru, dangos arbedwr sgrîn am</translation>
 <translation id="629550705077076970">pylu bysellfwrdd</translation>
-<translation id="6301193653204230066">Mae ailosod diogelwch yn diffodd estyniadau porwr Chrome ac yn ailosod gosodiadau rhwydwaith a gosodiadau eraill i osodiadau diogel diofyn.
-          Ni fydd eich tabiau, ffeiliau, cwcis a hanes yn cael eu newid.</translation>
 <translation id="6302401976930124515">Mae'r prawf <ph name="TEST_NAME" /> wedi'i ganslo</translation>
 <translation id="631063167932043783">Ap Explore</translation>
 <translation id="6318437367327684789">am byth</translation>
@@ -1774,6 +1771,8 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="951780398843003443">Cymharwch leisiau trwy gydol y recordiad fel bod y trawsgrifiad yn adlewyrchu'r hyn a ddywedodd pob siaradwr a phryd</translation>
 <translation id="952992212772159698">Heb ei weithredu</translation>
 <translation id="95718197892796296">clai</translation>
+<translation id="959792926760890141">Mae ailosod diogelwch yn diffodd estyniadau porwr Chrome ac yn ailosod gosodiadau rhwydwaith a gosodiadau eraill i osodiadau diogel diofyn.
+          Bydd eich peiriant chwilio diofyn yn cael ei ailosod, ond ni fydd eich tabiau, ffeiliau, cwcis a hanes yn cael eu newid.</translation>
 <translation id="960719561871045870">Cod gweithredwr</translation>
 <translation id="965918541715156800">melyn a gwyrddlas</translation>
 <translation id="966787709310836684">dewislen</translation>

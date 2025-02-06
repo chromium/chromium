@@ -36,7 +36,7 @@ namespace legacy {
 
 template <>
 perfetto::ThreadTrack ConvertThreadId(const ::base::PlatformThreadId& thread) {
-  return perfetto::ThreadTrack::ForThread(thread);
+  return perfetto::ThreadTrack::ForThread(thread.raw());
 }
 
 }  // namespace legacy
@@ -159,11 +159,11 @@ void TraceEvent::AppendAsJSON(
     const ArgumentFilterPredicate& argument_filter_predicate) const {
   int64_t time_int64 = timestamp_.ToInternalValue();
   ProcessId process_id;
-  PlatformThreadId thread_id;
+  std::optional<PlatformThreadId> thread_id;
   if ((flags_ & TRACE_EVENT_FLAG_HAS_PROCESS_ID) &&
       process_id_ != kNullProcessId) {
     process_id = process_id_;
-    thread_id = static_cast<PlatformThreadId>(-1);
+    thread_id = std::nullopt;
   } else {
     process_id = TraceLog::GetInstance()->process_id();
     thread_id = thread_id_;
@@ -171,13 +171,26 @@ void TraceEvent::AppendAsJSON(
   const char* category_group_name =
       TraceLog::GetCategoryGroupName(category_group_enabled_);
 
+  // The thread id might be an int64, however int64 values are not
+  // representable in JS and JSON (cf. crbug.com/40228085) since JS
+  // numbers are float64. Since thread IDs are likely to be allocated
+  // sequentially, truncation of the high bits is preferable to loss of
+  // precision in the low bits, as threads are more likely to differ in
+  // their low bit values, so we truncate the value to int32. Since this
+  // is only used for legacy JSON trace events, the loss of information
+  // is not catastrophic and won't affect normal browser execution, nor
+  // tracing with perfetto protobufs. In the worst case, the trace events
+  // will show up on a different thread track when displayed in a trace UI.
+  int thread_id_for_json =
+      thread_id ? thread_id->truncate_to_int32_for_display_only() : -1;
+
   // Category group checked at category creation time.
   DCHECK(!strchr(name_, '"'));
   StringAppendF(out,
                 "{\"pid\":%i,\"tid\":%i,\"ts\":%" PRId64
                 ",\"ph\":\"%c\",\"cat\":\"%s\",\"name\":",
-                static_cast<int>(process_id), static_cast<int>(thread_id),
-                time_int64, phase_, category_group_name);
+                static_cast<int>(process_id), thread_id_for_json, time_int64,
+                phase_, category_group_name);
   EscapeJSONString(name_, true, out);
   *out += ",\"args\":";
 

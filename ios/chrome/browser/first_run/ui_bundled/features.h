@@ -11,6 +11,22 @@ class ProfileIOS;
 
 namespace first_run {
 
+// Defines the different experiment arms for the Animated Default Browser Promo
+// in the FRE experiment.
+enum class AnimatedDefaultBrowserPromoInFREExperimentType {
+  // The experiment arm that displays the title, subtitle, animation, and the
+  // action buttons.
+  kAnimationWithActionButtons = 0,
+
+  // The experiment arm that displays the title, subtitle, animation, and the
+  // action buttons - including the show me how button.
+  kAnimationWithShowMeHow = 1,
+
+  // The experiment arm that displays the title, subtitle, animation,
+  // instruction view, and the action buttons.
+  kAnimationWithInstructions = 2,
+};
+
 // Enum to represent arms of feature kUpdatedFirstRunSequence.
 enum class UpdatedFRESequenceVariationType {
   kDisabled,
@@ -19,8 +35,16 @@ enum class UpdatedFRESequenceVariationType {
   kDBPromoFirstAndRemoveSignInSync,
 };
 
+// Flag to enable the FRE Default Browser Experiment.
+BASE_DECLARE_FEATURE(kAnimatedDefaultBrowserPromoInFRE);
+
 // Feature to enable updates to the sequence of the first run screens.
 BASE_DECLARE_FEATURE(kUpdatedFirstRunSequence);
+
+// Name of the parameter that controls the experiment type for the Animated
+// Default Browser Promo in the FRE experiment, which determines the layout of
+// the promo.
+extern const char kAnimatedDefaultBrowserPromoInFREExperimentType[];
 
 // Name of the param that indicates which variation of the
 // kUpdatedFirstRunSequence is enabled.
@@ -32,12 +56,14 @@ extern const char kUpdatedFirstRunSequenceParam[];
 UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
     ProfileIOS* profile);
 
-// Flag to enable the FRE Default Browser Experiment.
-BASE_DECLARE_FEATURE(kAnimatedDefaultBrowserPromoInFRE);
-
 // Whether the Default Browser Experiment in the FRE is enabled. This feature is
 // disabled when kUpdatedFirstRunSequence is enabled.
 bool IsAnimatedDefaultBrowserPromoInFREEnabled();
+
+// Returns the experimental arm for the Animated DBP in FRE experiment, which
+// determines the layout of the Animated DBP.
+AnimatedDefaultBrowserPromoInFREExperimentType
+AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled();
 
 }  // namespace first_run
 

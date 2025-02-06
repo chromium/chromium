@@ -331,6 +331,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="569897634095159764">Impossible de se connecter à Internet. Le serveur mandataire nécessite une authentification.</translation>
 <translation id="5761096224651992291">Vous n'êtes pas venu récemment. Chromium a retiré <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="5768371961535086509">Chromium libère de la mémoire à partir des onglets inactifs. Cela donne aux onglets actifs et aux autres applis plus de ressources informatiques, et assure la rapidité de Chromium. Vos onglets inactifs redeviennent automatiquement actifs lorsque vous y revenez. <ph name="BEGIN_LINK" />En savoir plus sur l'Économiseur de mémoire<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Si vous avez oublié votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="SETTINGS_LINK" /> les données Chromium de votre compte</translation>
 <translation id="5800158606660203929">Personnalisez et gérez Chromium. Définissez Chromium comme navigateur par défaut.</translation>
 <translation id="5809516625706423866">Impossible de se connecter à Internet. HTTP 401 Unauthorized. Veuillez vérifier la configuration de votre mandataire.</translation>
 <translation id="5821520528363214608">Pour utiliser et enregistrer les données Chromium dans votre compte Google, mettez à jour Chromium</translation>

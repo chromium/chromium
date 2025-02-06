@@ -147,7 +147,7 @@ class BASE_EXPORT ThreadCollisionWarner {
  public:
   // The parameter asserter is there only for test purpose
   explicit ThreadCollisionWarner(AsserterBase* asserter = new DCheckAsserter())
-      : valid_thread_id_(0), counter_(0), asserter_(asserter) {}
+      : valid_thread_id_(kInvalidThreadId), counter_(0), asserter_(asserter) {}
 
   ThreadCollisionWarner(const ThreadCollisionWarner&) = delete;
   ThreadCollisionWarner& operator=(const ThreadCollisionWarner&) = delete;

@@ -1705,6 +1705,7 @@
 <translation id="6637729079642709226">時間を変更</translation>
 <translation id="6641720045729354415">自動字幕起こしを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">名前による並べ替えを元に戻す</translation>
+<translation id="664793810957802384">提案グループ内のアイテム</translation>
 <translation id="6649641931981131786">自分が画面の中心に表示されるようカメラを調整します。</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>
 <translation id="6650742588569439432">アイテムを読み込めませんでした。</translation>
@@ -2382,6 +2383,7 @@
 <translation id="8956420987536947088">前回使用していたウィンドウやアプリを開きます</translation>
 <translation id="8959380109429710384">全画面拡大鏡のキーボード ショートカットを押しました。拡大した状態で移動するには、Ctrl+Alt+矢印キーを使用します。</translation>
 <translation id="8964525410783593407">1 時間</translation>
+<translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8973885907461690937">メニュー アイコンにフォーカスする</translation>
 <translation id="8980862970816311842">アプリグリッド内のフォルダにアプリアイコンを移動、または取り出します</translation>
 <translation id="8982906748181120328">周辺ユーザーによる検出</translation>

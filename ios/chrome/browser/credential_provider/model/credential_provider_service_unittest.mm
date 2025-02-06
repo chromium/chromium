@@ -390,31 +390,15 @@ TEST_F(CredentialProviderServiceTest, PasswordCreationPreference) {
 // Tests that the CredentialProviderService has the correct stored email based
 // on the password sync state.
 TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
+  // Start by signing in and turning sync on.
+  CoreAccountInfo account;
+  account.email = "foo@gmail.com";
+  account.gaia = GaiaId("gaia");
+  account.account_id = CoreAccountId::FromGaiaId(GaiaId("gaia"));
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account);
+
   CreateCredentialProviderService();
 
-  // Enable sync for managed account.
-  CoreAccountInfo core_account =
-      identity_test_environment_.MakeAccountAvailable("foo@gmail.com");
-  AccountInfo account;
-  account.account_id = core_account.account_id;
-  account.gaia = core_account.gaia;
-  account.email = core_account.email;
-  account.hosted_domain = "managed.com";
-  ASSERT_TRUE(account.IsManaged());
-  identity_test_environment_.UpdateAccountInfoForAccount(account);
-  identity_test_environment_.SetPrimaryAccount("foo@gmail.com",
-                                               signin::ConsentLevel::kSync);
-  base::RunLoop().RunUntilIdle();
-
-  // Sign in.
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account);
-  sync_service_.FireStateChanged();
-
-  EXPECT_NSEQ(
-      @"foo@gmail.com",
-      [app_group::GetGroupUserDefaults()
-          stringForKey:
-              AppGroupUserDefaultsCredentialProviderManagedUserEmail()]);
   EXPECT_NSEQ(
       @"foo@gmail.com",
       [app_group::GetGroupUserDefaults()
@@ -427,15 +411,8 @@ TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/user_selectable_type_set);
-
-  identity_test_environment_.ClearPrimaryAccount();
-  base::RunLoop().RunUntilIdle();
-
-  sync_service_.SetSignedOut();
   sync_service_.FireStateChanged();
 
-  EXPECT_FALSE([app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderManagedUserEmail()]);
   EXPECT_FALSE([app_group::GetGroupUserDefaults()
       stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
 }
@@ -452,13 +429,10 @@ TEST_F(CredentialProviderServiceTest, SignedInUserStoredEmail) {
 
   CreateCredentialProviderService();
 
-  EXPECT_NSEQ([app_group::GetGroupUserDefaults()
-                  stringForKey:
-                      AppGroupUserDefaultsCredentialProviderManagedUserEmail()],
-              @"foo@gmail.com");
-  EXPECT_EQ(
-      nil, [app_group::GetGroupUserDefaults()
-               stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
+  EXPECT_NSEQ(
+      [app_group::GetGroupUserDefaults()
+          stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()],
+      @"foo@gmail.com");
 
   // Disable account storage.
   syncer::UserSelectableTypeSet user_selectable_type_set =
@@ -467,11 +441,8 @@ TEST_F(CredentialProviderServiceTest, SignedInUserStoredEmail) {
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/user_selectable_type_set);
-  sync_service_.SetSignedOut();
   sync_service_.FireStateChanged();
 
-  EXPECT_FALSE([app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderManagedUserEmail()]);
   EXPECT_FALSE([app_group::GetGroupUserDefaults()
       stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
 }

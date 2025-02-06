@@ -321,6 +321,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         base::SysNSStringToUTF16(email));
     cell.userInteractionEnabled = YES;
     cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
+    // Set the enterprise icon. This may be replaced by the activity indicator
+    // when needed.
+    [cell showManagementIcon:[self.dataSource isGaiaIDManaged:gaiaID]];
+
     if ([indexPath isEqual:_selectedIndexPath]) {
       // In theory, this can occur if, during the account switch process, the
       // user scrolls a lot, and scroll back.

@@ -332,6 +332,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="569897634095159764">Nije moguće povezati se s internetom. Proksi server zahtijeva autentifikaciju.</translation>
 <translation id="5761096224651992291">Niste je posjetili već neko vrijeme. Chromium je uklonio odobrenja "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" i "<ph name="PERMISSION_3" />"</translation>
 <translation id="5768371961535086509">Chromium oslobađa memoriju od neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama pruža više računarskih resursa i ubrzava rad Chromiuma. Neaktivne kartice se automatski ponovo aktiviraju kada se vratite na njih. <ph name="BEGIN_LINK" />Saznajte više o Uštedi memorije<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Ako ste zaboravili pristupni izraz ili želite promijeniti ovu postavku, <ph name="SETTINGS_LINK" /> podatke Chromiuma na računu</translation>
 <translation id="5800158606660203929">Prilagodite i kontrolirajte Chromium. Postavite Chromium kao zadani preglednik.</translation>
 <translation id="5809516625706423866">Nije moguće povezati se s internetom. HTTP 401 nije ovlašten. Provjerite konfiguraciju proksi servera.</translation>
 <translation id="5821520528363214608">Da koristite i sačuvate podatke Chromiuma na Google računu, ažurirajte Chromium</translation>

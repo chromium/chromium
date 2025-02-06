@@ -488,14 +488,15 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
 - (void)showDefaultAccountWithFullName:(NSString*)fullName
                              givenName:(NSString*)givenName
                                  email:(NSString*)email
-                                avatar:(UIImage*)avatar {
+                                avatar:(UIImage*)avatar
+                               managed:(BOOL)managed {
   if (!self.viewLoaded) {
     // Load the view.
     [self view];
   }
   _submitString = _configuration.submitButtonTitle;
 
-  [_identityButtonControl setIdentityName:fullName email:email];
+  [_identityButtonControl setIdentityName:fullName email:email managed:managed];
   [_identityButtonControl setIdentityAvatar:avatar];
 
   // If spinner is active, delay UI updates until stopSpinner() is called.

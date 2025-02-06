@@ -654,8 +654,6 @@ source_set("browser_sources") {
       "android/gpu_video_accelerator_factories_provider.h",
       "android/impression_android.h",
       "android/java_interfaces.h",
-      "android/media_url_interceptor_register.cc",
-      "android/media_url_interceptor_register.h",
       "android/message_payload.h",
       "android/message_payload_type.h",
       "android/message_port_helper.h",

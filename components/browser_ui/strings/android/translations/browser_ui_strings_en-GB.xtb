@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">Download paused</translation>
 <translation id="1396327438254055134">Allow site to use V8 optimiser.</translation>
+<translation id="1409338233051621926">Tap Apps, then tap Default apps</translation>
 <translation id="1415402041810619267">URL truncated</translation>
 <translation id="1415855080660575082">Let Chrome share your recent tabs with your device to see them in your device's app list and search results. You can turn this on or off in Chrome settings.</translation>
 <translation id="1448064542941920355">Decrease zoom</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Don’t apply Dark theme to sites</translation>
 <translation id="2606760465469169465">Auto-verify</translation>
 <translation id="2621115761605608342">Allow JavaScript for a specific site.</translation>
+<translation id="2626708220538466178">Default browser bottom sheet closed</translation>
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2682367912565197520">Delete saved zoom level</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Mute sites that play sound</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3628308229821498208">Suggested searches</translation>
+<translation id="3658847490588580244">Default browser bottom sheet</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}other{<ph name="RWS_MEMBERS_COUNT" /> sites in <ph name="RWS_OWNER" />’s group of sites that can see your activity in the group}}</translation>
 <translation id="3697164069658504920">When on, sites can ask to use USB devices. When off, sites can't use USB devices.</translation>
 <translation id="3707034683772193706">A site that you visit can save a small amount of info with Chrome, mainly to validate that you're not a bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Delete and reset</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
+<translation id="4672315773691449562">Tap Browser app, then tap Chrome</translation>
 <translation id="4676059169848868271">To let <ph name="APP_NAME" /> use hand tracking, also turn on hand tracking in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
 <translation id="4755971844837804407">When on, sites can show any ad to you. When off, sites can't show intrusive or misleading ads.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Allowed (recommended)</translation>
 <translation id="8609465669617005112">Move up</translation>
 <translation id="8617611086246832542">When on, the desktop view of websites is shown. When off, the mobile view of websites is shown.</translation>
+<translation id="8670078035093027626">Default browser bottom sheet opened at full height</translation>
 <translation id="8676316391139423634">When on, sites can ask to track your hands. When off, sites can't track your hands.</translation>
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="8681886425883659911">Ads are blocked on sites known to show intrusive or misleading ads</translation>

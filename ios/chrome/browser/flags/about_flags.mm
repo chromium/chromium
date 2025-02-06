@@ -1271,6 +1271,22 @@ const FeatureEntry::FeatureVariation kDeprecateFeedHeaderVariations[] = {
      std::size(kDeprecateFeedHeaderVariationAbovePlusEnlargeElements),
      nullptr}};
 
+const FeatureEntry::FeatureParam kAnimatedDBPInFREWithActionButtons[] = {
+    {first_run::kAnimatedDefaultBrowserPromoInFREExperimentType, "0"}};
+const FeatureEntry::FeatureParam kAnimatedDBPInFREWithShowMeHow[] = {
+    {first_run::kAnimatedDefaultBrowserPromoInFREExperimentType, "1"}};
+const FeatureEntry::FeatureParam kAnimatedDBPInFREWithInstructions[] = {
+    {first_run::kAnimatedDefaultBrowserPromoInFREExperimentType, "2"}};
+
+const FeatureEntry::FeatureVariation
+    kAnimatedDefaultBrowserPromoInFREVariations[] = {
+        {" - with Action Buttons", kAnimatedDBPInFREWithActionButtons,
+         std::size(kAnimatedDBPInFREWithActionButtons), nullptr},
+        {" - with Show Me How", kAnimatedDBPInFREWithShowMeHow,
+         std::size(kAnimatedDBPInFREWithShowMeHow), nullptr},
+        {" - with Instructions", kAnimatedDBPInFREWithInstructions,
+         std::size(kAnimatedDBPInFREWithInstructions), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2346,7 +2362,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAnimatedDefaultBrowserPromoInFREName,
      flag_descriptions::kAnimatedDefaultBrowserPromoInFREDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(first_run::kAnimatedDefaultBrowserPromoInFRE)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         first_run::kAnimatedDefaultBrowserPromoInFRE,
+         kAnimatedDefaultBrowserPromoInFREVariations,
+         "AnimatedDBPInFRE-Layout")},
     {"autofill-enable-allowlist-for-bmo-card-category-benefits",
      flag_descriptions::kAutofillEnableAllowlistForBmoCardCategoryBenefitsName,
      flag_descriptions::

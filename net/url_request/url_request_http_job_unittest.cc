@@ -1370,7 +1370,7 @@ class URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest
         std::make_unique<
             testing::StrictMock<device_bound_sessions::SessionServiceMock>>());
     context_ = context_builder->Build();
-    request_ = context_->CreateRequest(GURL("http://www.example.com"),
+    request_ = context_->CreateRequest(GURL("https://www.example.com"),
                                        DEFAULT_PRIORITY, &delegate_,
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
   }
@@ -1404,6 +1404,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
                "Content-Length: 12\r\n\r\n"),
       MockRead("Test Content")};
 
+  net::SSLSocketDataProvider ssl_socket_data_provider(net::ASYNC, net::OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data_provider);
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
@@ -1430,6 +1432,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
                                      "Content-Length: 12\r\n\r\n"),
                             MockRead("Test Content")};
 
+  net::SSLSocketDataProvider ssl_socket_data_provider(net::ASYNC, net::OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data_provider);
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
@@ -1464,6 +1468,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
                                      "Content-Length: 12\r\n\r\n"),
                             MockRead("Test Content")};
 
+  net::SSLSocketDataProvider ssl_socket_data_provider(net::ASYNC, net::OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data_provider);
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
@@ -1489,6 +1495,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
                                      "Content-Length: 12\r\n\r\n"),
                             MockRead("Test Content")};
 
+  net::SSLSocketDataProvider ssl_socket_data_provider(net::ASYNC, net::OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data_provider);
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 
@@ -1521,6 +1529,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
           "Content-Length: 12\r\n\r\n"),
       MockRead("Test Content")};
 
+  net::SSLSocketDataProvider ssl_socket_data_provider(net::ASYNC, net::OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data_provider);
   StaticSocketDataProvider socket_data(reads, writes);
   socket_factory_.AddSocketDataProvider(&socket_data);
 

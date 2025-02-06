@@ -846,7 +846,7 @@ void AppListItemView::SetIconAndMaybeHostBadgeIcon(
 
   // Clear icon and bail out if item icon is empty.
   if (icon.isNull()) {
-    icon_->SetImage(nullptr);
+    icon_->SetImage(ui::ImageModel());
     icon_image_model_ =
         ui::ImageModel(ui::ImageModel::FromImageSkia(gfx::ImageSkia()));
     return;

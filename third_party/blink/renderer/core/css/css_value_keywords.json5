@@ -1207,6 +1207,8 @@
     // corner-shape
     // "round",
     "scoop",
+    "straight",
+    "superellipse",
 
     // -webkit-app-region
     "drag",

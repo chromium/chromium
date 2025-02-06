@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Даведацца больш<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Згрупавана <ph name="TABS_COUNT_ONE" /> укладка</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> укладка}one{<ph name="TABS_COUNT_MANY" /> укладка}few{<ph name="TABS_COUNT_MANY" /> укладкі}many{<ph name="TABS_COUNT_MANY" /> укладак}other{<ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
+<translation id="1909810060368225529">Апавяшчэнне. Усе карыстальнікі бачаць змяненні, унесеныя ў гэту абагуленую групу ўкладак. Кожны карыстальнік можа ўносіць змяненні ў вашы абагуленыя групы ўкладак</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Дадаць у закладкі <ph name="TABS_COUNT_ONE" /> выбраную ўкладку}one{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраную ўкладку}few{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі}many{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Дадаць у закладкі <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="2118649612461486615">Звесткі пра краму</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – укладка ў рэжыме інкогніта.}one{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладка ў рэжыме інкогніта.}few{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладкі ў рэжыме інкогніта.}many{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладак у рэжыме інкогніта.}other{Закрытыя ўкладкі і групы можна зноў адкрыць з раздзелаў "Нядаўнія ўкладкі" і "Групы ўкладак". Выключэнне – # укладкі ў рэжыме інкогніта.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">Тут будуць знаходзіцца групы ўкладак</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Скасаваць групаванне для <ph name="TABS_COUNT_ONE" /> выбранай укладкі}one{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбранай укладкі}few{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбраных укладак}many{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> укладка}one{<ph name="TABS_COUNT_MANY" /> укладка}few{<ph name="TABS_COUNT_MANY" /> укладкі}many{<ph name="TABS_COUNT_MANY" /> укладак}other{<ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
+<translation id="6499296376514955580">Апавяшчэнне пра змяненні ў абагуленай групе ўкладак закрыта</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Праз 1 дзень}one{Праз <ph name="DAY_COUNT_MANY" /> дзень}few{Праз <ph name="DAY_COUNT_MANY" /> дні}many{Праз <ph name="DAY_COUNT_MANY" /> дзён}other{Праз <ph name="DAY_COUNT_MANY" /> дня}}</translation>
 <translation id="6549021453810473782">Паказаць звесткі пра краму</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Перамясціць укладку ўлева</translation>
+<translation id="6589356853295569750">Адкрытае на ўвесь экран апавяшчэнне пра змяненні ў абагуленай групе ўкладак</translation>
 <translation id="6590332670428149473">Адкрыць меню дзеянняў для абагуленай групы ўкладак "<ph name="TITLE_OF_GROUP" />", колер <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Паказаць</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Укладак зменена: <ph name="ONE_CHANGED" />}one{Укладак зменена: <ph name="MANY_CHANGED" />}few{Укладак зменена: <ph name="MANY_CHANGED" />}many{Укладак зменена: <ph name="MANY_CHANGED" />}other{Укладак зменена: <ph name="MANY_CHANGED" />}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Абагуліць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку}one{Абагуліць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку}few{Абагуліць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі}many{Абагуліць <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Абагуліць <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="7773714564112603605">Прыбраць укладку і выдаліць групу</translation>
 <translation id="7792771145871471484">Праглядзець прапановы.</translation>
+<translation id="7792860826279960128">Адкрытае на палову экрана апавяшчэнне пра змяненні ў абагуленай групе ўкладак</translation>
 <translation id="7825973332242257878">Групы ўкладак</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Дадаць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку ў групу}one{Дадаць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку ў групу}few{Дадаць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі ў групу}many{Дадаць <ph name="TABS_COUNT_MANY" /> выбраных укладак у групу}other{Дадаць <ph name="TABS_COUNT_MANY" /> выбранай укладкі ў групу}}</translation>
 <translation id="7853202427316060426">Дзеянні</translation>

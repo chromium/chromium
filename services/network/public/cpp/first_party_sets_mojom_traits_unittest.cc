@@ -108,12 +108,14 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
       },
       /*aliases=*/{{c_cctld, c}});
 
-  original.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(
-      /*set_entries=*/{{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary,
-                                                   std::nullopt)},
-                       {b, net::FirstPartySetEntry(
-                               a, net::SiteType::kAssociated, 0)}},
-      /*aliases=*/{{b_cctld, b}}));
+  original.ApplyManuallySpecifiedSet(
+      net::LocalSetDeclaration::Create(
+          /*set_entries=*/{{a, net::FirstPartySetEntry(
+                                   a, net::SiteType::kPrimary, std::nullopt)},
+                           {b, net::FirstPartySetEntry(
+                                   a, net::SiteType::kAssociated, 0)}},
+          /*aliases=*/{{b_cctld, b}})
+          .value());
 
   net::GlobalFirstPartySets round_tripped;
 
@@ -144,12 +146,14 @@ TEST(FirstPartySetsTraitsTest, GlobalFirstPartySets_InvalidVersion) {
       },
       /*aliases=*/{{c_cctld, c}});
 
-  original.ApplyManuallySpecifiedSet(net::LocalSetDeclaration(
-      /*set_entries=*/{{a, net::FirstPartySetEntry(a, net::SiteType::kPrimary,
-                                                   std::nullopt)},
-                       {b, net::FirstPartySetEntry(
-                               a, net::SiteType::kAssociated, 0)}},
-      /*aliases=*/{{b_cctld, b}}));
+  original.ApplyManuallySpecifiedSet(
+      net::LocalSetDeclaration::Create(
+          /*set_entries=*/{{a, net::FirstPartySetEntry(
+                                   a, net::SiteType::kPrimary, std::nullopt)},
+                           {b, net::FirstPartySetEntry(
+                                   a, net::SiteType::kAssociated, 0)}},
+          /*aliases=*/{{b_cctld, b}})
+          .value());
 
   net::GlobalFirstPartySets round_tripped;
 

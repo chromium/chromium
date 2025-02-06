@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -41,6 +42,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   static constexpr base::TimeDelta kChangePasswordFormWaitingTimeout =
       base::Seconds(10);
+  static constexpr char kFinalPasswordChangeStatusHistogram[] =
+      "PasswordManager.FinalPasswordChangeStatus";
 
   PasswordChangeDelegateImpl(GURL change_password_url,
                              std::u16string username,
@@ -112,6 +115,8 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   std::unique_ptr<ChangeFormSubmissionVerifier> submission_verifier_;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
+
+  base::Time flow_start_time_;
 
   base::WeakPtrFactory<PasswordChangeDelegateImpl> weak_ptr_factory_{this};
 };

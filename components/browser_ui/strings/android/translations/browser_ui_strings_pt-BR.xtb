@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1384959399684842514">Download pausado</translation>
 <translation id="1396327438254055134">Permitir que o site use o otimizador V8.</translation>
+<translation id="1409338233051621926">Toque em "Apps" e em "Apps padrão"</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1415855080660575082">Permita que o Chrome compartilhe suas guias recentes com o dispositivo para que elas apareçam na lista de apps e nos resultados da pesquisa do aparelho. É possível ativar ou desativar essa opção nas configurações do Chrome.</translation>
 <translation id="1448064542941920355">Diminuir zoom</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Não aplicar o tema escuro para sites</translation>
 <translation id="2606760465469169465">Verificação automática</translation>
 <translation id="2621115761605608342">Permitir JavaScript para um site específico.</translation>
+<translation id="2626708220538466178">A página inferior de navegador padrão foi fechada</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2682367912565197520">Excluir nível de zoom salvo</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Silenciar sites com áudio</translation>
 <translation id="3602290021589620013">Visualizar</translation>
 <translation id="3628308229821498208">Pesquisas sugeridas</translation>
+<translation id="3658847490588580244">Página inferior de navegador padrão</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{Há <ph name="RWS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="RWS_OWNER" />}one{Há <ph name="RWS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="RWS_OWNER" />}other{Há <ph name="RWS_MEMBERS_COUNT" /> sites que podem ver sua atividade no grupo <ph name="RWS_OWNER" />}}</translation>
 <translation id="3697164069658504920">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos USB. Quando está desativada, os sites não podem usar dispositivos USB.</translation>
 <translation id="3707034683772193706">Os sites visitados podem salvar uma pequena quantidade de informações com o Chrome, principalmente para validar que você não é um bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Excluir e redefinir</translation>
 <translation id="4645575059429386691">Gerenciado pelos seus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
+<translation id="4672315773691449562">Toque em "App de navegação" e em "Chrome"</translation>
 <translation id="4676059169848868271">Para permitir que o app <ph name="APP_NAME" /> use o rastreamento de mãos, ative o recurso nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Sensores de luz ou movimento</translation>
 <translation id="4755971844837804407">Quando essa configuração está ativada, os sites podem mostrar qualquer anúncio para você. Quando está desativada, os sites não podem mostrar anúncios invasivos ou enganosos.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover para cima</translation>
 <translation id="8617611086246832542">Quando essa configuração está ativada, a versão para computadores dos sites aparece. Quando está desativada, a versão para dispositivos móveis aparece.</translation>
+<translation id="8670078035093027626">A página inferior de navegador padrão está aberta no tamanho máximo</translation>
 <translation id="8676316391139423634">Quando essa configuração está ativada, os sites podem pedir para acompanhar suas mãos. Quando está desativada, os sites não podem acompanhar suas mãos.</translation>
 <translation id="8676374126336081632">Limpar entrada</translation>
 <translation id="8681886425883659911">A publicidade é bloqueada em sites que mostram anúncios invasivos ou enganosos</translation>

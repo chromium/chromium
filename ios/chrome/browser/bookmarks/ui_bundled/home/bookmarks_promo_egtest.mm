@@ -286,6 +286,8 @@ using chrome_test_util::SettingsDoneButton;
   ExpectedSigninHistograms* expecteds = [[ExpectedSigninHistograms alloc]
       initWithAccessPoint:signin_metrics::AccessPoint::kBookmarkManager];
   expecteds.signinSignInStarted = 1;
+  expecteds.signinSignInOffered = 1;
+  expecteds.signinSignInOfferedNewAccountNoExistingAccount = 1;
   expecteds.signinSigninStartedAccessPoint = 1;
   expecteds.signinSignStartedAccessPointNewAccountNoExistingAccount = 1;
   expecteds.signinSignInCompleted = 1;

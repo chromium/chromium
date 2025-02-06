@@ -65,17 +65,9 @@ const base::FilePath::CharType kExtensionFilePath[] = FILE_PATH_LITERAL("/oo");
 
 constexpr char kThemesLocalDataItemModelId[] = "current-theme";
 
-class ThemeLocalDataBatchUploaderTest
-    : public extensions::ExtensionServiceTestBase,
-      public testing::WithParamInterface<sync_pb::ThemeSpecifics> {
+class ThemeLocalDataBatchUploaderTestBase
+    : public extensions::ExtensionServiceTestBase {
  protected:
-  ThemeLocalDataBatchUploaderTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kMoveThemePrefsToSpecifics,
-                              syncer::kSeparateLocalAndAccountThemes},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     // Setting a matching update URL is necessary to make the test theme
     // considered syncable.
@@ -155,12 +147,77 @@ class ThemeLocalDataBatchUploaderTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<ThemeService> theme_service_;
   raw_ptr<ThemeSyncableService> theme_sync_service_;
   std::unique_ptr<syncer::FakeSyncChangeProcessor> fake_change_processor_;
   scoped_refptr<extensions::Extension> theme_extension_;
   std::unique_ptr<ThemeLocalDataBatchUploader> batch_uploader_;
+};
+
+class ThemeLocalDataBatchUploaderTestWithFlagDisabled
+    : public ThemeLocalDataBatchUploaderTestBase {
+ public:
+  ThemeLocalDataBatchUploaderTestWithFlagDisabled() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kMoveThemePrefsToSpecifics,
+                              syncer::kSeparateLocalAndAccountThemes},
+        /*disabled_features=*/{syncer::kThemesBatchUpload});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ThemeLocalDataBatchUploaderTestWithFlagDisabled, ShouldReturnNoItems) {
+  // Local extension theme.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return theme_service()->UsingExtensionTheme(); }));
+
+  const sync_pb::ThemeSpecifics local_theme_specifics =
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting();
+  const sync_pb::ThemeSpecifics remote_theme_specifics =
+      theme_service::test::CreateThemeSpecificsWithColorTheme();
+
+  StartSyncing(remote_theme_specifics);
+
+  syncer::LocalDataDescription desc = GetLocalDataDescription();
+  EXPECT_EQ(desc.type, syncer::THEMES);
+  EXPECT_THAT(desc.local_data_models, IsEmpty());
+}
+
+using ThemeLocalDataBatchUploaderDeathTestWithFlagDisabled =
+    ThemeLocalDataBatchUploaderTestWithFlagDisabled;
+
+TEST_F(ThemeLocalDataBatchUploaderDeathTestWithFlagDisabled,
+       TriggerLocalDataMigration) {
+  // Local extension theme.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return theme_service()->UsingExtensionTheme(); }));
+
+  const sync_pb::ThemeSpecifics local_theme_specifics =
+      theme_sync_service()->GetThemeSpecificsFromCurrentThemeForTesting();
+  const sync_pb::ThemeSpecifics remote_theme_specifics =
+      theme_service::test::CreateThemeSpecificsWithColorTheme();
+
+  StartSyncing(remote_theme_specifics);
+
+  EXPECT_DEATH(TriggerLocalDataMigration(), "");
+}
+
+class ThemeLocalDataBatchUploaderTest
+    : public ThemeLocalDataBatchUploaderTestBase,
+      public testing::WithParamInterface<sync_pb::ThemeSpecifics> {
+ public:
+  ThemeLocalDataBatchUploaderTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kMoveThemePrefsToSpecifics,
+                              syncer::kSeparateLocalAndAccountThemes,
+                              syncer::kThemesBatchUpload},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ThemeLocalDataBatchUploaderTest,

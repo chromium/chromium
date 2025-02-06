@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">在所有裝置上都能使用自己的密碼</translation>
 <translation id="1082920045291562218">已關閉「透過摘要意見回饋表分享」功能</translation>
 <translation id="1087176310396019910">疑似垃圾內容</translation>
+<translation id="1087799850623149508">按住網址列即可移到底部</translation>
 <translation id="1089606299949659462">審查完成！</translation>
 <translation id="1094555143448724771">如要查看其他裝置上的分頁，請同步分頁和歷史記錄</translation>
 <translation id="1095761715416917775">確保你可以隨時存取同步處理的資料</translation>
@@ -131,6 +132,7 @@
 <translation id="1513858653616922153">刪除密碼</translation>
 <translation id="1521774566618522728">上次使用時間：今天</translation>
 <translation id="153446405401665083">Chrome 已推出新版本</translation>
+<translation id="1540012742443808215">網址列目前位於頂端</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{這 1 個書籤只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}other{這 # 個書籤只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />)。}}</translation>
 <translation id="1544084554881119930">系統將不會加密付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
 只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
@@ -1185,6 +1187,7 @@
 <translation id="6459045781120991510">問卷調查</translation>
 <translation id="6461962085415701688">無法開啟檔案</translation>
 <translation id="6464977750820128603">你可以查看自己透過 Chrome 造訪的網站，並對這些網站設定計時器。\n\nGoogle 會收到這些設有計時器的網站相關資訊以及你的造訪時間長度。這些資訊可協助我們改善數位健康。</translation>
+<translation id="6468703991511753953">網址列目前位於底部</translation>
 <translation id="6470181189905173055">使用 <ph name="APP_LABEL" /> 時，在 Chrome 中開啟的網頁會顯示在這裡。</translation>
 <translation id="6473086018775716761">分享選項清單已開啟，顯示在畫面下半部。</translation>
 <translation id="6475951671322991020">下載影片</translation>

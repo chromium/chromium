@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1444443021901415601">Chrome skráir áhugasvið í samræmi við nýlegan vafraferil</translation>
-<translation id="2252052615723281030">Þegar þú ert skráð(ur) inn í Chrome hjálpar þessi stilling þér að halda IP-tölunni lokaðri. Ef Chrome hefur grun um að vefsvæði gæti verið að rekja þig gæti hluti af umferðinni þinni verið send í gegnum persónuverndarþjóna.</translation>
 <translation id="235789365079050412">Persónuverndarstefna Google</translation>
 <translation id="2793385791865768072">Chromium skráir áhugasvið í samræmi við nýlegan vafraferil</translation>
 <translation id="2979365474350987274">Fótspor þriðju aðila eru takmörkuð</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Fótspor þriðja aðila takmörkuð</translation>
 <translation id="6371812158043974664">Þegar þú ert skráð(ur) inn í Chromium hjálpar þessi stilling þér að halda IP-tölunni lokaðri. Ef Chromium hefur grun um að vefsvæði gæti verið að rekja þig gæti hluti af umferðinni þinni verið send í gegnum persónuverndarþjóna. Nánar um <ph name="LINK_BEGIN" />hvernig IP-vörn virkar<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Farðu yfir <ph name="BEGIN_LINK1" />persónuverndarstefnuna<ph name="LINK_END1" /> okkar til að kynna þér hvernig Google verndar gögnin þín.</translation>
-<translation id="7040031291654706261">Lærðu <ph name="BEGIN_LINK" />hvernig IP-vörn virkar<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Farðu yfir umfjöllunarefni auglýsinga</translation>
 </translationbundle>

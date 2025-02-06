@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1444443021901415601">Chrome 会根据您近期的浏览记录来推测您感兴趣的主题</translation>
-<translation id="2252052615723281030">登录 Chrome 后，此设置有助于确保您的 IP 地址不会外泄。如果 Chrome 怀疑某个网站可能跟踪您，或许会通过隐私保护服务器来发送您的某些流量。</translation>
 <translation id="235789365079050412">Google 隐私权政策</translation>
 <translation id="2793385791865768072">Chromium 会根据您近期的浏览记录来推测您感兴趣的主题</translation>
 <translation id="2979365474350987274">第三方 Cookie 受到限制</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6371812158043974664">在您登录 Chromium 后，此设置有助于确保您的 IP 地址不会外泄。如果 Chromium 怀疑某个网站可能跟踪您，或许会通过隐私保护服务器来发送您的某些流量。详细了解<ph name="LINK_BEGIN" />“IP 地址保护”的运作方式<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">如需详细了解 Google 如何保护您的数据，请参阅我们的<ph name="BEGIN_LINK1" />《隐私权政策》<ph name="LINK_END1" />。</translation>
-<translation id="7040031291654706261">了解 <ph name="BEGIN_LINK" />IP 地址保护的工作原理<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">查看广告主题设置</translation>
 </translationbundle>

@@ -68,5 +68,6 @@
   },
   "builder_group": "chromium.coverage",
   "collect_fuzz_coverage": true,
+  "fuzz_engine": "libfuzzer",
   "recipe": "chromium/fuzz"
 }

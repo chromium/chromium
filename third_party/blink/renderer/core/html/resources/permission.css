@@ -12,15 +12,16 @@
 permission {
   background-color:#efefef;
   border: solid 1px #767676;
-  box-sizing: border-box !important;
+  box-sizing: content-box !important;
   border-radius: 3px;
   color: #000000;
   cursor: pointer !important;
   display: inline-block;
   font-weight: normal;
   font-style: normal;
-  height: 1.2em;
-  width: 188px;
+  padding: 8px 16px;
+  height: auto;
+  width: auto;
   word-spacing: normal;
  }
 

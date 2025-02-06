@@ -216,13 +216,13 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public void createSingleTabGroup(int tabId, boolean notify) {
-        createSingleTabGroup(getTabModel().getTabById(tabId), notify);
+    public void createSingleTabGroup(int tabId) {
+        createSingleTabGroup(getTabModel().getTabById(tabId));
     }
 
     @Override
-    public void createSingleTabGroup(Tab tab, boolean notify) {
-        createSingleTabGroupInternal(tab, Token.createRandom(), notify);
+    public void createSingleTabGroup(Tab tab) {
+        createSingleTabGroupInternal(tab, Token.createRandom());
     }
 
     @Override
@@ -230,14 +230,14 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         if (tabs.isEmpty()) return;
 
         Tab rootTab = tabs.get(0);
-        createSingleTabGroupInternal(rootTab, tabGroupId, /* notify= */ false);
+        createSingleTabGroupInternal(rootTab, tabGroupId);
 
         if (tabs.size() == 1) return;
 
         mergeListOfTabsToGroup(tabs, rootTab, /* notify= */ false);
     }
 
-    private void createSingleTabGroupInternal(Tab tab, @NonNull Token tabGroupId, boolean notify) {
+    private void createSingleTabGroupInternal(Tab tab, @NonNull Token tabGroupId) {
         assert tab.getTabGroupId() == null;
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
@@ -246,31 +246,12 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
         tab.setTabGroupId(tabGroupId);
 
-        // If this is a new tab group creation that will show a dialog, do not trigger a snackbar.
-        if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog()) {
-            notify = false;
-        }
-
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.didCreateNewGroup(tab, this);
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.didMergeTabToGroup(tab);
-        }
-
-        if (notify) {
-            int index = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
-            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.didCreateGroup(
-                    Collections.singletonList(tab),
-                    Collections.singletonList(index),
-                    Collections.singletonList(tab.getRootId()),
-                    Collections.singletonList(null),
-                    null,
-                    TabGroupColorUtils.INVALID_COLOR_ID,
-                    /* destinationGroupTitleCollapsed= */ false);
-            }
         }
     }
 
@@ -364,11 +345,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 if (willMergingCreateNewGroup) {
                     observer.didCreateNewGroup(destinationTab, this);
 
-                    // If this is a new tab group creation that will show a dialog, do not trigger a
-                    // snackbar.
-                    if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog()) {
-                        continue;
-                    }
+                    // New tab group creations will show a dialog, so do not trigger a snackbar.
+                    continue;
                 }
 
                 // Since the undo group merge logic is unsupported when called from the tab strip,
@@ -501,12 +479,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 observer.didCreateNewGroup(destinationTab, this);
             }
 
-            // If this is a new tab group creation that will show a dialog, do not trigger a
-            // snackbar.
-            boolean skipSnackbarForCreation =
-                    willMergingCreateNewGroup
-                            && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog();
-            if (notify && !skipSnackbarForCreation) {
+            // Do not show a snackbar for new tab group creations as they launch a dialog.
+            if (notify && !willMergingCreateNewGroup) {
                 observer.didCreateGroup(
                         mergedTabs,
                         originalIndexes,

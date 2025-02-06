@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SUPERELLIPSE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SUPERELLIPSE_H_
 
+#include <limits>
 namespace blink {
 
 // Represents a superellipse, as defined in
@@ -16,6 +17,11 @@ class Superellipse {
 
   // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-scoop
   static Superellipse Scoop() { return Superellipse(0.5); }
+
+  // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-straight
+  static Superellipse Straight() {
+    return Superellipse(std::numeric_limits<double>::max());
+  }
 
   explicit Superellipse(double exponent) : exponent_(exponent) {}
 

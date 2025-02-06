@@ -419,7 +419,7 @@ TEST_F(ProcessTest, SetProcessPriority) {
 bool IsThreadRT(PlatformThreadId thread_id) {
   // Check if the thread is running in real-time mode
   int sched = sched_getscheduler(
-      PlatformThread::CurrentId() == thread_id ? 0 : thread_id);
+      PlatformThread::CurrentId() == thread_id ? 0 : thread_id.raw());
   if (sched == -1) {
     // The thread may disappear for any reason so ignore ESRCH.
     DPLOG_IF(ERROR, errno != ESRCH)

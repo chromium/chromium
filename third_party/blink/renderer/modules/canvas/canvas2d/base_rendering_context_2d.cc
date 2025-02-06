@@ -57,11 +57,16 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_text_cluster_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_2d_gpu_transfer_option.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_direction.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_kerning.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_stretch.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_variant_caps.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_text_rendering.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
@@ -246,21 +251,6 @@ BASE_FEATURE(kDisableCanvasOverdrawOptimization,
 constexpr size_t kColorCacheMaxSize = 8;
 
 const char BaseRenderingContext2D::kDefaultFont[] = "10px sans-serif";
-const char BaseRenderingContext2D::kInheritDirectionString[] = "inherit";
-const char BaseRenderingContext2D::kRtlDirectionString[] = "rtl";
-const char BaseRenderingContext2D::kLtrDirectionString[] = "ltr";
-const char BaseRenderingContext2D::kAutoKerningString[] = "auto";
-const char BaseRenderingContext2D::kNormalKerningString[] = "normal";
-const char BaseRenderingContext2D::kNoneKerningString[] = "none";
-const char BaseRenderingContext2D::kNormalVariantString[] = "normal";
-const char BaseRenderingContext2D::kSmallCapsVariantString[] = "small-caps";
-const char BaseRenderingContext2D::kAllSmallCapsVariantString[] =
-    "all-small-caps";
-const char BaseRenderingContext2D::kPetiteVariantString[] = "petite-caps";
-const char BaseRenderingContext2D::kAllPetiteVariantString[] =
-    "all-petite-caps";
-const char BaseRenderingContext2D::kUnicaseVariantString[] = "unicase";
-const char BaseRenderingContext2D::kTitlingCapsVariantString[] = "titling-caps";
 
 // Dummy overdraw test for ops that do not support overdraw detection
 const auto kNoOverdraw = [](const SkIRect& clip_bounds) { return false; };
@@ -289,9 +279,7 @@ BaseRenderingContext2D::BaseRenderingContext2D(
       path2d_use_paint_cache_(
           base::FeatureList::IsEnabled(features::kPath2DPaintCache)
               ? UsePaintCache::kEnabled
-              : UsePaintCache::kDisabled) {
-  state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>());
-}
+              : UsePaintCache::kDisabled) {}
 
 BaseRenderingContext2D::~BaseRenderingContext2D() {
   UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Canvas.MaximumStateStackDepth",
@@ -1147,60 +1135,6 @@ void BaseRenderingContext2D::setMiterLimit(double limit) {
                                                 limit);
   }
   state.SetMiterLimit(ClampTo<float>(limit));
-}
-
-double BaseRenderingContext2D::shadowOffsetX() const {
-  return GetState().ShadowOffset().x();
-}
-
-void BaseRenderingContext2D::setShadowOffsetX(double x) {
-  if (!std::isfinite(x))
-    return;
-  CanvasRenderingContext2DState& state = GetState();
-  if (state.ShadowOffset().x() == x) {
-    return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetX,
-                                                x);
-  }
-  state.SetShadowOffsetX(ClampTo<float>(x));
-}
-
-double BaseRenderingContext2D::shadowOffsetY() const {
-  return GetState().ShadowOffset().y();
-}
-
-void BaseRenderingContext2D::setShadowOffsetY(double y) {
-  if (!std::isfinite(y))
-    return;
-  CanvasRenderingContext2DState& state = GetState();
-  if (state.ShadowOffset().y() == y) {
-    return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetY,
-                                                y);
-  }
-  state.SetShadowOffsetY(ClampTo<float>(y));
-}
-
-double BaseRenderingContext2D::shadowBlur() const {
-  return GetState().ShadowBlur();
-}
-
-void BaseRenderingContext2D::setShadowBlur(double blur) {
-  if (!std::isfinite(blur) || blur < 0)
-    return;
-  CanvasRenderingContext2DState& state = GetState();
-  if (state.ShadowBlur() == blur) {
-    return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowBlur,
-                                                blur);
-  }
-  state.SetShadowBlur(ClampTo<float>(blur));
 }
 
 String BaseRenderingContext2D::shadowColor() const {
@@ -3181,65 +3115,79 @@ V8CanvasTextRendering BaseRenderingContext2D::textRendering() const {
   return GetState().GetTextRendering();
 }
 
-String BaseRenderingContext2D::textAlign() const {
-  return TextAlignName(GetState().GetTextAlign());
+V8CanvasTextAlign BaseRenderingContext2D::textAlign() const {
+  return GetState().GetTextAlign();
 }
 
-void BaseRenderingContext2D::setTextAlign(const String& s) {
+void BaseRenderingContext2D::setTextAlign(const V8CanvasTextAlign align) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetTextAlign, IdentifiabilityBenignStringToken(s));
+        CanvasOps::kSetTextAlign,
+        IdentifiabilityBenignStringToken(align.AsString()));
   }
-  TextAlign align;
-  if (!ParseTextAlign(s, align))
-    return;
-  CanvasRenderingContext2DState& state = GetState();
-  if (state.GetTextAlign() == align) {
-    return;
-  }
-  state.SetTextAlign(align);
+  GetState().SetTextAlign(align);
 }
 
-String BaseRenderingContext2D::textBaseline() const {
-  return TextBaselineName(GetState().GetTextBaseline());
+V8CanvasTextBaseline BaseRenderingContext2D::textBaseline() const {
+  return GetState().GetTextBaseline();
 }
 
-void BaseRenderingContext2D::setTextBaseline(const String& s) {
+void BaseRenderingContext2D::setTextBaseline(
+    const V8CanvasTextBaseline baseline) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetTextBaseline, IdentifiabilityBenignStringToken(s));
+        CanvasOps::kSetTextBaseline,
+        IdentifiabilityBenignStringToken(baseline.AsString()));
   }
-  TextBaseline baseline;
-  if (!ParseTextBaseline(s, baseline))
-    return;
-  CanvasRenderingContext2DState& state = GetState();
-  if (state.GetTextBaseline() == baseline) {
-    return;
-  }
-  state.SetTextBaseline(baseline);
+  GetState().SetTextBaseline(baseline);
 }
 
-String BaseRenderingContext2D::fontKerning() const {
-  return FontDescription::ToString(GetState().GetFontKerning()).LowerASCII();
+V8CanvasFontKerning BaseRenderingContext2D::fontKerning() const {
+  switch (GetState().GetFontKerning()) {
+    case (FontDescription::Kerning::kAutoKerning):
+      return V8CanvasFontKerning(V8CanvasFontKerning::Enum::kAuto);
+    case (FontDescription::Kerning::kNoneKerning):
+      return V8CanvasFontKerning(V8CanvasFontKerning::Enum::kNone);
+    case (FontDescription::Kerning::kNormalKerning):
+      return V8CanvasFontKerning(V8CanvasFontKerning::Enum::kNormal);
+  }
 }
 
 V8CanvasFontStretch BaseRenderingContext2D::fontStretch() const {
   return GetState().GetFontStretch();
 }
 
-String BaseRenderingContext2D::fontVariantCaps() const {
-  return FontDescription::ToStringForIdl(GetState().GetFontVariantCaps());
+V8CanvasFontVariantCaps BaseRenderingContext2D::fontVariantCaps() const {
+  switch (GetState().GetFontVariantCaps()) {
+    case (FontDescription::FontVariantCaps::kCapsNormal):
+      return V8CanvasFontVariantCaps(V8CanvasFontVariantCaps::Enum::kNormal);
+    case (FontDescription::FontVariantCaps::kSmallCaps):
+      return V8CanvasFontVariantCaps(V8CanvasFontVariantCaps::Enum::kSmallCaps);
+    case (FontDescription::FontVariantCaps::kAllSmallCaps):
+      return V8CanvasFontVariantCaps(
+          V8CanvasFontVariantCaps::Enum::kAllSmallCaps);
+    case (FontDescription::FontVariantCaps::kPetiteCaps):
+      return V8CanvasFontVariantCaps(
+          V8CanvasFontVariantCaps::Enum::kPetiteCaps);
+    case (FontDescription::FontVariantCaps::kAllPetiteCaps):
+      return V8CanvasFontVariantCaps(
+          V8CanvasFontVariantCaps::Enum::kAllPetiteCaps);
+    case (FontDescription::FontVariantCaps::kTitlingCaps):
+      return V8CanvasFontVariantCaps(
+          V8CanvasFontVariantCaps::Enum::kTitlingCaps);
+    case (FontDescription::FontVariantCaps::kUnicase):
+      return V8CanvasFontVariantCaps(V8CanvasFontVariantCaps::Enum::kUnicase);
+  }
 }
 
 void BaseRenderingContext2D::Trace(Visitor* visitor) const {
-  visitor->Trace(state_stack_);
   visitor->Trace(dispatch_context_lost_event_timer_);
   visitor->Trace(dispatch_context_restored_event_timer_);
   visitor->Trace(try_restore_context_event_timer_);
   visitor->Trace(color_cache_);
   visitor->Trace(webgpu_access_texture_);
   visitor->Trace(placed_elements_);
-  CanvasPath::Trace(visitor);
+  CanvasRecordingContext2D::Trace(visitor);
 }
 
 BaseRenderingContext2D::UsageCounters::UsageCounters()
@@ -3378,15 +3326,15 @@ void BaseRenderingContext2D::setFont(const String& new_font) {
 }
 
 static inline TextDirection ToTextDirection(
-    CanvasRenderingContext2DState::Direction direction,
+    V8CanvasDirection direction,
     CanvasRenderingContextHost* host,
     const ComputedStyle* style = nullptr) {
-  switch (direction) {
-    case CanvasRenderingContext2DState::kDirectionInherit:
+  switch (direction.AsEnum()) {
+    case V8CanvasDirection::Enum::kInherit:
       return host ? host->GetTextDirection(style) : TextDirection::kLtr;
-    case CanvasRenderingContext2DState::kDirectionRTL:
+    case V8CanvasDirection::Enum::kRtl:
       return TextDirection::kRtl;
-    case CanvasRenderingContext2DState::kDirectionLTR:
+    case V8CanvasDirection::Enum::kLtr:
       return TextDirection::kLtr;
   }
   NOTREACHED();
@@ -3400,10 +3348,10 @@ OffscreenCanvas* BaseRenderingContext2D::HostAsOffscreenCanvas() const {
   return nullptr;
 }
 
-String BaseRenderingContext2D::direction() const {
+V8CanvasDirection BaseRenderingContext2D::direction() const {
   const CanvasRenderingContext2DState& state = GetState();
   bool value_is_inherit =
-      state.GetDirection() == CanvasRenderingContext2DState::kDirectionInherit;
+      state.GetDirection() == V8CanvasDirection::Enum::kInherit;
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasTextDirectionGet);
   if (value_is_inherit) {
@@ -3412,31 +3360,19 @@ String BaseRenderingContext2D::direction() const {
   }
   return ToTextDirection(state.GetDirection(),
                          GetCanvasRenderingContextHost()) == TextDirection::kRtl
-             ? kRtlDirectionString
-             : kLtrDirectionString;
+             ? V8CanvasDirection(V8CanvasDirection::Enum::kRtl)
+             : V8CanvasDirection(V8CanvasDirection::Enum::kLtr);
 }
 
-void BaseRenderingContext2D::setDirection(const String& direction_string) {
-  CanvasRenderingContext2DState::Direction direction;
+void BaseRenderingContext2D::setDirection(const V8CanvasDirection direction) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasTextDirectionSet);
-  if (direction_string == kInheritDirectionString) {
+  if (direction == V8CanvasDirection::Enum::kInherit) {
     UseCounter::Count(GetTopExecutionContext(),
                       WebFeature::kCanvasTextDirectionSetInherit);
-    direction = CanvasRenderingContext2DState::kDirectionInherit;
-  } else if (direction_string == kRtlDirectionString) {
-    direction = CanvasRenderingContext2DState::kDirectionRTL;
-  } else if (direction_string == kLtrDirectionString) {
-    direction = CanvasRenderingContext2DState::kDirectionLTR;
-  } else {
-    return;
   }
 
   CanvasRenderingContext2DState& state = GetState();
-  if (state.GetDirection() == direction) {
-    return;
-  }
-
   state.SetDirection(direction);
 }
 
@@ -3469,8 +3405,8 @@ void BaseRenderingContext2D::fillTextCluster(
     double y,
     const TextClusterOptions* cluster_options) {
   DCHECK(text_cluster);
-  TextAlign align = text_cluster->GetTextAlign();
-  TextBaseline baseline = text_cluster->GetTextBaseline();
+  V8CanvasTextAlign cluster_align = text_cluster->align();
+  V8CanvasTextBaseline cluster_baseline = text_cluster->baseline();
   double cluster_x = text_cluster->x();
   double cluster_y = text_cluster->y();
   if (cluster_options != nullptr) {
@@ -3481,15 +3417,15 @@ void BaseRenderingContext2D::fillTextCluster(
       cluster_y = cluster_options->y();
     }
     if (cluster_options->hasAlign()) {
-      ParseTextAlign(cluster_options->align(), align);
+      cluster_align = cluster_options->align();
     }
     if (cluster_options->hasBaseline()) {
-      ParseTextBaseline(cluster_options->baseline(), baseline);
+      cluster_baseline = cluster_options->baseline();
     }
   }
   DrawTextInternal(text_cluster->text(), cluster_x + x, cluster_y + y,
-                   CanvasRenderingContext2DState::kFillPaintType, align,
-                   baseline, text_cluster->begin(), text_cluster->end(),
+                   CanvasRenderingContext2DState::kFillPaintType, cluster_align,
+                   cluster_baseline, text_cluster->begin(), text_cluster->end(),
                    nullptr, &text_cluster->textMetrics()->GetFont());
 }
 
@@ -3528,8 +3464,8 @@ void BaseRenderingContext2D::DrawTextInternal(
     double x,
     double y,
     CanvasRenderingContext2DState::PaintType paint_type,
-    TextAlign align,
-    TextBaseline baseline,
+    V8CanvasTextAlign align,
+    V8CanvasTextBaseline baseline,
     unsigned run_start,
     unsigned run_end,
     double* max_width,
@@ -3606,24 +3542,27 @@ void BaseRenderingContext2D::DrawTextInternal(
   bool use_max_width = (max_width && *max_width < font_width);
   double width = use_max_width ? *max_width : font_width;
 
-  if (align == kStartTextAlign) {
-    align = is_rtl ? kRightTextAlign : kLeftTextAlign;
-  } else if (align == kEndTextAlign) {
-    align = is_rtl ? kLeftTextAlign : kRightTextAlign;
+  if (align == V8CanvasTextAlign::Enum::kStart) {
+    align = is_rtl ? V8CanvasTextAlign(V8CanvasTextAlign::Enum::kRight)
+                   : V8CanvasTextAlign(V8CanvasTextAlign::Enum::kLeft);
+  } else if (align == V8CanvasTextAlign::Enum::kEnd) {
+    align = is_rtl ? V8CanvasTextAlign(V8CanvasTextAlign::Enum::kLeft)
+                   : V8CanvasTextAlign(V8CanvasTextAlign::Enum::kRight);
   }
 
-  switch (align) {
-    case kCenterTextAlign:
+  switch (align.AsEnum()) {
+    case V8CanvasTextAlign::Enum::kCenter:
       location.set_x(location.x() - width / 2);
       break;
-    case kRightTextAlign:
+    case V8CanvasTextAlign::Enum::kRight:
       location.set_x(location.x() - width);
       break;
     default:
       break;
   }
 
-  location.Offset(0, TextMetrics::GetFontBaseline(baseline, *font_data));
+  location.Offset(0,
+                  TextMetrics::GetFontBaseline(baseline.AsEnum(), *font_data));
 
   bounds.Offset(location.x(), location.y());
   if (paint_type == CanvasRenderingContext2DState::kStrokePaintType) {
@@ -3705,8 +3644,9 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
   TextDirection direction = ToTextDirection(
       state.GetDirection(), GetCanvasRenderingContextHost(), computed_style);
 
-  return MakeGarbageCollected<TextMetrics>(
-      font, direction, state.GetTextBaseline(), state.GetTextAlign(), text);
+  return MakeGarbageCollected<TextMetrics>(font, direction,
+                                           state.GetTextBaseline().AsEnum(),
+                                           state.GetTextAlign().AsEnum(), text);
 }
 
 void BaseRenderingContext2D::SnapshotStateForFilter() {
@@ -3764,7 +3704,8 @@ void BaseRenderingContext2D::setTextRendering(
   state.SetTextRendering(text_rendering, GetFontSelector());
 }
 
-void BaseRenderingContext2D::setFontKerning(const String& font_kerning_string) {
+void BaseRenderingContext2D::setFontKerning(
+    const V8CanvasFontKerning font_kerning) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DFontKerning);
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
@@ -3773,19 +3714,17 @@ void BaseRenderingContext2D::setFontKerning(const String& font_kerning_string) {
   if (!state.HasRealizedFont()) {
     setFont(font());
   }
-  FontDescription::Kerning kerning;
-  if (font_kerning_string == kAutoKerningString) {
-    kerning = FontDescription::kAutoKerning;
-  } else if (font_kerning_string == kNoneKerningString) {
-    kerning = FontDescription::kNoneKerning;
-  } else if (font_kerning_string == kNormalKerningString) {
-    kerning = FontDescription::kNormalKerning;
-  } else {
-    return;
-  }
-
-  if (state.GetFontKerning() == kerning) {
-    return;
+  FontDescription::Kerning kerning = state.GetFontKerning();
+  switch (font_kerning.AsEnum()) {
+    case V8CanvasFontKerning::Enum::kAuto:
+      kerning = FontDescription::kAutoKerning;
+      break;
+    case V8CanvasFontKerning::Enum::kNone:
+      kerning = FontDescription::kNoneKerning;
+      break;
+    case V8CanvasFontKerning::Enum::kNormal:
+      kerning = FontDescription::kNormalKerning;
+      break;
   }
 
   state.SetFontKerning(kerning, GetFontSelector());
@@ -3809,7 +3748,7 @@ void BaseRenderingContext2D::setFontStretch(
 }
 
 void BaseRenderingContext2D::setFontVariantCaps(
-    const String& font_variant_caps_string) {
+    const V8CanvasFontVariantCaps& font_variant_caps) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DFontVariantCaps);
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
@@ -3818,27 +3757,29 @@ void BaseRenderingContext2D::setFontVariantCaps(
   if (!state.HasRealizedFont()) {
     setFont(font());
   }
-  FontDescription::FontVariantCaps variant_caps;
-  if (font_variant_caps_string == kNormalVariantString) {
-    variant_caps = FontDescription::kCapsNormal;
-  } else if (font_variant_caps_string == kSmallCapsVariantString) {
-    variant_caps = FontDescription::kSmallCaps;
-  } else if (font_variant_caps_string == kAllSmallCapsVariantString) {
-    variant_caps = FontDescription::kAllSmallCaps;
-  } else if (font_variant_caps_string == kPetiteVariantString) {
-    variant_caps = FontDescription::kPetiteCaps;
-  } else if (font_variant_caps_string == kAllPetiteVariantString) {
-    variant_caps = FontDescription::kAllPetiteCaps;
-  } else if (font_variant_caps_string == kUnicaseVariantString) {
-    variant_caps = FontDescription::kUnicase;
-  } else if (font_variant_caps_string == kTitlingCapsVariantString) {
-    variant_caps = FontDescription::kTitlingCaps;
-  } else {
-    return;
-  }
-
-  if (state.GetFontVariantCaps() == variant_caps) {
-    return;
+  FontDescription::FontVariantCaps variant_caps = state.GetFontVariantCaps();
+  switch (font_variant_caps.AsEnum()) {
+    case (V8CanvasFontVariantCaps::Enum::kNormal):
+      variant_caps = FontDescription::kCapsNormal;
+      break;
+    case (V8CanvasFontVariantCaps::Enum::kSmallCaps):
+      variant_caps = FontDescription::kSmallCaps;
+      break;
+    case (V8CanvasFontVariantCaps::Enum::kAllSmallCaps):
+      variant_caps = FontDescription::kAllSmallCaps;
+      break;
+    case (V8CanvasFontVariantCaps::Enum::kPetiteCaps):
+      variant_caps = FontDescription::kPetiteCaps;
+      break;
+    case (V8CanvasFontVariantCaps::Enum::kAllPetiteCaps):
+      variant_caps = FontDescription::kAllPetiteCaps;
+      break;
+    case (V8CanvasFontVariantCaps::Enum::kUnicase):
+      variant_caps = FontDescription::kUnicase;
+      break;
+    case (V8CanvasFontVariantCaps::Enum::kTitlingCaps):
+      variant_caps = FontDescription::kTitlingCaps;
+      break;
   }
 
   state.SetFontVariantCaps(variant_caps, GetFontSelector());

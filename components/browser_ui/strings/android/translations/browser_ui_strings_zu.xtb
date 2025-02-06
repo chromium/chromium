@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Sesha</translation>
 <translation id="1384959399684842514">Ukulayisha kumiswe isikhashana</translation>
 <translation id="1396327438254055134">Vumela isayithi ukusebenzisa isithuthukisi se-V8.</translation>
+<translation id="1409338233051621926">Thepa Ama-App bese uthepha ama-app Azenzekelayo</translation>
 <translation id="1415402041810619267">I-URL inciphisiwe</translation>
 <translation id="1415855080660575082">Vumela iChrome yabelane nedivayisi yakho ngamathebhu amuva ukuze uwabone ohlwini lwama-app akudivayisi yakho nasemiphumeleni yosesho. Ungakuvula noma ukuvale noma nini lokhu kumasethingi eChrome.</translation>
 <translation id="1448064542941920355">Nciphisa ukusondeza</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Ungayisebenzisi itimu emnyama kumasayithi</translation>
 <translation id="2606760465469169465">Qinisekisa ngokuzenzekelayo</translation>
 <translation id="2621115761605608342">Vumela i-JavaScript kusayithi elithile.</translation>
+<translation id="2626708220538466178">Ishidi eliphansi lebhrawuza evuleka ngokuzenzekela livalekile</translation>
 <translation id="2653659639078652383">Hambisa</translation>
 <translation id="2677748264148917807">Hamba</translation>
 <translation id="2682367912565197520">Sula izinga lokusondeza elilondoloziwe</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Thulisa amasayithi adlala umsindo</translation>
 <translation id="3602290021589620013">Hlola kuqala</translation>
 <translation id="3628308229821498208">Usesho oluphakanyisiwe</translation>
+<translation id="3658847490588580244">Ishidi eliphansi lebhrawuza evuleka ngokuzenzekela</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{Isayithi elingu-<ph name="RWS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="RWS_OWNER" /> lingabona umsebenzi wakho eqenjini}one{Amasayithi angu-<ph name="RWS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="RWS_OWNER" /> angabona umsebenzi wakho eqenjini}other{Amasayithi angu-<ph name="RWS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="RWS_OWNER" /> angabona umsebenzi wakho eqenjini}}</translation>
 <translation id="3697164069658504920">Lapho ivuliwe, amasayithi angacela ukusebenzisa amadivayisi e-USB. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa amadivayisi e-USB.</translation>
 <translation id="3707034683772193706">Isayithi olivakashelayo lingalondoloza inani elincane lolwazi nge-Chrome, ikakhulukazi ukuze kuqinisekiswe ukuthi awuyona i-bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Sula futhi setha kabusha</translation>
 <translation id="4645575059429386691">Kuphethwe umzali wakho</translation>
 <translation id="4670064810192446073">Into engekho ngokoqobo</translation>
+<translation id="4672315773691449562">Thepha i-app yokuBhrawuza bese uthepha iChrome</translation>
 <translation id="4676059169848868271">Ukuze uvumele i-<ph name="APP_NAME" /> ukuthi isebenzise ukulandelela ngesandla, vula nokulandelela ngesandla <ph name="BEGIN_LINK" />kumasethingi ohlelo<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Izinzwa zokunyakaza noma zokukhanya</translation>
 <translation id="4755971844837804407">Lapho ivuliwe, amasayithi angakubonisa noma yisiphi isikhangiso. Lapho ivaliwe, amasayithi awakwazi ukukubonisa izikhangiso eziphazamisayo noma ezikhohlisayo.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Kuvunyelwe (kunconyiwe)</translation>
 <translation id="8609465669617005112">Hambisa phezulu</translation>
 <translation id="8617611086246832542">Lapho ivuliwe, kuboniswa ukubuka kwedeskithophu yamawebhusayithi. Lapho ivaliwe, kuboniswa ukubuka kweselula yamawebhusayithi.</translation>
+<translation id="8670078035093027626">Ishidi eliphansi lebhrawuza evuleka ngokuzenzekela livuleke ekuphakameni okugcwele</translation>
 <translation id="8676316391139423634">Uma kuvuliwe, amasayithi angacela ukulandelela izandla zakho. Uma kuvaliwe, amasayithi angeke alandelele izandla zakho.</translation>
 <translation id="8676374126336081632">Sula okokufaka</translation>
 <translation id="8681886425883659911">Izikhangiso zivinjelwe kumasayithi aziwa ngokubonisa izikhangiso ezizivelelayo noma ezidukisayo</translation>

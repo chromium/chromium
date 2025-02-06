@@ -101,13 +101,10 @@ std::unique_ptr<views::View> CreateWordmarkView() {
   view->SetLayoutManager(std::make_unique<views::BoxLayout>());
 
   // Translate icon
-  const int translate_icon_id = IDR_TRANSLATE_TAB_WORDMARK;
   std::unique_ptr<views::ImageView> translate_icon =
       std::make_unique<views::ImageView>();
-  gfx::ImageSkia* translate_icon_image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          translate_icon_id);
-  translate_icon->SetImage(*translate_icon_image);
+  translate_icon->SetImage(
+      ui::ImageModel::FromResourceId(IDR_TRANSLATE_TAB_WORDMARK));
   view->AddChildView(std::move(translate_icon));
 
   return view;

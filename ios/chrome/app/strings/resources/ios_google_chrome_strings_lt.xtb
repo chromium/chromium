@@ -121,6 +121,7 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="4064699917955374540">Jei norite naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje, patvirtinkite savo tapatybę.</translation>
 <translation id="417201473131094001">Nepalaikoma versijoje „Chrome Canary“</translation>
 <translation id="424864128008805179">Atsijungti nuo „Chrome“?</translation>
+<translation id="4430797724889237570">Atidarykite nuorodas iš „Gmail“, Žemėlapių, „YouTube“ ir kitų programų naršyklėje „Chrome“</translation>
 <translation id="447252321002412580">Padėti tobulinti „Chrome“ funkcijas ir našumą</translation>
 <translation id="4523886039239821078">Dėl tam tikrų priedų „Chrome“ užstringa . Pašalinkite:</translation>
 <translation id="4633328489441962921">„Chrome“ nepavyko patikrinti, ar yra naujinių</translation>
@@ -206,6 +207,7 @@ Pabandykite palaukti kelias minutes prieš perjungdami paskyras. Jei dabar perju
 
 Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje.</translation>
 <translation id="6533470733797826516">Prisijunkite greičiau naudodami „Chrome“ automatinį pildymą</translation>
+<translation id="6536544321553662809">Nustatykite „Chrome“ kaip numatytąją naršyklę, kad galėtumėte lengvai bendrinti ir atidaryti nuorodas</translation>
 <translation id="6545449117344801102">„Chrome“ aptinka adresus ir naudoja „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos.</translation>
 <translation id="6636941099779251629">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chrome“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Siunčiama klaidinanti URL dalis „Google“ per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, „Google“.</translation>
@@ -291,6 +293,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="8371138994040262994">Atidaroma „Nustatymų“ skiltis naršyklėje „Chrome“.</translation>
 <translation id="8387459386171870978">Toliau naudoti „Chrome“</translation>
+<translation id="8392023217086447677">Atidaryta „Chrome“ inkognito režimu</translation>
 <translation id="840168496893712993">Dėl tam tikrų priedų „Chrome“ užstringa. Pabandykite juos pašalinti.</translation>
 <translation id="8413500425974960807">„Chrome“ patarimas: perkelkite „Chrome“ į doką</translation>
 <translation id="8413795581997394485">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Kai apsilankote svetainėje, „Chrome“ siunčia klaidinančią URL dalį „Google“ per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė atlieka ką nors įtartino, siunčiami ir visi URL bei puslapio turinio dalys.</translation>

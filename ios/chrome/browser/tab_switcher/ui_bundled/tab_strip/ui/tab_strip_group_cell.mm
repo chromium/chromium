@@ -31,6 +31,8 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   NSLayoutConstraint* _titleContainerHeightConstraint;
   NSLayoutConstraint* _titleLabelTrailingConstraint;
   NSLayoutConstraint* _notificationDotViewTrailingConstraint;
+  // `_collapsed` state of the cell before starting a drag action.
+  BOOL _collapsedBeforeDrag;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -86,6 +88,21 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
 - (void)layoutSubviews {
   [super layoutSubviews];
   [self updateTransitionState];
+}
+
+- (void)dragStateDidChange:(UICollectionViewCellDragState)dragState {
+  switch (dragState) {
+    case UICollectionViewCellDragStateNone:
+      [self setCollapsed:_collapsedBeforeDrag];
+      break;
+    case UICollectionViewCellDragStateLifting: {
+      _collapsedBeforeDrag = _collapsed;
+      [self setCollapsed:YES];
+      break;
+    }
+    case UICollectionViewCellDragStateDragging:
+      break;
+  }
 }
 
 #pragma mark - Setters

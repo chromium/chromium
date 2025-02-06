@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Aðgangsorð í öllum tækjum</translation>
 <translation id="1082920045291562218">Deila með samantektarblaði fyrir ábendingar lokað</translation>
 <translation id="1087176310396019910">Mögulegt ruslefni</translation>
+<translation id="1087799850623149508">Þú getur haldið veffangastikunni neðst inni til að færa hana</translation>
 <translation id="1089606299949659462">Yfirferð lokið!</translation>
 <translation id="1094555143448724771">Samstilltu flipana þína og ferilinn til að sjá flipa úr hinum tækjunum þínum</translation>
 <translation id="1095761715416917775">Vertu viss um að hafa alltaf aðgang að samtilltu gögnunum þínum</translation>
@@ -115,7 +116,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="1435593198351412143">Opna PDF-skrár sjálfkrafa</translation>
 <translation id="1436784010935106834">Fjarlægð</translation>
 <translation id="1437543266176261764">Keyrt í <ph name="APP_NAME" /></translation>
-<translation id="1448147069872048656">Staðfestu hver þú ert til að ganga úr skugga um að þú hafir aðgang að öllum aðgangsorðunum þínum í þessu tæki</translation>
+<translation id="1448147069872048656">Staðfestu hver þú ert til að tryggja að þú hafir aðgang að öllum aðgangsorðunum þínum í þessu tæki</translation>
 <translation id="1448440926884431741">Notaðu bókamerki til að flokka vörur sem þú vaktar</translation>
 <translation id="1460751212339734034">Sparaðu tíma, sláðu minna inn</translation>
 <translation id="1466383950273130737">Velja tungumál Chrome</translation>
@@ -131,6 +132,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="1513858653616922153">Eyða aðgangsorði</translation>
 <translation id="1521774566618522728">Virkt í dag</translation>
 <translation id="153446405401665083">Ný útgáfa af Chrome er í boði</translation>
+<translation id="1540012742443808215">Veffangastika er efst eins og stendur</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{Eitt bókamerki er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu vista það á Google-reikningnum þínum, <ph name="ACCOUNT_EMAIL" />.}one{# bókamerki er aðeins vistað í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum: <ph name="ACCOUNT_EMAIL" />.}other{# bókamerki eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum: <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Greiðslumátar og vefföng eru ekki dulkóðuð. Vafraferill Chrome samstillist ekki.
 Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6459045781120991510">Kannanir</translation>
 <translation id="6461962085415701688">Ekki hægt að opna skrá</translation>
 <translation id="6464977750820128603">Þú sérð vefsvæðin sem þú opnar í Chrome og velur teljara fyrir þau.\n\nGoogle fær upplýsingar um þau vefsvæði sem þú velur teljara fyrir og hversu lengi þú ert á þeim. Þessar upplýsingar eru notaðar til að bæta virkni stafrænnar vellíðunar.</translation>
+<translation id="6468703991511753953">Veffangastika er neðst eins og stendur</translation>
 <translation id="6470181189905173055">Síðurnar sem þú opnaðir í Chrome á meðan þú varst að nota <ph name="APP_LABEL" /> birtast hér.</translation>
 <translation id="6473086018775716761">Listi yfir deilingarkosti á hálfum skjánum.</translation>
 <translation id="6475951671322991020">Sækja myndskeið</translation>

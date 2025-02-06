@@ -51,6 +51,7 @@
 
 #if ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
 #include <dlfcn.h>
+
 #include "base/debug/elf_reader.h"
 #endif  // ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
 
@@ -363,7 +364,11 @@ void TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace(
     auto* thread_descriptor = trace_packet->set_thread_descriptor();
     thread_descriptor->set_pid(
         base::trace_event::TraceLog::GetInstance()->process_id());
-    thread_descriptor->set_tid(sampled_thread_id_);
+    // We allow thread ids to be truncated to int32 here, since this is
+    // only an id for logging, and there is a low risk of collisions of the
+    // truncated int64 value.
+    thread_descriptor->set_tid(
+        sampled_thread_id_.truncate_to_int32_for_display_only());
     last_timestamp_ = sample_timestamp;
     thread_descriptor->set_reference_timestamp_us(
         last_timestamp_.since_origin().InMicroseconds());
@@ -413,8 +418,9 @@ TracingSamplerProfiler::StackProfileWriter::GetCallstackIDAndMaybeEmit(
   InterningIndexEntry interned_callstack =
       interned_callstacks_.LookupOrAdd(ip_hash);
 
-  if (interned_callstack.was_emitted)
+  if (interned_callstack.was_emitted) {
     return interned_callstack.id;
+  }
 
   auto* interned_data = (*trace_packet)->set_interned_data();
 
@@ -605,8 +611,9 @@ void TracingSamplerProfiler::CreateOnChildThreadWithCustomUnwinders(
     CoreUnwindersCallback core_unwinders_factory_function) {
   base::SequenceLocalStorageSlot<TracingSamplerProfiler>& slot =
       GetSequenceLocalStorageProfilerSlot();
-  if (slot)
+  if (slot) {
     return;
+  }
 
   slot.emplace(base::GetSamplingProfilerCurrentThreadToken(),
                std::move(core_unwinders_factory_function));
@@ -670,16 +677,18 @@ TracingSamplerProfiler::TracingSamplerProfiler(
 
 TracingSamplerProfiler::~TracingSamplerProfiler() {
   TracingSamplerProfilerManager::Get()->UnregisterProfiler(this);
-  if (g_main_thread_instance == this)
+  if (g_main_thread_instance == this) {
     g_main_thread_instance = nullptr;
+  }
 }
 
 void TracingSamplerProfiler::SetAuxUnwinderFactory(
     const base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>& factory) {
   base::AutoLock lock(lock_);
   aux_unwinder_factory_ = factory;
-  if (profiler_)
+  if (profiler_) {
     profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
+  }
 }
 
 void TracingSamplerProfiler::StartTracing(
@@ -736,8 +745,9 @@ void TracingSamplerProfiler::StartTracing(
   }
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-  if (loader_lock_sampling_thread_)
+  if (loader_lock_sampling_thread_) {
     loader_lock_sampling_thread_->StartSampling();
+  }
 #endif
 }
 
@@ -753,8 +763,9 @@ void TracingSamplerProfiler::StopTracing() {
   profiler_.reset();
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
-  if (loader_lock_sampling_thread_)
+  if (loader_lock_sampling_thread_) {
     loader_lock_sampling_thread_->StopSampling();
+  }
 #endif
 }
 

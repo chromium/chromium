@@ -476,10 +476,10 @@ std::optional<int> HandlePackExtensionSwitches(
     if (!error_message.empty()) {
       LOG(ERROR) << error_message.c_str();
     }
-    return chrome::RESULT_CODE_PACK_EXTENSION_ERROR;
+    return CHROME_RESULT_CODE_PACK_EXTENSION_ERROR;
   }
 
-  return chrome::RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS;
+  return CHROME_RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS;
 }
 #endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -520,11 +520,11 @@ std::optional<int> AcquireProcessSingleton(
                          base::UTF16ToWide(l10n_util::GetStringUTF16(
                              IDS_USED_EXISTING_BROWSER)))
                          .c_str());
-      return chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED;
+      return CHROME_RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED;
     }
 
     case ProcessSingleton::PROFILE_IN_USE:
-      return chrome::RESULT_CODE_PROFILE_IN_USE;
+      return CHROME_RESULT_CODE_PROFILE_IN_USE;
 
     case ProcessSingleton::LOCK_ERROR:
       LOG(ERROR) << "Failed to create a ProcessSingleton for your profile "
@@ -532,7 +532,7 @@ std::optional<int> AcquireProcessSingleton(
                     "would start multiple browser processes rather than "
                     "opening a new window in the existing process. Aborting "
                     "now to avoid profile corruption.";
-      return chrome::RESULT_CODE_PROFILE_IN_USE;
+      return CHROME_RESULT_CODE_PROFILE_IN_USE;
   }
 
   return std::nullopt;
@@ -695,7 +695,7 @@ void OnResourceExhausted() {
     ::MessageBox(nullptr, kOnResourceExhaustedMessage, kMessageBoxTitle, MB_OK);
   }
   base::Process::TerminateCurrentProcessImmediately(
-      chrome::RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED);
+      CHROME_RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED);
 }
 
 // Alternate version of the above handler that is used when running in headless
@@ -1088,13 +1088,14 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       !pipes_are_specified_explicitly &&
       !devtools_pipe::AreFileDescriptorsOpen()) {
     LOG(ERROR) << "Remote debugging pipe file descriptors are not open.";
-    return chrome::RESULT_CODE_UNSUPPORTED_PARAM;
+    return CHROME_RESULT_CODE_UNSUPPORTED_PARAM;
   }
 
 #if BUILDFLAG(IS_WIN)
   // Browser should not be sandboxed.
-  if (is_browser && IsSandboxedProcess())
-    return chrome::RESULT_CODE_INVALID_SANDBOX_STATE;
+  if (is_browser && IsSandboxedProcess()) {
+    return CHROME_RESULT_CODE_INVALID_SANDBOX_STATE;
+  }
 #endif
 
 #if BUILDFLAG(IS_MAC)

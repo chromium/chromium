@@ -1862,13 +1862,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Viz.FrameIntervalDecider.ActualIntervalFor{DecidedHz}hz"
+    units="ms" expires_after="M143">
+  <owner>boliu@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    For a few common result intervals (named in hz), record the distribution of
+    actual frame intervals. Recorded every viz frame, sub-sampled with
+    probability 0.001. Note this requires FrameIntervalDecider to be enabled as
+    well as using an ExternalBeginFrameSource.
+  </summary>
+  <token key="DecidedHz">
+    <variant name="20" summary="20hz"/>
+    <variant name="24" summary="24hz"/>
+    <variant name="25" summary="25hz"/>
+    <variant name="30" summary="30hz"/>
+  </token>
+</histogram>
+
 <histogram name="Viz.FrameIntervalDecider.ResultMatcherType"
     enum="FrameIntervalMatcherType" expires_after="M143">
   <owner>boliu@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Frame interval matcher type matched current frame. Recorded every viz frame,
-    sub-sampled by base::ShouldLogHistogramForCpuReductionExperiment.
+    sub-sampled with probability 0.001.
   </summary>
 </histogram>
 
@@ -1878,8 +1896,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Frame interval decider result interval. Recorded every viz frame but only if
-    the result variant is an interval time delta, sub-sampled by
-    base::ShouldLogHistogramForCpuReductionExperiment
+    the result variant is an interval time delta, sub-sampled with probability
+    0.001.
   </summary>
 </histogram>
 

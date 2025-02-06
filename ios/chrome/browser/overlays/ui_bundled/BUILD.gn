@@ -63,6 +63,7 @@ source_set("ui") {
   deps = [
     ":presentation_controller",
     "//base",
+    "//ios/web/common:features",
   ]
 }
 

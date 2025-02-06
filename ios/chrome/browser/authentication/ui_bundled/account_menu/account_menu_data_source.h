@@ -41,6 +41,9 @@ struct ManagementState;
 // The image for the user with `gaiaID`.
 - (UIImage*)imageForGaiaID:(NSString*)gaiaID;
 
+// Returns true if `gaiaID` is managed by checking for a hosted domain.
+- (BOOL)isGaiaIDManaged:(NSString*)gaiaID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_DATA_SOURCE_H_

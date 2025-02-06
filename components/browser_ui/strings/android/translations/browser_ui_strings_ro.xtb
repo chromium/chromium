@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
 <translation id="1396327438254055134">Permite site-ului să folosească instrumentul de optimizare V8.</translation>
+<translation id="1409338233051621926">Atinge Aplicații, apoi atinge Aplicații prestabilite</translation>
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1415855080660575082">Permite ca Chrome să-ți trimită filele recente pe dispozitiv ca să le vezi în lista de aplicații și în rezultatele căutării pe dispozitiv. Poți să activezi sau să dezactivezi opțiunea din setările Chrome.</translation>
 <translation id="1448064542941920355">Micșorează nivelul de zoom</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Nu aplica tema întunecată pe site-uri</translation>
 <translation id="2606760465469169465">Verificare automată</translation>
 <translation id="2621115761605608342">Permite JavaScript pentru un anumit site.</translation>
+<translation id="2626708220538466178">Foaia din partea de jos a browserului prestabilit, închisă</translation>
 <translation id="2653659639078652383">Trimite</translation>
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2682367912565197520">Șterge nivelul de zoom salvat</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Dezactivează sunetul pentru site-urile care îl redau</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3628308229821498208">Căutări sugerate</translation>
+<translation id="3658847490588580244">Foaia din partea de jos a browserului prestabilit</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site din grupul utilizatorului <ph name="RWS_OWNER" /> care îți poate vedea activitatea în grup}few{<ph name="RWS_MEMBERS_COUNT" /> site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}other{<ph name="RWS_MEMBERS_COUNT" /> de site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}}</translation>
 <translation id="3697164069658504920">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive USB. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive USB.</translation>
 <translation id="3707034683772193706">Un site pe care îl accesezi poate salva un mic volum de informații în Chrome, în principal pentru a valida că nu ești o aplicație bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Șterge și resetează</translation>
 <translation id="4645575059429386691">Gestionat de părintele tău</translation>
 <translation id="4670064810192446073">Realitate virtuală</translation>
+<translation id="4672315773691449562">Atinge aplicația Browser, apoi atinge Chrome</translation>
 <translation id="4676059169848868271">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească urmărirea mâinilor, activează urmărirea mâinilor și în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Senzori de mișcare sau de lumină</translation>
 <translation id="4755971844837804407">Când opțiunea este activată, site-urile îți pot afișa orice anunț. Când opțiunea este dezactivată, site-urile nu pot afișa anunțuri deranjante sau înșelătoare.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Acordată (recomandat)</translation>
 <translation id="8609465669617005112">Mutați mai sus</translation>
 <translation id="8617611086246832542">Când opțiunea este activată, apare afișarea pe desktop a site-urilor. Când opțiunea este dezactivată, apare afișarea pe mobil a site-urilor.</translation>
+<translation id="8670078035093027626">Foaia din partea de jos a browserului prestabilit, deschisă la înălțime completă</translation>
 <translation id="8676316391139423634">Când opțiunea este activată, site-urile pot solicita permisiunea de a-ți urmări mâinile. Când opțiunea este dezactivată, site-urile nu îți pot urmări mâinile.</translation>
 <translation id="8676374126336081632">Șterge textul introdus</translation>
 <translation id="8681886425883659911">Anunțurile sunt blocate pe site-urile despre care se știe că afișează anunțuri deranjante sau înșelătoare</translation>

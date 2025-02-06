@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384959399684842514">已暂停下载</translation>
 <translation id="1396327438254055134">允许网站使用 V8 优化工具。</translation>
+<translation id="1409338233051621926">点按“应用”，然后点按“默认应用”</translation>
 <translation id="1415402041810619267">网址被截断了</translation>
 <translation id="1415855080660575082">允许 Chrome 与您的设备分享您近期打开的标签页，以便在设备的应用列表和搜索结果中查看这些标签页。您可以在 Chrome 设置中开启或关闭此功能。</translation>
 <translation id="1448064542941920355">缩小</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">不对网站应用深色主题</translation>
 <translation id="2606760465469169465">自动验证</translation>
 <translation id="2621115761605608342">允许特定网站运行 JavaScript。</translation>
+<translation id="2626708220538466178">默认浏览器底部动作条已关闭</translation>
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">离开</translation>
 <translation id="2682367912565197520">删除已保存的缩放级别</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">将播放声音的网站静音</translation>
 <translation id="3602290021589620013">预览</translation>
 <translation id="3628308229821498208">建议的搜索</translation>
+<translation id="3658847490588580244">默认浏览器底部动作条</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}other{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}}</translation>
 <translation id="3697164069658504920">开启此设置后，网站可以请求使用 USB 设备。关闭此设置后，网站无法使用 USB 设备。</translation>
 <translation id="3707034683772193706">您访问的网站可将少量信息保存在 Chrome 中，主要用于验证您不是机器人</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">删除并重置</translation>
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4670064810192446073">虚拟现实</translation>
+<translation id="4672315773691449562">点按“浏览器应用”，然后点按“Chrome”</translation>
 <translation id="4676059169848868271">若要允许 <ph name="APP_NAME" /> 使用手部跟踪功能，您还需在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中开启手部跟踪功能。</translation>
 <translation id="4751476147751820511">动态传感器或光传感器</translation>
 <translation id="4755971844837804407">开启此设置后，网站可以向您展示任何广告。关闭此设置后，网站无法展示侵扰性或误导性广告。</translation>
@@ -494,7 +498,7 @@
 <translation id="8197286292360124385">已授予“<ph name="PERMISSION_1" />”权限</translation>
 <translation id="8200772114523450471">继续</translation>
 <translation id="8206354486702514201">此设置是由您的管理员执行的。</translation>
-<translation id="8211406090763984747">连接是安全的</translation>
+<translation id="8211406090763984747">连接安全</translation>
 <translation id="8249310407154411074">移至顶部</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8284326494547611709">字幕</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">允许（推荐）</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8617611086246832542">开启此设置后，系统会显示网站的桌面版视图。关闭此设置后，系统会显示网站的移动版视图。</translation>
+<translation id="8670078035093027626">默认浏览器底部动作条已全屏打开</translation>
 <translation id="8676316391139423634">开启此设置后，网站可以请求跟踪您的双手。关闭此设置后，网站无法跟踪您的双手。</translation>
 <translation id="8676374126336081632">清除输入的内容</translation>
 <translation id="8681886425883659911">在已知会展示侵扰性或误导性广告的网站上屏蔽广告</translation>

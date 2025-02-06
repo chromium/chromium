@@ -198,12 +198,12 @@ void OnAddLegacyTraceEvent(TraceEvent* trace_event) {
         break;
     }
   }
-  if (trace_event->thread_id() &&
+  if (trace_event->thread_id() != kInvalidThreadId &&
       trace_event->thread_id() != base::PlatformThread::CurrentId()) {
     PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
         phase, category, trace_event->name(),
-        perfetto::ThreadTrack::ForThread(trace_event->thread_id()), timestamp,
-        write_args);
+        perfetto::ThreadTrack::ForThread(trace_event->thread_id().raw()),
+        timestamp, write_args);
     return;
   }
   PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
@@ -224,10 +224,11 @@ void OnUpdateLegacyTraceEventDuration(
   auto phase = TRACE_EVENT_PHASE_END;
   base::TimeTicks timestamp =
       explicit_timestamps ? now : TRACE_TIME_TICKS_NOW();
-  if (thread_id && thread_id != base::PlatformThread::CurrentId()) {
+  if (thread_id != kInvalidThreadId &&
+      thread_id != base::PlatformThread::CurrentId()) {
     PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
-        phase, category, name, perfetto::ThreadTrack::ForThread(thread_id),
-        timestamp);
+        phase, category, name,
+        perfetto::ThreadTrack::ForThread(thread_id.raw()), timestamp);
     return;
   }
   PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
@@ -879,12 +880,15 @@ base::trace_event::TraceEventHandle AddTraceEventWithProcessId(
     base::ProcessId process_id,
     base::trace_event::TraceArguments* args,
     unsigned int flags) {
+  static_assert(sizeof(base::PlatformThreadId::UnderlyingType) >=
+                sizeof(base::ProcessId));
   base::TimeTicks now = TRACE_TIME_TICKS_NOW();
   return AddTraceEventWithThreadIdAndTimestamp(
       phase, category_group_enabled, name, scope, id,
       trace_event_internal::kNoId,  // bind_id
-      static_cast<base::PlatformThreadId>(process_id), now, args,
-      flags | TRACE_EVENT_FLAG_HAS_PROCESS_ID);
+      base::PlatformThreadId(
+          static_cast<base::PlatformThreadId::UnderlyingType>(process_id)),
+      now, args, flags | TRACE_EVENT_FLAG_HAS_PROCESS_ID);
 }
 
 base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamp(

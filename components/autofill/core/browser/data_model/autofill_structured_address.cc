@@ -26,13 +26,6 @@
 
 namespace autofill {
 
-std::u16string AddressComponentWithRewriter::GetValueForComparison(
-    const std::u16string& value,
-    const AddressComponent& other) const {
-  return NormalizeAndRewrite(GetCommonCountry(other), value,
-                             /*keep_white_space=*/true);
-}
-
 StreetNameNode::StreetNameNode(SubcomponentsList children)
     : AddressComponent(ADDRESS_HOME_STREET_NAME,
                        std::move(children),
@@ -79,11 +72,10 @@ SubPremiseNode::~SubPremiseNode() = default;
 // Take the longer one. If both addresses have the same tokens apply a recursive
 // strategy to merge the substructure.
 StreetAddressNode::StreetAddressNode(SubcomponentsList children)
-    : AddressComponentWithRewriter(ADDRESS_HOME_STREET_ADDRESS,
-                                   std::move(children),
-                                   MergeMode::kReplaceEmpty |
-                                       MergeMode::kReplaceSubset |
-                                       MergeMode::kDefault) {}
+    : AddressComponent(ADDRESS_HOME_STREET_ADDRESS,
+                       std::move(children),
+                       MergeMode::kReplaceEmpty | MergeMode::kReplaceSubset |
+                           MergeMode::kDefault) {}
 
 StreetAddressNode::~StreetAddressNode() = default;
 
@@ -154,6 +146,13 @@ bool StreetAddressNode::HasNewerValuePrecedenceInMerging(
 void StreetAddressNode::UnsetValue() {
   AddressComponent::UnsetValue();
   address_lines_.clear();
+}
+
+std::u16string StreetAddressNode::GetValueForComparison(
+    const std::u16string& value,
+    const AddressComponent& other) const {
+  return NormalizeAndRewrite(GetCommonCountry(other), value,
+                             /*keep_white_space=*/true);
 }
 
 void StreetAddressNode::SetValue(std::u16string value,
@@ -264,11 +263,11 @@ CityNode::~CityNode() = default;
 // States are mergeable when the tokens of one is a subset of the other one.
 // Take the shorter non-empty one.
 StateNode::StateNode(SubcomponentsList children)
-    : AddressComponentWithRewriter(
-          ADDRESS_HOME_STATE,
-          std::move(children),
-          kPickShorterIfOneContainsTheOther |
-              MergeMode::kMergeBasedOnCanonicalizedValues | kReplaceEmpty) {}
+    : AddressComponent(ADDRESS_HOME_STATE,
+                       std::move(children),
+                       kPickShorterIfOneContainsTheOther |
+                           MergeMode::kMergeBasedOnCanonicalizedValues |
+                           kReplaceEmpty) {}
 
 StateNode::~StateNode() = default;
 
@@ -291,19 +290,21 @@ std::optional<std::u16string> StateNode::GetCanonicalizedValue() const {
   return canonicalized_state_name.value().value();
 }
 
+std::u16string StateNode::GetValueForComparison(
+    const std::u16string& value,
+    const AddressComponent& other) const {
+  return NormalizeAndRewrite(GetCommonCountry(other), value,
+                             /*keep_white_space=*/true);
+}
+
 // Zips are mergeable when one is a substring of the other one.
 // For merging, the shorter substring is taken.
 PostalCodeNode::PostalCodeNode(SubcomponentsList children)
-    : AddressComponentWithRewriter(
-          ADDRESS_HOME_ZIP,
-          std::move(children),
-          MergeMode::kUseMostRecentSubstring | kReplaceEmpty) {}
+    : AddressComponent(ADDRESS_HOME_ZIP,
+                       std::move(children),
+                       MergeMode::kUseMostRecentSubstring | kReplaceEmpty) {}
 
 PostalCodeNode::~PostalCodeNode() = default;
-
-std::u16string PostalCodeNode::GetNormalizedValue() const {
-  return NormalizeValue(GetValue(), /*keep_white_space=*/false);
-}
 
 std::u16string PostalCodeNode::GetValueForComparison(
     const std::u16string& value,

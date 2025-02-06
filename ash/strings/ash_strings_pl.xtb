@@ -1704,6 +1704,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6637729079642709226">Zmień czas</translation>
 <translation id="6641720045729354415">Włącz lub wyłącz napisy na żywo. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Cofnij sortowanie według nazwy</translation>
+<translation id="664793810957802384">Elementy w sugerowanej grupie</translation>
 <translation id="6649641931981131786">Dostosuj kamerę tak, aby pokazywała Cię pośrodku ekranu.</translation>
 <translation id="6650072551060208490">Strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
 <translation id="6650742588569439432">Nie udało się wczytać elementów.</translation>
@@ -2381,6 +2382,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8956420987536947088">Otwórz poprzednie okna i aplikacje</translation>
 <translation id="8959380109429710384">Naciśnięto skrót klawiszowy lupy pełnego ekranu. Aby poruszać się po powiększonym widoku, naciskaj Ctrl + Alt + klawisze strzałek.</translation>
 <translation id="8964525410783593407">1 godz.</translation>
+<translation id="8970887620466824814">Coś poszło nie tak.</translation>
 <translation id="8973885907461690937">Przenieś zaznaczenie na ikonę menu</translation>
 <translation id="8980862970816311842">Przenieś ikonę aplikacji do folderu lub poza folder w siatce aplikacji</translation>
 <translation id="8982906748181120328">Widoczność w pobliżu</translation>

@@ -25,6 +25,7 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> pestana agrupada</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
+<translation id="1909810060368225529">Aviso: Todo o mundo poderá ver os cambios neste grupo de pestanas compartido. Todos os membros do grupo poden facer cambios nos grupos de pestanas compartidos</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Engadir <ph name="TABS_COUNT_ONE" /> pestana seleccionada aos marcadores}other{Engadir <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas aos marcadores}}</translation>
 <translation id="2118649612461486615">Información da tenda</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas. A pestana do modo de incógnito non estará dispoñible.}other{As pestanas e grupos pechados poden volver abrirse desde as seccións Pestanas recentes e Grupos de pestanas. As # pestanas do modo de incógnito non estarán dispoñibles.}}</translation>
@@ -126,11 +127,13 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="6381032505162537930">Atoparás os teus grupos de pestanas aquí</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> pestana seleccionada}other{Desagrupar <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
+<translation id="6499296376514955580">Aviso sobre os cambios no grupo de pestanas compartido pechado</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Despois de 1 día}other{Despois de <ph name="DAY_COUNT_MANY" /> días}}</translation>
 <translation id="6549021453810473782">Ver información da tenda</translation>
 <translation id="6557858706263317126"><ph name="HIDDEN_TABS_COUNT" /> máis</translation>
 <translation id="6562820390860419811">Mover pestana cara á esquerda</translation>
+<translation id="6589356853295569750">Aviso sobre os cambios no grupo de pestanas compartido aberto a altura completa</translation>
 <translation id="6590332670428149473">Abrir o menú de accións para o grupo de pestanas compartido <ph name="TITLE_OF_GROUP" />, de cor <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> pestana cambiada}other{<ph name="MANY_CHANGED" /> pestanas cambiadas}}</translation>
@@ -157,6 +160,7 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Compartir <ph name="TABS_COUNT_ONE" /> pestana seleccionada}other{Compartir <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas}}</translation>
 <translation id="7773714564112603605">Quitar pestana e eliminar grupo</translation>
 <translation id="7792771145871471484">Revisar as suxestións.</translation>
+<translation id="7792860826279960128">Aviso sobre os cambios no grupo de pestanas compartido a media altura</translation>
 <translation id="7825973332242257878">Grupos de pestanas</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupar <ph name="TABS_COUNT_ONE" /> pestana seleccionada}other{Agrupar <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas}}</translation>
 <translation id="7853202427316060426">Actividade</translation>

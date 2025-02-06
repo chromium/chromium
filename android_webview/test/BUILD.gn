@@ -831,7 +831,6 @@ test("android_webview_unittests") {
     "../browser/aw_crash_keys_unittest.cc",
     "../browser/aw_feature_entries_unittest.cc",
     "../browser/aw_field_trials_unittest.cc",
-    "../browser/aw_media_url_interceptor_unittest.cc",
     "../browser/aw_pac_processor_unittest.cc",
     "../browser/aw_permission_manager_unittest.cc",
     "../browser/aw_user_agent_metadata_unittest.cc",

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/to_vector.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -1107,6 +1108,7 @@ int BookmarkMenuDelegate::GetAndIncrementNextMenuID() {
 
 MenuItemView* BookmarkMenuDelegate::UpdateBookmarksTitle() {
   CHECK(parent_menu_item_);
+  CHECK(parent_menu_item_->HasSubmenu());
   // Check if we need to add/remove the bookmarks title. If not, then return
   // null since the parent menu doesn't need to be updated.
   const bool should_have_title = ShouldHaveBookmarksTitle();
@@ -1137,14 +1139,24 @@ MenuItemView* BookmarkMenuDelegate::UpdateBookmarksTitle() {
 
 bool BookmarkMenuDelegate::ShouldHaveBookmarksTitle() {
   CHECK(parent_menu_item_);
+  // In practice, the parent menu item is never empty.
+  // If this assumption is wrong, there may be a redundant "separator" visual
+  // artifact, but the code will continue to function correctly (hence why we
+  // don't crash here).
+  // If this ever changes, then the delegate will need to observe and
+  // react to non-bookmark changes in its parent menu, which is currently not
+  // supported.
+  if (parent_menu_item_->GetSubmenu()->children().empty()) {
+    DCHECK(false) << "Expected parent menu item to be empty";
+    base::debug::DumpWithoutCrashing();
+  }
   const BookmarkMergedSurfaceService* service =
       GetBookmarkMergedSurfaceService();
   const bool bookmark_bar_has_children =
       service->GetChildrenCount(BookmarkParentFolder::BookmarkBarFolder());
-  return (bookmark_bar_has_children ||
-          ShouldBuildPermanentNode(service,
-                                   BookmarkParentFolder::ManagedFolder())) &&
-         !parent_menu_item_->GetSubmenu()->children().empty();
+  return (
+      bookmark_bar_has_children ||
+      ShouldBuildPermanentNode(service, BookmarkParentFolder::ManagedFolder()));
 }
 
 void BookmarkMenuDelegate::BuildBookmarksTitle(size_t index) {

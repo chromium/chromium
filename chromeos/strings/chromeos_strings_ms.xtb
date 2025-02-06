@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Ringkaskan</translation>
 <translation id="123124571410524056">Portal disyaki</translation>
 <translation id="1232610416724362657">air terjun</translation>
+<translation id="1238163879850290856">Tetapkan semula Input ChromeOS untuk mengelakkan orang lain daripada mengakses data. Gunakan kaedah input yang anda percayai sahaja.</translation>
 <translation id="1238612778414822719">Kependaman HTTPS</translation>
 <translation id="1252766349417594414">Kayu bedik</translation>
 <translation id="1270369111467284986">Disyaki portal terbolot</translation>
@@ -584,7 +585,6 @@
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="382043424867370667">Hiasan latar matahari terbenam</translation>
 <translation id="3824259034819781947">Lampirkan fail</translation>
-<translation id="3836587210832263413">Hidupkan sambungan yang anda percayai sahaja</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
 <translation id="3845880861638660475">Tekan <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> untuk menutup dialog.</translation>
 <translation id="3848280697030027394">menggelapkan papan kekunci</translation>
@@ -767,6 +767,7 @@
 <translation id="4650608062294027130">Shift kanan</translation>
 <translation id="4654549501020883054">Tukar Setiap Hari</translation>
 <translation id="4655868084888499342">Imej ditetapkan sebagai hiasan latar</translation>
+<translation id="4660989616054030633">AI generatif boleh membuat kesilapan, termasuk tentang orang, maka semak semula respons</translation>
 <translation id="4661249927038176904">Di luar alam nyata</translation>
 <translation id="4661392828086261436">Kemaskinian ini disediakan oleh pengilang peranti dan belum disahkan oleh Google</translation>
 <translation id="4664651912255946953">bulu</translation>
@@ -1066,6 +1067,7 @@
 <translation id="6074752328838739425">Sembunyikan ringkasan</translation>
 <translation id="6075872808778243331">Kependaman HTTP (Android)</translation>
 <translation id="6078323886959318429">Tambahkan pintasan</translation>
+<translation id="6079693086494835199">Tetapkan semula halaman utama Chrome untuk memastikan halaman utama lalai bukan laman pancingan data. Gunakan laman web yang anda percayai sahaja.</translation>
 <translation id="6091080061796993741">kuning</translation>
 <translation id="6104112872696127344">Pengimbasan telah dibatalkan</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan proses ini, masukkan kata laluan lama anda</translation>
@@ -1089,6 +1091,7 @@
 <translation id="6156030503438652198">merah manggis dan merah jambu</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Tetapkan semula kandungan laman Chrome untuk menghentikan orang lain daripada menggunakan mikrofon atau kamera. Berikan kebenaran kepada laman yang anda percayai sahaja.</translation>
 <translation id="6188737759358894319">Dibuat pada <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapasiti bateri menurun seiring dengan penggunaan</translation>
 <translation id="6189987971574353264">Main</translation>
@@ -1113,10 +1116,9 @@
 <translation id="628726841779494414">Urus pencetak anda dalam tetapan pencetak</translation>
 <translation id="6292095526077353682">Semasa pengecasan, paparkan penyelamat skrin selama</translation>
 <translation id="629550705077076970">pemalapan papan kekunci</translation>
-<translation id="6301193653204230066">Penetapan semula keselamatan akan mematikan sambungan penyemak imbas Chrome dan menetapkan semula rangkaian dan tetapan lain kepada lalai selamat.
-          Tab, fail, kuki dan sejarah anda tidak akan diubah.</translation>
 <translation id="6302401976930124515">Ujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="631063167932043783">Teroka apl</translation>
+<translation id="6314333689576767865">Chromebook anda ditetapkan semula kepada lalai selamat. Anda boleh membuat perubahan pada bila-bila masa dalam Tetapan.</translation>
 <translation id="6318437367327684789">selamanya</translation>
 <translation id="6319207335391420837">Kemas kini perisian tegar pada <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Hidupkan penyelamat skrin</translation>
@@ -1253,6 +1255,7 @@
 <translation id="6862416241246624313">Maklum balas diserahkan</translation>
 <translation id="6866732840889595464">bunga daisi</translation>
 <translation id="6871256179359663621">ungu muda</translation>
+<translation id="6887967050249348172">Sambungan dilumpuhkan untuk mengelakkan perubahan kepada tetapan. Hidupkan sambungan yang anda percayai sahaja.</translation>
 <translation id="6889786074662672253">Semasa memulakan semula, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Proses ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
 <translation id="6899460405678814458">Tunjukkan ringkasan</translation>
 <translation id="6900701049656042631">Album ini tidak mengandungi sebarang foto. Untuk menambahkan foto, akses <ph name="LINK" /></translation>
@@ -1343,7 +1346,8 @@
 <translation id="7233782086689993269">Pintasan telah dipulihkan</translation>
 <translation id="725133483556299729">Pilih e-mel</translation>
 <translation id="7255187042098209569">merah jambu dan ungu</translation>
-<translation id="7271000785316964275">klasikisme</translation>
+<translation id="7267918995585557751">Tetapkan semula permulaan Chrome untuk memastikan halaman permulaan lalai bukan laman web pancingan data. Gunakan laman web yang anda percayai sahaja.</translation>
+<translation id="7271000785316964275">klasisis</translation>
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
 <translation id="7271932918253517778">Pintasan dengan kekunci baris atas perlu menyertakan kekunci <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -1489,6 +1493,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7903695460270716054">Pilih kerja seni dan imej yang dipilih susun</translation>
 <translation id="7912005977894000746">Kembali kepada halaman utama</translation>
 <translation id="7915220255123750251">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dan Internet.</translation>
+<translation id="7915759923880480519">Tetapkan semula Rangkaian ChromeOS untuk melindungi data yang dihantar melalui rangkaian anda. Gunakan rangkaian yang anda percayai sahaja.</translation>
 <translation id="7936303884198020182">Pelayan tanpa nama ditemukan</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943235353293548836">Selang pengekal berterusan</translation>
@@ -1714,6 +1719,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="89945434909472341">kampung</translation>
 <translation id="8997710128084572139">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% bateri.</translation>
 <translation id="8998289560386111590">Tidak tersedia pada peranti anda</translation>
+<translation id="9000871120886759611">Tetapkan semula bahasa Chrome untuk memastikan anda boleh mengakses maklumat dalam bahasa pilihan anda. Semak bahawa hanya bahasa pilihan yang digunakan.</translation>
 <translation id="9003499805101629690">piza</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="901834265349196618">e-mel</translation>
@@ -1774,6 +1780,8 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="951780398843003443">Bandingkan suara sepanjang rakaman supaya transkrip menggambarkan perkara yang setiap penutur katakan dan masa penutur berkata</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
 <translation id="95718197892796296">tanah liat</translation>
+<translation id="959792926760890141">Penetapan semula keselamatan akan mematikan sambungan penyemak imbas Chrome dan menetapkan semula rangkaian dan tetapan lain kepada lalai selamat.
+          Enjin carian lalai anda akan ditetapkan semula tetapi tab, fail, kuki dan sejarah anda tidak akan diubah.</translation>
 <translation id="960719561871045870">Kod operator</translation>
 <translation id="965918541715156800">kuning dan hijau kebiruan</translation>
 <translation id="966787709310836684">menu</translation>

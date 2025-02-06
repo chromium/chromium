@@ -556,7 +556,7 @@
 <translation id="3644695927181369554">Má sugestão</translation>
 <translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
 <translation id="3661106764436337772">Escreva mais rápido e com mais confiança</translation>
-<translation id="3662461537616691585">borgonha e castanho</translation>
+<translation id="3662461537616691585">borgonha e bordô</translation>
 <translation id="3668449597372804501">Imagem de fundo Fluxo das nuvens</translation>
 <translation id="3668570675727296296">Definições de idioma</translation>
 <translation id="3675132884790542448">porcos</translation>
@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN inválido.</translation>
 <translation id="382043424867370667">Imagem de fundo Pôr do sol</translation>
 <translation id="3824259034819781947">Anexar ficheiros</translation>
-<translation id="3836587210832263413">Ative apenas extensões em que confia</translation>
 <translation id="3838338534323494292">Nova palavra-passe</translation>
 <translation id="3845880861638660475">Prima <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> para fechar a caixa de diálogo.</translation>
 <translation id="3848280697030027394">escurecer o teclado</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Faça a gestão das suas impressoras nas definições da impressora</translation>
 <translation id="6292095526077353682">Durante o carregamento, mostrar a proteção de ecrã</translation>
 <translation id="629550705077076970">redução da luminosidade do teclado</translation>
-<translation id="6301193653204230066">A reposição de segurança desativa as extensões do navegador Chrome e repõe a rede e outras definições para as predefinições seguras.
-          Os seus separadores, ficheiros, cookies e histórico não são alterados.</translation>
 <translation id="6302401976930124515">O teste <ph name="TEST_NAME" /> foi cancelado.</translation>
 <translation id="631063167932043783">Explorar app</translation>
 <translation id="6318437367327684789">para sempre</translation>
@@ -1359,7 +1356,7 @@
 <translation id="7311368985037279727">cor do teclado</translation>
 <translation id="7317831949569936035">Inscrição escolar</translation>
 <translation id="7319430975418800333">A3</translation>
-<translation id="7321055305895875150">verde e azul-esverdeado</translation>
+<translation id="7321055305895875150">verde e verde-azulado</translation>
 <translation id="7328475450575141167">estrelícia</translation>
 <translation id="7331297744262591636">Tem de ter, no mínimo, 18 anos e aceitar que a sua utilização dos fundos de IA está sujeita aos <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Termos de Utilização da Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> e aos <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Termos de Utilização Adicionais para IA Generativa<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
@@ -1774,8 +1771,10 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="951780398843003443">Compare vozes ao longo da gravação para que a transcrição reflita o que cada interlocutor disse e quando</translation>
 <translation id="952992212772159698">Não activado</translation>
 <translation id="95718197892796296">argila</translation>
+<translation id="959792926760890141">A reposição de segurança desativa as extensões do navegador Chrome e repõe a rede e outras definições para as predefinições seguras.
+          O seu motor de pesquisa predefinido vai ser reposto, mas os seus separadores, ficheiros, cookies e histórico não vão ser alterados.</translation>
 <translation id="960719561871045870">Código do operador</translation>
-<translation id="965918541715156800">amarelo e azul-esverdeado</translation>
+<translation id="965918541715156800">amarelo e verde-azulado</translation>
 <translation id="966787709310836684">menu</translation>
 <translation id="979450713603643090">Rosa-claro</translation>
 <translation id="982713511914535780">Executar teste de descarga</translation>

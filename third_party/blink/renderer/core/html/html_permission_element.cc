@@ -899,6 +899,19 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     builder.ResetPaddingTop();
     builder.ResetPaddingBottom();
   }
+
+  if (builder.BorderBottomWidth() > builder.FontSize()) {
+    builder.SetBorderBottomWidth(builder.FontSize());
+  }
+  if (builder.BorderTopWidth() > builder.FontSize()) {
+    builder.SetBorderTopWidth(builder.FontSize());
+  }
+  if (builder.BorderLeftWidth() > builder.FontSize()) {
+    builder.SetBorderLeftWidth(builder.FontSize());
+  }
+  if (builder.BorderRightWidth() > builder.FontSize()) {
+    builder.SetBorderRightWidth(builder.FontSize());
+  }
 }
 
 void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {

@@ -938,8 +938,8 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
   if (service) {
     std::optional<device_bound_sessions::Session::Id> id =
         service->GetAnySessionRequiringDeferral(request_);
-    // If the request needs to be deferred while waiting for refresh,
-    // do not start the transaction at this time.
+    // If the request needs to be deferred while waiting for refresh, do not
+    // start the transaction at this time. This may also kick off a refresh.
     if (id) {
       service->DeferRequestForRefresh(
           request_, *id,
@@ -1148,6 +1148,9 @@ void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
     return;
   }
 
+  // If response header Sec-Session-Registration is present and configured
+  // appropriately, trigger a registration request per header value to attempt
+  // to create a new session.
   const auto& request_url = request_->url();
   auto* headers = GetResponseHeaders();
   std::vector<device_bound_sessions::RegistrationFetcherParam> params =
@@ -1159,6 +1162,10 @@ void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
         request_->isolation_info(), request_->net_log(), request_->initiator());
   }
 
+  // If response header Sec-Session-Challenge is present and configured
+  // appropriately, for each header value, store the challenge in advance for
+  // the next relevant refresh request that gets triggered. This is to help
+  // avoid a round-trip for when the next refresh request is required.
   std::vector<device_bound_sessions::SessionChallengeParam> challenge_params =
       device_bound_sessions::SessionChallengeParam::CreateIfValid(request_url,
                                                                   headers);

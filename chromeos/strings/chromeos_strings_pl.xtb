@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Nieprawidłowy kod PIN.</translation>
 <translation id="382043424867370667">Tapeta Zachód słońca</translation>
 <translation id="3824259034819781947">Dołącz pliki</translation>
-<translation id="3836587210832263413">Włączaj tylko te rozszerzenia, którym ufasz</translation>
 <translation id="3838338534323494292">Nowe hasło</translation>
 <translation id="3845880861638660475">Aby zamknąć okno, naciśnij <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">przyciemnienie klawiatury</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Zarządzaj drukarkami w ustawieniach drukarek</translation>
 <translation id="6292095526077353682">Podczas ładowania pokazuj wygaszacz ekranu przez</translation>
 <translation id="629550705077076970">przyciemnianie klawiatury</translation>
-<translation id="6301193653204230066">Resetowanie bezpieczeństwa powoduje wyłączenie rozszerzeń przeglądarki Chrome i przywrócenie sieci oraz innych ustawień do bezpiecznych wartości domyślnych.
-          Karty, pliki, pliki cookie ani historia nie zostaną zmienione.</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> został anulowany</translation>
 <translation id="631063167932043783">Aplikacja Odkrywaj</translation>
 <translation id="6318437367327684789">bez końca</translation>
@@ -1772,6 +1769,8 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="951780398843003443">porównywać głosy w całym nagraniu i zaznaczać w transkrypcji, co mówi która osoba.</translation>
 <translation id="952992212772159698">Nie aktywowano</translation>
 <translation id="95718197892796296">gliny</translation>
+<translation id="959792926760890141">Resetowanie bezpieczeństwa powoduje wyłączenie rozszerzeń przeglądarki Chrome i przywrócenie sieci oraz innych ustawień do bezpiecznych wartości domyślnych.
+          Domyślna wyszukiwarka zostanie zresetowana, ale karty, pliki, pliki cookie i historia nie ulegną zmianie.</translation>
 <translation id="960719561871045870">Kod operatora</translation>
 <translation id="965918541715156800">żółtym i morskim</translation>
 <translation id="966787709310836684">menu</translation>

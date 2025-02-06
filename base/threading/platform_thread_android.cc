@@ -68,7 +68,8 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
       base::android::BuildInfo::GetInstance()->sdk_int() <
           base::android::SDK_VERSION_T) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_ThreadUtils_setThreadPriorityAudio(env, PlatformThread::CurrentId());
+    Java_ThreadUtils_setThreadPriorityAudio(env,
+                                            PlatformThread::CurrentId().raw());
     return true;
   }
   // Recent versions of Android (O+) up the priority of the UI thread
@@ -85,8 +86,8 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
 std::optional<ThreadPriorityForTest>
 GetCurrentThreadPriorityForPlatformForTest() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (Java_ThreadUtils_isThreadPriorityAudio(env,
-                                             PlatformThread::CurrentId())) {
+  if (Java_ThreadUtils_isThreadPriorityAudio(
+          env, PlatformThread::CurrentId().raw())) {
     return std::make_optional(ThreadPriorityForTest::kRealtimeAudio);
   }
   return std::nullopt;
@@ -101,7 +102,7 @@ void PlatformThread::SetName(const std::string& name) {
   // debugger by setting the process name for the LWP.
   // We don't want to do this for the main thread because that would rename
   // the process, causing tools like killall to stop working.
-  if (PlatformThread::CurrentId() == getpid()) {
+  if (PlatformThread::CurrentId().raw() == getpid()) {
     return;
   }
 

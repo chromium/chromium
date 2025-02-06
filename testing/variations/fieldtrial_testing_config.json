@@ -11066,6 +11066,25 @@
             ]
         }
     ],
+    "HappyEyeballsV3": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HappyEyeballsV3"
+                    ]
+                }
+            ]
+        }
+    ],
     "HatsArcGames": [
         {
             "platforms": [
@@ -21298,21 +21317,6 @@
             ]
         }
     ],
-    "ScreenlockReauthChromeOS": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BiometricsAuthForPwdFill"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScrimForBrowserWindowModal": [
         {
             "platforms": [
@@ -21765,13 +21769,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_10_100",
+                    "name": "Enabled_Both",
                     "params": {
-                        "delay_after_tasks": "10",
+                        "delay_after_tasks": "30",
                         "max_chunk_size": "100"
                     },
                     "enable_features": [
-                        "ShouldFreezeSelf"
+                        "ShouldFreezeSelf",
+                        "V8Flag_memory_reducer_respects_frozen_state"
                     ]
                 }
             ]
@@ -22497,6 +22502,7 @@
     "SkiaGraphite": [
         {
             "platforms": [
+                "android",
                 "mac",
                 "windows"
             ],

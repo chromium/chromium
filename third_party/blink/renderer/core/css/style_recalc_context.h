@@ -120,6 +120,10 @@ class CORE_EXPORT StyleRecalcContext {
   // Set to true if there is an ancestor element which has animations or
   // transitions applied. Used to optimize after-change style computation.
   bool has_animating_ancestor = false;
+  //
+  // True if any scroller ancestor of this element had a scroll-marker-group
+  // property set to "before" or "after".
+  bool has_scroller_ancestor_with_scroll_marker_group_property = false;
 };
 
 }  // namespace blink

@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">অমান্য পিন।</translation>
 <translation id="382043424867370667">সূৰ্যাস্তৰ ৱালপেপাৰ</translation>
 <translation id="3824259034819781947">ফাইল সংলগ্ন কৰক</translation>
-<translation id="3836587210832263413">কেৱল আপুনি বিশ্বাস কৰা এক্সটেনশ্বনসমূহ অন কৰক</translation>
 <translation id="3838338534323494292">নতুন পাছৱৰ্ড</translation>
 <translation id="3845880861638660475">ডায়লগটো বন্ধ কৰিবলৈ <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> টিপক।</translation>
 <translation id="3848280697030027394">কীব’ৰ্ড গাঢ় কৰা</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">প্ৰিণ্টাৰৰ ছেটিঙত আপোনাৰ প্ৰিণ্টাৰ পৰিচালনা কৰক</translation>
 <translation id="6292095526077353682">চাৰ্জ কৰি থকাৰ সময়ত, ইয়াৰ বাবে স্ক্ৰীন ছেভাৰ দেখুৱাওক</translation>
 <translation id="629550705077076970">কীব’ৰ্ড ডিমিং</translation>
-<translation id="6301193653204230066">সুৰক্ষা ৰিছেটে Chrome ব্ৰাউজাৰ এক্সটেনশ্বনসমূহ অফ কৰে আৰু নেটৱৰ্ক আৰু অন্য ছেটিংসমূহ সুৰক্ষিত ডিফ’ল্টলৈ ৰিছেট কৰে।
-          আপোনাৰ টেব, ফাইল, কুকিসমূহ আৰু ইতিহাস সলনি নহ’ব।</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পৰীক্ষাটো বাতিল কৰা হৈছে</translation>
 <translation id="631063167932043783">Explore এপ্‌</translation>
 <translation id="6318437367327684789">চিৰদিনৰ বাবে</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">সমগ্ৰ ৰেকৰ্ডিংটোৰ ভইচসমূহ তুলনা কৰক, যাতে ট্ৰেন্সক্ৰিপ্টটোৱে প্ৰতিগৰাকী স্পীকাৰে কেতিয়া কি কৈছিল সেয়া প্ৰতিফলিত কৰে</translation>
 <translation id="952992212772159698">সক্ৰিয় কৰা হোৱা নাই</translation>
 <translation id="95718197892796296">আলতীয়া মাটি</translation>
+<translation id="959792926760890141">সুৰক্ষা ৰিছেটে Chrome ব্ৰাউজাৰ এক্সটেনশ্বনসমূহ অফ কৰে আৰু নেটৱৰ্ক আৰু অন্য ছেটিংসমূহ সুৰক্ষিত ডিফ’ল্টলৈ ৰিছেট কৰে।
+          আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিন ৰিছেট কৰা হ’ব, কিন্তু আপোনাৰ টেব, ফাইল, কুকিসমূহ আৰু ইতিহাস সলনি নহ’ব।</translation>
 <translation id="960719561871045870">অপাৰেটৰ ক’ড</translation>
 <translation id="965918541715156800">হালধীয়া আৰু সেউজ-নীলা</translation>
 <translation id="966787709310836684">মেনু</translation>

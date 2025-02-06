@@ -23,6 +23,8 @@
 @property(nonatomic, strong) UIImage* avatar;
 // If YES, the identity is selected.
 @property(nonatomic, assign) BOOL selected;
+// If YES, the identity is managed.
+@property(nonatomic, assign) BOOL managed;
 // Style for the IdentityView.
 @property(nonatomic, assign) IdentityViewStyle identityViewStyle;
 

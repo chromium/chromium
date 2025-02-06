@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_cells_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -22,6 +23,8 @@ constexpr CGFloat kHorizontalPaddingBetweenTextAndStatus = 5;
 // Size of the error icon image.
 constexpr CGFloat kErrorIconImageSize = 22.;
 
+// Point size of enterprise icon in the bottom view.
+constexpr CGFloat kEnterpriseIconPointSize = 20;
 }  // namespace
 
 @implementation TableViewAccountItem
@@ -54,6 +57,7 @@ constexpr CGFloat kErrorIconImageSize = 22.;
     [cell setStatusView:nil];
     cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
+  [cell showManagementIcon:self.managed];
 
   cell.userInteractionEnabled = self.mode == TableViewAccountModeEnabled;
   if (self.mode != TableViewAccountModeDisabled) {
@@ -83,6 +87,8 @@ constexpr CGFloat kErrorIconImageSize = 22.;
   UIView* _statusView;
   // Container for the status view.
   UIView* _statusContainerView;
+
+  UIImageView* _managementIconView;
 }
 
 @synthesize imageView = _imageView;
@@ -112,6 +118,13 @@ constexpr CGFloat kErrorIconImageSize = 22.;
   // Creates the image rounded corners.
   _imageView.layer.cornerRadius = kTableViewIconImageSize / 2.0f;
   [contentView addSubview:_imageView];
+
+  _managementIconView = [[UIImageView alloc] init];
+  _managementIconView.image = SymbolWithPalette(
+      CustomSymbolWithPointSize(kEnterpriseSymbol, kEnterpriseIconPointSize),
+      @[ [UIColor colorNamed:kStaticGrey600Color] ]);
+  _managementIconView.translatesAutoresizingMaskIntoConstraints = NO;
+  [contentView addSubview:_managementIconView];
 
   _statusContainerView = [[UIView alloc] init];
   _statusContainerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -186,6 +199,8 @@ constexpr CGFloat kErrorIconImageSize = 22.;
         constraintEqualToAnchor:contentView.centerYAnchor],
     [_statusContainerView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
+    [_managementIconView.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
     [verticalCenteringView.topAnchor
         constraintGreaterThanOrEqualToAnchor:contentView.topAnchor
                                     constant:
@@ -199,20 +214,24 @@ constexpr CGFloat kErrorIconImageSize = 22.;
     [_statusContainerView.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor
                        constant:-kTableViewHorizontalSpacing],
+    [_managementIconView.trailingAnchor
+        constraintEqualToAnchor:_statusContainerView.leadingAnchor
+                       constant:-kTableViewHorizontalSpacing],
     [_detailTextLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_statusContainerView.leadingAnchor
+        constraintLessThanOrEqualToAnchor:_managementIconView.leadingAnchor
                                  constant:
                                      -kHorizontalPaddingBetweenTextAndStatus],
     [_textLabel.leadingAnchor
         constraintEqualToAnchor:_imageView.trailingAnchor
                        constant:kTableViewOneLabelCellVerticalSpacing],
     [_textLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_statusContainerView.leadingAnchor
+        constraintLessThanOrEqualToAnchor:_managementIconView.leadingAnchor
                                  constant:
                                      -kHorizontalPaddingBetweenTextAndStatus],
 
   ]];
   _statusContainerView.hidden = YES;
+  _managementIconView.hidden = YES;
 
   // This is needed so the image doesn't get pushed out if both text and detail
   // are long.
@@ -249,6 +268,19 @@ constexpr CGFloat kErrorIconImageSize = 22.;
     [statusIcon.heightAnchor constraintEqualToAnchor:statusIcon.widthAnchor],
   ]];
   [self setStatusView:statusIcon];
+}
+
+// Shows or hides the enterprise building icon.
+- (void)showManagementIcon:(BOOL)show {
+  // Hide the icon while the separate profile for managed accounts feature is
+  // not enabled, or if we explicitely hide the icon.
+  _managementIconView.hidden =
+      !AreSeparateProfilesForManagedAccountsEnabled() || !show;
+  [_managementIconView
+      setContentCompressionResistancePriority:_managementIconView.hidden
+                                                  ? UILayoutPriorityDefaultLow
+                                                  : UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
 }
 
 #pragma mark - UITableViewCell

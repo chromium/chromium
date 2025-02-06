@@ -196,15 +196,16 @@ absl_source_set("base") {
   ]
 }
 
-# This should be an executable() more than a test.
-# It cannot be enabled because it defines its own main() function.
-# absl_test("c_header_test") {
-#   sources = ["c_header_test.c"]
-#   deps = [
-#     ":config",
-#     ":core_headers",
-#   ]
-# }
+if (absl_build_tests) {
+  import("//testing/test.gni")
+  test("absl_c_header_test") {
+    sources = [ "c_header_test.c" ]
+    deps = [
+      ":config",
+      ":core_headers",
+    ]
+  }
+}
 
 absl_source_set("throw_delegate") {
   sources = [ "internal/throw_delegate.cc" ]
@@ -227,33 +228,6 @@ absl_source_set("pretty_function") {
   public = [ "internal/pretty_function.h" ]
   visibility = [ "//third_party/abseil-cpp/absl/*" ]
 }
-
-# TODO(mbonadei): This target throws by design. We should probably
-# just remove it.
-# source_set("exception_safety_testing") {
-#   testonly = true
-#   configs -= [ "//build/config/compiler:chromium_code" ]
-#   configs += [
-#     "//build/config/compiler:no_chromium_code",
-#     "//third_party/abseil-cpp:absl_test_cflags_cc",
-#   ]
-#   public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-#   sources = [
-#     "internal/exception_safety_testing.cc",
-#   ]
-#   public = [
-#     "internal/exception_safety_testing.h",
-#   ]
-#   deps = [
-#     ":config",
-#     ":pretty_function",
-#     "//third_party/abseil-cpp/absl/memory",
-#     "//third_party/abseil-cpp/absl/meta:type_traits",
-#     "//third_party/abseil-cpp/absl/strings",
-#     "//third_party/abseil-cpp/absl/utility",
-#     "//third_party/googletest:gtest",
-#   ]
-# }
 
 absl_source_set("spinlock_test_common") {
   testonly = true

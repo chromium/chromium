@@ -125,7 +125,7 @@
 <translation id="1515129336378114413">ব্রাউজার হোম</translation>
 <translation id="1526389707933164996">স্ক্রিন সেভার অ্যানিমেশন</translation>
 <translation id="152892567002884378">ভলিউম বাড়ান</translation>
-<translation id="1539864135338521185">লাপিস লাজুলাই</translation>
+<translation id="1539864135338521185">লাপিস লাজুলি</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="155865706765934889">টাচপ্যাড</translation>
 <translation id="1561927818299383735">ব্যাকলাইটের উজ্জ্বলতা সম্পন্ন কালার</translation>
@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">ভুল পিন।</translation>
 <translation id="382043424867370667">সানসেট ওয়ালপেপার</translation>
 <translation id="3824259034819781947">ফাইল অ্যাটাচ করুন</translation>
-<translation id="3836587210832263413">আপনি ভরসা আছে শুধু সেই এক্সটেনশন চালু করুন</translation>
 <translation id="3838338534323494292">নতুন পাসওয়ার্ড</translation>
 <translation id="3845880861638660475">ডায়ালগ বন্ধ করার জন্য <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> ‘কী’ প্রেস করুন।</translation>
 <translation id="3848280697030027394">কীবোর্ড ঘন রঙের হচ্ছে</translation>
@@ -767,7 +766,7 @@
 <translation id="4650608062294027130">ডানদিকের shift কী</translation>
 <translation id="4654549501020883054">রোজ পরিবর্তন করুন</translation>
 <translation id="4655868084888499342">ওয়ালপেপার হিসেবে ছবি সেট করা আছে</translation>
-<translation id="4661249927038176904">সুররিয়েল</translation>
+<translation id="4661249927038176904">অপার্থিব</translation>
 <translation id="4661392828086261436">এই আপডেট দিয়েছে ডিভাইস প্রস্তুতকারক এবং তা Google-এর মাধ্যমে যাচাই করা হয়নি</translation>
 <translation id="4664651912255946953">ফার</translation>
 <translation id="4665014895760275686">প্রস্তুতকর্তা</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">প্রিন্টারের সেটিংস থেকে আপনার প্রিন্টার ম্যানেজ করুন</translation>
 <translation id="6292095526077353682">চার্জ দেওয়ার সময়, এর জন্য স্ক্রিন সেভার দেখুন</translation>
 <translation id="629550705077076970">কীবোর্ড অনুজ্জ্বল হচ্ছে</translation>
-<translation id="6301193653204230066">'সেফটি রিসেট' ফিচার Chrome ব্রাউজারের এক্সটেনশন বন্ধ করে এবং নেটওয়ার্ক ও অন্যান্য সেটিংস নিরাপদ ডিফল্টে সেট করে।
-          আপনার ট্যাব, ফাইল, কুকি এবং ইতিহাস পরিবর্তন হবে না।</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পরীক্ষা বাতিল করা হয়েছে</translation>
 <translation id="631063167932043783">এক্সপ্লোর সংক্রান্ত অ্যাপ</translation>
 <translation id="6318437367327684789">সব সময়</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">রেকর্ডিং জুড়ে ভয়েসের তুলনা করুন যাতে প্রত্যেক স্পিকার কী এবং কখন বলেছেন, ট্রান্সক্রিপ্টে তা প্রতিফলিত হয়</translation>
 <translation id="952992212772159698">সক্রিয় নেই</translation>
 <translation id="95718197892796296">মাটি</translation>
+<translation id="959792926760890141">'সেফটি রিসেট' ফিচার Chrome ব্রাউজারের এক্সটেনশন বন্ধ করে এবং নেটওয়ার্ক ও অন্যান্য সেটিংস নিরাপদ ডিফল্টে সেট করে।
+          আপনার ডিফল্ট সার্চ ইঞ্জিন রিসেট করা হবে কিন্তু আপনার ট্যাব, ফাইল, কুকি এবং ইতিহাস পরিবর্তন হবে না।</translation>
 <translation id="960719561871045870">অপারেটরের কোড</translation>
 <translation id="965918541715156800">হলুদ ও টিল</translation>
 <translation id="966787709310836684">মেনু</translation>

@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Descarga en pausa</translation>
 <translation id="1396327438254055134">Permite que el sitio use el optimizador de V8.</translation>
+<translation id="1409338233051621926">Toca Aplicaciones y, a continuación, Aplicaciones predeterminadas</translation>
 <translation id="1415402041810619267">URL truncada</translation>
 <translation id="1415855080660575082">Permite que Chrome comparta tus pestañas recientes con tu dispositivo para que aparezcan en la lista de aplicaciones y en los resultados de búsqueda de tu dispositivo. Puedes activar o desactivar esta opción en la configuración de Chrome.</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">El tema oscuro no se aplica a los sitios</translation>
 <translation id="2606760465469169465">Verificación automática</translation>
 <translation id="2621115761605608342">Habilita JavaScript en un sitio específico.</translation>
+<translation id="2626708220538466178">Hoja inferior del navegador predeterminado cerrada</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Salir</translation>
 <translation id="2682367912565197520">Eliminar nivel de zoom guardado</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Silenciar los sitios que reproducen sonidos</translation>
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3628308229821498208">Sugerencias de búsqueda</translation>
+<translation id="3658847490588580244">Hoja inferior del navegador predeterminado</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sitio incluido en el grupo de sitios de <ph name="RWS_OWNER" /> que puede ver tu actividad en el grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sitios incluidos en el grupo de sitios de <ph name="RWS_OWNER" /> que puede ver tu actividad en el grupo}}</translation>
 <translation id="3697164069658504920">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos USB. Si está desactivada, los sitios no pueden usar dispositivos USB.</translation>
 <translation id="3707034683772193706">Los sitios que visitas pueden guardar una pequeña cantidad de información con Chrome, principalmente para verificar que no eres un bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Eliminar y restablecer</translation>
 <translation id="4645575059429386691">Administrado por uno de tus padres</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>
+<translation id="4672315773691449562">Toca Aplicación de navegador y, a continuación, Chrome</translation>
 <translation id="4676059169848868271">Para que <ph name="APP_NAME" /> pueda usar el seguimiento de manos, actívalo también en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Sensores de luz o movimiento</translation>
 <translation id="4755971844837804407">Cuando esta opción está activada, los sitios pueden mostrarte cualquier anuncio. Si está desactivada, los sitios no pueden mostrar anuncios invasivos o engañosos.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Subir</translation>
 <translation id="8617611086246832542">Cuando esta opción está activada, se muestra la vista para ordenador de los sitios web. Si está desactivada, se muestra la vista para móvil de los sitios web.</translation>
+<translation id="8670078035093027626">Hoja inferior del navegador predeterminado abierta a altura completa</translation>
 <translation id="8676316391139423634">Si activas esta opción, los sitios pueden solicitar permiso para monitorizar tus manos. Si está desactivada, los sitios no pueden monitorizar tus manos.</translation>
 <translation id="8676374126336081632">Borrar entrada</translation>
 <translation id="8681886425883659911">Los anuncios se bloquean en sitios que se caracterizan por mostrar anuncios invasivos o engañosos</translation>

@@ -36,6 +36,7 @@ const std::u16string kAnotherNewText = u"Another New Text";
 const std::u16string kTooltip = u"Tooltip";
 
 using ::actions::ActionItem;
+using ::testing::_;
 
 using TestPageActionModelObservation =
     ::base::ScopedObservation<PageActionModelInterface,
@@ -415,15 +416,14 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
 
   // Set the text override.
   EXPECT_CALL(models().Get(kActionItemId),
-              SetOverrideText(testing::_, std::optional<std::u16string>(kText)))
+              SetOverrideText(_, std::optional<std::u16string>(kText)))
       .Times(1);
 
   controller().OverrideText(kActionItemId, kText);
 
   // Clear the text override.
-  EXPECT_CALL(
-      models().Get(kActionItemId),
-      SetOverrideText(testing::_, std::optional<std::u16string>(std::nullopt)))
+  EXPECT_CALL(models().Get(kActionItemId),
+              SetOverrideText(_, std::optional<std::u16string>(std::nullopt)))
       .Times(1);
   controller().ClearOverrideText(0);
 }
@@ -433,8 +433,7 @@ TEST_F(PageActionControllerMockModelTest, TabActivation) {
   tab_interface().Deactivate();
   controller().Initialize(tab_interface(), {kActionItemId});
 
-  EXPECT_CALL(models().Get(kActionItemId), SetTabActive(testing::_, true))
-      .Times(1);
+  EXPECT_CALL(models().Get(kActionItemId), SetTabActive(_, true)).Times(1);
   tab_interface().Activate();
 }
 
@@ -443,17 +442,21 @@ TEST_F(PageActionControllerMockModelTest, TabDeactivation) {
   tab_interface().Activate();
   controller().Initialize(tab_interface(), {kActionItemId});
 
-  EXPECT_CALL(models().Get(kActionItemId), SetTabActive(testing::_, false))
-      .Times(1);
+  EXPECT_CALL(models().Get(kActionItemId), SetTabActive(_, false)).Times(1);
   tab_interface().Deactivate();
 }
 
 TEST_F(PageActionControllerMockModelTest, ShowSuggestionChip) {
   constexpr int kActionItemId = 0;
   controller().Initialize(tab_interface(), {kActionItemId});
-  EXPECT_CALL(models().Get(kActionItemId), SetShowSuggestionChip(testing::_))
+
+  EXPECT_CALL(models().Get(kActionItemId), SetShowSuggestionChip(_, true))
       .Times(1);
   controller().ShowSuggestionChip(kActionItemId);
+
+  EXPECT_CALL(models().Get(kActionItemId), SetShowSuggestionChip(_, false))
+      .Times(1);
+  controller().HideSuggestionChip(kActionItemId);
 }
 
 }  // namespace

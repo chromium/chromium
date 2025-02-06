@@ -103,6 +103,7 @@ TestProfileIOS::TestProfileIOS(const base::FilePath& state_path,
 TestProfileIOS::TestProfileIOS(
     const base::FilePath& state_path,
     std::string_view profile_name,
+    base::Uuid webkit_storage_id,
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingFactories testing_factories,
     std::unique_ptr<ProfilePolicyConnector> policy_connector,
@@ -114,6 +115,7 @@ TestProfileIOS::TestProfileIOS(
               {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       prefs_(std::move(prefs)),
       testing_prefs_(nullptr),
+      webkit_storage_id_(std::move(webkit_storage_id)),
       user_cloud_policy_manager_(std::move(user_cloud_policy_manager)),
       policy_connector_(std::move(policy_connector)),
       otr_profile_(nullptr),
@@ -203,6 +205,10 @@ void TestProfileIOS::Init() {
 
 bool TestProfileIOS::IsOffTheRecord() const {
   return original_profile_ != nullptr;
+}
+
+const base::Uuid& TestProfileIOS::GetWebKitStorageID() const {
+  return webkit_storage_id_;
 }
 
 scoped_refptr<base::SequencedTaskRunner> TestProfileIOS::GetIOTaskRunner() {
@@ -369,6 +375,12 @@ TestProfileIOS::Builder& TestProfileIOS::Builder::SetUserCloudPolicyManager(
   return *this;
 }
 
+TestProfileIOS::Builder& TestProfileIOS::Builder::SetWebkitStorageId(
+    const base::Uuid& webkit_storage_id) {
+  webkit_storage_id_ = webkit_storage_id;
+  return *this;
+}
+
 std::string TestProfileIOS::Builder::GetEffectiveName() const {
   return profile_name_.empty() ? "Test" : profile_name_;
 }
@@ -383,6 +395,7 @@ std::unique_ptr<TestProfileIOS> TestProfileIOS::Builder::Build(
 
   return base::WrapUnique(new TestProfileIOS(
       data_dir.Append(GetEffectiveName()), GetEffectiveName(),
-      std::move(pref_service_), std::move(testing_factories_),
-      std::move(policy_connector_), std::move(user_cloud_policy_manager_)));
+      std::move(webkit_storage_id_), std::move(pref_service_),
+      std::move(testing_factories_), std::move(policy_connector_),
+      std::move(user_cloud_policy_manager_)));
 }

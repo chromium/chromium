@@ -330,6 +330,7 @@
 <translation id="569897634095159764">Internetyhteyden muodostaminen ei onnistu. Välityspalvelin edellyttää todennusta.</translation>
 <translation id="5761096224651992291">Sivut, joilla et ole käynyt viime aikoina. Chromium poisti luvat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="PERMISSION_3" /></translation>
 <translation id="5768371961535086509">Chromium vapauttaa muistia ei-aktiivisilta välilehdiltä. Näin aktiiviset välilehdet ja muut sovellukset voivat käyttää enemmän tietokoneen resursseja ja Chromium pysyy nopeana. Ei-aktiiviset välilehdet aktivoituvat automaattisesti, kun palaat niihin. <ph name="BEGIN_LINK" />Lue lisää Muistinsäästöstä<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="SETTINGS_LINK" /> tilin Chromium-data</translation>
 <translation id="5800158606660203929">Yksilöi Chromiumia ja muuta sen asetuksia. Valitse Chromium oletusselaimeksi.</translation>
 <translation id="5809516625706423866">Internetyhteyden muodostaminen ei onnistu. HTTP 401 (ei lupaa). Tarkista välityspalvelimen asetukset.</translation>
 <translation id="5821520528363214608">Chromium-datan käyttö ja tallennus Google-tilillä edellyttää Chromiumin päivittämistä</translation>

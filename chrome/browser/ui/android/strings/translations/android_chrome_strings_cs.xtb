@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Hesla ve všech vašich zařízeních</translation>
 <translation id="1082920045291562218">Sdílet se zavřenou tabulkou zpětné vazby ke shrnutí</translation>
 <translation id="1087176310396019910">Možný spam</translation>
+<translation id="1087799850623149508">Klepnutím a podržením přesunete adresní řádek dolů</translation>
 <translation id="1089606299949659462">Kontrola dokončena.</translation>
 <translation id="1094555143448724771">Pokud chcete zobrazit karty ze svých ostatních zařízení, synchronizujte karty a historii</translation>
 <translation id="1095761715416917775">Zajistěte, abyste k synchronizovaným datům měli vždy přístup</translation>
@@ -131,6 +132,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="1513858653616922153">Vymazat heslo</translation>
 <translation id="1521774566618522728">Aktivní dnes</translation>
 <translation id="153446405401665083">K dispozici je nová verze Chromu</translation>
+<translation id="1540012742443808215">Adresní řádek je aktuálně nahoře</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 záložka je uložená jen na tomto zařízení. Pokud ji chcete používat v jiných zařízeních, uložte ji do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}few{# záložky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}many{# záložky je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}other{# záložek je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Platební metody a adresy nebudou šifrovány. Historie prohlížení v Chromu se nebude synchronizovat.
 Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6459045781120991510">Průzkumy</translation>
 <translation id="6461962085415701688">Soubor nelze otevřít</translation>
 <translation id="6464977750820128603">Můžete se podívat, které stránky v Chromu navštěvujete, a nastavit pro ně časovače.\n\nGoogle obdrží informace o webech, pro které nastavíte časovače, a o tom, jak dlouho jste na nich byli. Tyto informace slouží ke zlepšování digitální rovnováhy.</translation>
+<translation id="6468703991511753953">Adresní řádek je aktuálně dole</translation>
 <translation id="6470181189905173055">Zde se zobrazí stránky, které jste otevřeli v Chromu při používání aplikace <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Seznam možností sdílení otevřený na poloviční výšku.</translation>
 <translation id="6475951671322991020">Stáhnout video</translation>

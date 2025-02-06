@@ -29,6 +29,7 @@
                       subtitle:(NSString*)subtitle
                          image:(UIImage*)image
                        checked:(BOOL)checked
+                       managed:(BOOL)managed
              identityViewStyle:(IdentityViewStyle)identityViewStyle
                     titleColor:(UIColor*)titleColor;
 

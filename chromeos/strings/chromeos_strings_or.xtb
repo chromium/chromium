@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">ଅବୈଧ PIN।</translation>
 <translation id="382043424867370667">ସୂର୍ଯ୍ୟାସ୍ତ ୱାଲପେପର</translation>
 <translation id="3824259034819781947">ଫାଇଲଗୁଡ଼ିକୁ ଆଟାଚ କରନ୍ତୁ</translation>
-<translation id="3836587210832263413">ଆପଣ ବିଶ୍ୱାସ କରୁଥିବା ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ କେବଳ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3838338534323494292">ନୂଆ ପାସ୍‌ୱାର୍ଡ</translation>
 <translation id="3845880861638660475">ଡାଏଲଗ ବନ୍ଦ କରିବା ପାଇଁ <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="3848280697030027394">କୀବୋର୍ଡକୁ ଗାଢ଼ା କରନ୍ତୁ</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">ପ୍ରିଣ୍ଟର ସେଟିଂସରେ ଆପଣଙ୍କ ପ୍ରିଣ୍ଟରଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6292095526077353682">ଚାର୍ଜ ହେଉଥିବା ବେଳେ ଏଥିପାଇଁ ସ୍କ୍ରିନ ସେଭର ଦେଖାନ୍ତୁ</translation>
 <translation id="629550705077076970">କୀବୋର୍ଡକୁ ଡିମ କରନ୍ତୁ</translation>
-<translation id="6301193653204230066">ସେଫ୍ଟି ରିସେଟ, Chrome ବ୍ରାଉଜର ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ବନ୍ଦ କରିଦିଏ ଏବଂ ନେଟୱାର୍କ ଓ ଅନ୍ୟ ସେଟିଂସକୁ ସୁରକ୍ଷିତ ଡିଫଲ୍ଟରେ ରିସେଟ କରେ।
-          ଆପଣଙ୍କର ଟାବ, ଫାଇଲ, କୁକୀ ଏବଂ ଇତିହାସ ପରିବର୍ତ୍ତନ ହେବ ନାହିଁ।</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ଟେଷ୍ଟକୁ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="631063167932043783">ଆପ ଏକ୍ସପ୍ଲୋର କରନ୍ତୁ</translation>
 <translation id="6318437367327684789">ସବୁଦିନ ପାଇଁ</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">ସମ୍ପୂର୍ଣ୍ଣ ରେକର୍ଡିଂରେ ଭଏସଗୁଡ଼ିକୁ ତୁଳନା କରିବା ଯାହା ଫଳରେ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ପ୍ରତ୍ୟେକ ସ୍ପିକର କଣ ଏବଂ କେତେବେଳେ କହିଲେ ତାହା ପ୍ରତିଫଳିତ କରେ</translation>
 <translation id="952992212772159698">ସକ୍ରିୟ ହୋ‍ଇନାହିଁ</translation>
 <translation id="95718197892796296">କାଦୁଅ</translation>
+<translation id="959792926760890141">ସେଫ୍ଟି ରିସେଟ, Chrome ବ୍ରାଉଜର ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ବନ୍ଦ କରିଦିଏ ଏବଂ ନେଟୱାର୍କ ଓ ଅନ୍ୟ ସେଟିଂସକୁ ସୁରକ୍ଷିତ ଡିଫଲ୍ଟରେ ରିସେଟ କରେ।
+          ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ରିସେଟ ହୋଇଯିବ, କିନ୍ତୁ ଆପଣଙ୍କର ଟାବ, ଫାଇଲ, କୁକୀ ଏବଂ ଇତିହାସ ପରିବର୍ତ୍ତନ ହେବ ନାହିଁ।</translation>
 <translation id="960719561871045870">ଅପରେଟର୍ କୋଡ୍</translation>
 <translation id="965918541715156800">ହଳଦିଆ ଏବଂ ଟିଲ</translation>
 <translation id="966787709310836684">ମେନୁ</translation>

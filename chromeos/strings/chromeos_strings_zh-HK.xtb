@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">PIN 無效。</translation>
 <translation id="382043424867370667">日落桌布</translation>
 <translation id="3824259034819781947">附加檔案</translation>
-<translation id="3836587210832263413">只開啟你信任的擴充程式</translation>
 <translation id="3838338534323494292">新密碼</translation>
 <translation id="3845880861638660475">按下 <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> 鍵，即可關閉對話框。</translation>
 <translation id="3848280697030027394">降低鍵盤亮度</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">在打印機設定中管理你的打印機</translation>
 <translation id="6292095526077353682">裝置充電時，螢幕保護程式的顯示時間長度：</translation>
 <translation id="629550705077076970">將鍵盤調暗</translation>
-<translation id="6301193653204230066">「安全重設」會關閉 Chrome 瀏覽器擴充程式，並將網絡和其他設定重設為安全預設值。
-          你的分頁、檔案、Cookie 和記錄會保持不變。</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />測試已取消</translation>
 <translation id="631063167932043783">探索應用程式</translation>
 <translation id="6318437367327684789">不限時間</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">比較整段錄音中的語音，讓轉錄文字反映每位講者的講話內容和時間</translation>
 <translation id="952992212772159698">未啟用</translation>
 <translation id="95718197892796296">黏土</translation>
+<translation id="959792926760890141">「安全重設」會關閉 Chrome 瀏覽器擴充程式，並將網絡和其他設定重設為安全預設值。
+          你的預設搜尋引擎將會重設，但分頁、檔案、Cookie 和記錄會保持不變。</translation>
 <translation id="960719561871045870">流動網絡供應商代碼</translation>
 <translation id="965918541715156800">黃色和深藍綠色</translation>
 <translation id="966787709310836684">選單</translation>

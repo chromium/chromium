@@ -648,27 +648,6 @@ DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
   return fragment;
 }
 
-namespace {
-
-class CreateFragmentForInnerOuterHTMLFastPathScope {
-  STACK_ALLOCATED();
-
- public:
-  explicit CreateFragmentForInnerOuterHTMLFastPathScope(Document& document)
-      : document_(document) {
-    CHECK(!document_.IsInCreateFragmentForInnerOuterHTMLFastPath());
-    document_.SetIsInCreateFragmentForInnerOuterHTMLFastPath(true);
-  }
-  ~CreateFragmentForInnerOuterHTMLFastPathScope() {
-    document_.SetIsInCreateFragmentForInnerOuterHTMLFastPath(false);
-  }
-
- private:
-  Document& document_;
-};
-
-}  // namespace
-
 DocumentFragment* CreateFragmentForInnerOuterHTML(
     const String& markup,
     Element* context_element,
@@ -700,34 +679,31 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
         Element::ParseDeclarativeShadowRoots::kParse) {
       parser_behavior.Put(HTMLFragmentParsingBehavior::kIncludeShadowRoots);
     }
-    {
-      CreateFragmentForInnerOuterHTMLFastPathScope fast_path_scope(document);
-      const bool parsed_fast_path = TryParsingHTMLFragment(
-          markup, document, *fragment, *context_element, parser_content_policy,
-          parser_behavior, &log_tag_stats);
-      if (parsed_fast_path) {
-        if (RuntimeEnabledFeatures::DOMInsertionFasterEnabled()) {
-          fragment->SetHoldsUnnotifiedChildren(true);
-          fragment->ParserFinishedBuildingDocumentFragment(
-              DocumentFragment::ShouldNotifyInsertedNodes::kSkip);
-        } else {
-          fragment->ParserFinishedBuildingDocumentFragment(
-              DocumentFragment::ShouldNotifyInsertedNodes::kNotify);
-        }
-        LogFastPathParserTotalTime(parse_timer.Elapsed());
-#if DCHECK_IS_ON()
-        // As a sanity check for the fast-path, create another fragment using
-        // the full parser and compare the results.
-        // See https://bugs.chromium.org/p/chromium/issues/detail?id=1407201
-        // for details.
-        DocumentFragment* fragment2 = DocumentFragment::Create(document);
-        fragment2->ParseHTML(markup, context_element, parser_content_policy);
-        DCHECK_EQ(CreateMarkup(fragment), CreateMarkup(fragment2))
-            << " supplied value " << markup;
-        DCHECK(fragment->isEqualNode(fragment2));
-#endif
-        return fragment;
+    const bool parsed_fast_path = TryParsingHTMLFragment(
+        markup, document, *fragment, *context_element, parser_content_policy,
+        parser_behavior, &log_tag_stats);
+    if (parsed_fast_path) {
+      if (RuntimeEnabledFeatures::DOMInsertionFasterEnabled()) {
+        fragment->SetHoldsUnnotifiedChildren(true);
+        fragment->ParserFinishedBuildingDocumentFragment(
+            DocumentFragment::ShouldNotifyInsertedNodes::kSkip);
+      } else {
+        fragment->ParserFinishedBuildingDocumentFragment(
+            DocumentFragment::ShouldNotifyInsertedNodes::kNotify);
       }
+      LogFastPathParserTotalTime(parse_timer.Elapsed());
+#if DCHECK_IS_ON()
+      // As a sanity check for the fast-path, create another fragment using
+      // the full parser and compare the results.
+      // See https://bugs.chromium.org/p/chromium/issues/detail?id=1407201
+      // for details.
+      DocumentFragment* fragment2 = DocumentFragment::Create(document);
+      fragment2->ParseHTML(markup, context_element, parser_content_policy);
+      DCHECK_EQ(CreateMarkup(fragment), CreateMarkup(fragment2))
+          << " supplied value " << markup;
+      DCHECK(fragment->isEqualNode(fragment2));
+#endif
+      return fragment;
     }
     fragment = DocumentFragment::Create(document);
     fragment->ParseHTML(markup, context_element, parser_content_policy);

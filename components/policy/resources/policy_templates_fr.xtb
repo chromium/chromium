@@ -4700,6 +4700,19 @@ Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.<
 <translation id="4534500438517478692">Nom de la restriction Android :</translation>
 <translation id="4541530620466526913">Comptes locaux de l'appareil</translation>
 <translation id="4542255783284620926">Bloquer l'ajout d'un compte géré en tant que compte secondaire sur Chrome OS (session ouverte)</translation>
+<translation id="4543338637126011529">Cette règle permet d'établir la liste des applis Web isolées (IWA) qui s'installent de manière autonome.
+      Les IWA sont des applis avec des propriétés de sécurité utiles qui ne sont pas disponibles pour les pages Web normales. Elles sont empaquetées dans un bundle Web signé. La clé publique de ce bundle sert à créer l'ID du bundle Web qui identifie l'IWA.
+      Jusqu'à présent, cette règle ne fonctionne que pour les sessions Invité gérées.
+
+      Chaque élément de la règle correspond à un objet avec deux champs obligatoires : l'<ph name="URL_LABEL" /> du fichier manifeste de mise à jour et l'ID de bundle Web de l'appli Web isolée.
+
+      Chaque élément peut également comporter ces champs facultatifs :
+
+        * <ph name="UPDATE_CHANNEL_OPTION" /> : le nom du canal de version/mise à jour de l'AWI. Si cette règle n'est pas définie, "default" est utilisé.
+
+        * <ph name="PINNED_VERSION_OPTION" /> : version spécifique à installer. Le système tentera d'installer cette version si elle est disponible sur le canal de mise à jour spécifié. Par défaut, épingler une AWI sur une version spécifique empêche sa mise à jour au-delà de cette version. Pour retirer l'épingle, supprimez ce champ.
+
+        * <ph name="ALLOW_DOWNGRADES_OPTION" /> : permet d'installer des versions antérieures de l'AWI. Pour cela, vous devez définir le champ "pinned_version". Si aucune valeur n'est fournie ou s'il est défini sur <ph name="FALSE" />, le retour à une version antérieure est désactivé pour cette AWI.</translation>
 <translation id="4543502256674577024">Paramètres de mise à jour de l'appareil</translation>
 <translation id="454585952814397564">Utiliser la priorité normale pour le processus audio</translation>
 <translation id="4546641664653711266">Cette règle est temporaire et sera supprimée dans M127.

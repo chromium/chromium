@@ -150,6 +150,20 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameCharacterWithLanguageTags) {
   EXPECT_TRUE(out_result->typeface_data->get_font_file().IsValid());
 }
 
+TEST_F(FontDataServiceImplUnitTest, GetAllFamilyNames) {
+  std::vector<std::string> out_result;
+  font_service_->GetAllFamilyNames(&out_result);
+
+  // This tests that GetAllFamilyNames returns the actual font family names
+  // installed on the system. There's no guarantee that these are going to be
+  // stable across systems, so just assert that the function is returning
+  // something, and that the names are non-empty.
+  EXPECT_GT(out_result.size(), 0UL);
+  for (const auto& family_name : out_result) {
+    EXPECT_GT(family_name.size(), 0UL);
+  }
+}
+
 }  // namespace
 
 }  // namespace font_data_service

@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Wachtwoorden op al je apparaten</translation>
 <translation id="1082920045291562218">Delen met blad met overzichtfeedback gesloten</translation>
 <translation id="1087176310396019910">Mogelijk spam</translation>
+<translation id="1087799850623149508">Je kunt de adresbalk naar beneden verplaatsen door je vinger erop te houden</translation>
 <translation id="1089606299949659462">Beoordeling voltooid</translation>
 <translation id="1094555143448724771">Synchroniseer je tabbladen en geschiedenis om tabbladen van je andere apparaten te zien</translation>
 <translation id="1095761715416917775">Zorg dat je altijd toegang hebt tot je gesynchroniseerde gegevens</translation>
@@ -131,6 +132,7 @@ Ga naar <ph name="BEGIN_LINK2" />Google-services<ph name="END_LINK2" /> voor mee
 <translation id="1513858653616922153">Wachtwoord verwijderen</translation>
 <translation id="1521774566618522728">Vandaag actief</translation>
 <translation id="153446405401665083">Nieuwe versie van Chrome beschikbaar</translation>
+<translation id="1540012742443808215">Adresbalk staat op dit moment bovenaan</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bookmark wordt alleen op dit apparaat opgeslagen. Als je de bookmark op je andere apparaten wilt gebruiken, sla je deze op in je Google-account <ph name="ACCOUNT_EMAIL" />.}other{# bookmarks worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.
 Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6459045781120991510">Enquêtes</translation>
 <translation id="6461962085415701688">Kan bestand niet openen</translation>
 <translation id="6464977750820128603">Je kunt sites bekijken die je in Chrome bezoekt en timers hiervoor instellen.\n\nGoogle ontvangt informatie over de sites waarvoor je timers instelt en hoelang je ze bezoekt. Deze informatie wordt gebruikt om Digitaal welzijn te verbeteren.</translation>
+<translation id="6468703991511753953">Adresbalk staat op dit moment onderaan</translation>
 <translation id="6470181189905173055">Hier komen de pagina's te staan die je in Chrome hebt geopend terwijl je <ph name="APP_LABEL" /> gebruikt.</translation>
 <translation id="6473086018775716761">Lijst met deelopties is geopend op halve hoogte.</translation>
 <translation id="6475951671322991020">Video downloaden</translation>

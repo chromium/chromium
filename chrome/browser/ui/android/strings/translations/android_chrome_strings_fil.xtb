@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Mga password sa lahat ng iyong device</translation>
 <translation id="1082920045291562218">Isinara ang sheet sa pag-share nang may feedback sa buod</translation>
 <translation id="1087176310396019910">Posibleng spam</translation>
+<translation id="1087799850623149508">Puwede mong pindutin nang matagal para ilipat ang address bar sa ibaba</translation>
 <translation id="1089606299949659462">Tapos na ang pagsusuri!</translation>
 <translation id="1094555143448724771">Para makita ang mga tab mula sa iba mong device, i-sync ang iyong mga tab at history</translation>
 <translation id="1095761715416917775">Tiyaking maa-access mo sa anumang oras ang iyong sini-sync na data</translation>
@@ -131,6 +132,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="1513858653616922153">I-delete ang password</translation>
 <translation id="1521774566618522728">Aktibo ngayong araw</translation>
 <translation id="153446405401665083">May available na bagong bersyon ng Chrome</translation>
+<translation id="1540012742443808215">Kasalukuyang nasa itaas ang address bar</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bookmark ang naka-save lang sa device na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}one{# bookmark ang naka-save lang sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}other{# na bookmark ang naka-save lang sa device na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
 Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6459045781120991510">Mga Survey</translation>
 <translation id="6461962085415701688">Hindi mabuksan ang file</translation>
 <translation id="6464977750820128603">Puwede mong makita ang mga site na binibisita mo sa Chrome at puwede kang magtakda ng mga timer para sa mga ito.\n\nKumukuha ng impormasyon ang Google tungkol sa mga site kung saan ka nagtakda ng mga timer at inaalam nito kung gaano mo katagal binisita ang mga ito. Ginagamit ang impormasyong ito para pahusayin ang Digital Wellness.</translation>
+<translation id="6468703991511753953">Kasalukuyang nasa ibaba ang address bar</translation>
 <translation id="6470181189905173055">Lalabas dito ang mga binuksan mong page sa Chrome habang ginagamit ang <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Nakabukas nang kalahati ang taas ang listahan ng mga opsyon sa pagbabahagi.</translation>
 <translation id="6475951671322991020">I-download ang video</translation>

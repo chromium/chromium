@@ -41,7 +41,7 @@ class MockPageActionModel : public PageActionModelInterface {
               (override));
   MOCK_METHOD(void,
               SetShowSuggestionChip,
-              (base::PassKey<PageActionController>),
+              (base::PassKey<PageActionController>, bool show),
               (override));
   MOCK_METHOD(void,
               SetHasPinnedIcon,

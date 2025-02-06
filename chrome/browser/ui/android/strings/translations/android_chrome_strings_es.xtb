@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Contraseñas en todos tus dispositivos</translation>
 <translation id="1082920045291562218">Compartir con la hoja de comentarios sobre el resumen cerrada</translation>
 <translation id="1087176310396019910">Posible spam</translation>
+<translation id="1087799850623149508">Puedes mantener pulsada la barra de direcciones para moverla a la parte inferior</translation>
 <translation id="1089606299949659462">Revisión completada</translation>
 <translation id="1094555143448724771">Para ver las pestañas de tus otros dispositivos, sincroniza tus pestañas y tu historial</translation>
 <translation id="1095761715416917775">Asegúrate de que siempre puedas acceder a tus datos sincronizados</translation>
@@ -131,6 +132,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="1513858653616922153">Eliminar contraseña</translation>
 <translation id="1521774566618522728">Activo hoy</translation>
 <translation id="153446405401665083">Hay una nueva versión de Chrome disponible</translation>
+<translation id="1540012742443808215">La barra de direcciones está en la parte superior</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 marcador está guardado solo en este dispositivo. Para usarlo en tus otros dispositivos, guárdalo en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}other{# marcadores están guardados solo en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Los métodos de pago y las direcciones no se cifrarán. El historial de navegación de Chrome no se sincronizará.
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
@@ -211,7 +213,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1957557050935255529">Cargando PDF...</translation>
 <translation id="1959679933317802873">Esperando el contenido</translation>
 <translation id="1960290143419248813">Ya no se admiten actualizaciones de Chrome en esta versión de Android.</translation>
-<translation id="1963056249988316027">La comprobación de identidad está activada y no se puede verificar que eres tú</translation>
+<translation id="1963056249988316027">Verificación de identidad está activado y no se puede verificar que eres tú</translation>
 <translation id="1963976881984600709">Protección estándar</translation>
 <translation id="1966710179511230534">Actualiza tus datos de inicio de sesión.</translation>
 <translation id="1969037871259811890">Al eliminar tus datos de navegación, no se cerrará la sesión de tu cuenta de Google. Para ello, <ph name="BEGIN_LINK1" />cierra sesión en Chrome<ph name="END_LINK1" />.</translation>
@@ -565,7 +567,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3622349720008044802">Gestionar ventanas</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sitio}other{+ # sitios}}</translation>
 <translation id="3631987586758005671">Compartiendo con <ph name="DEVICE_NAME" /></translation>
-<translation id="363484704507524488">Puedes gestionar la comprobación de identidad en los ajustes de protección antirrobo. <ph name="BEGIN_LINK" />Ir a Ajustes<ph name="END_LINK" /></translation>
+<translation id="363484704507524488">Puedes gestionar Verificación de identidad en los ajustes de protección antirrobo. <ph name="BEGIN_LINK" />Ir a Ajustes<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome puede comprobar tus contraseñas cuando las guardas</translation>
 <translation id="363596933471559332">Permite iniciar sesión automáticamente en sitios web con credenciales almacenadas. Si esta función está desactivada, se solicitará la verificación cada vez que se intente iniciar sesión en un sitio web.</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
@@ -1185,6 +1187,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6459045781120991510">Encuestas</translation>
 <translation id="6461962085415701688">No se puede abrir el archivo</translation>
 <translation id="6464977750820128603">Puedes ver los sitios que visitas en Chrome y ponerles temporizadores.\n\nGoogle obtiene información sobre estos sitios y sobre la duración de la visita. La información se usa para mejorar Bienestar digital.</translation>
+<translation id="6468703991511753953">La barra de direcciones está en la parte inferior</translation>
 <translation id="6470181189905173055">Las páginas que hayas abierto en Chrome mientras usabas <ph name="APP_LABEL" /> aparecerán aquí.</translation>
 <translation id="6473086018775716761">Lista de opciones para compartir abierta a media altura.</translation>
 <translation id="6475951671322991020">Descargar vídeo</translation>

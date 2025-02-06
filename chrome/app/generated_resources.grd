@@ -17393,11 +17393,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE" translateable="false">
-        Retrieve credentials from phone or tablet.
+        Scan this QR code to use an ID from an Android device
       </message>
 
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_BODY" translateable="false">
-        Scan this QR code with a camera on the device from which you want to retrieve credentials for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
+        Scan this QR code with a camera on the device from which you want to retrieve an ID for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
       </message>
 
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_CODE_ALT_TEXT" translateable="false">

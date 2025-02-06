@@ -48,6 +48,12 @@ static const int32_t kAnotherAlgorithmIdentifier = 2;
 
 }  // namespace
 
+// Base class for unittests testing SecurePaymentConfirmationService, which
+// provides general test environment setup and management.
+//
+// Tests that derive from this class should setup their feature flags as needed,
+// and then call `InitializeSecurePaymentConfirmationService` to create the SPC
+// service under test.
 class SecurePaymentConfirmationServiceTestBase {
  public:
   SecurePaymentConfirmationServiceTestBase() {
@@ -55,40 +61,20 @@ class SecurePaymentConfirmationServiceTestBase {
   }
 
  protected:
-  std::unique_ptr<webauthn::InternalAuthenticator>
-  CreateMockInternalAuthenticator() {
-    mock_internal_authenticator_ =
-        new webauthn::MockInternalAuthenticator(web_contents_);
-    return base::WrapUnique(static_cast<webauthn::InternalAuthenticator*>(
-        &*mock_internal_authenticator_));
-  }
+  void InitializeSecurePaymentConfirmationService(
+      bool with_authenticator = true) {
+    CHECK(!mock_internal_authenticator_);
+    CHECK(!spc_service_);
 
-  std::unique_ptr<SecurePaymentConfirmationService,
-                  SecurePaymentConfirmationServiceDeleter>
-  CreateSecurePaymentConfirmationService() {
     mojo::PendingRemote<mojom::SecurePaymentConfirmationService> remote;
     mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver =
         remote.InitWithNewPipeAndPassReceiver();
-    return std::unique_ptr<SecurePaymentConfirmationService,
-                           SecurePaymentConfirmationServiceDeleter>(
+    spc_service_ = std::unique_ptr<SecurePaymentConfirmationService,
+                                   SecurePaymentConfirmationServiceDeleter>(
         new SecurePaymentConfirmationService(
             *web_contents_->GetPrimaryMainFrame(),
             /*receiver=*/std::move(receiver), mock_web_data_service_,
-            CreateMockInternalAuthenticator()));
-  }
-
-  std::unique_ptr<SecurePaymentConfirmationService,
-                  SecurePaymentConfirmationServiceDeleter>
-  CreateSecurePaymentConfirmationServiceWithoutAuthenticator() {
-    mojo::PendingRemote<mojom::SecurePaymentConfirmationService> remote;
-    mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver =
-        remote.InitWithNewPipeAndPassReceiver();
-    return std::unique_ptr<SecurePaymentConfirmationService,
-                           SecurePaymentConfirmationServiceDeleter>(
-        new SecurePaymentConfirmationService(
-            *web_contents_->GetPrimaryMainFrame(),
-            /*receiver=*/std::move(receiver), mock_web_data_service_,
-            /*authenticator=*/nullptr));
+            with_authenticator ? CreateMockInternalAuthenticator() : nullptr));
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -98,11 +84,24 @@ class SecurePaymentConfirmationServiceTestBase {
   scoped_refptr<payments::MockPaymentManifestWebDataService>
       mock_web_data_service_ =
           base::MakeRefCounted<MockPaymentManifestWebDataService>();
-  raw_ptr<webauthn::MockInternalAuthenticator, DanglingUntriaged>
-      mock_internal_authenticator_;
+  // The `spc_service_` must be deleted after `mock_internal_authenticator_`, as
+  // it owns the underlying std::unique_ptr.
+  std::unique_ptr<SecurePaymentConfirmationService,
+                  SecurePaymentConfirmationServiceDeleter>
+      spc_service_;
+  raw_ptr<webauthn::MockInternalAuthenticator> mock_internal_authenticator_;
   base::MockCallback<mojom::SecurePaymentConfirmationService::
                          IsSecurePaymentConfirmationAvailableCallback>
       mock_is_secure_payment_confirmation_available_callback_;
+
+ private:
+  std::unique_ptr<webauthn::InternalAuthenticator>
+  CreateMockInternalAuthenticator() {
+    mock_internal_authenticator_ =
+        new webauthn::MockInternalAuthenticator(web_contents_);
+    return base::WrapUnique(static_cast<webauthn::InternalAuthenticator*>(
+        &*mock_internal_authenticator_));
+  }
 };
 
 class SecurePaymentConfirmationServiceTest
@@ -117,9 +116,7 @@ TEST_F(SecurePaymentConfirmationServiceTest,
        features::kSecurePaymentConfirmationUseCredentialStoreAPIs},
       {});
 
-  std::unique_ptr<SecurePaymentConfirmationService,
-                  SecurePaymentConfirmationServiceDeleter>
-      spc_service = CreateSecurePaymentConfirmationService();
+  InitializeSecurePaymentConfirmationService();
 
   EXPECT_CALL(*mock_internal_authenticator_,
               IsGetMatchingCredentialIdsSupported())
@@ -130,7 +127,7 @@ TEST_F(SecurePaymentConfirmationServiceTest,
 
   EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
               Run(true));
-  spc_service->IsSecurePaymentConfirmationAvailable(
+  spc_service_->IsSecurePaymentConfirmationAvailable(
       mock_is_secure_payment_confirmation_available_callback_.Get());
 }
 
@@ -141,13 +138,11 @@ TEST_F(SecurePaymentConfirmationServiceTest,
       {}, {::features::kSecurePaymentConfirmation,
            features::kSecurePaymentConfirmationUseCredentialStoreAPIs});
 
-  std::unique_ptr<SecurePaymentConfirmationService,
-                  SecurePaymentConfirmationServiceDeleter>
-      spc_service = CreateSecurePaymentConfirmationService();
+  InitializeSecurePaymentConfirmationService();
 
   EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
               Run(false));
-  spc_service->IsSecurePaymentConfirmationAvailable(
+  spc_service_->IsSecurePaymentConfirmationAvailable(
       mock_is_secure_payment_confirmation_available_callback_.Get());
 }
 
@@ -161,16 +156,13 @@ TEST_F(
        ::features::kSecurePaymentConfirmationDebug},
       {});
 
-  std::unique_ptr<SecurePaymentConfirmationService,
-                  SecurePaymentConfirmationServiceDeleter>
-      spc_service =
-          CreateSecurePaymentConfirmationServiceWithoutAuthenticator();
+  InitializeSecurePaymentConfirmationService(/*with_authenticator=*/false);
 
   // Here we haven't set up the authenticator, but since the debug flag is set
   // that does not matter; the API should still return true.
   EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
               Run(true));
-  spc_service->IsSecurePaymentConfirmationAvailable(
+  spc_service_->IsSecurePaymentConfirmationAvailable(
       mock_is_secure_payment_confirmation_available_callback_.Get());
 }
 
@@ -182,14 +174,11 @@ TEST_F(SecurePaymentConfirmationServiceTest,
        features::kSecurePaymentConfirmationUseCredentialStoreAPIs},
       {});
 
-  std::unique_ptr<SecurePaymentConfirmationService,
-                  SecurePaymentConfirmationServiceDeleter>
-      spc_service =
-          CreateSecurePaymentConfirmationServiceWithoutAuthenticator();
+  InitializeSecurePaymentConfirmationService(/*with_authenticator=*/false);
 
   EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
               Run(false));
-  spc_service->IsSecurePaymentConfirmationAvailable(
+  spc_service_->IsSecurePaymentConfirmationAvailable(
       mock_is_secure_payment_confirmation_available_callback_.Get());
 }
 
@@ -202,9 +191,7 @@ TEST_F(
        features::kSecurePaymentConfirmationUseCredentialStoreAPIs},
       {});
 
-  std::unique_ptr<SecurePaymentConfirmationService,
-                  SecurePaymentConfirmationServiceDeleter>
-      spc_service = CreateSecurePaymentConfirmationService();
+  InitializeSecurePaymentConfirmationService();
 
   EXPECT_CALL(*mock_internal_authenticator_,
               IsGetMatchingCredentialIdsSupported())
@@ -212,7 +199,7 @@ TEST_F(
 
   EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
               Run(false));
-  spc_service->IsSecurePaymentConfirmationAvailable(
+  spc_service_->IsSecurePaymentConfirmationAvailable(
       mock_is_secure_payment_confirmation_available_callback_.Get());
 }
 
@@ -225,9 +212,7 @@ TEST_F(
        features::kSecurePaymentConfirmationUseCredentialStoreAPIs},
       {});
 
-  std::unique_ptr<SecurePaymentConfirmationService,
-                  SecurePaymentConfirmationServiceDeleter>
-      spc_service = CreateSecurePaymentConfirmationService();
+  InitializeSecurePaymentConfirmationService();
 
   EXPECT_CALL(*mock_internal_authenticator_,
               IsGetMatchingCredentialIdsSupported())
@@ -238,7 +223,7 @@ TEST_F(
 
   EXPECT_CALL(mock_is_secure_payment_confirmation_available_callback_,
               Run(false));
-  spc_service->IsSecurePaymentConfirmationAvailable(
+  spc_service_->IsSecurePaymentConfirmationAvailable(
       mock_is_secure_payment_confirmation_available_callback_.Get());
 }
 
@@ -260,29 +245,23 @@ class SecurePaymentConfirmationServiceCredentialTest
     : public SecurePaymentConfirmationServiceTestBase,
       public ::testing::TestWithParam<CredentialTestParams> {
  public:
-  SecurePaymentConfirmationServiceCredentialTest() = default;
-
- protected:
-  std::unique_ptr<BrowserBoundKeyStore> CreateFakeBrowserBoundKeyStore() {
-    auto key_store = std::make_unique<FakeBrowserBoundKeyStore>();
-    fake_browser_bound_key_store_ = key_store->GetWeakPtr();
-    return base::WrapUnique<BrowserBoundKeyStore>(key_store.release());
+  SecurePaymentConfirmationServiceCredentialTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
   }
 
-  std::unique_ptr<SecurePaymentConfirmationService,
-                  SecurePaymentConfirmationServiceDeleter>
-  CreateSecurePaymentConfirmationServiceWithBrowserBoundKeyStore() {
-    auto spc_service = CreateSecurePaymentConfirmationService();
+  void SetUp() override {
+    InitializeSecurePaymentConfirmationService();
     auto passkey_browser_binder = std::make_unique<PasskeyBrowserBinder>(
         CreateFakeBrowserBoundKeyStore(), mock_web_data_service_);
     passkey_browser_binder->SetRandomBytesAsVectorCallbackForTesting(
         base::BindLambdaForTesting(
             [this](size_t length) { return fake_browser_bound_key_id_; }));
-    spc_service->SetPasskeyBrowserBinderForTesting(
+    spc_service_->SetPasskeyBrowserBinderForTesting(
         std::move(passkey_browser_binder));
-    return spc_service;
   }
 
+ protected:
   const std::vector<uint8_t> fake_challenge_ = {0x01, 0x02, 0x03, 0x04};
   const std::vector<uint8_t> fake_credential_id_ = {0x10, 0x11, 0x12, 0x13};
   const std::vector<uint8_t> fake_client_data_json_ = {0x30, 0x31, 0x32, 0x33};
@@ -294,6 +273,15 @@ class SecurePaymentConfirmationServiceCredentialTest
   base::MockCallback<
       mojom::SecurePaymentConfirmationService::MakePaymentCredentialCallback>
       mock_payment_credential_callback_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
+  std::unique_ptr<BrowserBoundKeyStore> CreateFakeBrowserBoundKeyStore() {
+    auto key_store = std::make_unique<FakeBrowserBoundKeyStore>();
+    fake_browser_bound_key_store_ = key_store->GetWeakPtr();
+    return base::WrapUnique<BrowserBoundKeyStore>(key_store.release());
+  }
 };
 
 static ::testing::Matcher<
@@ -350,12 +338,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(SecurePaymentConfirmationServiceCredentialTest,
        MakePaymentCredentialAddsBrowserBoundKey) {
-  base::test::ScopedFeatureList features(
-      blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
-  std::unique_ptr<SecurePaymentConfirmationService,
-                  SecurePaymentConfirmationServiceDeleter>
-      spc_service =
-          CreateSecurePaymentConfirmationServiceWithBrowserBoundKeyStore();
   fake_browser_bound_key_store_->PutFakeKey(fake_browser_bound_key_id_,
                                             GetParam().fake_key);
   auto creation_options =
@@ -400,8 +382,8 @@ TEST_P(SecurePaymentConfirmationServiceCredentialTest,
                       GetParam().expected_signature),
                   _));
 
-  spc_service->MakePaymentCredential(creation_options.Clone(),
-                                     mock_payment_credential_callback_.Get());
+  spc_service_->MakePaymentCredential(creation_options.Clone(),
+                                      mock_payment_credential_callback_.Get());
   ASSERT_FALSE(actual_payment_options.is_null());
   EXPECT_EQ(actual_payment_options->browser_bound_public_key,
             GetParam().expected_browser_bound_key);

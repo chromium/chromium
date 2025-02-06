@@ -32,6 +32,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -98,7 +99,8 @@ class SQLiteDatabase {
 
   sqlite3* Sqlite3Handle() const {
 #if DCHECK_IS_ON()
-    DCHECK_EQ(!!CurrentThread(), opening_thread_ || !db_);
+    DCHECK_EQ(CurrentThread() != base::kInvalidThreadId,
+              opening_thread_ != base::kInvalidThreadId || !db_);
 #endif
     return db_;
   }
@@ -149,7 +151,7 @@ class SQLiteDatabase {
   raw_ptr<DatabaseAuthorizer> authorizer_ GUARDED_BY(authorizer_lock_) =
       nullptr;
 
-  base::PlatformThreadId opening_thread_ = 0;
+  base::PlatformThreadId opening_thread_ = base::kInvalidThreadId;
 
   base::Lock database_closing_mutex_;
 

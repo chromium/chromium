@@ -99,6 +99,10 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
       [self identityForGaiaID:gaiaID], IdentityAvatarSize::TableViewIcon);
 }
 
+- (BOOL)isGaiaIDManaged:(NSString*)gaiaID {
+  return NO;
+}
+
 @end
 
 // The test param determines whether `kSeparateProfilesForManagedAccounts` is

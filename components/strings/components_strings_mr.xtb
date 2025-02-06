@@ -1234,6 +1234,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> ला तुमच्या डिव्हाइसवर डेटा कायमचा स्टोअर करायचा आहे</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> वर <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">तुम्ही हे डिव्हाइस सक्रियपणे कधी वापरता त्याबद्दल जाणून घेण्याची विनंती करू शकते</translation>
+<translation id="3201482403106004262">सर्वेक्षणामध्ये एरर आली.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3203025201812691413">URL रिकामी असू शकत नाही</translation>
 <translation id="320323717674993345">पेमेंट रद्द करा</translation>
@@ -2346,6 +2347,7 @@
 <translation id="5138227688689900538">कमी दाखवा</translation>
 <translation id="5143309888746105072">तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी तृतीय पक्ष कुकी वापरण्यापासून Chromium हे साइटना ब्लॉक करते.
             <ph name="NEW_LINE" />साइट वैशिष्ट्ये काम करत नसल्यास, <ph name="START_LINK" />तृतीय पक्ष कुकीना तात्पुरती परवानगी देऊन पाहणे<ph name="END_LINK" /> हे करा.</translation>
+<translation id="5144613843429436866">तुम्ही या साइटसाठी <ph name="PERMISSION" /> ला अनुमती दिली आहे</translation>
 <translation id="5145883236150621069">धोरण प्रतिसादामध्ये एरर कोड अस्तित्वात आहे</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />साठीच्या सूचना ब्लॉक केलेल्या आहेत</translation>
 <translation id="514704532284964975">तुम्ही तुमचा फोन वापरून टॅप केलेल्या NFC डिव्हाइसवरील माहिती <ph name="URL" /> ला पाहायची आणि बदलायची आहे</translation>
@@ -4403,6 +4405,7 @@
 <translation id="8792621596287649091">तुम्ही तुमच्या Google <ph name="ORG_NAME" /> चा ॲक्सेस गमावू शकता किंवा तुमची संवेदनशील माहिती चोरीला जाऊ शकते. Chromium लगेच तुमचा पासवर्ड बदलण्याची शिफारस करत आहे.</translation>
 <translation id="8792626944327216835">मायक्रोफोन</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ने तुमच्या ब्राउझरवर Chrome एंटरप्राइझ कनेक्टर्स सुरू केली आहेत. या कनेक्टरना तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> सेटिंग्ज</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
 <translation id="8800034312320686233">साइट काम करत नाही का?</translation>
 <translation id="8805819170075074995">सूची एंट्री "<ph name="LANGUAGE_ID" />": एंट्री SpellcheckLanguage धोरणामध्येदेखील समाविष्ट असल्यामुळे तिच्याकडे दुर्लक्ष केले गेले आहे.</translation>
@@ -4623,6 +4626,7 @@
 <translation id="9192361865877479444">मेटल (मॅट)</translation>
 <translation id="9192947025498305328">आरोग्याला अनुकूल अशा सौंदर्याबाबत आशय</translation>
 <translation id="9199905725844810519">प्रिंट करणे ब्लॉक केले</translation>
+<translation id="9201904868909900493">सर्वेक्षण उघडत आहे...</translation>
 <translation id="9204089334327209740">अपलोड पूर्ण झाल्यावर, तुम्ही <ph name="CLOUD_PROVIDER" /> मध्ये तुमच्या फाइलमध्ये फेरबदल करू शकता. ट्रॅश मधील कोणत्याही फाइलसह स्थानिक स्टोरेज आपोआप काढून टाकले जाईल.</translation>
 <translation id="9205078245616868884">तुमचा डेटा तुमच्या सिंक सांकेतिक पासफ्रेझासह एंक्रिप्ट केलेला केला जातो. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="920643408853370361">प्रवास विमा</translation>

@@ -1159,6 +1159,7 @@
 <translation id="3076865167425975822">ఆపరేటింగ్ సిస్టమ్‌లు</translation>
 <translation id="3080254622891793721">గ్రాఫిక్</translation>
 <translation id="3082007635241601060">వ్యక్తిగతీకరించిన డిస్కౌంట్‌లు అందుబాటులో ఉన్నప్పుడు కనుగొనడానికి, మీ కార్ట్‌లను ఉపయోగించడానికి Googleకు అనుమతినివ్వండి</translation>
+<translation id="3086269988715347183">మీరు ఇంతకు ముందు <ph name="BLOCKED_URL" />‌ను ఆమోదించలేదు</translation>
 <translation id="3086579638707268289">వెబ్‌లో మీ యాక్టివిటీ పర్యవేక్షించబడుతోంది</translation>
 <translation id="3087734570205094154">దిగువ</translation>
 <translation id="3090667236485488075">గ్లాస్</translation>
@@ -1229,10 +1230,12 @@
 <translation id="3194737229810486521"><ph name="URL" /> శాశ్వతంగా డేటాను మీ పరికరంలో స్టోరేజ్‌ చేయాలనుకుంటోంది</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />లో <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">మీరు ఈ పరికరాన్ని యాక్టివ్‌గా ఉపయోగించే సమయాలను తెలుసుకోవడానికి సైట్ అనుమతి అడగవచ్చు</translation>
+<translation id="3201482403106004262">సర్వేతో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీరు ఏ సమాచారాన్ని సింక్ చేయాలనుకుంటున్నారో మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3203025201812691413">URL ఖాళీగా ఉండకూడదు</translation>
 <translation id="320323717674993345">పేమెంట్‌ను రద్దు చేయండి</translation>
 <translation id="3203366800380907218">వెబ్ నుండి</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" />లో పెద్దవారికి మాత్రమే తగిన కంటెంట్ ఉండవచ్చు</translation>
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3208701679386778924">దయచేసి రిపోర్ట్‌ను పంపండి, తద్వారా మేము మరిన్ని ChromeOS అప్‌డేట్‌లను మెరుగుపరచగలము.</translation>
 <translation id="3209034400446768650">పేజీ, నగదును ఛార్జ్ చేయవచ్చు</translation>
@@ -2342,6 +2345,7 @@
 <translation id="5138227688689900538">తక్కువ చూపు</translation>
 <translation id="5143309888746105072">Chromium థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేస్తుంది, కాబట్టి మీరు బ్రౌజ్ చేస్తున్నప్పుడు అవి మిమ్మల్ని ట్రాక్ చేయలేవు.
             <ph name="NEW_LINE" />ఒకవేళ సైట్ ఫీచర్‌లు పని చేయకపోతే, <ph name="START_LINK" />థర్డ్-పార్టీ కుక్కీలను తాత్కాలికంగా అనుమతించడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">మీరు ఈ సైట్‌కు <ph name="PERMISSION" />‌ను అనుమతించారు</translation>
 <translation id="5145883236150621069">విధాన ప్రతిస్పందనలో ఎర్రర్ కోడ్ ఉంది</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> కోసం నోటిఫికేషన్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="514704532284964975">మీరు మీ ఫోన్‌తో ట్యాప్ చేసే NFC పరికరాలలోని సమాచారాన్ని <ph name="URL" /> చూడాలని, మార్చాలనుకుంటోంది</translation>
@@ -2966,6 +2970,7 @@
 <translation id="6254436959401408446">ఈ పేజీని తెరవడానికి తగినంత మెమరీ లేదు</translation>
 <translation id="625463612687472648">అనుమతించడాన్ని ఆపివేయండి</translation>
 <translation id="6259156558325130047">&amp;మళ్లీ క్రమం చేయడాన్ని రిపీట్‌ చేయి</translation>
+<translation id="6259282549512536479">మీరు ఇదివరకే <ph name="BLOCKED_URL" />‌ను బ్లాక్ చేశారు</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> బుక్‌మార్క్‌లు</translation>
 <translation id="6264376385120300461">ఏదేమైనా డౌన్‌లోడ్ చేయండి</translation>
 <translation id="6264485186158353794">భద్రతకు తిరిగి వెళ్ళు</translation>
@@ -4398,6 +4403,7 @@
 <translation id="8792621596287649091">మీరు మీ <ph name="ORG_NAME" /> ఖాతాకు యాక్సెస్‌ను కోల్పోవచ్చు. లేదా గుర్తింపు స‌మాచారం చోరీకి గురి కావచ్చు. మీ పాస్‌వర్డ్‌ను ఇప్పుడే రీసెట్ చేయాల్సిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="8792626944327216835">మైక్రోఫోన్</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" />, మీ బ్రౌజర్‌లో Chrome Enterprise కనెక్టర్‌లను ఆన్ చేసింది. ఈ కనెక్టర్‌లకు మీ డేటాలో కొంత డేటాకు యాక్సెస్ ఉంది.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> సెట్టింగ్‌లు</translation>
 <translation id="8798099450830957504">డిఫాల్ట్</translation>
 <translation id="8800034312320686233">సైట్ పని చేయడం లేదా?</translation>
 <translation id="8805819170075074995">లిస్ట్‌ నమోదు "<ph name="LANGUAGE_ID" />": నమోదు విస్మరించబడింది, ఎందుకంటే ఇది SpellcheckLanguage విధానంలో కూడా ఉంది.</translation>
@@ -4618,6 +4624,7 @@
 <translation id="9192361865877479444">మెటల్ (మాట్)</translation>
 <translation id="9192947025498305328">క్లీన్ బ్యూటీ</translation>
 <translation id="9199905725844810519">ప్రింటింగ్ బ్లాక్ చేయబడింది</translation>
+<translation id="9201904868909900493">సర్వేను తెరుస్తోంది…</translation>
 <translation id="9204089334327209740">అప్‌లోడ్ పూర్తయిన తర్వాత, మీరు మీ ఫైల్స్‌ను <ph name="CLOUD_PROVIDER" />లో సవరించవచ్చు. ట్రాష్‌లోని ఏవైనా ఫైల్స్‌తో సహా లోకల్ స్టోరేజ్ ఆటోమేటిక్‌గా తీసివేయబడుతుంది.</translation>
 <translation id="9205078245616868884">మీ సింక్‌ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>
 <translation id="920643408853370361">ప్రయాణ బీమా</translation>

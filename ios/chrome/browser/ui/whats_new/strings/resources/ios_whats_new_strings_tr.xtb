@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="163361131991952999">Görsel aramanıza metin ekleyin</translation>
 <translation id="1703743472724191604">Fiyat 100 ₺ - 150 $</translation>
 <translation id="1741219894094057085">Akıllı Saat</translation>
 <translation id="1841425245869881163">Ekranı aşağı kaydırın ve Diğer Satın Alma Seçenekleri'ne dokunun</translation>
@@ -11,24 +12,36 @@
 <translation id="2657494017069155956">iPhone'unuzun ana ekran yuvasına taşıyarak Chrome'a daha hızlı erişin</translation>
 <translation id="3266153067803506235">Chrome simgesini basılı tutup "Ana Ekranı Düzenle"yi tıklayın.</translation>
 <translation id="3764562164106905124">Kas</translation>
+<translation id="3899112482022541392">Aramak istediğiniz herhangi bir şeyi çizerek, vurgulayarak veya dokunarak seçebilir ve sekmenizden ayrılmadan sonuçları alabilirsiniz.</translation>
 <translation id="3958312024468322930">Simgeyi ana ekranınızın alt kısmındaki yuvaya sürükleyin</translation>
+<translation id="4057827571914844935">İstediğiniz sayfaya gidin.</translation>
+<translation id="413904417725060645">Adres çubuğunda Google Lens kamera simgesine dokunun.</translation>
 <translation id="4227258125987011664">200 ₺</translation>
+<translation id="4515441253330406845">Çevirmek istediğiniz metni vurgulayın.</translation>
 <translation id="4607887340472970274">Fiyat Takibi</translation>
+<translation id="4760786790170329383">Gördüğünüzü arayın</translation>
+<translation id="4947953558604796939">Menüden Google Çeviri'yi seçin.</translation>
 <translation id="5119329531859909472">Ürünü takip etmek için Takip Et'e dokunun</translation>
+<translation id="5325058481170363873">Çevirmek için görseldeki veya videodaki kelimeleri vurgulayın.</translation>
 <translation id="5423269318075950257">Fiyatı Takip Et</translation>
+<translation id="5551447203719429864">Google Lens, göz atarken daha fazla bilgi edinmenizi kolaylaştırır. Artık herhangi bir sayfada gördüğünüz ürünleri, yerleri ve metinleri keşfetmek için arama yapabilirsiniz.</translation>
 <translation id="5910891913281809039">Ara</translation>
 <translation id="5980825544755559844">100 ₺</translation>
 <translation id="5997931385777991124">Diğer Satın Alma Seçenekleri</translation>
 <translation id="6250648963363746140">Ürün fiyatlarının zaman içinde nasıl değiştiğini görün</translation>
 <translation id="6434483369543264725">Eki</translation>
+<translation id="6709005160890717159">Resimlerdeki metni çevirin</translation>
 <translation id="6926200709057244215">Fiyatları takip etmenize, fiyat geçmişini görmenize ve en uygun zamanda satın almanıza yardımcı olan alışveriş analizlerinden yararlanın</translation>
 <translation id="6944020103996173879">Daha fazla satın alma seçeneği göster</translation>
 <translation id="6998251471716094661">Ürün fiyatlarını takip edin ve herhangi bir sitede fiyat düştüğünde uyarı alın</translation>
 <translation id="7065813315247345131">Chrome'u yuvaya taşıyın</translation>
 <translation id="7097046145876891318">Adres çubuğunda fiyat geçmişine dokunarak zaman içindeki fiyat değişikliklerini görün</translation>
 <translation id="7227293336683593977">Fiyat Geçmişi</translation>
+<translation id="7467253702085233835">Daha fazla seçenek görmek için arama kutusuna bir soru veya daha fazla arama terimi girin.</translation>
 <translation id="794945939108159738">120 ₺</translation>
 <translation id="8625706492572042370">Ana ekranı düzenleyin</translation>
 <translation id="8871142946513037507">Web'deki diğer mağazalar</translation>
+<translation id="9159747300317927284">Aramak için ekranınızdaki herhangi bir öğeyi daire içine alın, vurgulayın veya öğeye dokunun.</translation>
+<translation id="9207009447080468029">Daha fazla seçenek görmek için soru sorun veya aramanızın kapsamını daraltın.</translation>
 <translation id="991428047095920989">Adres çubuğunda fiyat geçmişi simgesine dokunarak zaman içindeki fiyat değişikliklerini görün</translation>
 </translationbundle>

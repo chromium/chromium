@@ -330,6 +330,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="569897634095159764">İnternetə qoşulmaq olmur. Proksi serveri identifikasiya tələb edir.</translation>
 <translation id="5761096224651992291">Bu yaxınlarda daxil olmamısınız. Chromium sildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="5768371961535086509">Chromium deaktiv tabların yaddaşını boşaldır. Bu, aktiv tablara və digər tətbiqlərə daha çox kompüter resursu verir və Chromium-u sürətləndirir. Qayıtdığınız zaman deaktiv tablar avtomatik olaraq yenidən aktivləşir. <ph name="BEGIN_LINK" />Yaddaşa Qənaət haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, hesabdakı Chromium datasını <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromium-u fərdiləşdirin və idarə edin. Chromium-u defolt kimi ayarlayın.</translation>
 <translation id="5809516625706423866">İnternetə qoşulmaq olmur. HTTP 401 üçün icazə verilməyib. Proksi konfiqurasiyasını yoxlayın.</translation>
 <translation id="5821520528363214608">Google Hesabınızda Chromium datasından istifadə etmək və datanı yadda saxlamaq üçün Chromium-u güncəlləyin</translation>

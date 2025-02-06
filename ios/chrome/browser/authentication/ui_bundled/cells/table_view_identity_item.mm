@@ -39,6 +39,7 @@
                       subtitle:subtitle
                          image:self.avatar
                        checked:self.selected
+                       managed:self.managed
              identityViewStyle:self.identityViewStyle
                     titleColor:[UIColor colorNamed:kTextPrimaryColor]];
 }

@@ -231,6 +231,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/permission_protected_media.png",
     "java/res/drawable-xxxhdpi/settings_sensors.png",
     "java/res/drawable-xxxhdpi/web_asset.png",
+    "java/res/drawable/broken_24.xml",
     "java/res/drawable/gm_database_24.xml",
     "java/res/drawable/ic_account_attention.xml",
     "java/res/drawable/ic_archive.xml",

@@ -11,6 +11,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -126,7 +127,9 @@
   [_consumer showDefaultAccountWithFullName:selectedIdentity.userFullName
                                   givenName:selectedIdentity.userGivenName
                                       email:selectedIdentity.userEmail
-                                     avatar:avatar];
+                                     avatar:avatar
+                                    managed:[self isIdentityKnownToBeManaged:
+                                                      selectedIdentity]];
 }
 
 - (void)handleIdentityListChanged {
@@ -137,6 +140,27 @@
   if ([_selectedIdentity isEqual:identity]) {
     [self updateSelectedIdentityUI];
   }
+}
+
+// Returns true if `identity` is known to be managed.
+// Returns false if the identity is known not to be managed or if the management
+// status is unknown. If the management status is unknown, it is fetched by
+// calling `FetchManagedStatusForIdentity`. `handleIdentityUpdated:` will be
+// called asynchronously when the management status if retrieved and the
+// identity is managed.
+- (BOOL)isIdentityKnownToBeManaged:(id<SystemIdentity>)identity {
+  if (std::optional<BOOL> managed = IsIdentityManaged(identity);
+      managed.has_value()) {
+    return managed.value();
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  FetchManagedStatusForIdentity(identity, base::BindOnce(^(bool managed) {
+                                  if (managed) {
+                                    [weakSelf handleIdentityUpdated:identity];
+                                  }
+                                }));
+  return NO;
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver

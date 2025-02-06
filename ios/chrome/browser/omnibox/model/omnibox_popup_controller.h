@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 class AutocompleteResult;
+@class OmniboxAutocompleteController;
 @protocol OmniboxPopupControllerDelegate;
 
 /// Controller for the omnibox popup.
@@ -16,8 +17,23 @@ class AutocompleteResult;
 /// Delegate of the omnibox popup controller.
 @property(nonatomic, weak) id<OmniboxPopupControllerDelegate> delegate;
 
+/// Controller of autocomplete.
+@property(nonatomic, weak)
+    OmniboxAutocompleteController* omniboxAutocompleteController;
+
+#pragma mark - OmniboxAutocomplete event
+
 /// Updates the omnibox popup with `result`.
 - (void)updateWithResults:(const AutocompleteResult&)results;
+
+/// Updates the omnibox popup with sorted`result`.
+- (void)updateWithSortedResults:(const AutocompleteResult&)results;
+
+#pragma mark - OmniboxPopup event
+
+/// Request suggestions with a number of visible suggestions.
+- (void)requestSuggestionsWithVisibleSuggestionCount:
+    (NSUInteger)visibleSuggestionCount;
 
 @end
 

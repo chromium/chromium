@@ -1705,6 +1705,7 @@ Nova instalacija</translation>
 <translation id="6637729079642709226">Promjena vremena</translation>
 <translation id="6641720045729354415">Uključite/isključite Automatske titlove. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Poništavanje načina sortiranja po nazivu</translation>
+<translation id="664793810957802384">Stavke u predloženoj grupi</translation>
 <translation id="6649641931981131786">Podesite kameru tako da budete u centru ekrana.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> želi potvrditi vaš identitet</translation>
 <translation id="6650742588569439432">Učitavanje stavki nije uspjelo.</translation>
@@ -2382,6 +2383,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8956420987536947088">Otvorite prijašnje prozore i aplikacije</translation>
 <translation id="8959380109429710384">Pritisnuli ste prečicu na tastaturi za povećalo za cijeli ekran. Koristite Ctrl + Alt + strelice da se pomičete po uvećanom prikazu.</translation>
 <translation id="8964525410783593407">1 h</translation>
+<translation id="8970887620466824814">Nešto nije uredu.</translation>
 <translation id="8973885907461690937">Postavljanje fokusa na ikonu menija</translation>
 <translation id="8980862970816311842">Premještanje ikone aplikacije u folder ili iz foldera na mreži aplikacija</translation>
 <translation id="8982906748181120328">Vid. u blizini</translation>

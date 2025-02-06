@@ -5,44 +5,96 @@
 #include "net/first_party_sets/local_set_declaration.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/containers/map_util.h"
+#include "base/logging.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/sets_mutation.h"
 
 namespace net {
 
+namespace {
+bool CheckPreconditions(
+    const base::flat_map<SchemefulSite, FirstPartySetEntry>& entries,
+    const base::flat_map<SchemefulSite, SchemefulSite>& aliases,
+    bool emit_errors) {
+  auto emit = [&](std::string_view message) {
+    if (emit_errors) {
+      LOG(ERROR) << message;
+    }
+  };
+
+  if (!std::ranges::all_of(aliases, [&](const auto& p) {
+        const FirstPartySetEntry* alias_entry =
+            base::FindOrNull(entries, p.first);
+        const FirstPartySetEntry* canonical_entry =
+            base::FindOrNull(entries, p.second);
+        // The canonical entry must exist. If the alias entry exists explicitly,
+        // it must be the same as the canonical entry.
+        if (!canonical_entry) {
+          emit(
+              "Invalid local Related Website Set: alias names a site that has "
+              "no entry in the set.");
+          return false;
+        }
+        if (alias_entry && *alias_entry != *canonical_entry) {
+          emit(
+              "Invalid local Related Website Set: alias entry differs from the "
+              "canonical entry.");
+          return false;
+        }
+        return true;
+      })) {
+    return false;
+  }
+
+  if (!entries.empty()) {
+    // Must not be a singleton set.
+    if (entries.size() + aliases.size() <= 1) {
+      emit(
+          "Invalid local Related Website Set: set must include more than one "
+          "site.");
+      return false;
+    }
+
+    // All provided entries must have the same primary site. I.e., there must
+    // only be one set.
+    const SchemefulSite& primary = entries.begin()->second.primary();
+    if (!std::ranges::all_of(
+            entries,
+            [&](const std::pair<SchemefulSite, FirstPartySetEntry>& pair) {
+              return pair.second.primary() == primary;
+            })) {
+      // More than one set was provided. That is (currently) unsupported.
+      emit(
+          "Invalid local Related Website Set: entries must all list the same "
+          "primary site.");
+      return false;
+    }
+  }
+  return true;
+}
+}  // namespace
+
+// static
+std::optional<LocalSetDeclaration> LocalSetDeclaration::Create(
+    base::flat_map<SchemefulSite, FirstPartySetEntry> set_entries,
+    base::flat_map<SchemefulSite, SchemefulSite> aliases,
+    bool emit_errors) {
+  if (!CheckPreconditions(set_entries, aliases, emit_errors)) {
+    return std::nullopt;
+  }
+  return LocalSetDeclaration(std::move(set_entries), std::move(aliases));
+}
+
 LocalSetDeclaration::LocalSetDeclaration() = default;
 
 LocalSetDeclaration::LocalSetDeclaration(
     base::flat_map<SchemefulSite, FirstPartySetEntry> set_entries,
     base::flat_map<SchemefulSite, SchemefulSite> aliases)
-    : entries_(std::move(set_entries)), aliases_(std::move(aliases)) {
-  CHECK(std::ranges::all_of(aliases_, [&](const auto& p) {
-    const FirstPartySetEntry* alias_entry = base::FindOrNull(entries_, p.first);
-    const FirstPartySetEntry* canonical_entry =
-        base::FindOrNull(entries_, p.second);
-    // The canonical entry must exist. If the alias entry exists explicitly, it
-    // must be the same as the canonical entry.
-    return canonical_entry &&
-           (!alias_entry || *alias_entry == *canonical_entry);
-  }));
-
-  if (!entries_.empty()) {
-    // Must not be a singleton set (i.e. must have more than one entry).
-    CHECK_GT(entries_.size() + aliases_.size(), 1u);
-
-    // All provided entries must have the same primary site. I.e., there must
-    // only be one set.
-    const SchemefulSite& primary = entries_.begin()->second.primary();
-    CHECK(std::ranges::all_of(
-        entries_,
-        [&](const std::pair<SchemefulSite, FirstPartySetEntry>& pair) {
-          return pair.second.primary() == primary;
-        }));
-  }
-}
+    : entries_(std::move(set_entries)), aliases_(std::move(aliases)) {}
 
 LocalSetDeclaration::~LocalSetDeclaration() = default;
 

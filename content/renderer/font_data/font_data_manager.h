@@ -85,6 +85,10 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
   sk_sp<SkTypeface> CreateTypefaceFromMatchResult(
       mojom::MatchFamilyNameResultPtr match_result) const;
 
+  // This must be const to allow being called from onCountFamilies and
+  // onGetFamilyNames, but it does mutate family_names_.
+  void GetAllFamilyNames() const;
+
   // Key of the typeface_cache_.
   struct MatchFamilyRequest {
     std::string name;
@@ -122,6 +126,12 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
 
   // Cache of the memory mapped files to ensure the mapping lives.
   mutable std::list<std::unique_ptr<base::MemoryMappedFile>> mapped_files_;
+
+  // A cache of all the font family names that could be returned by
+  // onGetFamilyName. When populated, this has the same amount of elements as
+  // returned by onCountFamilies. This is populated on the first call to either
+  // onCountFamilies or onGetFamilyName.
+  mutable std::vector<std::string> family_names_;
 
 #if BUILDFLAG(ENABLE_FREETYPE)
   sk_sp<SkFontMgr> custom_fnt_mgr_;

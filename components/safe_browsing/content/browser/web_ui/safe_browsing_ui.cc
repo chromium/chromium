@@ -1805,11 +1805,23 @@ base::Value::Dict SerializeReferringAppInfo(
 }
 #endif
 
+base::Value::Dict SerializeSafeBrowsingWebAppKey(
+    const SafeBrowsingWebAppKey& key) {
+  base::Value::Dict dict;
+  dict.Set("start_url_origin", key.start_url_origin());
+  dict.Set("id_or_start_path", key.id_or_start_path());
+  return dict;
+}
+
 base::Value::Dict SerializeReferringAppInfo(const ReferringAppInfo& info) {
   base::Value::Dict dict;
   dict.Set("referring_app_source", ReferringAppInfo_ReferringAppSource_Name(
                                        info.referring_app_source()));
   dict.Set("referring_app_info", info.referring_app_name());
+  if (info.has_referring_webapk()) {
+    dict.Set("referring_webapk",
+             SerializeSafeBrowsingWebAppKey(info.referring_webapk()));
+  }
   return dict;
 }
 

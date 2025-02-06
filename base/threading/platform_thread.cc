@@ -6,6 +6,7 @@
 
 #include "base/task/current_thread.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "base/trace_event/base_tracing.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/scheduler.h"
@@ -18,6 +19,10 @@ namespace {
 constinit thread_local ThreadType current_thread_type = ThreadType::kDefault;
 
 }  // namespace
+
+void PlatformThreadId::WriteIntoTrace(perfetto::TracedValue&& context) const {
+  perfetto::WriteIntoTracedValue(std::move(context), value_);
+}
 
 // static
 void PlatformThreadBase::SetCurrentThreadType(ThreadType thread_type) {

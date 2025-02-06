@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
 <translation id="382043424867370667">સનસેટ વૉલપેપર</translation>
 <translation id="3824259034819781947">ફાઇલ જોડો</translation>
-<translation id="3836587210832263413">તમે વિશ્વાસ કરતા હો ફક્ત તેવા જ એક્સ્ટેન્શન ચાલુ કરો</translation>
 <translation id="3838338534323494292">નવો પાસવર્ડ</translation>
 <translation id="3845880861638660475">સંવાદ બંધ કરવા માટે <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> દબાવો.</translation>
 <translation id="3848280697030027394">કીબોર્ડને ઘેરું કરો</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">પ્રિન્ટરના સેટિંગમાં જઈને તમારા પ્રિન્ટર મેનેજ કરો</translation>
 <translation id="6292095526077353682">ચાર્જ કરતી વખતે, આટલા સમય માટે સ્ક્રીન સેવર બતાવો</translation>
 <translation id="629550705077076970">કીબોર્ડ ડિમ કરવું</translation>
-<translation id="6301193653204230066">"સલામતી માટે રીસેટ" Chrome બ્રાઉઝરના એક્સ્ટેન્શન બંધ કરી દે છે અને નેટવર્ક તથા અન્ય સેટિંગને "સલામત" ડિફૉલ્ટ પર રીસેટ કરે છે.
-          તમારા ટૅબ, ફાઇલો, કુકી અને ઇતિહાસ બદલાશે નહીં.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />નું પરીક્ષણ રદ કરવામાં આવ્યું</translation>
 <translation id="631063167932043783">Explore ઍપ</translation>
 <translation id="6318437367327684789">કાયમ માટે</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">સમગ્ર રેકોર્ડિંગ દરમિયાન વૉઇસની તુલના કરે છે, જેથી ટ્રાન્સક્રિપ્ટ દર્શાવી શકે કે દરેક સ્પીકર દ્વારા શું કહેવામાં આવ્યું અને ક્યારે કહેવામાં આવ્યું</translation>
 <translation id="952992212772159698">સક્રિય કરેલું નથી</translation>
 <translation id="95718197892796296">માટી</translation>
+<translation id="959792926760890141">"સલામતી માટે રીસેટ" Chrome બ્રાઉઝરના એક્સ્ટેન્શન બંધ કરી દે છે અને નેટવર્ક તથા અન્ય સેટિંગને "સલામત" ડિફૉલ્ટ પર રીસેટ કરે છે.
+          તમારું ડિફૉલ્ટ શોધ એન્જિન રીસેટ કરવામાં આવશે, પણ તમારા ટૅબ, ફાઇલો, કુકી અને ઇતિહાસ બદલાશે નહીં.</translation>
 <translation id="960719561871045870">ઑપરેટર કોડ</translation>
 <translation id="965918541715156800">પીળો અને મોરપીંછ</translation>
 <translation id="966787709310836684">મેનૂ</translation>

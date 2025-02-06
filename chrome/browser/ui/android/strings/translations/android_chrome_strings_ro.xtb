@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Parole disponibile pe toate dispozitivele</translation>
 <translation id="1082920045291562218">Opțiunea Distribuie cu foaia de feedback pentru rezumat a fost închisă</translation>
 <translation id="1087176310396019910">Posibil spam</translation>
+<translation id="1087799850623149508">Poți să atingi lung pentru a muta bara de adrese în partea de jos</translation>
 <translation id="1089606299949659462">Examinare finalizată!</translation>
 <translation id="1094555143448724771">Pentru a vedea filele de pe alte dispozitive, sincronizează filele și istoricul</translation>
 <translation id="1095761715416917775">Asigură-te că ai în permanență acces la datele sincronizate</translation>
@@ -131,6 +132,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="1513858653616922153">Șterge parola</translation>
 <translation id="1521774566618522728">Activ astăzi</translation>
 <translation id="153446405401665083">Este disponibilă o nouă versiune Chrome</translation>
+<translation id="1540012742443808215">Bara de adrese este în partea de sus</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{Un marcaj se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul Google <ph name="ACCOUNT_EMAIL" />.}few{# marcaje se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}other{# de marcaje se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Metodele de plată și adresele nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.
 Numai un utilizator care deține expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6459045781120991510">Sondaje</translation>
 <translation id="6461962085415701688">Fișierul nu poate fi deschis</translation>
 <translation id="6464977750820128603">Poți vedea site-urile pe care le vizitezi în Chrome și să setezi temporizatoare pentru ele.\n\nGoogle obține informații cu privire la site-urile pentru care setezi temporizatoare și la durata de accesare. Aceste informații sunt folosite pentru a îmbunătăți Bunăstarea digitală.</translation>
+<translation id="6468703991511753953">Bara de adrese este în partea de jos</translation>
 <translation id="6470181189905173055">Paginile pe care le-ai deschis în Chrome în timp ce ai folosit <ph name="APP_LABEL" /> vor apărea aici.</translation>
 <translation id="6473086018775716761">Lista cu opțiuni de permitere a accesului deschisă la jumătate din înălțime.</translation>
 <translation id="6475951671322991020">Descarcă videoclipul</translation>

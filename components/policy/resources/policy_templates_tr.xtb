@@ -4795,6 +4795,19 @@ Etkinleştirilir, boş bırakılır veya ayarlanmazsa bu politikanın hiçbir et
 <translation id="4534500438517478692">Android kısıtlama adı:</translation>
 <translation id="4541530620466526913">Cihaz-yerel hesaplar</translation>
 <translation id="4542255783284620926">Yönetilen bir hesabın ChromeOS'te ikincil hesap olarak eklenmesini engelle (oturum açıkken)</translation>
+<translation id="4543338637126011529">Politika ayarlanırsa sessiz bir şekilde yüklenen izole web uygulamalarının (IWA) listesi belirtilir.
+      IWA'lar, normal web sayfalarında mevcut olmayan yararlı güvenlik özelliklerine sahip uygulamalardır. Bunlar, imzalanmış Web Bundle'da yer alır. İmzalanmış Web Bundle'ın ortak anahtarı, IWA'yı tanımlayan Web Bundle kimliğini oluşturmak için kullanılır.
+      Bu politika şimdilik yalnızca yönetilen misafir oturumunda geçerlidir.
+
+      Politikanın her liste öğesi, iki zorunlu alan içeren bir nesnedir: <ph name="URL_LABEL" /> güncelleme manifesti ve yalıtılmış web uygulamasının web paketi kimliği.
+
+      Her öğede şu isteğe bağlı alanlar da bulunabilir:
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />: IWA sürüm/güncelleme kanalının adı. Ayarlanmazsa "varsayılan" kullanılır.
+
+        * <ph name="PINNED_VERSION_OPTION" />:  Yüklenecek sürüm. Sistem, belirtilen güncelleme kanalında varsa bu sürümü yüklemeyi dener. IWA'yı belirli bir sürüme sabitlerseniz bu sürümden sonraki sürümlere güncellenmesi varsayılan olarak engellenir. Sabitlemeyi kaldırmak için bu alanı kaldırın.
+
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />: IWA'nın eski sürümlerinin yüklenmesini etkinleştirir. Bunun için "pinned_version" alanının ayarlanması gerekir. Belirtilmez veya <ph name="FALSE" /> değerine ayarlanırsa ilgili IWA için eski sürüme geçirme devre dışı bırakılır.</translation>
 <translation id="4543502256674577024">Cihaz güncelleme ayarları</translation>
 <translation id="454585952814397564">Ses işlemi için normal öncelik kullan</translation>
 <translation id="4546641664653711266">Bu politika geçici olup M127 sürümünde kaldırılacaktır.

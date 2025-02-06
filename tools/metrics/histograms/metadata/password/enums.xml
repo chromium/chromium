@@ -701,6 +701,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Unsafe state"/>
 </enum>
 
+<enum name="PasswordChangeFlowState">
+  <int value="0" label="Offering password change"/>
+  <int value="1" label="Waiting for privacy notice acceptance"/>
+  <int value="2" label="Checking if user is signed in"/>
+  <int value="3" label="No change password form found"/>
+  <int value="4" label="Changing password"/>
+  <int value="5" label="Password successfully changed"/>
+  <int value="6" label="Password change failed"/>
+</enum>
+
 <enum name="PasswordCheckInteraction">
   <int value="0" label="Check started automatically"/>
   <int value="1" label="Check started manually"/>
@@ -1745,6 +1755,22 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Change password form cleared"/>
   <int value="12" label="DOM mutation after Autofill"/>
 </enum>
+
+<!-- LINT.IfChange(SubmissionOutcome)-->
+
+<enum name="SubmissionOutcome">
+  <int value="0" label="Uncategorized Error"/>
+  <int value="1" label="Successful Outcome"/>
+  <int value="2" label="Unknown Outcome"/>
+  <int value="3" label="Error - old password was incorrect"/>
+  <int value="4" label="Error - old passwords don't match"/>
+  <int value="5" label="Error - new password incorrect"/>
+  <int value="6" label="Error - page error"/>
+  <int value="7" label="No Response"/>
+  <int value="8" label="Could not parse response"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/password_manager/password_change/change_form_submission_verifier.h:SubmissionOutcome)-->
 
 <enum name="SubmittedPasswordFormFrame">
   <int value="0" label="Main frame"/>

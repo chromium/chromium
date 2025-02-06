@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />შეიტყვეთ მეტი<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ჩანართი დაჯგუფდა</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
+<translation id="1909810060368225529">შეტყობინება: ამ საზიარო ჩანართების ჯგუფში შეტანილი ცვლილებები ხილულია ყველასთვის. ყველას შეუძლია ცვლილებების შეტანა თქვენს საზიარო ჩანართების ჯგუფში</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის სანიშნეებში დამატება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის სანიშნეებში დამატება}}</translation>
 <translation id="2118649612461486615">მაღაზიის ინფორმაცია</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{თქვენი დახურული ჩანართებისა და ჯგუფების ხელახლა გახსნა შესაძლებელია ბოლო ჩანართების სექციიდან და ჩანართების ჯგუფების სექციიდან. თქვენი ინკოგნიტო ჩანართი მიუწვდომელი იქნება.}other{თქვენი დახურული ჩანართებისა და ჯგუფების ხელახლა გახსნა შესაძლებელია ბოლო ჩანართების სექციიდან და ჩანართების ჯგუფების სექციიდან. თქვენი # ინკოგნიტო ჩანართი მიუწვდომელი იქნება.}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">თქვენს ჩანართების ჯგუფებს აქ ნახავთ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{გააუქმეთ <ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დაჯგუფება}other{გააუქმეთ <ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დაჯგუფება}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
+<translation id="6499296376514955580">საზიარო ჩანართების ჯგუფის ცვლილების შესახებ შეტყობინება დაიხურა</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 დღის შემდეგ}other{<ph name="DAY_COUNT_MANY" /> დღის შემდეგ}}</translation>
 <translation id="6549021453810473782">მაღაზიის ინფორმაციის ნახვა</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ჩანართის მარცხნივ გადატანა</translation>
+<translation id="6589356853295569750">საზიარო ჩანართების ჯგუფის ცვლილების შესახებ შეტყობინება გაიხსნა სრულ სიმაღლეზე</translation>
 <translation id="6590332670428149473">გახსენით ჩანართების ჯგუფზე მოქმედებების მენიუ ჩანართების <ph name="COLOR_NAME" /> ფერის გაზიარებული ჯგუფისთვის „<ph name="TITLE_OF_GROUP" />“.</translation>
 <translation id="6615455863669487791">მაჩვენე</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ჩანართი შეიცვალა}other{<ph name="MANY_CHANGED" /> ჩანართი შეიცვალა}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის გაზიარება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის გაზიარება}}</translation>
 <translation id="7773714564112603605">ჩანართის ამოშლა და ჯგუფის წაშლა</translation>
 <translation id="7792771145871471484">შემოთავაზებების გადახედვა.</translation>
+<translation id="7792860826279960128">საზიარო ჩანართების ჯგუფის ცვლილების შესახებ შეტყობინება ნახევარ სიმაღლეზე</translation>
 <translation id="7825973332242257878">ჩანართების ჯგუფები</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დაჯგუფება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დაჯგუფება}}</translation>
 <translation id="7853202427316060426">აქტივობა</translation>

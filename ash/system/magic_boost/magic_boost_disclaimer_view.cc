@@ -201,9 +201,8 @@ MagicBoostDisclaimerView::MagicBoostDisclaimerView(
       .SetPaintToLayer()
       .AddChildren(
           views::Builder<views::ImageView>()
-              .SetImage(
-                  ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                      IDR_MAGIC_BOOST_DISCLAIMER_ILLUSTRATION))
+              .SetImage(ui::ImageModel::FromResourceId(
+                  IDR_MAGIC_BOOST_DISCLAIMER_ILLUSTRATION))
               .SetPreferredSize(kImagePreferredSize),
           views::Builder<views::ScrollView>()
               .SetBackgroundColor(std::nullopt)

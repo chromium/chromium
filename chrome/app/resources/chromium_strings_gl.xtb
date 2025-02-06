@@ -332,6 +332,7 @@
 <translation id="569897634095159764">Non se puido establecer conexión con Internet. O servidor proxy require autenticación.</translation>
 <translation id="5761096224651992291">Levas un tempo sen entrar. Chromium quitou os seguintes permisos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /></translation>
 <translation id="5768371961535086509">Chromium libera memoria das pestanas inactivas. Desta forma, as pestanas activas e outras aplicacións dispoñen de máis recursos informáticos e Chromium segue funcionando rápido. As pestanas inactivas volven activarse automaticamente cando regresas a elas. <ph name="BEGIN_LINK" />Máis información sobre o aforro de memoria<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Se esqueciches a frase de acceso ou queres cambiar esta opción de configuración, <ph name="SETTINGS_LINK" /> os datos de Chromium da túa conta</translation>
 <translation id="5800158606660203929">Personalizar e controlar Chromium. Define Chromium como navegador predeterminado.</translation>
 <translation id="5809516625706423866">Non se puido establecer conexión con Internet. Erro: HTTP 401 (acceso non autorizado). Revisa a configuración do proxy.</translation>
 <translation id="5821520528363214608">Actualiza Chromium para poder usar e gardar os seus datos na túa Conta de Google</translation>

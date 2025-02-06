@@ -22,7 +22,8 @@
 - (void)showDefaultAccountWithFullName:(NSString*)fullName
                              givenName:(NSString*)givenName
                                  email:(NSString*)email
-                                avatar:(UIImage*)avatar;
+                                avatar:(UIImage*)avatar
+                               managed:(BOOL)managed;
 
 // Disable display for the default account button, for when an account isn't
 // available on the device.

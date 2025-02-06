@@ -1705,6 +1705,7 @@
 <translation id="6637729079642709226">Убакытты өзгөртүү</translation>
 <translation id="6641720045729354415">Ыкчам коштомо жазууларды өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Аталышы боюнча иреттөө тартибин артка кайтаруу</translation>
+<translation id="664793810957802384">Сунушталган топтогу нерселер</translation>
 <translation id="6649641931981131786">Камераны сиз экрандын борборунда болгудай кылып тууралаңыз.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> сиз экениңизди ырастоону суранып жатат</translation>
 <translation id="6650742588569439432">Нерселер жүктөлгөн жок.</translation>
@@ -1733,7 +1734,7 @@
 <translation id="6732087373923685049">камера</translation>
 <translation id="6732800389263199929">дагы <ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Камера менен микрофон колдонулууда</translation>
-<translation id="6739144137573853180">ЖӨНДӨӨЛӨРГӨ ӨТҮҮ</translation>
+<translation id="6739144137573853180">ПАРАМЕТРЛЕРГЕ ӨТҮҮ</translation>
 <translation id="6747985245839783873">Батареянын кубаты <ph name="PERCENTAGE" /> пайыз. Батареяны үнөмдөгүч күйүк.</translation>
 <translation id="6751052314767925245">Администраторуңуз ишке киргизди</translation>
 <translation id="6751826523481687655">Майнаптуулукка көз салуу күйгүзүлгөн</translation>
@@ -2382,6 +2383,7 @@
 <translation id="8956420987536947088">Мурунку терезелериңизди жана колдонмолоруңузду ачыңыз</translation>
 <translation id="8959380109429710384">Толук экран лупасы үчүн ыкчам баскычты бастыңыз. Жакындатылган көрүнүштө ары-бери жылуу үчүн ctrl + alt + жебелерин колдонуңуз.</translation>
 <translation id="8964525410783593407">1 с.</translation>
+<translation id="8970887620466824814">Бир жерден ката кетти.</translation>
 <translation id="8973885907461690937">Меню сүрөтчөсүнө өтүү</translation>
 <translation id="8980862970816311842">Колдонмонун сүрөтчөсүн колдонмонун торчосунда киргизүү/чыгаруу</translation>
 <translation id="8982906748181120328">Nearby'да көрүнүү</translation>

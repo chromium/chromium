@@ -108,7 +108,7 @@ void SetThreadTrackDescriptors() {
   const auto thread_ids = thread_id_name_manager->GetIds();
   for (base::PlatformThreadId thread_id : thread_ids) {
     const char* thread_name = thread_id_name_manager->GetName(thread_id);
-    auto thread_track = perfetto::ThreadTrack::ForThread(thread_id);
+    auto thread_track = perfetto::ThreadTrack::ForThread(thread_id.raw());
     FillThreadTrack(thread_track, thread_name);
   }
 

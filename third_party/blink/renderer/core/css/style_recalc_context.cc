@@ -30,6 +30,13 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
         result.container = element;
       }
     }
+
+    const ComputedStyle* style = element->GetComputedStyle();
+    if (style && !style->ScrollMarkerGroupNone() &&
+        style->IsScrollContainer()) {
+      result.has_scroller_ancestor_with_scroll_marker_group_property = true;
+    }
+
     if (!result.has_content_visibility_auto_locked_ancestor) {
       if (const DisplayLockContext* display_lock_context =
               element->GetDisplayLockContext()) {
@@ -39,6 +46,7 @@ StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
         }
       }
     }
+
     if (!result.has_animating_ancestor && element->GetElementAnimations()) {
       result.has_animating_ancestor = true;
     }

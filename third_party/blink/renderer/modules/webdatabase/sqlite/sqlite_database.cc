@@ -143,7 +143,7 @@ void SQLiteDatabase::Close() {
     sqlite3_close(db);
   }
 
-  opening_thread_ = 0;
+  opening_thread_ = base::kInvalidThreadId;
   open_error_ = SQLITE_ERROR;
   open_error_message_ = std::string();
 }

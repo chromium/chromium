@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">在所有设备上使用您的密码</translation>
 <translation id="1082920045291562218">已关闭分享摘要反馈工作表</translation>
 <translation id="1087176310396019910">可能是垃圾内容</translation>
+<translation id="1087799850623149508">您可以轻触并按住地址栏将其移到底部</translation>
 <translation id="1089606299949659462">查看完毕！</translation>
 <translation id="1094555143448724771">如需查看您在其他设备中打开的标签页，请同步您的标签页和历史记录</translation>
 <translation id="1095761715416917775">确保您可以随时访问自己的同步数据</translation>
@@ -131,6 +132,7 @@
 <translation id="1513858653616922153">删除密码</translation>
 <translation id="1521774566618522728">今天曾有活动</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
+<translation id="1540012742443808215">地址栏目前位于顶部</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{有 1 个书签只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}other{有 # 个书签只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。}}</translation>
 <translation id="1544084554881119930">付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
 只有知道您口令的人能读取您的加密数据。该口令不会发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
@@ -1185,6 +1187,7 @@
 <translation id="6459045781120991510">调查问卷</translation>
 <translation id="6461962085415701688">无法打开文件</translation>
 <translation id="6464977750820128603">您可以查看自己在 Chrome 中访问的网站并为这些网站设置计时器。\n\nGoogle 会获取这些设有计时器的网站的相关信息以及您对这些网站的访问时长。这些信息会被用于改进“数字健康”应用。</translation>
+<translation id="6468703991511753953">地址栏目前位于底部</translation>
 <translation id="6470181189905173055">您使用“<ph name="APP_LABEL" />”在 Chrome 中打开的网页将显示在此处。</translation>
 <translation id="6473086018775716761">分享选项列表已半屏打开。</translation>
 <translation id="6475951671322991020">下载视频</translation>

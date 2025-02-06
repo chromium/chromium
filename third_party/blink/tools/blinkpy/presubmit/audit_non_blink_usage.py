@@ -105,6 +105,7 @@ _CONFIG = [
             'base::i18n::ToUCharPtr',
             'base::JobDelegate',
             'base::JobHandle',
+            'base::kInvalidThreadId',
             'base::Location',
             'base::MakeRefCounted',
             'base::MatcherStringPattern',

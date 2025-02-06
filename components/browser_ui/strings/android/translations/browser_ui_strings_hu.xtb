@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1384959399684842514">A letöltés szünetel</translation>
 <translation id="1396327438254055134">A V8-optimalizáló használatának engedélyezése az alábbi webhely számára.</translation>
+<translation id="1409338233051621926">Koppintson az Alkalmazások, majd az Alapértelmezett alkalmazások lehetőségre</translation>
 <translation id="1415402041810619267">URL csonkolva</translation>
 <translation id="1415855080660575082">Engedélyezze a Chrome-nak, hogy megossza eszközével a nemrég megnyitott lapokat, hogy azok megjelenjenek az eszköz alkalmazáslistáján és a keresési találatok között is. Ezt a Chrome beállításai között kapcsolhatja be vagy ki.</translation>
 <translation id="1448064542941920355">Nagyítás csökkentése</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Ne használjon sötét témát a webhelyeknél</translation>
 <translation id="2606760465469169465">Automatikus igazolás</translation>
 <translation id="2621115761605608342">A JavaScript engedélyezése egy adott webhelyen.</translation>
+<translation id="2626708220538466178">Alapértelmezett böngésző alsó lapja bezárva</translation>
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2682367912565197520">Mentett nagyítási szint törlése</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Elnémítja a hangot lejátszó webhelyeket</translation>
 <translation id="3602290021589620013">Előnézet</translation>
 <translation id="3628308229821498208">Javasolt keresések</translation>
+<translation id="3658847490588580244">Alapértelmezett böngésző alsó lapja</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amely láthatja az Ön által a csoportban végzett tevékenységeket}other{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amelyek láthatják az Ön által a csoportban végzett tevékenységeket}}</translation>
 <translation id="3697164069658504920">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek USB-eszközök használatára. Ha ki van kapcsolva, a webhelyek nem használhatnak USB-eszközöket.</translation>
 <translation id="3707034683772193706">A felkeresett webhelyek menthetnek kis mennyiségű adatot a Chrome-ban, elsősorban annak ellenőrzéséhez, hogy Ön nem robot.</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Törlés és alaphelyzetbe állítás</translation>
 <translation id="4645575059429386691">A szülő kezeli</translation>
 <translation id="4670064810192446073">Virtuális valóság</translation>
+<translation id="4672315773691449562">Koppintson a Böngésző alkalmazás, majd a Chrome lehetőségre</translation>
 <translation id="4676059169848868271">Ahhoz, hogy a <ph name="APP_NAME" /> használhassa a kézkövetést, kapcsolja be a kézkövetést a <ph name="BEGIN_LINK" />rendszerbeállításokban<ph name="END_LINK" /> is.</translation>
 <translation id="4751476147751820511">Mozgás- és fényérzékelők</translation>
 <translation id="4755971844837804407">Ha be van kapcsolva, a webhelyek bármilyen hirdetést megjeleníthetnek Önnek. Ha ki van kapcsolva, a webhelyek nem jeleníthetnek meg tolakodó vagy félrevezető hirdetéseket.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Engedélyezve (ajánlott)</translation>
 <translation id="8609465669617005112">Mozgatás felfelé</translation>
 <translation id="8617611086246832542">Ha be van kapcsolva, a webhelyek asztali nézete jelenik meg. Ha ki van kapcsolva, a webhelyek mobilnézete látható.</translation>
+<translation id="8670078035093027626">Az alapértelmezett böngésző alsó lapja teljes magasságban megnyitva</translation>
 <translation id="8676316391139423634">Ha be van kapcsolva, a webhelyek kérhetik a kézmozgása nyomon követését. Ha ki van kapcsolva, a webhelyek nem követhetik a kézmozgását.</translation>
 <translation id="8676374126336081632">Beírt szöveg törlése</translation>
 <translation id="8681886425883659911">A hirdetések le vannak tiltva a köztudottan tolakodó vagy félrevezető hirdetéseket megjelenítő webhelyeken</translation>

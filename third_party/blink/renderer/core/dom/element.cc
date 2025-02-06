@@ -4071,6 +4071,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   if (const ComputedStyle* style = GetComputedStyle()) {
+    child_recalc_context
+        .has_scroller_ancestor_with_scroll_marker_group_property |=
+        style->IsScrollContainer() && !style->ScrollMarkerGroupNone();
     if (style->CanMatchSizeContainerQueries(*this)) {
       // IsSuppressed() means we are at the root of a container subtree called
       // from UpdateStyleAndLayoutTreeForContainer(). If so, we can not skip
@@ -8197,6 +8200,12 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
     return nullptr;
   }
 
+  if (pseudo_element_specifier == kPseudoIdScrollMarker &&
+      !style_recalc_context
+           .has_scroller_ancestor_with_scroll_marker_group_property) {
+    return nullptr;
+  }
+
   if (const ComputedStyle* pseudo_element_style =
           element_style->GetCachedPseudoElementStyle(pseudo_element_specifier,
                                                      pseudo_argument)) {
@@ -8588,6 +8597,11 @@ PseudoElement* Element::UpdatePseudoElement(
 
   if (change.ShouldUpdatePseudoElement(*element)) {
     bool generate_pseudo = CanGeneratePseudoElement(pseudo_id);
+    if (pseudo_id == kPseudoIdScrollMarker &&
+        !style_recalc_context
+             .has_scroller_ancestor_with_scroll_marker_group_property) {
+      generate_pseudo = false;
+    }
     if (generate_pseudo) {
       if (auto* cache = GetDocument().ExistingAXObjectCache()) {
         cache->RemoveSubtree(this, /*remove_root*/ false);
@@ -8624,6 +8638,11 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
     const StyleRecalcContext& style_recalc_context,
     const AtomicString& view_transition_name) {
   if (!CanGeneratePseudoElement(pseudo_id)) {
+    return nullptr;
+  }
+  if (pseudo_id == kPseudoIdScrollMarker &&
+      !style_recalc_context
+           .has_scroller_ancestor_with_scroll_marker_group_property) {
     return nullptr;
   }
   if (pseudo_id == kPseudoIdFirstLetter) {

@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Lozinke na svim vašim uređajima</translation>
 <translation id="1082920045291562218">Dijeljenje sa zatvorenom tabelom sažetka povratnih informacija</translation>
 <translation id="1087176310396019910">Mogući neželjeni sadržaj</translation>
+<translation id="1087799850623149508">Možete dodirnuti i zadržati da premjestite traku za adresu u donji dio</translation>
 <translation id="1089606299949659462">Pregled je završen!</translation>
 <translation id="1094555143448724771">Da vidite kartice sa svojih drugih uređaja, sinhronizirajte kartice i historiju</translation>
 <translation id="1095761715416917775">Provjerite možete li uvijek pristupiti sinhroniziranim podacima</translation>
@@ -131,6 +132,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="1513858653616922153">Izbriši lozinku</translation>
 <translation id="1521774566618522728">Aktivan danas</translation>
 <translation id="153446405401665083">Dostupna je nova verzija Chromea</translation>
+<translation id="1540012742443808215">Traka za adresu je trenutno na vrhu</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 oznaka je sačuvana samo na ovom uređaju. Da je koristite na drugim uređajima, sačuvajte je na Google računu <ph name="ACCOUNT_EMAIL" />.}one{# oznaka je sačuvana samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu <ph name="ACCOUNT_EMAIL" />.}few{# oznake su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu <ph name="ACCOUNT_EMAIL" />.}other{# oznaka je sačuvano samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Načini plaćanja i adrese se neće šifrirati. Historija pregledanja iz Chromea se neće sinhronizirati.
 Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga on pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6459045781120991510">Ankete</translation>
 <translation id="6461962085415701688">Nije moguće otvoriti fajl</translation>
 <translation id="6464977750820128603">Možete vidjeti web lokacije koje posjećujete putem Chromea i za njih postaviti tajmere.\n\nGoogle će primati informacije o web lokacijama za koje postavite tajmere i o vremenu koje provedete na njima. Te informacije se koriste za poboljšanje Digitalnog blagostanja.</translation>
+<translation id="6468703991511753953">Traka za adresu je trenutno na dnu</translation>
 <translation id="6470181189905173055">Ovdje će se prikazivati stranice koje ste otvorili u Chromeu prilikom korištenja aplikacije <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Lista opcija dijeljenja otvorenih na pola visine.</translation>
 <translation id="6475951671322991020">Preuzmi videozapis</translation>

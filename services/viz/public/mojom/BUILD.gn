@@ -54,6 +54,14 @@ mojom("mojom") {
     "hit_test/input_target_client.mojom",
   ]
 
+  # Used in thread.mojom
+  enabled_features = []
+  if (is_fuchsia) {
+    enabled_features += [ "thread_id_is_64_bit" ]
+  } else {
+    enabled_features += [ "thread_id_is_32_bit" ]
+  }
+
   deps = [ "//gpu/ipc/common:gmb_interface" ]
 
   public_deps = [

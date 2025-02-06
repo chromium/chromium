@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_TEXT_CLUSTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_TEXT_CLUSTER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -25,16 +27,16 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
               double y,
               unsigned begin,
               unsigned end,
-              TextAlign align,
-              TextBaseline baseline,
+              V8CanvasTextAlign align,
+              V8CanvasTextBaseline baseline,
               TextMetrics& text_metrics);
   static TextCluster* Create(const String& text,
                              double x,
                              double y,
                              unsigned begin,
                              unsigned end,
-                             TextAlign align,
-                             TextBaseline baseline,
+                             V8CanvasTextAlign align,
+                             V8CanvasTextBaseline baseline,
                              TextMetrics& text_metrics);
 
   const String& text() const { return text_; }
@@ -42,10 +44,8 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
   double y() const { return y_; }
   unsigned begin() const { return begin_; }
   unsigned end() const { return end_; }
-  const String align() const { return TextAlignName(align_); }
-  const String baseline() const { return TextBaselineName(baseline_); }
-  TextAlign GetTextAlign() const { return align_; }
-  TextBaseline GetTextBaseline() const { return baseline_; }
+  V8CanvasTextAlign align() const { return align_; }
+  V8CanvasTextBaseline baseline() const { return baseline_; }
   const Member<TextMetrics> textMetrics() const { return text_metrics_; }
 
   void OffsetPosition(double x_offset, double y_offset);
@@ -59,8 +59,8 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
   double y_ = 0.0;
   unsigned begin_ = 0;
   unsigned end_ = 0;
-  const TextAlign align_;
-  const TextBaseline baseline_;
+  const V8CanvasTextAlign align_;
+  const V8CanvasTextBaseline baseline_;
   const Member<TextMetrics> text_metrics_;
 };
 

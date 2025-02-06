@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/android/media_common_android.h"
 #include "media/base/android/media_resource_getter.h"
-#include "media/base/android/media_url_interceptor.h"
 #include "media/base/timestamp_constants.h"
 #include "net/storage_access_api/status.h"
 
@@ -206,22 +205,6 @@ void MediaPlayerBridge::SetDataSource(const std::string& url) {
   JNIEnv* env = base::android::AttachCurrentThread();
   CHECK(env);
 
-  int fd;
-  int64_t offset;
-  int64_t size;
-  if (InterceptMediaUrl(url, &fd, &offset, &size)) {
-    if (!Java_MediaPlayerBridge_setDataSourceFromFd(env, j_media_player_bridge_,
-                                                    fd, offset, size)) {
-      OnMediaError(MEDIA_ERROR_FORMAT);
-      return;
-    }
-
-    if (!Java_MediaPlayerBridge_prepareAsync(env, j_media_player_bridge_))
-      OnMediaError(MEDIA_ERROR_FORMAT);
-
-    return;
-  }
-
   // Create a Java String for the URL.
   ScopedJavaLocalRef<jstring> j_url_string = ConvertUTF8ToJavaString(env, url);
 
@@ -280,27 +263,6 @@ void MediaPlayerBridge::SetDataSourceInternal() {
 
   if (!Java_MediaPlayerBridge_prepareAsync(env, j_media_player_bridge_))
     OnMediaError(MEDIA_ERROR_FORMAT);
-}
-
-bool MediaPlayerBridge::InterceptMediaUrl(const std::string& url,
-                                          int* fd,
-                                          int64_t* offset,
-                                          int64_t* size) {
-  // Sentinel value to check whether the output arguments have been set.
-  const int kUnsetValue = -1;
-
-  *fd = kUnsetValue;
-  *offset = kUnsetValue;
-  *size = kUnsetValue;
-  media::MediaUrlInterceptor* url_interceptor =
-      client_->GetMediaUrlInterceptor();
-  if (url_interceptor && url_interceptor->Intercept(url, fd, offset, size)) {
-    DCHECK_NE(kUnsetValue, *fd);
-    DCHECK_NE(kUnsetValue, *offset);
-    DCHECK_NE(kUnsetValue, *size);
-    return true;
-  }
-  return false;
 }
 
 void MediaPlayerBridge::OnDidSetDataUriDataSource(

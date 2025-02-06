@@ -50,7 +50,8 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       bool cross_origin_isolation_enabled_by_dip);
 
   explicit PolicyContainerPolicies(
-      const blink::mojom::PolicyContainerPolicies& policies);
+      const blink::mojom::PolicyContainerPolicies& policies,
+      bool is_web_secure_context);
 
   // Used when loading workers from network schemes.
   // WARNING: This does not populate referrer policy.

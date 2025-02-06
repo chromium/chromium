@@ -1961,7 +1961,9 @@ void CloseInstallCompleteDialog(const std::u16string& bundle_name,
         return found && !process.IsRunning();
       },
       [&] {
-        VLOG(0) << "Still waiting, `found`: " << found
+        VLOG(0) << "Still waiting for window with title: " << window_title
+                << ", child_window_text_to_find: " << child_window_text_to_find
+                << ", `found`: " << found
                 << ": `process.IsRunning()`: " << process.IsRunning();
       }));
 }

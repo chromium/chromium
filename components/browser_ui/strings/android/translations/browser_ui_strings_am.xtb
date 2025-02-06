@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">ፍለጋ </translation>
 <translation id="1384959399684842514">የሚወርደው ላፍታ ቆሟል</translation>
 <translation id="1396327438254055134">ጣቢያ V8 አትቢን እንዲጠቀም ይፍቀዱ።</translation>
+<translation id="1409338233051621926">መተግበሪያዎችን መታ ያድርጉ ከዚያም ነባሪ መተግበሪያዎችን መታ ያድርጉ</translation>
 <translation id="1415402041810619267">ዩአርኤል እንዲያጥር ተደርጓል</translation>
 <translation id="1415855080660575082">በመሣሪያዎ የመተግበሪያ ዝርዝር እና የፍለጋ ውጤቶች ውስጥ እንዲመለከቷቸው Chrome የእርስዎን የቅርብ ጊዜ ትሮች ከመሣሪያዎ ጋር እንዲያጋራ ይፍቀዱ። በChrome ቅንብሮች ውስጥ ይህን ማብራት ወይም ማጥፋት ይችላሉ።</translation>
 <translation id="1448064542941920355">ማጉላትን ቀንስ</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">ጠቆር ያለ ገጽታን ጣቢያዎች ላይ አትተግብር</translation>
 <translation id="2606760465469169465">በራስ-ሰር ማረጋገጥ</translation>
 <translation id="2621115761605608342">ጃቫስክሪፕትን ለአንድ የተወሰነ ጣቢያ ፍቀድ።</translation>
+<translation id="2626708220538466178">የነባሪ አሳሽ የግርጌ ሉህ ተዘግቷል</translation>
 <translation id="2653659639078652383">አስገባ</translation>
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>
 <translation id="2682367912565197520">የተቀመጠ የማጉላት-ደረጃን ሰርዝ</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">ድምጽን በሚያጫውቱ ጣቢያዎች ላይ ድምጸ-ከል አድርግ</translation>
 <translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
 <translation id="3628308229821498208">የተጠቆሙ ፍለጋዎች</translation>
+<translation id="3658847490588580244">የነባሪ አሳሽ የግርጌ ሉህ</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}one{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}other{በ<ph name="RWS_OWNER" /> ጣቢያዎች ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከቱ <ph name="RWS_MEMBERS_COUNT" /> ጣቢያዎች}}</translation>
 <translation id="3697164069658504920">ሲበራ፣ ጣቢያዎች የUSB መሳሪያዎችን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የUSB መሳሪያዎችን መጠቀም አይችሉም።</translation>
 <translation id="3707034683772193706">እርስዎ የሚጎበኙት ጣቢያ በዋነኛነት እርስዎ ቦት አለመሆንዎን ለማረጋገጥ በChrome ትንሽ መጠን ያለው መረጃ ሊያስቀምጥ ይችላል</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">ሰርዝ እና ዳግም አስጀምር</translation>
 <translation id="4645575059429386691">በእርስዎ ወላጅ የሚቀናበር</translation>
 <translation id="4670064810192446073">ምናባዊ እውነታ</translation>
+<translation id="4672315773691449562">የአሳሽ መተግበሪያን መታ ያድርጉ ከዚያም Chrome ላይ መታ ያድርጉ</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" /> የእጅ ክትትል እንዲጠቀም ለመፍቀድ <ph name="BEGIN_LINK" />የሥርዓት ቅንብሮች<ph name="END_LINK" /> ውስጥ ጭምር የእጅ ክትትልን ያብሩ።</translation>
 <translation id="4751476147751820511">የእንቅስቃሴ ወይም የብርሃን ዳሳሾች</translation>
 <translation id="4755971844837804407">ሲበራ፣ ጣቢያዎች ማንኛውንም ማስታወቂያ ሊያሳዩዎት ይችላሉ። ሲጠፉ፣ ጣቢያዎች ረባሽ ወይም አሳሳች ማስታወቂያዎችን ማሳየት አይችሉም።</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">ተፈቅዷል (የሚመከር)</translation>
 <translation id="8609465669617005112">ወደላይ አውጣ</translation>
 <translation id="8617611086246832542">ሲበራ፣ የድር ጣቢያዎች የዴስክቶፕ እይታ ይታያል። ሲጠፋ፣ የድር ጣቢያዎች የሞባይል እይታ ይታያል።</translation>
+<translation id="8670078035093027626">የነባሪ አሳሽ የግርጌ ሉህ በሙሉ ቁመት ላይ ተከፍቷል</translation>
 <translation id="8676316391139423634">በሚበራበት ጊዜ ጣቢያዎች እጆችዎን መከታተል ይችላሉ። በሚጠፋበት ጊዜ ጣቢያዎች እጆችዎን መከታተል አይችሉም።</translation>
 <translation id="8676374126336081632">ግቤቱን አጽዳ</translation>
 <translation id="8681886425883659911">ማስታወቂያዎች ጣልቃ ገቢ ወይም አሳሳች ማስታወቂያዎችን በማሳየት በሚታወቁ ጣቢያዎች ላይ ታግደዋል</translation>

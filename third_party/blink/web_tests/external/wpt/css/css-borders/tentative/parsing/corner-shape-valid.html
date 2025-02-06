@@ -17,11 +17,13 @@
         test_valid_value(prop, "squircle");
         test_valid_value(prop, "straight");
         test_valid_value(prop, "superellipse(2)");
-        test_valid_value(prop, "superellipse(.5)");
+        test_valid_value(prop, "superellipse(.5)", "superellipse(0.5)");
         test_valid_value(prop, "superellipse(7)");
         test_valid_value(prop, "superellipse(0.3)");
+        test_valid_value(prop, "superellipse(  0)", "superellipse(0)");
+        test_valid_value(prop, "superellipse(2 )", "superellipse(2)");
         test_valid_value(prop, "superellipse(infinity)");
-        test_valid_value(prop, "superellipse(calc(0.5 * 4))");
+        test_valid_value(prop, "superellipse(calc(0.5 * 4))", "superellipse(calc(2))");
     }
 
     for (const v of ["top", "bottom"]) {

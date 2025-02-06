@@ -253,31 +253,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     BOOL showSpeedbumpMenu = GetLensOverlayOnboardingTreatment() ==
                              LensOverlayOnboardingTreatment::kSpeedbumpMenu;
     if (showSpeedbumpMenu) {
-      __weak __typeof__(self) weakSelf = self;
-      _lensOverlayPlaceholderView.menu = [UIMenu
-          menuWithTitle:l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME)
-               children:@[
-                 [UIAction
-                     actionWithTitle:
-                         l10n_util::GetNSString(
-                             IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_SCREEN)
-                               image:nil
-                          identifier:nil
-                             handler:^(UIAction* _) {
-                               [weakSelf
-                                   handleLensSpeedbumpMenuOpenLensOverlay];
-                             }],
-                 [UIAction
-                     actionWithTitle:
-                         l10n_util::GetNSString(
-                             IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_CAMERA)
-                               image:nil
-                          identifier:nil
-                             handler:^(UIAction* _) {
-                               [weakSelf
-                                   handleLensSpeedbumpMenuOpenLensViewFinder];
-                             }],
-               ]];
+      _lensOverlayPlaceholderView.menu = [self createSpeedbumpMenu];
       _lensOverlayPlaceholderView.showsMenuAsPrimaryAction = YES;
     } else {
       [_lensOverlayPlaceholderView
@@ -733,6 +709,37 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   return ios::provider::IsLensSupported() &&
          base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage) &&
          self.lensImageEnabled;
+}
+
+// Creates a new menu to use as the "speedbump" menu for the lens overlay
+// entrypoint. Only used in LensOverlayOnboardingTreatment::kSpeedbumpMenu.
+- (UIMenu*)createSpeedbumpMenu {
+  DCHECK(GetLensOverlayOnboardingTreatment() ==
+         LensOverlayOnboardingTreatment::kSpeedbumpMenu);
+
+  NSString* lensOverlayTitle =
+      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_SCREEN);
+  __weak __typeof__(self) weakSelf = self;
+  UIAction* lensOverlayAction =
+      [UIAction actionWithTitle:lensOverlayTitle
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* /* action */) {
+                          [weakSelf handleLensSpeedbumpMenuOpenLensOverlay];
+                        }];
+
+  NSString* cameraTitle =
+      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_CAMERA);
+  UIAction* viewfinderAction =
+      [UIAction actionWithTitle:cameraTitle
+                          image:nil
+                     identifier:nil
+                        handler:^(UIAction* /* action */) {
+                          [weakSelf handleLensSpeedbumpMenuOpenLensViewFinder];
+                        }];
+  NSString* menuTitle = l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME);
+  return [UIMenu menuWithTitle:menuTitle
+                      children:@[ lensOverlayAction, viewfinderAction ]];
 }
 
 #pragma mark - UIContextMenuInteractionDelegate

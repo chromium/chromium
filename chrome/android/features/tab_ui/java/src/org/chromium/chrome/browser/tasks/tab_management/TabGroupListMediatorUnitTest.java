@@ -108,6 +108,7 @@ import org.chromium.ui.test.util.MockitoHelper;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /** Tests for {@link TabGroupListMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -857,6 +858,10 @@ public class TabGroupListMediatorUnitTest {
         modelToBeRemoved.get(UI_DISMISS_ACTION_PROVIDER).dismiss(ALL);
 
         assertEquals(3, mModelList.size());
+        verify(mMessagingBackendService)
+                .clearPersistentMessage(
+                        MESSAGE_ID2,
+                        Optional.of(PersistentNotificationType.DIRTY_TAB_GROUP_REMOVED));
 
         PropertyModel model1 = mModelList.get(0).model;
         assertEquals("Shopping tab group no longer available", model1.get(DESCRIPTION_TEXT));

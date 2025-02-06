@@ -36,7 +36,6 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
       ComputeIntersectionsContext&) = 0;
 
   virtual bool GetIntrinsicSizingInfo(NaturalSizingInfo&) const = 0;
-  virtual bool HasIntrinsicSizingInfo() const = 0;
 
   // Returns true if this frame could potentially skip rendering and avoid
   // scheduling visual updates.

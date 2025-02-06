@@ -25,6 +25,7 @@
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ပိုမိုလေ့လာရန်<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
+<translation id="1909810060368225529">သတိပေးချက်- မျှဝေထားသော ဤ ‘တဘ်အုပ်စု’ ရှိ အပြောင်းအလဲများကို လူတိုင်း မြင်နိုင်သည်။ မျှဝေထားသော သင့်တဘ်အုပ်စုများကို လူတိုင်းက ပြောင်းလဲနိုင်သည်</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ရွေးထားသောတဘ် <ph name="TABS_COUNT_ONE" /> ခုကို လိပ်စာမှတ်ရန်}other{ရွေးထားသောတဘ် <ph name="TABS_COUNT_MANY" /> ခုကို လိပ်စာမှတ်ရန်}}</translation>
 <translation id="2118649612461486615">ဆိုင်အချက်အလက်</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ ကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။}other{ပိတ်ထားသောတဘ်နှင့် အုပ်စုများကို ‘လတ်တလောတဘ်’ နှင့် ‘တဘ်အုပ်စု’ ကဏ္ဍများမှ ပြန်ဖွင့်နိုင်သည်။ ‘ရုပ်ဖျက်တဘ်’ # ခုကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။}}</translation>
@@ -126,11 +127,13 @@
 <translation id="6381032505162537930">တဘ်အုပ်စုများကို ဤနေရာတွင် မြင်ရမည်</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖြုတ်ရန်}other{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖြုတ်ရန်}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
+<translation id="6499296376514955580">‘မျှဝေထားသော တဘ်အုပ်စု’ အပြောင်းအလဲများအကြောင်း သတိပေးချက်ကို ပိတ်ထားသည်</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{၁ ရက် ကြာပြီးနောက်}other{<ph name="DAY_COUNT_MANY" /> ရက် ကြာပြီးနောက်}}</translation>
 <translation id="6549021453810473782">ဆိုင်အချက်အလက် ကြည့်ရန်</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">တဘ်ကို ဘယ်ဘက်သို့ ရွှေ့ရန်</translation>
+<translation id="6589356853295569750">‘မျှဝေထားသော တဘ်အုပ်စု’ အပြောင်းအလဲများအကြောင်း သတိပေးချက်ကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်</translation>
 <translation id="6590332670428149473">မျှဝေထားသော <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စု၊ <ph name="COLOR_NAME" /> အတွက် တဘ်အုပ်စု လုပ်ဆောင်ချက် မီနူးကို ဖွင့်ရန်။</translation>
 <translation id="6615455863669487791">ပြရန်</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{တဘ် <ph name="ONE_CHANGED" /> ခု ပြောင်းသွားသည်}other{တဘ် <ph name="MANY_CHANGED" /> ခု ပြောင်းသွားသည်}}</translation>
@@ -157,6 +160,7 @@
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_ONE" /> ခု မျှဝေရန်}other{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_MANY" /> ခု မျှဝေရန်}}</translation>
 <translation id="7773714564112603605">တဘ်ဖယ်ရှားပြီး အုပ်စုကို ဖျက်ရန်</translation>
 <translation id="7792771145871471484">အကြံပြုချက်များကို စစ်ဆေးရန်။</translation>
+<translation id="7792860826279960128">‘မျှဝေထားသော တဘ်အုပ်စု’ အပြောင်းအလဲများအကြောင်း သတိပေးချက်ကို မြင်ကွင်းတစ်ဝက်ဖွင့်ထားသည်</translation>
 <translation id="7825973332242257878">တဘ်အုပ်စု</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{ရွေးထားသောတဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖွဲ့ရန်}other{ရွေးထားသောတဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖွဲ့ရန်}}</translation>
 <translation id="7853202427316060426">လုပ်ဆောင်ချက်</translation>

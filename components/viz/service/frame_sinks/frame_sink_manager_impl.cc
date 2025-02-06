@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -923,7 +924,12 @@ void FrameSinkManagerImpl::VerifySandboxedThreadIds(
     return;
   }
   // GPU check passed, now do an async check for the Browser process.
-  std::vector<int32_t> tids(thread_ids.begin(), thread_ids.end());
+  static_assert(
+      std::is_same_v<int32_t, base::PlatformThreadId::UnderlyingType>);
+  std::vector<int32_t> tids;
+  tids.reserve(thread_ids.size());
+  std::transform(thread_ids.begin(), thread_ids.end(), std::back_inserter(tids),
+                 [](const base::PlatformThreadId& tid) { return tid.raw(); });
   client_->VerifyThreadIdsDoNotBelongToHost(tids,
                                             std::move(verification_callback));
 #else

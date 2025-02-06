@@ -152,6 +152,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsReflectValue() const { return class_type_ == kReflectClass; }
   bool IsShadowValue() const { return class_type_ == kShadowClass; }
   bool IsStringValue() const { return class_type_ == kStringClass; }
+  bool IsSuperellipseValue() const { return class_type_ == kSuperellipseClass; }
   bool IsURIValue() const { return class_type_ == kURIClass; }
   bool IsLinearTimingFunctionValue() const {
     return class_type_ == kLinearTimingFunctionClass;
@@ -343,6 +344,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kImageSetTypeClass,
 
     kRepeatStyleClass,
+
+    kSuperellipseClass,
 
     // List class types must appear after ValueListClass.
     kValueListClass,

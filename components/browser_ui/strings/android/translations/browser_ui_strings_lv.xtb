@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1384959399684842514">Lejupielāde pārtraukta</translation>
 <translation id="1396327438254055134">Atļaujiet vietnei izmantot V8 optimizētāju.</translation>
+<translation id="1409338233051621926">Pieskarieties vienumam “Lietotnes” un pēc tam — vienumam “Noklusējuma lietotnes”.</translation>
 <translation id="1415402041810619267">URL ir saīsināts</translation>
 <translation id="1415855080660575082">Ļaujiet pārlūkam Chrome kopīgot jūsu nesen atvērtās cilnes ar ierīci, lai tās tiktu rādītas ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat ieslēgt vai izslēgt šo funkciju.</translation>
 <translation id="1448064542941920355">Tuvināt</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Varat vietnēs nelietot tumšo motīvu</translation>
 <translation id="2606760465469169465">Automātiska verifikācija</translation>
 <translation id="2621115761605608342">Atļaut JavaScript konkrētai vietnei</translation>
+<translation id="2626708220538466178">Noklusējuma pārlūka ekrāna apakšdaļas lapa ir aizvērta</translation>
 <translation id="2653659639078652383">Iesniegt</translation>
 <translation id="2677748264148917807">Iziet</translation>
 <translation id="2682367912565197520">Dzēst saglabāto tālummaiņas līmeni</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Izslēgt skaņu vietnēm, kurās tiek atskaņota skaņa</translation>
 <translation id="3602290021589620013">Priekšskatīt</translation>
 <translation id="3628308229821498208">Ieteiktie meklēšanas vaicājumi</translation>
+<translation id="3658847490588580244">Noklusējuma pārlūka ekrāna apakšdaļas lapa</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> vietne domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}zero{<ph name="RWS_MEMBERS_COUNT" /> vietņu domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}one{<ph name="RWS_MEMBERS_COUNT" /> vietne domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}other{<ph name="RWS_MEMBERS_COUNT" /> vietnes domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}}</translation>
 <translation id="3697164069658504920">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot USB ierīces. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot USB ierīces.</translation>
 <translation id="3707034683772193706">Vietne, ko apmeklējat, pārlūkā Chrome var saglabāt nelielu informācijas daudzumu, galvenokārt, lai apstiprinātu, ka neesat robots</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Dzēst un atiestatīt</translation>
 <translation id="4645575059429386691">Pārvalda viens no jūsu vecākiem</translation>
 <translation id="4670064810192446073">Virtuālā realitāte</translation>
+<translation id="4672315773691449562">Pieskarieties vienumam “Pārlūka lietotne” un pēc tam — vienumam “Chrome”.</translation>
 <translation id="4676059169848868271">Lai ļautu lietotnei <ph name="APP_NAME" /> izmantot roku kustību izsekošanu, ieslēdziet roku kustību izsekošanu arī <ph name="BEGIN_LINK" />sistēmas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Kustību vai gaismas sensori</translation>
 <translation id="4755971844837804407">Kad šis slēdzis ir ieslēgts, vietnēs var tikt rādītas jebkādas reklāmas. Kad šis slēdzis ir izslēgts, vietnēs nevar rādīt traucējošas vai maldinošas reklāmas.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Atļauta (ieteicams)</translation>
 <translation id="8609465669617005112">Virziet uz augšu</translation>
 <translation id="8617611086246832542">Kad šis slēdzis ir ieslēgts, tiek rādīts vietņu skats datorā. Kad šis slēdzis ir izslēgts, tiek rādīts vietņu skats mobilajā ierīcē.</translation>
+<translation id="8670078035093027626">Noklusējuma pārlūka ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
 <translation id="8676316391139423634">Kad šis slēdzis ir ieslēgts, vietnes drīkst pieprasīt atļauju izsekot jūsu roku kustības. Kad šis slēdzis ir izslēgts, vietnes nedrīkst izsekot jūsu roku kustības.</translation>
 <translation id="8676374126336081632">Notīrīt ievadi</translation>
 <translation id="8681886425883659911">Reklāmas tiek bloķētas vietnēs, kurās ir konstatēta traucējošu vai maldinošu reklāmu rādīšana</translation>

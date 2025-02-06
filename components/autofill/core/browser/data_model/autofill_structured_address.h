@@ -15,20 +15,6 @@
 
 namespace autofill {
 
-// This class reimplements the ValueForComparison method to apply a
-// country-specific rewriter to the normalized value.
-class AddressComponentWithRewriter : public AddressComponent {
- public:
-  using AddressComponent::AddressComponent;
-
- protected:
-  // Applies a country-specific rewriting and normalization
-  // to the provided `value`.
-  std::u16string GetValueForComparison(
-      const std::u16string& value,
-      const AddressComponent& other) const override;
-};
-
 // The name of the street.
 class StreetNameNode : public AddressComponent {
  public:
@@ -129,9 +115,7 @@ class BetweenStreetsOrLandmarkNode : public AddressComponent {
 
 // The StreetAddress incorporates all the information specifically related to
 // the street address (e.g. street location. between streets, subpremise, etc).
-// This class inherits from AddressComponentWithRewriter to implement
-// rewriting values for comparison.
-class StreetAddressNode : public AddressComponentWithRewriter {
+class StreetAddressNode : public AddressComponent {
  public:
   explicit StreetAddressNode(SubcomponentsList children);
   ~StreetAddressNode() override;
@@ -141,6 +125,10 @@ class StreetAddressNode : public AddressComponentWithRewriter {
   void SetValue(std::u16string value, VerificationStatus status) override;
 
   void UnsetValue() override;
+
+  std::u16string GetValueForComparison(
+      const std::u16string& value,
+      const AddressComponent& other) const override;
 
  protected:
   // Gives the component with the higher verification status precedence.
@@ -205,9 +193,7 @@ class CityNode : public AddressComponent {
 };
 
 // Stores the state of an address.
-// This class inherits from AddressComponentWithRewriter to implement
-// rewriting values for comparison.
-class StateNode : public AddressComponentWithRewriter {
+class StateNode : public AddressComponent {
  public:
   explicit StateNode(SubcomponentsList children);
   ~StateNode() override;
@@ -215,20 +201,17 @@ class StateNode : public AddressComponentWithRewriter {
   // For states we use the AlternativeStateNameMap to offer canonicalized state
   // names.
   std::optional<std::u16string> GetCanonicalizedValue() const override;
+
+  std::u16string GetValueForComparison(
+      const std::u16string& value,
+      const AddressComponent& other) const override;
 };
 
 // Stores the postal code of an address.
-// This class inherits from AddressComponentWithRewriter to implement
-// rewriting values for comparison.
-class PostalCodeNode : public AddressComponentWithRewriter {
+class PostalCodeNode : public AddressComponent {
  public:
   explicit PostalCodeNode(SubcomponentsList children);
   ~PostalCodeNode() override;
-
- protected:
-  // In contrast to the base class, the normalization removes all white spaces
-  // from the value.
-  std::u16string GetNormalizedValue() const override;
 
   std::u16string GetValueForComparison(
       const std::u16string& value,

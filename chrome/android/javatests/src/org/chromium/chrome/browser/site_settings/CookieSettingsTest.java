@@ -75,6 +75,30 @@ public class CookieSettingsTest {
     @Test
     @SmallTest
     @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    public void shouldDisplayBlockThirdPartyDescriptionAndRwsToggleWhenAuxButtonClicked()
+            throws IOException {
+        onView(withId(R.id.block_third_party_with_aux)).perform(click());
+        onView(
+                        allOf(
+                                withId(R.id.expand_arrow),
+                                isDescendantOfA(withId(R.id.block_third_party_with_aux))))
+                .perform(click());
+        onView(withText(R.string.website_settings_category_cookie_block_third_party_subtitle))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.website_settings_category_cookie_subpage_bullet_one))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.website_settings_category_cookie_subpage_bullet_two))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.website_settings_category_cookie_rws_toggle_title))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.website_settings_category_cookie_rws_toggle_description))
+                .check(matches(isDisplayed()));
+    }
+
+    // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void shouldDisplayBlockThirdPartyIncognitoDescriptionWhenAuxButtonClicked()
             throws IOException {
         onView(withId(R.id.block_third_party_incognito_with_aux)).perform(click());
@@ -120,9 +144,11 @@ public class CookieSettingsTest {
                 .perform(click());
         onView(withText(R.string.website_settings_category_cookie_block_third_party_subtitle))
                 .check(matches(isDisplayed()));
-        onView(withText(R.string.website_settings_category_cookie_subpage_bullet_one))
+        onView(withText(R.string.settings_cookies_block_third_party_settings_block_bullet_one))
                 .check(matches(isDisplayed()));
-        onView(withText(R.string.website_settings_category_cookie_subpage_bullet_two))
+        onView(withText(R.string.settings_cookies_block_third_party_settings_block_bullet_two))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.settings_cookies_block_third_party_settings_block_bullet_three))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.website_settings_category_cookie_rws_toggle_title))
                 .check(matches(isDisplayed()));

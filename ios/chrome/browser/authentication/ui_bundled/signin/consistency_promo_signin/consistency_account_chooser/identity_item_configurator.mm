@@ -15,6 +15,7 @@
   item.avatar = self.avatar;
   item.selected = self.selected;
   item.useCustomSeparator = NO;
+  item.managed = self.managed;
 }
 
 - (NSString*)description {

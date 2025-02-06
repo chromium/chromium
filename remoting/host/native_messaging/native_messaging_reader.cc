@@ -174,7 +174,7 @@ NativeMessagingReader::~NativeMessagingReader() {
   // needed for POSIX since it works correctly.
   base::PlatformThreadId thread_id = reader_thread_.GetThreadId();
   base::win::ScopedHandle thread_handle(
-      OpenThread(THREAD_TERMINATE, /*bInheritHandle=*/false, thread_id));
+      OpenThread(THREAD_TERMINATE, /*bInheritHandle=*/false, thread_id.raw()));
   if (!CancelSynchronousIo(thread_handle.Get())) {
     // ERROR_NOT_FOUND means there were no pending IO requests so don't treat
     // that result as an error.

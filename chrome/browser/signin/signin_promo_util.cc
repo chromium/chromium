@@ -12,6 +12,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "net/base/network_change_notifier.h"
@@ -115,7 +116,8 @@ bool ShouldShowSignInPromoCommon(Profile& profile,
     return false;
   }
 
-  return true;
+  // Only show the promo if explicit browser signin is enabled.
+  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
 }
 
 bool ShouldShowPromoBasedOnImpressionCount(Profile& profile,
@@ -247,6 +249,10 @@ bool ShouldShowPasswordSignInPromo(Profile& profile) {
 bool ShouldShowAddressSignInPromo(Profile& profile,
                                   const autofill::AutofillProfile& address) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Remove this once enabled by default.
+  if (!switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    return false;
+  }
 
   if (!ShouldShowSignInPromoCommon(profile,
                                    AutofillSignInPromoType::kAddress)) {

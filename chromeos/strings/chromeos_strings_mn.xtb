@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">ПИН буруу байна.</translation>
 <translation id="382043424867370667">Нар жаргахыг харуулсан дэлгэцийн зураг</translation>
 <translation id="3824259034819781947">Файлууд хавсаргах</translation>
-<translation id="3836587210832263413">Зөвхөн итгэдэг өргөтгөлүүдээ асаана уу</translation>
 <translation id="3838338534323494292">Шинэ нууц үг</translation>
 <translation id="3845880861638660475">Харилцах цонхыг хаахын тулд <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> дээр дарна уу.</translation>
 <translation id="3848280697030027394">гарыг бараан болгох</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Хэвлэгчийн тохиргоонд хэвлэгчдээ удирдана уу</translation>
 <translation id="6292095526077353682">Цэнэглэх үед дараахад дэлгэц амраагчийг харуулах</translation>
 <translation id="629550705077076970">гарыг бүдгэрүүлэх</translation>
-<translation id="6301193653204230066">Аюулгүй байдлын шинэчлэлт Chrome хөтчийн өргөтгөлүүдийг унтрааж, сүлжээ болон бусад тохиргоог аюулгүй өгөгдмөл рүү шинэчилнэ.
-          Таны таб, файл, күүки, түүхийг өөрчлөхгүй.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тестийг цуцалсан байна</translation>
 <translation id="631063167932043783">Аппыг судлах</translation>
 <translation id="6318437367327684789">үүрд</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">Бичлэгийн туршид дуу хоолойг харьцуулснаар яригч бүр хэзээ, юу гэж хэлснийг сийрүүлэгт тусгана</translation>
 <translation id="952992212772159698">Идэвхжээгүй байна</translation>
 <translation id="95718197892796296">шавар</translation>
+<translation id="959792926760890141">Аюулгүй байдлын шинэчлэлт Chrome хөтчийн өргөтгөлүүдийг унтрааж, сүлжээ болон бусад тохиргоог аюулгүй өгөгдмөл рүү шинэчилнэ.
+          Таны өгөгдмөл хайлтын системийг шинэчлэх хэдий ч таб, файл, күүки, түүхийг өөрчлөхгүй.</translation>
 <translation id="960719561871045870">Операторын код</translation>
 <translation id="965918541715156800">шар, усан цэнхэр</translation>
 <translation id="966787709310836684">цэс</translation>

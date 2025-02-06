@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Manenosiri kwenye vifaa vyako vyote</translation>
 <translation id="1082920045291562218">Laha ya kutuma ukitumia maoni kwa muhtasari imefungwa</translation>
 <translation id="1087176310396019910">Uwezekano wa taka</translation>
+<translation id="1087799850623149508">Unaweza kugusa na kushikilia ili usogeze sehemu ya anwani upande wa chini</translation>
 <translation id="1089606299949659462">Ukaguzi umekamilika!</translation>
 <translation id="1094555143448724771">Ili uone vichupo kutoka kwenye vifaa vyako vingine, sawazisha vichupo na historia yako</translation>
 <translation id="1095761715416917775">Hakikisha kwamba unaweza kufikia data yako inayosawazishwa, kila wakati</translation>
@@ -131,6 +132,7 @@ Kwa mipangilio zaidi inayotumia data ili kuboresha hali yako ya utumiaji wa Chro
 <translation id="1513858653616922153">Futa nenosiri</translation>
 <translation id="1521774566618522728">Ameitumia leo</translation>
 <translation id="153446405401665083">Toleo jipya la Chrome linapatikana</translation>
+<translation id="1540012742443808215">Kwa sasa, sehemu ya anwani inapatikana katika upande wa juu</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{Umehifadhi alamisho 1 kwenye kifaa hiki pekee. Ili uitumie kwenye vifaa vyako vingine, ihifadhi kwenye Akaunti yako ya Google, <ph name="ACCOUNT_EMAIL" />.}other{Umehifadhi alamisho # kwenye kifaa hiki pekee. Ili uzitumie kwenye vifaa vyako vingine, zihifadhi kwenye Akaunti yako ya Google, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Njia za kulipa na anwani hazitasimbwa kwa njia fiche. Historia ya kuvinjari kwenye Chrome haitasawazishwa.
 Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi kwa au kuhifadhiwa na Google. Ukisahau kauli yako ya siri au ukipenda kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6459045781120991510">Tafiti</translation>
 <translation id="6461962085415701688">Imeshindwa kufungua faili</translation>
 <translation id="6464977750820128603">Unaweza kuona tovuti ambazo ulitembelea katika Chrome na kuziwekea vipima muda.\n\nGoogle inapata maelezo kuhusu tovuti ulizowekea vipima muda na muda unaozitembelea. Tunatumia maelezo haya kuboresha mpango wa Nidhamu Dijitali.</translation>
+<translation id="6468703991511753953">Kwa sasa, Sehemu ya anwani inapatikana katika upande wa chini</translation>
 <translation id="6470181189905173055">Kurasa ulizofungua kwenye Chrome huku ukitumia <ph name="APP_LABEL" /> zitaonyeshwa hapa.</translation>
 <translation id="6473086018775716761">Orodha ya chaguo za kushiriki imefunguliwa kwenye nusu ya skrini.</translation>
 <translation id="6475951671322991020">Pakua video</translation>

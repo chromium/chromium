@@ -1153,6 +1153,11 @@
 #pragma mark - FeedSignInPromoDelegate
 
 - (void)showSignInUIFromSource:(FeedSignInPromoSource)source {
+  // If the user is already signed in, do nothing.
+  if (self.authService &&
+      self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    return;
+  }
   // This flow shouldn't be offered if sign-in is disallowed.
   // In theory, the flow should not even have been offered to the user.
   if (![self isSignInAllowed]) {

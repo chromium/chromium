@@ -75,7 +75,15 @@ def getSpreadsheet():
 def appendRow(spreadsheet, values):
     """
     Appends a row to the Google spreadsheet.
+
+    It performs some basic truncation and other logic to prevent easy to make
+    errors (like to much text in a single cell).
     """
+    # Google spreadsheet enforces a maximum 50000 chars so we truncate the data
+    # down to fit to prevent the error.
+    values = list(
+        map(lambda val: val[0:50000]
+            if len(str(val)) > 50000 else val, values))
     try:
         spreadsheet.append(
             spreadsheetId='14YCQY2eBlLDr2wd8XaCfbLacz0t94YRuyt5CjkohBK4',

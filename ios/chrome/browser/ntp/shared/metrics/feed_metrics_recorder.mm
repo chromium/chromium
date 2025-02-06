@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/feed/core/common/pref_names.h"
 #import "components/feed/core/v2/public/ios/notice_card_tracker.h"
@@ -672,6 +673,11 @@ using feed::FeedUserActionType;
 
 - (void)recordCarouselScrolled:(int)scrollDistance {
   [self recordEngagement:scrollDistance interacted:NO];
+}
+
+- (void)recordFeedHandlingError:(NSString*)action {
+  base::UmaHistogramBoolean(
+      kFeedHandlingErrorPrefix + base::SysNSStringToUTF8(action), YES);
 }
 
 - (void)recordUniformityFlagValue:(BOOL)flag {

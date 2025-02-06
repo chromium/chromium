@@ -1206,6 +1206,7 @@ coverage_builder(
     notifies = ["chrome-fuzzing-core"],
     properties = {
         "collect_fuzz_coverage": True,
+        "fuzz_engine": "libfuzzer",
     },
 )
 

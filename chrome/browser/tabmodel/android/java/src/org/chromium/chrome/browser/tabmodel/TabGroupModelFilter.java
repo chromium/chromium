@@ -174,12 +174,11 @@ public interface TabGroupModelFilter extends TabList {
      * Creates a tab group containing a single tab.
      *
      * @param tabId The tab id of the tab to create the group for.
-     * @param notify Whether to notify observers to create an undo snackbar.
      */
-    void createSingleTabGroup(int tabId, boolean notify);
+    void createSingleTabGroup(int tabId);
 
-    /** Same as {@link #createSingleTabGroup(int, boolean)}, but with a {@link Tab} object. */
-    void createSingleTabGroup(Tab tab, boolean notify);
+    /** Same as {@link #createSingleTabGroup(int)}, but with a {@link Tab} object. */
+    void createSingleTabGroup(Tab tab);
 
     /**
      * Creates a tab group with a preallocated {@link Token} for the TabGroupId.

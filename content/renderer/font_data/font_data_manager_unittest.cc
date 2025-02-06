@@ -112,6 +112,11 @@ class TestFontServiceApp : public font_data_service::mojom::FontDataService {
     MatchFamilyName(family_name, std::move(style), std::move(callback));
   }
 
+  void GetAllFamilyNames(GetAllFamilyNamesCallback callback) override {
+    std::vector<std::string> names{"First Font", "Other Font"};
+    std::move(callback).Run(std::move(names));
+  }
+
   size_t match_family_call_count() const { return match_family_call_count_; }
   size_t match_family_character_call_count() const {
     return match_family_character_call_count_;
@@ -299,15 +304,34 @@ TEST_F(FontDataManagerUnitTest, MatchFamilyStyleCharacter) {
       kExpectedBcp47s);
 }
 
+TEST_F(FontDataManagerUnitTest, CountFamilies) {
+  // The TestFontServiceApp returns a vector of 2 family names.
+  EXPECT_EQ(skia_font_manager_->countFamilies(), 2);
+}
+
+TEST_F(FontDataManagerUnitTest, GetFamilyName) {
+  SkString family_name;
+  skia_font_manager_->getFamilyName(0, &family_name);
+  EXPECT_EQ(family_name, SkString("First Font"));
+
+  skia_font_manager_->getFamilyName(1, &family_name);
+  EXPECT_EQ(family_name, SkString("Other Font"));
+
+  SkString empty_family_name;
+
+  // Asking for a negative index doesn't change the output parameter.
+  skia_font_manager_->getFamilyName(-1, &empty_family_name);
+  EXPECT_TRUE(empty_family_name.isEmpty());
+
+  // There are only 2 font families, asking for index 2 doesn't change the
+  // output parameter.
+  skia_font_manager_->getFamilyName(2, &empty_family_name);
+  EXPECT_TRUE(empty_family_name.isEmpty());
+}
+
 using FontDataManagerDeathTest = FontDataManagerUnitTest;
 
 // Methods are unused in FontDataManager.
-TEST_F(FontDataManagerDeathTest, GetFamilyName) {
-  SkString family_name;
-  EXPECT_DEATH_IF_SUPPORTED(skia_font_manager_->getFamilyName(0, &family_name),
-                            "");
-}
-
 TEST_F(FontDataManagerDeathTest, CreateStyleSet) {
   EXPECT_DEATH_IF_SUPPORTED(skia_font_manager_->createStyleSet(0), "");
 }

@@ -524,13 +524,6 @@ void CredentialProviderService::UpdateUserEmail() {
   [app_group::GetGroupUserDefaults()
       setObject:accountForSaving ? base::SysUTF8ToNSString(*accountForSaving)
                                  : nil
-         forKey:AppGroupUserDefaultsCredentialProviderManagedUserEmail()];
-
-  CoreAccountInfo account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  [app_group::GetGroupUserDefaults()
-      setObject:!account.IsEmpty() ? base::SysUTF8ToNSString(account.email)
-                                   : nil
          forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
 }
 

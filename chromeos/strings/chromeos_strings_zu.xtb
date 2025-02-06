@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Iphinikhodi engavumelekile</translation>
 <translation id="382043424867370667">Isigciniskrini sokushona kwelanga</translation>
 <translation id="3824259034819781947">Namathisela amafayela</translation>
-<translation id="3836587210832263413">Vula kuphela izandiso ozethembayo</translation>
 <translation id="3838338534323494292">Iphasiwedi entsha</translation>
 <translation id="3845880861638660475">Cindezela okuthi <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> ukuze uvale ingxoxo.</translation>
 <translation id="3848280697030027394">yenza ikhibhodi ibe mnyama</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Phatha amaphrinta akho kumasethingi ephrinta</translation>
 <translation id="6292095526077353682">Ngenkathi ishaja, bonisa isilondolozi sesikrini</translation>
 <translation id="629550705077076970">ukufiphala kwekhibhodi</translation>
-<translation id="6301193653204230066">Ukusetha kabusha ukuphepha kuvala izandiso zebhrawuza yeChrome futhi kusetha kabusha inethiwekhi namanye amasethingi abe okuzenzekelayo okuphephile.
-          Amathebhu wakho, amafayela, amakhukhi, nomlando ngeke kushintshwe.</translation>
 <translation id="6302401976930124515">Ukuhlola kwe-<ph name="TEST_NAME" /> kukhanseliwe</translation>
 <translation id="631063167932043783">Hlola i-app</translation>
 <translation id="6318437367327684789">phakade</translation>
@@ -1774,6 +1771,8 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="951780398843003443">Qhathanisa amazwi kukho konke okurekhodiwe ukuze okulotshiweyo kubonise lokho okushiwo isikhulumi ngasinye nokuthi nini</translation>
 <translation id="952992212772159698">Ayenziwanga yasebenza</translation>
 <translation id="95718197892796296">ubumba</translation>
+<translation id="959792926760890141">Ukusetha kabusha ukuphepha kuvala izandiso zebhrawuza yeChrome futhi kusetha kabusha inethiwekhi namanye amasethingi abe okuzenzekelayo okuphephile.
+          Injini yakho yokusesha ezenzekelayo izosethwa kabusha, kodwa amathebhu, amafayela, amakhukhi, nomlando wakho ngeke zishintshwe.</translation>
 <translation id="960719561871045870">Ikhodi ye-opharetha</translation>
 <translation id="965918541715156800">okuphuzi noku-teal</translation>
 <translation id="966787709310836684">imenyu</translation>

@@ -4691,6 +4691,19 @@ Dit beleid heeft geen effect als je het toepast, leeg laat of niet instelt.</tra
 <translation id="4534500438517478692">Naam Android-beperking:</translation>
 <translation id="4541530620466526913">Lokale accounts op apparaat</translation>
 <translation id="4542255783284620926">Toevoeging blokkeren van een beheerd account als secundair account in Chrome OS (in sessie)</translation>
+<translation id="4543338637126011529">Als je het beleid instelt, geef je een lijst aan met geïsoleerde web-apps (GWA's) die op de achtergrond worden geïnstalleerd.
+      GWA's zijn apps met nuttige beveiligingseigenschappen die niet beschikbaar zijn op normale webpagina's. Ze worden verpakt in een ondertekende webbundel. De openbare sleutel van de ondertekende webbundel wordt gebruikt om de webbundel-ID te maken waarmee de GWA wordt geïdentificeerd.
+      Dit beleid werkt tot nu toe alleen voor beheerde gastsessies.
+
+      Elk lijstitem van het beleid is een object met 2 verplichte velden: het updatemanifest <ph name="URL_LABEL" /> en de webbundel-ID van de geïsoleerde web-app.
+
+Elk item kan ook deze optionele velden bevatten:
+
+* <ph name="UPDATE_CHANNEL_OPTION" />: De naam van het release-/updatekanaal van de GWA. Als je dit beleid niet instelt, wordt 'default' gebruikt.
+
+        * <ph name="PINNED_VERSION_OPTION" />: Een specifieke versie om te installeren. Het systeem probeert deze versie te installeren als die beschikbaar is op het aangegeven updatekanaal. Als je een GWA vastzet op een specifieke versie, wordt standaard voorkomen dat deze wordt geüpdatet naar een hogere versie dan die versie. Verwijder dit veld om de versie los te maken.
+
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />: Hiermee kun je oudere versies van de GWA installeren. Hiervoor moet het veld 'pinned_version' worden ingesteld. Als je dit beleid niet instelt of instelt op <ph name="FALSE" />, is downgraden voor die GWA niet mogelijk.</translation>
 <translation id="4543502256674577024">Update-instellingen voor apparaat</translation>
 <translation id="454585952814397564">Normale prioriteit gebruiken voor audioproces</translation>
 <translation id="4546641664653711266">Dit is een tijdelijk beleid dat wordt verwijderd in M127.
@@ -5372,6 +5385,7 @@ Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLO
 <translation id="5030415914668947893">Verzameling van URL-sleutelstatistieken toestaan</translation>
 <translation id="5033070732967197381">WebAuthn API-verzoeken toestaan op sites met niet-werkende TLS-certificaten.</translation>
 <translation id="5034504101537897433">Rapportage voor informatie over crashrapporten van apparaat aanzetten</translation>
+<translation id="5035980227219807711">Registratie van clientcertificaten voor browsers uitzetten</translation>
 <translation id="5036013147560568855">Versie van het certificaatregistratieprotocol. De standaardinstelling is 1. 1 is het 'statische' protocol. 2 is het 'dynamische' protocol.</translation>
 <translation id="5036559232677914717">Als je dit beleid instelt, kun je aangeven hoe het systeem moet reageren als de browser wordt opgestart. Als je deze instelling uitzet, heeft dit hetzelfde effect als wanneer je het beleid niet instelt, omdat het opstartgedrag van <ph name="PRODUCT_NAME" /> moet zijn aangegeven.
 
@@ -8510,6 +8524,7 @@ Als je het beleid niet toepast, kunnen gebruikers automatisch inloggen zonder ve
 <translation id="7174158612490351828">Een lijst met openbare sleutels voor certificaten die niet moeten worden vertrouwd door <ph name="PRODUCT_NAME" /> voor verificatie van de TLS-server.
 
 De beleidswaarde is een lijst met base64-gecodeerde X.509-certificaten. Elk certificaat met een overeenkomende SPKI (SubjectPublicKeyInfo) wordt niet vertrouwd.</translation>
+<translation id="7174997120839381414">Registratie van clientcertificaten voor browsers aanzetten</translation>
 <translation id="717630378807352957">Alle printers in het configuratiebestand toestaan.</translation>
 <translation id="7177293255621000064">Als je het beleid instelt op 'True', zijn alle typen externe opslagmedia (USB-sticks, externe harde schijven, SD's en andere geheugenkaarten, optische opslagapparaten) niet meer beschikbaar in de bestandsbrowser. Als je het beleid instelt op 'False' of niet instelt, kunnen gebruikers externe opslag gebruiken op hun apparaat.
 
@@ -8987,6 +9002,7 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
       Als je het beleid niet toepast, wordt Eenheidsconversie van Snelle antwoorden uitgezet.</translation>
 <translation id="7584363090329234690">VC-achtergrond met generatieve AI toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="7585312329612243723">Het attestproces <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aanzetten voor een lijst met URL's in beheerde browsers</translation>
+<translation id="7586199729147257934">Hiermee wordt de registratie van clientcertificaten voor beheerde browsers aangezet</translation>
 <translation id="7587345076013230465">De gebruiker vragen om het clientcertificaat te selecteren als het beleid voor automatische selectie overeenkomt met meerdere certificaten op het inlogscherm</translation>
 <translation id="7587921466180902617">Dogfood-versie van Screencast aanzetten voor gebruikers van Family Link</translation>
 <translation id="7595074040612182185">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van sites die afbeeldingen mogen weergeven.
@@ -10024,6 +10040,9 @@ Certificaten moeten base64-gecodeerd zijn.</translation>
 <translation id="8399825694820904218">Als je het beleid instelt op een getal, toont <ph name="PRODUCT_NAME" /> gedurende dat aantal milliseconden een melding en wordt daarna de alternatieve browser geopend.
 
 Als je dit beleid niet instelt of instelt op 0, wordt de URL onmiddellijk in een alternatieve browser geopend als je naar de URL navigeert.</translation>
+<translation id="8400225642589806131">Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" /> (waarde 1), vraagt <ph name="PRODUCT_NAME" /> een clientcertificaat aan bij de apparaatbeheerserver voor een beheerde browsersessie. Dit certificaat wordt beschikbaar gemaakt voor bijvoorbeeld mTLS-verbindingen.
+
+Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (waarde 0) of niet instelt, kan <ph name="PRODUCT_NAME" /> het clientcertificaat niet aanvragen. Als het beheerde clientcertificaat van een browser al is geregistreerd omdat dit beleid eerder werd toegepast, wordt het niet verwijderd maar is het niet beschikbaar voor mTLS-verbindingen en wordt het niet verlengd als het verloopt.</translation>
 <translation id="8402079500086185021">Pdf-bestanden altijd extern openen</translation>
 <translation id="8402357110539568621">De toegankelijkheidsfunctie voor het virtuele toetsenbord aanzetten.
 

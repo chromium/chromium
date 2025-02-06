@@ -1661,6 +1661,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.FinalPasswordChangeStatus"
+    enum="PasswordChangeFlowState" expires_after="2025-11-30">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Records the state at which the password change flow was interrupted (success
+    or failed state if the flow completed fully). The metric is logged when
+    password change delegate is being destroyed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.FirstRendererFillingResult"
     enum="PasswordManagerFirstRendererFillingResult" expires_after="2025-06-22">
   <owner>kazinova@google.com</owner>
@@ -2594,6 +2605,28 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records the result of interaction with the password change success bubble
     shown in the end of the flow. The metric is recorded during the bubble
     closure.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordChangeSubmissionOutcome"
+    enum="SubmissionOutcome" expires_after="2026-02-04">
+  <owner>fiorellab@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The password change submission outcome. This is recorded when receiving a
+    response from the optimization guide service to a request made with the
+    representation of the web page where the submission happened.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordChangeTimeOverall" units="ms"
+    expires_after="2025-11-30">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The time in milliseconds it takes to complete the password change flow. The
+    metric is recorded only if the flow runs until the end with success or
+    failure outcome.
   </summary>
 </histogram>
 

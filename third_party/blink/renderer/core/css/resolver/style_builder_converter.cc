@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
+#include "third_party/blink/renderer/core/css/css_superellipse_value.h"
 #include "third_party/blink/renderer/core/css/css_unresolved_color_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -1772,10 +1773,16 @@ Superellipse StyleBuilderConverter::ConvertCornerShape(
         return Superellipse::Round();
       case CSSValueID::kScoop:
         return Superellipse::Scoop();
+      case CSSValueID::kStraight:
+        return Superellipse::Straight();
       default:
         NOTREACHED();
     }
   }
+
+  const auto& superellipse = To<cssvalue::CSSSuperellipseValue>(value);
+  return Superellipse(
+      superellipse.Param().ComputeNumber(state.CssToLengthConversionData()));
 
   NOTREACHED();
 }

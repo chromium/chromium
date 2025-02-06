@@ -331,6 +331,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="569897634095159764">Nelze se připojit k internetu. Proxy server vyžaduje ověření.</translation>
 <translation id="5761096224651992291">V poslední době jste nenavštívili. Prohlížeč Chromium odebral tato oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="5768371961535086509">Chromium uvolňuje paměť obsazenou neaktivními kartami. Aktivní karty a jiné aplikace tak mají k dispozici více výpočetních zdrojů a prohlížeč Chromium zůstává rychlý. Když se k neaktivním kartám vrátíte, automaticky se aktivují. <ph name="BEGIN_LINK" />Další informace o Spořiči paměti<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="SETTINGS_LINK" /> data prohlížeče Chromium ve svém účtu.</translation>
 <translation id="5800158606660203929">Přizpůsobte si prohlížeč Chromium a ovládejte ho. Nastavte si Chromium jako výchozí prohlížeč.</translation>
 <translation id="5809516625706423866">Nelze se připojit k internetu. HTTP 401 (Neautorizováno). Zkontrolujte konfiguraci proxy.</translation>
 <translation id="5821520528363214608">Pokud chcete používat data prohlížeče Chromium ve svém účtu Google a ukládat je do něj, aktualizujte prohlížeč Chromium</translation>

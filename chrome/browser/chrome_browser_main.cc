@@ -831,11 +831,11 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
       chrome_feature_list_creator->TakeMetricsServicesManager(),
       chrome_feature_list_creator->GetMetricsServicesManagerClient());
 
-  if (load_local_state_result == chrome::RESULT_CODE_MISSING_DATA &&
+  if (load_local_state_result == CHROME_RESULT_CODE_MISSING_DATA &&
       failed_to_load_resource_bundle) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kNoErrorDialogs)) {
-      return chrome::RESULT_CODE_MISSING_DATA;
+      return CHROME_RESULT_CODE_MISSING_DATA;
     }
     // Continue on and show error later (once UI has been initialized and main
     // message loop is running).
@@ -853,7 +853,7 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
 
     // Note, cannot return RESULT_CODE_NORMAL_EXIT here as this code needs to
     // result in browser startup bailing.
-    return chrome::RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
+    return CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -952,7 +952,7 @@ int ChromeBrowserMainParts::OnLocalStateLoaded(
     bool* failed_to_load_resource_bundle) {
   *failed_to_load_resource_bundle = false;
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir_))
-    return chrome::RESULT_CODE_MISSING_DATA;
+    return CHROME_RESULT_CODE_MISSING_DATA;
 
   auto* platform_management_service =
       policy::ManagementServiceFactory::GetForPlatform();
@@ -979,7 +979,7 @@ int ChromeBrowserMainParts::OnLocalStateLoaded(
       startup_data_->chrome_feature_list_creator()->actual_locale();
   if (locale.empty()) {
     *failed_to_load_resource_bundle = true;
-    return chrome::RESULT_CODE_MISSING_DATA;
+    return CHROME_RESULT_CODE_MISSING_DATA;
   }
   browser_process_->SetApplicationLocale(locale);
 
@@ -1019,7 +1019,7 @@ int ChromeBrowserMainParts::ApplyFirstRunPrefs() {
                                            std::move(installer_initial_prefs),
                                            master_prefs_.get());
   if (pip_result == first_run::EULA_EXIT_NOW)
-    return chrome::RESULT_CODE_EULA_REFUSED;
+    return CHROME_RESULT_CODE_EULA_REFUSED;
 
   // TODO(macourteau): refactor preferences that are copied from
   // master_preferences into local_state, as a "local_state" section in
@@ -1048,7 +1048,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 
   if (browser_process_->GetApplicationLocale().empty()) {
     ShowMissingLocaleMessageBox();
-    return chrome::RESULT_CODE_MISSING_DATA;
+    return CHROME_RESULT_CODE_MISSING_DATA;
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1532,7 +1532,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   if (!g_browser_process->local_state()->GetBoolean(
           prefs::kChromeForTestingAllowed)) {
     LOG(ERROR) << "Chrome for Testing is disallowed by the system admin.";
-    return static_cast<int>(chrome::RESULT_CODE_ACTION_DISALLOWED_BY_POLICY);
+    return static_cast<int>(CHROME_RESULT_CODE_ACTION_DISALLOWED_BY_POLICY);
   }
 #endif  // BUILDFLAG(CHROME_FOR_TESTING)
 
@@ -1542,12 +1542,12 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
         prefs::kDefaultBrowserSettingEnabled);
     if (is_managed && !g_browser_process->local_state()->GetBoolean(
         prefs::kDefaultBrowserSettingEnabled)) {
-      return static_cast<int>(chrome::RESULT_CODE_ACTION_DISALLOWED_BY_POLICY);
+      return static_cast<int>(CHROME_RESULT_CODE_ACTION_DISALLOWED_BY_POLICY);
     }
 
     return shell_integration::SetAsDefaultBrowser()
                ? static_cast<int>(content::RESULT_CODE_NORMAL_EXIT)
-               : static_cast<int>(chrome::RESULT_CODE_SHELL_INTEGRATION_FAILED);
+               : static_cast<int>(CHROME_RESULT_CODE_SHELL_INTEGRATION_FAILED);
   }
 
 #if defined(USE_AURA)
@@ -1559,7 +1559,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // We must call DoUpgradeTasks now that we own the browser singleton to
   // finish upgrade tasks (swap) and relaunch if necessary.
   if (upgrade_util::DoUpgradeTasks(*base::CommandLine::ForCurrentProcess()))
-    return chrome::RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
+    return CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
@@ -1567,7 +1567,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // to handle a version downgrade.
   if (downgrade_manager_.PrepareUserDataDirectoryForCurrentVersion(
           user_data_dir_)) {
-    return chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH;
+    return CHROME_RESULT_CODE_DOWNGRADE_AND_RELAUNCH;
   }
   downgrade_manager_.UpdateLastVersion(user_data_dir_);
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
@@ -1595,7 +1595,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   if (!browser_process_->browser_policy_connector()
            ->chrome_browser_cloud_management_controller()
            ->WaitUntilPolicyEnrollmentFinished()) {
-    return chrome::RESULT_CODE_CLOUD_POLICY_ENROLLMENT_FAILED;
+    return CHROME_RESULT_CODE_CLOUD_POLICY_ENROLLMENT_FAILED;
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
@@ -1607,7 +1607,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // Note this check needs to happen here (after the process singleton was
   // obtained but before potentially creating the first run sentinel).
   if (ChromeBrowserMainPartsWin::CheckMachineLevelInstall())
-    return chrome::RESULT_CODE_MACHINE_LEVEL_INSTALL_EXISTS;
+    return CHROME_RESULT_CODE_MACHINE_LEVEL_INSTALL_EXISTS;
 #endif  // BUILDFLAG(IS_WIN)
 
   // Desktop construction occurs here, (required before profile creation).
@@ -2009,7 +2009,7 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
-  if (result_code_ == chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH) {
+  if (result_code_ == CHROME_RESULT_CODE_DOWNGRADE_AND_RELAUNCH) {
     // Process a pending User Data downgrade before restarting.
     downgrade_manager_.ProcessDowngrade(user_data_dir_);
 

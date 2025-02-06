@@ -158,7 +158,7 @@ class BASE_EXPORT TraceEvent {
   //  tid: thread_id_, pid: current_process_id (default case).
   //  tid: -1, pid: process_id_ (when flags_ & TRACE_EVENT_FLAG_HAS_PROCESS_ID).
   union {
-    PlatformThreadId thread_id_ = 0;
+    PlatformThreadId thread_id_ = kInvalidThreadId;
     ProcessId process_id_;
   };
   unsigned int flags_ = 0;

@@ -49,10 +49,10 @@ NotificationServiceInProcessFuzzer::GetChromiumCommandLineArguments() {
 
 void NotificationServiceInProcessFuzzer::SetUpOnMainThread() {
   InProcessFuzzer::SetUpOnMainThread();
-  CHECK(embedded_https_test_server().Start());
   base::FilePath exe_path;
   CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
   embedded_https_test_server().ServeFilesFromDirectory(exe_path);
+  CHECK(embedded_https_test_server().Start());
 
   // This html page includes the necessary scripts for the mojo js bindings.
   // Navigate to this page and execute the fuzzer generated JS in this context.

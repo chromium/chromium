@@ -791,22 +791,9 @@ net::LocalSetDeclaration FirstPartySetParser::ParseFromCommandLine(
   SetsMap entries = std::move(parsed.first);
   Aliases aliases = std::move(parsed.second);
 
-  if (entries.empty()) {
-    return net::LocalSetDeclaration();
-  }
-
-  const net::SchemefulSite& primary = entries.begin()->second.primary();
-
-  if (std::ranges::any_of(entries, [&primary](const SetsMap::value_type& pair) {
-        return pair.second.primary() != primary;
-      })) {
-    // More than one set was provided. That is (currently) unsupported.
-    LOG(ERROR) << "Ignoring use-related-website-set switch due to multiple set "
-                  "declarations.";
-    return net::LocalSetDeclaration();
-  }
-
-  return net::LocalSetDeclaration(std::move(entries), std::move(aliases));
+  return net::LocalSetDeclaration::Create(
+             std::move(entries), std::move(aliases), /*emit_errors=*/true)
+      .value_or(net::LocalSetDeclaration());
 }
 
 }  // namespace content

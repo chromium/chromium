@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Lösenord på alla dina enheter</translation>
 <translation id="1082920045291562218">Dela med feedbackarket för sammanfattningen har stängts</translation>
 <translation id="1087176310396019910">Möjlig spam</translation>
+<translation id="1087799850623149508">Du kan trycka länge för att flytta adressfältet längst ned</translation>
 <translation id="1089606299949659462">Granskningen är klar</translation>
 <translation id="1094555143448724771">Synkronisera flikar och historik om du vill se flikar från dina andra enheter</translation>
 <translation id="1095761715416917775">Se till att du alltid får åtkomst till din synkroniserade data</translation>
@@ -131,6 +132,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="1513858653616922153">Radera lösenord</translation>
 <translation id="1521774566618522728">Aktiv idag</translation>
 <translation id="153446405401665083">En ny version av Chrome är tillgänglig</translation>
+<translation id="1540012742443808215">Adressfältet är för närvarande högst upp</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bokmärke sparas endast på den här enheten. Om du vill använda det på dina andra enheter kan du spara det i Google-kontot <ph name="ACCOUNT_EMAIL" />.}other{# bokmärken sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Betalningsmetoder och adresser krypteras inte. Webbhistorik från Chrome synkroniseras inte.
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chrome-data<ph name="END_LINK" />.</translation>
@@ -1186,6 +1188,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6459045781120991510">Enkäter</translation>
 <translation id="6461962085415701688">Det går inte att öppna filen</translation>
 <translation id="6464977750820128603">Du kan se vilka webbplatser du besökt i Chrome och ställa in en timer för dem.\n\nGoogle får information om vilka webbplatser du har ställt in en timer för och hur länge du har stannat på dem. Informationen används för att förbättra Digitalt välmående.</translation>
+<translation id="6468703991511753953">Adressfältet är för närvarande längst ned</translation>
 <translation id="6470181189905173055">Sidorna som du har öppnat i Chrome medan du har använt <ph name="APP_LABEL" /> visas här.</translation>
 <translation id="6473086018775716761">Lista över delningsalternativ har öppnats över halva skärmen.</translation>
 <translation id="6475951671322991020">Ladda ned video</translation>

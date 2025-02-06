@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -227,8 +229,9 @@ TEST_P(CaretPositionForOffsetBidiTest, CaretPositionForOffsetsBidi) {
   const auto& test_data = GetParam();
   String text_string(test_data.string);
   TextMetrics* text_metrics = MakeGarbageCollected<TextMetrics>(
-      GetFont(test_data.font), test_data.direction, kAlphabeticTextBaseline,
-      kLeftTextAlign, text_string);
+      GetFont(test_data.font), test_data.direction,
+      V8CanvasTextBaseline::Enum::kAlphabetic, V8CanvasTextAlign::Enum::kLeft,
+      text_string);
 
   for (wtf_size_t i = 0; i < test_data.points.size(); ++i) {
     EXPECT_EQ(test_data.positions[i],

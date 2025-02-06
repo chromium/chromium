@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Mật khẩu trên tất cả thiết bị của bạn</translation>
 <translation id="1082920045291562218">Trang Chia sẻ kèm theo phản hồi về bảng tóm tắt đã đóng</translation>
 <translation id="1087176310396019910">Có thể là thông báo rác</translation>
+<translation id="1087799850623149508">Bạn có thể chạm và giữ để di chuyển thanh địa chỉ xuống dưới cùng</translation>
 <translation id="1089606299949659462">Đã hoàn tất quá trình xem xét!</translation>
 <translation id="1094555143448724771">Để xem thẻ từ các thiết bị khác của bạn, hãy đồng bộ hoá các thẻ và nhật ký</translation>
 <translation id="1095761715416917775">Đảm bảo bạn luôn có thể truy cập vào dữ liệu đồng bộ hóa</translation>
@@ -131,6 +132,7 @@
 <translation id="1513858653616922153">Xóa mật khẩu</translation>
 <translation id="1521774566618522728">Hoạt động hôm nay</translation>
 <translation id="153446405401665083">Đã có phiên bản Chrome mới</translation>
+<translation id="1540012742443808215">Thanh địa chỉ hiện đang ở trên cùng</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 dấu trang chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}other{# dấu trang chỉ được lưu trên thiết bị này. Để sử dụng cả trên các thiết bị khác, hãy lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" /> của bạn.}}</translation>
 <translation id="1544084554881119930">Địa chỉ và phương thức thanh toán sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
 Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6459045781120991510">Khảo sát</translation>
 <translation id="6461962085415701688">Không thể mở tệp</translation>
 <translation id="6464977750820128603">Bạn có thể xem các trang web mà mình truy cập trên Chrome và hẹn giờ cho các trang web này.\n\nGoogle thu thập thông tin về các trang web mà bạn đã hẹn giờ và khoảng thời gian bạn truy cập các trang web đó. Thông tin này dùng để cải thiện Digital Wellbeing.</translation>
+<translation id="6468703991511753953">Thanh địa chỉ hiện đang ở dưới cùng</translation>
 <translation id="6470181189905173055">Những trang bạn đã mở trong Chrome khi dùng <ph name="APP_LABEL" /> sẽ xuất hiện ở đây.</translation>
 <translation id="6473086018775716761">Danh sách các lựa chọn chia sẻ đã được mở ở nửa dưới của màn hình.</translation>
 <translation id="6475951671322991020">Tải video xuống</translation>

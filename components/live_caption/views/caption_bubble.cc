@@ -1451,7 +1451,8 @@ void CaptionBubble::SetTextColor() {
   media_foundation_renderer_error_text_->AddStyleRange(
       gfx::Range(offset + link.length(), text.length()), error_message_style);
   media_foundation_renderer_error_icon_->SetImage(
-      gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, primary_color));
+      ui::ImageModel::FromVectorIcon(vector_icons::kErrorOutlineIcon,
+                                     primary_color));
   media_foundation_renderer_error_checkbox_->SetEnabledTextColors(
       primary_color);
   media_foundation_renderer_error_checkbox_->SetTextSubpixelRenderingEnabled(

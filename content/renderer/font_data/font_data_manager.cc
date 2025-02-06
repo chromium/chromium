@@ -80,12 +80,29 @@ FontDataManager::FontDataManager()
 FontDataManager::~FontDataManager() = default;
 
 int FontDataManager::onCountFamilies() const {
-  NOTREACHED();
+  if (family_names_.empty()) {
+    GetAllFamilyNames();
+  }
+
+  return family_names_.size();
 }
 
 void FontDataManager::onGetFamilyName(int index,
                                       SkString* requested_family_name) const {
-  NOTREACHED();
+  if (family_names_.empty()) {
+    GetAllFamilyNames();
+  }
+
+  if (index < 0) {
+    return;
+  }
+
+  size_t family_index = static_cast<size_t>(index);
+  if (family_index >= family_names_.size()) {
+    return;
+  }
+
+  *requested_family_name = SkString(family_names_[family_index]);
 }
 
 sk_sp<SkFontStyleSet> FontDataManager::onCreateStyleSet(int index) const {
@@ -345,6 +362,10 @@ sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResult(
   }
 
   return typeface;
+}
+
+void FontDataManager::GetAllFamilyNames() const {
+  GetRemoteFontDataService().GetAllFamilyNames(&family_names_);
 }
 
 }  // namespace font_data_service

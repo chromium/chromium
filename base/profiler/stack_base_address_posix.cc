@@ -82,7 +82,7 @@ std::optional<uintptr_t> GetThreadStackBaseAddress(PlatformThreadId id,
   // trying to work around the problem.
   return std::nullopt;
 #else
-  const bool is_main_thread = id == GetCurrentProcId();
+  const bool is_main_thread = id.raw() == GetCurrentProcId();
   if (is_main_thread) {
 #if BUILDFLAG(IS_ANDROID)
     // The implementation of pthread_getattr_np() in Bionic reads proc/self/maps

@@ -7,7 +7,6 @@ package org.chromium.media;
 import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Base64InputStream;
@@ -176,19 +175,6 @@ public class MediaPlayerBridge {
             getLocalPlayer().setDataSource(ContextUtils.getApplicationContext(), uri, headersMap);
             return true;
         } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @CalledByNative
-    protected boolean setDataSourceFromFd(int fd, long offset, long length) {
-        try {
-            ParcelFileDescriptor parcelFd = ParcelFileDescriptor.adoptFd(fd);
-            getLocalPlayer().setDataSource(parcelFd.getFileDescriptor(), offset, length);
-            parcelFd.close();
-            return true;
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to set data source from file descriptor: " + e);
             return false;
         }
     }

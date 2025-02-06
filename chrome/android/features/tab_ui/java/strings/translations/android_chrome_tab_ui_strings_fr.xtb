@@ -25,6 +25,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> onglet regroupé</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
+<translation id="1909810060368225529">Remarque : Les modifications apportées à ce groupe d'onglets partagé sont visibles par tous. Tout le monde peut modifier vos groupes d'onglets partagés</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet sélectionné aux favoris}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet sélectionné aux favoris}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets sélectionnés aux favoris}}</translation>
 <translation id="2118649612461486615">Infos sur le magasin</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". L'onglet de navigation privée ne sera pas disponible.}one{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". # onglet de navigation privée ne sera pas disponible.}other{Vous pouvez rouvrir vos onglets et groupes fermés depuis les sections "Onglets récents" et "Groupes d'onglets". # onglets de navigation privée ne seront pas disponibles.}}</translation>
@@ -126,11 +127,13 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="6381032505162537930">Vos groupes d'onglets s'afficheront ici</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dégrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Dégrouper <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Dégrouper <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
+<translation id="6499296376514955580">Avis fermé sur les modifications apportées au groupe d'onglets partagés</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Après 1 jour}one{Après <ph name="DAY_COUNT_MANY" /> jour}other{Après <ph name="DAY_COUNT_MANY" /> jours}}</translation>
 <translation id="6549021453810473782">Afficher les infos sur le magasin</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Déplacer l'onglet vers la gauche</translation>
+<translation id="6589356853295569750">Avis ouvert à pleine hauteur sur les modifications apportées au groupe d'onglets partagés</translation>
 <translation id="6590332670428149473">Ouvrir le menu d'actions du groupe d'onglets partagé <ph name="TITLE_OF_GROUP" />, couleur <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Démonstration</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> onglet modifié}one{<ph name="MANY_CHANGED" /> onglet modifié}other{<ph name="MANY_CHANGED" /> onglets modifiés}}</translation>
@@ -157,6 +160,7 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Partager <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Partager <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Partager <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="7773714564112603605">Supprimer l'onglet et le groupe</translation>
 <translation id="7792771145871471484">Afficher les suggestions.</translation>
+<translation id="7792860826279960128">Avis à mi-hauteur sur les modifications apportées au groupe d'onglets partagés</translation>
 <translation id="7825973332242257878">Groupes d'onglets</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Regrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Group <ph name="TABS_COUNT_MANY" /> selected tabs}other{Regrouper les <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="7853202427316060426">Activité</translation>

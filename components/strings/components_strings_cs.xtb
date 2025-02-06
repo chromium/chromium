@@ -1231,6 +1231,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3194737229810486521">Stránka <ph name="URL" /> chce trvale ukládat data v zařízení</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na serveru <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Může zjišťovat, kdy aktivně používáte toto zařízení</translation>
+<translation id="3201482403106004262">V průzkumu došlo k chybě.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete v nastavení Chromu spravovat, jaké informace synchronizujete</translation>
 <translation id="3203025201812691413">Adresa URL nesmí být prázdná</translation>
 <translation id="320323717674993345">Zrušit platbu</translation>
@@ -1869,6 +1870,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4269264543938335308">Plavky a koupací oblečení</translation>
 <translation id="4269599248168651462">Certifikát serveru je vydán na jméno, které není jedinečné.</translation>
 <translation id="4270541775497538019">Stohovač 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Zobrazit 0 recenzí. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}=1{Zobrazit 1 recenzi. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}few{Zobrazit všechny # recenze. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}many{Zobrazit všech # recenze. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}other{Zobrazit všech # recenzí. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.}}</translation>
 <translation id="4271652479722040953">Když jsou do Chromu přidána rozšíření, odesílají se o nich relevantní data třetím stranám k analýze a tato data může vidět také váš administrátor. Tato data zahrnují informace o rozšířeních, jako jsou název, čas instalace a zdroj instalace, a také s nimi spojené aktivity (jako je změna karet, kontaktování webů nebo přístup k souborům cookie). Tato data se shromažďují pro rozšíření nainstalovaná z Internetového obchodu Chrome i pro rozšíření nainstalovaná odjinud.</translation>
 <translation id="4275830172053184480">Restartovat zařízení</translation>
 <translation id="4276974990916607331">Ne, díky</translation>
@@ -2342,6 +2344,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5138227688689900538">Zobrazit méně</translation>
 <translation id="5143309888746105072">Chromium brání webům v používání souborů cookie třetích stran ke sledování vašeho procházení.
             <ph name="NEW_LINE" />Pokud web nefunguje správně, <ph name="START_LINK" />zkuste soubory cookie třetích stran dočasně povolit<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Tomuto webu jste udělili oprávnění <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Odpověď zásady obsahuje kód chyby</translation>
 <translation id="5146995429444047494">Oznámení z webu <ph name="ORIGIN" /> jsou blokována</translation>
 <translation id="514704532284964975">Web <ph name="URL" /> chce číst a měnit informace na zařízeních NFC, kterých se dotknete telefonem</translation>
@@ -2947,6 +2950,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6224281071334553713">Klenoty a šperky</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter si v nastavení Chromu můžete přizpůsobit nástroje pro usnadnění přístupu</translation>
 <translation id="6228346913624365233">Luxusní vozy</translation>
+<translation id="6228836011612806720">Recenze obchodů. Průměrné hodnocení hvězdičkami je <ph name="STARS" />.</translation>
 <translation id="6229196330202833460">Streamování filmů a televize</translation>
 <translation id="6234122620015464377">Oříznout za každým dokumentem</translation>
 <translation id="6234310016144827337">Zkontrolujte připojení a zkuste to znovu</translation>
@@ -4396,6 +4400,7 @@ Další podrobnosti:
 <translation id="8792621596287649091">Mohli byste ztratit přístup k účtu <ph name="ORG_NAME" /> nebo by mohlo dojít k odcizení vaší identity. Doporučujeme vám okamžitě změnit heslo.</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">Administrátor organizace <ph name="ENROLLMENT_DOMAIN" /> vám v prohlížeči zapnul konektory Chrome Enterprise Connectors. Tyto konektory mají přístup k některým vašim datům.</translation>
+<translation id="8796062699363039080">Nastavení systému <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Výchozí</translation>
 <translation id="8800034312320686233">Web nefunguje?</translation>
 <translation id="8805819170075074995">Položka seznamu „<ph name="LANGUAGE_ID" />“: Položka byla ignorována, protože je zahrnuta také v zásadě SpellcheckLanguage.</translation>
@@ -4615,6 +4620,7 @@ Další podrobnosti:
 <translation id="9192361865877479444">Kov (matný)</translation>
 <translation id="9192947025498305328">Ekologická krása</translation>
 <translation id="9199905725844810519">Tisk je blokován</translation>
+<translation id="9201904868909900493">Otevírání průzkumu…</translation>
 <translation id="9204089334327209740">Po dokončení nahrávání můžete své soubory upravit ve službě <ph name="CLOUD_PROVIDER" />. Místní úložiště, včetně všech souborů v koši, bude automaticky odstraněno.</translation>
 <translation id="9205078245616868884">Vaše data jsou šifrována pomocí heslové fráze pro synchronizaci. Chcete-li zahájit synchronizaci, zadejte ji.</translation>
 <translation id="920643408853370361">Cestovní pojištění</translation>

@@ -289,13 +289,14 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email
                           givenName:(NSString*)givenName
-                             avatar:(UIImage*)avatar {
+                             avatar:(UIImage*)avatar
+                            managed:(BOOL)managed {
   DCHECK_NE(self.signinStatus, SigninScreenConsumerSigninStatusDisabled);
   DCHECK(email);
   DCHECK(avatar);
   self.personalizedButtonPrompt = givenName ? givenName : email;
   [self updateUIForIdentityAvailable:YES];
-  [self.identityControl setIdentityName:userName email:email];
+  [self.identityControl setIdentityName:userName email:email managed:managed];
   [self.identityControl setIdentityAvatar:avatar];
 }
 

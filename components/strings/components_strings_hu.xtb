@@ -1164,6 +1164,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3076865167425975822">Operációs rendszer</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">A Google használhatja a kosarait személyre szabott kedvezmények keresésére</translation>
+<translation id="3086269988715347183">Ön korábban nem hagyta jóvá a következőt: <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Megfigyelik az Ön interneten végzett tevékenységeit</translation>
 <translation id="3087734570205094154">Alja</translation>
 <translation id="3090667236485488075">Üveg</translation>
@@ -1232,10 +1233,12 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3194737229810486521">A(z) <ph name="URL" /> webhely állandó jelleggel adatokat szeretne tárolni az eszközön</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> nyomtató a(z) <ph name="SERVER_NAME" /> nevű szerveren</translation>
 <translation id="3197136577151645743">Engedélyt kérhet annak észlelésére, hogy Ön mikor használja aktívan az eszközt</translation>
+<translation id="3201482403106004262">Hiba történt a kérdőívvel.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt az adatok szinkronizálásának Chrome-beállítások közötti kezeléséhez.</translation>
 <translation id="3203025201812691413">Az URL mezője nem maradhat üresen.</translation>
 <translation id="320323717674993345">Fizetés visszavonása</translation>
 <translation id="3203366800380907218">Az internetről</translation>
+<translation id="3207830513221832868">A(z) <ph name="BLOCKED_URL" /> felnőtteknek szóló tartalmat tartalmazhat</translation>
 <translation id="3207960819495026254">Könyvjelző rögzítve</translation>
 <translation id="3208701679386778924">Küldjön jelentést, hogy segítse a ChromeOS további verzióinak fejlesztését.</translation>
 <translation id="3209034400446768650">Az oldal díjat számíthat fel</translation>
@@ -1870,6 +1873,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4269264543938335308">Úszóruházat</translation>
 <translation id="4269599248168651462">A szervertanúsítvány nem egyedi névre van kiállítva.</translation>
 <translation id="4270541775497538019">6. kötegelő</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 vélemény megtekintése. Az átlagos értékelés <ph name="STARS" /> csillag.}=1{1 vélemény megtekintése. Az átlagos értékelés <ph name="STARS" /> csillag.}other{Az összes (#) vélemény megtekintése. Az átlagos értékelés <ph name="STARS" /> csillag.}}</translation>
 <translation id="4271652479722040953">Amikor bővítményeket ad hozzá a Chrome-hoz, a böngésző elemzés céljából harmadik feleknek továbbítja az adott bővítményekkel kapcsolatos vonatkozó adatokat, amelyeket a rendszergazda is láthat. Az adatok közé tartoznak a bővítményekre vonatkozó információk, például a bővítmények neve, a telepítés ideje, a telepítés forrása, valamint az ezekkel a bővítményekkel kapcsolatos tevékenységek (például lapváltás, webhelyekkel való kapcsolatfelvétel vagy cookie-khoz való hozzáférés). Ezeket az adatokat a Chrome Webáruházból telepített bővítményekre, valamint a webáruházon kívülről telepített bővítményekre vonatkozóan is gyűjti a rendszer.</translation>
 <translation id="4275830172053184480">Indítsa újra az eszközt</translation>
 <translation id="4276974990916607331">Nem</translation>
@@ -2343,6 +2347,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5138227688689900538">Kevesebb megjelenítése</translation>
 <translation id="5143309888746105072">A Chromium megakadályozza a webhelyek számára, hogy harmadik féltől származó cookie-kat használjanak az Ön nyomon követésére böngészés közben.
             <ph name="NEW_LINE" />Ha nem működnek bizonyos webhelyfunkciók, <ph name="START_LINK" />próbálkozzon a harmadik féltől származó cookie-k ideiglenes engedélyezésével<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Engedélyezte a következő használatát ezen a webhelyen: <ph name="PERMISSION" /></translation>
 <translation id="5145883236150621069">Az irányelv válasza hibakódot tartalmaz</translation>
 <translation id="5146995429444047494">A(z) <ph name="ORIGIN" /> értesítései le vannak tiltva</translation>
 <translation id="514704532284964975">A(z) <ph name="URL" /> szeretné megtekinteni az eszközéhez érintett NFC-eszközökön található információkat, és információkat cserélni az ilyen eszközökkel</translation>
@@ -2949,6 +2954,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6224281071334553713">Drágakövek és ékszerek</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt a kisegítő eszközöknek a Chrome beállításaiban való személyre szabásához.</translation>
 <translation id="6228346913624365233">Luxusjárművek</translation>
+<translation id="6228836011612806720">Vélemények az üzletről. Az átlagos értékelés <ph name="STARS" /> csillag.</translation>
 <translation id="6229196330202833460">Film- és TV-streaming</translation>
 <translation id="6234122620015464377">Vágás minden dokumentum után</translation>
 <translation id="6234310016144827337">Ellenőrizze a kapcsolatot, majd próbálkozzon újra.</translation>
@@ -2966,6 +2972,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6254436959401408446">Nincs elég memória az oldal megnyitásához</translation>
 <translation id="625463612687472648">Engedélyezés leállítása</translation>
 <translation id="6259156558325130047">&amp;Átrendezés újra</translation>
+<translation id="6259282549512536479">Ön korábban letiltotta a következőt: <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> könyvjelzők</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
 <translation id="6264485186158353794">Vissza a biztonsághoz</translation>
@@ -4400,6 +4407,7 @@ További részletek:
 <translation id="8792621596287649091">Elveszítheti a hozzáférést <ph name="ORG_NAME" />-fiókjához, vagy visszaélhetnek személyes adataival. A Chromium azt javasolja, hogy azonnal módosítsa jelszavát.</translation>
 <translation id="8792626944327216835">mikrofon</translation>
 <translation id="8793655568873652685">A(z) <ph name="ENROLLMENT_DOMAIN" /> bekapcsolta a Chrome Enterprise Connectors integrációs eszközöket az Ön böngészőjében. Az eszközök hozzáférnek bizonyos adatokhoz.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" />-beállítások</translation>
 <translation id="8798099450830957504">Alapértelmezett</translation>
 <translation id="8800034312320686233">Nem működik a webhely?</translation>
 <translation id="8805819170075074995">„<ph name="LANGUAGE_ID" />” listabejegyzés: A bejegyzést figyelmen kívül hagyja a rendszer, mert szerepel a SpellcheckLanguage házirendben is.</translation>
@@ -4620,6 +4628,7 @@ További részletek:
 <translation id="9192361865877479444">Fém (matt)</translation>
 <translation id="9192947025498305328">Etikus szépségápolás</translation>
 <translation id="9199905725844810519">A nyomtatás le van tiltva</translation>
+<translation id="9201904868909900493">Kérdőív megnyitása…</translation>
 <translation id="9204089334327209740">A feltöltés végeztével a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásban módosíthatja a fájlokat. A helyi tárhely, beleértve a kukában lévő fájlokat is, automatikusan eltávolításra kerül.</translation>
 <translation id="9205078245616868884">Adatai az összetett szinkronizálási jelszavával vannak titkosítva. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>
 <translation id="920643408853370361">Utazási biztosítás</translation>

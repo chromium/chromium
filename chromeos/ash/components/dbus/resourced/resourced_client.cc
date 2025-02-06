@@ -381,7 +381,7 @@ void ResourcedClientImpl::SetThreadState(base::ProcessId process_id,
   dbus::MessageWriter writer(&method_call);
 
   writer.AppendUint32(process_id);
-  writer.AppendUint32(thread_id);
+  writer.AppendUint32(thread_id.raw());
   writer.AppendByte(static_cast<uint8_t>(state));
 
   proxy_->CallMethodWithErrorResponse(

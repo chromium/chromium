@@ -797,7 +797,7 @@ void HangWatcher::WatchStateSnapShot::Init(
                                                LoggingLevel::kUmaOnly)) {
         const PlatformThreadId thread_id = watch_state.get()->GetThreadID();
         const auto track = perfetto::Track::FromPointer(
-            this, perfetto::ThreadTrack::ForThread(thread_id));
+            this, perfetto::ThreadTrack::ForThread(thread_id.raw()));
         TRACE_EVENT_BEGIN("latency", "HangWatcher::ThreadHung", track,
                           now - monitoring_period);
         TRACE_EVENT_END("latency", track, now);
@@ -1333,7 +1333,7 @@ uint64_t HangWatchState::GetSystemWideThreadID() const {
 #if BUILDFLAG(IS_MAC)
   return system_wide_thread_id_;
 #else
-  CHECK(thread_id_ > 0);
+  CHECK_NE(thread_id_, kInvalidThreadId);
   return static_cast<uint64_t>(thread_id_);
 #endif
 }

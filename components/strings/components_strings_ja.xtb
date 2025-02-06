@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">オペレーティング システム</translation>
 <translation id="3080254622891793721">グラフィック</translation>
 <translation id="3082007635241601060">カートに入れたアイテムの割引情報の検索を Google に許可する</translation>
+<translation id="3086269988715347183"><ph name="BLOCKED_URL" /> はこれまで承認していません</translation>
 <translation id="3086579638707268289">ウェブでのアクティビティが監視されています</translation>
 <translation id="3087734570205094154">下</translation>
 <translation id="3090667236485488075">ガラス</translation>
@@ -1234,10 +1235,12 @@
 <translation id="3194737229810486521"><ph name="URL" /> から、デバイスにデータを永続的に保存する許可を求められています</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />（<ph name="SERVER_NAME" /> 上）</translation>
 <translation id="3197136577151645743">このデバイスのアクティブ状態の検出を要求できる</translation>
+<translation id="3201482403106004262">アンケートでエラーが発生しました。</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定で同期する情報を管理します</translation>
 <translation id="3203025201812691413">URL を空白にすることはできません</translation>
 <translation id="320323717674993345">支払いをキャンセル</translation>
 <translation id="3203366800380907218">ウェブから</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> には成人向けコンテンツが含まれている可能性があります</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208701679386778924">ChromeOS の今後の更新に役立てるため、報告を送信してください。</translation>
 <translation id="3209034400446768650">このページでは料金が請求される可能性があります</translation>
@@ -1868,11 +1871,12 @@
 <translation id="425582637250725228">行った変更が保存されない可能性があります。</translation>
 <translation id="4258748452823770588">署名が不適切です</translation>
 <translation id="4261046003697461417">保護されたドキュメントに注釈を追加することはできません</translation>
-<translation id="4265872034478892965">管理者によって許可</translation>
+<translation id="4265872034478892965">管理者によって許可されています</translation>
 <translation id="4269029136757623689">家庭用扇風機</translation>
 <translation id="4269264543938335308">水着</translation>
 <translation id="4269599248168651462">サーバー証明書が一意でない名前に対して発行されました。</translation>
 <translation id="4270541775497538019">スタッカー 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 件のレビューを表示します。平均評価は星 <ph name="STARS" /> 個です。}=1{1 件のレビューを表示します。平均評価は星 <ph name="STARS" /> 個です。}other{全 # 件のレビューを表示します。平均評価は星 <ph name="STARS" /> 個です。}}</translation>
 <translation id="4271652479722040953">拡張機能が Chrome に追加されると、これらの拡張機能に関するデータが分析のため第三者に送信され、管理者に公開される可能性があります。こうしたデータには、名前、インストール時間、インストール元などの拡張機能に関する情報と、拡張機能に関連するアクティビティ（タブの変更、ウェブサイトへの接続、Cookie へのアクセスなど）が含まれます。このデータは、Chrome ウェブストアからインストールされた拡張機能と、ストア以外からインストールされた拡張機能の両方について収集されます。</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
 <translation id="4276974990916607331">今はしない</translation>
@@ -2346,6 +2350,7 @@
 <translation id="5138227688689900538">一部を表示</translation>
 <translation id="5143309888746105072">Chromium では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。
             <ph name="NEW_LINE" />サイトが機能しない場合は、<ph name="START_LINK" />サードパーティ Cookie を一時的に許可してみてください<ph name="END_LINK" />。</translation>
+<translation id="5144613843429436866">このサイトに <ph name="PERMISSION" /> の使用を許可しています</translation>
 <translation id="5145883236150621069">ポリシー応答内にエラー コードがあります</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> の通知をブロックしました</translation>
 <translation id="514704532284964975"><ph name="URL" /> が、スマートフォンでタップした NFC デバイスの情報を参照および変更しようとしています</translation>
@@ -2952,6 +2957,7 @@
 <translation id="6224281071334553713">宝石</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="6228346913624365233">高級車</translation>
+<translation id="6228836011612806720">店舗のレビュー。平均評価は星 <ph name="STARS" /> 個です。</translation>
 <translation id="6229196330202833460">映画やテレビのストリーミング</translation>
 <translation id="6234122620015464377">トリミング（ドキュメント単位）</translation>
 <translation id="6234310016144827337">接続を確認してから、もう一度お試しください</translation>
@@ -2969,6 +2975,7 @@
 <translation id="6254436959401408446">メモリが不足しているため、このページを開けません</translation>
 <translation id="625463612687472648">許可を取り消す</translation>
 <translation id="6259156558325130047">順序変更のやり直し（&amp;R）</translation>
+<translation id="6259282549512536479"><ph name="BLOCKED_URL" /> は以前にブロックしています</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> のブックマーク</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
 <translation id="6264485186158353794">セキュリティで保護されたページに戻る</translation>
@@ -3816,7 +3823,7 @@
 <translation id="7714404809393719981">写真（半光沢）</translation>
 <translation id="7714424966701020172">氏名を入力するオプションが選択されました</translation>
 <translation id="7714464543167945231">証明書</translation>
-<translation id="7716147886133743102">管理者によってブロック</translation>
+<translation id="7716147886133743102">管理者によってブロックされています</translation>
 <translation id="7716375162095500223">まだアップロードされていないか、無視されました</translation>
 <translation id="7716424297397655342">このサイトをキャッシュから読み込むことができません</translation>
 <translation id="7719791801330803993">写真、ビデオ ソフトウェア</translation>
@@ -4403,6 +4410,7 @@
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> アカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
 <translation id="8792626944327216835">マイク</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> により、お使いのブラウザで Chrome Enterprise Connectors が有効化されています。これらのコネクタには、一部のユーザーデータへのアクセスが許可されます。</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> の設定</translation>
 <translation id="8798099450830957504">既定</translation>
 <translation id="8800034312320686233">サイトが動作していない場合</translation>
 <translation id="8805819170075074995">リスト項目「<ph name="LANGUAGE_ID" />」: SpellcheckLanguage ポリシーにも含まれているため、この項目は無視されます。</translation>
@@ -4622,6 +4630,7 @@
 <translation id="9192361865877479444">金属（非光沢）</translation>
 <translation id="9192947025498305328">クリーン ビューティー</translation>
 <translation id="9199905725844810519">印刷はブロックされています</translation>
+<translation id="9201904868909900493">アンケートを開いています…</translation>
 <translation id="9204089334327209740">アップロードが完了したら、<ph name="CLOUD_PROVIDER" /> でファイルを変更できます。ゴミ箱内のファイルを含め、ローカル ストレージは自動的に削除されます。</translation>
 <translation id="9205078245616868884">データは同期パスフレーズで暗号化されます。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="920643408853370361">旅行保険</translation>

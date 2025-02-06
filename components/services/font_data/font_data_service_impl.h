@@ -70,6 +70,10 @@ class FontDataServiceImpl : public mojom::FontDataService {
       int32_t character,
       MatchFamilyNameCharacterCallback callback) override;
 
+  // Gets all the available font families on the system. Usage of this function
+  // is strongly discouraged as it iterates over all installed fonts.
+  void GetAllFamilyNames(GetAllFamilyNamesCallback callback) override;
+
  protected:
   // Returns a file handle based on the SkTypeface. The file handle may be empty
   // if there is no file associated with the typeface or if the typeface is

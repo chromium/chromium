@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1444443021901415601">Mae Chrome yn nodi pynciau o ddiddordeb yn seiliedig ar eich hanes pori diweddar</translation>
-<translation id="2252052615723281030">Pan fyddwch wedi mewngofnodi i Chrome, mae'r gosodiad hwn yn helpu i gadw'ch cyfeiriad IP yn breifat. Os yw Chrome yn amau bod gwefan yn eich olrhain, mae'n bosib y bydd rhywfaint o'ch traffig yn cael ei anfon trwy weinyddion preifatrwydd.</translation>
 <translation id="235789365079050412">Polisi Preifatrwydd Google</translation>
 <translation id="2793385791865768072">Mae Chrome yn nodi pynciau o ddiddordeb yn seiliedig ar eich hanes pori diweddar</translation>
 <translation id="2979365474350987274">Mae cwcis trydydd parti yn gyfyngedig</translation>
@@ -22,6 +21,5 @@
 <translation id="6195163219142236913">Mae cwcis trydydd parti yn gyfyngedig</translation>
 <translation id="6371812158043974664">Pan fyddwch wedi mewngofnodi i Chromium, mae'r gosodiad hwn yn helpu i gadw'ch cyfeiriad IP yn breifat. Os yw Chromium yn amau bod gwefan yn eich olrhain, mae'n bosib y bydd rhywfaint o'ch traffig yn cael ei anfon trwy weinyddion preifatrwydd. Dysgu rhagor am <ph name="LINK_BEGIN" />sut mae diogelu IP yn gweithio<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">Dysgu rhagor am sut mae Google yn gwarchod eich data yn ein <ph name="BEGIN_LINK1" />Polisi Preifatrwydd<ph name="LINK_END1" />.</translation>
-<translation id="7040031291654706261">Dysgu <ph name="BEGIN_LINK" />sut mae diogelu IP yn gweithio<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Adolygu eich gosodiad pynciau hysbyseb</translation>
 </translationbundle>

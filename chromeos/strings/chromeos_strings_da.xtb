@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Ugyldig pinkode.</translation>
 <translation id="382043424867370667">Baggrunden Solnedgang</translation>
 <translation id="3824259034819781947">Vedhæft filer</translation>
-<translation id="3836587210832263413">Aktivér kun udvidelser, du har tillid til</translation>
 <translation id="3838338534323494292">Ny adgangskode</translation>
 <translation id="3845880861638660475">Tryk på <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> for at lukke dialogboksen.</translation>
 <translation id="3848280697030027394">nedton tastaturlys</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Administrer dine printere i printerindstillingerne</translation>
 <translation id="6292095526077353682">Vis pauseskærmen under opladningen</translation>
 <translation id="629550705077076970">dæmp tastaturlys</translation>
-<translation id="6301193653204230066">En sikkerhedsnulstilling deaktiverer Chrome-browserudvidelser samt nulstiller netværk og andre indstillinger til sikre standardindstillinger.
-          Dine faner, filer, cookies og historik ændres ikke.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testen er annulleret</translation>
 <translation id="631063167932043783">Appen Udforsk</translation>
 <translation id="6318437367327684789">hele tiden</translation>
@@ -1774,6 +1771,8 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="951780398843003443">Sammenlign stemmer i optagelsen, så det fremgår af transskriptionen, hvad hver person sagde, og hvornår de sagde det</translation>
 <translation id="952992212772159698">Ikke aktiveret</translation>
 <translation id="95718197892796296">ler</translation>
+<translation id="959792926760890141">En sikkerhedsnulstilling deaktiverer Chrome-browserudvidelser samt nulstiller netværk og andre indstillinger til sikre standardindstillinger.
+          Din standardsøgemaskine nulstilles, men dine faner, filer, cookies og historik påvirkes ikke.</translation>
 <translation id="960719561871045870">Operatørkode</translation>
 <translation id="965918541715156800">gul og grønblå</translation>
 <translation id="966787709310836684">menu</translation>

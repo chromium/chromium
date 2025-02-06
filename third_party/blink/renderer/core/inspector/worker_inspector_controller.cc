@@ -205,7 +205,8 @@ void WorkerInspectorController::EmitTraceEvent() {
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
       "TracingSessionIdForWorker",
       inspector_tracing_session_id_for_worker_event::Data,
-      worker_devtools_token_, parent_devtools_token_, url_, worker_thread_id_);
+      worker_devtools_token_, parent_devtools_token_, url_,
+      worker_thread_id_.raw());
 }
 
 void WorkerInspectorController::Trace(Visitor* visitor) const {

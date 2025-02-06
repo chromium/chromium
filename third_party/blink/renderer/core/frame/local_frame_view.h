@@ -276,7 +276,6 @@ class CORE_EXPORT LocalFrameView final
   }
 
   bool GetIntrinsicSizingInfo(NaturalSizingInfo&) const override;
-  bool HasIntrinsicSizingInfo() const override;
 
   void Dispose() override;
   void PropagateFrameRects() override;

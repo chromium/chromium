@@ -25,6 +25,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> Tab zu Gruppe hinzugefügt</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
+<translation id="1909810060368225529">Hinweis: Änderungen an dieser geteilten Tabgruppe sind für alle sichtbar. Jeder kann Änderungen an deinen geteilten Tabgruppen vornehmen.</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab als Lesezeichen speichern}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs als Lesezeichen speichern}}</translation>
 <translation id="2118649612461486615">Händlerinfo</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deinen Inkognitotab findest du dort jedoch nicht.}other{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deine # Inkognitotabs findest du dort jedoch nicht.}}</translation>
@@ -126,11 +127,13 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="6381032505162537930">Hier werden deine Tabgruppen angezeigt</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Gruppierung des <ph name="TABS_COUNT_ONE" /> ausgewählten Tabs aufheben}other{Gruppierung der <ph name="TABS_COUNT_MANY" /> ausgewählten Tabs aufheben}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
+<translation id="6499296376514955580">Hinweis zu Änderungen an geteilten Tabgruppen, die geschlossen sind</translation>
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Nach 1 Tag}other{Nach <ph name="DAY_COUNT_MANY" /> Tagen}}</translation>
 <translation id="6549021453810473782">Händlerinfo anzeigen</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Tab nach links bewegen</translation>
+<translation id="6589356853295569750">Hinweis zu Änderungen an geteilten Tabgruppen, die ganz geöffnet sind</translation>
 <translation id="6590332670428149473">Aktionsmenü für die freigegebene Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit der Farbe <ph name="COLOR_NAME" /> öffnen.</translation>
 <translation id="6615455863669487791">Zeigen</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> Tab geändert}other{<ph name="MANY_CHANGED" /> Tabs geändert}}</translation>
@@ -157,6 +160,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab teilen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs teilen}}</translation>
 <translation id="7773714564112603605">Tab entfernen und Gruppe löschen</translation>
 <translation id="7792771145871471484">Vorschläge ansehen.</translation>
+<translation id="7792860826279960128">Hinweis zu Änderungen an geteilten Tabgruppen, die halb geöffnet sind</translation>
 <translation id="7825973332242257878">Tabgruppen</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab gruppieren}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs gruppieren}}</translation>
 <translation id="7853202427316060426">Aktivität</translation>

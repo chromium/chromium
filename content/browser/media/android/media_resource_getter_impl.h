@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/base/android/media_resource_getter.h"
-#include "media/base/android/media_url_interceptor.h"
 #include "net/base/auth.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/site_for_cookies.h"

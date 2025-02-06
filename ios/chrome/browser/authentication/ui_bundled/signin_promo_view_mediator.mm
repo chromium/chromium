@@ -781,6 +781,12 @@ id<SystemIdentity> GetDisplayedIdentity(
   if (self.signinPromoViewState == SigninPromoViewState::kNeverVisible) {
     self.signinPromoViewState = SigninPromoViewState::kUnused;
   }
+  signin_metrics::LogSignInOffered(
+      self.accessPoint,
+      self.displayedIdentity
+          ? signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
+          : signin_metrics::PromoAction::
+                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
   self.signinPromoViewVisible = YES;
   switch (self.signinPromoAction) {
     case SigninPromoAction::kReviewAccountSettings:

@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">Операциялық жүйелер</translation>
 <translation id="3080254622891793721">Кескін</translation>
 <translation id="3082007635241601060">Жекелендірілген жеңілдіктер қолжетімді болғанда, оларды табу үшін Google-ға себеттеріңізді қолдануға рұқсат етіңіз.</translation>
+<translation id="3086269988715347183">Бұрын <ph name="BLOCKED_URL" /> веб-сайтын мақұлдамағансыз.</translation>
 <translation id="3086579638707268289">Интернеттегі әрекетіңіз қадағаланып жатыр</translation>
 <translation id="3087734570205094154">Астына</translation>
 <translation id="3090667236485488075">Шыны</translation>
@@ -1233,10 +1234,12 @@
 <translation id="3194737229810486521"><ph name="URL" /> деректерді құрылғыңызда біржола сақтағысы келеді</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> серверіндегі <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Осы құрылғыны қашан белсенді пайдаланатыныңыз туралы білу үшін сұрай алады</translation>
+<translation id="3201482403106004262">Сауалнамаға қатысты қате пайда болды.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлеріне кіріп, синхрондалатын ақпаратты басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
 <translation id="3203025201812691413">URL бос болмауы керек</translation>
 <translation id="320323717674993345">Төлемнен бас тарту</translation>
 <translation id="3203366800380907218">Интернеттен</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> веб-сайтында ересектерге арналған контент болуы мүмкін.</translation>
 <translation id="3207960819495026254">Бетбелгі қойылған</translation>
 <translation id="3208701679386778924">Қосымша ChromeOS жаңартуларын жақсарта алуымыз үшін есеп жіберіңіз.</translation>
 <translation id="3209034400446768650">Бұл бет ақылы болуы мүмкін</translation>
@@ -2346,6 +2349,7 @@
 <translation id="5138227688689900538">Жию</translation>
 <translation id="5143309888746105072">Chromium сайттарды браузер пайдаланғаныңызды бақылайтын үшінші тарап cookie файлдарын қолданудан блоктайды.
             <ph name="NEW_LINE" />Сайт функциялары жұмыс істемесе, <ph name="START_LINK" />үшінші тарап cookie файлдарына уақытша рұқсат беріп көріңіз<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Бұл сайтқа <ph name="PERMISSION" /> пайдалануға рұқсат бердіңіз.</translation>
 <translation id="5145883236150621069">Қате коды саясат жауабында көрсетіледі</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> сайты үшін хабарландырулар бөгелді</translation>
 <translation id="514704532284964975"><ph name="URL" /> сайты телефоныңызбен түрткен NFC құрылғылары туралы ақпаратты көргісі және өзгерткісі келеді.</translation>
@@ -2970,6 +2974,7 @@
 <translation id="6254436959401408446">Бұл бетті ашу үшін жад жеткіліксіз</translation>
 <translation id="625463612687472648">Рұқсат беруді тоқтату</translation>
 <translation id="6259156558325130047">&amp;Қайта ретке келтіру әрекетін қайталау</translation>
+<translation id="6259282549512536479">Бұған дейін <ph name="BLOCKED_URL" /> веб-сайтын блоктағансыз.</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> бетбелгілері</translation>
 <translation id="6264376385120300461">Сонда да жүктеп алу</translation>
 <translation id="6264485186158353794">Қауіпсіз аймаққа қайту</translation>
@@ -4401,6 +4406,7 @@
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> аккаунтыңызға кіру мүмкіндігін жоғалтып алуыңыз немесе жеке мәліметтеріңізді беріп қоюыңыз мүмкін. Chromium құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> сіздің браузеріңізде Chrome Enterprise Connectors функциясын қосып қойды. Бұл коннекторлар кейбір деректеріңізді пайдалануы мүмкін.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> параметрлері</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
 <translation id="8800034312320686233">Сайт жұмыс істемей ме?</translation>
 <translation id="8805819170075074995">"<ph name="LANGUAGE_ID" />" тізім жазбасы: жазба еленбейді, себебі ол SpellcheckLanguage саясатына енгізілген.</translation>
@@ -4620,6 +4626,7 @@
 <translation id="9192361865877479444">Металл (күңгірт)</translation>
 <translation id="9192947025498305328">Таза сұлулық</translation>
 <translation id="9199905725844810519">Басып шығаруға тыйым салынған</translation>
+<translation id="9201904868909900493">Сауалнама ашылып жатыр…</translation>
 <translation id="9204089334327209740">Жүктеп салынғаннан кейін файлдарды <ph name="CLOUD_PROVIDER" /> ішінде өзгертуге болады. Себеттегі файлдарды қоса алғанда, жергілікті жад автоматты түрде жойылады.</translation>
 <translation id="9205078245616868884">Деректер синхрондаудың құпия фразасымен шифрланған. Синхрондауды бастау үшін оны енгізіңіз.</translation>
 <translation id="920643408853370361">Туристік сақтандыру</translation>

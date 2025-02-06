@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/cached_color.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_recording_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
@@ -126,8 +127,13 @@ template <typename T>
 class NotShared;
 class V8CanvasFontStretch;
 class V8CanvasTextRendering;
+class V8CanvasTextAlign;
+class V8CanvasTextBaseline;
+class V8CanvasDirection;
+class V8CanvasFontKerning;
+class V8CanvasFontVariantCaps;
 
-class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
+class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
  public:
   static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
 
@@ -168,15 +174,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   double lineDashOffset() const;
   void setLineDashOffset(double);
-
-  virtual double shadowOffsetX() const;
-  virtual void setShadowOffsetX(double);
-
-  virtual double shadowOffsetY() const;
-  virtual void setShadowOffsetY(double);
-
-  virtual double shadowBlur() const;
-  virtual void setShadowBlur(double);
 
   String shadowColor() const;
   void setShadowColor(const String&);
@@ -445,14 +442,14 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   void RestoreMatrixClipStack(cc::PaintCanvas*) const;
 
-  String direction() const;
-  void setDirection(const String&);
+  V8CanvasDirection direction() const;
+  void setDirection(const V8CanvasDirection);
 
-  String textAlign() const;
-  void setTextAlign(const String&);
+  V8CanvasTextAlign textAlign() const;
+  void setTextAlign(const V8CanvasTextAlign);
 
-  String textBaseline() const;
-  void setTextBaseline(const String&);
+  V8CanvasTextBaseline textBaseline() const;
+  void setTextBaseline(const V8CanvasTextBaseline);
 
   String letterSpacing() const;
   void setLetterSpacing(const String&);
@@ -463,14 +460,14 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   V8CanvasTextRendering textRendering() const;
   void setTextRendering(const V8CanvasTextRendering&);
 
-  String fontKerning() const;
-  void setFontKerning(const String&);
+  V8CanvasFontKerning fontKerning() const;
+  void setFontKerning(const V8CanvasFontKerning);
 
   V8CanvasFontStretch fontStretch() const;
   void setFontStretch(const V8CanvasFontStretch&);
 
-  String fontVariantCaps() const;
-  void setFontVariantCaps(const String&);
+  V8CanvasFontVariantCaps fontVariantCaps() const;
+  void setFontVariantCaps(const V8CanvasFontVariantCaps&);
 
   String font() const;
   void setFont(const String& new_font);
@@ -598,10 +595,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual bool ResolveFont(const String& new_font) = 0;
   virtual bool CurrentFontResolvedAndUpToDate() const;
 
-  ALWAYS_INLINE CanvasRenderingContext2DState& GetState() const {
-    return *state_stack_.back();
-  }
-
   bool ComputeDirtyRect(const gfx::RectF& local_bounds, SkIRect*);
   bool ComputeDirtyRect(const gfx::RectF& local_bounds,
                         const SkIRect& transformed_clip_bounds,
@@ -640,7 +633,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                      CanvasRenderingContext2DState::ImageType,
                      BaseRenderingContext2D::OverdrawOp overdraw_op);
 
-  HeapVector<Member<CanvasRenderingContext2DState>> state_stack_;
   unsigned max_state_stack_depth_ = 1;
   // Counts how many states have been pushed with BeginLayer.
   int layer_count_ = 0;
@@ -653,23 +645,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual void TryRestoreContextEvent(TimerBase*) {}
 
   static const char kDefaultFont[];
-  static const char kInheritDirectionString[];
-  static const char kRtlDirectionString[];
-  static const char kLtrDirectionString[];
-  static const char kAutoKerningString[];
-  static const char kNormalKerningString[];
-  static const char kNoneKerningString[];
-  static const char kNormalVariantString[];
-  static const char kSmallCapsVariantString[];
-  static const char kAllSmallCapsVariantString[];
-  static const char kPetiteVariantString[];
-  static const char kAllPetiteVariantString[];
-  static const char kUnicaseVariantString[];
-  static const char kTitlingCapsVariantString[];
-  static const char kAutoRendering[];
-  static const char kOptimizeSpeedRendering[];
-  static const char kOptimizeLegibilityRendering[];
-  static const char kGeometricPrecisionRendering[];
   virtual void DisableAcceleration() {}
 
   // Override to prematurely disable acceleration because of a readback.
@@ -715,8 +690,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                         double x,
                         double y,
                         CanvasRenderingContext2DState::PaintType paint_type,
-                        TextAlign align,
-                        TextBaseline baseline,
+                        V8CanvasTextAlign align,
+                        V8CanvasTextBaseline baseline,
                         unsigned run_start,
                         unsigned run_end,
                         double* max_width = nullptr,

@@ -25,12 +25,20 @@ namespace tracing {
 
 class ActiveProcessesTest : public testing::Test {
  protected:
-  using PidAndTid = std::pair<base::ProcessId, base::PlatformThreadId>;
+  // ActiveProcesses explicitly uses uint32_t for pid/tid, rather than the
+  // base typedefs for process/thread id. Assert that these match in size.
+  using ProcessId = uint32_t;
+  using ThreadId = uint32_t;
+  static_assert(sizeof(ProcessId) == sizeof(base::ProcessId));
+  static_assert(sizeof(ThreadId) ==
+                sizeof(base::PlatformThreadId::UnderlyingType));
+
+  using PidAndTid = std::pair<ProcessId, ThreadId>;
 
   // The pid and tid of the client. Named "base" because the offsets below are
   // applied to compute distinct pids and tids for other processes.
-  static constexpr uint32_t kBasePid = 0x1000;
-  static constexpr uint32_t kBaseTid = 0x1000;
+  static constexpr ProcessId kBasePid = 0x1000;
+  static constexpr ThreadId kBaseTid = 0x1000;
 
   // Offsets from the bases above for pids and tids for other processes.
   static constexpr int kChildOffset = 100;
@@ -101,26 +109,27 @@ class ActiveProcessesTest : public testing::Test {
   // Adds a child process of the client -- same image file name, parent pid
   // matches the client.
   PidAndTid AddChild() {
-    const base::ProcessId child_pid = kBasePid + kChildOffset;
-    const base::PlatformThreadId child_tid = kBaseTid + kChildOffset;
+    const ProcessId child_pid = kBasePid + kChildOffset;
+    const ThreadId child_tid = kBaseTid + kChildOffset;
     active_processes().AddProcess(
         child_pid, kBasePid, /*session_id=*/4, random_user_sid().Clone(),
         client_image_file_name(), client_command_line());
-    active_processes().AddThread(child_pid, child_tid, /*thread_name=*/{});
+    active_processes().AddThread(child_pid, child_tid,
+                                 /*thread_name=*/{});
     return {child_pid, child_tid};
   }
 
   // Adds a process unrelated to the client and returns its pid and a tid.
   // `unrelated_pid` may be set to force a specific pid to be used.
-  PidAndTid AddUnrelated(base::ProcessId unrelated_pid = kBasePid +
-                                                         kUnrelatedOffset) {
+  PidAndTid AddUnrelated(ProcessId unrelated_pid = kBasePid +
+                                                   kUnrelatedOffset) {
     base::CommandLine unrelated_command_line(base::CommandLine::NO_PROGRAM);
     unrelated_command_line.ParseFromString(client_command_line());
     unrelated_command_line.SetProgram(
         unrelated_command_line.GetProgram().DirName().DirName().Append(
             FILE_PATH_LITERAL("unrelated.exe")));
 
-    const base::PlatformThreadId unrelated_tid = kBaseTid + kUnrelatedOffset;
+    const ThreadId unrelated_tid = kBaseTid + kUnrelatedOffset;
     active_processes().AddProcess(
         unrelated_pid, /*parent_pid=*/0, /*session_id=*/4,
         random_user_sid().Clone(), "unrelated.exe",
@@ -140,9 +149,8 @@ class ActiveProcessesTest : public testing::Test {
             .Append(FILE_PATH_LITERAL("1.2.3"))
             .Append(FILE_PATH_LITERAL("independent.exe")));
 
-    const base::ProcessId independent_pid = kBasePid + kIndependentOffset;
-    const base::PlatformThreadId independent_tid =
-        kBaseTid + kIndependentOffset;
+    const ProcessId independent_pid = kBasePid + kIndependentOffset;
+    const ThreadId independent_tid = kBaseTid + kIndependentOffset;
     active_processes().AddProcess(
         independent_pid, /*parent_pid=*/0, /*session_id=*/4,
         random_user_sid().Clone(), "independent.exe",
@@ -336,8 +344,8 @@ TEST_F(ActiveProcessesTest, ClientOtherUser) {
             ActiveProcesses::Category::kClient);
 
   // Add another instance of the client running as another user.
-  const base::ProcessId other_user_pid = client_pid + 1;
-  const base::PlatformThreadId other_user_tid = client_tid + 1;
+  const ProcessId other_user_pid = client_pid + 1;
+  const ThreadId other_user_tid = client_tid + 1;
   active_processes().AddProcess(
       other_user_pid, /*parent_pid=*/0, /*session_id=*/4,
       base::win::Sid::GenerateRandomSid(), client_image_file_name(),
@@ -359,8 +367,8 @@ TEST_F(ActiveProcessesTest, ClientOtherSession) {
             ActiveProcesses::Category::kClient);
 
   // Add another instance of the client running in a different session
-  const base::ProcessId other_session_pid = client_pid + 1;
-  const base::PlatformThreadId other_session_tid = client_tid + 1;
+  const ProcessId other_session_pid = client_pid + 1;
+  const ThreadId other_session_tid = client_tid + 1;
   active_processes().AddProcess(other_session_pid, /*parent_pid=*/0,
                                 /*session_id=*/5, random_user_sid().Clone(),
                                 client_image_file_name(),
@@ -377,8 +385,8 @@ TEST_F(ActiveProcessesTest, ClientOtherSession) {
 // client and that other processes belonging to the application are not.
 TEST_F(ActiveProcessesTest, ExternalClient) {
   // Add a client that does not reside in the application's directory.
-  const base::ProcessId client_pid = kBasePid;
-  const base::PlatformThreadId client_tid = kBaseTid;
+  const ProcessId client_pid = kBasePid;
+  const ThreadId client_tid = kBaseTid;
   active_processes().AddProcess(
       client_pid, /*parent_pid=*/0, /*session_id=*/4, random_user_sid().Clone(),
       client_image_file_name(), external_client_command_line());
@@ -388,8 +396,8 @@ TEST_F(ActiveProcessesTest, ExternalClient) {
 
   // If it launches a child of the application, those children are considered
   // "other" with respect to the client.
-  const base::ProcessId child_pid = kBasePid + kChildOffset;
-  const base::PlatformThreadId child_tid = kBaseTid + kChildOffset;
+  const ProcessId child_pid = kBasePid + kChildOffset;
+  const ThreadId child_tid = kBaseTid + kChildOffset;
   active_processes().AddProcess(
       child_pid, client_pid, /*session_id=*/4, random_user_sid().Clone(),
       client_image_file_name(), client_command_line());
@@ -401,8 +409,8 @@ TEST_F(ActiveProcessesTest, ExternalClient) {
 // Tests that a system process is categorized as "other".
 TEST_F(ActiveProcessesTest, SystemProcess) {
   // Any process running in session 0xFFFFFFFF is a system process.
-  const base::ProcessId system_pid = kBasePid + kSystemOffset;
-  const base::PlatformThreadId system_tid = kBaseTid + kSystemOffset;
+  const ProcessId system_pid = kBasePid + kSystemOffset;
+  const ThreadId system_tid = kBaseTid + kSystemOffset;
   active_processes().AddProcess(system_pid, /*parent_pid=*/0,
                                 /*session_id=*/0xFFFFFFFF,
                                 base::win::Sid::GenerateRandomSid(), "system",

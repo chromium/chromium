@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
+#include "third_party/blink/renderer/core/css/css_superellipse_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -61,6 +63,7 @@
 #include "third_party/blink/renderer/core/style/position_area.h"
 #include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
+#include "third_party/blink/renderer/core/style/superellipse.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_rect_element.h"
 #include "third_party/blink/renderer/core/svg_element_type_helpers.h"
@@ -69,6 +72,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/perspective_transform_operation.h"
@@ -2816,9 +2820,20 @@ CSSValue* ComputedStyleUtils::ValueForBorderRadiusCorner(
       CSSValuePair::kDropIdenticalValues);
 }
 
-CSSValue* ComputedStyleUtils::ValueForCornerShape(const Superellipse&) {
-  // TODO(crbug.com/393989633) serialize computed corner-shape values.
-  return CSSIdentifierValue::Create(CSSValueID::kRound);
+CSSValue* ComputedStyleUtils::ValueForCornerShape(
+    const Superellipse& superellipse) {
+  if (superellipse == Superellipse::Round()) {
+    return CSSIdentifierValue::Create(CSSValueID::kRound);
+  }
+  if (superellipse == Superellipse::Scoop()) {
+    return CSSIdentifierValue::Create(CSSValueID::kScoop);
+  }
+  if (superellipse == Superellipse::Straight()) {
+    return CSSIdentifierValue::Create(CSSValueID::kStraight);
+  }
+  return MakeGarbageCollected<cssvalue::CSSSuperellipseValue>(
+      *CSSNumericLiteralValue::Create(superellipse.Exponent(),
+                                      CSSPrimitiveValue::UnitType::kNumber));
 }
 
 CSSFunctionValue* ComputedStyleUtils::ValueForTransform(

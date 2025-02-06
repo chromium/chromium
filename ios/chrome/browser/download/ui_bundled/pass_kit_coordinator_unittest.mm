@@ -8,6 +8,7 @@
 
 #import <memory>
 
+#import "base/ios/ios_util.h"
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
@@ -82,13 +83,7 @@ class PassKitCoordinatorTest : public PlatformTest {
 
 // Tests that PassKitCoordinator presents PKAddPassesViewController for the
 // valid PKPass object.
-// TODO(crbug.com/391920782): test fails on iOS18.2 Physical device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_ValidPassKitObject ValidPassKitObject
-#else
-#define MAYBE_ValidPassKitObject DISABLED_ValidPassKitObject
-#endif
-TEST_F(PassKitCoordinatorTest, MAYBE_ValidPassKitObject) {
+TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
   std::string data = testing::GetTestFileContents(testing::kPkPassFilePath);
   NSData* nsdata = [NSData dataWithBytes:data.c_str() length:data.size()];
   PKPass* pass = [[PKPass alloc] initWithData:nsdata error:nil];
@@ -97,7 +92,15 @@ TEST_F(PassKitCoordinatorTest, MAYBE_ValidPassKitObject) {
   coordinator_.passes = @[ pass ];
   [coordinator_ start];
 
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  // Wallet app is not supported on iPads simulator or on iPad device before
+  // iOS18.2.
+#if TARGET_IPHONE_SIMULATOR
+  const bool simulator = true;
+#else
+  const bool simulator = false;
+#endif
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+      (simulator || !base::ios::IsRunningOnOrLater(18, 2, 0))) {
     // Wallet app is not supported on iPads.
   } else {
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{

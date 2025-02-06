@@ -93,6 +93,25 @@ TEST_F(SessionTest, InvalidTestUrl) {
   EXPECT_FALSE(Session::CreateIfValid(params, kTestUrlForWrongETLD));
 }
 
+TEST_F(SessionTest, NonSecureUrl) {
+  // HTTP is not allowed for the refresh URL.
+  {
+    auto params = CreateValidParams();
+    params.refresh_url = "http://example.test/registration";
+    EXPECT_FALSE(
+        Session::CreateIfValid(params, GURL("http://example.test/index.html")));
+  }
+
+  // But localhost is okay.
+  {
+    auto params = CreateValidParams();
+    params.refresh_url = "http://localhost:8080/registration";
+    params.scope.origin = "localhost";
+    EXPECT_TRUE(Session::CreateIfValid(
+        params, GURL("http://localhost:8080/index.html")));
+  }
+}
+
 TEST_F(SessionTest, ToFromProto) {
   std::unique_ptr<Session> session =
       Session::CreateIfValid(CreateValidParams(), kTestUrl);

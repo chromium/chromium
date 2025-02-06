@@ -1703,6 +1703,7 @@
 <translation id="6637729079642709226">تغيير الوقت</translation>
 <translation id="6641720045729354415">إيقاف/تفعيل ميزة "النسخ النصي التلقائي". <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">عكس نظام الترتيب حسب الاسم</translation>
+<translation id="664793810957802384">عناصر المجموعة المقترَحة</translation>
 <translation id="6649641931981131786">عليك تعديل الكاميرا لتظهر صورتك في منتصف الشاشة.</translation>
 <translation id="6650072551060208490">يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>
 <translation id="6650742588569439432">تعذَّر تحميل العناصر.</translation>
@@ -2381,6 +2382,7 @@
 <translation id="8956420987536947088">يمكنك فتح النوافذ والتطبيقات السابقة</translation>
 <translation id="8959380109429710384">‏لقد ضغطت على اختصار لوحة المفاتيح الخاص بـ "المكبِّر بملء الشاشة". اضغط على Ctrl ‏+ Alt ‏+ مفاتيح الأسهم للتنقّل داخل الشاشة أثناء تكبيرها.</translation>
 <translation id="8964525410783593407">ساعة واحدة</translation>
+<translation id="8970887620466824814">حدث خطأ.</translation>
 <translation id="8973885907461690937">التركيز على رمز القائمة</translation>
 <translation id="8980862970816311842">نقل رمز تطبيق داخل مجلد في شبكة التطبيقات أو خارجه</translation>
 <translation id="8982906748181120328">مشاركة عن قرب</translation>

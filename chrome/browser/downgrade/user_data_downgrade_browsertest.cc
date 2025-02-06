@@ -165,7 +165,7 @@ class UserDataDowngradeBrowserCopyAndCleanTest
               mock_relaunch_callback_->Get());
 
       // Expect that browser startup short-circuits into a relaunch.
-      set_expected_exit_code(chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH);
+      set_expected_exit_code(CHROME_RESULT_CODE_DOWNGRADE_AND_RELAUNCH);
 
       // Prepare to check histograms during the restart.
       histogram_tester_ = std::make_unique<base::HistogramTester>();

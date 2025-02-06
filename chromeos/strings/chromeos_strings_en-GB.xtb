@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Invalid PIN.</translation>
 <translation id="382043424867370667">Sunset wallpaper</translation>
 <translation id="3824259034819781947">Attach files</translation>
-<translation id="3836587210832263413">Only turn on extensions that you trust</translation>
 <translation id="3838338534323494292">New password</translation>
 <translation id="3845880861638660475">Press <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> to close the dialogue.</translation>
 <translation id="3848280697030027394">keyboard darken</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Manage your printers in printer settings</translation>
 <translation id="6292095526077353682">While charging, show screen saver for</translation>
 <translation id="629550705077076970">keyboard dimming</translation>
-<translation id="6301193653204230066">Safety reset turns off Chrome browser extensions and resets network and other settings to safe defaults.
-          Your tabs, files, cookies and history won't be changed.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> test has been cancelled</translation>
 <translation id="631063167932043783">Explore app</translation>
 <translation id="6318437367327684789">forever</translation>
@@ -1774,6 +1771,8 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="951780398843003443">Compare voices throughout the recording so that the transcript reflects what each speaker said and when</translation>
 <translation id="952992212772159698">Not activated</translation>
 <translation id="95718197892796296">clay</translation>
+<translation id="959792926760890141">Safety reset turns off Chrome browser extensions and resets network and other settings to safe defaults.
+          Your default search engine will be reset, but your tabs, files, cookies and history won't be changed.</translation>
 <translation id="960719561871045870">Operator code</translation>
 <translation id="965918541715156800">yellow and teal</translation>
 <translation id="966787709310836684">menu</translation>

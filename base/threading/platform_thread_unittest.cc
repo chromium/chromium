@@ -629,7 +629,7 @@ INSTANTIATE_TEST_SUITE_P(
 namespace {
 
 bool IsTidCacheCorrect() {
-  return PlatformThread::CurrentId() == syscall(__NR_gettid);
+  return PlatformThread::CurrentId().raw() == syscall(__NR_gettid);
 }
 
 void* CheckTidCacheCorrectWrapper(void*) {

@@ -330,6 +330,7 @@
 <translation id="569897634095159764">Der kan ikke oprettes forbindelse til internettet. Proxyserveren kræver godkendelse.</translation>
 <translation id="5761096224651992291">Du har ikke besøgt websitet for nylig. Chromium har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /></translation>
 <translation id="5768371961535086509">Chromium frigør hukommelse fra inaktive faner. Dette tildeler aktive faner og andre apps flere computerressourcer og gør Chromium hurtig. Dine inaktive faner bliver automatisk aktive igen, når du vender tilbage til dem. <ph name="BEGIN_LINK" />Få flere oplysninger om Hukommelsessparefunktion<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="SETTINGS_LINK" /> Chromium-dataene på din konto.</translation>
 <translation id="5800158606660203929">Tilpas og styr Chromium. Angiv Chromium som din standardbrowser.</translation>
 <translation id="5809516625706423866">Der kan ikke oprettes forbindelse til internettet. HTTP 401 (uautoriseret). Tjek din proxykonfiguration.</translation>
 <translation id="5821520528363214608">For at bruge og gemme Chromium-data på din Google-konto skal du opdatere Chromium</translation>

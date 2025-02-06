@@ -195,11 +195,14 @@ class AddressComponent {
   // assigned, an empty string is returned.
   const std::u16string& GetValue() const;
 
-  // Formats `value` to be used for comparison.
-  // In the default implementation this is `value` normalized but this function
-  // can be overridden in subclasses to apply further operations on `value`.
-  // `other` represents the component we are comparing with and is required
-  // for consistent rewriting rules.
+  // Returns the normalized value of this component for comparison. `other` is
+  // the component being compared against and is required for consistent
+  // application of rewriting rules.
+  std::u16string GetValueForComparison(const AddressComponent& other) const;
+
+  // Returns a normalized version of `value` for comparison. `other` is the
+  // component being compared against and is required for consistent application
+  // of rewriting rules.
   virtual std::u16string GetValueForComparison(
       const std::u16string& value,
       const AddressComponent& other) const;
@@ -458,20 +461,6 @@ class AddressComponent {
 
   // Function to be called post assign to do sanitization.
   virtual void PostAssignSanitization() {}
-
-  // Returns a normalized value for comparison.
-  // In the default implementation, this converts the value to lower case and
-  // removes white spaces. This function may be reimplemented to perform
-  // different normalization operations.
-  virtual std::u16string GetNormalizedValue() const;
-
-  // Returns a value used for comparison.
-  // In the default implementation this is just the normalized value but this
-  // function can be overridden in subclasses to apply further operations on
-  // the normalized value.
-  // |other| represents the component we are comparing with and is required
-  // for consistent rewriting rules.
-  std::u16string GetValueForComparison(const AddressComponent& other) const;
 
   // Returns true if the merging of two token identical values should give
   // precedence to the newer value.

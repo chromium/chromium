@@ -479,6 +479,8 @@ void LogPriceDropMetrics(web::WebState* web_state) {
                      selectedItemIdentifier:nil];
   }
 
+  const WebStateList::ScopedBatchOperation batch =
+      groupWebStateList->StartBatchOperation();
   groupWebStateList->DeleteGroup(group);
 }
 

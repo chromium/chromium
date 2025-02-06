@@ -71,7 +71,8 @@ void TraceEventImpl::AddTraceEventWithThreadIdAndTimestamp(
   trace_event_internal::AddTraceEventWithThreadIdAndTimestamp(
       phase, static_cast<const unsigned char*>(category_enabled), name,
       trace_event_internal::kGlobalScope, id, trace_event_internal::kNoId,
-      thread_id, base::TimeTicks::FromInternalValue(timestamp), &args, flags);
+      base::PlatformThreadId(thread_id),
+      base::TimeTicks::FromInternalValue(timestamp), &args, flags);
 }
 
 // static

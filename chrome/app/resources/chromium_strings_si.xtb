@@ -331,6 +331,7 @@
 <translation id="569897634095159764">අන්තර්ජාලය වෙත සම්බන්ධ වීමට නොහැකි වේ. ප්‍රොක්සි සේවාදායකයට සත්‍යාපනය අවශ්‍යයි.</translation>
 <translation id="5761096224651992291">ඔබ මෑත පැමිණ නැත. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ඉවත් කළා</translation>
 <translation id="5768371961535086509">Chromium අක්‍රිය පටිති වෙතින් මතකය නිදහස් කරයි. මෙය සක්‍රිය පටිති සහ අනෙකුත් යෙදුම්වලට වැඩි පරිගණක සම්පත් ලබා දෙන අතර Chromium වේගවත්ව තබා ගනී. ඔබ ඒවා වෙත ආපසු යන විට ඔබේ අක්‍රිය පටිති ස්වයංක්‍රීයව නැවත සක්‍රිය වේ. <ph name="BEGIN_LINK" />මතක සුරකිනය පිළිබඳ තව දැන ගන්න<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම්, ඔබේ ගිණුමේ ඇති Chromium දත්ත <ph name="SETTINGS_LINK" /></translation>
 <translation id="5800158606660203929">Chromium අභිරුචි කිරීම සහ පාලනය. Chromium ඔබේ පෙරනිමිය ලෙස සකසන්න.</translation>
 <translation id="5809516625706423866">අන්තර්ජාලය වෙත සම්බන්ධ වීමට නොහැකි වේ. HTTP 401 අනවසරයි. ඔබේ ප්‍රොක්සි වින්‍යාසය පරීක්ෂා කරන්න.</translation>
 <translation id="5821520528363214608">ඔබේ Google ගිණුමේ Chromium දත්ත භාවිත කිරීමට සහ සුරැකීමට, Chromium යාවත්කාලීන කරන්න</translation>

@@ -23,9 +23,14 @@ typedef NS_ENUM(NSInteger, TableViewAccountMode) {
 // Item for account avatar, used everywhere an account cell is shown.
 @interface TableViewAccountItem : TableViewItem
 
+// Those properties should be set before the cell is displayed because
+// updates to these will not be reflected after it is shown.
 @property(nonatomic, strong) UIImage* image;
 @property(nonatomic, copy) NSString* text;
 @property(nonatomic, copy) NSString* detailText;
+// If this is set to true, an enterprise building icon will be shown on the
+// cell.
+@property(nonatomic, assign) BOOL managed;
 
 // Set to YES to display an error icon at the end of the cell content with an
 // accessibility error message.
@@ -60,6 +65,9 @@ typedef NS_ENUM(NSInteger, TableViewAccountMode) {
 
 // Same as `setStatusView`, except the argument is an image.
 - (void)setStatusViewWithImage:(UIImage*)statusImage;
+
+// Shows or hides the enterprise building icon.
+- (void)showManagementIcon:(BOOL)show;
 
 @end
 

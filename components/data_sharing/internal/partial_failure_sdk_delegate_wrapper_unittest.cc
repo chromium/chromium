@@ -116,6 +116,34 @@ TEST_F(PartialFailureSDKDelegateWrapperTest, ShouldHandlePartialFailure) {
             data_sharing_pb::FailedReadGroupResult::GROUP_NOT_FOUND);
 }
 
+// Regression test for crbug.com/391629890: the wrapper didn't cleanup results
+// from previous calls to ReadGroups(), leading to incorrect results for
+// subsequent calls (such as returning groups that were not requested).
+TEST_F(PartialFailureSDKDelegateWrapperTest, ShouldHandleSubsequentReadGroups) {
+  const std::string display_name1 = "group_display_name_1";
+  const GroupId group_id1 =
+      actual_sdk_delegate().AddGroupAndReturnId(display_name1);
+
+  base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>
+      read_groups_result1 =
+          ReadGroupsViaWrapper(CreateReadGroupsParams({group_id1}));
+  ASSERT_TRUE(read_groups_result1.has_value());
+  ASSERT_EQ(read_groups_result1->group_data_size(), 1);
+  ASSERT_EQ(read_groups_result1->group_data(0).display_name(), display_name1);
+
+  const std::string display_name2 = "group_display_name_2";
+  const GroupId group_id2 =
+      actual_sdk_delegate().AddGroupAndReturnId(display_name2);
+
+  base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>
+      read_groups_result2 =
+          ReadGroupsViaWrapper(CreateReadGroupsParams({group_id2}));
+  ASSERT_TRUE(read_groups_result2.has_value());
+  // Actual expectation: first group is not returned.
+  ASSERT_EQ(read_groups_result2->group_data_size(), 1);
+  EXPECT_EQ(read_groups_result2->group_data(0).display_name(), display_name2);
+}
+
 // TODO(crbug.com/377914193): add tests for full and partial transient failures
 // once FakeDataSharingSDKDelegate supports faking them.
 

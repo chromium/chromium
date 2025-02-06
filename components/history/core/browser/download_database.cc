@@ -75,11 +75,10 @@ DownloadDatabase::DownloadDatabase(
     DownloadInterruptReason download_interrupt_reason_none,
     DownloadInterruptReason download_interrupt_reason_crash)
     : owning_thread_set_(false),
-      owning_thread_(0),
+      owning_thread_(base::kInvalidThreadId),
       in_progress_entry_cleanup_completed_(false),
       download_interrupt_reason_none_(download_interrupt_reason_none),
-      download_interrupt_reason_crash_(download_interrupt_reason_crash) {
-}
+      download_interrupt_reason_crash_(download_interrupt_reason_crash) {}
 
 DownloadDatabase::~DownloadDatabase() {
 }

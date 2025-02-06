@@ -47,9 +47,6 @@ class LayoutImageResourceStyleImage final : public LayoutImageResource {
   scoped_refptr<Image> GetImage(const gfx::SizeF&) const override;
   bool ErrorOccurred() const override { return style_image_->ErrorOccurred(); }
 
-  bool HasIntrinsicSize() const override {
-    return style_image_->HasIntrinsicSize();
-  }
   NaturalSizingInfo GetNaturalDimensions(float multiplier) const override;
   RespectImageOrientationEnum ImageOrientation() const override;
   WrappedImagePtr ImagePtr() const override { return style_image_->Data(); }

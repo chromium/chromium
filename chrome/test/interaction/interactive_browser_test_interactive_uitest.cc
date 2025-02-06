@@ -76,13 +76,41 @@ class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
-                       TestEventTypesAndMouseMoveClick) {
+                       PressButtonAndMouseMoveClick) {
+  RelativePositionSpecifier pos = CenterPoint();
 #if BUILDFLAG(IS_WIN)
   if (base::win::OSInfo::GetInstance()->version() < base::win::Version::WIN11) {
-    GTEST_SKIP()
-        << "TODO(https://crbug.com/392854216): Test is flaky on Win 10 "
-           "builder, so temporarily disable until a fix can be found. More "
-           "info available at the bug link above.";
+    // Handler for http://crbug.com/392854216 (menu may overlap button).
+    pos = base::BindOnce([](ui::TrackedElement* el) {
+      gfx::Rect bounds = el->GetScreenBounds();
+      auto* const menu_item =
+          ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+              AppMenuModel::kMoreToolsMenuItem);
+      const gfx::Rect widget_bounds =
+          menu_item->AsA<views::TrackedElementViews>()
+              ->view()
+              ->GetWidget()
+              ->GetWindowBoundsInScreen();
+
+      // Create a rectangle where all points are strictly inside the original
+      // bounds.
+      bounds.Inset(gfx::Insets::TLBR(1, 1, 2, 2));
+
+      // Test points around the rectangle to find one that does not intersect
+      // the menu widget.
+      for (const auto& point :
+           {bounds.CenterPoint(), bounds.bottom_center(), bounds.left_center(),
+            bounds.right_center(), bounds.origin(), bounds.top_right(),
+            bounds.bottom_right(), bounds.bottom_left()}) {
+        if (!widget_bounds.Contains(point)) {
+          return point;
+        }
+      }
+
+      NOTREACHED() << "Menu widget ()" << widget_bounds.ToString()
+                   << ") significantly overlaps menu button ("
+                   << bounds.ToString() << ") cannot target button.";
+    });
   }
 #endif
 
@@ -91,12 +119,11 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       MoveMouseTo(kTabStripElementId),
       // Simulate press of the menu button and ensure the button activates and
       // the menu appears.
-      Do(base::BindOnce([]() { LOG(INFO) << "In second action."; })),
       PressButton(kToolbarAppMenuButtonElementId),
       WaitForActivate(kToolbarAppMenuButtonElementId),
       WaitForShow(AppMenuModel::kMoreToolsMenuItem),
       // Move the mouse to the button and click it. This will hide the menu.
-      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
+      MoveMouseTo(kToolbarAppMenuButtonElementId, std::move(pos)), ClickMouse(),
       WaitForHide(AppMenuModel::kMoreToolsMenuItem));
 }
 

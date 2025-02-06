@@ -23,7 +23,7 @@ final class SyncTestTabGroupHelpers {
     @CalledByNative
     private static Token createGroupFromTab(Tab tab) {
         TabGroupModelFilter tabGroupModelFilter = TabModelUtils.getTabGroupModelFilterByTab(tab);
-        tabGroupModelFilter.createSingleTabGroup(tab, false);
+        tabGroupModelFilter.createSingleTabGroup(tab);
 
         return tab.getTabGroupId();
     }

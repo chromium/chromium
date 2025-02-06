@@ -49,9 +49,6 @@ class MEDIA_EXPORT MediaPlayerBridge {
     // Returns a pointer to the MediaResourceGetter object.
     virtual MediaResourceGetter* GetMediaResourceGetter() = 0;
 
-    // Returns a pointer to the MediaUrlInterceptor object or null.
-    virtual MediaUrlInterceptor* GetMediaUrlInterceptor() = 0;
-
     // Called when media duration is first detected or changes.
     virtual void OnMediaDurationChanged(base::TimeDelta duration) = 0;
 

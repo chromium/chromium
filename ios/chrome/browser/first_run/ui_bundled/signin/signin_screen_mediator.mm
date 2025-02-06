@@ -16,6 +16,7 @@
 #import "components/web_resource/web_resource_pref_names.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -351,10 +352,13 @@ enum class SigninScreenState {
   } else {
     UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
         selectedIdentity, IdentityAvatarSize::Regular);
+
     [self.consumer setSelectedIdentityUserName:selectedIdentity.userFullName
                                          email:selectedIdentity.userEmail
                                      givenName:selectedIdentity.userGivenName
-                                        avatar:avatar];
+                                        avatar:avatar
+                                       managed:[self isIdentityKnownToBeManaged:
+                                                         selectedIdentity]];
   }
 }
 
@@ -369,6 +373,27 @@ enum class SigninScreenState {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateConsumerIdentity];
   }
+}
+
+// Returns true if `identity` is known to be managed.
+// Returns false if the identity is known not to be managed or if the management
+// status is unknown. If the management status is unknown, it is fetched by
+// calling `FetchManagedStatusForIdentity`. `identityUpdated:` will be called
+// asynchronously when the management status if retrieved and the identity is
+// managed.
+- (BOOL)isIdentityKnownToBeManaged:(id<SystemIdentity>)identity {
+  if (std::optional<BOOL> managed = IsIdentityManaged(identity);
+      managed.has_value()) {
+    return managed.value();
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  FetchManagedStatusForIdentity(identity, base::BindOnce(^(bool managed) {
+                                  if (managed) {
+                                    [weakSelf identityUpdated:identity];
+                                  }
+                                }));
+  return NO;
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver
@@ -414,5 +439,4 @@ enum class SigninScreenState {
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   [self handleIdentityUpdated:identity];
 }
-
 @end

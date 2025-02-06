@@ -9,6 +9,7 @@
 #include "base/strings/escape.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
@@ -76,6 +77,8 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
           base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
   GURL refresh_endpoint = url.Resolve(unescaped_refresh_url);
   if (!refresh_endpoint.is_valid() ||
+      (!refresh_endpoint.SchemeIsCryptographic() &&
+       !IsLocalhost(refresh_endpoint)) ||
       net::SchemefulSite(refresh_endpoint) != net::SchemefulSite(url)) {
     return nullptr;
   }

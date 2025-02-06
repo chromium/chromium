@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstddef>
 #include <initializer_list>
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_shape_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
+#include "third_party/blink/renderer/core/css/css_superellipse_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
@@ -5088,7 +5090,36 @@ CSSValue* ParseBorderRadiusCorner(CSSParserTokenStream& stream,
 
 const CSSValue* ParseCornerShape(CSSParserTokenStream& stream,
                                  const CSSParserContext& context) {
-  return ConsumeIdent<CSSValueID::kRound, CSSValueID::kScoop>(stream);
+  if (const auto* ident = ConsumeIdent<CSSValueID::kRound, CSSValueID::kScoop,
+                                       CSSValueID::kStraight>(stream)) {
+    return ident;
+  }
+
+  if (stream.Peek().FunctionId() != CSSValueID::kSuperellipse) {
+    return nullptr;
+  }
+
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+  const CSSPrimitiveValue* param = nullptr;
+  if (stream.Peek().Id() == CSSValueID::kInfinity) {
+    param =
+        CSSNumericLiteralValue::Create(std::numeric_limits<double>::infinity(),
+                                       CSSPrimitiveValue::UnitType::kNumber);
+    stream.ConsumeIncludingWhitespace();
+  } else {
+    param = ConsumeNumber(stream, context,
+                          CSSPrimitiveValue::ValueRange::kNonNegative);
+  }
+  if (!param) {
+    return nullptr;
+  }
+
+  if (!stream.AtEnd()) {
+    return nullptr;
+  }
+  guard.Release();
+  return MakeGarbageCollected<cssvalue::CSSSuperellipseValue>(*param);
 }
 
 CSSValue* ParseBorderWidthSide(CSSParserTokenStream& stream,

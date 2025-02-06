@@ -97,6 +97,35 @@ sync_pb::CollaborationGroupSpecifics MakeCollaborationGroupSpecifics(
   return result;
 }
 
+// Adds a sync passphrase and returns its key_params.
+syncer::KeyParamsForTesting AddSyncPassphraseInternal(
+    const std::string& sync_passphrase) {
+  syncer::KeyParamsForTesting key_params =
+      syncer::Pbkdf2PassphraseKeyParamsForTesting(sync_passphrase);
+  fake_server::SetNigoriInFakeServer(
+      syncer::BuildCustomPassphraseNigoriSpecifics(key_params),
+      gSyncFakeServer.get());
+  return key_params;
+}
+
+// Adds SavedTabGroup `specifics` to the fake server.
+void AddDataToFakeServer(const sync_pb::SavedTabGroupSpecifics& specifics) {
+  sync_pb::EntitySpecifics group_entity_specifics;
+  sync_pb::SavedTabGroupSpecifics* group_specifics =
+      group_entity_specifics.mutable_saved_tab_group();
+  group_specifics->CopyFrom(specifics);
+
+  std::string client_tag = group_specifics->guid();
+  int64_t creation_time = group_specifics->creation_time_windows_epoch_micros();
+  int64_t update_time = group_specifics->update_time_windows_epoch_micros();
+
+  gSyncFakeServer->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          "non_unique_name", client_tag, group_entity_specifics,
+          /*creation_time=*/creation_time,
+          /*last_modified_time=*/update_time));
+}
+
 }  // namespace
 
 namespace chrome_test_util {
@@ -485,19 +514,6 @@ void DeleteTypedUrlFromClient(const GURL& url) {
   history_service->DeleteURLs({url});
 }
 
-namespace {
-// Add a sync passphrase and returns its key_params.
-syncer::KeyParamsForTesting AddSyncPassphraseInternal(
-    const std::string& sync_passphrase) {
-  syncer::KeyParamsForTesting key_params =
-      syncer::Pbkdf2PassphraseKeyParamsForTesting(sync_passphrase);
-  fake_server::SetNigoriInFakeServer(
-      syncer::BuildCustomPassphraseNigoriSpecifics(key_params),
-      gSyncFakeServer.get());
-  return key_params;
-}
-}  // namespace
-
 void AddSyncPassphrase(const std::string& sync_passphrase) {
   AddSyncPassphraseInternal(sync_passphrase);
 }
@@ -516,26 +532,6 @@ void AddBookmarkWithSyncPassphrase(const std::string& sync_passphrase) {
       server_entity->GetSpecifics().bookmark(), key_params));
   gSyncFakeServer->InjectEntity(std::move(server_entity));
 }
-
-namespace {
-// Adds SavedTabGroup `specifics` to the fake server.
-void AddDataToFakeServer(const sync_pb::SavedTabGroupSpecifics& specifics) {
-  sync_pb::EntitySpecifics group_entity_specifics;
-  sync_pb::SavedTabGroupSpecifics* group_specifics =
-      group_entity_specifics.mutable_saved_tab_group();
-  group_specifics->CopyFrom(specifics);
-
-  std::string client_tag = group_specifics->guid();
-  int64_t creation_time = group_specifics->creation_time_windows_epoch_micros();
-  int64_t update_time = group_specifics->update_time_windows_epoch_micros();
-
-  gSyncFakeServer->InjectEntity(
-      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-          "non_unique_name", client_tag, group_entity_specifics,
-          /*creation_time=*/creation_time,
-          /*last_modified_time=*/update_time));
-}
-}  // namespace
 
 void AddGroupToFakeServer(const tab_groups::SavedTabGroup& group) {
   AddDataToFakeServer(

@@ -44,7 +44,7 @@ win::ScopedHandle GetThreadHandle(PlatformThreadId thread_id) {
   // TODO(crbug.com/40620762): Move this logic to
   // GetSamplingProfilerCurrentThreadToken() and pass the handle in
   // SamplingProfilerThreadToken.
-  if (thread_id == ::GetCurrentThreadId()) {
+  if (thread_id.raw() == ::GetCurrentThreadId()) {
     return GetCurrentThreadHandle();
   }
 
@@ -54,15 +54,15 @@ win::ScopedHandle GetThreadHandle(PlatformThreadId thread_id) {
   base::debug::Alias(&flags);
 
   flags |= THREAD_GET_CONTEXT;
-  win::ScopedHandle test_handle1(::OpenThread(flags, FALSE, thread_id));
+  win::ScopedHandle test_handle1(::OpenThread(flags, FALSE, thread_id.raw()));
   CHECK(test_handle1.is_valid());
 
   flags |= THREAD_QUERY_INFORMATION;
-  win::ScopedHandle test_handle2(::OpenThread(flags, FALSE, thread_id));
+  win::ScopedHandle test_handle2(::OpenThread(flags, FALSE, thread_id.raw()));
   CHECK(test_handle2.is_valid());
 
   flags |= THREAD_SUSPEND_RESUME;
-  win::ScopedHandle handle(::OpenThread(flags, FALSE, thread_id));
+  win::ScopedHandle handle(::OpenThread(flags, FALSE, thread_id.raw()));
   CHECK(handle.is_valid());
   return handle;
 }
@@ -73,7 +73,7 @@ const TEB* GetThreadEnvironmentBlock(PlatformThreadId thread_id,
   // TODO(crbug.com/40620762): Move this logic to
   // GetSamplingProfilerCurrentThreadToken() and pass the TEB* in
   // SamplingProfilerThreadToken.
-  if (thread_id == ::GetCurrentThreadId()) {
+  if (thread_id.raw() == ::GetCurrentThreadId()) {
     return reinterpret_cast<TEB*>(NtCurrentTeb());
   }
 

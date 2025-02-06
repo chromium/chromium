@@ -331,7 +331,7 @@ bool CrashAnalyzer::AnalyzeLightweightDetectorCrash(
   proto->set_error_type(Crash_ErrorType_USE_AFTER_FREE);
   proto->set_allocation_address(metadata.alloc_ptr);
   proto->set_allocation_size(metadata.alloc_size);
-  if (metadata.dealloc.tid != base::kInvalidThreadId ||
+  if (metadata.dealloc.tid != base::kInvalidThreadId.raw() ||
       metadata.dealloc.trace_len) {
     ReadAllocationInfo(metadata.deallocation_stack_trace,
                        /* stack_trace_offset = */ 0, metadata.dealloc,
@@ -432,14 +432,16 @@ bool CrashAnalyzer::AnalyzeCrashedAllocator(
     proto->set_error_type(static_cast<Crash_ErrorType>(error_type));
     proto->set_allocation_address(metadata.alloc_ptr);
     proto->set_allocation_size(metadata.alloc_size);
-    if (metadata.alloc.tid != base::kInvalidThreadId ||
-        metadata.alloc.trace_len)
+    if (metadata.alloc.tid != base::kInvalidThreadId.raw() ||
+        metadata.alloc.trace_len) {
       ReadAllocationInfo(metadata.stack_trace_pool, 0, metadata.alloc,
                          proto->mutable_allocation());
-    if (metadata.dealloc.tid != base::kInvalidThreadId ||
-        metadata.dealloc.trace_len)
+    }
+    if (metadata.dealloc.tid != base::kInvalidThreadId.raw() ||
+        metadata.dealloc.trace_len) {
       ReadAllocationInfo(metadata.stack_trace_pool, metadata.alloc.trace_len,
                          metadata.dealloc, proto->mutable_deallocation());
+    }
   }
 
   ReportHistogram(allocator, GwpAsanCrashAnalysisResult::kGwpAsanCrash);
@@ -451,8 +453,9 @@ void CrashAnalyzer::ReadAllocationInfo(
     size_t stack_trace_offset,
     const AllocationInfo& slot_info,
     gwp_asan::Crash_AllocationInfo* proto_info) {
-  if (slot_info.tid != base::kInvalidThreadId)
+  if (slot_info.tid != base::kInvalidThreadId.raw()) {
     proto_info->set_thread_id(slot_info.tid);
+  }
 
   if (!slot_info.trace_len || !slot_info.trace_collected)
     return;

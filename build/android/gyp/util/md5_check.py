@@ -122,24 +122,18 @@ def CallAndRecordIfStale(function,
     else:
       new_metadata.AddFile(path, _ComputeTagForPath(path))
 
-  old_metadata = None
   force = force or _FORCE_REBUILD
   missing_outputs = [x for x in output_paths if force or not os.path.exists(x)]
-  too_new = []
-  # When outputs are missing, don't bother gathering change information.
-  if not missing_outputs and os.path.exists(record_path):
-    record_mtime = os.path.getmtime(record_path)
-    # Outputs newer than the change information must have been modified outside
-    # of the build, and should be considered stale.
-    too_new = [x for x in output_paths if os.path.getmtime(x) > record_mtime]
-    if not too_new:
-      with open(record_path, 'r') as jsonfile:
-        try:
-          old_metadata = _Metadata.FromFile(jsonfile)
-        except:  # pylint: disable=bare-except
-          pass  # Not yet using new file format.
+  old_metadata = None
 
-  changes = Changes(old_metadata, new_metadata, force, missing_outputs, too_new)
+  if not missing_outputs and os.path.exists(record_path):
+    with open(record_path, 'r') as jsonfile:
+      try:
+        old_metadata = _Metadata.FromFile(jsonfile)
+      except:  # pylint: disable=bare-except
+        pass  # Not yet using new file format.
+
+  changes = Changes(old_metadata, new_metadata, force, missing_outputs)
   if not changes.HasChanges():
     return
 
@@ -159,13 +153,11 @@ def CallAndRecordIfStale(function,
 class Changes:
   """Provides and API for querying what changed between runs."""
 
-  def __init__(self, old_metadata, new_metadata, force, missing_outputs,
-               too_new):
+  def __init__(self, old_metadata, new_metadata, force, missing_outputs):
     self.old_metadata = old_metadata
     self.new_metadata = new_metadata
     self.force = force
     self.missing_outputs = missing_outputs
-    self.too_new = too_new
 
   def _GetOldTag(self, path, subpath=None):
     return self.old_metadata and self.old_metadata.GetTag(path, subpath)
@@ -262,8 +254,6 @@ class Changes:
       return 'force=True'
     if self.missing_outputs:
       return 'Outputs do not exist:\n  ' + '\n  '.join(self.missing_outputs)
-    if self.too_new:
-      return 'Outputs newer than stamp file:\n  ' + '\n  '.join(self.too_new)
     if self.old_metadata is None:
       return 'Previous stamp file not found.'
 

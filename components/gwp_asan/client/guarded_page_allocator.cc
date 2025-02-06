@@ -444,7 +444,8 @@ void GuardedPageAllocator::RecordAllocationMetadata(
   metadata_[metadata_idx].alloc.tid = AllocationInfo::GetCurrentTid();
   metadata_[metadata_idx].alloc.trace_collected = true;
 
-  metadata_[metadata_idx].dealloc.tid = base::kInvalidThreadId;
+  metadata_[metadata_idx].dealloc.tid =
+      static_cast<uint64_t>(base::kInvalidThreadId);
   metadata_[metadata_idx].dealloc.trace_len = 0;
   metadata_[metadata_idx].dealloc.trace_collected = false;
   metadata_[metadata_idx].deallocation_occurred = false;

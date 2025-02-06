@@ -51,7 +51,8 @@ typedef NS_ENUM(NSUInteger, SigninScreenConsumerScreenIntent) {
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email
                           givenName:(NSString*)givenName
-                             avatar:(UIImage*)avatar;
+                             avatar:(UIImage*)avatar
+                            managed:(BOOL)managed;
 // Notifies the consumer that no identity is available and that the UI should be
 // updated accordingly.
 - (void)noIdentityAvailable;

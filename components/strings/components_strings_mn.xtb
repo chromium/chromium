@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">Үйлдлийн системүүд</translation>
 <translation id="3080254622891793721">График</translation>
 <translation id="3082007635241601060">Google-д таны сагсыг хувийн болгосон хөнгөлөлт боломжтой үед нь олоход ашиглахыг зөвшөөрнө үү</translation>
+<translation id="3086269988715347183">Та өмнө нь <ph name="BLOCKED_URL" />-г зөвшөөрөөгүй</translation>
 <translation id="3086579638707268289">Веб дээрх таны үйл ажиллагааг хянаж байна</translation>
 <translation id="3087734570205094154">Доод</translation>
 <translation id="3090667236485488075">Шил</translation>
@@ -1234,10 +1235,12 @@
 <translation id="3194737229810486521"><ph name="URL" /> таны төхөөрөмжид өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> дээрх <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Таныг энэ төхөөрөмжийг хэзээ идэвхтэй ашиглаж буйг мэдэхийг хүсэх боломжтой</translation>
+<translation id="3201482403106004262">Судалгаатай холбоотой алдаа гарлаа.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome-н тохиргоонд ямар мэдээлэл синк хийхээ удирдахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="3203025201812691413">URL хоосон байх боломжгүй</translation>
 <translation id="320323717674993345">Төлбөрийг цуцлах</translation>
 <translation id="3203366800380907218">Вебээс</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" />-д насанд хүрэгчдийн контент байж болзошгүй</translation>
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
 <translation id="3208701679386778924">Тайлан илгээснээр бид ChromeOS-н цаашдын шинэчлэлтийг сайжруулах боломжтой.</translation>
 <translation id="3209034400446768650">Хуудас төлбөр нэхэмжилж болзошгүй</translation>
@@ -1874,6 +1877,7 @@
 <translation id="4269264543938335308">Усны хувцас</translation>
 <translation id="4269599248168651462">Серверийн сертификатыг өвөрмөц бус нэрд олгодог.</translation>
 <translation id="4270541775497538019">Гарах цаасыг зэрэгцүүлэх тавцан 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 шүүмжийг харна уу. Дундаж үнэлгээ нь <ph name="STARS" /> од байна.}=1{1 шүүмжийг харна уу. Дундаж үнэлгээ нь <ph name="STARS" /> од байна.}other{Бүх # шүүмжийг харна уу. Дундаж үнэлгээ нь <ph name="STARS" /> од байна.}}</translation>
 <translation id="4271652479722040953">Өргөтгөлүүдийг Chrome-д нэмсэн байхад эдгээр өргөтгөлийн талаарх хамааралтай өгөгдлийг задлан шинжлэх зорилгоор гуравдагч тал руу илгээдэг бөгөөд танай администраторт харагдаж магадгүй. Өгөгдөлд нэр, суулгасан цаг, суулгасан эх сурвалж зэрэг өргөтгөлийн талаарх мэдээллээс гадна эдгээр өргөтгөлтэй холбоотой үйл ажиллагаа (табыг өөрчлөх, вебсайттай холбогдох, күүкид хандах гэх мэт) багтана. Энэ өгөгдлийг Chrome Веб дэлгүүрээс суулгасан өргөтгөлөөс гадна дэлгүүрээс гадуурх өргөтгөлүүдээс цуглуулдаг.</translation>
 <translation id="4275830172053184480">Төхөөрөмжийг дахин эхлүүл</translation>
 <translation id="4276974990916607331">Үгүй, баярлалаа</translation>
@@ -2347,6 +2351,7 @@
 <translation id="5138227688689900538">Хураангуйлж харуулах</translation>
 <translation id="5143309888746105072">Chromium сайтуудыг таныг үзэхэд хянах гуравдагч талын күүкинүүдийг ашиглахыг блоклоно.
             <ph name="NEW_LINE" />Хэрэв сайтын онцлогууд ажиллахгүй байвал <ph name="START_LINK" />гуравдагч талын күүкинүүдийг түр зуур зөвшөөрч үзнэ үү<ph name="END_LINK" />.</translation>
+<translation id="5144613843429436866">Та энэ сайтад <ph name="PERMISSION" />-г зөвшөөрсөн</translation>
 <translation id="5145883236150621069">удирдамжийн хариулт дахь алдааны код</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />-н мэдэгдлийг хориглосон</translation>
 <translation id="514704532284964975"><ph name="URL" /> таны утсаараа товшсон NFC төхөөрөмжүүд дээрх мэдээллийг харах болон өөрчлөхийг хүсэж байна</translation>
@@ -2375,7 +2380,7 @@
 <translation id="519422657042045905">Тэмдэглэгээ боломжгүй байна</translation>
 <translation id="5200063972779787617">Бүртгэлд хаяг хадгалах</translation>
 <translation id="5201306358585911203">Энэ хуудсанд оруулсан хуудас хэлэхдээ</translation>
-<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, боломжтой үйлдлүүдийг харахын тулд Tab, дараа нь сонгосон үйдлийг гүйцэтгэхийн тулд Enter дарна уу.</translation>
+<translation id="5205114269877707377"><ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT" />, боломжтой үйлдлүүдийг харахын тулд Tab-г дараад, дараа нь сонгосон үйдлийг гүйцэтгэхийн тулд Enter-г дарна уу.</translation>
 <translation id="5205222826937269299">Нэр шаардлагатай</translation>
 <translation id="5206392433295093945">Унтлагын өрөө</translation>
 <translation id="5209670883520018268">Тавиур 20</translation>
@@ -2952,6 +2957,7 @@
 <translation id="6224281071334553713">Үнэт чулуу болон үнэт эдлэл</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="6228346913624365233">Тансаг зэрэглэлийн тээврийн хэрэгслүүд</translation>
+<translation id="6228836011612806720">Дэлгүүрийн шүүмж. Дундаж үнэлгээ нь <ph name="STARS" /> од байна.</translation>
 <translation id="6229196330202833460">Кино болон ТВ-ийн стриминг</translation>
 <translation id="6234122620015464377">Документ бүрийн дараа тайрах</translation>
 <translation id="6234310016144827337">Холболтоо шалгаад, дахин оролдоно уу</translation>
@@ -2969,6 +2975,7 @@
 <translation id="6254436959401408446">Энэ хуудсыг нээхэд санах ойн багтаамж хүрэлцэхгүй байна</translation>
 <translation id="625463612687472648">Зөвшөөрөхийг болих</translation>
 <translation id="6259156558325130047">&amp; Дахин эрэмбэлэх үйлдлийг дахин хийх</translation>
+<translation id="6259282549512536479">Та өмнө нь <ph name="BLOCKED_URL" />-г блоклосон</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> хавчуургууд</translation>
 <translation id="6264376385120300461">Ямартай ч татах</translation>
 <translation id="6264485186158353794">Аюулгүй байдалд буцах</translation>
@@ -4400,6 +4407,7 @@
 <translation id="8792621596287649091">Та <ph name="ORG_NAME" /> бүртгэлийнхээ хандах эрх эсвэл нууц үгээ алдаж болзошгүй. Chromium одоо таны нууц үгийг өөрчлөхийг зөвлөж байна.</translation>
 <translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> нь Chrome Enterprise Connectors-г таны хөтөч дээр асаасан. Эдгээр холбогч нь таны зарим өгөгдөлд хандах эрхтэй.</translation>
+<translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" />-н тохиргоо</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
 <translation id="8800034312320686233">Сайт ажиллахгүй байна уу?</translation>
 <translation id="8805819170075074995">Жагсаалтын оролт "<ph name="LANGUAGE_ID" />": Энэ оролт SpellcheckLanguage удирдамжид мөн адил багтсан тул үүнийг үл хэрэгссэн болно.</translation>
@@ -4620,6 +4628,7 @@
 <translation id="9192361865877479444">Металл (мaтте)</translation>
 <translation id="9192947025498305328">Байгалийн гоо сайхны бүтээгдэхүүн</translation>
 <translation id="9199905725844810519">Хэвлэхийг блоклосон байна</translation>
+<translation id="9201904868909900493">Сyдалгааг нээж байна...</translation>
 <translation id="9204089334327209740">Байршуулж дууссаны дараа та <ph name="CLOUD_PROVIDER" /> дахь файлуудаа өөрчлөх боломжтой. Хогийн саван дахь аливаа файл зэрэг дотоод хадгалах санг автоматаар хасна.</translation>
 <translation id="9205078245616868884">Таны өгөгдлийг таны синк хийх нэвтрэх үгтэй шифрлэсэн. Синкийг эхлүүлэхийн тулд үүнийг оруулна уу.</translation>
 <translation id="920643408853370361">Аяллын даатгал</translation>

@@ -59,7 +59,11 @@ void PageActionController::Hide(actions::ActionId action_id) {
 }
 
 void PageActionController::ShowSuggestionChip(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowSuggestionChip(PassKey());
+  FindPageActionModel(action_id).SetShowSuggestionChip(PassKey(), true);
+}
+
+void PageActionController::HideSuggestionChip(actions::ActionId action_id) {
+  FindPageActionModel(action_id).SetShowSuggestionChip(PassKey(), false);
 }
 
 void PageActionController::ActionItemChanged(

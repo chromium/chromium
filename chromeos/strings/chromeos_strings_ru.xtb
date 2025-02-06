@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Неверный PIN-код.</translation>
 <translation id="382043424867370667">Обои с закатом</translation>
 <translation id="3824259034819781947">Прикрепить файлы</translation>
-<translation id="3836587210832263413">Включайте только те расширения, которым вы доверяете</translation>
 <translation id="3838338534323494292">Новый пароль</translation>
 <translation id="3845880861638660475">Чтобы закрыть диалоговое окно, нажмите <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="3848280697030027394">клавиатура уменьшение яркости</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Чтобы изменить параметры принтеров, перейдите в настройки</translation>
 <translation id="6292095526077353682">Во время зарядки показывать заставку</translation>
 <translation id="629550705077076970">затемнение подсветки клавиатуры</translation>
-<translation id="6301193653204230066">Расширения браузера Chrome будут отключены, а сетевые и другие настройки (в том числе поисковой системы по умолчанию) – сброшены.
-          На файлы cookie, вкладки, историю и ваши личные файлы это не повлияет.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тестирование отменено.</translation>
 <translation id="631063167932043783">Приложение "Возможности"</translation>
 <translation id="6318437367327684789">всегда</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">сравнивать голоса на протяжении всей записи, чтобы в расшифровке было видно, что и когда сказал каждый говорящий.</translation>
 <translation id="952992212772159698">Не активировано</translation>
 <translation id="95718197892796296">глина</translation>
+<translation id="959792926760890141">Расширения браузера Chrome будут отключены, а сетевые и другие настройки (в том числе поисковой системы по умолчанию) – сброшены.
+          На файлы cookie, вкладки, историю и ваши личные файлы это не повлияет.</translation>
 <translation id="960719561871045870">Код оператора</translation>
 <translation id="965918541715156800">желтый и сине-зеленый</translation>
 <translation id="966787709310836684">меню</translation>

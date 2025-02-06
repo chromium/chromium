@@ -1,6 +1,4 @@
 This is a wdspec test.
-[FAIL] test_unsubscribe
-  webdriver.bidi.error.InvalidArgumentException: invalid argument (Unknown event: browsingContext.navigationCommitted)
 [FAIL] test_subscribe
   TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_timestamp

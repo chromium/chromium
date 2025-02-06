@@ -1234,6 +1234,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3194737229810486521"><ph name="URL" /> kërkon të ruajë në mënyrë të përhershme të dhëna në pajisjen tënde</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> në <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Mund të kërkojë të dijë kur e përdor pajisjen tënde në mënyrë aktive</translation>
+<translation id="3201482403106004262">Ndodhi një gabim me anketën.</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="3203025201812691413">URL-ja nuk mund të jetë bosh</translation>
 <translation id="320323717674993345">Anulo pagesën</translation>
@@ -1873,6 +1874,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4269264543938335308">Kostume banje</translation>
 <translation id="4269599248168651462">Certifikata e serverit është lëshuar për një emër jounik.</translation>
 <translation id="4270541775497538019">Stivuesi 6</translation>
+<translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{Shiko 0 komente. Vlerësimi mesatar është me <ph name="STARS" /> yje.}=1{Shiko 1 koment. Vlerësimi mesatar është me <ph name="STARS" /> yje.}other{Shiko të # komentet. Vlerësimi mesatar është me <ph name="STARS" /> yje.}}</translation>
 <translation id="4271652479722040953">Kur shtesat shtohen te Chrome, të dhënat përkatëse për këto shtesa dërgohen te palët e treta për analizë dhe mund të jenë të dukshme për administratorin tënd. Të dhënat përfshijnë informacione për shtesat si p.sh. emrin, kohën e instalimit, burimin e instalimit, si dhe aktivitetin e lidhur me këto shtesa (si p.sh. ndryshimin e skedave, kontaktin me uebsajtet ose qasjen te kukit). Këto të dhëna mblidhen për shtesat e instaluara nga "Dyqani i uebit i Chrome", si dhe nga shtesat jashtë dyqanit.</translation>
 <translation id="4275830172053184480">Rinise pajisjen</translation>
 <translation id="4276974990916607331">Jo, faleminderit</translation>
@@ -2951,6 +2953,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6224281071334553713">Gurë të çmuar dhe stoli</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Shtyp "Tab" dhe më pas "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e Chrome</translation>
 <translation id="6228346913624365233">Automjete luksoze</translation>
+<translation id="6228836011612806720">Komentet për dyqanin. Vlerësimi mesatar është me <ph name="STARS" /> yje.</translation>
 <translation id="6229196330202833460">Transmetimi i filmave dhe shfaqjeve televizive</translation>
 <translation id="6234122620015464377">Prerje pas çdo dokumenti</translation>
 <translation id="6234310016144827337">Kontrollo lidhjen tënde dhe provo përsëri</translation>
@@ -4619,6 +4622,7 @@ Detaje shtesë:
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Estetikë e pastër</translation>
 <translation id="9199905725844810519">Printimi është bllokuar</translation>
+<translation id="9201904868909900493">Anketa po hapet...</translation>
 <translation id="9204089334327209740">Pasi ngarkimi të ketë përfunduar, mund të modifikosh skedarët në <ph name="CLOUD_PROVIDER" />. Hapësira ruajtëse lokale, duke përfshirë çdo skedar te "Koshi", do të hiqet automatikisht.</translation>
 <translation id="9205078245616868884">Të dhënat e tua janë koduar me frazën e kalimit për sinkronizimin. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="920643408853370361">Sigurimi i udhëtimit</translation>

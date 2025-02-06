@@ -394,6 +394,8 @@ public class TabGroupListMediator {
 
     private void dismissActionProvider(String messageId) {
         removeMessageCardItemFromModelList(messageId);
+        mMessagingBackendService.clearPersistentMessage(
+                messageId, Optional.of(PersistentNotificationType.DIRTY_TAB_GROUP_REMOVED));
     }
 
     // TODO(crbug.com/394312504): Make the method general and move to ModelList Util.

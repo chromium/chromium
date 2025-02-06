@@ -25,6 +25,7 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Funda kabanzi<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">Iqembu lethebhu elingu-<ph name="TABS_COUNT_ONE" /></translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ithebhu}one{<ph name="TABS_COUNT_MANY" /> amathebhu}other{<ph name="TABS_COUNT_MANY" /> amathebhu}}</translation>
+<translation id="1909810060368225529">Isaziso: Ushintsho kuleli Qembu Lethebhu elabiwe lubonakala kuwo wonke umuntu. Wonke umuntu angenza ushintsho emaqenjini ethebhu owabelane ngawo</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Faka ibhukhimakhi kuthebhu engu-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Faka ibhukhimakhi kumathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Faka ibhukhimakhi kumathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
 <translation id="2118649612461486615">Ulwazi lwesitolo</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu Akamuva kanye nesigaba Samaqembu amathebhu. Ithebhu yakho ye-Incognito ngeke itholakale.}one{Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu akamuva kanye nesigaba Samaqembu amathebhu. Amathebhu akho angu-# e-Incognito ngeke atholakale.}other{Amathebhu wakho avaliwe namaqembu angaphinda avulwe esigabeni Samathebhu akamuva kanye nesigaba Samaqembu amathebhu. Amathebhu akho angu-# e-Incognito ngeke atholakale.}}</translation>
@@ -126,11 +127,13 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="6381032505162537930">Uzothola amaqembu wakho amathebhu lapha</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Hlukanisa ithebhu e-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{Ithebhu e-<ph name="TABS_COUNT_ONE" />}one{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}other{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="6499296376514955580">Isaziso ngoshintsho lokuvaleka eQenjini Lethebhu Elabiwe</translation>
 <translation id="6527303717912515753">Yabelana</translation>
 <translation id="6542289363124393690">{DAY_COUNT,plural, =1{Ngemva kosuku olu-1}one{Ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}other{Ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}}</translation>
 <translation id="6549021453810473782">Buka ulwazi lwesitolo</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Hambisa ithebhu ngakwesokunxele</translation>
+<translation id="6589356853295569750">Isaziso ngoshintsho lokuvuleka ekuphakameni okugcwele eQenjini Lethebhu Elabiwe</translation>
 <translation id="6590332670428149473">Vula imenyu yesenzo seqembu lethebhu yeqembu lethebhu elabiwe le-<ph name="TITLE_OF_GROUP" />, umbala <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Ngibonise</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Ithebhu engu-<ph name="ONE_CHANGED" /> ishintshiwe}one{Amathebhu angu-<ph name="MANY_CHANGED" /> ashintshiwe}other{Amathebhu angu-<ph name="MANY_CHANGED" /> ashintshiwe}}</translation>
@@ -157,6 +160,7 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Yabelana ngethebhu ekhethiwe ye-<ph name="TABS_COUNT_ONE" />}one{Yabelana ngamathebhu akhethiwe we-<ph name="TABS_COUNT_MANY" />}other{Yabelana ngamathebhu akhethiwe we-<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="7773714564112603605">Susa ithebhu bese usula iqembu</translation>
 <translation id="7792771145871471484">Buyekeza iziphakamiso.</translation>
+<translation id="7792860826279960128">Isaziso ngoshintsho ekuphakameni okunguhhafu eQenjini Lethebhu Elabiwe</translation>
 <translation id="7825973332242257878">Amaqembu ethebhu</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Faka kuqembu ithebhu ekhethiwe e-<ph name="TABS_COUNT_ONE" />}one{Faka kuqembu amathebhu akhethiwe a-<ph name="TABS_COUNT_MANY" />}other{Faka kuqembu amathebhu akhethiwe a-<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="7853202427316060426">Umsebenzi</translation>

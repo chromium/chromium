@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1384959399684842514">Download sospeso</translation>
 <translation id="1396327438254055134">Consenti al sito di utilizzare lo strumento di ottimizzazione V8.</translation>
+<translation id="1409338233051621926">Tocca App, poi App predefinite</translation>
 <translation id="1415402041810619267">URL troncato</translation>
 <translation id="1415855080660575082">Consenti a Chrome di condividere le schede recenti con il tuo dispositivo per visualizzarle nell'elenco di app e nei risultati di ricerca del dispositivo. Puoi attivare o disattivare questa funzionalità nelle impostazioni di Chrome.</translation>
 <translation id="1448064542941920355">Diminuisci lo zoom</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">Non applicare il tema scuro ai siti</translation>
 <translation id="2606760465469169465">Verifica automatica</translation>
 <translation id="2621115761605608342">Consenti JavaScript per un sito specifico.</translation>
+<translation id="2626708220538466178">Riquadro inferiore del browser predefinito chiuso</translation>
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2682367912565197520">Elimina il livello di zoom salvato</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">Disattiva l'audio nei siti che riproducono suoni</translation>
 <translation id="3602290021589620013">Anteprima</translation>
 <translation id="3628308229821498208">Ricerche suggerite</translation>
+<translation id="3658847490588580244">Riquadro inferiore del browser predefinito</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sito del gruppo di siti di <ph name="RWS_OWNER" /> può vedere le tue attività nel gruppo}other{<ph name="RWS_MEMBERS_COUNT" /> siti del gruppo di siti di <ph name="RWS_OWNER" /> possono vedere le tue attività nel gruppo}}</translation>
 <translation id="3697164069658504920">Quando l'opzione è attiva, i siti potrebbero chiedere di usare i dispositivi USB. Quando l'opzione è disattivata, i siti non possono utilizzare i dispositivi USB.</translation>
 <translation id="3707034683772193706">Un sito che visiti può salvare una piccola quantità di informazioni con Chrome, principalmente per verificare che tu non sia un bot</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">Elimina e reimposta</translation>
 <translation id="4645575059429386691">Gestito da un genitore</translation>
 <translation id="4670064810192446073">Realtà virtuale</translation>
+<translation id="4672315773691449562">Tocca App browser, poi Chrome</translation>
 <translation id="4676059169848868271">Per consentire all'app <ph name="APP_NAME" /> di usare il tracciamento delle mani, attiva anche il tracciamento delle mani nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Sensori di movimento o della luce</translation>
 <translation id="4755971844837804407">Quando l'opzione è attiva, i siti possono mostrarti qualsiasi annuncio. Quando l'opzione è disattivata, i siti non possono mostrare annunci invasivi o fuorvianti.</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">Consentita (opzione consigliata)</translation>
 <translation id="8609465669617005112">Sposta su</translation>
 <translation id="8617611086246832542">Quando l'opzione è attiva, viene mostrata la visualizzazione dei siti web da computer. Quando l'opzione è disattivata, viene mostrata la visualizzazione mobile dei siti web.</translation>
+<translation id="8670078035093027626">Riquadro inferiore del browser predefinito aperto a schermo intero</translation>
 <translation id="8676316391139423634">Quando l'opzione è attiva, i siti possono chiedere di monitorare le tue mani. Quando l'opzione è disattivata, i siti non possono monitorare le tue mani.</translation>
 <translation id="8676374126336081632">Cancella testo inserito</translation>
 <translation id="8681886425883659911">Gli annunci vengono bloccati sui siti noti che mostrano annunci invasivi o fuorvianti</translation>

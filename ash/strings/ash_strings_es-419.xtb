@@ -1706,6 +1706,7 @@ Nueva instalación</translation>
 <translation id="6637729079642709226">Cambia la hora</translation>
 <translation id="6641720045729354415">Activa o desactiva el Subtitulado instantáneo. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Deshacer el orden por nombre</translation>
+<translation id="664793810957802384">Elementos del grupo sugerido</translation>
 <translation id="6649641931981131786">Ajusta la cámara para ubicarte en el centro de la pantalla.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
 <translation id="6650742588569439432">No se pudieron cargar los elementos.</translation>
@@ -2383,6 +2384,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8956420987536947088">Abre las ventanas y apps anteriores</translation>
 <translation id="8959380109429710384">Presionaste la combinación de teclas para activar la lupa de pantalla completa. Usa Ctrl + Alt + flechas para moverte por la vista con zoom.</translation>
 <translation id="8964525410783593407">1 h</translation>
+<translation id="8970887620466824814">Se produjo un error</translation>
 <translation id="8973885907461690937">Enfocar el ícono de menú</translation>
 <translation id="8980862970816311842">Mover el ícono de una app hacia dentro o fuera de una carpeta en la cuadrícula de apps</translation>
 <translation id="8982906748181120328">Visibilidad de Nearby</translation>

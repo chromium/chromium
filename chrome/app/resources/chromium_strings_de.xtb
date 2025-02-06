@@ -329,6 +329,7 @@
 <translation id="569897634095159764">Internetverbindung kann nicht hergestellt werden. Für den Proxyserver ist eine Authentifizierung erforderlich.</translation>
 <translation id="5761096224651992291">Du hast diese Website in letzter Zeit nicht besucht. Chromium hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und „<ph name="PERMISSION_3" />“ entfernt.</translation>
 <translation id="5768371961535086509">In Chromium wird von inaktiven Tabs belegter Arbeitsspeicher freigegeben. Dadurch können aktive Tabs und andere Apps auf mehr Ressourcen zugreifen und Chromium bleibt schnell. Deine inaktiven Tabs werden automatisch wieder aktiviert, sobald du sie aufrufst. <ph name="BEGIN_LINK" />Weitere Informationen zum Arbeitsspeicher-Sparmodus<ph name="END_LINK" /></translation>
+<translation id="5775198138441669627">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="SETTINGS_LINK" /> die Chromium-Daten in deinem Konto</translation>
 <translation id="5800158606660203929">Chromium anpassen und verwalten. Chromium als Standardbrowser festlegen.</translation>
 <translation id="5809516625706423866">Internetverbindung kann nicht hergestellt werden. HTTP 401 Unauthorized. Bitte prüfe deine Proxykonfiguration.</translation>
 <translation id="5821520528363214608">Aktualisiere Chromium, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern</translation>

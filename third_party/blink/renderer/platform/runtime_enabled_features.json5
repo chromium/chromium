@@ -1090,8 +1090,9 @@
       status: "stable",
     },
     {
+      // https://drafts.csswg.org/css-mixins-1/#function-rule
       name: "CSSFunctions",
-      status: "test",
+      status: "experimental",
     },
     {
       // https://chromestatus.com/feature/5157805733183488
@@ -1249,7 +1250,8 @@
     {
       // Enables env(safe-area-max-inset-*).
       // https://github.com/w3c/csswg-drafts/issues/11019
-      name: "CSSSafeAreaMaxInset"
+      name: "CSSSafeAreaMaxInset",
+      status: "experimental"
     },
     {
       // The "@import scope(...)" syntax.
@@ -1417,6 +1419,12 @@
       origin_trial_feature_name: "WebSQL",
       origin_trial_allows_third_party: true,
       origin_trial_type: "deprecation",
+    },
+    {
+      // Remove this feature when the removal of the WebGPU limit
+      // maxInterStageShaderComponents has been stable long enough.
+      // See https://crbug.com/364338810
+      name: "DeprecateMaxInterStageShaderComponents",
     },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any

@@ -17,7 +17,8 @@ struct AllocationInfo {
 
   // (De)allocation thread id or base::kInvalidThreadId if no (de)allocation
   // occurred.
-  uint64_t tid = base::kInvalidThreadId;
+  uint64_t tid = static_cast<uint64_t>(base::kInvalidThreadId);
+  static_assert(sizeof(tid) >= sizeof(base::PlatformThreadId));
   // Length used to encode the packed stack trace.
   uint16_t trace_len = 0;
   // Whether a stack trace has been collected for this (de)allocation.

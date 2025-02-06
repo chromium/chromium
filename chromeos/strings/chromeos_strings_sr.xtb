@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Неважећи PIN.</translation>
 <translation id="382043424867370667">Позадина са заласком сунца</translation>
 <translation id="3824259034819781947">Приложи фајлове</translation>
-<translation id="3836587210832263413">Укључите само поуздане додатке</translation>
 <translation id="3838338534323494292">Нова лозинка</translation>
 <translation id="3845880861638660475">Притисните <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> да бисте затворили дијалог.</translation>
 <translation id="3848280697030027394">потамњивање тастатуре</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Управљајте штампачима у подешавањима штампача</translation>
 <translation id="6292095526077353682">Током пуњења прикажи чувар екрана за</translation>
 <translation id="629550705077076970">затамњивање тастатуре</translation>
-<translation id="6301193653204230066">Безбедно ресетовање искључује додатке за Chrome прегледач и ресетује мрежна и друга подешавања на безбедне подразумеване вредности.
-          Картице, фајлови, колачићи и историја неће бити промењени.</translation>
 <translation id="6302401976930124515">Тест <ph name="TEST_NAME" /> је отказан</translation>
 <translation id="631063167932043783">Истражите апликацију</translation>
 <translation id="6318437367327684789">заувек</translation>
@@ -1142,7 +1139,7 @@
 <translation id="6394634179843537518">Додајте фајл</translation>
 <translation id="6396719002784938593">суво ковиље</translation>
 <translation id="639964859328803943">поподневни чај</translation>
-<translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> из снова од <ph name="DREAMSCAPES_MATERIAL" /> <ph name="DREAMSCAPES_COLORS" /></translation>
+<translation id="6400680457268373900">Надреално: <ph name="DREAMSCAPES_OBJECT" />, материјал: <ph name="DREAMSCAPES_MATERIAL" /> <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">претрага прегледача</translation>
 <translation id="6410257289063177456">Датотеке слика</translation>
 <translation id="641081527798843608">Подударање наслова</translation>
@@ -1774,6 +1771,8 @@
 <translation id="951780398843003443">Поређење гласове на снимку да би транскрипт одражавао шта је сваки говорник рекао и када</translation>
 <translation id="952992212772159698">Није активирано</translation>
 <translation id="95718197892796296">глине</translation>
+<translation id="959792926760890141">Безбедно ресетовање искључује додатке за Chrome прегледач и ресетује мрежна и друга подешавања на безбедне подразумеване вредности.
+          Подразумевани претраживач ће се ресетовати, али картице, фајлови, колачићи и историја неће бити промењени.</translation>
 <translation id="960719561871045870">Кôд мобилног оператера</translation>
 <translation id="965918541715156800">жуте и плавозелене боје</translation>
 <translation id="966787709310836684">мени</translation>

@@ -330,6 +330,7 @@
 <translation id="569897634095159764">Nem lehet csatlakozni az internethez. A proxyszerver hitelesítést igényel.</translation>
 <translation id="5761096224651992291">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és <ph name="PERMISSION_3" />.</translation>
 <translation id="5768371961535086509">A Chromium memóriát szabadít fel az inaktív lapokból. Így az aktív lapok és más alkalmazások több számítógépes erőforrást kapnak, és a Chromium gyors marad. Az inaktív lapok automatikusan ismét aktívak lesznek, amikor visszalép rájuk. <ph name="BEGIN_LINK" />További információ a Memóriatakarékos funkcióról<ph name="END_LINK" />.</translation>
+<translation id="5775198138441669627">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="SETTINGS_LINK" /> törölje a fiókjában lévő Chromium-adatokat.</translation>
 <translation id="5800158606660203929">Személyre szabhatja a Chromium működését. Beállíthatja a Chromiumot alapértelmezettként.</translation>
 <translation id="5809516625706423866">Nem lehet csatlakozni az internethez. „HTTP 401 Unauthorized” hiba. Ellenőrizze a proxybeállításokat.</translation>
 <translation id="5821520528363214608">Ha Chromium-adatokat szeretne használni és tárolni Google-fiókjában, frissítse a Chromiumot</translation>

@@ -312,10 +312,9 @@ IN_PROC_BROWSER_TEST_F(ProcessSingletonTest, MAYBE_StartupRaceCondition) {
         // exit code, which we also allow, though it would be ideal if that
         // never happened.
         // TODO(mattm): investigate why PROFILE_IN_USE occurs sometimes.
-        EXPECT_THAT(
-            chrome_starters_[starter_index]->exit_code_,
-            AnyOf(Eq(chrome::RESULT_CODE_PROFILE_IN_USE),
-                  Eq(chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED)));
+        EXPECT_THAT(chrome_starters_[starter_index]->exit_code_,
+                    AnyOf(Eq(CHROME_RESULT_CODE_PROFILE_IN_USE),
+                          Eq(CHROME_RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED)));
       } else {
         // But we let the last loop turn finish so that we can properly
         // kill all remaining processes. Starting with this one...

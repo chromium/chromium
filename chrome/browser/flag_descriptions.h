@@ -2748,9 +2748,6 @@ extern const char kCrossDeviceTabPaneAndroidDescription[];
 extern const char kHistoryPaneAndroidName[];
 extern const char kHistoryPaneAndroidDescription[];
 
-extern const char kTabGroupCreationDialogAndroidName[];
-extern const char kTabGroupCreationDialogAndroidDescription[];
-
 extern const char kTabGroupPaneAndroidName[];
 extern const char kTabGroupPaneAndroidDescription[];
 
@@ -2845,6 +2842,9 @@ extern const char kOpenXRAndroidSmoothDepthDescription[];
 // Non-Android ----------------------------------------------------------------
 
 #else  // !BUILDFLAG(IS_ANDROID)
+
+extern const char kAccountStoragePrefsThemesAndSearchEnginesName[];
+extern const char kAccountStoragePrefsThemesAndSearchEnginesDescription[];
 
 extern const char kAllowAllSitesToInitiateMirroringName[];
 extern const char kAllowAllSitesToInitiateMirroringDescription[];

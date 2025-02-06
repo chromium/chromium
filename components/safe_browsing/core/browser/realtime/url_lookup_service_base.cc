@@ -46,7 +46,7 @@ const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
 const size_t kURLLookupTimeoutDurationInSeconds = 3;
 
 // Represents the value stored in the |version| field of |RTLookupRequest|.
-const int kRTLookupRequestVersion = 3;
+const int kRTLookupRequestVersion = 4;
 
 // UMA helper functions.
 void RecordBooleanWithAndWithoutSuffix(const std::string& metric,
@@ -604,15 +604,16 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
   request->set_report_type(is_sampled_report ? RTLookupRequest::SAMPLED_REPORT
                                              : RTLookupRequest::FULL_REPORT);
   request->set_frame_type(RTLookupRequest::MAIN_FRAME);
-  if (referring_app_info) {
+  if (referring_app_info && pref_service_ &&
+      IsEnhancedProtectionEnabled(*pref_service_)) {
     safe_browsing::ReferringAppInfo referring_app_info_proto;
     referring_app_info_proto.set_referring_app_name(
         referring_app_info.value().referring_app_name);
     referring_app_info_proto.set_referring_app_source(
         referring_app_info.value().referring_app_source);
-    // TODO(chlily): Populate WebAPK fields.
     *request->mutable_referring_app_info() =
         std::move(referring_app_info_proto);
+    MaybeFillReferringWebApk(*referring_app_info, *request);
   }
   std::optional<std::string> dm_token_string = GetDMTokenString();
   if (dm_token_string.has_value()) {

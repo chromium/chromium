@@ -70,6 +70,7 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="2459183986985456602">Atidaryti naujausią skirtuką naršyklėje „Chromium“.</translation>
 <translation id="2476409803017965813">Pasirinkimus galite bet kada atnaujinti „Chromium“ nustatymuose.</translation>
 <translation id="2478931088402984578">Pasirinkite <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Nustatykite „Chromium“ kaip numatytąją naršyklę, kad galėtumėte lengvai bendrinti ir atidaryti nuorodas</translation>
 <translation id="2512597191798760956">Paspauskite ir palaikykite „Chromium“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
 <translation id="2517624234762908348">Sinchronizuoti „Chromium“ duomenis</translation>
 <translation id="2592940277904433508">Toliau naudoti „Chromium“</translation>
@@ -167,6 +168,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="5088872414922783602">Greičiau pasiekite „Chromium“ naudodami pagrindinio ekrano doką.</translation>
 <translation id="5124429847818367226">Dabar galite naudoti „Chromium“ bet kada naršydami ar paliesdami nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="5131565040785979529">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios esate prisijungę, ir tai, kaip naudojama „Chromium“.</translation>
+<translation id="5134464247000681876">Atidarykite nuorodas iš „Gmail“, Žemėlapių, „YouTube“ ir kitų programų naršyklėje „Chromium“</translation>
 <translation id="5224391634244552924">Nėra išsaugotų slaptažodžių. „Chromium“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote.</translation>
 <translation id="5259423875997548710">Ieškokite vaizdo medžiagos naršyklėje „Chromium“.</translation>
 <translation id="5308226104666789935">„Chromium“ nepavyko patikrinti, ar yra naujinių.</translation>
@@ -260,6 +262,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="7674213385180944843">Atidarykite „Nustatymai“ &gt; „Privatumas“ &gt; „Fotoaparatas“ &gt; „Chromium“ ir įjunkite fotoaparatą.</translation>
 <translation id="7733418656985455268">„Chromium“ patarimas: ieškokite naudodami „Lens“</translation>
 <translation id="7747820849741499258">Paieška naršyklėje „Chromium“</translation>
+<translation id="7753923083404296545">Atidaryta „Chromium“ inkognito režimu</translation>
 <translation id="7762622637388462191">Užrakinkite inkognito skirtukus, išėję iš „Chromium“ ar perjungę į kitą programą.</translation>
 <translation id="7763454117143368771">Naudokite „Chromium“ kaip numatytąją naršyklę, kad apsisaugotumėte nuo pavojingų svetainių ir užtikrintumėte slaptažodžių apsaugą</translation>
 <translation id="7784950022329154821">Užrakinti inkognito skirtukus uždarius „Chromium“</translation>

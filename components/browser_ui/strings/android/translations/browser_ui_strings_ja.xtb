@@ -25,6 +25,7 @@
 <translation id="1383876407941801731">検索</translation>
 <translation id="1384959399684842514">ダウンロードを一時停止しました</translation>
 <translation id="1396327438254055134">V8 オプティマイザーの使用を許可するサイトを指定します。</translation>
+<translation id="1409338233051621926">[アプリ]、[デフォルトのアプリ] をタップします</translation>
 <translation id="1415402041810619267">URL の短縮バージョンです</translation>
 <translation id="1415855080660575082">Chrome で最近使ったタブをデバイスと共有して、デバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でオンまたはオフにできます。</translation>
 <translation id="1448064542941920355">縮小</translation>
@@ -108,6 +109,7 @@
 <translation id="2597457036804169544">ダークモードをサイトに適用しません</translation>
 <translation id="2606760465469169465">自動確認</translation>
 <translation id="2621115761605608342">特定のサイトに対して JavaScript を許可します。</translation>
+<translation id="2626708220538466178">デフォルトのブラウザのボトムシートが閉じられました</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2682367912565197520">保存したズームレベルを削除</translation>
@@ -176,6 +178,7 @@
 <translation id="3600792891314830896">音声が再生されるサイトをミュートする</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3628308229821498208">提案された検索</translation>
+<translation id="3658847490588580244">デフォルトのブラウザのボトムシート</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> のサイトグループに属する <ph name="RWS_MEMBERS_COUNT" /> 件のサイトが、グループでのあなたのアクティビティを確認できます}other{<ph name="RWS_OWNER" /> のサイトグループに属する <ph name="RWS_MEMBERS_COUNT" /> 件のサイトが、グループでのあなたのアクティビティを確認できます}}</translation>
 <translation id="3697164069658504920">オンにすると、サイトは USB デバイスの使用を要求できます。オフにすると、サイトは USB デバイスを使用できません。</translation>
 <translation id="3707034683772193706">アクセス先のサイトは、主にあなたが bot でないことを確認する少量の情報を Chrome に保存できます。</translation>
@@ -241,6 +244,7 @@
 <translation id="4644713492825682049">削除してリセット</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
+<translation id="4672315773691449562">[ブラウザアプリ]、[Chrome] をタップします</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" /> にハンド トラッキングの使用を許可するには、<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />でもハンド トラッキングをオンにしてください。</translation>
 <translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
 <translation id="4755971844837804407">オンにすると、サイトはユーザーにあらゆる広告を表示できます。オフにすると、サイトは煩わしい広告や誤解を招く広告を表示できません。</translation>
@@ -523,6 +527,7 @@
 <translation id="857943718398505171">許可（推奨）</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8617611086246832542">オンにすると、ウェブサイトのデスクトップ ビューが表示されます。オフにすると、ウェブサイトのモバイルビューが表示されます。</translation>
+<translation id="8670078035093027626">デフォルトのブラウザのボトムシートが画面全体に表示されています</translation>
 <translation id="8676316391139423634">オンにすると、サイトはハンド トラッキングを要求できます。オフにすると、サイトはハンド トラッキングを要求できません。</translation>
 <translation id="8676374126336081632">入力内容を消去</translation>
 <translation id="8681886425883659911">煩わしい広告や誤解を招く広告が表示されることがわかっているサイトで広告がブロックされます</translation>

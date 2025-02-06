@@ -5,13 +5,17 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
+#include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
@@ -42,6 +46,10 @@ using affiliations::AffiliationService;
 using affiliations::MockAffiliationService;
 using PasswordChangeOutcome = ::optimization_guide::proto::
     PasswordChangeSubmissionData_PasswordChangeOutcome;
+using PasswordChangeErrorCase = ::optimization_guide::proto::
+    PasswordChangeSubmissionData_PasswordChangeErrorCase;
+using OptimizationGuideModelExecutionError = optimization_guide::
+    OptimizationGuideModelExecutionError::ModelExecutionError;
 using ::testing::_;
 using ::testing::An;
 using ::testing::Contains;
@@ -49,6 +57,9 @@ using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::WithArg;
+
+const char kPasswordChangeSubmissionOutcomeHistogram[] =
+    "PasswordManager.PasswordChangeSubmissionOutcome";
 
 namespace {
 
@@ -145,9 +156,14 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
         base::BindRepeating(&OpenNewTabInBackground, browser()->AsWeakPtr()));
   }
 
-  void MockPasswordChangeOutcome(PasswordChangeOutcome outcome) {
+  void MockPasswordChangeOutcome(
+      std::optional<PasswordChangeOutcome> outcome,
+      std::optional<PasswordChangeErrorCase> error_case = std::nullopt) {
     optimization_guide::proto::PasswordChangeResponse response;
-    response.mutable_outcome_data()->set_submission_outcome(outcome);
+    response.mutable_outcome_data()->set_submission_outcome(outcome.value());
+    if (error_case.has_value()) {
+      response.mutable_outcome_data()->add_error_case(error_case.value());
+    }
 
     EXPECT_CALL(*mock_optimization_guide_keyed_service(),
                 ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
@@ -304,6 +320,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
+  base::HistogramTester histogram_tester;
   MockPasswordChangeDelegateObserver observer;
 
   SetPrivacyNoticeAcceptedPref();
@@ -315,8 +332,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
 
   // Verify the delegate is created and it's currently waiting for change
   // password form.
-  auto* delegate = password_change_service()->GetPasswordChangeDelegate(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
+  base::WeakPtr<PasswordChangeDelegate> delegate =
+      password_change_service()
+          ->GetPasswordChangeDelegate(
+              browser()->tab_strip_model()->GetWebContentsAt(0))
+          ->AsWeakPtr();
   ASSERT_TRUE(delegate);
   delegate->AddObserver(&observer);
   EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
@@ -337,6 +357,15 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
             delegate->GetCurrentState());
 
   delegate->RemoveObserver(&observer);
+  delegate->Stop();
+  EXPECT_TRUE(base::test::RunUntil([&delegate]() {
+    // Delegate's destructor is called async, so this is needed before checking
+    // the metrics report.
+    return delegate == nullptr;
+  }));
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
+      PasswordChangeDelegate::State::kChangingPassword, 1);
 }
 
 // TODO(crbug.com/382703186): Fix flakiness and re-enable.
@@ -394,6 +423,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, StopPasswordChange) {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
+  base::HistogramTester histogram_tester;
   SetPrivacyNoticeAcceptedPref();
   GURL main_url("https://example.com/");
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
@@ -409,8 +439,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   PasswordsNavigationObserver password_change_page_observer(web_contents);
   EXPECT_TRUE(password_change_page_observer.Wait());
 
-  PasswordChangeDelegate* delegate =
-      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  base::WeakPtr<PasswordChangeDelegate> delegate =
+      password_change_service()
+          ->GetPasswordChangeDelegate(WebContents())
+          ->AsWeakPtr();
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     // Keep trying to mark successful submission.
@@ -421,9 +453,25 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   CheckThatCredentialsStored(
       /*username=*/"test", base::UTF16ToUTF8(delegate->GetGeneratedPassword()),
       password_manager::PasswordForm::Type::kChangeSubmission);
+
+  delegate->Stop();
+  EXPECT_TRUE(base::test::RunUntil([&delegate]() {
+    // Delegate's destructor is called async, so this is needed before checking
+    // the metrics report.
+    return delegate == nullptr;
+  }));
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
+      PasswordChangeDelegate::State::kPasswordSuccessfullyChanged, 1);
+  histogram_tester.ExpectUniqueSample(
+      kPasswordChangeSubmissionOutcomeHistogram,
+      ChangeFormSubmissionVerifier::SubmissionOutcome::kSuccess, 1);
+  histogram_tester.ExpectTotalCount("PasswordManager.PasswordChangeTimeOverall",
+                                    1);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
+  base::HistogramTester histograms;
   SetPrivacyNoticeAcceptedPref();
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
@@ -472,7 +520,68 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       PasswordChangeSubmissionFailedEmptyResponse) {
+  base::HistogramTester histograms;
+  SetPrivacyNoticeAcceptedPref();
+  password_manager::PasswordStoreInterface* password_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+  GURL origin = embedded_test_server()->GetURL("example.com", "/");
+  password_manager::PasswordForm form;
+  form.signon_realm = origin.spec();
+  form.url = origin;
+  form.username_value = u"test";
+  form.password_value = u"pa$$word";
+  password_store->AddLogin(form);
+  WaitForPasswordStore();
+
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(origin))
+      .WillOnce(testing::Return(embedded_test_server()->GetURL(
+          "example.com", "/password/update_form_empty_fields.html")));
+
+  StartPasswordChange(origin, form.username_value, form.password_value,
+                      WebContents());
+  EXPECT_CALL(
+      *mock_optimization_guide_keyed_service(),
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                       kPasswordChangeSubmission,
+                   _, _,
+                   An<optimization_guide::
+                          OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              base::unexpected(
+                  optimization_guide::OptimizationGuideModelExecutionError::
+                      FromModelExecutionError(
+                          OptimizationGuideModelExecutionError::
+                              kGenericFailure)),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+
+  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
+  PasswordsNavigationObserver password_change_page_observer(web_contents);
+  EXPECT_TRUE(password_change_page_observer.Wait());
+
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    // Keep trying to mark successful submission.
+    delegate->OnPasswordFormSubmission(web_contents);
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kPasswordChangeFailed;
+  }));
+
+  WaitForPasswordStore();
+  histograms.ExpectUniqueSample(
+      kPasswordChangeSubmissionOutcomeHistogram,
+      ChangeFormSubmissionVerifier::SubmissionOutcome::kNoResponse, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        PasswordChangeSubmissionFailed) {
+  base::HistogramTester histogram_tester;
   SetPrivacyNoticeAcceptedPref();
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
@@ -496,14 +605,18 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 
   MockPasswordChangeOutcome(
       PasswordChangeOutcome::
-          PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME);
+          PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME,
+      PasswordChangeErrorCase::
+          PasswordChangeSubmissionData_PasswordChangeErrorCase_PAGE_ERROR);
 
   auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
   PasswordsNavigationObserver password_change_page_observer(web_contents);
   EXPECT_TRUE(password_change_page_observer.Wait());
 
-  PasswordChangeDelegate* delegate =
-      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  base::WeakPtr<PasswordChangeDelegate> delegate =
+      password_change_service()
+          ->GetPasswordChangeDelegate(WebContents())
+          ->AsWeakPtr();
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     // Keep trying to mark successful submission.
@@ -516,6 +629,19 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   CheckPasswordsSavedOnFailure(
       base::UTF16ToUTF8(form.username_value),
       base::UTF16ToUTF8(delegate->GetGeneratedPassword()));
+
+  delegate->Stop();
+  EXPECT_TRUE(base::test::RunUntil([&delegate]() {
+    // Delegate's destructor is called async, so this is needed before checking
+    // the metrics report.
+    return delegate == nullptr;
+  }));
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
+      PasswordChangeDelegate::State::kPasswordChangeFailed, 1);
+  histogram_tester.ExpectUniqueSample(
+      kPasswordChangeSubmissionOutcomeHistogram,
+      ChangeFormSubmissionVerifier::SubmissionOutcome::kPageError, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,

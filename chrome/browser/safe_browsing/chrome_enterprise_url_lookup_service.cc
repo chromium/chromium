@@ -75,13 +75,14 @@ ChromeEnterpriseRealTimeUrlLookupService::
             get_user_population_callback,
         std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
         enterprise_connectors::ConnectorsService* connectors_service,
-        ReferrerChainProvider* referrer_chain_provider)
+        ReferrerChainProvider* referrer_chain_provider,
+        PrefService* pref_service)
     : RealTimeUrlLookupServiceBase(
           url_loader_factory,
           cache_manager,
           get_user_population_callback,
           referrer_chain_provider,
-          /*pref_service=*/nullptr,
+          pref_service,
           /*webui_delegate=*/WebUIInfoSingleton::GetInstance()),
       profile_(profile),
       connectors_service_(connectors_service),

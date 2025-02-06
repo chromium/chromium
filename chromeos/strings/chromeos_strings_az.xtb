@@ -584,7 +584,6 @@
 <translation id="3820172043799983114">Yanlış PIN.</translation>
 <translation id="382043424867370667">"Gün batımı" divar kağızı</translation>
 <translation id="3824259034819781947">Fayllar əlavə edin</translation>
-<translation id="3836587210832263413">Yalnız etibar etdiyiniz artırmaları aktiv edin</translation>
 <translation id="3838338534323494292">Yeni parol</translation>
 <translation id="3845880861638660475">Dialoqu bağlamaq üçün <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> düyməsini basın.</translation>
 <translation id="3848280697030027394">klaviaturanın tündləşdirilməsi</translation>
@@ -1113,8 +1112,6 @@
 <translation id="628726841779494414">Printer ayarlarında printerləri idarə edin</translation>
 <translation id="6292095526077353682">Şarj zamanı ekran qoruyucusu göstərilsin</translation>
 <translation id="629550705077076970">klaviaturanın qaraldılması</translation>
-<translation id="6301193653204230066">Təhlükəsiz sıfırlama Chrome brauzer artırmalarını deaktiv edir, eyni zamanda şəbəkə və digər ayarları təhlükəsiz defoltlara sıfırlayır.
-          Tablar, fayllar, kukilər və tarixçə dəyişməyəcək.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi ləğv edilib</translation>
 <translation id="631063167932043783">Tətbiqi araşdırın</translation>
 <translation id="6318437367327684789">həmişə</translation>
@@ -1774,6 +1771,8 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="951780398843003443">Çəkiliş boyunca səsləri müqayisə edin ki, transkript hər spikerin nə dediyini və nə vaxt dediyini əks etdirsin</translation>
 <translation id="952992212772159698">Aktiv edilməyib</translation>
 <translation id="95718197892796296">gil</translation>
+<translation id="959792926760890141">Təhlükəsiz sıfırlama Chrome brauzer artırmalarını deaktiv edir, eyni zamanda şəbəkə və digər ayarları təhlükəsiz defoltlara sıfırlayır.
+          Defolt axtarış mühərriki sıfırlanacaq, lakin tablar, fayllar, kukilər və tarixçə dəyişməyəcək.</translation>
 <translation id="960719561871045870">Operator kodu</translation>
 <translation id="965918541715156800">sarı və yaşılımtıl mavi</translation>
 <translation id="966787709310836684">menyu</translation>

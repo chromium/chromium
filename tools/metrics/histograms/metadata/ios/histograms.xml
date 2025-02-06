@@ -1520,6 +1520,24 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.FeedHandlingError.{Action}" enum="Boolean"
+    expires_after="2025-07-05">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Emitted every time a request from Discover feed could not be fulfilled as
+    intended.
+  </summary>
+  <token key="Action">
+    <variant name="DisplayMessage"/>
+    <variant name="OpenUrl"/>
+    <variant name="PresentManageFlow"/>
+    <variant name="PresentSignInFlow"/>
+    <variant name="SendFeedback"/>
+    <variant name="TapPreview"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.FilePicker.Drive.AccountSelection"
     enum="IOSFilePickerDriveAccountSelection" expires_after="2025-10-10">
   <owner>qpubert@google.com</owner>

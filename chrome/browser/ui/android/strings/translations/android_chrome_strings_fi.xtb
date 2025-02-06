@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Salasanat kaikilla laitteillasi</translation>
 <translation id="1082920045291562218">Jaa yhteenvedon palautetaulukolle, suljettu</translation>
 <translation id="1087176310396019910">Mahdollisesti roskapostia</translation>
+<translation id="1087799850623149508">Voit siirtää osoitepalkin alareunaan koskettamalla sitä pitkään</translation>
 <translation id="1089606299949659462">Tarkastus valmis</translation>
 <translation id="1094555143448724771">Voit nähdä muiden laitteiden välilehdet synkronoimalla välilehdet ja historian</translation>
 <translation id="1095761715416917775">Varmista, että sinulla on aina pääsy synkronoituun dataasi</translation>
@@ -131,6 +132,7 @@ Siirry <ph name="BEGIN_LINK2" />Googlen palveluihin<ph name="END_LINK2" />, jos 
 <translation id="1513858653616922153">Poista salasana</translation>
 <translation id="1521774566618522728">Aktiivinen tänään</translation>
 <translation id="153446405401665083">Chromen uusi versio on saatavilla</translation>
+<translation id="1540012742443808215">Osoitepalkki on yläreunassa</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 kirjanmerkki tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}other{# kirjanmerkkiä tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="1544084554881119930">Maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.
 Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6459045781120991510">Kyselyt</translation>
 <translation id="6461962085415701688">Tiedoston avaaminen epäonnistui</translation>
 <translation id="6464977750820128603">Voit nähdä Chromessa käyttämäsi sivustot ja asettaa niille ajastimia.\n\nGoogle saa tietoa sivustoista, joille asetat ajastimia, ja sivustojen käytön kestosta. Tietoja käytetään Digitaalisen hyvinvoinnin parantamiseen.</translation>
+<translation id="6468703991511753953">Osoitepalkki on tällä hetkellä alareunassa</translation>
 <translation id="6470181189905173055">Sivut, jotka olet avannut Chromessa, kun <ph name="APP_LABEL" /> on käytössä, näkyvät täällä.</translation>
 <translation id="6473086018775716761">Jakamisvaihtoehtojen lista puolen näytön kokoisena.</translation>
 <translation id="6475951671322991020">Lataa video</translation>

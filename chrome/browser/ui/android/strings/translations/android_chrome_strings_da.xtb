@@ -20,6 +20,7 @@
 <translation id="1080365971383768617">Adgangskoder på alle dine enheder</translation>
 <translation id="1082920045291562218">Feedback om Oversigtsark til deling er lukket</translation>
 <translation id="1087176310396019910">Muligt spam</translation>
+<translation id="1087799850623149508">Du kan holde fingeren nede for at flytte adresselinjen til bunden</translation>
 <translation id="1089606299949659462">Gennemgangen er fuldført</translation>
 <translation id="1094555143448724771">Hvis du vil se faner fra dine andre enheder, skal du synkronisere dine faner og din historik</translation>
 <translation id="1095761715416917775">Sørg for, at du altid kan få adgang til dine synkroniserede data</translation>
@@ -131,6 +132,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1513858653616922153">Slet adgangskoden</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="153446405401665083">En ny version af Chrome er tilgængelig</translation>
+<translation id="1540012742443808215">Adresselinjen vises i øjeblikket øverst</translation>
 <translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 bogmærke gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}one{# bogmærke gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}other{# bogmærker gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Betalingsmetoder og adresser krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
 Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
@@ -1185,6 +1187,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6459045781120991510">Undersøgelser</translation>
 <translation id="6461962085415701688">Filen kan ikke åbnes</translation>
 <translation id="6464977750820128603">Du kan se websites, du har besøgt i Chrome, og indstille timere for dem.\n\nGoogle får oplysninger om de websites, du indstiller timere for, og hvor længe du er på dem. Disse oplysninger bruges til at forbedre Digital balance.</translation>
+<translation id="6468703991511753953">Adresselinjen vises i øjeblikket nederst</translation>
 <translation id="6470181189905173055">De sider, du åbnede i Chrome, mens du brugte <ph name="APP_LABEL" />, vises her.</translation>
 <translation id="6473086018775716761">Listen over delingsindstillinger er åbnet i halv højde.</translation>
 <translation id="6475951671322991020">Download video</translation>

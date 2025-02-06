@@ -26,6 +26,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+class PrefService;
 class Profile;
 
 namespace safe_browsing {
@@ -46,7 +47,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
           get_user_population_callback,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       enterprise_connectors::ConnectorsService* connectors_service,
-      ReferrerChainProvider* referrer_chain_provider);
+      ReferrerChainProvider* referrer_chain_provider,
+      PrefService* pref_service);
 
   ChromeEnterpriseRealTimeUrlLookupService(
       const ChromeEnterpriseRealTimeUrlLookupService&) = delete;

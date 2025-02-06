@@ -723,7 +723,15 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
 
 // Test that navigating across a site boundary after a crash creates a new
 // RFH without requiring a cross-site transition (i.e., PENDING state).
-TEST_F(WebContentsImplTest, DISABLED_CrossSiteBoundariesAfterCrash) {
+// TODO(crbug.com/375057184): Determine why this test crashes on Android and
+// re-enable it.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CrossSiteBoundariesAfterCrash \
+  DISABLED_CrossSiteBoundariesAfterCrash
+#else
+#define MAYBE_CrossSiteBoundariesAfterCrash CrossSiteBoundariesAfterCrash
+#endif
+TEST_F(WebContentsImplTest, MAYBE_CrossSiteBoundariesAfterCrash) {
   // Ensure that the cross-site transition will also be cross-process on
   // Android.
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());

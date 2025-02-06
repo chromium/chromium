@@ -218,7 +218,7 @@ PlatformThreadId PlatformThreadBase::CurrentId() {
   // Pthreads doesn't have the concept of a thread ID, so we have to reach down
   // into the kernel.
 #if BUILDFLAG(IS_APPLE)
-  return pthread_mach_thread_np(pthread_self());
+  return PlatformThreadId(pthread_mach_thread_np(pthread_self()));
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Workaround false-positive MSAN use-of-uninitialized-value on
   // thread_local storage for loaded libraries:
@@ -249,29 +249,29 @@ PlatformThreadId PlatformThreadBase::CurrentId() {
     }
 #endif
   }
-  return g_thread_id;
+  return PlatformThreadId(g_thread_id);
 #elif BUILDFLAG(IS_ANDROID)
   // Note: do not cache the return value inside a thread_local variable on
   // Android (as above). The reasons are:
   // - thread_local is slow on Android (goes through emutls)
   // - gettid() is fast, since its return value is cached in pthread (in the
   //   thread control block of pthread). See gettid.c in bionic.
-  return gettid();
+  return PlatformThreadId(gettid());
 #elif BUILDFLAG(IS_FUCHSIA)
   thread_local static zx_koid_t id =
       GetKoid(*zx::thread::self()).value_or(ZX_KOID_INVALID);
-  return id;
+  return PlatformThreadId(id);
 #elif BUILDFLAG(IS_SOLARIS) || BUILDFLAG(IS_QNX)
-  return pthread_self();
+  return PlatformThreadId(pthread_self());
 #elif BUILDFLAG(IS_NACL) && defined(__GLIBC__)
-  return pthread_self();
+  return PlatformThreadId(pthread_self());
 #elif BUILDFLAG(IS_NACL) && !defined(__GLIBC__)
   // Pointers are 32-bits in NaCl.
-  return reinterpret_cast<int32_t>(pthread_self());
+  return PlatformThreadId(reinterpret_cast<int32_t>(pthread_self()));
 #elif BUILDFLAG(IS_POSIX) && BUILDFLAG(IS_AIX)
-  return pthread_self();
+  return PlatformThreadId(pthread_self());
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_AIX)
-  return reinterpret_cast<int64_t>(pthread_self());
+  return PlatformThreadId(reinterpret_cast<int64_t>(pthread_self()));
 #endif
 }
 
