@@ -2025,7 +2025,6 @@ component("base") {
       "process/process_metrics_apple.cc",
       "profiler/module_cache_apple.cc",
       "strings/sys_string_conversions_apple.mm",
-      "synchronization/waitable_event_apple.cc",
       "system/sys_info_apple.mm",
       "threading/platform_thread_apple.mm",
       "time/time_apple.mm",
@@ -2037,6 +2036,10 @@ component("base") {
       "Foundation.framework",
       "Security.framework",
     ]
+
+    if (!is_ios || !use_blink) {
+      sources += [ "synchronization/waitable_event_apple.cc" ]
+    }
   }
 
   # Desktop Mac.
@@ -2176,7 +2179,8 @@ component("base") {
         "process/process_mac.cc",
         "process/process_posix.cc",
         "sync_socket_posix.cc",
-        "synchronization/waitable_event_watcher_mac.cc",
+        "synchronization/waitable_event_posix.cc",
+        "synchronization/waitable_event_watcher_posix.cc",
       ]
 
       # We include launch_mac on simulator builds so unittests can fork.

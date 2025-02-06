@@ -168,12 +168,19 @@ void TabStripLayoutHelper::RemoveGroupHeader(tab_groups::TabGroupId group) {
 
 void TabStripLayoutHelper::UpdateGroupHeaderIndex(
     tab_groups::TabGroupId group) {
+  if (!GetFirstTabSlotForGroup(group).has_value()) {
+    return;
+  }
+
   const int slot_index = GetSlotIndexForGroupHeader(group);
   TabSlot header_slot = slots_[slot_index];
 
   slots_.erase(slots_.begin() + slot_index);
+
+  // Recalculate the first tab index after removing the header as it
+  // helps with the header insertion index calculation.
   std::optional<int> first_tab = GetFirstTabSlotForGroup(group);
-  CHECK(first_tab);
+
   slots_.insert(slots_.begin() + first_tab.value(), header_slot);
 }
 

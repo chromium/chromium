@@ -33,6 +33,12 @@ suite('GlicPage', function() {
     await flushTasks();
   }
 
+  function clickToggleRow() {
+    const launcherToggle = $<SettingsToggleButtonElement>('launcherToggle');
+    assertTrue(!!launcherToggle);
+    launcherToggle.click();
+  }
+
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -63,48 +69,54 @@ suite('GlicPage', function() {
     assertFalse($<SettingsToggleButtonElement>('launcherToggle')!.checked);
   });
 
-  test('LauncherToggleChange', async () => {
-    page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
+  for (const clickType of [clickToggle, clickToggleRow]) {
+    const clickTypeName = clickType.name.replace('click', '');
+    test('Launcher' + clickTypeName + 'Change', async () => {
+      page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
 
-    const launcherToggle = $<SettingsToggleButtonElement>('launcherToggle')!;
+      const launcherToggle = $<SettingsToggleButtonElement>('launcherToggle')!;
 
-    await clickToggle();
-    assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
-    assertTrue(launcherToggle.checked);
-    assertEquals(1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
-    glicBrowserProxy.reset();
+      await clickType();
+      assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
+      assertTrue(launcherToggle.checked);
+      assertEquals(
+          1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
+      glicBrowserProxy.reset();
 
-    await clickToggle();
-    assertFalse(page.getPref(PrefName.LAUNCHER_ENABLED).value);
-    assertFalse(launcherToggle.checked);
-    assertEquals(1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
-    glicBrowserProxy.reset();
-  });
+      await clickType();
+      assertFalse(page.getPref(PrefName.LAUNCHER_ENABLED).value);
+      assertFalse(launcherToggle.checked);
+      assertEquals(
+          1, glicBrowserProxy.getCallCount('setGlicOsLauncherEnabled'));
+      glicBrowserProxy.reset();
+    });
 
-  // Test that the keyboard shortcut is collapsed/invisible when the launcher
-  // is disabled and shown when the launcher is enabled.
-  test('KeyboardShortcutVisibility', async () => {
-    const keyboardShortcutSetting = $('keyboardShortcutSetting');
+    // Test that the keyboard shortcut is collapsed/invisible when the launcher
+    // is disabled and shown when the launcher is enabled.
+    test('KeyboardShortcutVisibility' + clickTypeName, async () => {
+      const keyboardShortcutSetting = $('keyboardShortcutSetting');
 
-    // The pref starts off disabled, the keyboard shortcut row should be hidden.
-    page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
-    assertFalse(isVisible(keyboardShortcutSetting));
+      // The pref starts off disabled, the keyboard shortcut row should be
+      // hidden.
+      page.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
+      assertFalse(isVisible(keyboardShortcutSetting));
 
-    // Enable using the launcher toggle, the row should show.
-    await clickToggle();
-    assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
-    assertTrue(isVisible(keyboardShortcutSetting));
+      // Enable using the launcher toggle, the row should show.
+      await clickType();
+      assertTrue(page.getPref(PrefName.LAUNCHER_ENABLED).value);
+      assertTrue(isVisible(keyboardShortcutSetting));
 
-    // Disable using the launcher toggle, the row should hide.
-    await clickToggle();
-    assertFalse(page.getPref(PrefName.LAUNCHER_ENABLED).value);
-    assertFalse(isVisible(keyboardShortcutSetting));
+      // Disable using the launcher toggle, the row should hide.
+      await clickType();
+      assertFalse(page.getPref(PrefName.LAUNCHER_ENABLED).value);
+      assertFalse(isVisible(keyboardShortcutSetting));
 
-    // Enable via pref, the row should show.
-    page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
-    await flushTasks();
-    assertTrue(isVisible(keyboardShortcutSetting));
-  });
+      // Enable via pref, the row should show.
+      page.setPrefValue(PrefName.LAUNCHER_ENABLED, true);
+      await flushTasks();
+      assertTrue(isVisible(keyboardShortcutSetting));
+    });
+  }
 
   test('ShortcutInputSuspends', async () => {
     const shortcutInput = $<CrShortcutInputElement>('shortcutInput')!;

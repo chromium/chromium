@@ -1728,29 +1728,31 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
                       /*is_download=*/false, factory_builder,
                       /*factory_override=*/nullptr);
   net::CookieSettingOverrides devtools_cookie_overrides;
+  devtools_instrumentation::ApplyNetworkCookieControlsOverrides(
+      devtools_params.agent_host(), devtools_cookie_overrides);
+
+  net::CookieSettingOverrides cookie_overrides;
+  if (ShouldAllowSameSiteNoneCookiesInSandbox(*frame_tree_node)) {
+    // Include a CookieSettingOverride in the UrlLoaderFactoryParams for the
+    // frame's SharedURLLoaderFactory if the frame contains the
+    // `allow-same-site-none-cookies` value in its sandbox policy.
+    cookie_overrides.Put(
+        net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
+  }
 
   if (header_client) {
     return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-        CreateURLLoaderFactoryWithHeaderClient(std::move(header_client),
-                                               std::move(factory_builder),
-                                               storage_partition));
-  } else if (devtools_instrumentation::ApplyNetworkCookieControlsOverrides(
-                 devtools_params.agent_host(), devtools_cookie_overrides)) {
-    network::mojom::URLLoaderFactoryParamsPtr params =
-        storage_partition->CreateURLLoaderFactoryParams();
-    params->devtools_cookie_setting_overrides =
-        std::move(devtools_cookie_overrides);
-    return std::move(factory_builder)
-        .Finish(storage_partition->GetNetworkContext(), std::move(params));
+        CreateURLLoaderFactoryWithHeaderClient(
+            std::move(header_client), std::move(factory_builder),
+            storage_partition, std::move(devtools_cookie_overrides),
+            std::move(cookie_overrides)));
   } else {
-    if (ShouldAllowSameSiteNoneCookiesInSandbox(*frame_tree_node)) {
-      // Include a CookieSettingOverride in the UrlLoaderFactoryParams for the
-      // frame's SharedURLLoaderFactory if the frame contains the
-      // `allow-same-site-none-cookies` value in its sandbox policy.
+    if (!devtools_cookie_overrides.empty() || !cookie_overrides.empty()) {
       network::mojom::URLLoaderFactoryParamsPtr params =
           storage_partition->CreateURLLoaderFactoryParams();
-      params->cookie_setting_overrides.Put(
-          net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
+      params->devtools_cookie_setting_overrides =
+          std::move(devtools_cookie_overrides);
+      params->cookie_setting_overrides = std::move(cookie_overrides);
       return std::move(factory_builder)
           .Finish(storage_partition->GetNetworkContext(), std::move(params));
     }
@@ -1897,7 +1899,9 @@ NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
         header_client,
     network::URLLoaderFactoryBuilder factory_builder,
-    StoragePartitionImpl* partition) {
+    StoragePartitionImpl* partition,
+    std::optional<net::CookieSettingOverrides> devtools_cookie_overrides,
+    std::optional<net::CookieSettingOverrides> cookie_overrides) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (url_loader_factory::GetTestingInterceptor()) {
@@ -1914,7 +1918,13 @@ NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
   params->disable_web_security =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity);
-
+  if (devtools_cookie_overrides.has_value()) {
+    params->devtools_cookie_setting_overrides =
+        std::move(devtools_cookie_overrides.value());
+  }
+  if (cookie_overrides.has_value()) {
+    params->cookie_setting_overrides = std::move(cookie_overrides.value());
+  }
   return std::move(factory_builder)
       .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
           partition->GetNetworkContext(), std::move(params));

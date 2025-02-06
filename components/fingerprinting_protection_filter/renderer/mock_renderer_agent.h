@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <optional>
-#include <string_view>
 
 #include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
 #include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
@@ -45,7 +44,7 @@ class MockRendererAgent : public RendererAgent {
                std::optional<subresource_filter::mojom::ActivationState>());
   MOCK_METHOD0(RequestActivationState, void());
   MOCK_METHOD0(OnSetFilterCalled, void());
-  MOCK_METHOD1(OnSubresourceDisallowed, void(std::string_view));
+  MOCK_METHOD0(OnSubresourceDisallowed, void());
 
   bool IsTopLevelMainFrame() override { return is_top_level_main_frame_; }
 

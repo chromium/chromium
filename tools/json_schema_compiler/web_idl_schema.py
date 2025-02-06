@@ -120,7 +120,15 @@ def GetNodeDescription(node: IDLNode) -> str:
   Raises:
     SchemaCompilerError: If top of file is reached while trying to extract a
     comment for a description.
+    AssertionError: If the line number the IDLNode is annotated with is not
+    greater than zero.
   """
+
+  # The IDL parser doesn't annotate Operation nodes with their line number
+  # correctly, but the Arguments child node will have the correct line number,
+  # so use that instead.
+  if node.GetClass() == 'Operation':
+    return GetNodeDescription(node.GetOneOf('Arguments'))
 
   # Extended attributes for a node can actually be formatted onto a preceding
   # line, so if this node has an extended attribute we instead look for the
@@ -132,6 +140,12 @@ def GetNodeDescription(node: IDLNode) -> str:
   # Look through the lines above the current node and extract every consecutive
   # line that is a comment until a blank or non-comment line is found.
   filename, line_number = node.GetFileAndLine()
+  # The IDL parser we use doesn't annotate some classes of nodes with the
+  # correct line number and just reports them as line 0. In theory we shouldn't
+  # pass any of those nodes to this function, so throw an error if happens.
+  assert line_number > 0, node.GetLogLine(
+      'Attempted to extract a description comment for an IDL node, but the line'
+      ' number of the node was reported as 0: %s.' % (node.GetName()))
   lines = []
   while line_number > 0:
     line = linecache.getline(filename, line_number - 1)
@@ -372,6 +386,10 @@ class Operation:
   def process(self) -> dict:
     properties = OrderedDict()
     properties['name'] = self.node.GetName()
+
+    description = GetNodeDescription(self.node)
+    if (description):
+      properties['description'] = description
 
     parameters = []
     arguments_node = self.node.GetOneOf('Arguments')

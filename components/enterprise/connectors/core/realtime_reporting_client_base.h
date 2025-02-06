@@ -51,8 +51,6 @@ class RealtimeReportingClientBase : public KeyedService,
 
   virtual base::WeakPtr<RealtimeReportingClientBase> AsWeakPtr() = 0;
 
-  base::Value::List GetLocalIpAddresses();
-
  protected:
   // Sub-method called by InitRealtimeReportingClient() to make appropriate
   // verifications and initialize the profile reporting client. Returns a policy

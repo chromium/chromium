@@ -377,8 +377,6 @@ base::TimeTicks IdleHelper::State::idle_period_deadline() const {
 void IdleHelper::State::UpdateState(IdlePeriodState new_state,
                                     base::TimeTicks new_deadline,
                                     base::TimeTicks optional_now) {
-  IdlePeriodState old_idle_period_state = idle_period_state_;
-
   helper_->CheckOnValidThread();
   if (new_state == idle_period_state_) {
     DCHECK_EQ(new_deadline, idle_period_deadline_);
@@ -396,14 +394,6 @@ void IdleHelper::State::UpdateState(IdlePeriodState new_state,
 
   idle_period_state_ = new_state;
   idle_period_deadline_ = new_deadline;
-
-  // Inform the delegate if we are starting or ending an idle period.
-  if (IsInIdlePeriod(new_state) && !IsInIdlePeriod(old_idle_period_state)) {
-    delegate_->OnIdlePeriodStarted();
-  } else if (!IsInIdlePeriod(new_state) &&
-             IsInIdlePeriod(old_idle_period_state)) {
-    delegate_->OnIdlePeriodEnded();
-  }
 }
 
 void IdleHelper::State::TraceIdleIdleTaskStart() {

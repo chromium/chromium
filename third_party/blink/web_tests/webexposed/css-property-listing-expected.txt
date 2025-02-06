@@ -344,6 +344,7 @@ All changes to this list should go through Blink's feature review process: http:
     quotes
     r
     reading-flow
+    reading-order
     resize
     right
     rotate

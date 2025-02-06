@@ -78,6 +78,9 @@ void DocumentStyleEnvironmentVariables::RecordVariableUsage(
   } else if (name == "safe-area-inset-right") {
     UseCounter::Count(document_,
                       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetRight);
+  } else if (name == "safe-area-max-inset-bottom") {
+    UseCounter::Count(
+        document_, WebFeature::kCSSEnvironmentVariable_SafeAreaMaxInsetBottom);
   } else {
     // Do nothing if this is an unknown variable.
   }

@@ -518,6 +518,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 IntentUtils.safeGetBooleanExtra(
                         intent, EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE, false);
 
+        // TODO(crbug.com/393437143): Potentially reuse the close button code from Auth Tab.
         Bitmap bitmap =
                 IntentUtils.safeGetParcelableExtra(
                         intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
@@ -1022,7 +1023,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (mInteractWithBackground) {
             featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_BACKGROUND_INTERACTION);
         }
-        if (mCloseButtonIcon != null) featureUsage.log(CustomTabsFeature.EXTRA_CLOSE_BUTTON_ICON);
+        if (IntentUtils.safeHasExtra(intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_CLOSE_BUTTON_ICON);
+        }
         if (getCloseButtonPosition() != CLOSE_BUTTON_POSITION_DEFAULT) {
             featureUsage.log(CustomTabsFeature.EXTRA_CLOSE_BUTTON_POSITION);
         }

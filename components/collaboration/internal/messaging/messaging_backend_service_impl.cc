@@ -646,6 +646,14 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
     return;
   }
 
+  // If the user themselves are trying to leave the group, they don't need to be
+  // notified of anything. Note that although real event source is local, it
+  // appears to be a remote event since the leave attempt and tab group removal
+  //  is processed only after a commit happens to the server side.
+  if (data_sharing_service_->IsLeavingGroup(*collaboration_group_id)) {
+    return;
+  }
+
   collaboration_pb::Message message =
       CreateTabGroupMessage(*collaboration_group_id, removed_group,
                             collaboration_pb::TAB_GROUP_REMOVED,
@@ -796,9 +804,15 @@ void MessagingBackendServiceImpl::OnTabUpdated(
     return;
   }
 
+  bool is_active_tab =
+      last_selected_tab_ &&
+      last_selected_tab_->saved_tab_guid() == updated_tab.saved_tab_guid();
+  DirtyType dirty_type =
+      is_active_tab ? DirtyType::kChip : DirtyType::kDotAndChip;
+
   collaboration_pb::Message message =
       CreateTabMessage(*collaboration_group_id, updated_tab,
-                       collaboration_pb::TAB_UPDATED, DirtyType::kDotAndChip);
+                       collaboration_pb::TAB_UPDATED, dirty_type);
   PersistentMessage persistent_message =
       CreatePersistentMessage(message, std::nullopt, updated_tab, std::nullopt);
 
@@ -812,18 +826,22 @@ void MessagingBackendServiceImpl::OnTabUpdated(
         persistent_message, {PersistentNotificationType::CHIP,
                              PersistentNotificationType::DIRTY_TAB});
   } else {
+    std::vector<PersistentNotificationType> persistent_notification_types(
+        {PersistentNotificationType::CHIP});
+    if (!is_active_tab) {
+      persistent_notification_types.emplace_back(
+          PersistentNotificationType::DIRTY_TAB);
+    }
     // For remote updates, show the message on UI.
     store_->AddMessage(message);
-    NotifyDisplayPersistentMessagesForTypes(
-        persistent_message, {PersistentNotificationType::CHIP,
-                             PersistentNotificationType::DIRTY_TAB});
+    NotifyDisplayPersistentMessagesForTypes(persistent_message,
+                                            persistent_notification_types);
   }
 
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            updated_tab.saved_group_guid());
 
-  if (source == tab_groups::TriggerSource::REMOTE && last_selected_tab_ &&
-      last_selected_tab_->saved_tab_guid() == updated_tab.saved_tab_guid() &&
+  if (source == tab_groups::TriggerSource::REMOTE && is_active_tab &&
       instant_message_delegate_) {
     InstantMessage instant_message_base;
     instant_message_base.attribution = CreateMessageAttributionForTabUpdates(

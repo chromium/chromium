@@ -6,6 +6,7 @@
 
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "net/base/network_interfaces.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -124,6 +125,22 @@ TEST(ReportingUtilsTest, GetBrowserCrashEvent) {
   ASSERT_EQ(event.version(), "100.0.0000.000");
   ASSERT_EQ(event.report_id(), "123");
   ASSERT_EQ(event.platform(), "Windows");
+}
+
+TEST(ReportingUtilsTest, TestEventLocalIp) {
+  base::Value::List local_ips = GetLocalIpAddresses();
+  // TODO(crbug.com//394602691): Remove Android build exclusion once IP address
+  // support becomes a requirement for Android devices.
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(local_ips.empty());
+#endif
+  for (const auto& ip_address : local_ips) {
+    std::string_view str_view(ip_address.GetString());
+    std::optional<net::IPAddress> local_ip =
+        net::IPAddress::FromIPLiteral(str_view);
+    EXPECT_TRUE(local_ip->IsValid());
+    EXPECT_FALSE(local_ip->IsZero());
+  }
 }
 
 }  // namespace enterprise_connectors

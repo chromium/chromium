@@ -45,6 +45,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
@@ -985,6 +986,13 @@ void ContentAnalysisDelegate::PrepareRequest(
 
   if (data_.reason != ContentAnalysisRequest::UNKNOWN) {
     request->set_reason(data_.reason);
+  }
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
+    for (const auto& ip_address :
+         enterprise_connectors::GetLocalIpAddresses()) {
+      request->add_local_ips(ip_address.GetString());
+    }
   }
 
   request->set_blocking(data_.settings.block_until_verdict !=

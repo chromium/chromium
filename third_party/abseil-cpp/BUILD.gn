@@ -121,6 +121,10 @@ group("absl_component_deps") {
     # base/logging.cc uses this non-public absl dependency while there no better
     # alternative to inject abort hook. See notes in `base/logging.cc`.
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+
+    # absl internal utilities used by protobuf.
+    "//third_party/abseil-cpp/absl/container:layout",
+    "//third_party/abseil-cpp/absl/utility:if_constexpr",
   ]
 
   if (is_component_build) {

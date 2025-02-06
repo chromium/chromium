@@ -48,14 +48,9 @@ class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
   }
 
   void RegisterHotkey(ui::Accelerator updated_hotkey) {
-    auto hotkey_dictionary =
-        base::Value::Dict()
-            .Set(GlicLauncherConfiguration::kHotkeyKeyCode,
-                 updated_hotkey.key_code())
-            .Set(GlicLauncherConfiguration::kHotkeyModifiers,
-                 updated_hotkey.modifiers());
-    g_browser_process->local_state()->SetDict(prefs::kGlicLauncherGlobalHotkey,
-                                              std::move(hotkey_dictionary));
+    g_browser_process->local_state()->SetString(
+        prefs::kGlicLauncherHotkey,
+        ui::Command::AcceleratorToString(updated_hotkey));
   }
 
  private:
@@ -113,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
                             ),
             manager->RegisteredHotkeyForTesting());
 
-  ui::Accelerator updated_hotkey(ui::VKEY_A, ui::EF_SHIFT_DOWN);
+  ui::Accelerator updated_hotkey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   RegisterHotkey(updated_hotkey);
   EXPECT_EQ(updated_hotkey, manager->RegisteredHotkeyForTesting());
 }
@@ -131,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
 
   // If the hotkey pref were to somehow change even while glic was disabled,
   // the manager should not register the hotkey.
-  ui::Accelerator updated_hotkey(ui::VKEY_A, ui::EF_SHIFT_DOWN);
+  ui::Accelerator updated_hotkey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   RegisterHotkey(updated_hotkey);
   EXPECT_TRUE(manager->RegisteredHotkeyForTesting().IsEmpty());
 

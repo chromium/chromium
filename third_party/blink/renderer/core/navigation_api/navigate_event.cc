@@ -368,13 +368,19 @@ void NavigateEvent::ReactDone(ScriptValue value, bool did_fulfill) {
   }
 }
 
-void NavigateEvent::Abort(ScriptState* script_state, ScriptValue error) {
+void NavigateEvent::Abort(ScriptState* script_state,
+                          ScriptValue error,
+                          CancelNavigationReason reason) {
   if (IsBeingDispatched()) {
     preventDefault();
   }
   CHECK(controller_);
   controller_->abort(script_state, error);
   delayed_load_start_task_handle_.Cancel();
+  if (!defaultPrevented() && intercept_state_ == InterceptState::kIntercepted &&
+      reason != CancelNavigationReason::kNavigateEvent) {
+    DomWindow()->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
+  }
 }
 
 void NavigateEvent::DelayedLoadStartTimerFired() {

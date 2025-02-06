@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_for_context_dispose.h"
-#include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -114,13 +113,10 @@ void OomInterventionImpl::OnMemoryPing(MemoryUsage usage) {
 void OomInterventionImpl::Check(MemoryUsage usage) {
   DCHECK(host_);
 
-  OomInterventionMetrics current_memory =
-      CrashMemoryMetricsReporterImpl::MemoryUsageToMetrics(usage);
-
   bool oom_detected = false;
 
   oom_detected |= detection_args_->private_footprint_threshold > 0 &&
-                  current_memory.current_private_footprint_kb * 1024 >
+                  usage.private_footprint_bytes >
                       detection_args_->private_footprint_threshold;
 
   if (oom_detected) {

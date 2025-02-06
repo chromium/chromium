@@ -1,5 +1,5 @@
 [
   {
-    "reason_for_missing_test": "TODO(375240486): Add browser tests once policy handler is implemented"
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see SearchAggregatorPolicyOmniboxViewTest.* for a full policy browser test"
   }
 ]

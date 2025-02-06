@@ -274,7 +274,7 @@ void CheckChipButtonsOfLocalCard() {
 
 // Opens the payment method manual fill view when there are no saved payment
 // methods and verifies that the card view controller is visible afterwards.
-// Only useful when the `kIOSKeyboardAccessoryUpgrade` feature is enabled.
+// Only useful when the Keyboard Accessory Upgrade feature is enabled.
 void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
   // Tap the button to open the expanded manual fill view.
   [[EarlGrey selectElementWithMatcher:CreditCardManualFillViewButton()]
@@ -1301,7 +1301,7 @@ void DismissPaymentBottomSheet() {
 
 @end
 
-// Rerun all the tests in this file but with kIOSKeyboardAccessoryUpgrade
+// Rerun all the tests in this file but with Keyboard Accessory Upgrade
 // disabled. This will be removed once that feature launches fully, but ensures
 // regressions aren't introduced in the meantime.
 @interface CreditCardViewControllerKeyboardAccessoryUpgradeDisabledTestCase

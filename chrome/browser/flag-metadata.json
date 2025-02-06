@@ -3343,6 +3343,11 @@
     "expiry_milestone": 139
   },
   {
+    "name": "enable-lens-overlay-simplified-selection",
+    "owners": [ "juanmojica@google.com", "lens-chrome@google.com" ],
+    "expiry_milestone": 139
+  },
+  {
     "name": "enable-lens-overlay-translate-button",
     "owners": [ "juanmojica@google.com", "jdonnelly@chromium.org", "lens-chrome@google.com" ],
     "expiry_milestone": 135
@@ -4335,7 +4340,7 @@
   {
     "name": "extensions-menu-access-control",
     "owners": [ "emiliapaz@chromium.org" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "extensions-on-chrome-urls",
@@ -5275,6 +5280,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "ios-keyboard-accessory-upgrade-for-ipad",
+    "owners": [ "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "ios-keyboard-accessory-upgrade-short-manual-fill-menu",
     "owners": [ "noemies@google.com", "sugoi@chromium.org", "tmartino@chromium.org", "bling-integrations-team@google.com" ],
     "expiry_milestone": 137
@@ -5344,33 +5354,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "ios-promo-address-bubble",
-    "owners": [
-      "nicolasmacbeth@google.com",
-      "gujen@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "ios-promo-payment-bubble",
-    "owners": [
-      "nicolasmacbeth@google.com",
-      "gujen@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "ios-promo-refreshed-password-bubble",
-    "owners": [
-      "nicolasmacbeth@google.com",
-      "gujen@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "ios-provisional-notification-alert",
     "owners": [
       "thegreenfrog@google.com",
@@ -5400,6 +5383,14 @@
     "name": "ios-shared-highlighting-color-change",
     "owners": [ "cheickcisse@google.com" ],
     "expiry_milestone": 95
+  },
+  {
+    "name": "ios-shop-card",
+    "owners": [
+      "davidjm@google.com",
+      "gloriafang@google.com"
+    ],
+    "expiry_milestone": 139
   },
   {
     "name": "ios-soft-lock",
@@ -5440,14 +5431,14 @@
     "owners": [
       "emiliapaz@chromium.org"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "iph-extensions-request-access-button-feature",
     "owners": [
       "emiliapaz@chromium.org"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
       "name": "iph-price-notifications-while-browsing",
@@ -5634,6 +5625,11 @@
   },
   {
     "name": "lens-overlay-enable-ipad-compatibility",
+    "owners": ["radunitescu@google.com"],
+    "expiry_milestone": 142
+  },
+  {
+    "name": "lens-overlay-enable-landscape-compatibility",
     "owners": ["radunitescu@google.com"],
     "expiry_milestone": 142
   },

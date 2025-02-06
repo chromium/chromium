@@ -14,10 +14,10 @@ class AutocompleteResult;
 @protocol OmniboxPopupControllerDelegate <NSObject>
 
 /// Notifies the delegate the new suggestions are available.
-/// TODO(crbug.com/390410111): Change to AutocompleteSuggestion after moving the
-/// wrapping to the controller.
-- (void)popupController:(OmniboxPopupController*)popupController
-       didUpdateResults:(const AutocompleteResult&)results;
+- (void)popupControllerDidUpdateSuggestions:
+            (OmniboxPopupController*)popupController
+                             hasSuggestions:(BOOL)hasSuggestions
+                                  isOnFocus:(BOOL)isOnFocus;
 
 /// Notifies the delegate of the new sorted suggestions.
 /// TODO(crbug.com/390410111): Change to AutocompleteSuggestion after moving the

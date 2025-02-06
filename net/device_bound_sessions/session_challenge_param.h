@@ -41,6 +41,11 @@ class NET_EXPORT SessionChallengeParam {
   ~SessionChallengeParam();
 
   // Returns a vector of valid instances from the headers.
+
+  // Checks `headers` for any Sec-Session-Challenge headers. Parses any valid
+  // ones that are found into `SessionChallengeParam` instances and returns a
+  // vector of these. `request_url` corresponds to the request that returned
+  // these headers; it is used only to affirm that that URL is valid.
   static std::vector<SessionChallengeParam> CreateIfValid(
       const GURL& request_url,
       const HttpResponseHeaders* headers);

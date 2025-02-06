@@ -277,9 +277,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   InterestInvokerTargetData& EnsureInterestInvokerTargetData();
   void RemoveInterestInvokerTargetData();
 
-  Element* GetInterestInvoker() const;
-  void SetInterestInvoker(Element* element);
-
   bool HasElementFlag(ElementFlags mask) const {
     return element_flags_ & static_cast<uint16_t>(mask);
   }

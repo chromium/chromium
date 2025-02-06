@@ -421,14 +421,6 @@ class BrowserWindow : public ui::BaseWindow,
   // |already_bookmarked| is true if the url is already bookmarked.
   virtual void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) = 0;
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Checks if the user is eligible for the iOS Password Promo Bubble. If they
-  // are, make a final eligibility check with a call to the segmentation
-  // platform with `MaybeShowIOSPasswordPromoBubble` passed as callback. That
-  // method may create/show a bubble to the user.
-  virtual void VerifyUserEligibilityIOSPasswordPromoBubble() = 0;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   // Shows the Screenshot bubble.
   virtual sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
       content::WebContents* contents,

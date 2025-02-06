@@ -338,6 +338,20 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     }
   }
 
+  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
+                              std::optional<tab_groups::TabGroupId> old_group,
+                              std::optional<tab_groups::TabGroupId> new_group,
+                              tabs::TabInterface* tab,
+                              int index) override {
+    if (old_group.has_value()) {
+      group_updates_[old_group.value()].contents_update_count++;
+    }
+
+    if (new_group.has_value()) {
+      group_updates_[new_group.value()].contents_update_count++;
+    }
+  }
+
   void OnTabGroupChanged(const TabGroupChange& change) override {
     switch (change.type) {
       case TabGroupChange::kCreated: {
@@ -345,10 +359,6 @@ class MockTabStripModelObserver : public TabStripModelObserver {
         break;
       }
       case TabGroupChange::kEditorOpened: {
-        break;
-      }
-      case TabGroupChange::kContentsChanged: {
-        group_updates_[change.group].contents_update_count++;
         break;
       }
       case TabGroupChange::kVisualsChanged: {

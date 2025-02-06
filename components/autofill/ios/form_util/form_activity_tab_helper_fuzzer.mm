@@ -50,8 +50,6 @@ class Env : public web::FuzzerEnvWithWebState {
   std::string main_frame_id_;
 };
 
-protobuf_mutator::protobuf::LogSilencer log_silencer;
-
 }  // namespace
 
 DEFINE_PROTO_FUZZER(const web::ScriptMessageProto& proto_js_message) {

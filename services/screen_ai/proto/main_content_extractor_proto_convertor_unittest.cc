@@ -132,10 +132,13 @@ ui::AXTree CreateSampleTree() {
   // ++id=4 paragraph clips_children child_ids=5 (1, 6)-(5, 5)
   // ++is_line_breaking_object=true
   // ++++id=5 staticText name=StaticText10 offset_container_id=4 (6, 6)-(5, 5)
-  // ++id=6 paragraph child_ids=7 (0, 0)-(0, 0) is_line_breaking_object=true
-  // ++++id=7 link LINKED child_ids=8,9 (0, 0)-(0, 0)
-  // ++++++id=8 staticText name=StaticText200 (0, 0)-(0, 0)
-  // ++++++id=9 staticText name=StaticText201 (0, 0)-(0, 0)
+  // ++id=6 paragraph child_ids=7 (0, 10)-(5, 5) is_line_breaking_object=true
+  // ++++id=7 link LINKED child_ids=8,9 (1, 1)-(1, 1)
+  // ++++++id=8 staticText name=StaticText200 (1, 2)-(1, 1)
+  // ++++++id=9 staticText name=Static Text 201 child_ids=10,11,12 (1, 3)-(1, 4)
+  // ++++++++id=10 inlineTextBox name=Static (1, 3)-(1, 1)
+  // ++++++++id=11 inlineTextBox name=Text (1, 4)-(1, 1)
+  // ++++++++id=12 inlineTextBox name=201 (1, 5)-(1, 1)
 
   ui::AXNodeData root;
   ui::AXNodeData paragraph_0;
@@ -146,6 +149,9 @@ ui::AXTree CreateSampleTree() {
   ui::AXNodeData link_2_0;
   ui::AXNodeData static_text_2_0_0;
   ui::AXNodeData static_text_2_0_1;
+  ui::AXNodeData inline_text_box_2_0_1_0;
+  ui::AXNodeData inline_text_box_2_0_1_1;
+  ui::AXNodeData inline_text_box_2_0_1_2;
 
   root.id = 1;
   paragraph_0.id = 2;
@@ -156,6 +162,9 @@ ui::AXTree CreateSampleTree() {
   link_2_0.id = 7;
   static_text_2_0_0.id = 8;
   static_text_2_0_1.id = 9;
+  inline_text_box_2_0_1_0.id = 10;
+  inline_text_box_2_0_1_1.id = 11;
+  inline_text_box_2_0_1_2.id = 12;
 
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot,
@@ -193,23 +202,51 @@ ui::AXTree CreateSampleTree() {
   paragraph_2.role = ax::mojom::Role::kParagraph;
   paragraph_2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
                                true);
+  paragraph_2.relative_bounds.bounds = gfx::RectF(0, 10, 5, 5);
   paragraph_2.child_ids = {link_2_0.id};
 
   link_2_0.role = ax::mojom::Role::kLink;
   link_2_0.AddState(ax::mojom::State::kLinked);
+  link_2_0.relative_bounds.bounds = gfx::RectF(1, 1, 1, 1);
   link_2_0.child_ids = {static_text_2_0_0.id, static_text_2_0_1.id};
 
   static_text_2_0_0.role = ax::mojom::Role::kStaticText;
   static_text_2_0_0.SetName("StaticText200");
+  static_text_2_0_0.relative_bounds.bounds = gfx::RectF(1, 2, 1, 1);
 
   static_text_2_0_1.role = ax::mojom::Role::kStaticText;
-  static_text_2_0_1.SetName("StaticText201");
+  static_text_2_0_1.SetName("Static Text 201");
+  static_text_2_0_1.relative_bounds.bounds = gfx::RectF(1, 3, 1, 4);
+  static_text_2_0_1.child_ids = {inline_text_box_2_0_1_0.id,
+                                 inline_text_box_2_0_1_1.id,
+                                 inline_text_box_2_0_1_2.id};
+
+  inline_text_box_2_0_1_0.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_box_2_0_1_0.SetName("Static");
+  inline_text_box_2_0_1_0.relative_bounds.bounds = gfx::RectF(1, 3, 1, 1);
+
+  inline_text_box_2_0_1_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_box_2_0_1_1.SetName("Text");
+  inline_text_box_2_0_1_1.relative_bounds.bounds = gfx::RectF(1, 4, 1, 1);
+
+  inline_text_box_2_0_1_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_box_2_0_1_2.SetName("201");
+  inline_text_box_2_0_1_2.relative_bounds.bounds = gfx::RectF(1, 5, 1, 1);
 
   ui::AXTreeUpdate initial_state;
   initial_state.root_id = root.id;
-  initial_state.nodes = {root,        paragraph_0,       static_text_0_0,
-                         paragraph_1, static_text_1_0,   paragraph_2,
-                         link_2_0,    static_text_2_0_0, static_text_2_0_1};
+  initial_state.nodes = {root,
+                         paragraph_0,
+                         static_text_0_0,
+                         paragraph_1,
+                         static_text_1_0,
+                         paragraph_2,
+                         link_2_0,
+                         static_text_2_0_0,
+                         static_text_2_0_1,
+                         inline_text_box_2_0_1_0,
+                         inline_text_box_2_0_1_1,
+                         inline_text_box_2_0_1_2};
   initial_state.has_tree_data = true;
 
   ui::AXTreeData tree_data;

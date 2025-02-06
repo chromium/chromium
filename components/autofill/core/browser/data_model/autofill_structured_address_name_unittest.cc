@@ -129,7 +129,14 @@ class AutofillStructuredNameParseFullNameTest
     : public testing::TestWithParam<NameParserTestRecord> {};
 
 // Tests the parsing of full names into their subcomponents.
-TEST_P(AutofillStructuredNameParseFullNameTest, ParseFullName) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/394860914): This test currently fails on the platform when run
+// as part of the full test suite.
+#define MAYBE_ParseFullName DISABLED_ParseFullName
+#else
+#define MAYBE_ParseFullName ParseFullName
+#endif  // BUILDFLAG(IOS)
+TEST_P(AutofillStructuredNameParseFullNameTest, MAYBE_ParseFullName) {
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kAutofillSupportLastNamePrefix};
   auto test_case = GetParam();

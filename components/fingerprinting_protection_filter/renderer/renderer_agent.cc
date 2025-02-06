@@ -198,7 +198,7 @@ void RendererAgent::OnDestruct() {
   delete this;
 }
 
-void RendererAgent::OnSubresourceDisallowed(std::string_view subresource_url) {
+void RendererAgent::OnSubresourceDisallowed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!notified_disallow_) {
     notified_disallow_ = true;
@@ -209,16 +209,6 @@ void RendererAgent::OnSubresourceDisallowed(std::string_view subresource_url) {
     if (fp_host) {
       fp_host->DidDisallowFirstSubresource();
     }
-
-#if defined(_DEBUG)
-    if (features::IsFingerprintingProtectionConsoleLoggingEnabled()) {
-      // Log message to console.
-      std::string console_message = base::StringPrintf(
-          kDisallowSubresourceConsoleDebugMessageFormat, subresource_url);
-      render_frame()->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError, console_message);
-    }
-#endif
   }
 }
 

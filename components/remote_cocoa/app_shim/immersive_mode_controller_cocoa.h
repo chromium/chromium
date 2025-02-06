@@ -177,12 +177,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa
   // display::DisplayObserver:
   void OnPrimaryDisplayChanged() override;
 
-  // See comment for `thin_titlebar_view_controller_`. These helpers abstract
-  // manipulating it for the `kFullscreenPermanentThinController` feature.
-  // TODO(https://crbug.com/373722654): Clean these up.
-  void CreateThinControllerIfNecessary();
-  void DisableThinControllerIfNecessary();
-
   bool initialized_ = false;
 
   int reveal_lock_count_ = 0;
@@ -204,14 +198,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa
   // A controller for top chrome.
   ImmersiveModeTitlebarViewController* __strong
       immersive_mode_titlebar_view_controller_;
-
-  // A controller that keeps a small portion (0.5px) of the fullscreen AppKit
-  // NSWindow on screen.
-  // This controller is used as a workaround for an AppKit bug that displays a
-  // black bar when changing a NSTitlebarAccessoryViewController's
-  // fullScreenMinHeight from zero to non-zero.
-  // TODO(crbug.com/40240734): Remove when fixed by Apple.
-  NSTitlebarAccessoryViewController* __strong thin_titlebar_view_controller_;
 
   ImmersiveModeMapper* __strong immersive_mode_mapper_;
 

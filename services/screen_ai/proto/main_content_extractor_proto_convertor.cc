@@ -190,17 +190,6 @@ void AddSubTree(const ui::AXTree& tree,
   // Ensure that node id and index are the same.
   DCHECK(proto.ui_elements_size() == next_unused_node_id);
 
-  // Do not include kInlineTextBox nodes in the tree. They contain no text and
-  // will result in ScreenAI missing their kStaticText parent nodes.
-  // The pruning should not be done when data is stored for Screen2x library
-  // training.
-  // TODO(crbug.com/359853518): Consider removing pruning when it's done in
-  // the Screen2x library.
-  if (node->data().role == ax::mojom::Role::kInlineTextBox &&
-      !features::IsDataCollectionModeForScreen2xEnabled()) {
-    return;
-  }
-
   // Create and add proto.
   int current_node_id = next_unused_node_id;
   screenai::UiElement uie = CreateUiElementProto(
@@ -209,15 +198,9 @@ void AddSubTree(const ui::AXTree& tree,
   const ::screenai::BoundingBoxPixels current_node_bounds =
       proto.ui_elements(current_node_id).bounding_box_pixels();
 
-  // Add children (except for kInlineTextBox children).
+  // Add children.
   std::vector<int> child_ids;
   for (auto it = node->AllChildrenBegin(); it != node->AllChildrenEnd(); ++it) {
-    // TODO(crbug.com/359853518): Consider removing pruning when it's done in
-    // the Screen2x library.
-    if ((*it).data().role == ax::mojom::Role::kInlineTextBox &&
-        !features::IsDataCollectionModeForScreen2xEnabled()) {
-      continue;
-    }
     child_ids.push_back(++next_unused_node_id);
     AddSubTree(tree, it.get(), proto, next_unused_node_id, current_node_id,
                current_node_bounds, tree_dimensions);

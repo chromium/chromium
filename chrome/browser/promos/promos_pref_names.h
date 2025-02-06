@@ -10,7 +10,8 @@ namespace promos_prefs {
 // Pref names for the "Desktop to iOS" promos where users are offered a QR code
 // on Desktop they can scan to download the mobile app.
 
-// iOS Password promo prefs.
+// iOS Password promo prefs. Migrated from the legacy to the refreshed promo to
+// keep user impressions unchanged.
 // Int64 that keeps track of the last impression timestamp of the "iOS password
 // promo bubble on desktop" for a given user.
 inline constexpr char kDesktopToiOSPasswordPromoLastImpressionTimestamp[] =

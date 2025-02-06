@@ -519,6 +519,11 @@ extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 
 // Title and description for the flag to enable the keyboard accessory upgrade
+// for iPads.
+extern const char kIOSKeyboardAccessoryUpgradeForIPadName[];
+extern const char kIOSKeyboardAccessoryUpgradeForIPadDescription[];
+
+// Title and description for the flag to enable the keyboard accessory upgrade
 // with a shorter manual fill menu.
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuName[];
 extern const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[];
@@ -642,6 +647,10 @@ extern const char kLensOverlayPriceInsightsCounterfactualDescription[];
 // Title and description for the flag to allow lens overlay on iPad devices.
 extern const char kLensOverlayEnableIPadCompatibilityName[];
 extern const char kLensOverlayEnableIPadCompatibilityDescription[];
+
+// Title and description for the flag to allow lens overlay in landscape.
+extern const char kLensOverlayEnableLandscapeCompatibilityName[];
+extern const char kLensOverlayEnableLandscapeCompatibilityDescription[];
 
 // Title and description for the flag to enable the Lens overlay location bar
 // entrypoint.
@@ -1018,6 +1027,10 @@ extern const char kSeparateProfilesForManagedAccountsDescription[];
 // Text Edit Menu option).
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
+
+// Title and description for the flag to enable ShopCard.
+extern const char kShopCardName[];
+extern const char kShopCardDescription[];
 
 // Title and description for the flag to enable the Set Up List in the First
 // Run.

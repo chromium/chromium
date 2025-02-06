@@ -2,10 +2,26 @@ source_set("auto_deletion") {
   sources = [
     "auto_deletion_service.h",
     "auto_deletion_service.mm",
+    "scheduled_file.h",
+    "scheduled_file.mm",
   ]
   deps = [
     "//components/prefs",
+    "//ios/chrome/browser/download/model/auto_deletion/proto",
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "scheduled_file_unittest.mm" ]
+
+  deps = [
+    ":auto_deletion",
+    "//base",
+    "//ios/chrome/browser/download/model/auto_deletion/proto",
+    "//ios/chrome/browser/shared/model/paths",
+    "//testing/gtest",
   ]
 }

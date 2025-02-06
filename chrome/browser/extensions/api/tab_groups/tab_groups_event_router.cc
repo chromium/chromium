@@ -46,7 +46,6 @@ void TabGroupsEventRouter::OnTabGroupChanged(const TabGroupChange& change) {
       DispatchGroupUpdated(change.group);
       break;
     }
-    case TabGroupChange::kContentsChanged:
     case TabGroupChange::kEditorOpened:
       break;
   }

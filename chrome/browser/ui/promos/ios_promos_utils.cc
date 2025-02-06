@@ -112,8 +112,7 @@ void VerifyIOSPromoEligibilityCriteriaAsync(
     auto input_context =
         base::MakeRefCounted<segmentation_platform::InputContext>();
     input_context->metadata_args.emplace(
-        "active_days_limit",
-        promos_utils::kiOSDesktopPromoLookbackWindow.InDays());
+        "active_days_limit", promos_utils::kiOSDesktopPromoLookbackWindow);
     input_context->metadata_args.emplace(
         "wait_for_device_info_in_seconds",
         segmentation_platform::processing::ProcessedValue(0));

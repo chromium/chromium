@@ -2471,16 +2471,8 @@ TEST_P(BrowserFeaturePromoController2xPriorityTest,
                   Do([&notice]() { notice.Release(); }));
 }
 
-// TODO(crbug.com/391799252): Fix and re-enabled test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MultipleStartupPromosHighThenNoticeThenLow \
-  DISABLED_MultipleStartupPromosHighThenNoticeThenLow
-#else
-#define MAYBE_MultipleStartupPromosHighThenNoticeThenLow \
-  MultipleStartupPromosHighThenNoticeThenLow
-#endif
 TEST_P(BrowserFeaturePromoController2xPriorityTest,
-       MAYBE_MultipleStartupPromosHighThenNoticeThenLow) {
+       MultipleStartupPromosHighThenNoticeThenLow) {
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kPost);
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          second_promo_callback);
@@ -2499,17 +2491,13 @@ TEST_P(BrowserFeaturePromoController2xPriorityTest,
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
       ExpectShowingPromo(&kLegalNoticeFeature2),
       // Request the notice and verify it doesn't pop.
-      Log("Requesting notice."),
       Do([&notice]() { notice.Request(kRequiredNoticeId); }),
-      WaitForState(kNoticeCallbackState, false),
+      CheckState(kNoticeCallbackState, false),
       // Close the promo and verify the notice (and not the other promo) pops.
-      Log("Closing promo and waiting for notice."), ClosePromo(),
-      WaitForState(kNoticeCallbackState, true),
-      Log("Verifying second promo did not show."),
+      ClosePromo(), WaitForState(kNoticeCallbackState, true),
       WaitForState(kStartupCallbackState, false),
       // Release the notice and verify the final promo is shown.
-      Log("Releasing notice."), Do([&notice]() { notice.Release(); }),
-      Log("Waiting for second notice to show."),
+      Do([&notice]() { notice.Release(); }),
       WaitForState(kStartupCallbackState, true),
       WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
       ExpectShowingPromo(&kTestIPHFeature), ClosePromo());

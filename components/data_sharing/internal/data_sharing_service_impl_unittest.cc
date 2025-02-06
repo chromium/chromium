@@ -254,6 +254,7 @@ TEST_P(DataSharingServiceImplTest, ShouldRemoveMember) {
 TEST_P(DataSharingServiceImplTest, ShouldLeaveGroup) {
   const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
+  EXPECT_FALSE(data_sharing_service_->IsLeavingGroup(group_id));
 
   const std::string email = "user@gmail.com";
   const GaiaId gaia_id("123456789");
@@ -274,6 +275,7 @@ TEST_P(DataSharingServiceImplTest, ShouldLeaveGroup) {
   auto group = not_owned_sdk_delegate_->GetGroup(group_id);
   ASSERT_TRUE(group.has_value());
   EXPECT_TRUE(group->members().empty());
+  EXPECT_TRUE(data_sharing_service_->IsLeavingGroup(group_id));
 }
 
 TEST_P(DataSharingServiceImplTest, ShouldNotifyOnSyncBridgeUpdateTypeChanged) {

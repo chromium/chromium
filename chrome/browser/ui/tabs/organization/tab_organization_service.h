@@ -120,7 +120,14 @@ class TabOrganizationService : public KeyedService,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+
   void OnTabGroupChanged(const TabGroupChange& change) override;
+
+  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
+                              std::optional<tab_groups::TabGroupId> old_group,
+                              std::optional<tab_groups::TabGroupId> new_group,
+                              tabs::TabInterface* tab,
+                              int index) override;
 
   // Returns true if the profile that owns this service should be able to create
   // requests to the TabOrganizationRequest object, otherwise returns false.

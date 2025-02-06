@@ -474,16 +474,20 @@ void FeaturePromoController25::UpdateQueuesAndMaybeShowPromo() {
   // It's okay to transition to a pending state, because if either high or low
   // priority were allowed and there were eligible promos, one would have been
   // shown above.
-  PromoState new_state;
+  std::optional<PromoState> new_state;
   if (IsDemoPending() || private_->queues.IsEmpty() ||
       !promo_data.pending_priority) {
-    new_state = PromoState::kNone;
+    if (!current_promo()) {
+      new_state = PromoState::kNone;
+    }
   } else if (*promo_data.pending_priority == Priority::kHigh) {
     new_state = PromoState::kHighPriorityPending;
   } else {
     new_state = PromoState::kLowPriorityPending;
   }
-  private_->messaging_coordinator.TransitionToState(new_state);
+  if (new_state) {
+    private_->messaging_coordinator.TransitionToState(*new_state);
+  }
   UpdatePollingState();
 }
 

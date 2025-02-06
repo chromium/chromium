@@ -215,6 +215,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
@@ -3108,6 +3109,31 @@ void RenderViewContextMenu::OpenURLWithExtraHeaders(
 }
 
 void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
+  if (IsCommandGatedByFencedFrameUntrustedNetworkStatus(id) &&
+      IsUntrustedNetworkDisabled()) {
+    // Fenced frame untrusted network status can change between the time the
+    // command is shown and the time it is executed.
+    //
+    // This can be done by a `contextmenu` listener that disables the fenced
+    // frame untrusted network, granting fenced frame access to unpartitioned
+    // cross-site data. When context menu is shown, commands that are gated on
+    // fenced frame untrusted network status will still be enabled. But by the
+    // time the command executes, the listener has been invoked. The URL that
+    // the context menu operates upon may have been tampered to include
+    // cross-site information.
+    //
+    // The execution must be blocked if the untrusted network is disabled.
+    for (auto& observer : observers_) {
+      observer.CommandBlocked(id);
+    }
+
+    GetRenderFrameHost()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "Context menu command is not executed because the fenced frame has "
+        "untrusted network disabled.");
+    return;
+  }
+
   RenderViewContextMenuBase::ExecuteCommand(id, event_flags);
   if (command_executed_) {
     return;
@@ -3577,6 +3603,16 @@ void RenderViewContextMenu::RegisterMenuShownCallbackForTesting(
 void RenderViewContextMenu::RegisterExecutePluginActionCallbackForTesting(
     ExecutePluginActionCallback cb) {
   execute_plugin_action_callback_ = std::move(cb);
+}
+
+void RenderViewContextMenu::AddObserverForTesting(
+    RenderViewContextMenuObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void RenderViewContextMenu::RemoveObserverForTesting(
+    RenderViewContextMenuObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList

@@ -24,9 +24,12 @@ PageActionContainerView::PageActionContainerView(
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
 
-  // Add `between_icon_spacing_` dip after each child.
-  layout->SetDefault(views::kMarginsKey,
-                     gfx::Insets().set_right(between_icon_spacing_));
+  // Add `between_icon_spacing_` dip after each child, except for the last
+  // item, unless we need to bridge this container with icons to the right.
+  layout
+      ->SetDefault(views::kMarginsKey,
+                   gfx::Insets().set_right(between_icon_spacing_))
+      .SetIgnoreDefaultMainAxisMargins(!params.should_bridge_containers);
 
   for (actions::ActionItem* action_item : action_items) {
     PageActionView* view =

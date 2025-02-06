@@ -1,36 +1,14 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
-#include <google/protobuf/compiler/cpp/padding_optimizer.h>
+#include "google/protobuf/compiler/cpp/padding_optimizer.h"
 
-#include <google/protobuf/compiler/cpp/helpers.h>
+#include "absl/log/absl_log.h"
+#include "google/protobuf/compiler/cpp/helpers.h"
 
 namespace google {
 namespace protobuf {
@@ -85,52 +63,19 @@ class FieldGroup {
 
 }  // namespace
 
-// Reorder 'fields' so that if the fields are output into a c++ class in the new
-// order, fields of similar family (see below) are together and within each
-// family, alignment padding is minimized.
-//
-// We try to do this while keeping each field as close as possible to its field
-// number order so that we don't reduce cache locality much for function that
-// access each field in order.  Originally, OptimizePadding used declaration
-// order for its decisions, but generated code minus the serializer/parsers uses
-// the output of OptimizePadding as well (stored in
-// MessageGenerator::optimized_order_).  Since the serializers use field number
-// order, we use that as a tie-breaker.
-//
-// We classify each field into a particular "family" of fields, that we perform
-// the same operation on in our generated functions.
-//
-// REPEATED is placed first, as the C++ compiler automatically initializes
-// these fields in layout order.
-//
-// STRING is grouped next, as our Clear/SharedCtor/SharedDtor walks it and
-// calls ArenaStringPtr::Destroy on each.
-//
-// LAZY_MESSAGE is grouped next, as it interferes with the ability to memset
-// non-repeated fields otherwise.
-//
-// MESSAGE is grouped next, as our Clear/SharedDtor code walks it and calls
-// delete on each.  We initialize these fields with a NULL pointer (see
-// MessageFieldGenerator::GenerateConstructorCode), which allows them to be
-// memset.
-//
-// ZERO_INITIALIZABLE is memset in Clear/SharedCtor
-//
-// OTHER these fields are initialized one-by-one.
-void PaddingOptimizer::OptimizeLayout(
-    std::vector<const FieldDescriptor*>* fields, const Options& options,
-    MessageSCCAnalyzer* scc_analyzer) {
+static void OptimizeLayoutHelper(std::vector<const FieldDescriptor*>* fields,
+                                 const Options& options,
+                                 MessageSCCAnalyzer* scc_analyzer) {
+  if (fields->empty()) return;
+
   // The sorted numeric order of Family determines the declaration order in the
   // memory layout.
   enum Family {
     REPEATED = 0,
     STRING = 1,
-    // Laying out LAZY_MESSAGE before MESSAGE allows a single memset to zero
-    // MESSAGE and ZERO_INITIALIZABLE fields together.
-    LAZY_MESSAGE = 2,
-    MESSAGE = 3,
-    ZERO_INITIALIZABLE = 4,
-    OTHER = 5,
+    MESSAGE = 2,
+    ZERO_INITIALIZABLE = 3,
+    OTHER = 4,
     kMaxFamily
   };
 
@@ -148,10 +93,7 @@ void PaddingOptimizer::OptimizeLayout(
       f = STRING;
     } else if (field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE) {
       f = MESSAGE;
-      if (IsLazy(field, options, scc_analyzer)) {
-        f = LAZY_MESSAGE;
-      }
-    } else if (CanInitializeByZeroing(field)) {
+    } else if (CanInitializeByZeroing(field, options, scc_analyzer)) {
       f = ZERO_INITIALIZABLE;
     }
 
@@ -167,8 +109,9 @@ void PaddingOptimizer::OptimizeLayout(
         aligned_to_8[f].push_back(FieldGroup(j, field));
         break;
       default:
-        GOOGLE_LOG(FATAL) << "Unknown alignment size " << EstimateAlignmentSize(field)
-                   << "for a field " << field->full_name() << ".";
+        ABSL_LOG(FATAL) << "Unknown alignment size "
+                        << EstimateAlignmentSize(field) << "for a field "
+                        << field->full_name() << ".";
     }
   }
 
@@ -220,6 +163,58 @@ void PaddingOptimizer::OptimizeLayout(
                      aligned_to_8[f][i].fields().end());
     }
   }
+}
+
+// Reorder 'fields' so that if the fields are output into a c++ class in the new
+// order, fields of similar family (see below) are together and within each
+// family, alignment padding is minimized.
+//
+// We try to do this while keeping each field as close as possible to its field
+// number order so that we don't reduce cache locality much for function that
+// access each field in order.  Originally, OptimizePadding used declaration
+// order for its decisions, but generated code minus the serializer/parsers uses
+// the output of OptimizePadding as well (stored in
+// MessageGenerator::optimized_order_).  Since the serializers use field number
+// order, we use that as a tie-breaker.
+//
+// We classify each field into a particular "family" of fields, that we perform
+// the same operation on in our generated functions.
+//
+// REPEATED is placed first, as the C++ compiler automatically initializes
+// these fields in layout order.
+//
+// STRING is grouped next, as our Clear/SharedCtor/SharedDtor walks it and
+// calls ArenaStringPtr::Destroy on each.
+//
+// MESSAGE is grouped next, as our Clear/SharedDtor code walks it and calls
+// delete on each.  We initialize these fields with a NULL pointer (see
+// MessageFieldGenerator::GenerateConstructorCode), which allows them to be
+// memset.
+//
+// ZERO_INITIALIZABLE is memset in Clear/SharedCtor
+//
+// OTHER these fields are initialized one-by-one.
+//
+// If there are split fields in `fields`, they will be placed at the end. The
+// order within split fields follows the same rule, aka classify and order by
+// "family".
+void PaddingOptimizer::OptimizeLayout(
+    std::vector<const FieldDescriptor*>* fields, const Options& options,
+    MessageSCCAnalyzer* scc_analyzer) {
+  std::vector<const FieldDescriptor*> normal;
+  std::vector<const FieldDescriptor*> split;
+  for (const auto* field : *fields) {
+    if (ShouldSplit(field, options)) {
+      split.push_back(field);
+    } else {
+      normal.push_back(field);
+    }
+  }
+  OptimizeLayoutHelper(&normal, options, scc_analyzer);
+  OptimizeLayoutHelper(&split, options, scc_analyzer);
+  fields->clear();
+  fields->insert(fields->end(), normal.begin(), normal.end());
+  fields->insert(fields->end(), split.begin(), split.end());
 }
 
 }  // namespace cpp

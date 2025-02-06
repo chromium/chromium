@@ -326,6 +326,7 @@ position-try-order: normal
 position-visibility: always
 r: 0px
 reading-flow: normal
+reading-order: 0
 resize: none
 right: auto
 rotate: none

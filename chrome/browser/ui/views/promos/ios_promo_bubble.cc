@@ -44,15 +44,15 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-// Get the correct Finch-paramed (or default) URL for the promo's QR code.
+// Get the correct URL for the promo's QR code.
 std::string GetIOSDesktopPromoQRCodeURL(IOSPromoType promo_type) {
   switch (promo_type) {
     case IOSPromoType::kPassword:
-      return features::kIOSPromoPasswordBubbleQRCodeURL.Get();
+      return IOSPromoConstants::kIOSPromoPasswordBubbleQRCodeURL;
     case IOSPromoType::kAddress:
-      return features::kIOSPromoAddressBubbleQRCodeURL.Get();
+      return IOSPromoConstants::kIOSPromoAddressBubbleQRCodeURL;
     case IOSPromoType::kPayment:
-      return features::kIOSPromoPaymentBubbleQRCodeURL.Get();
+      return IOSPromoConstants::kIOSPromoPaymentBubbleQRCodeURL;
   }
 }
 }  // namespace

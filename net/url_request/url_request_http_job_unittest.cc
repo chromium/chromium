@@ -23,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
 #include "net/base/features.h"
@@ -1242,6 +1243,110 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectTest) {
         const bool upgrade_expected =
             test.upgrade_expected &&
             !(!is_main_frame_navigation && top_level_only_enabled);
+
+        if (upgrade_expected) {
+          auto entries = net_log_observer_.GetEntriesWithType(
+              net::NetLogEventType::URL_REQUEST_REDIRECT_JOB);
+          int redirects = entries.size();
+          for (const auto& entry : entries) {
+            EXPECT_EQ("HSTS", GetStringValueFromParams(entry, "reason"));
+          }
+          EXPECT_EQ(1, redirects);
+          EXPECT_EQ(1, d.received_redirect_count());
+          EXPECT_EQ(2u, r->url_chain().size());
+
+          EXPECT_EQ(GURL(test.upgraded_url), r->url());
+        } else {
+          EXPECT_EQ(0, d.received_redirect_count());
+          EXPECT_EQ(1u, r->url_chain().size());
+
+          EXPECT_EQ(GURL(test.url), r->url());
+        }
+      }
+    }
+  }
+}
+
+// Tests HSTS upgrades for MPArch frames (such as Fenced Frames). MPArch frames
+// are similar to "normal" frames except that they set the IsolationInfo's
+// nonce.
+TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectTestMPArchFrames) {
+  // Setup HSTS state.
+  context_->transport_security_state()->AddHSTS(
+      "upgrade.test", base::Time::Now() + base::Seconds(10), true);
+  // Setting `is_top_level_nav` true prevents the upgrade from being blocked by
+  // kHstsTopLevelNavigationsOnly.
+  ASSERT_TRUE(context_->transport_security_state()->ShouldUpgradeToSSL(
+      "upgrade.test", /*is_top_level_nav=*/true));
+  ASSERT_FALSE(context_->transport_security_state()->ShouldUpgradeToSSL(
+      "no-upgrade.test", /*is_top_level_nav=*/true));
+
+  struct TestCase {
+    const char* url;
+    // Upgrades for MPArch frames should only occur when
+    // kHstsTopLevelNavigationsOnly is disabled.
+    bool upgrade_expected;
+    const char* upgraded_url;
+  } cases[] = {
+      {"http://upgrade.test/", true, "https://upgrade.test/"},
+      {"http://upgrade.test:123/", true, "https://upgrade.test:123/"},
+      {"http://no-upgrade.test/", false, "http://no-upgrade.test/"},
+      {"http://no-upgrade.test:123/", false, "http://no-upgrade.test:123/"},
+  };
+
+  // This test has a few different test configurations, a combination of:
+  // * kHstsTopLevelNavigationsOnly enabled/disabled.
+  // * Request is considered a main frame navigation or not.
+  for (bool top_level_only_enabled : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        features::kHstsTopLevelNavigationsOnly, top_level_only_enabled);
+
+    // Even though MPArch frames are embedded within a "normal" frame their
+    // navigations are still considered "main frame navigations".
+    for (bool is_main_frame_navigation : {false, true}) {
+      for (const auto& test : cases) {
+        std::stringstream scoped_trace_message;
+        scoped_trace_message
+            << "url: " << test.url << ", feature state: "
+            << (top_level_only_enabled ? "enabled" : "disabled")
+            << ", main frame navigation: "
+            << (is_main_frame_navigation ? "yes" : "no");
+        SCOPED_TRACE(scoped_trace_message.str());
+
+        GURL url = GURL(test.url);
+        url::Origin origin = url::Origin::Create(url);
+
+        TestDelegate d;
+        TestNetworkDelegate network_delegate;
+        std::unique_ptr<URLRequest> r(context_->CreateRequest(
+            url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS, false));
+
+        // Only apply for main frame navigation based runs.
+        if (is_main_frame_navigation) {
+          r->set_isolation_info(IsolationInfo::Create(
+              IsolationInfo::RequestType::kMainFrame, origin, origin,
+              SiteForCookies::FromOrigin(origin),
+              /*nonce=*/base::UnguessableToken::Create()));
+        } else {
+          r->set_isolation_info(IsolationInfo::Create(
+              IsolationInfo::RequestType::kOther, origin, origin,
+              SiteForCookies::FromOrigin(origin),
+              /*nonce=*/base::UnguessableToken::Create()));
+        }
+        net_log_observer_.Clear();
+        r->Start();
+        d.RunUntilComplete();
+
+        // An upgrade should be expected when
+        // * The test case expects an upgrade AND
+        // * `top_level_only_enabled` is false.
+        //
+        // This is because since these frames' "main frame" navigations aren't
+        // true top-level navgiations (or, outermost main frame navigations)
+        // they should never be upgraded when the feature is enabled.
+        const bool upgrade_expected =
+            test.upgrade_expected && !top_level_only_enabled;
 
         if (upgrade_expected) {
           auto entries = net_log_observer_.GetEntriesWithType(

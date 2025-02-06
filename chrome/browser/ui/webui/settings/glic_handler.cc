@@ -71,17 +71,8 @@ void GlicHandler::HandleSetGlicShortcut(const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
   const std::string accelerator_string = args[1].GetString();
-  ui::Accelerator updated_hotkey =
-      ui::Command::StringToAccelerator(accelerator_string);
-
-  auto hotkey_dictionary =
-      base::Value::Dict()
-          .Set(glic::GlicLauncherConfiguration::kHotkeyKeyCode,
-               updated_hotkey.key_code())
-          .Set(glic::GlicLauncherConfiguration::kHotkeyModifiers,
-               updated_hotkey.modifiers());
-  g_browser_process->local_state()->SetDict(
-      glic::prefs::kGlicLauncherGlobalHotkey, std::move(hotkey_dictionary));
+  g_browser_process->local_state()->SetString(glic::prefs::kGlicLauncherHotkey,
+                                              accelerator_string);
 
   UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       web_ui()->GetWebContents()->GetBrowserContext(),

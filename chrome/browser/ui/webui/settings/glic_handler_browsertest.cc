@@ -81,32 +81,18 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, UpdateGlicShortcut) {
       base::Value::List()
           .Append("callback_id")
           .Append(ui::Command::AcceleratorToString(invalid_shortcut)));
-  PrefService* const pref_service = g_browser_process->local_state();
-  const base::Value::Dict& hotkey_dictionary =
-      pref_service->GetDict(glic::prefs::kGlicLauncherGlobalHotkey);
-  EXPECT_EQ(
-      ui::VKEY_UNKNOWN,
-      hotkey_dictionary.Find(glic::GlicLauncherConfiguration::kHotkeyKeyCode)
-          ->GetInt());
-  EXPECT_EQ(
-      ui::EF_NONE,
-      hotkey_dictionary.Find(glic::GlicLauncherConfiguration::kHotkeyModifiers)
-          ->GetInt());
+  ui::Accelerator saved_hotkey =
+      glic::GlicLauncherConfiguration::GetGlobalHotkey();
+  EXPECT_EQ(ui::VKEY_UNKNOWN, saved_hotkey.key_code());
+  EXPECT_EQ(ui::EF_NONE, saved_hotkey.modifiers());
 
   const ui::Accelerator valid_shortcut(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   glic_handler()->HandleSetGlicShortcut(
       base::Value::List()
           .Append("callback_id")
           .Append(ui::Command::AcceleratorToString(valid_shortcut)));
-  const base::Value::Dict& updated_hotkey_dictionary =
-      pref_service->GetDict(glic::prefs::kGlicLauncherGlobalHotkey);
-  EXPECT_EQ(valid_shortcut.key_code(),
-            updated_hotkey_dictionary
-                .Find(glic::GlicLauncherConfiguration::kHotkeyKeyCode)
-                ->GetInt());
-  EXPECT_EQ(valid_shortcut.modifiers(),
-            updated_hotkey_dictionary
-                .Find(glic::GlicLauncherConfiguration::kHotkeyModifiers)
-                ->GetInt());
+  saved_hotkey = glic::GlicLauncherConfiguration::GetGlobalHotkey();
+  EXPECT_EQ(valid_shortcut.key_code(), saved_hotkey.key_code());
+  EXPECT_EQ(valid_shortcut.modifiers(), saved_hotkey.modifiers());
 }
 }  // namespace settings

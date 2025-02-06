@@ -788,6 +788,30 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
   unique_request_job_ = service_->CreateJob(std::move(config));
 }
 
+void CloudPolicyClient::DeterminePromotionEligibility(ResultCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(service_);
+
+  // Create parameters for the job
+  auto params = DMServerJobConfiguration::CreateParams::WithClient(
+      DeviceManagementService::JobConfiguration::
+          TYPE_DETERMINE_PROMOTION_ELIGIBILITY,
+      this);
+  params.oauth_token = oauth_token_;
+  params.profile_id = profile_id_;
+  params.callback =
+      base::BindOnce(&CloudPolicyClient::OnPromotionEligibilityDetermined,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  // Create the job config
+  std::unique_ptr<DMServerJobConfiguration> config =
+      std::make_unique<DMServerJobConfiguration>(std::move(params));
+
+  config->request()->mutable_determine_promotion_eligibility_request();
+
+  // Execute job
+  request_jobs_.push_back(service_->CreateJob(std::move(config)));
+}
+
 #if BUILDFLAG(IS_WIN)
 void CloudPolicyClient::SetBrowserDeviceIdentifier(
     em::PolicyFetchRequest* request,
@@ -1022,10 +1046,9 @@ void CloudPolicyClient::UploadChromeProfileReport(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
-void CloudPolicyClient::UploadSecurityEventReport(
-    bool include_device_info,
-    base::Value::Dict report,
-    ResultCallback callback) {
+void CloudPolicyClient::UploadSecurityEventReport(bool include_device_info,
+                                                  base::Value::Dict report,
+                                                  ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_registered()) {
@@ -1787,6 +1810,18 @@ void CloudPolicyClient::OnClientCertProvisioningRequestResponse(
   std::move(callback).Run(
       last_dm_status_,
       result.response.client_certificate_provisioning_response());
+}
+
+void CloudPolicyClient::OnPromotionEligibilityDetermined(
+    ResultCallback callback,
+    DMServerJobResult result) {
+  last_dm_status_ = result.dm_status;
+  if (result.dm_status != DM_STATUS_SUCCESS) {
+    NotifyClientError();
+  }
+
+  std::move(callback).Run(Result(result.dm_status));
+  RemoveJob(result.job);
 }
 
 void CloudPolicyClient::NotifyPolicyFetched() {

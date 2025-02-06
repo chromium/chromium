@@ -397,13 +397,13 @@
                 {
                     "name": "Enabled_20240718",
                     "enable_features": [
+                        "AndroidBcivZeroBrowserFrames",
                         "AndroidBrowserControlsInViz"
                     ],
                     "disable_features": [
                         "AndroidBcivBottomControls",
                         "AndroidBcivWithSimpleScheduler",
-                        "AndroidBcivWithSuppression",
-                        "AndroidBcivZeroBrowserFrames"
+                        "AndroidBcivWithSuppression"
                     ]
                 }
             ]
@@ -13169,6 +13169,36 @@
             ]
         }
     ],
+    "KeyboardLockPrompt": [
+        {
+            "platforms": [
+                "windows",
+                "linux",
+                "mac",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_PEPC",
+                    "params": {
+                        "use_pepc_ui": "true"
+                    },
+                    "enable_features": [
+                        "KeyboardLockPrompt"
+                    ]
+                },
+                {
+                    "name": "Enabled_Classic",
+                    "params": {
+                        "use_pepc_ui": "false"
+                    },
+                    "enable_features": [
+                        "KeyboardLockPrompt"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeyboardUsedPalmSuppression": [
         {
             "platforms": [
@@ -13816,21 +13846,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MacAccessibilityOptimizeChildrenChanged"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MacPermanentThinController": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FullscreenPermanentThinController"
                     ]
                 }
             ]
@@ -24352,48 +24367,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UsePollForMessagePumpEpoll"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseRustJsonParserInCurrentSequence": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "UseRustJsonParserInCurrentSequence": "true"
-                    },
-                    "enable_features": [
-                        "UseRustJsonParser"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseRustJsonParserInCurrentSequenceAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "UseRustJsonParserInCurrentSequence": "true"
-                    },
-                    "enable_features": [
-                        "UseRustJsonParser"
                     ]
                 }
             ]

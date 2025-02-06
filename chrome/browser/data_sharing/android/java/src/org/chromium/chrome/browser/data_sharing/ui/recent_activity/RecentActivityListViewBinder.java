@@ -58,6 +58,11 @@ class RecentActivityListViewBinder {
         // Measure available width for the TextView.
         descriptionTimestampView.post(
                 () -> {
+                    if (TextUtils.isEmpty(description)) {
+                        descriptionTimestampView.setText(timestamp);
+                        return;
+                    }
+
                     TextPaint paint = descriptionTimestampView.getPaint();
                     int totalWidth =
                             descriptionTimestampView.getWidth()

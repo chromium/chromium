@@ -137,7 +137,6 @@ source_set("impl") {
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui:browser_navigator_params_headers",
-      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common",

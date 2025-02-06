@@ -261,7 +261,6 @@ struct TabGroupChange {
   enum Type {
     kCreated,
     kEditorOpened,
-    kContentsChanged,
     kVisualsChanged,
     kMoved,
     kClosed

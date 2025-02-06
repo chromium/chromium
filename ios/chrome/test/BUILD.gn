@@ -265,6 +265,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/dialogs/ui_bundled:unit_tests_internal",
     "//ios/chrome/browser/docking_promo/coordinator:unit_tests",
     "//ios/chrome/browser/download/model:unit_tests",
+    "//ios/chrome/browser/download/model/auto_deletion:unit_tests",
     "//ios/chrome/browser/download/model/background_service:unit_tests",
     "//ios/chrome/browser/download/ui_bundled:unit_tests",
     "//ios/chrome/browser/drive/model:unit_tests",

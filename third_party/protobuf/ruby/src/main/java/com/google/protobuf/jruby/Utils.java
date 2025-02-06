@@ -36,14 +36,18 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import java.math.BigInteger;
+import org.jcodings.Encoding;
 import org.jcodings.specific.ASCIIEncoding;
+import org.jcodings.specific.UTF8Encoding;
 import org.jruby.*;
+import org.jruby.common.RubyWarnings;
 import org.jruby.exceptions.RaiseException;
 import org.jruby.ext.bigdecimal.RubyBigDecimal;
 import org.jruby.runtime.Block;
 import org.jruby.runtime.Helpers;
 import org.jruby.runtime.ThreadContext;
 import org.jruby.runtime.builtin.IRubyObject;
+import org.jruby.util.ByteList;
 
 public class Utils {
   public static FieldDescriptor.Type rubyToFieldType(IRubyObject typeClass) {
@@ -140,12 +144,12 @@ public class Utils {
           throw createInvalidTypeError(context, "boolean", fieldName, value);
         break;
       case BYTES:
-        value = validateAndEncodeString(context, "bytes", fieldName, value, "Encoding::ASCII_8BIT");
+        value = validateAndEncodeString(context, "bytes", fieldName, value, ASCIIEncoding.INSTANCE);
         break;
       case STRING:
         value =
             validateAndEncodeString(
-                context, "string", fieldName, symToString(value), "Encoding::UTF_8");
+                context, "string", fieldName, symToString(value), UTF8Encoding.INSTANCE);
         break;
       case MESSAGE:
         if (value.getMetaClass() != typeClass) {
@@ -263,7 +267,9 @@ public class Utils {
           IRubyObject wrapped =
               encodeBytes
                   ? RubyString.newString(
-                      runtime, ((ByteString) value).toStringUtf8(), ASCIIEncoding.INSTANCE)
+                      runtime,
+                      new ByteList(((ByteString) value).toByteArray()),
+                      ASCIIEncoding.INSTANCE)
                   : RubyString.newString(runtime, ((ByteString) value).toByteArray());
           wrapped.setFrozen(true);
           return wrapped;
@@ -380,11 +386,25 @@ public class Utils {
       String fieldType,
       String fieldName,
       IRubyObject value,
-      String encoding) {
+      Encoding encoding) {
     if (!(value instanceof RubyString))
       throw createInvalidTypeError(context, fieldType, fieldName, value);
 
-    value = ((RubyString) value).encode(context, context.runtime.evalScriptlet(encoding));
+    RubyString string = (RubyString) value;
+    if (encoding == UTF8Encoding.INSTANCE && string.getEncoding().isUTF8()) {
+      if (string.isCodeRangeBroken()) {
+        // TODO: For now we only warn for
+        // this case.  We will remove the warning and throw an exception in the 30.x release
+        context
+            .runtime
+            .getWarnings()
+            .warn("String is invalid UTF-8. This will be an error in a future version.");
+      }
+    }
+
+    value =
+        string.encode(
+            context, context.runtime.getEncodingService().convertEncodingToRubyEncoding(encoding));
     value.setFrozen(true);
     return value;
   }

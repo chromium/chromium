@@ -156,7 +156,7 @@ class RendererAgentTest : public ::testing::Test {
   }
 
   void ExpectNoSignalAboutSubresourceDisallowed() {
-    EXPECT_CALL(*agent(), OnSubresourceDisallowed(_)).Times(0);
+    EXPECT_CALL(*agent(), OnSubresourceDisallowed()).Times(0);
   }
 
   void ExpectLoadPolicy(std::string_view url_spec,
@@ -172,7 +172,7 @@ class RendererAgentTest : public ::testing::Test {
     // If the load policy indicated the load was filtered, simulate a filtered
     // load callback.
     if (actual_policy == subresource_filter::LoadPolicy::DISALLOW) {
-      agent()->OnSubresourceDisallowed(url_spec);
+      agent()->OnSubresourceDisallowed();
     }
   }
 
@@ -325,7 +325,7 @@ TEST_F(RendererAgentTest, Enabled_FilteringIsInEffectForOneLoad) {
       subresource_filter::mojom::ActivationLevel::kEnabled);
   ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
 
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed(kTestFirstURL));
+  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
 
   ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::DISALLOW);
   ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
@@ -335,7 +335,7 @@ TEST_F(RendererAgentTest, Enabled_FilteringIsInEffectForOneLoad) {
   ExpectNoFilterGetsInjected();
   ExpectNoSignalAboutSubresourceDisallowed();
   PerformSameDocumentNavigationWithoutSettingActivationLevel();
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed(kTestFirstURL));
+  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
   ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::DISALLOW);
   ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
 
@@ -365,7 +365,7 @@ TEST_F(RendererAgentTest, Enabled_ActivationIsInheritedWhenAvailable) {
   StartLoadWithoutSettingActivationState();
   ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
 
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed(kTestFirstURL));
+  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
 
   ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::DISALLOW);
   ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
@@ -393,7 +393,7 @@ TEST_F(RendererAgentTest, Enabled_NewRulesetIsPickedUpAtNextLoad) {
   ASSERT_NO_FATAL_FAILURE(
       SetTestRulesetToDisallowURLsWithPathSuffix(kTestSecondURLPathSuffix));
 
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed(kTestFirstURL));
+  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
 
   ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::DISALLOW);
   ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);
@@ -409,7 +409,7 @@ TEST_F(RendererAgentTest, Enabled_NewRulesetIsPickedUpAtNextLoad) {
       subresource_filter::mojom::ActivationLevel::kEnabled);
   ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
 
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed(kTestSecondURL));
+  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
 
   ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::ALLOW);
   ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::DISALLOW);
@@ -568,7 +568,7 @@ TEST_F(RendererAgentTest,
   StartLoadAndSetActivationState(activation_state);
   ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
 
-  EXPECT_CALL(*agent(), OnSubresourceDisallowed(kTestFirstURL));
+  EXPECT_CALL(*agent(), OnSubresourceDisallowed());
 
   ExpectLoadPolicy(kTestFirstURL, subresource_filter::LoadPolicy::DISALLOW);
   ExpectLoadPolicy(kTestSecondURL, subresource_filter::LoadPolicy::ALLOW);

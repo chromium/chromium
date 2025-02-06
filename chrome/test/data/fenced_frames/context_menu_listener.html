@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<a href="https://example.com" id="anchor" oncontextmenu="changeURL()">
+  www.example.com
+</a>
+
+<script>
+  function changeURL() {
+    // Append cross-site data to anchor element href.
+    document.getElementById("anchor").href =
+      "https://example.com#cross-site-data";
+  }
+</script>
+
+</body>
+</html>

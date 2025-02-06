@@ -19,8 +19,6 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // NSTitlebarAccessoryViewController's `fullScreenMinHeight` from zero
 // to non-zero.
 // Its presence also fixes a race condition in PWA fullscreen.
-// `nil` unless the `kFullscreenPermanentThinController` is enabled.
-// (see https://crbug.com/373722654)
 @property(nonatomic)
     NSTitlebarAccessoryViewController* thinTitlebarViewController;
 @end

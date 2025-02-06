@@ -2367,6 +2367,11 @@ const char kLensOverlaySidePanelOpenInNewTabName[] =
 const char kLensOverlaySidePanelOpenInNewTabDescription[] =
     "Enables open in new tab in the Lens overlay side panel.";
 
+const char kLensOverlaySimplifiedSelectionName[] =
+    "Lens overlay simplified selection";
+const char kLensOverlaySimplifiedSelectionDescription[] =
+    "Enables simplified selection in the Lens overlay.";
+
 const char kLensOverlayTranslateButtonName[] = "Lens overlay translate button";
 const char kLensOverlayTranslateButtonDescription[] =
     "Enables translate button via the Lens overlay.";
@@ -5214,22 +5219,6 @@ const char kTabstripDedupeName[] = "Tab Deduplication";
 const char kTabstripDedupeDescription[] =
     "Enables the Tab Deduplication feature, which can be found within the Tab "
     "Search bubble.";
-
-const char kIOSPromoRefreshedPasswordBubbleName[] =
-    "Chrome for iOS promo : passwords";
-const char kIOSPromoRefreshedPasswordBubbleDescription[] =
-    "When enabled, the new Contextual Chrome for iOS promo will be shown to"
-    "the eligible users when they save/update their passwords.";
-
-const char kIOSPromoAddressBubbleName[] = "Chrome for iOS promo : addresses";
-const char kIOSPromoAddressBubbleDescription[] =
-    "When enabled, the Contextual Chrome for iOS promo will be shown to"
-    "the eligible users when they save/update their address.";
-
-const char kIOSPromoPaymentBubbleName[] = "Chrome for iOS promo : payments";
-const char kIOSPromoPaymentBubbleDescription[] =
-    "When enabled, the Contextual Chrome for iOS promo will be shown to"
-    "the eligible users when they save/update their payments.";
 
 const char kWebAppSyncGeneratedIconBackgroundFixName[] =
     "Web App Sync Generated Icon Background Fix";

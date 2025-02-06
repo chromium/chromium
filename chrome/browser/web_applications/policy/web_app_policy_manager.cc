@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/web_app_id_constants.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -66,7 +65,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/edusumer/graduation_utils.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "components/user_manager/user_manager.h"
@@ -856,6 +857,30 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kRecorder:
         disabled_system_apps_.insert(ash::SystemWebAppType::RECORDER);
         break;
+      case policy::SystemFeature::kGmail:
+        disabled_web_apps_.insert(ash::kGmailAppId);
+        break;
+      case policy::SystemFeature::kGoogleDocs:
+        disabled_web_apps_.insert(ash::kGoogleDocsAppId);
+        break;
+      case policy::SystemFeature::kGoogleSlides:
+        disabled_web_apps_.insert(ash::kGoogleSlidesAppId);
+        break;
+      case policy::SystemFeature::kGoogleSheets:
+        disabled_web_apps_.insert(ash::kGoogleSheetsAppId);
+        break;
+      case policy::SystemFeature::kGoogleDrive:
+        disabled_web_apps_.insert(ash::kGoogleDriveAppId);
+        break;
+      case policy::SystemFeature::kGoogleKeep:
+        disabled_web_apps_.insert(ash::kGoogleKeepAppId);
+        break;
+      case policy::SystemFeature::kGoogleCalendar:
+        disabled_web_apps_.insert(ash::kGoogleCalendarAppId);
+        break;
+      case policy::SystemFeature::kGoogleChat:
+        disabled_web_apps_.insert(ash::kGoogleChatAppId);
+        break;
 #else
       case policy::SystemFeature::kCamera:
       case policy::SystemFeature::kOsSettings:
@@ -867,6 +892,14 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kPrintJobs:
       case policy::SystemFeature::kKeyShortcuts:
       case policy::SystemFeature::kRecorder:
+      case policy::SystemFeature::kGmail:
+      case policy::SystemFeature::kGoogleDocs:
+      case policy::SystemFeature::kGoogleSlides:
+      case policy::SystemFeature::kGoogleSheets:
+      case policy::SystemFeature::kGoogleDrive:
+      case policy::SystemFeature::kGoogleKeep:
+      case policy::SystemFeature::kGoogleCalendar:
+      case policy::SystemFeature::kGoogleChat:
         break;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       case policy::SystemFeature::kUnknownSystemFeature:

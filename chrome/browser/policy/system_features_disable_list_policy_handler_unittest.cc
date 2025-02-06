@@ -71,17 +71,26 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleSomeSettings) {
 }
 
 TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleAllSettings) {
-  ApplyPolicySettings({"camera", "os_settings", "browser_settings", "scanning",
-                       "web_store", "canvas", "explore", "crosh", "terminal",
-                       "gallery", "print_jobs", "key_shortcuts", "recorder"});
+  ApplyPolicySettings({"camera",        "os_settings",     "browser_settings",
+                       "scanning",      "web_store",       "canvas",
+                       "explore",       "crosh",           "terminal",
+                       "gallery",       "print_jobs",      "key_shortcuts",
+                       "recorder",      "gmail",           "google_docs",
+                       "google_slides", "google_sheets",   "google_drive",
+                       "google_keep",   "google_calendar", "google_chat"});
 
-  VerifyPrefList({SystemFeature::kCamera, SystemFeature::kOsSettings,
-                  SystemFeature::kBrowserSettings, SystemFeature::kScanning,
-                  SystemFeature::kWebStore, SystemFeature::kCanvas,
-                  SystemFeature::kExplore, SystemFeature::kCrosh,
-                  SystemFeature::kTerminal, SystemFeature::kGallery,
-                  SystemFeature::kPrintJobs, SystemFeature::kKeyShortcuts,
-                  SystemFeature::kRecorder});
+  VerifyPrefList(
+      {SystemFeature::kCamera,          SystemFeature::kOsSettings,
+       SystemFeature::kBrowserSettings, SystemFeature::kScanning,
+       SystemFeature::kWebStore,        SystemFeature::kCanvas,
+       SystemFeature::kExplore,         SystemFeature::kCrosh,
+       SystemFeature::kTerminal,        SystemFeature::kGallery,
+       SystemFeature::kPrintJobs,       SystemFeature::kKeyShortcuts,
+       SystemFeature::kRecorder,        SystemFeature::kGmail,
+       SystemFeature::kGoogleDocs,      SystemFeature::kGoogleSlides,
+       SystemFeature::kGoogleSheets,    SystemFeature::kGoogleDrive,
+       SystemFeature::kGoogleKeep,      SystemFeature::kGoogleCalendar,
+       SystemFeature::kGoogleChat});
 
   std::vector<base::Bucket> expected_histogram{
       base::Bucket(static_cast<int>(SystemFeature::kCamera), 1),
@@ -96,7 +105,15 @@ TEST_F(SystemFeaturesDisableListPolicyHandlerTest, ShouldHandleAllSettings) {
       base::Bucket(static_cast<int>(SystemFeature::kGallery), 1),
       base::Bucket(static_cast<int>(SystemFeature::kPrintJobs), 1),
       base::Bucket(static_cast<int>(SystemFeature::kKeyShortcuts), 1),
-      base::Bucket(static_cast<int>(SystemFeature::kRecorder), 1)};
+      base::Bucket(static_cast<int>(SystemFeature::kRecorder), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGmail), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleDocs), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleSlides), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleSheets), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleDrive), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleKeep), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleCalendar), 1),
+      base::Bucket(static_cast<int>(SystemFeature::kGoogleChat), 1)};
 
   EXPECT_EQ(
       histogram_tester_.GetAllSamples(kSystemFeaturesDisableListHistogram),

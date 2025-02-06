@@ -106,8 +106,8 @@ void InstantMessageQueueProcessor::MaybeShowInstantMessage() {
   is_showing_instant_message_ = true;
 
   // Schedule next step of queue-processing.
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {},
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
       base::BindOnce(
           &InstantMessageQueueProcessor::ProcessQueueAfterMessageShown,
           base::Unretained(this)),

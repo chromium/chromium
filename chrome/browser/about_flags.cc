@@ -9667,21 +9667,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kRenderArcNotificationsByChrome)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"ios-promo-refreshed-password-bubble",
-     flag_descriptions::kIOSPromoRefreshedPasswordBubbleName,
-     flag_descriptions::kIOSPromoRefreshedPasswordBubbleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kIOSPromoRefreshedPasswordBubble)},
-
-    {"ios-promo-address-bubble", flag_descriptions::kIOSPromoAddressBubbleName,
-     flag_descriptions::kIOSPromoAddressBubbleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kIOSPromoAddressBubble)},
-
-    {"ios-promo-payment-bubble", flag_descriptions::kIOSPromoPaymentBubbleName,
-     flag_descriptions::kIOSPromoPaymentBubbleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kIOSPromoPaymentBubble)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
     {"enable-compression-dictionary-transport",
      flag_descriptions::kCompressionDictionaryTransportName,
      flag_descriptions::kCompressionDictionaryTransportDescription, kOsAll,
@@ -11072,6 +11057,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kCertVerificationNetworkTime)},
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"enable-lens-overlay-simplified-selection",
+     flag_descriptions::kLensOverlaySimplifiedSelectionName,
+     flag_descriptions::kLensOverlaySimplifiedSelectionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlaySimplifiedSelection)},
+
     {"enable-lens-overlay-translate-button",
      flag_descriptions::kLensOverlayTranslateButtonName,
      flag_descriptions::kLensOverlayTranslateButtonDescription, kOsDesktop,

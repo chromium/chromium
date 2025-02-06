@@ -124,10 +124,6 @@ namespace glic {
 class BorderView;
 }  // namespace glic
 
-namespace segmentation_platform {
-struct ClassificationResult;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView
 //
@@ -597,11 +593,6 @@ class BrowserView : public BrowserWindow,
   sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
       content::WebContents* contents,
       const gfx::Image& image) override;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // TODO(crbug.com/339262105): Clean up the old password promo methods after
-  // the generic promo launch.
-  void VerifyUserEligibilityIOSPasswordPromoBubble() override;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   qrcode_generator::QRCodeGeneratorBubbleView* ShowQRCodeGeneratorBubble(
       content::WebContents* contents,
       const GURL& url,
@@ -979,20 +970,6 @@ class BrowserView : public BrowserWindow,
   // type, and there should be a subsequent re-layout to show it.
   // |contents| can be null.
   bool MaybeShowInfoBar(content::WebContents* contents);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // TODO(crbug.com/339262105): Clean up the old password promo methods after
-  // the generic promo launch.
-  // Decides whether to show the iOS Password Promo Bubble based on segmentation
-  // platform classification results (is passed as a callback to the
-  // segmentation API).
-  void MaybeShowIOSPasswordPromoBubble(
-      const segmentation_platform::ClassificationResult& result);
-  // TODO(crbug.com/339262105): Clean up the old password promo methods after
-  // the generic promo launch.
-  // Shows the iOS Password Promo Bubble.
-  void ShowIOSPasswordPromoBubble();
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Updates devtools window for given contents. This method will show docked
   // devtools window for inspected |web_contents| that has docked devtools

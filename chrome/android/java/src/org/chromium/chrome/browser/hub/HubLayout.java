@@ -521,7 +521,8 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             finalRect.top -= 1;
 
             initialRect = new Rect();
-            NewTabAnimationUtils.updateRects(initialRect, finalRect, isRtl);
+            NewTabAnimationUtils.updateRects(
+                    initialRect, finalRect, isRtl, /* isTopAligned= */ true);
             cornerRadius = NewTabAnimationUtils.FOREGROUND_RADIUS;
         } else {
             cornerRadius = 0;

@@ -40,6 +40,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -590,6 +591,13 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
 
   for (const auto& tag : analysis_settings_.tags) {
     request->add_tag(tag.first);
+  }
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
+    for (const auto& ip_address :
+         enterprise_connectors::GetLocalIpAddresses()) {
+      request->add_local_ips(ip_address.GetString());
+    }
   }
 
   request->set_blocking(analysis_settings_.block_until_verdict !=

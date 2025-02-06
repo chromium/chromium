@@ -1552,6 +1552,7 @@ TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForTab) {
 TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsUpdated) {
   CreateAndInitializeService();
   SetupInstantMessageDelegate();
+  AddPersistentMessageObserver();
 
   data_sharing::GroupId collaboration_group_id =
       data_sharing::GroupId("my group id");
@@ -1582,6 +1583,12 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsUpdated) {
       .WillRepeatedly(
           DoAll(SaveArg<0>(&message), MoveArg<1>(&success_callback)));
 
+  // Save the last invocation of DisplayPersistentMessage.
+  PersistentMessage last_persistent_message;
+  EXPECT_CALL(mock_persistent_message_observer_, DisplayPersistentMessage(_))
+      .Times(1)
+      .WillOnce(SaveArg<0>(&last_persistent_message));
+
   // Updating the currently selected tab should inform the delegate.
   tg_notifier_observer_->OnTabUpdated(*tab1, tab_groups::TriggerSource::REMOTE);
 
@@ -1590,6 +1597,15 @@ TEST_F(MessagingBackendServiceImplTest, TestSelectedTabGetsUpdated) {
   base::Uuid db_message_id = base::Uuid::ParseLowercase(db_message.uuid());
   EXPECT_EQ(db_message_id, message.attribution.id);
 
+  // Verify that the dirty bit is chip only and no dot.
+  EXPECT_FALSE(static_cast<int>(DirtyType::kDot) & db_message.dirty());
+  EXPECT_TRUE(static_cast<int>(DirtyType::kChip) & db_message.dirty());
+
+  // Verify persistent notification. There should be only a chip notification
+  // and no tab group notification.
+  EXPECT_EQ(PersistentNotificationType::CHIP, last_persistent_message.type);
+
+  // Verify instant message.
   EXPECT_EQ(CollaborationEvent::TAB_UPDATED, message.collaboration_event);
   EXPECT_EQ(InstantNotificationType::UNDEFINED, message.type);
 
@@ -1784,6 +1800,39 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
               ClearDirtyMessage(db_message_id, DirtyType::kMessageOnly))
       .Times(1);
   std::move(success_callback).Run(true);
+}
+
+TEST_F(MessagingBackendServiceImplTest,
+       LeavingCollaborationDoesNotResultInNotifications) {
+  CreateAndInitializeService();
+  SetupInstantMessageDelegate();
+  AddPersistentMessageObserver();
+
+  data_sharing::GroupId collaboration_group_id =
+      data_sharing::GroupId("my group id");
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(collaboration_group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillRepeatedly(Return(tab_group));
+
+  // Mimic that the user has just left the group.
+  EXPECT_CALL(*mock_data_sharing_service_,
+              IsLeavingGroup(Eq(collaboration_group_id)))
+      .WillRepeatedly(Return(true));
+
+  // Remove the group which results due to leaving the collaboration. There
+  // should be no instant, persistent or db message.
+  EXPECT_CALL(*mock_instant_message_delegate_, DisplayInstantaneousMessage)
+      .Times(0);
+  EXPECT_CALL(mock_persistent_message_observer_, DisplayPersistentMessage)
+      .Times(0);
+  EXPECT_CALL(*unowned_messaging_backend_store_, AddMessage).Times(0);
+  tg_notifier_observer_->OnTabGroupRemoved(tab_group,
+                                           tab_groups::TriggerSource::REMOTE);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestInstantMessageCallbackFails) {

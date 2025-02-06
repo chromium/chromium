@@ -6,7 +6,6 @@
 #include <queue>
 #include <string>
 
-#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,7 +32,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/ozone_buildflags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
@@ -790,60 +788,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
             ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
       }));
-}
-
-// Linux wayland does not support window activation.
-#if (BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND))
-#define MAYBE_TestOsSystemAutoResolves DISABLED_TestOsSystemAutoResolves
-#else
-#define MAYBE_TestOsSystemAutoResolves TestOsSystemAutoResolves
-#endif
-IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
-                       MAYBE_TestOsSystemAutoResolves) {
-  std::unique_ptr<base::AutoReset<bool>> mock_system_settings =
-      std::make_unique<base::AutoReset<bool>>(
-          system_permission_settings::MockShowSystemSettingsForTesting());
-
-  std::unique_ptr<system_permission_settings::ScopedSettingsForTesting>
-      scoped_system_permission_camera = std::make_unique<
-          system_permission_settings::ScopedSettingsForTesting>(
-          ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
-  std::unique_ptr<system_permission_settings::ScopedSettingsForTesting>
-      scoped_system_permission_mic = std::make_unique<
-          system_permission_settings::ScopedSettingsForTesting>(
-          ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
-
-  RunTestSequence(
-      InstrumentTab(kWebContentsElementId),
-      NavigateWebContents(kWebContentsElementId, GetURL()),
-      ClickOnPEPCElement("camera-microphone"),
-      InAnyContext(
-          WaitForShow(EmbeddedPermissionPromptSystemSettingsView::kMainViewId)),
-      Do([&]() {
-        mock_system_settings.reset();
-        scoped_system_permission_camera.reset();
-        scoped_system_permission_mic.reset();
-        scoped_system_permission_camera = std::make_unique<
-            system_permission_settings::ScopedSettingsForTesting>(
-            ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/false);
-        scoped_system_permission_mic = std::make_unique<
-            system_permission_settings::ScopedSettingsForTesting>(
-            ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/false);
-
-        // Simulate another window becoming active, and then the current window
-        // again.
-        Browser* focused_window = CreateBrowser(browser()->profile());
-        ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
-        ASSERT_FALSE(browser()->window()->IsActive());
-
-        ui_test_utils::BrowserActivationWaiter waiter(browser());
-        browser()->window()->Activate();
-        waiter.WaitForActivation();
-      }),
-
-      // Now that both system permissions changed to allowed, the PEPC prompt
-      // advances to the next screen.
-      InAnyContext(WaitForShow(EmbeddedPermissionPromptAskView::kAllowId)));
 }
 
 class EmbeddedPermissionPromptPositioningInteractiveTest

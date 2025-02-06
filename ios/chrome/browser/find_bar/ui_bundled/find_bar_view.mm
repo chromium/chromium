@@ -64,10 +64,15 @@ const CGFloat kButtonLength = 44;
   [self setupConstraints];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
   [self updateFonts];
 }
+#endif
 
 #pragma mark - Private
 
@@ -81,6 +86,11 @@ const CGFloat kButtonLength = 44;
 
   [self setupColors];
   [self updateFonts];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+    [self registerForTraitChanges:traits withAction:@selector(updateFonts)];
+  }
 }
 
 // Sets the constraints for the subviews up.

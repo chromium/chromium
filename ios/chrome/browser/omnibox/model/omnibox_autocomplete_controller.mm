@@ -8,6 +8,7 @@
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/omnibox_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
+#import "third_party/omnibox_proto/groups.pb.h"
 
 @implementation OmniboxAutocompleteController {
   /// Controller of the omnibox.
@@ -35,8 +36,11 @@
 
 - (void)updatePopupSuggestions {
   if (_autocompleteController) {
+    BOOL isFocusing = _autocompleteController->input().focus_type() ==
+                      metrics::OmniboxFocusType::INTERACTION_FOCUS;
     [self.omniboxPopupController
-        updateWithResults:_autocompleteController->result()];
+        newResultsAvailable:_autocompleteController->result()
+                  isOnFocus:isFocusing];
   }
 }
 

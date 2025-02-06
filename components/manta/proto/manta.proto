@@ -131,6 +131,8 @@ message OutputData {
   optional float score = 5;
 
   optional uint32 generation_seed = 6;
+
+  optional string generative_prompt = 8;
 }
 
 enum FilteredReason {

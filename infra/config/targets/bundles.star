@@ -2018,6 +2018,32 @@ targets.bundle(
     ],
 )
 
+# This test suite contains the exact same tests as
+# chromium_mac_gtests_no_nacl, with some tests default to run on mac vm.
+targets.bundle(
+    name = "chromium_mac_gtests_no_nacl_mac14_arm",
+    targets = [
+        "chromium_gtests",
+        "chromium_mac_gtests_vm_optional",
+        "non_android_and_cast_and_chromeos_chromium_gtests",
+        "non_android_chromium_gtests_no_nacl",
+    ],
+)
+
+# A subsuite tests of chromium_mac_gtests_no_nacl which
+# are safe to run on VMs
+targets.bundle(
+    name = "chromium_mac_gtests_vm_optional",
+    targets = [
+        "chromium_gtests_for_devices_with_graphical_output",
+        "chromium_gtests_for_linux_and_mac_only",
+        "mac_specific_chromium_gtests",
+    ],
+    mixins = [
+        "mac_14_vm_optional",
+    ],
+)
+
 targets.bundle(
     name = "chromium_mac_osxbeta_rel_isolated_scripts",
     targets = [

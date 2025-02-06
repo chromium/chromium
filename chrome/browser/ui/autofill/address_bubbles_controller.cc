@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -162,9 +161,8 @@ void AddressBubblesController::OnUserDecision(
     MaybeShowSignInPromo(profile);
   }
 
-  if ((decision == AutofillClient::AddressPromptUserDecision::kAccepted ||
-       decision == AutofillClient::AddressPromptUserDecision::kEditAccepted) &&
-      base::FeatureList::IsEnabled(::features::kIOSPromoAddressBubble)) {
+  if (decision == AutofillClient::AddressPromptUserDecision::kAccepted ||
+      decision == AutofillClient::AddressPromptUserDecision::kEditAccepted) {
     MaybeShowIOSDektopAddressPromo();
   }
 }

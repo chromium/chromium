@@ -3139,8 +3139,6 @@ static_library("ui") {
       "profiles/profile_customization_util.h",
       "profiles/profile_picker.cc",
       "profiles/profile_picker.h",
-      "startup/default_browser_prompt/default_browser_prompt_trial.cc",
-      "startup/default_browser_prompt/default_browser_prompt_trial.h",
       "startup/first_run_service.cc",
       "startup/first_run_service.h",
       "views/profiles/badged_profile_photo.cc",
@@ -5009,7 +5007,6 @@ static_library("ui") {
       "//components/power_bookmarks/storage",
       "//components/prefs",
       "//components/reading_list/features:flags",
-      "//components/segmentation_platform/embedder/default_model:default_model",
       "//components/services/app_service",
       "//components/soda",
       "//components/soda:constants",
@@ -5036,8 +5033,6 @@ static_library("ui") {
 
     if (is_chrome_branded && !is_android) {
       sources += [
-        "views/promos/ios_promo_password_bubble.cc",
-        "views/promos/ios_promo_password_bubble.h",
         "views/user_education/low_usage_promo.cc",
         "views/user_education/low_usage_promo.h",
       ]

@@ -442,6 +442,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["css3/filters",
               "external/wpt/css/css-backgrounds/hidpi",
+              "external/wpt/css/css-overflow/scroll-buttons-scroll-distance.html",
               "external/wpt/css/css-paint-api/hidpi",
               "external/wpt/css/cssom-view/Element-currentCSSZoom.html",
               "external/wpt/element-timing",

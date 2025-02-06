@@ -12,6 +12,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -26,7 +27,7 @@ GlicLauncherConfiguration::GlicLauncherConfiguration(Observer* manager)
         base::BindRepeating(&GlicLauncherConfiguration::OnEnabledPrefChanged,
                             base::Unretained(this)));
     pref_registrar_.Add(
-        prefs::kGlicLauncherGlobalHotkey,
+        prefs::kGlicLauncherHotkey,
         base::BindRepeating(
             &GlicLauncherConfiguration::OnGlobalHotkeyPrefChanged,
             base::Unretained(this)));
@@ -39,17 +40,16 @@ GlicLauncherConfiguration::~GlicLauncherConfiguration() = default;
 void GlicLauncherConfiguration::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGlicLauncherEnabled, false);
-  registry->RegisterDictionaryPref(
-      prefs::kGlicLauncherGlobalHotkey,
-      base::Value::Dict()
-          .Set(kHotkeyKeyCode, ui::KeyboardCode::VKEY_G)
-          .Set(kHotkeyModifiers,
+
 #if BUILDFLAG(IS_MAC)
-               ui::EF_CONTROL_DOWN
+  const ui::EventFlags modifiers = ui::EF_CONTROL_DOWN;
 #else
-               ui::EF_ALT_DOWN
+  const ui::EventFlags modifiers = ui::EF_ALT_DOWN;
 #endif
-               ));
+
+  const ui::Accelerator hotkey(ui::KeyboardCode::VKEY_G, modifiers);
+  registry->RegisterStringPref(prefs::kGlicLauncherHotkey,
+                               ui::Command::AcceleratorToString(hotkey));
 }
 
 // static
@@ -66,17 +66,12 @@ bool GlicLauncherConfiguration::IsEnabled(bool* is_default_value) {
 
 // static
 ui::Accelerator GlicLauncherConfiguration::GetGlobalHotkey() {
-  const base::Value::Dict& hotkey_dictionary =
-      g_browser_process->local_state()->GetDict(
-          prefs::kGlicLauncherGlobalHotkey);
-  const int key_code = hotkey_dictionary.Find(kHotkeyKeyCode)->GetInt();
-  const int modifiers = hotkey_dictionary.Find(kHotkeyModifiers)->GetInt();
-  const ui::Accelerator hotkey =
-      ui::Accelerator(static_cast<ui::KeyboardCode>(key_code), modifiers);
+  const ui::Accelerator hotkey = ui::Command::StringToAccelerator(
+      g_browser_process->local_state()->GetString(prefs::kGlicLauncherHotkey));
 
   // Return empty accelerator if an invalid modifier was set.
   if (!hotkey.IsEmpty() &&
-      ui::Accelerator::MaskOutKeyEventFlags(modifiers) == 0) {
+      ui::Accelerator::MaskOutKeyEventFlags(hotkey.modifiers()) == 0) {
     return ui::Accelerator();
   }
 

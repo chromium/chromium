@@ -174,10 +174,7 @@ class IdleHelperForTest : public IdleHelper, public IdleHelper::Delegate {
   MOCK_METHOD2(CanEnterLongIdlePeriod,
                bool(base::TimeTicks now,
                     base::TimeDelta* next_long_idle_period_delay_out));
-
   MOCK_METHOD0(IsNotQuiescent, void());
-  MOCK_METHOD0(OnIdlePeriodStarted, void());
-  MOCK_METHOD0(OnIdlePeriodEnded, void());
   MOCK_METHOD1(OnPendingTasksChanged, void(bool has_tasks));
 };
 
@@ -214,8 +211,6 @@ class BaseIdleHelperTest : public testing::Test {
   ~BaseIdleHelperTest() override = default;
 
   void SetUp() override {
-    EXPECT_CALL(*idle_helper_, OnIdlePeriodStarted()).Times(AnyNumber());
-    EXPECT_CALL(*idle_helper_, OnIdlePeriodEnded()).Times(AnyNumber());
     EXPECT_CALL(*idle_helper_, CanEnterLongIdlePeriod(_, _))
         .Times(AnyNumber())
         .WillRepeatedly(Return(true));
@@ -223,7 +218,6 @@ class BaseIdleHelperTest : public testing::Test {
   }
 
   void TearDown() override {
-    EXPECT_CALL(*idle_helper_, OnIdlePeriodEnded()).Times(AnyNumber());
     idle_helper_->Shutdown();
     idle_helper_queue_->ShutdownTaskQueue();
     test_task_runner_->FastForwardUntilNoTasksRemain();
@@ -395,60 +389,17 @@ TEST_F(IdleHelperTest, TestIdleTaskExceedsDeadline) {
   EXPECT_EQ(2, run_count);
 }
 
-class IdleHelperTestWithIdlePeriodObserver : public BaseIdleHelperTest {
- public:
-  IdleHelperTestWithIdlePeriodObserver()
-      : BaseIdleHelperTest(base::TimeDelta()) {}
-  IdleHelperTestWithIdlePeriodObserver(
-      const IdleHelperTestWithIdlePeriodObserver&) = delete;
-  IdleHelperTestWithIdlePeriodObserver& operator=(
-      const IdleHelperTestWithIdlePeriodObserver&) = delete;
-
-  ~IdleHelperTestWithIdlePeriodObserver() override = default;
-
-  void SetUp() override {
-    EXPECT_CALL(*idle_helper_, OnPendingTasksChanged(_)).Times(AnyNumber());
-  }
-
-  void ExpectIdlePeriodStartsButNeverEnds() {
-    EXPECT_CALL(*idle_helper_, OnIdlePeriodStarted()).Times(1);
-    EXPECT_CALL(*idle_helper_, OnIdlePeriodEnded()).Times(0);
-  }
-
-  void ExpectIdlePeriodStartsAndEnds(const testing::Cardinality& cardinality) {
-    EXPECT_CALL(*idle_helper_, OnIdlePeriodStarted()).Times(cardinality);
-    EXPECT_CALL(*idle_helper_, OnIdlePeriodEnded()).Times(cardinality);
-  }
-};
-
-TEST_F(IdleHelperTestWithIdlePeriodObserver, TestEnterButNotExitIdlePeriod) {
-  ExpectIdlePeriodStartsButNeverEnds();
-
+TEST_F(IdleHelperTest, TestEnterAndExitIdlePeriod) {
   idle_helper_->StartIdlePeriod(
       IdleHelper::IdlePeriodState::kInShortIdlePeriod,
       test_task_runner_->NowTicks(),
       test_task_runner_->NowTicks() + base::Milliseconds(10));
-}
-
-TEST_F(IdleHelperTestWithIdlePeriodObserver, TestEnterAndExitIdlePeriod) {
-  BaseIdleHelperTest* fixture = this;
-  ON_CALL(*idle_helper_, OnIdlePeriodStarted())
-      .WillByDefault(
-          Invoke([fixture]() { EXPECT_TRUE(fixture->IsInIdlePeriod()); }));
-  ON_CALL(*idle_helper_, OnIdlePeriodEnded()).WillByDefault(Invoke([fixture]() {
-    EXPECT_FALSE(fixture->IsInIdlePeriod());
-  }));
-
-  ExpectIdlePeriodStartsAndEnds(Exactly(1));
-
-  idle_helper_->StartIdlePeriod(
-      IdleHelper::IdlePeriodState::kInShortIdlePeriod,
-      test_task_runner_->NowTicks(),
-      test_task_runner_->NowTicks() + base::Milliseconds(10));
+  EXPECT_TRUE(IsInIdlePeriod());
   idle_helper_->EndIdlePeriod();
+  EXPECT_FALSE(IsInIdlePeriod());
 }
 
-TEST_F(IdleHelperTestWithIdlePeriodObserver, TestLongIdlePeriod) {
+TEST_F(IdleHelperTest, TestEnterLongIdlePeriod) {
   base::TimeTicks expected_deadline =
       test_task_runner_->NowTicks() + maximum_idle_period_duration();
   base::TimeTicks deadline_in_task;
@@ -460,7 +411,6 @@ TEST_F(IdleHelperTestWithIdlePeriodObserver, TestLongIdlePeriod) {
   EXPECT_CALL(*idle_helper_, CanEnterLongIdlePeriod(_, _))
       .Times(1)
       .WillRepeatedly(Return(true));
-  ExpectIdlePeriodStartsButNeverEnds();
 
   test_task_runner_->RunUntilIdle();
   EXPECT_EQ(0, run_count);  // Shouldn't run yet as no idle period.
@@ -469,6 +419,7 @@ TEST_F(IdleHelperTestWithIdlePeriodObserver, TestLongIdlePeriod) {
   test_task_runner_->RunUntilIdle();
   EXPECT_EQ(1, run_count);  // Should have run in a long idle time.
   EXPECT_EQ(expected_deadline, deadline_in_task);
+  EXPECT_TRUE(IsInIdlePeriod());
 }
 
 TEST_F(IdleHelperTest, TestLongIdlePeriodWithPendingDelayedTask) {
@@ -514,14 +465,13 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodWithLatePendingDelayedTask) {
   EXPECT_EQ(1, run_count);
 }
 
-TEST_F(IdleHelperTestWithIdlePeriodObserver, TestLongIdlePeriodRepeating) {
+TEST_F(IdleHelperTest, TestLongIdlePeriodRepeating) {
   Vector<base::TimeTicks> actual_deadlines;
   int run_count = 0;
 
   EXPECT_CALL(*idle_helper_, CanEnterLongIdlePeriod(_, _))
       .Times(4)
       .WillRepeatedly(Return(true));
-  ExpectIdlePeriodStartsAndEnds(AtLeast(2));
 
   g_max_idle_task_reposts = 3;
   base::TimeTicks clock_before(test_task_runner_->NowTicks());
@@ -557,8 +507,7 @@ TEST_F(IdleHelperTestWithIdlePeriodObserver, TestLongIdlePeriodRepeating) {
   EXPECT_EQ(4, run_count);
 }
 
-TEST_F(IdleHelperTestWithIdlePeriodObserver,
-       TestLongIdlePeriodWhenNotCanEnterLongIdlePeriod) {
+TEST_F(IdleHelperTest, TestLongIdlePeriodWhenNotCanEnterLongIdlePeriod) {
   base::TimeDelta delay = base::Milliseconds(1000);
   base::TimeDelta half_delay = base::Milliseconds(500);
   base::TimeTicks delay_over = test_task_runner_->NowTicks() + delay;
@@ -577,7 +526,6 @@ TEST_F(IdleHelperTestWithIdlePeriodObserver,
           }));
 
   EXPECT_CALL(*idle_helper_, CanEnterLongIdlePeriod(_, _)).Times(2);
-  EXPECT_CALL(*idle_helper_, OnIdlePeriodStarted()).Times(AnyNumber());
 
   idle_task_runner_->PostIdleTask(
       FROM_HERE, base::BindOnce(&IdleTestTask, &run_count, &deadline_in_task));
@@ -787,8 +735,6 @@ class IdleHelperWithQuiescencePeriodTest : public BaseIdleHelperTest {
   ~IdleHelperWithQuiescencePeriodTest() override = default;
 
   void SetUp() override {
-    EXPECT_CALL(*idle_helper_, OnIdlePeriodStarted()).Times(AnyNumber());
-    EXPECT_CALL(*idle_helper_, OnIdlePeriodEnded()).Times(AnyNumber());
     EXPECT_CALL(*idle_helper_, CanEnterLongIdlePeriod(_, _))
         .Times(AnyNumber())
         .WillRepeatedly(Return(true));
@@ -803,25 +749,6 @@ class IdleHelperWithQuiescencePeriodTest : public BaseIdleHelperTest {
   }
 
  private:
-};
-
-class IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver
-    : public IdleHelperWithQuiescencePeriodTest {
- public:
-  IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver()
-      : IdleHelperWithQuiescencePeriodTest() {}
-
-  IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver(
-      const IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver&) = delete;
-  IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver& operator=(
-      const IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver&) = delete;
-
-  ~IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver() override =
-      default;
-
-  void SetUp() override {
-    EXPECT_CALL(*idle_helper_, OnPendingTasksChanged(_)).Times(AnyNumber());
-  }
 };
 
 TEST_F(IdleHelperWithQuiescencePeriodTest,
@@ -840,11 +767,9 @@ TEST_F(IdleHelperWithQuiescencePeriodTest,
   EXPECT_EQ(1, run_count);
 }
 
-TEST_F(IdleHelperWithQuiescencePeriodTestWithIdlePeriodObserver,
+TEST_F(IdleHelperWithQuiescencePeriodTest,
        LongIdlePeriodDoesNotStartsImmediatelyIfBusy) {
   MakeNonQuiescent();
-  EXPECT_CALL(*idle_helper_, OnIdlePeriodStarted()).Times(0);
-  EXPECT_CALL(*idle_helper_, OnIdlePeriodEnded()).Times(0);
   EXPECT_CALL(*idle_helper_, CanEnterLongIdlePeriod(_, _)).Times(0);
   EXPECT_CALL(*idle_helper_, IsNotQuiescent()).Times(AtLeast(1));
 

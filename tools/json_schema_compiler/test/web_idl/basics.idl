@@ -35,6 +35,21 @@ interface TestWebIdl {
   static Promise<DOMString?> nullablePromiseReturn();
   static Promise<ExampleType> customTypePromiseReturn();
   static Promise<undefined> undefinedPromiseReturn();
+
+  // Test items for comment to description processing:
+
+  static undefined noDescription();
+  // One line description.
+  static undefined oneLineDescription();
+  // Multi line description.
+  // Split over.
+  // Multiple lines.
+  static undefined multiLineDescription();
+  // Paragraphed description.
+  //
+  // With blank comment line for paragraph tags.
+  static undefined paragraphedDescription();
+
 };
 
 dictionary ExampleType {

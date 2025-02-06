@@ -1350,18 +1350,6 @@ void TabStripModel::OpenTabGroupEditor(const tab_groups::TabGroupId& group) {
   }
 }
 
-void TabStripModel::ChangeTabGroupContents(
-    const tab_groups::TabGroupId& group) {
-  if (!group_model_) {
-    return;
-  }
-
-  TabGroupChange change(this, group, TabGroupChange::kContentsChanged);
-  for (auto& observer : observers_) {
-    observer.OnTabGroupChanged(change);
-  }
-}
-
 void TabStripModel::ChangeTabGroupVisuals(
     const tab_groups::TabGroupId& group,
     const TabGroupChange::VisualsChange& visuals) {
@@ -2949,13 +2937,6 @@ void TabStripModel::MoveTabToIndexImpl(
   if (group_model_) {
     if (initial_group != tab->GetGroup()) {
       TabGroupStateChanged(final_index, tab, initial_group, tab->GetGroup());
-    } else if (initial_group.has_value()) {
-      const TabGroup* tab_group =
-          group_model_->GetTabGroup(initial_group.value());
-      if (tab_group->GetFirstTab().value() == initial_index ||
-          tab_group->GetFirstTab().value() == final_index) {
-        ChangeTabGroupContents(initial_group.value());
-      }
     }
   }
 }
@@ -3002,13 +2983,6 @@ void TabStripModel::MoveTabsToIndexImpl(
       if (notification.intial_group != tab->GetGroup()) {
         TabGroupStateChanged(final_index, tab, notification.intial_group,
                              tab->GetGroup());
-      } else if (notification.intial_group.has_value()) {
-        const TabGroup* tab_group =
-            group_model_->GetTabGroup(notification.intial_group.value());
-        if (tab_group->GetFirstTab().value() == notification.initial_index ||
-            tab_group->GetFirstTab().value() == final_index) {
-          ChangeTabGroupContents(notification.intial_group.value());
-        }
       }
     }
   }
@@ -3038,13 +3012,14 @@ void TabStripModel::TabGroupStateChanged(
   }
 
   if (new_group.has_value()) {
+    // Update the group model.
+    AddTabToGroupModel(new_group.value());
+
     // Send the observation
     for (auto& observer : observers_) {
       observer.TabGroupedStateChanged(this, std::nullopt, new_group, tab,
                                       index);
     }
-    // Update the group model.
-    AddTabToGroupModel(new_group.value());
   }
 }
 
