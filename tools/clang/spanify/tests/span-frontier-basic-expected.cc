@@ -19,9 +19,42 @@
 // └───────────────┘
 void test_frontier_basic() {
   std::vector<int> buf(5, 5);
+  // Expected rewrite:
+  // base::span<int> spanified_2 = buf;
   base::span<int> spanified_2 = buf;
+  // Expected rewrite:
+  // base::span<int> spanified_1 = spanified_2;
   base::span<int> spanified_1 = spanified_2;  // Expect: frontier not applied.
+  // Expected rewrite:
+  // int* not_spanified_2 = spanified_2.data();
   int* not_spanified_2 = spanified_2.data();  // Expect: frontier applied
   int* not_spanified_1 = not_spanified_2;     // Expect: frontier not applied.
+  spanified_1[0] = 0;
+}
+
+// Test the case that the arrow operator is used instead of the dot operator.
+// The lhs of the operator is a pointer, so we need to dereference it.
+void test_frontier_basic2() {
+  std::vector<int> buf(5, 5);
+  std::vector<int>* buf_ptr;
+  // Expected rewrite:
+  // base::span<int> spanified_2 = *buf_ptr;
+  base::span<int> spanified_2 = *buf_ptr;
+  // Expected rewrite:
+  // base::span<int> spanified_1 = spanified_2;
+  base::span<int> spanified_1 = spanified_2;
+  spanified_1[0] = 0;
+}
+
+// Test the case that the arrow operator is used instead of the dot operator.
+// The lhs of the operator can be a non-simple expression, e.g. a function call.
+void test_frontier_basic3() {
+  extern std::vector<int>* func();
+  // Expected rewrite:
+  // base::span<int> spanified_2 = *func();
+  base::span<int> spanified_2 = *func();
+  // Expected rewrite:
+  // base::span<int> spanified_1 = spanified_2;
+  base::span<int> spanified_1 = spanified_2;
   spanified_1[0] = 0;
 }
