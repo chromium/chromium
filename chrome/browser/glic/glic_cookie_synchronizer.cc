@@ -187,7 +187,6 @@ GlicCookieSynchronizer::GlicCookieSynchronizer(
       identity_manager_(identity_manager),
       use_for_fre_(use_for_fre) {
   CHECK(context_);
-  observation_.Observe(identity_manager);
 }
 
 GlicCookieSynchronizer::~GlicCookieSynchronizer() = default;
@@ -236,12 +235,6 @@ void GlicCookieSynchronizer::CopyCookiesToWebviewStoragePartition(
   } else {
     BeginCookieSync();
   }
-}
-
-void GlicCookieSynchronizer::OnIdentityManagerShutdown(
-    signin::IdentityManager* identity_manager) {
-  observation_.Reset();
-  cookie_loader_.reset();
 }
 
 void GlicCookieSynchronizer::SyncCookiesForDevelopmentComplete(bool success) {

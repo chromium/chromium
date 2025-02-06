@@ -34,7 +34,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/glic_test_util.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -51,10 +51,16 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
+    // Signing in is a prerequisite for Glic.
+    identity_test_environment_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+    identity_test_environment_adaptor_->identity_test_env()
+        ->MakePrimaryAccountAvailable("test@example.com",
+                                      signin::ConsentLevel::kSync);
 #if BUILDFLAG(ENABLE_GLIC)
     glic_test_environment_ =
         std::make_unique<glic::GlicTestEnvironment>(browser()->profile());
-    glic::ForceSigninAndModelExecutionCapability(browser()->profile());
 #endif
   }
 
@@ -91,6 +97,16 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   TabStripNudgeButton* GlicNudgeButton() {
     return tab_strip_action_container()->glic_nudge_button();
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  void AcceptGlicFre() {
+    // Mark the glic FRE as accepted by default when testing the glic button.
+    // TODO(cuianthony): Move this logic to glic_guest_util.h after
+    // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
+    PrefService* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(glic::prefs::kGlicCompletedFre, true);
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
   void ShowTabStripNudgeButton(TabStripNudgeButton* button) {
     tab_strip_action_container()->ShowTabStripNudge(button);
@@ -352,6 +368,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 #if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ImmediatelyHidesWhenGlicNudgeButtonDismissed) {
+  AcceptGlicFre();
   ShowTabStripNudgeButton(GlicNudgeButton());
   tab_strip_action_container()
       ->animation_session_for_testing()
@@ -370,6 +387,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        LogsWhenGlicNudgeButtonClicked) {
+  AcceptGlicFre();
   ShowTabStripNudgeButton(GlicNudgeButton());
 
   OnButtonClicked(GlicNudgeButton());
@@ -382,6 +400,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        ShowAndHideGlicButtonWhenGlicNudgeButtonShows) {
+  AcceptGlicFre();
   ShowTabStripNudgeButton(GlicNudgeButton());
   tab_strip_action_container()
       ->animation_session_for_testing()

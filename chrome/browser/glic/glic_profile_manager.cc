@@ -54,7 +54,8 @@ void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {
 }
 
 bool GlicProfileManager::ShouldPreloadForProfile(Profile* profile) const {
-  if (!GlicEnabling::IsReadyForProfile(profile) ||
+  // TODO(crbug.com/390487066): Also return false when profile is not ready.
+  if (!GlicEnabling::IsEnabledForProfile(profile) ||
       !base::FeatureList::IsEnabled(features::kGlicWarming)) {
     return false;
   }

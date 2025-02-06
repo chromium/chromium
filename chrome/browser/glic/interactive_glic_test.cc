@@ -4,7 +4,6 @@
 
 #include "chrome/browser/glic/interactive_glic_test.h"
 
-#include "base/scoped_observation_traits.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -24,17 +23,6 @@ GlicWindowControllerStateObserver::~GlicWindowControllerStateObserver() =
 
 DEFINE_STATE_IDENTIFIER_VALUE(GlicWindowControllerStateObserver,
                               kGlicWindowControllerState);
-
-GlicAppStateObserver::GlicAppStateObserver(GlicWindowController* controler)
-    : ObservationStateObserver(controler) {}
-
-GlicAppStateObserver::~GlicAppStateObserver() = default;
-
-void GlicAppStateObserver::WebUiStateChanged(mojom::WebUiState state) {
-  OnStateObserverStateChanged(state);
-}
-
-DEFINE_STATE_IDENTIFIER_VALUE(GlicAppStateObserver, kGlicAppState);
 
 }  // namespace internal
 

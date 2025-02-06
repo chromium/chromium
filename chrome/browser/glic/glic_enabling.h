@@ -9,6 +9,16 @@
 
 class Profile;
 
+namespace glic {
+// Enum for signalling the reason why glic was not enabled.
+enum class GlicEnabledStatus {
+  kEnabled = 0,
+  kGlicFeatureFlagDisabled = 1,
+  kTabstripComboButtonDisabled = 2,
+  kMaxValue = 2
+};
+}  // namespace glic
+
 // This class provides a central location for checking if GLIC is enabled. It
 // allows for future expansion to include other ways the feature may be disabled
 // such as based on user preferences or system settings.
@@ -47,9 +57,10 @@ class GlicEnabling {
   // value can change at runtime.
   static bool IsEnabledForProfile(const Profile* profile);
 
-  // Whether or not the profile is currently ready for Glic. This means no
-  // additional steps must be taken before opening Glic.
-  static bool IsReadyForProfile(Profile* profile);
+ private:
+  // Private helper function that returns enabled status for fine grain logging
+  // if desired.
+  static glic::GlicEnabledStatus CheckEnabling();
 };
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_ENABLING_H_
