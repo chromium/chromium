@@ -263,6 +263,8 @@ TabFeatures::CreateCommerceUiTabHelper(content::WebContents* web_contents,
 void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                       content::WebContents* old_contents,
                                       content::WebContents* new_contents) {
+  DCHECK_EQ(old_contents, tab->GetContents());
+
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
 
   // This method is transiently used to reset features that do not handle tab
@@ -292,14 +294,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     privacy_sandbox_tab_observer_.reset();
     privacy_sandbox_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
-            tab->GetContents());
+            new_contents);
   }
 
   if (dwa_web_contents_observer_) {
     dwa_web_contents_observer_.reset();
     dwa_web_contents_observer_ =
-        std::make_unique<metrics::DwaWebContentsObserver>(
-            tab->GetContents());
+        std::make_unique<metrics::DwaWebContentsObserver>(new_contents);
   }
 
   if (web_app::AreWebAppsEnabled(
@@ -315,6 +316,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
               profile),
           ChromeTranslateClient::FromWebContents(new_contents),
           favicon::ContentFaviconDriver::FromWebContents(new_contents));
+
+  if (permission_indicators_tab_data_) {
+    permission_indicators_tab_data_ =
+        std::make_unique<permissions::PermissionIndicatorsTabData>(
+            new_contents);
+  }
 }
 
 }  // namespace tabs
