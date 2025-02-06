@@ -36,6 +36,10 @@ namespace gfx {
 class Image;
 }
 
+namespace blink::common::webid {
+struct LoginStatusOptions;
+}  // namespace blink::common::webid
+
 namespace content {
 
 class FederatedAuthDisconnectRequest;
@@ -94,10 +98,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void ResolveTokenRequest(const std::optional<std::string>& account_id,
                            const std::string& token,
                            ResolveTokenRequestCallback callback) override;
-  void SetIdpSigninStatus(const url::Origin& origin,
-                          blink::mojom::IdpSigninStatus status) override;
+  void SetIdpSigninStatus(
+      const url::Origin& origin,
+      blink::mojom::IdpSigninStatus status,
+      const std::optional<::blink::common::webid::LoginStatusOptions>& options)
+      override;
   void RegisterIdP(const ::GURL& idp, RegisterIdPCallback) override;
   void UnregisterIdP(const ::GURL& idp, UnregisterIdPCallback) override;
+
   void CloseModalDialogView() override;
   void PreventSilentAccess(PreventSilentAccessCallback callback) override;
   void Disconnect(blink::mojom::IdentityCredentialDisconnectOptionsPtr options,

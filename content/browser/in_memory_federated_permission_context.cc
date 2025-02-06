@@ -10,7 +10,12 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "content/browser/webid/flags.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "third_party/blink/public/common/webid/login_status_account.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace content {
 
@@ -234,12 +239,38 @@ std::optional<bool> InMemoryFederatedPermissionContext::GetIdpSigninStatus(
   }
 }
 
+std::vector<blink::common::webid::LoginStatusAccount>
+InMemoryFederatedPermissionContext::GetAccountProfiles(
+    const url::Origin& idp_origin) {
+  auto options = idp_login_status_options_.find(idp_origin.Serialize());
+
+  if (options != idp_login_status_options_.end()) {
+    return options->second.accounts;
+  }
+  return {};
+}
+
 void InMemoryFederatedPermissionContext::SetIdpSigninStatus(
     const url::Origin& idp_origin,
-    bool idp_signin_status) {
+    bool idp_signin_status,
+    base::optional_ref<const blink::common::webid::LoginStatusOptions>
+        options) {
+  if (idp_origin.opaque()) {
+    mojo::ReportBadMessage("Bad IdP Origin from renderer.");
+    return;
+  }
+
   idp_signin_status_[idp_origin.Serialize()] = idp_signin_status;
   for (IdpSigninStatusObserver& observer : idp_signin_status_observer_list_) {
     observer.OnIdpSigninStatusReceived(idp_origin, idp_signin_status);
+  }
+
+  if (options && IsFedCmLightweightModeEnabled()) {
+    if (idp_signin_status) {
+      idp_login_status_options_[idp_origin.Serialize()] = options.value();
+    } else {
+      idp_login_status_options_.erase(idp_origin.Serialize());
+    }
   }
 
   // TODO(crbug.com/40245925): Replace this with AddIdpSigninStatusObserver.

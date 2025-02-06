@@ -18,12 +18,6 @@ LoginStatusOptions::LoginStatusOptions(
     const std::optional<base::TimeDelta>& expiration)
     : accounts(std::move(accounts)), expiration(expiration) {}
 
-LoginStatusOptions::LoginStatusOptions(const LoginStatusOptions& account) =
-    default;
-
-LoginStatusOptions& LoginStatusOptions::operator=(const LoginStatusOptions&) =
-    default;
-
 bool LoginStatusOptions::operator==(const LoginStatusOptions& account) const =
     default;
 

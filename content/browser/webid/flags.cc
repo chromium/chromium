@@ -79,4 +79,8 @@ bool IsFedCmShowFilteredAccountsEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmShowFilteredAccounts);
 }
 
+bool IsFedCmLightweightModeEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmLightweightMode);
+}
+
 }  // namespace content

@@ -23,12 +23,6 @@ LoginStatusAccount::LoginStatusAccount(
       given_name(given_name.CopyAsOptional()),
       picture(picture_url.CopyAsOptional()) {}
 
-LoginStatusAccount::LoginStatusAccount(const LoginStatusAccount& account) =
-    default;
-
-LoginStatusAccount& LoginStatusAccount::operator=(const LoginStatusAccount&) =
-    default;
-
 bool LoginStatusAccount::operator==(const LoginStatusAccount& account) const =
     default;
 

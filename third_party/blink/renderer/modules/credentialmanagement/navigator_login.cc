@@ -52,7 +52,7 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
       status = mojom::blink::IdpSigninStatus::kSignedOut;
       break;
   }
-  request->SetIdpSigninStatus(context->GetSecurityOrigin(), status);
+  request->SetIdpSigninStatus(context->GetSecurityOrigin(), status, nullptr);
   return EmptyPromise();
 }
 
@@ -101,7 +101,9 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
     }
   }
 
-  request->SetIdpSigninStatus(context->GetSecurityOrigin(), status);
+  request->SetIdpSigninStatus(
+      context->GetSecurityOrigin(), status,
+      mojo::ConvertTo<blink::mojom::blink::LoginStatusOptionsPtr>(*options));
   resolver->Resolve();
   return promise;
 }

@@ -5,9 +5,14 @@
 #ifndef CONTENT_BROWSER_WEBID_TEST_MOCK_PERMISSION_DELEGATE_H_
 #define CONTENT_BROWSER_WEBID_TEST_MOCK_PERMISSION_DELEGATE_H_
 
+#include <vector>
+
 #include "base/functional/callback.h"
+#include "base/types/optional_ref.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -69,7 +74,17 @@ class MockPermissionDelegate
               GetIdpSigninStatus,
               (const url::Origin&),
               (override));
-  MOCK_METHOD(void, SetIdpSigninStatus, (const url::Origin&, bool), (override));
+  MOCK_METHOD(std::vector<blink::common::webid::LoginStatusAccount>,
+              GetAccountProfiles,
+              (const url::Origin& identity_provider),
+              (override));
+  MOCK_METHOD(
+      void,
+      SetIdpSigninStatus,
+      (const url::Origin&,
+       bool,
+       base::optional_ref<const blink::common::webid::LoginStatusOptions>),
+      (override));
   MOCK_METHOD(void, RegisterIdP, (const ::GURL&), (override));
   MOCK_METHOD(void, UnregisterIdP, (const ::GURL&), (override));
   MOCK_METHOD(std::vector<GURL>, GetRegisteredIdPs, (), (override));

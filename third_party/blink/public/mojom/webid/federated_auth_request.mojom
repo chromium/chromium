@@ -218,8 +218,10 @@ interface FederatedAuthRequest {
   // selected in the account chooser will be used.
   ResolveTokenRequest(string? account_id, string token) => (bool success);
 
-  // Marks the user as logged in/out to the IDP on this origin.
-  SetIdpSigninStatus(url.mojom.Origin origin, IdpSigninStatus status);
+  // Marks the user as logged in/out to the IDP on this origin. 'origin' must
+  // not be opaque.
+  SetIdpSigninStatus(url.mojom.Origin origin, IdpSigninStatus status,
+                     LoginStatusOptions? options);
 
   // Registers the url as an IdP's configURL of the user's preference.
   RegisterIdP(url.mojom.Url url) => (RegisterIdpStatus status);

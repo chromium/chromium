@@ -51,9 +51,8 @@ TEST(LoginStatusOptionsMojomTraitsTest, AccountFullRoundTrip) {
 TEST(LoginStatusOptionsMojomTraitsTest, AccountInvalidUrlFails) {
   GURL invalid_url("https:://google.com");
   std::string given_name = "Alice";
-  LoginStatusAccount input(LoginStatusAccount("identifier", "email@example.com",
-                                              "Alice Smith", given_name,
-                                              invalid_url));
+  LoginStatusAccount input("identifier", "email@example.com", "Alice Smith",
+                           given_name, invalid_url);
 
   LoginStatusAccount result;
 
@@ -64,9 +63,8 @@ TEST(LoginStatusOptionsMojomTraitsTest, AccountInvalidUrlFails) {
 TEST(LoginStatusOptionsMojomTraitsTest, AccountUntrustworthyUrlFails) {
   GURL untrustworthy_url("http://idp.example/user.png");
   std::string given_name = "Alice";
-  LoginStatusAccount input(LoginStatusAccount("identifier", "email@example.com",
-                                              "Alice Smith", given_name,
-                                              untrustworthy_url));
+  LoginStatusAccount input("identifier", "email@example.com", "Alice Smith",
+                           given_name, untrustworthy_url);
   LoginStatusAccount result;
   ASSERT_FALSE(mojo::test::SerializeAndDeserialize<mojom::LoginStatusAccount>(
       input, result));
