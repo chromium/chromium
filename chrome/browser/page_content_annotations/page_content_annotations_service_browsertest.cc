@@ -1167,6 +1167,11 @@ class PageContentAnnotationsServiceContentExtractionTest
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
                        Basic) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::test::TestFuture<void> future;
+  ukm_recorder.SetOnAddEntryCallback(
+      ukm::builders::OptimizationGuide_AnnotatedPageContent::kEntryName,
+      future.GetRepeatingCallback());
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1178,11 +1183,38 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionTest,
       &histogram_tester, "OptimizationGuide.AIPageContent.TotalLatency", 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.AnnotatedPageContent.TotalSize2", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.AnnotatedPageContent.TotalWordCount", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.AnnotatedPageContent.TotalNodeCount", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.AnnotatedPageContent.ComputeMetricsLatency", 1);
 
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "OptimizationGuide.InnerText.TotalLatency", 1);
   histogram_tester.ExpectTotalCount("OptimizationGuide.InnerText.TotalSize2",
                                     1);
+
+  EXPECT_TRUE(future.Wait());
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::OptimizationGuide_AnnotatedPageContent::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0].get();
+  EXPECT_EQ(1,
+            *ukm_recorder.GetEntryMetric(
+                entry, ukm::builders::OptimizationGuide_AnnotatedPageContent::
+                           kWordsCountName));
+  EXPECT_EQ(3,
+            *ukm_recorder.GetEntryMetric(
+                entry, ukm::builders::OptimizationGuide_AnnotatedPageContent::
+                           kNodeCountName));
+  EXPECT_LT(0,
+            *ukm_recorder.GetEntryMetric(
+                entry, ukm::builders::OptimizationGuide_AnnotatedPageContent::
+                           kTotalSizeName));
+  EXPECT_TRUE(ukm_recorder.GetEntryMetric(
+      entry, ukm::builders::OptimizationGuide_AnnotatedPageContent::
+                 kExtractionLatencyName));
 }
 
 class PageContentAnnotationsServiceContentExtractionPdfTest

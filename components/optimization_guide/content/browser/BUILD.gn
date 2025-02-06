@@ -28,6 +28,7 @@ static_library("browser") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
   ]
   if (build_with_tflite_lib) {
