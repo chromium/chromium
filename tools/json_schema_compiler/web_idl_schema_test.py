@@ -224,6 +224,26 @@ class WebIdlSchemaTest(unittest.TestCase):
         '$ref': 'ExampleType'
     }], getFunctionParameters(schema, 'takesOptionalCustomType'))
 
+  # Tests function descriptions are processed as expected.
+  # TODO(crbug.com/379052294): Add testcases for functions with parameter and
+  # return descriptions, once support for those are added to the processor.
+  def testFunctionDescriptions(self):
+    schema = self.idl_basics
+    # A function without a preceding comment has no 'description' key.
+    self.assertTrue('description' not in getFunction(schema, 'noDescription'))
+
+    self.assertEqual(
+        'One line description.',
+        getFunction(schema, 'oneLineDescription').get('description'))
+    self.assertEqual(
+        'Multi line description. Split over. Multiple lines.',
+        getFunction(schema, 'multiLineDescription').get('description'))
+    self.assertEqual(
+        '<p>Paragraphed description.</p><p>With blank comment line for'
+        ' paragraph tags.</p>',
+        getFunction(schema, 'paragraphedDescription').get('description'))
+
+
   # Tests that Dictionaries defined on the top level of the IDL file are
   # processed into types on the resulting namespace.
   def testApiTypesOnNamespace(self):
