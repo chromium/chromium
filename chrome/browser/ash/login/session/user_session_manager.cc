@@ -20,6 +20,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/base_paths.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -1179,9 +1180,47 @@ void UserSessionManager::CreateUserSession(const UserContext& user_context,
   has_auth_cookies_ = has_auth_cookies;
   ProcessAppModeSwitches();
   StoreUserContextDataBeforeProfileIsCreated();
-  session_manager::SessionManager::Get()->CreateSession(
-      user_context_.GetAccountId(), user_context_.GetUserIDHash(),
-      user_context.GetUserType(), has_active_session);
+
+  // Ensure there's user to be logged in.
+  // TODO(hidehiko): probably we should have better place to guarantee User
+  // registered much before this stage. Investigate further.
+  const AccountId& account_id = user_context_.GetAccountId();
+  auto& user_manager = CHECK_DEREF(user_manager::UserManager::Get());
+  auto& session_manager = CHECK_DEREF(session_manager::SessionManager::Get());
+
+  // Find persisted user.
+  user_manager::User* persisted_user = nullptr;
+  for (auto& user : user_manager.GetPersistedUsers()) {
+    if (user->GetAccountId() == account_id) {
+      persisted_user = user.get();
+      break;
+    }
+  }
+
+  bool created = false;
+  if (session_manager.sessions().empty()) {
+    // Primary session login.
+    user_manager::UserType user_type = user_manager.CalculateUserType(
+        account_id, persisted_user,
+        /*browser_restart=*/false,
+        user_context_.GetUserType() == user_manager::UserType::kChild);
+    // TODO(crbug.com/278643115): Make sure user_type and
+    // user_context_.GetUserType() are the same value, and then remove
+    // CalculateUserType call.
+
+    // Note: we call EnsureUser even if there's persisted_user,
+    // which may update user type between kRegular and kChild.
+    created = user_manager.EnsureUser(
+        account_id, user_type, user_manager.IsEphemeralAccountId(account_id));
+  } else {
+    CHECK(persisted_user);
+    // TODO(crbug.com/278643115): Make sure persisted_user's type and
+    // user_context_.GetUserType() are the same value.
+  }
+
+  session_manager.CreateSession(user_context_.GetAccountId(),
+                                user_context_.GetUserIDHash(), created,
+                                has_active_session);
 }
 
 void UserSessionManager::PreStartSession(StartSessionType start_session_type) {

@@ -125,7 +125,7 @@ class ScreenLockerUnitTest : public testing::Test {
     auto* session_manager = session_manager::SessionManager::Get();
     session_manager->CreateSession(user->GetAccountId(),
                                    user->GetAccountId().GetUserEmail(),
-                                   user->GetType(),
+                                   /*new_user=*/false,
                                    /*has_active_session=*/false);
     auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
     ASSERT_TRUE(primary_user);

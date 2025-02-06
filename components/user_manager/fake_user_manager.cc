@@ -57,15 +57,13 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
     }
   }
 
-  if (!active_user_ && IsEphemeralAccountId(account_id)) {
-    // TODO(crbug.com/278643115): Temporarily duplicate the logic
-    // of ephemeral user creation. This method should be unified with
-    // UserManagerImpl::UserLoggedIn eventually.
-    active_user_ = AddEphemeralUser(account_id, UserType::kRegular);
-    SetIsCurrentUserNew(true);
-  }
-
   NotifyOnLogin();
+}
+
+bool FakeUserManager::EnsureUser(const AccountId& account_id,
+                                 UserType user_type,
+                                 bool is_ephemeral) {
+  NOTREACHED();
 }
 
 void FakeUserManager::SwitchActiveUser(const AccountId& account_id) {

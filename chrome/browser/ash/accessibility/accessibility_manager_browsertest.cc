@@ -51,6 +51,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -1817,10 +1819,16 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   }
 
   void CreateSession(const AccountId& account_id) {
+    ASSERT_TRUE(user_manager::TestHelper(*user_manager::UserManager::Get())
+                    .AddRegularUser(account_id));
+
     auto* session_manager = session_manager::SessionManager::Get();
-    session_manager->CreateSession(account_id, account_id.GetUserEmail(),
-                                   user_manager::UserType::kRegular,
-                                   /*has_active_session=*/false);
+    session_manager->CreateSession(
+        account_id,
+        // TODO(crbug.com/278643115): Use fake username hash.
+        account_id.GetUserEmail(),
+        /*new_user=*/false,
+        /*has_active_session=*/false);
   }
 
   void StartUserSession(const AccountId& account_id) {

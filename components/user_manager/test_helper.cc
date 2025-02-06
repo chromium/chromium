@@ -10,6 +10,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
+#include "components/user_manager/user_names.h"
 
 namespace user_manager {
 
@@ -30,6 +31,34 @@ TestHelper::TestHelper(UserManager& user_manager)
     : user_manager_(user_manager) {}
 
 TestHelper::~TestHelper() = default;
+
+User* TestHelper::AddRegularUser(const AccountId& account_id) {
+  return AddUserInternal(account_id, UserType::kRegular);
+}
+
+User* TestHelper::AddChildUser(const AccountId& account_id) {
+  return AddUserInternal(account_id, UserType::kChild);
+}
+
+User* TestHelper::AddGuestUser() {
+  return AddUserInternal(GuestAccountId(), UserType::kGuest);
+}
+
+User* TestHelper::AddUserInternal(const AccountId& account_id,
+                                  UserType user_type) {
+  if (user_manager_->FindUser(account_id)) {
+    LOG(ERROR) << "User for " << account_id << " already exists";
+    return nullptr;
+  }
+
+  if (!user_manager_->EnsureUser(account_id, user_type,
+                                 /*is_ephemeral=*/false)) {
+    LOG(ERROR) << "Failed to create a user " << user_type << " for "
+               << account_id;
+    return nullptr;
+  }
+  return user_manager_->FindUserAndModify(account_id);
+}
 
 User* TestHelper::AddKioskAppUser(std::string_view user_id) {
   // Quick check that the `user_id` satisfies kiosk-app type.

@@ -5,6 +5,7 @@
 #include "components/session_manager/core/session_manager.h"
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -45,8 +46,8 @@ void SessionManager::SetSessionState(SessionState state) {
 }
 
 void SessionManager::CreateSession(const AccountId& user_account_id,
-                                   const std::string& user_id_hash,
-                                   user_manager::UserType user_type,
+                                   const std::string& username_hash,
+                                   bool new_user,
                                    bool has_active_session) {
   // For secondary user log-in in common cases, we switch the active
   // session after user Profile is created, so data needed for UI update,
@@ -57,22 +58,15 @@ void SessionManager::CreateSession(const AccountId& user_account_id,
   if (!has_active_session && !sessions_.empty()) {
     pending_active_account_id_ = user_account_id;
   }
-  CreateSessionInternal(user_account_id, user_id_hash,
-                        false /* browser_restart */,
-                        // TODO(crbug.com/278643115): Respect given `user_type`
-                        // instead of estimating from surrounding info.
-                        user_type == user_manager::UserType::kChild);
+  CreateSessionInternal(user_account_id, username_hash, new_user,
+                        /*browser_restart=*/false);
 }
 
 void SessionManager::CreateSessionForRestart(const AccountId& user_account_id,
-                                             const std::string& user_id_hash) {
-  CHECK(user_manager_);
-  const user_manager::User* user = user_manager_->FindUser(user_account_id);
-  // Tests do not always create users.
-  const bool is_child =
-      user && user->GetType() == user_manager::UserType::kChild;
-  CreateSessionInternal(user_account_id, user_id_hash,
-                        true /* browser_restart */, is_child);
+                                             const std::string& username_hash,
+                                             bool new_user) {
+  CreateSessionInternal(user_account_id, username_hash, new_user,
+                        /*browser_restart=*/true);
 }
 
 void SessionManager::OnUserManagerCreated(
@@ -174,16 +168,27 @@ void SessionManager::SetInstance(SessionManager* session_manager) {
 }
 
 void SessionManager::CreateSessionInternal(const AccountId& user_account_id,
-                                           const std::string& user_id_hash,
-                                           bool browser_restart,
-                                           bool is_child) {
+                                           const std::string& username_hash,
+                                           bool new_user,
+                                           bool browser_restart) {
   CHECK(user_manager_);
   DCHECK(!HasSessionForAccountId(user_account_id));
+
+  const auto& user = CHECK_DEREF(user_manager_->FindUser(user_account_id));
+
+  // TODO(crbug.com/278643115): This attribute looks like the one for Session
+  // rather than UserManager. Move the field.
+  // Note: For KioskApp user, this may be updated later in UserSessionManager.
+  user_manager_->SetIsCurrentUserNew(
+      (new_user && user.HasGaiaAccount()) ||
+      user.GetType() == user_manager::UserType::kPublicAccount);
+
   observers_.Notify(&SessionManagerObserver::OnSessionCreationStarted,
                     user_account_id);
   sessions_.push_back(std::make_unique<Session>(next_id_++, user_account_id));
-  user_manager_->UserLoggedIn(user_account_id, user_id_hash, browser_restart,
-                              is_child);
+  user_manager_->UserLoggedIn(user_account_id, username_hash,
+                              /*browser_restart=*/false,  // unused
+                              /*is_child=*/false);        // unused
   OnSessionCreated(browser_restart);
   observers_.Notify(&SessionManagerObserver::OnSessionCreated, user_account_id);
 }

@@ -77,6 +77,9 @@ class FakeChromeUserManager : public user_manager::UserManagerImpl {
                     const std::string& user_id_hash,
                     bool browser_restart,
                     bool is_child) override;
+  bool EnsureUser(const AccountId& account_id,
+                  user_manager::UserType user_type,
+                  bool is_ephemeral) override;
   void SwitchActiveUser(const AccountId& account_id) override;
   void SwitchToLastActiveUser() override;
   void OnSessionStarted() override;

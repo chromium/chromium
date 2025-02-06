@@ -69,7 +69,7 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
     session_manager->CreateSession(
         account_id,
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        user->GetType(),
+        /*new_user=*/false,
         /*has_active_session=*/false);
     session_manager->SessionStarted();
 

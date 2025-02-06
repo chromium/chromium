@@ -269,16 +269,13 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
     }
   }
 
-  if (!active_user_ && IsEphemeralAccountId(account_id)) {
-    // TODO(crbug.com/278643115): Temporarily duplicate the logic
-    // of ephemeral user creation. This class should be migrated into
-    // FakeUserManager.
-    active_user_ =
-        AddEphemeralUser(account_id, user_manager::UserType::kRegular);
-    SetIsCurrentUserNew(true);
-  }
-
   NotifyOnLogin();
+}
+
+bool FakeChromeUserManager::EnsureUser(const AccountId& account_id,
+                                       user_manager::UserType user_type,
+                                       bool is_ephemeral) {
+  NOTREACHED();
 }
 
 void FakeChromeUserManager::SwitchToLastActiveUser() {

@@ -249,15 +249,25 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns account Id of the user that was active in the previous session.
   virtual const AccountId& GetLastSessionActiveAccountId() const = 0;
 
-  // Indicates that a user with the given |account_id| has just logged in. The
-  // persistent list is updated accordingly if the user is not ephemeral.
-  // |browser_restart| is true when reloading Chrome after crash to distinguish
-  // from normal sign in flow.
-  // |username_hash| is used to identify homedir mount point.
+  // Indicates that a user with the given `account_id` has just logged in.
+  // `username_hash` is used to identify homedir mount point.
+  // TODO(crbug.com/278643115): `browser_restart` and `is_child` is no longer
+  // used. Remove them.
   virtual void UserLoggedIn(const AccountId& account_id,
                             const std::string& username_hash,
                             bool browser_restart,
                             bool is_child) = 0;
+
+  // If there's no user for the given `account_id`, a new is created with
+  // the given `user_type`. `is_ephemeral` is respected only if the `user_type`
+  // is either kRegular or kChild.
+  // If there's the user of `account_id` already (i.e. persisted),
+  // the user is kRegular or kChild, and the given `user_type` is either one,
+  // the type will be updated properly.
+  // Returns whether the new user is created.
+  virtual bool EnsureUser(const AccountId& account_id,
+                          UserType user_type,
+                          bool is_ephemeral) = 0;
 
   // Called when the Profile instance for a user identified by `account_id`
   // is created. `prefs` should be the one that is owned by Profile.
