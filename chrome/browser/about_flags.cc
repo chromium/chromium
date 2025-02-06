@@ -7928,10 +7928,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityMouseKeysDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityMouseKeys)},
 
-    {"enable-pip-tuck", flag_descriptions::kPipTuckName,
-     flag_descriptions::kPipTuckDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPipTuck)},
-
     {"event-based-log-upload", flag_descriptions::kEventBasedLogUpload,
      flag_descriptions::kEventBasedLogUploadDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEventBasedLogUpload)},

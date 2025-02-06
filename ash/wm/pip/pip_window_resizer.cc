@@ -174,7 +174,7 @@ void PipWindowResizer::Drag(const gfx::PointF& location_in_parent,
     float in_screen_area = in_screen_bounds.width() * in_screen_bounds.height();
     if (bounds_area != 0.f) {
       in_screen_fraction_ = in_screen_area / bounds_area;
-      if (may_dismiss_horizontally_ && features::IsPipTuckEnabled()) {
+      if (may_dismiss_horizontally_) {
         if (bounds_area != 0.f) {
           Shell::Get()->pip_controller()->SetDimOpacity(
               fmin(0.5f, 1 - in_screen_fraction_));
@@ -294,8 +294,7 @@ void PipWindowResizer::CompleteDrag() {
       in_screen_fraction_ < kPipDismissFraction ||
       (in_screen_fraction_ != 1.f &&
        fling_amount >= kPipSwipeToDismissFlingThresholdSquared);
-  bool should_tuck = should_dismiss_or_tuck && may_dismiss_horizontally_ &&
-                     features::IsPipTuckEnabled();
+  bool should_tuck = should_dismiss_or_tuck && may_dismiss_horizontally_;
   bool should_dismiss = should_dismiss_or_tuck && !should_tuck;
 
   if (should_dismiss) {

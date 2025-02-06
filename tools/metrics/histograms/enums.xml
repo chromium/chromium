@@ -9245,7 +9245,6 @@ from previous Chrome versions.
   <int value="-1935889520" label="LinkedServicesSetting:enabled"/>
   <int value="-1935787681" label="SystemNotifications:disabled"/>
   <int value="-1935597303" label="OptimizeEarlyNavigation:enabled"/>
-  <int value="-1935466197" label="PipTuck:enabled"/>
   <int value="-1935055754" label="WebShare:enabled"/>
   <int value="-1934661084" label="ForceUnifiedConsentBump:disabled"/>
   <int value="-1933425042" label="OfflinePreviews:enabled"/>
@@ -14649,7 +14648,6 @@ from previous Chrome versions.
   <int value="219117936" label="AllowReaderForAccessibility:enabled"/>
   <int value="219162425" label="TabClosureMethodRefactor:disabled"/>
   <int value="219384037" label="ESimPolicy:disabled"/>
-  <int value="220182175" label="PipTuck:disabled"/>
   <int value="220654375" label="SearchResultInlineIcon:disabled"/>
   <int value="221212638" label="StartSurfaceAndroid:enabled"/>
   <int value="221363150" label="ForceEnableFaceAe:disabled"/>

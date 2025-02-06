@@ -1527,9 +1527,6 @@ const char kEnableWindowsGamingInputDataFetcherDescription[] =
     "Enable Windows.Gaming.Input by default to provide game controller "
     "support on Windows 10 desktop.";
 
-const char kPipTuckName[] = "Enable tuck for PiP windows";
-const char kPipTuckDescription[] = "Enables window tucking for PiP windows. ";
-
 const char kPrivacyGuideAiSettingsName[] = "AI settings in Privacy Guide";
 const char kPrivacyGuideAiSettingsDescription[] =
     "Enables the AI settings linkout in the Privacy Guide completion card.";

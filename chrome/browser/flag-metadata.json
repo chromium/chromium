@@ -3581,11 +3581,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "enable-pip-tuck",
-    "owners": [ "takise@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "enable-pix-payments",
     "owners": [ "siashah@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 140
