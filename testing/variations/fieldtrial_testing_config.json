@@ -13169,6 +13169,36 @@
             ]
         }
     ],
+    "KeyboardLockPrompt": [
+        {
+            "platforms": [
+                "windows",
+                "linux",
+                "mac",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_PEPC",
+                    "params": {
+                        "use_pepc_ui": "true"
+                    },
+                    "enable_features": [
+                        "KeyboardLockPrompt"
+                    ]
+                },
+                {
+                    "name": "Enabled_Classic",
+                    "params": {
+                        "use_pepc_ui": "false"
+                    },
+                    "enable_features": [
+                        "KeyboardLockPrompt"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeyboardUsedPalmSuppression": [
         {
             "platforms": [
