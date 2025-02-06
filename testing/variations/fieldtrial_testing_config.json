@@ -24249,6 +24249,21 @@
             ]
         }
     ],
+    "UseCompositorClockVSyncInterval": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseCompositorClockVSyncInterval"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseContextSnapshot": [
         {
             "platforms": [
