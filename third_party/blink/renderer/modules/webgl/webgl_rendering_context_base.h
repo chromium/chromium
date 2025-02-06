@@ -636,7 +636,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   };
 
   SkAlphaType GetAlphaType() const override;
-  SkColorType GetSkColorType() const override;
   viz::SharedImageFormat GetSharedImageFormat() const override;
   gfx::ColorSpace GetColorSpace() const override;
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override;

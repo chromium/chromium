@@ -180,7 +180,6 @@ class CORE_EXPORT CanvasRenderingContext
   }
 
   virtual SkAlphaType GetAlphaType() const = 0;
-  virtual SkColorType GetSkColorType() const = 0;
   virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
   virtual gfx::ColorSpace GetColorSpace() const = 0;
 

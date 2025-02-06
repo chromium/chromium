@@ -112,10 +112,6 @@ SkAlphaType GPUCanvasContext::GetAlphaType() const {
              : kPremul_SkAlphaType;
 }
 
-SkColorType GPUCanvasContext::GetSkColorType() const {
-  return viz::ToClosestSkColorType(GetSharedImageFormat());
-}
-
 viz::SharedImageFormat GPUCanvasContext::GetSharedImageFormat() const {
   if (!swap_buffers_) {
     return GetN32FormatForCanvas();
