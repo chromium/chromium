@@ -103,10 +103,11 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
         shortcutInput.getBubbleAnchor());
   }
 
-  private onToggleChange_(event: CustomEvent<boolean>) {
-    this.browserProxy_.setGlicOsLauncherEnabled(event.detail);
+  private onToggleChange_(event: Event) {
+    const enabled = (event.target as SettingsToggleButtonElement).checked;
+    this.browserProxy_.setGlicOsLauncherEnabled(enabled);
     this.metricsBrowserProxy_.recordBooleanHistogram(
-        'Glic.OsEntrypoint.Settings.Toggle', event.detail);
+        'Glic.OsEntrypoint.Settings.Toggle', enabled);
     this.hideHelpBubble(OS_WIDGET_TOGGLE_ELEMENT_ID);
   }
 
