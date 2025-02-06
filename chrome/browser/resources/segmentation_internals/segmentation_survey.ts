@@ -59,6 +59,13 @@ function openError() {
 }
 
 function processPredictionResult(segmentInfo: SegmentInfo) {
+  if (!segmentInfo.predictionResult || segmentInfo.predictionResult === '' ||
+      segmentInfo.predictionTimestamp.internalValue === 0n ||
+      segmentInfo.segmentId !== 50 ||
+      !segmentInfo.segmentData.includes('model_version: 2')) {
+    openError();
+    return;
+  }
   const result = String(segmentInfo.predictionResult) +
       ' Timestamp: ' + String(segmentInfo.predictionTimestamp.internalValue);
   const encoded = window.btoa(result);
@@ -89,7 +96,8 @@ function initialize() {
         }
       });
 
-  getProxy().getServiceStatus();
+  // OPTIMIZATION_TARGET_SEGMENTATION_METRICS_CLUSTERING
+  getProxy().executeModel(50);
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

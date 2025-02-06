@@ -487,15 +487,14 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TabResupmtionRanker) {
 #endif  //! BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SegmentationPlatformServiceFactoryTest, MetricsClustering) {
-  InitServiceAndCacheResults(
-      segmentation_platform::MetricsClustering::kMetricsClusteringKey);
+  InitService();
 
   segmentation_platform::PredictionOptions prediction_options =
-      PredictionOptions::ForCached();
+      PredictionOptions::ForOnDemand();
 
   ExpectGetAnnotatedNumericResult(
       segmentation_platform::MetricsClustering::kMetricsClusteringKey,
-      prediction_options, nullptr, PredictionStatus::kSucceeded);
+      prediction_options, nullptr, PredictionStatus::kFailed);
 }
 
 #if BUILDFLAG(IS_ANDROID)
