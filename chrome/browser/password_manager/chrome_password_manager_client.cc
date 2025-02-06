@@ -173,9 +173,6 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
-#endif
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/browser.h"
 #endif
 
@@ -200,12 +197,12 @@ using sessions::SerializedNavigationEntry;
 
 // Shorten the name to spare line breaks. The code provides enough context
 // already.
-typedef autofill::SavePasswordProgressLogger Logger;
+using Logger = autofill::SavePasswordProgressLogger;
 
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-static const char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
+constexpr char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

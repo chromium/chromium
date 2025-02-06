@@ -48,17 +48,11 @@
 #include "chrome/browser/password_manager/android/account_storage_notice/account_storage_notice.h"
 #include "chrome/browser/password_manager/android/cct_password_saving_metrics_recorder_bridge.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
-#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_access_loss_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/first_cct_page_load_passwords_ukm_recorder.h"
-
-class PasswordAccessoryController;
-class TouchToFillController;
-#else
-#include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -70,6 +64,14 @@ class TouchToFillController;
 class PasswordGenerationPopupObserver;
 class PasswordGenerationPopupControllerImpl;
 class Profile;
+
+#if BUILDFLAG(IS_ANDROID)
+class AcknowledgeGroupedCredentialSheetController;
+class PasswordAccessoryController;
+class TouchToFillController;
+#else
+class PasswordCrossDomainConfirmationPopupControllerImpl;
+#endif
 
 namespace autofill {
 class LogManager;
