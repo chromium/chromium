@@ -3401,6 +3401,46 @@ TEST_F(ScannerTest, SmartActionsButtonNotShownWhenOffline) {
       ElementsAre(ActionButtonIdIs(ActionButtonViewID::kCopyTextButton)));
 }
 
+// Tests that pressing the smart actions button shows an error when the network
+// connection is offline.
+TEST_F(ScannerTest, PressingSmartActionsButtonShowsErrorIfOffline) {
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  // Simulate the network being online initially, so that the search button
+  // will appear when a region is selected.
+  ON_CALL(*test_delegate, IsNetworkConnectionOffline)
+      .WillByDefault(Return(false));
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  detect_text_future.Take().Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  const ActionButtonView* smart_actions_button =
+      session_test_api.GetButtonWithViewID(
+          ActionButtonViewID::kSmartActionsButton);
+  ASSERT_TRUE(smart_actions_button);
+
+  // Simulate the network disconnecting before clicking the smart actions
+  // button.
+  ON_CALL(*test_delegate, IsNetworkConnectionOffline)
+      .WillByDefault(Return(true));
+  LeftClickOn(smart_actions_button);
+
+  // An error should be shown.
+  ActionButtonContainerView::ErrorView* error_view =
+      session_test_api.GetActionContainerErrorView();
+  ASSERT_TRUE(error_view);
+  EXPECT_TRUE(error_view->GetVisible());
+}
+
 TEST_F(ScannerTest, SmartActionsButtonShownForDetectedTextRecordsHistogram) {
   base::HistogramTester histogram_tester;
   auto* controller = CaptureModeController::Get();

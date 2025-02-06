@@ -1532,6 +1532,12 @@ void CaptureModeSession::OnSmartActionsButtonPressed() {
 }
 
 void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
+  if (controller_->IsNetworkConnectionOffline()) {
+    ShowActionContainerError(l10n_util::GetStringUTF16(
+        IDS_ASH_SCREEN_CAPTURE_ACTION_ATTEMPTED_OFFLINE_ERROR));
+    return;
+  }
+
   CHECK(action_container_view_);
   action_container_view_->StartSmartActionsButtonTransition();
 
@@ -1539,7 +1545,7 @@ void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
   auto* scanner_controller = Shell::Get()->scanner_controller();
   CHECK(scanner_controller);
   scanner_controller->StartNewSession();
-  controller_->PerformImageSearch(PerformCaptureType::kScanner);
+  controller_->PerformCapture(PerformCaptureType::kScanner);
 }
 
 void CaptureModeSession::OnScannerActionButtonPressed(
