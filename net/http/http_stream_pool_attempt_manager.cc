@@ -1712,18 +1712,11 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
 void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify() {
   CHECK(!is_canceling_jobs_);
   CHECK(!is_failing_);
+  CHECK(spdy_session_);
 
-  if (!spdy_session_ || !spdy_session_->IsAvailable()) {
-    // There was an available SPDY session but the session has gone while
-    // notifying to jobs. Do another attempt.
-    // TODO(crbug.com/346835898): This may cause unlimited retries. Instead of
-    // retry, we should just create HttpStreams with the unavailable SPDY
-    // session and delegate failure handling to the upper layer.
-    spdy_session_.reset();
-    CHECK(ssl_config_.has_value());
-    MaybeAttemptConnection();
-    return;
-  }
+  // Note that spdy_session_->IsAvailable() may not be true. Just create
+  // HttpStreams even the session is not available to delegate retry to the
+  // upper layer.
 
   std::set<std::string> dns_aliases =
       http_network_session()->spdy_session_pool()->GetDnsAliasesForSessionKey(
