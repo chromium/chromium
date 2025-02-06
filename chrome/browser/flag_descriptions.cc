@@ -1649,6 +1649,12 @@ const char kEnableCssSelectorFragmentAnchorDescription[] =
     "Similar to text directives, CSS selector directives can be specified "
     "in a url which is to be scrolled into view and highlighted.";
 
+const char kEnableImprovedGuestProfileMenuName[] =
+    "Enables new design for guest and incognito profile menu";
+const char kEnableImprovedGuestProfileMenuDescription[] =
+    "The design is in line with the regular profiles. The illustration is "
+    "removed.";
+
 const char kRetailCouponsName[] = "Enable to fetch for retail coupons";
 const char kRetailCouponsDescription[] =
     "Allow to fetch retail coupons for consented users";
