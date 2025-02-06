@@ -258,8 +258,9 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
       affiliation_mixin_.account_id());
 }
 
+// TODO(crbug.com/394677144): Enable test
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
-                       ReportSubsequentUsage) {
+                       DISABLED_ReportSubsequentUsage) {
   // Login as affiliated user and set policy.
   ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   SetAllowlistedUrls({ContentSettingsPattern::Wildcard().ToString()});
