@@ -127,6 +127,29 @@ class EntityInstance final {
 
   const EntityType& type() const { return type_; }
 
+  // The attributes present in this instance.
+  // This is a subset of the attributes supported by the entity type.
+  base::span<const AttributeInstance> attributes() const LIFETIME_BOUND {
+    return attributes_;
+  }
+
+  // Returns the instance of `a` if it is present.
+  base::optional_ref<const AttributeInstance> attribute(AttributeType a) const
+      LIFETIME_BOUND {
+    CHECK_EQ(a.entity_type(), type());
+    auto it = attributes_.find(a);
+    return it != attributes_.end() ? &*it : nullptr;
+  }
+
+  // Globally unique identifier of this entity.
+  const base::Uuid& guid() const LIFETIME_BOUND { return guid_; }
+
+  // The nickname assigned to this instance by the user.
+  const std::string& nickname() const LIFETIME_BOUND { return nickname_; }
+
+  // The latest time the instance, including any of its attributes, was edited.
+  base::Time date_modified() const { return date_modified_; }
+
   struct EntityMergeability {
     EntityMergeability();
     EntityMergeability(std::vector<AttributeInstance> mergeable_attributes,
@@ -145,42 +168,19 @@ class EntityInstance final {
     bool is_subset = false;
   };
 
-  // The attributes present in this instance.
-  // This is a subset of the attributes supported by the entity type.
-  base::span<const AttributeInstance> attributes() const LIFETIME_BOUND {
-    return attributes_;
-  }
-
-  // Returns the instance of `a` if it is present.
-  base::optional_ref<const AttributeInstance> attribute(AttributeType a) const
-      LIFETIME_BOUND {
-    CHECK_EQ(a.entity_type(), type());
-    auto it = attributes_.find(a);
-    return it != attributes_.end() ? &*it : nullptr;
-  }
-
-  // - When `newer` is a superset of `this`,
-  //   `EntityMergeability.mergeable_attributes` contains the list of attributes
-  //   that `newer` has, but `this` does not. These attributes can be set on
-  //   `this` to update it.
-  // - If `newer` is a subset of `this`,
-  //   `EntityMergeability.mergeable_attributes` is empty and
-  //   `EntityMergeability.is_subset` is `true`. In this case no saving or
+  // - If `newer` is a proper superset of `this`,
+  //   `EntityMergeability::mergeable_attributes` contains the list of
+  //   attributes that `newer` has, but `this` does not. These attributes can be
+  //   set on `this` to update it.
+  // - If `newer` is a proper subset of `this`,
+  //   `EntityMergeability::mergeable_attributes` is empty and
+  //   `EntityMergeability::is_subset` is `true`. In this case no saving or
   //   updating is required.
   // - Otherwise, we have a situation were `newer` should be considered an
   //   independent entity.
-  // TODO(389629676): This does not yet properly handle Names and possibly
+  // TODO(389629676): This does not yet properly handle names and possibly
   // dates.
   EntityMergeability GetEntityMergeability(const EntityInstance& newer) const;
-
-  // Globally unique identifier of this entity.
-  const base::Uuid& guid() const LIFETIME_BOUND { return guid_; }
-
-  // The nickname assigned to this instance by the user.
-  const std::string& nickname() const LIFETIME_BOUND { return nickname_; }
-
-  // The latest time the instance, including any of its attributes, was edited.
-  base::Time date_modified() const { return date_modified_; }
 
   friend bool operator==(const EntityInstance&,
                          const EntityInstance&) = default;

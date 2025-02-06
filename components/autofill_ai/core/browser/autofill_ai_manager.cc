@@ -5,6 +5,7 @@
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"
 
 #include <optional>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -74,28 +75,24 @@ static constexpr auto kEntitiesOrderedByImportPreference =
                autofill::EntityType(autofill::EntityTypeName::kLoyaltyCard)};
 
 bool CheckIfEntitySatisfiesConstraints(const autofill::EntityInstance& entity) {
-  autofill::DenseSet<autofill::AttributeType> entity_attribute_types =
-      [](const autofill::EntityInstance& entity) {
-        autofill::DenseSet<autofill::AttributeType> types;
-        for (const autofill::AttributeInstance& entity_attribute_instance :
-             entity.attributes()) {
-          types.insert(entity_attribute_instance.type());
-        }
-        return types;
-      }(entity);
+  autofill::DenseSet<autofill::AttributeType> attribute_types;
+  for (const autofill::AttributeInstance& attribute_instance :
+       entity.attributes()) {
+    attribute_types.insert(attribute_instance.type());
+  }
 
   return std::ranges::any_of(
       entity.type().import_constraints(),
       [&](const autofill::DenseSet<autofill::AttributeType>& constraint) {
-        return entity_attribute_types.contains_all(constraint);
+        return attribute_types.contains_all(constraint);
       });
 }
 
 std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
     const autofill::FormStructure& submitted_form) {
-  std::map<autofill::Section,
-           std::map<autofill::EntityTypeName,
-                    std::vector<autofill::AttributeInstance>>>
+  std::map<
+      autofill::Section,
+      std::map<autofill::EntityType, std::vector<autofill::AttributeInstance>>>
       section_to_entity_types_attributes;
   for (const std::unique_ptr<autofill::AutofillField>& field :
        submitted_form.fields()) {
@@ -108,12 +105,12 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
         autofill::AttributeType::FromFieldType(*autofill_ai_server_prediction);
     CHECK(field_attribute_type);
     // TODO(crbug.com/389629676): Save data format.
-    section_to_entity_types_attributes
-        [field->section()][field_attribute_type->entity_type().name()]
-            .emplace_back(*field_attribute_type,
-                          base::UTF16ToUTF8(
-                              field->value(autofill::ValueSemantics::kCurrent)),
-                          autofill::AttributeInstance::Context{});
+    section_to_entity_types_attributes[field->section()][field_attribute_type
+                                                             ->entity_type()]
+        .emplace_back(
+            *field_attribute_type,
+            base::UTF16ToUTF8(field->value(autofill::ValueSemantics::kCurrent)),
+            autofill::AttributeInstance::Context{});
   }
 
   std::vector<autofill::EntityInstance> entities_found_in_form;
@@ -617,8 +614,7 @@ void AutofillAiManager::MaybeImportForm(
         // depend on `current_entities`.
         for (const autofill::EntityType& entity_type :
              kEntitiesOrderedByImportPreference) {
-          for (const autofill::EntityInstance& entity :
-               entity_instances_from_form) {
+          for (autofill::EntityInstance& entity : entity_instances_from_form) {
             if (entity.type() != entity_type) {
               continue;
             }

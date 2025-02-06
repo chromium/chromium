@@ -41,9 +41,6 @@ FieldType AttributeTypeNameToFieldType(AttributeTypeName a);
 // merely a thin wrapper with member functions.
 class AttributeType final {
  public:
-  // Returns `std::nullopt` if `type` cannot be mapped to any `AttributeType`.
-  static std::optional<AttributeType> FromFieldType(FieldType type);
-
   // Defines ordering for disambiguating different instances of the same entity
   // type, as specified in the schema.
   // "Less" according to this ordering means "higher precedence".
@@ -55,6 +52,9 @@ class AttributeType final {
   struct DisambiguationComparator {
     bool operator()(const AttributeType& lhs, const AttributeType& rhs) const;
   };
+
+  // Returns `std::nullopt` if `type` cannot be mapped to any `AttributeType`.
+  static std::optional<AttributeType> FromFieldType(FieldType type);
 
   constexpr explicit AttributeType(AttributeTypeName n) : name_(n) {}
 
