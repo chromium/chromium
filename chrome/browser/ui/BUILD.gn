@@ -5007,7 +5007,6 @@ static_library("ui") {
       "//components/power_bookmarks/storage",
       "//components/prefs",
       "//components/reading_list/features:flags",
-      "//components/segmentation_platform/embedder/default_model:default_model",
       "//components/services/app_service",
       "//components/soda",
       "//components/soda:constants",
@@ -5034,8 +5033,6 @@ static_library("ui") {
 
     if (is_chrome_branded && !is_android) {
       sources += [
-        "views/promos/ios_promo_password_bubble.cc",
-        "views/promos/ios_promo_password_bubble.h",
         "views/user_education/low_usage_promo.cc",
         "views/user_education/low_usage_promo.h",
       ]

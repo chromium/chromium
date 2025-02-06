@@ -1293,37 +1293,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<!-- TODO(crbug.com/339262105): Clean up the old password promo methods after
-the generic promo launch. -->
-
-<histogram name="IOS.DesktopPasswordPromo.Shown"
-    enum="DesktopIOSPasswordPromoImpression" expires_after="2025-08-05">
-  <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <summary>
-    The impression of the iOS Password Promo shown to the user on Desktop.
-    Desktop only. This is only recorded for contextual promo appearances, not
-    when the eligibility criteria is override via feature flag.
-  </summary>
-</histogram>
-
-<!-- TODO(crbug.com/339262105): Clean up the old password promo methods after
-the generic promo launch. -->
-
-<histogram name="IOS.DesktopPasswordPromo.{Impression}.Action"
-    enum="DesktopIOSPasswordPromoAction" expires_after="2025-08-05">
-  <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <summary>
-    The action taken by the user when shown the iOS Password Promo on Desktop
-    for the {Impression} impression. Desktop only.
-  </summary>
-  <token key="Impression">
-    <variant name="FirstImpression" summary="first"/>
-    <variant name="SecondImpression" summary="second"/>
-  </token>
-</histogram>
-
 <histogram name="IOS.DistantTab.TimeSinceLastUse" units="ms"
     expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>

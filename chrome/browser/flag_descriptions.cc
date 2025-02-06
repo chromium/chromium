@@ -5220,22 +5220,6 @@ const char kTabstripDedupeDescription[] =
     "Enables the Tab Deduplication feature, which can be found within the Tab "
     "Search bubble.";
 
-const char kIOSPromoRefreshedPasswordBubbleName[] =
-    "Chrome for iOS promo : passwords";
-const char kIOSPromoRefreshedPasswordBubbleDescription[] =
-    "When enabled, the new Contextual Chrome for iOS promo will be shown to"
-    "the eligible users when they save/update their passwords.";
-
-const char kIOSPromoAddressBubbleName[] = "Chrome for iOS promo : addresses";
-const char kIOSPromoAddressBubbleDescription[] =
-    "When enabled, the Contextual Chrome for iOS promo will be shown to"
-    "the eligible users when they save/update their address.";
-
-const char kIOSPromoPaymentBubbleName[] = "Chrome for iOS promo : payments";
-const char kIOSPromoPaymentBubbleDescription[] =
-    "When enabled, the Contextual Chrome for iOS promo will be shown to"
-    "the eligible users when they save/update their payments.";
-
 const char kWebAppSyncGeneratedIconBackgroundFixName[] =
     "Web App Sync Generated Icon Background Fix";
 const char kWebAppSyncGeneratedIconBackgroundFixDescription[] =

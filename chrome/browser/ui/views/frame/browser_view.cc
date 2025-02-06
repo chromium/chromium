@@ -55,7 +55,6 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/promos/promos_utils.h"
-#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
@@ -211,11 +210,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
-#include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
-#include "components/segmentation_platform/public/constants.h"
-#include "components/segmentation_platform/public/input_context.h"
-#include "components/segmentation_platform/public/prediction_options.h"
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/sync/service/sync_service.h"
@@ -323,11 +317,6 @@
 #include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "components/remote_cocoa/browser/application_host.h"
 #endif
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/views/promos/ios_promo_password_bubble.h"
-#include "components/segmentation_platform/public/result.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if defined(USE_AURA)
 #include "chrome/browser/ui/views/theme_profile_key.h"
@@ -3148,77 +3137,6 @@ void BrowserView::ShowIntentPickerBubble(
 void BrowserView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
   toolbar_->ShowBookmarkBubble(url, already_bookmarked);
 }
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-// TODO(crbug.com/339262105): Clean up the old password promo methods after the
-// generic promo launch.
-void BrowserView::VerifyUserEligibilityIOSPasswordPromoBubble() {
-  if (!browser_) {
-    return;
-  }
-
-  const syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(browser_->profile());
-
-  // Verify that the user is currently syncing their preferences, hasn't
-  // exceeded their impression limit, is not in the cooldown period or has not
-  // opted-out from seeing the promo.
-  if (sync_service && sync_service->IsSyncFeatureActive() &&
-      sync_service->GetActiveDataTypes().Has(syncer::PREFERENCES) &&
-      promos_utils::ShouldShowIOSPasswordPromo(browser_->profile())) {
-    auto input_context =
-        base::MakeRefCounted<segmentation_platform::InputContext>();
-    input_context->metadata_args.emplace(
-        "active_days_limit", promos_utils::kiOSPasswordPromoLookbackWindow);
-    input_context->metadata_args.emplace(
-        "wait_for_device_info_in_seconds",
-        segmentation_platform::processing::ProcessedValue(0));
-
-    segmentation_platform::PredictionOptions options;
-    options.on_demand_execution = true;
-
-    // Get segmentation platform classification results and pass callback.
-    segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
-        browser_->profile())
-        ->GetClassificationResult(
-            segmentation_platform::kDeviceSwitcherKey, options, input_context,
-            base::BindOnce(&BrowserView::MaybeShowIOSPasswordPromoBubble,
-                           GetAsWeakPtr()));
-  }
-}
-
-// TODO(crbug.com/339262105): Clean up the old password promo methods after the
-// generic promo launch.
-void BrowserView::MaybeShowIOSPasswordPromoBubble(
-    const segmentation_platform::ClassificationResult& result) {
-  if (!browser_) {
-    return;
-  }
-
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser_->profile());
-
-  if (promos_utils::UserNotClassifiedAsMobileDeviceSwitcher(result) &&
-      tracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHiOSPasswordPromoDesktopFeature)) {
-    promos_utils::iOSPasswordPromoShown(browser_->profile());
-    ShowIOSPasswordPromoBubble();
-  }
-}
-
-// TODO(crbug.com/339262105): Clean up the old password promo methods after the
-// generic promo launch.
-void BrowserView::ShowIOSPasswordPromoBubble() {
-  IOSPromoPasswordBubble::ShowBubble(
-      toolbar_button_provider_->GetAnchorView(kActionShowPasswordsBubbleOrPage),
-      toolbar_button_provider_->GetPageActionIconView(
-          PageActionIconType::kManagePasswords),
-      browser_.get());
-}
-
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 qrcode_generator::QRCodeGeneratorBubbleView*
 BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,

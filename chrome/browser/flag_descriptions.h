@@ -3059,15 +3059,6 @@ extern const char kTabstripDeclutterDescription[];
 extern const char kTabstripDedupeName[];
 extern const char kTabstripDedupeDescription[];
 
-extern const char kIOSPromoRefreshedPasswordBubbleName[];
-extern const char kIOSPromoRefreshedPasswordBubbleDescription[];
-
-extern const char kIOSPromoAddressBubbleName[];
-extern const char kIOSPromoAddressBubbleDescription[];
-
-extern const char kIOSPromoPaymentBubbleName[];
-extern const char kIOSPromoPaymentBubbleDescription[];
-
 extern const char kWebAppSyncGeneratedIconBackgroundFixName[];
 extern const char kWebAppSyncGeneratedIconBackgroundFixDescription[];
 

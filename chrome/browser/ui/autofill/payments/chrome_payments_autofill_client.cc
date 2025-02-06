@@ -97,7 +97,6 @@
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
-#include "chrome/browser/ui/ui_features.h"  // nogncheck
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -397,8 +396,7 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
     // Only attempt to show the iOS payment promo if the card was successfully
     // uploaded and there is no VCN enroll flow callback, and still fallback to
     // normal confirmation bubble if showing the promo fails.
-    if (card_saved && !on_confirmation_closed_callback &&
-        base::FeatureList::IsEnabled(::features::kIOSPromoPaymentBubble)) {
+    if (card_saved && !on_confirmation_closed_callback) {
       base::OnceClosure promo_will_show_callback =
           controller->GetEndSaveCardPromptFlowCallback();
       base::OnceClosure promo_not_shown_callback =

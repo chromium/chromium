@@ -3495,7 +3495,6 @@ if (!is_android) {
 
     if (is_chrome_branded && !is_android) {
       sources += [
-        "../browser/ui/views/promos/ios_promo_password_bubble_browsertest.cc",
         "../browser/ui/views/user_education/low_usage_promo_browsertest.cc",
       ]
     }

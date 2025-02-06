@@ -5354,33 +5354,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "ios-promo-address-bubble",
-    "owners": [
-      "nicolasmacbeth@google.com",
-      "gujen@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "ios-promo-payment-bubble",
-    "owners": [
-      "nicolasmacbeth@google.com",
-      "gujen@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "ios-promo-refreshed-password-bubble",
-    "owners": [
-      "nicolasmacbeth@google.com",
-      "gujen@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "ios-provisional-notification-alert",
     "owners": [
       "thegreenfrog@google.com",
