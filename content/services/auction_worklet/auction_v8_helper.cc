@@ -715,8 +715,9 @@ AuctionV8Helper::Result AuctionV8Helper::CallFunction(
           dict.Add("functionName", function_name);
           dict.Add("scriptId", base::NumberToString(func_ptr->ScriptId()));
           dict.Add("url", script_name);
-          dict.Add("lineNumber", func_ptr->GetScriptLineNumber() + 1);
-          dict.Add("columnNumber", func_ptr->GetScriptColumnNumber() + 1);
+          v8::Location location = func_ptr->GetScriptLocation();
+          dict.Add("lineNumber", location.GetLineNumber() + 1);
+          dict.Add("columnNumber", location.GetColumnNumber() + 1);
         });
     func_result =
         func_ptr->Call(context, context->Global(), args.size(), args.data());

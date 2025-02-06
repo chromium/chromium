@@ -230,13 +230,15 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation() {
 std::unique_ptr<SourceLocation> CaptureSourceLocation(
     v8::Isolate* isolate,
     v8::Local<v8::Function> function) {
-  if (!function.IsEmpty())
+  if (!function.IsEmpty()) {
+    v8::Location location = function->GetScriptLocation();
     return std::make_unique<SourceLocation>(
         ToCoreStringWithUndefinedOrNullCheck(
             isolate, function->GetScriptOrigin().ResourceName()),
         ToCoreStringWithUndefinedOrNullCheck(isolate, function->GetName()),
-        function->GetScriptLineNumber() + 1,
-        function->GetScriptColumnNumber() + 1, nullptr, function->ScriptId());
+        location.GetLineNumber() + 1, location.GetColumnNumber() + 1, nullptr,
+        function->ScriptId());
+  }
   return std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr, 0);
 }
 
