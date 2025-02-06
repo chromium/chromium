@@ -6807,17 +6807,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.MediaUrlIntercept" enum="Boolean"
-    expires_after="2025-09-03">
-  <owner>alexmitra@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the result of AwMediaUrlInterceptor::Intercept. We don't know how
-    often this is used in production (if at all). This metric should give us an
-    idea of whether this is something that is actually used.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.Memory.FunctorReclaim.OtherPrivateDirty"
     units="MB" expires_after="2024-11-03">
   <owner>lizeb@chromium.org</owner>
