@@ -71,6 +71,16 @@ TEST_F(PageActionModelTest, VisibilityConditions) {
   EXPECT_FALSE(model_.GetVisible());
 }
 
+TEST_F(PageActionModelTest, ChipVisibility) {
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
+
+  model_.SetShowSuggestionChip(PassKey(), true);
+  EXPECT_EQ(model_.GetShowSuggestionChip(), true);
+
+  model_.SetShowSuggestionChip(PassKey(), false);
+  EXPECT_EQ(model_.GetShowSuggestionChip(), false);
+}
+
 TEST_F(PageActionModelTest, OverrideText) {
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
 

@@ -30,12 +30,12 @@ void PageActionModel::SetShowRequested(base::PassKey<PageActionController>,
   NotifyChange();
 }
 
-void PageActionModel::SetShowSuggestionChip(
-    base::PassKey<PageActionController>) {
-  if (show_suggestion_chip_) {
+void PageActionModel::SetShowSuggestionChip(base::PassKey<PageActionController>,
+                                            bool show) {
+  if (show_suggestion_chip_ == show) {
     return;
   }
-  show_suggestion_chip_ = true;
+  show_suggestion_chip_ = show;
   NotifyChange();
 }
 

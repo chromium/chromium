@@ -45,9 +45,16 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   void Initialize(tabs::TabInterface& tab_interface,
                   const std::vector<actions::ActionId>& action_ids);
 
-  void Hide(actions::ActionId action_id);
+  // Request that the page action be shown or hidden.
   void Show(actions::ActionId action_id);
+  void Hide(actions::ActionId action_id);
+
+  // Request that the page action's chip state shown or hidden. Note that a
+  // request to show the chip does not guarantee it will be shown (for example,
+  // the framework may choose to display only one chip at a time, despite
+  // requests from multiple features).
   void ShowSuggestionChip(actions::ActionId action_id);
+  void HideSuggestionChip(actions::ActionId action_id);
 
   // By default, in suggestion chip mode, the ActionItem text will be used as
   // the control label. However, features can provide a custom text to use
