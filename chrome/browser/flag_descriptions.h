@@ -2357,9 +2357,6 @@ extern const char kUseIDNA2008NonTransitionalDescription[];
 extern const char kEnablePasswordSharingName[];
 extern const char kEnablePasswordSharingDescription[];
 
-extern const char kEnableMantaServiceName[];
-extern const char kEnableMantaServiceDescription[];
-
 extern const char kPredictableReportedQuotaName[];
 extern const char kPredictableReportedQuotaDescription[];
 
@@ -3688,9 +3685,6 @@ extern const char kEnableKeyboardRewriterFixDescription[];
 
 extern const char kEnableLibinputToHandleTouchpadName[];
 extern const char kEnableLibinputToHandleTouchpadDescription[];
-
-extern const char kEnableNeuralPalmAdaptiveHoldName[];
-extern const char kEnableNeuralPalmAdaptiveHoldDescription[];
 
 extern const char kEnableFakeKeyboardHeuristicName[];
 extern const char kEnableFakeKeyboardHeuristicDescription[];

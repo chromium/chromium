@@ -3419,11 +3419,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "enable-manta-service",
-    "owners": [ "alanlxl@chromium.org", "amoylan@chromium.org", "nbowe@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-media-dynamic-cgroup",
     "owners": [ "erin.park@intel.com", "youssefesmat@chromium.org" ],
     "expiry_milestone": 125
@@ -3482,11 +3477,6 @@
   {
     "name": "enable-network-service-sandbox",
     "owners": [ "mpdenton@chromium.org", "chrome-platform-security@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "enable-neural-palm-adaptive-hold",
-    "owners": [ "robsc@chromium.org", "napper@chromium.org", "alanlxl@chromium.org" ],
     "expiry_milestone": 130
   },
   {

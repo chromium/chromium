@@ -3985,10 +3985,6 @@ const char kEnablePasswordSharingName[] = "Enables password sharing";
 const char kEnablePasswordSharingDescription[] =
     "Enables sharing of password between members of the same family.";
 
-const char kEnableMantaServiceName[] = "Enable Manta Service";
-const char kEnableMantaServiceDescription[] =
-    "Enables the profile keyed Manta service at startup.";
-
 const char kPredictableReportedQuotaName[] = "Predictable Reported Quota";
 const char kPredictableReportedQuotaDescription[] =
     "Enables reporting of a predictable quota from the StorageManager's "
@@ -6311,10 +6307,6 @@ const char kEnableKeyboardUsedPalmSuppressionName[] =
     "Use keyboard based palm suppression.";
 const char kEnableKeyboardUsedPalmSuppressionDescription[] =
     "Enable keyboard usage based palm suppression.";
-
-const char kEnableNeuralPalmAdaptiveHoldName[] = "Palm Rejection Adaptive Hold";
-const char kEnableNeuralPalmAdaptiveHoldDescription[] =
-    "Enable adaptive hold in palm rejection.  Not compatible with all devices.";
 
 const char kEnableHeatmapPalmDetectionName[] = "Enable Heatmap Palm Detection";
 const char kEnableHeatmapPalmDetectionDescription[] =
