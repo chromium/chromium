@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
+#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -56,7 +57,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/test/button_test_api.h"
+#include "ui/views/test/dialog_test.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -120,10 +124,7 @@ class WidgetDestroyedWaiter : public views::WidgetObserver {
 
 class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
  public:
-  IntentPickerBubbleViewBrowserTestChromeOS() {
-    // TODO(crbug.com/40236806): Run relevant tests against the updated UI.
-    feature_list_.InitAndDisableFeature(apps::features::kLinkCapturingUiUpdate);
-  }
+  IntentPickerBubbleViewBrowserTestChromeOS() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     arc::SetArcAvailableCommandLineForTesting(command_line);
@@ -196,10 +197,10 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     return app_id;
   }
 
-  PageActionIconView* GetIntentPickerIcon() {
+  IntentChipButton* GetIntentPickerIcon() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar_button_provider()
-        ->GetPageActionIconView(PageActionIconType::kIntentPicker);
+        ->GetIntentChipButton();
   }
 
   IntentPickerBubbleView* intent_picker_bubble() {
@@ -239,9 +240,11 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         IntentPickerBubbleView::kViewClassName);
-    PageActionIconView* intent_picker = GetIntentPickerIcon();
-    ASSERT_NE(intent_picker, nullptr);
-    intent_picker->ExecuteForTesting();
+    views::test::ButtonTestApi test_api(GetIntentPickerIcon());
+    test_api.NotifyClick(ui::MouseEvent(
+        ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+        base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+
     waiter.WaitIfNeededAndGet();
     ASSERT_NE(intent_picker_bubble(), nullptr);
     EXPECT_TRUE(intent_picker_bubble()->GetVisible());
@@ -336,6 +339,15 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     run_loop.Run();
   }
 
+  void ClickAppAtIndexOnGrid(size_t index) {
+    auto event_generator = ui::test::EventGenerator(
+        views::GetRootWindow(intent_picker_bubble()->GetWidget()));
+    event_generator.MoveMouseTo(GetButtonAtIndex(intent_picker_bubble(), index)
+                                    ->GetBoundsInScreen()
+                                    .CenterPoint());
+    event_generator.ClickLeftButton();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<apps::AppServiceProxy, DanglingUntriaged> app_service_proxy_ =
@@ -359,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   GURL test_url(InScopeAppUrl());
   std::string app_name = "test_name";
   auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+  views::Button* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
   ASSERT_TRUE(
@@ -485,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
                        ReloadAfterInstall) {
   GURL test_url(InScopeAppUrl());
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+  views::Button* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
   ASSERT_TRUE(
@@ -575,21 +587,17 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_EQ(2U, app_info.size());
   const apps::IntentPickerAppInfo* pwa_app_info;
   const apps::IntentPickerAppInfo* arc_app_info;
+  size_t index_for_pwa = 0;
   if (app_info[0].launch_name == app_id_pwa) {
     pwa_app_info = &app_info[0];
     arc_app_info = &app_info[1];
+    index_for_pwa = 0;
   } else {
     pwa_app_info = &app_info[1];
     arc_app_info = &app_info[0];
-
-    // Select the PWA when it is not automatically selected.
-    auto event_generator = ui::test::EventGenerator(
-        views::GetRootWindow(intent_picker_bubble()->GetWidget()));
-    event_generator.MoveMouseTo(GetButtonAtIndex(intent_picker_bubble(), 1)
-                                    ->GetBoundsInScreen()
-                                    .CenterPoint());
-    event_generator.ClickLeftButton();
+    index_for_pwa = 1;
   }
+  ClickAppAtIndexOnGrid(index_for_pwa);
 
   EXPECT_EQ(app_id_pwa, pwa_app_info->launch_name);
   EXPECT_EQ(app_name_pwa, pwa_app_info->display_name);
@@ -652,22 +660,17 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_EQ(2U, app_info.size());
   const apps::IntentPickerAppInfo* pwa_app_info;
   const apps::IntentPickerAppInfo* arc_app_info;
+  size_t arc_app_index = 0;
   if (app_info[0].launch_name == app_id_pwa) {
     pwa_app_info = &app_info[0];
     arc_app_info = &app_info[1];
-
-    // Select the ARC app when it is not automatically selected.
-    auto event_generator = ui::test::EventGenerator(
-        views::GetRootWindow(intent_picker_bubble()->GetWidget()));
-
-    event_generator.MoveMouseTo(GetButtonAtIndex(intent_picker_bubble(), 1)
-                                    ->GetBoundsInScreen()
-                                    .CenterPoint());
-    event_generator.ClickLeftButton();
+    arc_app_index = 1;
   } else {
     pwa_app_info = &app_info[1];
     arc_app_info = &app_info[0];
+    arc_app_index = 0;
   }
+  ClickAppAtIndexOnGrid(arc_app_index);
 
   EXPECT_EQ(app_id_pwa, pwa_app_info->launch_name);
   EXPECT_EQ(app_name_pwa, pwa_app_info->display_name);
@@ -711,10 +714,8 @@ class IntentPickerBubbleViewBrowserTestChromeOSParameterized
  public:
   IntentPickerBubbleViewBrowserTestChromeOSParameterized()
       : IntentPickerBubbleViewBrowserTestChromeOS() {
-    // TODO(crbug.com/40236806): Run relevant tests against the updated UI.
     feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()),
-        {apps::features::kLinkCapturingUiUpdate});
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
   }
 
  private:

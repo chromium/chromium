@@ -10,14 +10,9 @@
 
 namespace apps::features {
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enables user link capturing on CrOS.
-BASE_DECLARE_FEATURE(kLinkCapturingUiUpdate);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Returns true if the updated UX for link capturing needs to be shown. Only set
-// to true if kPwaNavigationCapturing is enabled on desktop platforms, and
-// kLinkCapturingUiUpdate on CrOS platforms.
+// to true on desktop platforms if kPwaNavigationCapturing is enabled, and
+// always on CrOS.
 bool ShouldShowLinkCapturingUX();
 
 // Returns true if the `kPwaNavigationCapturing` flag is enabled with the

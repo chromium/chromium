@@ -4737,13 +4737,10 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kPwaUpdateDialogForIcon);
   enabled_features.push_back(features::kRecordWebAppDebugInfo);
   enabled_features.push_back(features::kWebAppDontAddExistingAppsToSync);
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/40236806): Update test driver to work with new UI.
-  enabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
-#else
+#if !BUILDFLAG(IS_CHROMEOS)
   // TODO(b/313492499): Update test driver to work with new intent picker UI.
   enabled_features.push_back(features::kPwaNavigationCapturing);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   scoped_feature_list_.InitWithFeatures(enabled_features, {});
 }
 
