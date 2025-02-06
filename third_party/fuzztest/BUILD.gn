@@ -351,6 +351,8 @@ source_set("common") {
     "src/common/remote_file_oss.cc",
     "src/common/sha1.cc",
     "src/common/sha1.h",
+    "src/common/temp_dir.cc",
+    "src/common/temp_dir.h",
   ]
 
   deps = [ "//third_party/abseil-cpp:absl_full" ]
