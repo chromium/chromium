@@ -1289,8 +1289,7 @@ PDFiumPage::Area PDFiumEngine::GetCharIndex(const gfx::Point& point,
 
   *page_index = page;
   PDFiumPage::Area result = pages_[page]->GetCharIndex(
-      point_in_page, layout_.options().default_page_orientation(), char_index,
-      form_type, target);
+      point_in_page, GetCurrentOrientation(), char_index, form_type, target);
   return (client_->IsPrintPreview() && result == PDFiumPage::WEBLINK_AREA)
              ? PDFiumPage::NONSELECTABLE_AREA
              : result;
@@ -2212,8 +2211,8 @@ std::vector<gfx::Rect> PDFiumEngine::GetAllScreenRectsUnion(
   std::vector<gfx::Rect> rect_vector;
   rect_vector.reserve(rect_range.size());
   for (const auto& range : rect_range) {
-    const std::vector<gfx::Rect>& rects = range.GetScreenRects(
-        point, current_zoom_, layout_.options().default_page_orientation());
+    const std::vector<gfx::Rect>& rects =
+        range.GetScreenRects(point, current_zoom_, GetCurrentOrientation());
     rect_vector.push_back(gfx::UnionRects(rects));
   }
   return rect_vector;
@@ -3229,8 +3228,8 @@ bool PDFiumEngine::ContinuePaint(size_t progressive_index,
   return FPDF_RenderPageBitmap_Start(
              new_bitmap_ptr, page, pdfium_rect.x(), pdfium_rect.y(),
              pdfium_rect.width(), pdfium_rect.height(),
-             ToPDFiumRotation(layout_.options().default_page_orientation()),
-             GetRenderingFlags(), this) != FPDF_RENDER_TOBECONTINUED;
+             ToPDFiumRotation(GetCurrentOrientation()), GetRenderingFlags(),
+             this) != FPDF_RENDER_TOBECONTINUED;
 }
 
 void PDFiumEngine::FinishPaint(size_t progressive_index, SkBitmap& image_data) {
@@ -3245,8 +3244,7 @@ void PDFiumEngine::FinishPaint(size_t progressive_index, SkBitmap& image_data) {
   // Draw the forms.
   FPDF_FFLDraw(form(), bitmap, pages_[page_index]->GetPage(), pdfium_rect.x(),
                pdfium_rect.y(), pdfium_rect.width(), pdfium_rect.height(),
-               ToPDFiumRotation(layout_.options().default_page_orientation()),
-               GetRenderingFlags());
+               ToPDFiumRotation(GetCurrentOrientation()), GetRenderingFlags());
 
   FillPageSides(progressive_index);
 
@@ -3558,9 +3556,9 @@ PDFiumEngine::ChangeInvalidator::GetVisibleScreenRectsFromRanges(
       continue;
     }
 
-    const std::vector<gfx::Rect>& screen_rects = range.GetScreenRects(
-        visible_point, engine_->current_zoom_,
-        engine_->layout_.options().default_page_orientation());
+    const std::vector<gfx::Rect>& screen_rects =
+        range.GetScreenRects(visible_point, engine_->current_zoom_,
+                             engine_->GetCurrentOrientation());
     rects.insert(rects.end(), screen_rects.begin(), screen_rects.end());
   }
   return rects;
@@ -3717,8 +3715,8 @@ void PDFiumEngine::DeviceToPage(int page_index,
 
   FPDF_BOOL ret = FPDF_DeviceToPage(
       page->GetPage(), 0, 0, page_rect.width(), page_rect.height(),
-      ToPDFiumRotation(layout_.options().default_page_orientation()),
-      point_in_page.x(), point_in_page.y(), page_x, page_y);
+      ToPDFiumRotation(GetCurrentOrientation()), point_in_page.x(),
+      point_in_page.y(), page_x, page_y);
   DCHECK(ret);
 }
 
@@ -3793,9 +3791,8 @@ void PDFiumEngine::DrawHighlightOnPage(
     const RegionData& region,
     SkColor color,
     std::vector<gfx::Rect>& highlighted_rects) const {
-  const std::vector<gfx::Rect>& rects =
-      range.GetScreenRects(visible_rect.origin(), current_zoom_,
-                           layout_.options().default_page_orientation());
+  const std::vector<gfx::Rect>& rects = range.GetScreenRects(
+      visible_rect.origin(), current_zoom_, GetCurrentOrientation());
   for (const auto& rect : rects) {
     gfx::Rect visible_selection = gfx::IntersectRects(rect, dirty_in_screen);
     if (visible_selection.IsEmpty()) {
@@ -3847,9 +3844,8 @@ void PDFiumEngine::OnSelectionPositionChanged() {
                  std::numeric_limits<int32_t>::max(), 0, 0);
   gfx::Rect right;
   for (const auto& sel : selection_) {
-    const std::vector<gfx::Rect>& screen_rects =
-        sel.GetScreenRects(GetVisibleRect().origin(), current_zoom_,
-                           layout_.options().default_page_orientation());
+    const std::vector<gfx::Rect>& screen_rects = sel.GetScreenRects(
+        GetVisibleRect().origin(), current_zoom_, GetCurrentOrientation());
     for (const auto& rect : screen_rects) {
       if (IsAboveOrDirectlyLeftOf(rect, left))
         left = rect;
@@ -4056,8 +4052,7 @@ void PDFiumEngine::ScrollAnnotationIntoView(FPDF_ANNOTATION annot,
 
   gfx::Rect rect = pages_[page_index]->PageToScreen(
       gfx::Point(), /*zoom=*/1.0, annot_rect.left, annot_rect.top,
-      annot_rect.right, annot_rect.bottom,
-      layout_.options().default_page_orientation());
+      annot_rect.right, annot_rect.bottom, GetCurrentOrientation());
 
   gfx::Rect visible_rect = GetVisibleRect();
   if (visible_rect.Contains(rect))
@@ -4078,8 +4073,8 @@ void PDFiumEngine::ScrollAnnotationIntoView(FPDF_ANNOTATION annot,
 
 void PDFiumEngine::ScrollToBoundingRects(const PDFiumRange& range) {
   // Use zoom of 1.0 since `visible_rect` is without zoom.
-  const std::vector<gfx::Rect>& rects = range.GetScreenRects(
-      gfx::Point(), 1.0, layout_.options().default_page_orientation());
+  const std::vector<gfx::Rect>& rects =
+      range.GetScreenRects(gfx::Point(), 1.0, GetCurrentOrientation());
   const gfx::Rect bounding_rect = gfx::UnionRects(rects);
   gfx::Rect visible_rect = GetVisibleRect();
   // If `range` is in view, return early.
@@ -4127,8 +4122,7 @@ void PDFiumEngine::OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot,
     // Position assuming top-left of the first page is at (0,0).
     gfx::Rect rect_screen = pages_[page_index]->PageToScreen(
         gfx::Point(), current_zoom_, annot_rect.left, annot_rect.top,
-        annot_rect.right, annot_rect.bottom,
-        layout_.options().default_page_orientation());
+        annot_rect.right, annot_rect.bottom, GetCurrentOrientation());
 
     // Position in viewport.
     caret_rect_.SetRect(rect_screen.x() - position_.x(),
