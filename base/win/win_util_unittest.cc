@@ -24,6 +24,7 @@
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -169,6 +170,84 @@ TEST(BaseWinUtilTest, ExpandEnvironmentVariablesUndefinedValue) {
 
   EXPECT_EQ(ExpandEnvironmentVariables(path_with_env_var).value(),
             path_expanded);
+}
+
+TEST(BaseWinUtilTest, ProcessPowerThrottling) {
+  if (GetVersion() < Version::WIN11_22H2) {
+    GTEST_SKIP() << "Test only applies to Windows 11 22H2 and later.";
+  }
+
+  // Clear any previous state.
+  ASSERT_TRUE(
+      SetProcessEcoQoSState(::GetCurrentProcess(), ProcessPowerState::kUnset));
+  ASSERT_TRUE(SetProcessTimerThrottleState(::GetCurrentProcess(),
+                                           ProcessPowerState::kUnset));
+
+  // Verify the initial state.
+  ASSERT_TRUE(GetProcessEcoQoSState(::GetCurrentProcess()) ==
+              ProcessPowerState::kUnset);
+  ASSERT_TRUE(GetProcessTimerThrottleState(::GetCurrentProcess()) ==
+              ProcessPowerState::kUnset);
+
+  // Verify setting the EcoQoS state.
+  ASSERT_TRUE(SetProcessEcoQoSState(::GetCurrentProcess(),
+                                    ProcessPowerState::kEnabled));
+  ASSERT_TRUE(GetProcessEcoQoSState(::GetCurrentProcess()) ==
+              ProcessPowerState::kEnabled);
+  ASSERT_TRUE(
+      SetProcessEcoQoSState(::GetCurrentProcess(), ProcessPowerState::kUnset));
+
+  // Verify setting the timer resolution state.
+  ASSERT_TRUE(SetProcessTimerThrottleState(::GetCurrentProcess(),
+                                           ProcessPowerState::kEnabled));
+  ASSERT_TRUE(GetProcessTimerThrottleState(::GetCurrentProcess()) ==
+              ProcessPowerState::kEnabled);
+
+  // Set the EcoQoS state again and verify the timer throttling state is not
+  // clobbered.
+  ASSERT_TRUE(SetProcessEcoQoSState(::GetCurrentProcess(),
+                                    ProcessPowerState::kEnabled));
+  ASSERT_TRUE(GetProcessEcoQoSState(::GetCurrentProcess()) ==
+              ProcessPowerState::kEnabled);
+  ASSERT_TRUE(GetProcessTimerThrottleState(::GetCurrentProcess()) ==
+              ProcessPowerState::kEnabled);
+
+  // Disable the EcoQoS state and verify the timer throttling state is not
+  // clobbered.
+  ASSERT_TRUE(SetProcessEcoQoSState(::GetCurrentProcess(),
+                                    ProcessPowerState::kDisabled));
+  ASSERT_TRUE(GetProcessEcoQoSState(::GetCurrentProcess()) ==
+              ProcessPowerState::kDisabled);
+  ASSERT_TRUE(GetProcessTimerThrottleState(::GetCurrentProcess()) ==
+              ProcessPowerState::kEnabled);
+
+  // Disable the timer throttling state and verify state.
+  ASSERT_TRUE(SetProcessTimerThrottleState(::GetCurrentProcess(),
+                                           ProcessPowerState::kDisabled));
+  ASSERT_TRUE(GetProcessTimerThrottleState(::GetCurrentProcess()) ==
+              ProcessPowerState::kDisabled);
+  ASSERT_TRUE(GetProcessEcoQoSState(::GetCurrentProcess()) ==
+              ProcessPowerState::kDisabled);
+
+  // Enable both states and verify.
+  ASSERT_TRUE(SetProcessEcoQoSState(::GetCurrentProcess(),
+                                    ProcessPowerState::kEnabled));
+  ASSERT_TRUE(SetProcessTimerThrottleState(::GetCurrentProcess(),
+                                           ProcessPowerState::kEnabled));
+  ASSERT_TRUE(GetProcessEcoQoSState(::GetCurrentProcess()) ==
+              ProcessPowerState::kEnabled);
+  ASSERT_TRUE(GetProcessTimerThrottleState(::GetCurrentProcess()) ==
+              ProcessPowerState::kEnabled);
+
+  // Clear both states and verify.
+  ASSERT_TRUE(
+      SetProcessEcoQoSState(::GetCurrentProcess(), ProcessPowerState::kUnset));
+  ASSERT_TRUE(SetProcessTimerThrottleState(::GetCurrentProcess(),
+                                           ProcessPowerState::kUnset));
+  ASSERT_TRUE(GetProcessEcoQoSState(::GetCurrentProcess()) ==
+              ProcessPowerState::kUnset);
+  ASSERT_TRUE(GetProcessTimerThrottleState(::GetCurrentProcess()) ==
+              ProcessPowerState::kUnset);
 }
 
 TEST(GetObjectTypeNameTest, NullHandle) {

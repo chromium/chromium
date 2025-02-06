@@ -331,6 +331,55 @@ BASE_EXPORT expected<ScopedHandle, NTSTATUS> TakeHandleOfType(
     HANDLE handle,
     std::wstring_view object_type_name);
 
+// Process Power Throttling APIs are only available on Windows 11. By default,
+// Windows will throttle processes based on various heuristics (power plan,
+// media playback state, MMCSS apis, app visibility, etc). This can result in
+// the process set to a lower Quality of Service (QoS) as well as having
+// requests for high resolution timers ignored. The purpose is to provide
+// improved performance and battery life, but can lead to unwanted regressions
+// in some scenarios. It is important to note that such settings get applied to
+// child processes as well. Callers can explicitly tell the OS to enable or
+// disable throttling for specific processes with the SetProcessInformation API
+// and the PROCESS_POWER_THROTTLING_STATE structure.
+// https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocessinformation
+// Before Win11 22H2 there was no way to query the current state using
+// GetProcessInformation. This is needed in Process::GetPriority to accurately
+// determine the current priority. Calls made to set the process power
+// throttling state before 22H2 are a no-op.
+enum class ProcessPowerState { kUnset, kDisabled, kEnabled };
+
+// Returns the current state of the process power speed throttling. Returns
+// kEnabled if the process is explicitly set to EcoQoS. Returns kDisabled if the
+// process is explicitly set to HighQoS. Returns kUnset if the setting is not
+// explicitly set and therefore the OS decides the process power speed
+// throttling state.
+BASE_EXPORT ProcessPowerState GetProcessEcoQoSState(HANDLE process);
+
+// Sets the state of the process power speed throttling. State set to kEnabled
+// explicitly sets the process to EcoQoS. State set to kDisabled explicitly sets
+// the process to HighQoS. State set to kUnset results in the OS deciding the
+// throttling state. Returns true if the state was successfully set, false
+// otherwise. Calls made to SetProcessEcoQoSState before 22H2 are a no-op and
+// return false.
+BASE_EXPORT bool SetProcessEcoQoSState(HANDLE process, ProcessPowerState state);
+
+// Returns the state of the process power timer resolution throttling. Returns
+// kEnabled if the process is explicitly set to ignore requests for high
+// resolution timers. Returns kDisabled if the process is explicitly set to not
+// ignore requests for high resolution timers. Returns kUnset if the setting is
+// not expliclity set and therefore the OS decides the throttling state.
+BASE_EXPORT ProcessPowerState GetProcessTimerThrottleState(HANDLE process);
+
+// Sets the state of the process power timer resolution throttling.
+// State set to kEnabled explicitly sets the process to ignore requests for high
+// resolution timers. State set to kDisabled explicitly sets the process to
+// allow requests for high resolution timers. State set to kUnset results in the
+// OS deciding the throttling state. Returns true if the state was successfully
+// set, false otherwise.  Calls made to SetProcessTimerThrottleState before 22H2
+// are a no-op and return false.
+BASE_EXPORT bool SetProcessTimerThrottleState(HANDLE process,
+                                              ProcessPowerState state);
+
 // Allows changing the domain enrolled state for the life time of the object.
 // The original state is restored upon destruction.
 class BASE_EXPORT ScopedDomainStateForTesting {
