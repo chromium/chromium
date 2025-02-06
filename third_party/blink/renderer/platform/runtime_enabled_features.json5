@@ -1220,6 +1220,13 @@
       status: "experimental",
     },
     {
+      // TODO(crbug.com/393550130): Non-standard 'reading-order' keyword
+      // to overwrite reading-flow order.
+      name: "CSSReadingOrder",
+      status: "test",
+      depends_on: ["CSSReadingFlow"],
+    },
+    {
       // https://drafts.csswg.org/css-color-5/#relative-colors
       name: "CSSRelativeColor",
       status: "stable",

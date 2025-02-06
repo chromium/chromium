@@ -213,6 +213,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kOpacity:
       case CSSPropertyID::kOrder:
       case CSSPropertyID::kOrphans:
+      case CSSPropertyID::kReadingOrder:
       case CSSPropertyID::kShapeImageThreshold:
       case CSSPropertyID::kStopOpacity:
       case CSSPropertyID::kStrokeMiterlimit:
