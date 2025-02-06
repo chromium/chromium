@@ -5914,6 +5914,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8GeolocationCoordinates_AltitudeAccuracy_AttributeGetter"/>
   <int value="5314" label="V8GeolocationCoordinates_Heading_AttributeGetter"/>
   <int value="5315" label="V8GeolocationCoordinates_Speed_AttributeGetter"/>
+  <int value="5316" label="CSSEnvironmentVariable_SafeAreaMaxInsetBottom"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

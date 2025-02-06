@@ -117,6 +117,10 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
     StyleEnvironmentVariables::GetRootInstance().SetVariable(
         variable, first_dimension, second_dimension, value, nullptr);
   }
+
+  void ClearRootInstance() {
+    StyleEnvironmentVariables::GetRootInstance().ClearForTesting();
+  }
 };
 
 TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_AfterLoad) {
@@ -327,6 +331,9 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Change) {
 
 TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_DefaultsPresent) {
   ScopedCSSSafeAreaMaxInsetForTest scoped_feature(true);
+  // Reinitialize after updating feature state.
+  ClearRootInstance();
+
   EXPECT_EQ(kSafeAreaInsetExpectedDefault,
             GetRootVariableValue(UADefinedVariable::kSafeAreaInsetTop));
   EXPECT_EQ(kSafeAreaInsetExpectedDefault,
@@ -394,6 +401,8 @@ TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_IgnoreMediaControls) {
       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetRight));
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom_FastPath));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCSSEnvironmentVariable_SafeAreaMaxInsetBottom));
 }
 
 TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_InvalidProperty) {
@@ -413,6 +422,15 @@ TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_SafeAreaInsetBottom) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSEnvironmentVariable));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom));
+}
+
+TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_SafeAreaMaxInsetBottom) {
+  InitializeTestPageWithVariableNamed(
+      GetFrame(), UADefinedVariable::kSafeAreaMaxInsetBottom);
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSEnvironmentVariable));
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kCSSEnvironmentVariable_SafeAreaMaxInsetBottom));
 }
 
 TEST_F(StyleEnvironmentVariablesTest,
