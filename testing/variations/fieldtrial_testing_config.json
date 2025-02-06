@@ -21769,13 +21769,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_10_100",
+                    "name": "Enabled_Both",
                     "params": {
-                        "delay_after_tasks": "10",
+                        "delay_after_tasks": "30",
                         "max_chunk_size": "100"
                     },
                     "enable_features": [
-                        "ShouldFreezeSelf"
+                        "ShouldFreezeSelf",
+                        "V8Flag_memory_reducer_respects_frozen_state"
                     ]
                 }
             ]
