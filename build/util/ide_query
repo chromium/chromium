@@ -77,6 +77,8 @@ def main():
     help=('Output directory, containing args.gn, which specifies the build '
           'configuration.'))
   parser.add_argument('--log-dir', help=('Directory to save log files to.'))
+  parser.add_argument('--format', choices=['proto', 'prototext', 'json'],
+                      default='proto', help=('Output format.'))
   options = parser.parse_args()
 
   this_dir = os.path.dirname(__file__)
@@ -140,6 +142,8 @@ def main():
         # even if build fails, it should report ideanalysis back.
 
   args = ['siso', 'query', 'ideanalysis', '-C', options.out_dir]
+  if options.format:
+      args.extend(['--format', options.format])
   args.extend(targets)
   subprocess.run(args, cwd=repo_root, check=True)
 
