@@ -94,6 +94,7 @@ _CONFIG = [
             'base::FindOrNull',
             'base::FunctionRef',
             'base::GetUniqueIdForProcess',
+            'base::GetSystemMemoryInfo',
             'base::HashingLRUCache',
             'base::HashInts',
             'base::HeapArray',
@@ -149,6 +150,7 @@ _CONFIG = [
             'base::StringPiece',
             'base::SubstringSetMatcher',
             'base::SysInfo',
+            'base::SystemMemoryInfoKB',
             'base::ThreadChecker',
             'base::ThreadTicks',
             'base::ThreadType',
@@ -955,6 +957,14 @@ _CONFIG = [
         'allowed': [
             # For memory reduction histogram.
             'base::ProcessMetrics',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.cc'
+        ],
+        'allowed': [
+            'base::subtle::RelaxedAtomicWriteMemcpy',
         ],
     },
     {

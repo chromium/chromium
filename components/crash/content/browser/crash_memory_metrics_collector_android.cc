@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/atomicops.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "content/public/browser/render_process_host.h"
@@ -39,9 +40,12 @@ CrashMemoryMetricsCollector::CrashMemoryMetricsCollector(
 
 CrashMemoryMetricsCollector::~CrashMemoryMetricsCollector() = default;
 
-const blink::OomInterventionMetrics*
-CrashMemoryMetricsCollector::MemoryMetrics() {
+blink::OomInterventionMetrics CrashMemoryMetricsCollector::MemoryMetrics() {
   // This should be called after SetSharedMemory.
   DCHECK(metrics_mapping_.IsValid());
-  return metrics_mapping_.GetMemoryAs<blink::OomInterventionMetrics>();
+  blink::OomInterventionMetrics memory_metrics;
+  base::subtle::RelaxedAtomicWriteMemcpy(
+      base::byte_span_from_ref(memory_metrics),
+      metrics_mapping_.GetMemoryAsSpan<uint8_t>());
+  return memory_metrics;
 }
