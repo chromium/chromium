@@ -420,6 +420,15 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
+    protected void initializeAdaptiveToolbarButton(Supplier<Tracker> trackerSupplier) {
+        if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()) return;
+
+        super.initializeAdaptiveToolbarButton(trackerSupplier);
+        // TODO(crbug/391931152): Instantiate CCT-specific ButtonControllers based on
+        //     the feature flag configuration.
+    }
+
+    @Override
     protected boolean canPreviewPromoteToTab() {
         return mActivityType == ActivityType.CUSTOM_TAB;
     }

@@ -152,7 +152,6 @@ import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveButtonActionMenuCoordinator;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.TranslateToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -210,7 +209,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -284,7 +283,9 @@ public class RootUiCoordinator
 
     private ScrimManager mScrimManager;
     private List<ButtonDataProvider> mButtonDataProviders;
-    @Nullable private AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
+    private VoiceToolbarButtonController mVoiceToolbarButtonController;
+    @Nullable private IdentityDiscController mIdentityDiscController;
+    @Nullable protected AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private ContextualPageActionController mContextualPageActionController;
     private CurrentTabPriceTrackingStateSupplier mCurrentTabPriceTrackingStateSupplier;
     private final ToolbarActionModeCallback mActionModeControllerCallback;
@@ -659,11 +660,6 @@ public class RootUiCoordinator
             mContextualPageActionController = null;
         }
 
-        if (mAdaptiveToolbarButtonController != null) {
-            mAdaptiveToolbarButtonController.destroy();
-            mAdaptiveToolbarButtonController = null;
-        }
-
         if (mAppMenuCoordinator != null) {
             mAppMenuCoordinator.unregisterAppMenuBlocker(this);
             mAppMenuCoordinator.unregisterAppMenuBlocker(mAppMenuBlocker);
@@ -700,6 +696,10 @@ public class RootUiCoordinator
             }
 
             mButtonDataProviders = null;
+
+            // Included in mButtonDataProviders if not null.
+            mAdaptiveToolbarButtonController = null;
+            mIdentityDiscController = null;
         }
 
         if (mScrimManager != null) mScrimManager.destroy();
@@ -1418,171 +1418,15 @@ public class RootUiCoordinator
                                 : TrackerFactory.getTrackerForProfile(profile);
                     };
 
-            IdentityDiscController mIdentityDiscController =
-                    new IdentityDiscController(
-                            mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
-            mCurrentTabPriceTrackingStateSupplier =
-                    new CurrentTabPriceTrackingStateSupplier(
-                            mActivityTabProvider, mProfileSupplier);
+            initializeAdaptiveToolbarButton(trackerSupplier);
+            mButtonDataProviders = new ArrayList<>();
 
-            PriceInsightsButtonController priceInsightsButtonController =
-                    new PriceInsightsButtonController(
-                            mActivity,
-                            mActivityTabProvider,
-                            mTabModelSelectorSupplier,
-                            () -> ShoppingServiceFactory.getForProfile(mProfileSupplier.get()),
-                            mModalDialogManagerSupplier.get(),
-                            getBottomSheetController(),
-                            mSnackbarManagerSupplier.get(),
-                            new PriceInsightsDelegateImpl(
-                                    mActivity, mCurrentTabPriceTrackingStateSupplier),
-                            AppCompatResources.getDrawable(
-                                    mActivity, R.drawable.ic_trending_down_24dp),
-                            this::getCommerceBottomSheetContentController);
-            PriceTrackingButtonController priceTrackingButtonController =
-                    new PriceTrackingButtonController(
-                            mActivity,
-                            mActivityTabProvider,
-                            mModalDialogManagerSupplier.get(),
-                            getBottomSheetController(),
-                            mSnackbarManagerSupplier.get(),
-                            mTabBookmarkerSupplier,
-                            mProfileSupplier,
-                            mBookmarkModelSupplier,
-                            mCurrentTabPriceTrackingStateSupplier);
-            ReaderModeToolbarButtonController readerModeToolbarButtonController =
-                    new ReaderModeToolbarButtonController(
-                            mActivity,
-                            mActivityTabProvider,
-                            mModalDialogManagerSupplier.get(),
-                            AppCompatResources.getDrawable(
-                                    mActivity, R.drawable.ic_mobile_friendly));
-            ReadAloudToolbarButtonController readAloudButtonController =
-                    new ReadAloudToolbarButtonController(
-                            mActivity,
-                            mActivityTabProvider,
-                            AppCompatResources.getDrawable(mActivity, R.drawable.ic_play_circle),
-                            mReadAloudControllerSupplier,
-                            trackerSupplier);
-
-            ShareButtonController shareButtonController =
-                    new ShareButtonController(
-                            mActivity,
-                            AppCompatResources.getDrawable(
-                                    mActivity, R.drawable.ic_toolbar_share_offset_24dp),
-                            mActivityTabProvider,
-                            mShareDelegateSupplier,
-                            trackerSupplier,
-                            new ShareUtils(),
-                            mModalDialogManagerSupplier.get(),
-                            () ->
-                                    mToolbarManager.setUrlBarFocus(
-                                            false, OmniboxFocusReason.UNFOCUS));
-            VoiceToolbarButtonController.VoiceSearchDelegate voiceSearchDelegate =
-                    new VoiceToolbarButtonController.VoiceSearchDelegate() {
-                        @Override
-                        public boolean isVoiceSearchEnabled() {
-                            VoiceRecognitionHandler voiceRecognitionHandler =
-                                    mToolbarManager.getVoiceRecognitionHandler();
-                            if (voiceRecognitionHandler == null) return false;
-                            return voiceRecognitionHandler.isVoiceSearchEnabled();
-                        }
-
-                        @Override
-                        public void startVoiceRecognition() {
-                            VoiceRecognitionHandler voiceRecognitionHandler =
-                                    mToolbarManager.getVoiceRecognitionHandler();
-                            if (voiceRecognitionHandler == null) return;
-                            voiceRecognitionHandler.startVoiceRecognition(
-                                    VoiceInteractionSource.TOOLBAR);
-                        }
-                    };
-            TranslateToolbarButtonController translateToolbarButtonController =
-                    new TranslateToolbarButtonController(
-                            mActivityTabProvider,
-                            AppCompatResources.getDrawable(mActivity, R.drawable.ic_translate),
-                            mActivity.getString(R.string.menu_translate),
-                            trackerSupplier);
-            VoiceToolbarButtonController voiceToolbarButtonController =
-                    new VoiceToolbarButtonController(
-                            mActivity,
-                            AppCompatResources.getDrawable(mActivity, R.drawable.ic_mic_white_24dp),
-                            mActivityTabProvider,
-                            trackerSupplier,
-                            mModalDialogManagerSupplier.get(),
-                            voiceSearchDelegate);
-            OptionalNewTabButtonController newTabButtonController =
-                    new OptionalNewTabButtonController(
-                            mActivity,
-                            AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
-                            mActivityLifecycleDispatcher,
-                            mTabCreatorManagerSupplier,
-                            mActivityTabProvider,
-                            trackerSupplier);
-            AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
-                    new AddToBookmarksToolbarButtonController(
-                            mActivityTabProvider,
-                            mActivity,
-                            mActivityLifecycleDispatcher,
-                            mTabBookmarkerSupplier,
-                            trackerSupplier,
-                            mBookmarkModelSupplier);
-            AdaptiveToolbarButtonController adaptiveToolbarButtonController =
-                    new AdaptiveToolbarButtonController(
-                            mActivity,
-                            mActivityLifecycleDispatcher,
-                            mProfileSupplier,
-                            new AdaptiveButtonActionMenuCoordinator(),
-                            mWindowAndroid);
-            PageSummaryButtonController pageSummaryButtonController =
-                    new PageSummaryButtonController(
-                            mActivity,
-                            mModalDialogManagerSupplier.get(),
-                            mActivityTabProvider,
-                            new AiAssistantService());
-
-            if (ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
-                DiscountsButtonController discountsButtonController =
-                        new DiscountsButtonController(
-                                mActivity,
-                                mActivityTabProvider,
-                                mModalDialogManagerSupplier.get(),
-                                this::getCommerceBottomSheetContentController);
-                adaptiveToolbarButtonController.addButtonVariant(
-                        AdaptiveToolbarButtonVariant.DISCOUNTS, discountsButtonController);
+            if (mAdaptiveToolbarButtonController != null) {
+                mButtonDataProviders.add(mAdaptiveToolbarButtonController);
             }
-
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.NEW_TAB, newTabButtonController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.SHARE, shareButtonController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
-                    addToBookmarksToolbarButtonController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.TRANSLATE, translateToolbarButtonController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.PRICE_INSIGHTS, priceInsightsButtonController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.PRICE_TRACKING, priceTrackingButtonController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.READER_MODE, readerModeToolbarButtonController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.READ_ALOUD, readAloudButtonController);
-            adaptiveToolbarButtonController.addButtonVariant(
-                    AdaptiveToolbarButtonVariant.PAGE_SUMMARY, pageSummaryButtonController);
-            mContextualPageActionController =
-                    new ContextualPageActionController(
-                            mProfileSupplier,
-                            mActivityTabProvider,
-                            adaptiveToolbarButtonController,
-                            () -> ShoppingServiceFactory.getForProfile(mProfileSupplier.get()),
-                            mBookmarkModelSupplier);
-            mButtonDataProviders =
-                    Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
-
+            if (mIdentityDiscController != null) {
+                mButtonDataProviders.add(mIdentityDiscController);
+            }
             var omniboxActionDelegate =
                     new OmniboxActionDelegateImpl(
                             mActivity,
@@ -1680,11 +1524,165 @@ public class RootUiCoordinator
             VoiceRecognitionHandler voiceRecognitionHandler =
                     mToolbarManager.getVoiceRecognitionHandler();
             if (voiceRecognitionHandler != null) {
-                mMicStateObserver = voiceToolbarButtonController::updateMicButtonState;
+                mMicStateObserver = mVoiceToolbarButtonController::updateMicButtonState;
                 voiceRecognitionHandler.addObserver(mMicStateObserver);
             }
             mToolbarManagerOneshotSupplier.set(mToolbarManager);
         }
+    }
+
+    protected void initializeAdaptiveToolbarButton(Supplier<Tracker> trackerSupplier) {
+        mIdentityDiscController =
+                new IdentityDiscController(
+                        mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
+        mCurrentTabPriceTrackingStateSupplier =
+                new CurrentTabPriceTrackingStateSupplier(mActivityTabProvider, mProfileSupplier);
+
+        PriceInsightsButtonController priceInsightsButtonController =
+                new PriceInsightsButtonController(
+                        mActivity,
+                        mActivityTabProvider,
+                        mTabModelSelectorSupplier,
+                        () -> ShoppingServiceFactory.getForProfile(mProfileSupplier.get()),
+                        mModalDialogManagerSupplier.get(),
+                        getBottomSheetController(),
+                        mSnackbarManagerSupplier.get(),
+                        new PriceInsightsDelegateImpl(
+                                mActivity, mCurrentTabPriceTrackingStateSupplier),
+                        AppCompatResources.getDrawable(mActivity, R.drawable.ic_trending_down_24dp),
+                        this::getCommerceBottomSheetContentController);
+        PriceTrackingButtonController priceTrackingButtonController =
+                new PriceTrackingButtonController(
+                        mActivity,
+                        mActivityTabProvider,
+                        mModalDialogManagerSupplier.get(),
+                        getBottomSheetController(),
+                        mSnackbarManagerSupplier.get(),
+                        mTabBookmarkerSupplier,
+                        mProfileSupplier,
+                        mBookmarkModelSupplier,
+                        mCurrentTabPriceTrackingStateSupplier);
+        ReaderModeToolbarButtonController readerModeToolbarButtonController =
+                new ReaderModeToolbarButtonController(
+                        mActivity,
+                        mActivityTabProvider,
+                        mModalDialogManagerSupplier.get(),
+                        AppCompatResources.getDrawable(mActivity, R.drawable.ic_mobile_friendly));
+        ReadAloudToolbarButtonController readAloudButtonController =
+                new ReadAloudToolbarButtonController(
+                        mActivity,
+                        mActivityTabProvider,
+                        AppCompatResources.getDrawable(mActivity, R.drawable.ic_play_circle),
+                        mReadAloudControllerSupplier,
+                        trackerSupplier);
+
+        ShareButtonController shareButtonController =
+                new ShareButtonController(
+                        mActivity,
+                        AppCompatResources.getDrawable(
+                                mActivity, R.drawable.ic_toolbar_share_offset_24dp),
+                        mActivityTabProvider,
+                        mShareDelegateSupplier,
+                        trackerSupplier,
+                        new ShareUtils(),
+                        mModalDialogManagerSupplier.get(),
+                        () -> mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS));
+        TranslateToolbarButtonController translateToolbarButtonController =
+                new TranslateToolbarButtonController(
+                        mActivityTabProvider,
+                        AppCompatResources.getDrawable(mActivity, R.drawable.ic_translate),
+                        mActivity.getString(R.string.menu_translate),
+                        trackerSupplier);
+        AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
+                new AddToBookmarksToolbarButtonController(
+                        mActivityTabProvider,
+                        mActivity,
+                        mActivityLifecycleDispatcher,
+                        mTabBookmarkerSupplier,
+                        trackerSupplier,
+                        mBookmarkModelSupplier);
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController =
+                new AdaptiveToolbarButtonController(
+                        mActivity,
+                        mActivityLifecycleDispatcher,
+                        mProfileSupplier,
+                        new AdaptiveButtonActionMenuCoordinator(),
+                        mWindowAndroid);
+        PageSummaryButtonController pageSummaryButtonController =
+                new PageSummaryButtonController(
+                        mActivity,
+                        mModalDialogManagerSupplier.get(),
+                        mActivityTabProvider,
+                        new AiAssistantService());
+
+        if (ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
+            DiscountsButtonController discountsButtonController =
+                    new DiscountsButtonController(
+                            mActivity,
+                            mActivityTabProvider,
+                            mModalDialogManagerSupplier.get(),
+                            this::getCommerceBottomSheetContentController);
+            adaptiveToolbarButtonController.addButtonVariant(
+                    AdaptiveToolbarButtonVariant.DISCOUNTS, discountsButtonController);
+        }
+
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.SHARE, shareButtonController);
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
+                addToBookmarksToolbarButtonController);
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.TRANSLATE, translateToolbarButtonController);
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.PRICE_INSIGHTS, priceInsightsButtonController);
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.PRICE_TRACKING, priceTrackingButtonController);
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.READER_MODE, readerModeToolbarButtonController);
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.READ_ALOUD, readAloudButtonController);
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.PAGE_SUMMARY, pageSummaryButtonController);
+        mContextualPageActionController =
+                new ContextualPageActionController(
+                        mProfileSupplier,
+                        mActivityTabProvider,
+                        adaptiveToolbarButtonController,
+                        () -> ShoppingServiceFactory.getForProfile(mProfileSupplier.get()),
+                        mBookmarkModelSupplier);
+        mAdaptiveToolbarButtonController = adaptiveToolbarButtonController;
+    }
+
+    protected void addVoiceSearchAdaptiveButton(Supplier<Tracker> trackerSupplier) {
+        VoiceToolbarButtonController.VoiceSearchDelegate voiceSearchDelegate =
+                new VoiceToolbarButtonController.VoiceSearchDelegate() {
+                    @Override
+                    public boolean isVoiceSearchEnabled() {
+                        VoiceRecognitionHandler voiceRecognitionHandler =
+                                mToolbarManager.getVoiceRecognitionHandler();
+                        if (voiceRecognitionHandler == null) return false;
+                        return voiceRecognitionHandler.isVoiceSearchEnabled();
+                    }
+
+                    @Override
+                    public void startVoiceRecognition() {
+                        VoiceRecognitionHandler voiceRecognitionHandler =
+                                mToolbarManager.getVoiceRecognitionHandler();
+                        if (voiceRecognitionHandler == null) return;
+                        voiceRecognitionHandler.startVoiceRecognition(
+                                VoiceInteractionSource.TOOLBAR);
+                    }
+                };
+        mVoiceToolbarButtonController =
+                new VoiceToolbarButtonController(
+                        mActivity,
+                        AppCompatResources.getDrawable(mActivity, R.drawable.ic_mic_white_24dp),
+                        mActivityTabProvider,
+                        trackerSupplier,
+                        mModalDialogManagerSupplier.get(),
+                        voiceSearchDelegate);
+        mAdaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.VOICE, mVoiceToolbarButtonController);
     }
 
     @Nullable
