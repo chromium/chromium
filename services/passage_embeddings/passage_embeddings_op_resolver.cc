@@ -19,13 +19,14 @@ PassageEmbeddingsOpResolver::PassageEmbeddingsOpResolver(
     auto* chrome_ml = ml::ChromeML::Get();
     if (chrome_ml && chrome_ml->api().CreateGpuDelegate &&
         chrome_ml->api().DestroyGpuDelegate) {
-      delegate_creators_.push_back([](TfLiteContext* context) {
-        return std::unique_ptr<TfLiteDelegate, void (*)(TfLiteDelegate*)>(
-            ml::ChromeML::Get()->api().CreateGpuDelegate(),
-            [](TfLiteDelegate* delegate) {
-              ml::ChromeML::Get()->api().DestroyGpuDelegate(delegate);
-            });
-      });
+      delegate_creators_.insert(
+          delegate_creators_.begin(), [](TfLiteContext* context) {
+            return std::unique_ptr<TfLiteDelegate, void (*)(TfLiteDelegate*)>(
+                ml::ChromeML::Get()->api().CreateGpuDelegate(),
+                [](TfLiteDelegate* delegate) {
+                  ml::ChromeML::Get()->api().DestroyGpuDelegate(delegate);
+                });
+          });
     }
   }
 #endif
