@@ -832,7 +832,6 @@ targets.mixin(
 targets.mixin(
     name = "gpu_integration_test_expected_color_args",
     args = [
-        # TODO(crbug.com/391899126): Remove argument it's not used in expected_color.
         "--dont-restore-color-profile-after-test",
         "--test-machine-name",
         "${buildername}",
