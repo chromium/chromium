@@ -393,7 +393,8 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
         is_sync_promo || access_point == signin_metrics::AccessPoint::kSettings;
   }
   TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
-      account.account_id !=
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+              account.account_id !=
                   identity_manager
                       ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                       .account_id &&
