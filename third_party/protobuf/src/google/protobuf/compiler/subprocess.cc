@@ -1,40 +1,17 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 // Author: kenton@google.com (Kenton Varda)
 
-#include <google/protobuf/compiler/subprocess.h>
+#include "google/protobuf/compiler/subprocess.h"
 
 #include <algorithm>
 #include <cstring>
-#include <iostream>
+#include <string>
 
 #ifndef _WIN32
 #include <errno.h>
@@ -43,32 +20,24 @@
 #include <sys/wait.h>
 #endif
 
-#include <google/protobuf/stubs/logging.h>
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/substitute.h>
-#include <google/protobuf/message.h>
-#include <google/protobuf/io/io_win32.h>
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
+#include "absl/strings/escaping.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/substitute.h"
+#include "google/protobuf/io/io_win32.h"
+#include "google/protobuf/message.h"
 
 namespace google {
 namespace protobuf {
 namespace compiler {
 
-namespace {
-char* portable_strdup(const char* s) {
-  char* ns = (char*)malloc(strlen(s) + 1);
-  if (ns != nullptr) {
-    strcpy(ns, s);
-  }
-  return ns;
-}
-}  // namespace
-
 #ifdef _WIN32
 
 static void CloseHandleOrDie(HANDLE handle) {
   if (!CloseHandle(handle)) {
-    GOOGLE_LOG(FATAL) << "CloseHandle: "
-                      << Subprocess::Win32ErrorMessage(GetLastError());
+    ABSL_LOG(FATAL) << "CloseHandle: "
+                    << Subprocess::Win32ErrorMessage(GetLastError());
   }
 }
 
@@ -95,22 +64,22 @@ void Subprocess::Start(const std::string& program, SearchMode search_mode) {
   HANDLE stdout_pipe_write;
 
   if (!CreatePipe(&stdin_pipe_read, &stdin_pipe_write, nullptr, 0)) {
-    GOOGLE_LOG(FATAL) << "CreatePipe: " << Win32ErrorMessage(GetLastError());
+    ABSL_LOG(FATAL) << "CreatePipe: " << Win32ErrorMessage(GetLastError());
   }
   if (!CreatePipe(&stdout_pipe_read, &stdout_pipe_write, nullptr, 0)) {
-    GOOGLE_LOG(FATAL) << "CreatePipe: " << Win32ErrorMessage(GetLastError());
+    ABSL_LOG(FATAL) << "CreatePipe: " << Win32ErrorMessage(GetLastError());
   }
 
   // Make child side of the pipes inheritable.
   if (!SetHandleInformation(stdin_pipe_read, HANDLE_FLAG_INHERIT,
                             HANDLE_FLAG_INHERIT)) {
-    GOOGLE_LOG(FATAL) << "SetHandleInformation: "
-                      << Win32ErrorMessage(GetLastError());
+    ABSL_LOG(FATAL) << "SetHandleInformation: "
+                    << Win32ErrorMessage(GetLastError());
   }
   if (!SetHandleInformation(stdout_pipe_write, HANDLE_FLAG_INHERIT,
                             HANDLE_FLAG_INHERIT)) {
-    GOOGLE_LOG(FATAL) << "SetHandleInformation: "
-                      << Win32ErrorMessage(GetLastError());
+    ABSL_LOG(FATAL) << "SetHandleInformation: "
+                    << Win32ErrorMessage(GetLastError());
   }
 
   // Setup STARTUPINFO to redirect handles.
@@ -123,22 +92,22 @@ void Subprocess::Start(const std::string& program, SearchMode search_mode) {
   startup_info.hStdError = GetStdHandle(STD_ERROR_HANDLE);
 
   if (startup_info.hStdError == INVALID_HANDLE_VALUE) {
-    GOOGLE_LOG(FATAL) << "GetStdHandle: " << Win32ErrorMessage(GetLastError());
+    ABSL_LOG(FATAL) << "GetStdHandle: " << Win32ErrorMessage(GetLastError());
   }
 
   // get wide string version of program as the path may contain non-ascii characters
   std::wstring wprogram;
   if (!io::win32::strings::utf8_to_wcs(program.c_str(), &wprogram)) {
-    GOOGLE_LOG(FATAL) << "utf8_to_wcs: " << Win32ErrorMessage(GetLastError());
+    ABSL_LOG(FATAL) << "utf8_to_wcs: " << Win32ErrorMessage(GetLastError());
   }
 
   // Invoking cmd.exe allows for '.bat' files from the path as well as '.exe'.
-  std::string command_line = "cmd.exe /c \"" + program + "\"";
+  std::string command_line = absl::StrCat("cmd.exe /c \"", program, "\"");
 
   // get wide string version of command line as the path may contain non-ascii characters
   std::wstring wcommand_line;
   if (!io::win32::strings::utf8_to_wcs(command_line.c_str(), &wcommand_line)) {
-    GOOGLE_LOG(FATAL) << "utf8_to_wcs: " << Win32ErrorMessage(GetLastError());
+    ABSL_LOG(FATAL) << "utf8_to_wcs: " << Win32ErrorMessage(GetLastError());
   }
 
   // Using a malloc'ed string because CreateProcess() can mutate its second
@@ -148,15 +117,16 @@ void Subprocess::Start(const std::string& program, SearchMode search_mode) {
   // Create the process.
   PROCESS_INFORMATION process_info;
 
-  if (CreateProcessW((search_mode == SEARCH_PATH) ? nullptr : wprogram.c_str(),
-                     (search_mode == SEARCH_PATH) ? wcommand_line_copy : NULL,
-                     nullptr,  // process security attributes
-                     nullptr,  // thread security attributes
-                     TRUE,     // inherit handles?
-                     0,        // obscure creation flags
-                     nullptr,  // environment (inherit from parent)
-                     nullptr,  // current directory (inherit from parent)
-                     &startup_info, &process_info)) {
+  if (CreateProcessW(
+          (search_mode == SEARCH_PATH) ? nullptr : wprogram.c_str(),
+          (search_mode == SEARCH_PATH) ? wcommand_line_copy : nullptr,
+          nullptr,  // process security attributes
+          nullptr,  // thread security attributes
+          TRUE,     // inherit handles?
+          0,        // obscure creation flags
+          nullptr,  // environment (inherit from parent)
+          nullptr,  // current directory (inherit from parent)
+          &startup_info, &process_info)) {
     child_handle_ = process_info.hProcess;
     CloseHandleOrDie(process_info.hThread);
     child_stdin_ = stdin_pipe_write;
@@ -179,7 +149,7 @@ bool Subprocess::Communicate(const Message& input, Message* output,
     return false;
   }
 
-  GOOGLE_CHECK(child_handle_ != nullptr) << "Must call Start() first.";
+  ABSL_CHECK(child_handle_ != nullptr) << "Must call Start() first.";
 
   std::string input_data;
   if (!input.SerializeToString(&input_data)) {
@@ -209,11 +179,11 @@ bool Subprocess::Communicate(const Message& input, Message* output,
         wait_result < WAIT_OBJECT_0 + handle_count) {
       signaled_handle = handles[wait_result - WAIT_OBJECT_0];
     } else if (wait_result == WAIT_FAILED) {
-      GOOGLE_LOG(FATAL) << "WaitForMultipleObjects: "
-                        << Win32ErrorMessage(GetLastError());
+      ABSL_LOG(FATAL) << "WaitForMultipleObjects: "
+                      << Win32ErrorMessage(GetLastError());
     } else {
-      GOOGLE_LOG(FATAL) << "WaitForMultipleObjects: Unexpected return code: "
-                        << wait_result;
+      ABSL_LOG(FATAL) << "WaitForMultipleObjects: Unexpected return code: "
+                      << wait_result;
     }
 
     if (signaled_handle == child_stdin_) {
@@ -256,29 +226,30 @@ bool Subprocess::Communicate(const Message& input, Message* output,
   DWORD wait_result = WaitForSingleObject(child_handle_, INFINITE);
 
   if (wait_result == WAIT_FAILED) {
-    GOOGLE_LOG(FATAL) << "WaitForSingleObject: "
-                      << Win32ErrorMessage(GetLastError());
+    ABSL_LOG(FATAL) << "WaitForSingleObject: "
+                    << Win32ErrorMessage(GetLastError());
   } else if (wait_result != WAIT_OBJECT_0) {
-    GOOGLE_LOG(FATAL) << "WaitForSingleObject: Unexpected return code: "
-                      << wait_result;
+    ABSL_LOG(FATAL) << "WaitForSingleObject: Unexpected return code: "
+                    << wait_result;
   }
 
   DWORD exit_code;
   if (!GetExitCodeProcess(child_handle_, &exit_code)) {
-    GOOGLE_LOG(FATAL) << "GetExitCodeProcess: "
-                      << Win32ErrorMessage(GetLastError());
+    ABSL_LOG(FATAL) << "GetExitCodeProcess: "
+                    << Win32ErrorMessage(GetLastError());
   }
 
   CloseHandleOrDie(child_handle_);
   child_handle_ = nullptr;
 
   if (exit_code != 0) {
-    *error = strings::Substitute("Plugin failed with status code $0.", exit_code);
+    *error = absl::Substitute("Plugin failed with status code $0.", exit_code);
     return false;
   }
 
   if (!output->ParseFromString(output_data)) {
-    *error = "Plugin output is unparseable: " + CEscape(output_data);
+    *error = absl::StrCat("Plugin output is unparseable: ",
+                          absl::CEscape(output_data));
     return false;
   }
 
@@ -317,6 +288,16 @@ Subprocess::~Subprocess() {
   }
 }
 
+namespace {
+char* portable_strdup(const char* s) {
+  char* ns = (char*)malloc(strlen(s) + 1);
+  if (ns != nullptr) {
+    strcpy(ns, s);
+  }
+  return ns;
+}
+}  // namespace
+
 void Subprocess::Start(const std::string& program, SearchMode search_mode) {
   // Note that we assume that there are no other threads, thus we don't have to
   // do crazy stuff like using socket pairs or avoiding libc locks.
@@ -325,14 +306,14 @@ void Subprocess::Start(const std::string& program, SearchMode search_mode) {
   int stdin_pipe[2];
   int stdout_pipe[2];
 
-  GOOGLE_CHECK(pipe(stdin_pipe) != -1);
-  GOOGLE_CHECK(pipe(stdout_pipe) != -1);
+  ABSL_CHECK(pipe(stdin_pipe) != -1);
+  ABSL_CHECK(pipe(stdout_pipe) != -1);
 
   char* argv[2] = {portable_strdup(program.c_str()), nullptr};
 
   child_pid_ = fork();
   if (child_pid_ == -1) {
-    GOOGLE_LOG(FATAL) << "fork: " << strerror(errno);
+    ABSL_LOG(FATAL) << "fork: " << strerror(errno);
   } else if (child_pid_ == 0) {
     // We are the child.
     dup2(stdin_pipe[0], STDIN_FILENO);
@@ -379,7 +360,7 @@ void Subprocess::Start(const std::string& program, SearchMode search_mode) {
 
 bool Subprocess::Communicate(const Message& input, Message* output,
                              std::string* error) {
-  GOOGLE_CHECK_NE(child_stdin_, -1) << "Must call Start() first.";
+  ABSL_CHECK_NE(child_stdin_, -1) << "Must call Start() first.";
 
   // The "sighandler_t" typedef is GNU-specific, so define our own.
   typedef void SignalHandler(int);
@@ -414,7 +395,7 @@ bool Subprocess::Communicate(const Message& input, Message* output,
         // Interrupted by signal.  Try again.
         continue;
       } else {
-        GOOGLE_LOG(FATAL) << "select: " << strerror(errno);
+        ABSL_LOG(FATAL) << "select: " << strerror(errno);
       }
     }
 
@@ -460,7 +441,7 @@ bool Subprocess::Communicate(const Message& input, Message* output,
   int status;
   while (waitpid(child_pid_, &status, 0) == -1) {
     if (errno != EINTR) {
-      GOOGLE_LOG(FATAL) << "waitpid: " << strerror(errno);
+      ABSL_LOG(FATAL) << "waitpid: " << strerror(errno);
     }
   }
 
@@ -471,12 +452,12 @@ bool Subprocess::Communicate(const Message& input, Message* output,
     if (WEXITSTATUS(status) != 0) {
       int error_code = WEXITSTATUS(status);
       *error =
-          strings::Substitute("Plugin failed with status code $0.", error_code);
+          absl::Substitute("Plugin failed with status code $0.", error_code);
       return false;
     }
   } else if (WIFSIGNALED(status)) {
     int signal = WTERMSIG(status);
-    *error = strings::Substitute("Plugin killed by signal $0.", signal);
+    *error = absl::Substitute("Plugin killed by signal $0.", signal);
     return false;
   } else {
     *error = "Neither WEXITSTATUS nor WTERMSIG is true?";
@@ -484,7 +465,8 @@ bool Subprocess::Communicate(const Message& input, Message* output,
   }
 
   if (!output->ParseFromString(output_data)) {
-    *error = "Plugin output is unparseable: " + CEscape(output_data);
+    *error = absl::StrCat("Plugin output is unparseable: ",
+                          absl::CEscape(output_data));
     return false;
   }
 

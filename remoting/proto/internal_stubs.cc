@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "base/notreached.h"
+
 namespace remoting::internal {
 
 namespace {
@@ -19,30 +21,16 @@ const std::string& GetEmptyStringRef() {
 }
 }  // namespace
 
-std::string DoNothingProto::GetTypeName() const {
-  return "";
-}
-
 // DoNothingProto
 
-google::protobuf::MessageLite* DoNothingProto::New(
-    google::protobuf::Arena* arena) const {
-  return nullptr;
+const google::protobuf::internal::ClassData* DoNothingProto::GetClassData()
+    const {
+  NOTREACHED();
 }
 
 void DoNothingProto::Clear() {}
 
-bool DoNothingProto::IsInitialized() const {
-  return true;
-}
-
-void DoNothingProto::CheckTypeAndMergeFrom(const MessageLite& other) {}
-
 size_t DoNothingProto::ByteSizeLong() const {
-  return 0;
-}
-
-int DoNothingProto::GetCachedSize() const {
   return 0;
 }
 

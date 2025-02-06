@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 cd $(dirname $0)/..
 
@@ -9,7 +9,7 @@ cd $(dirname $0)/..
 # (and for the release to PECL).
 rm -rf ext/google/protobuf/third_party
 mkdir -p ext/google/protobuf/third_party/utf8_range
-cp ../third_party/utf8_range/* ext/google/protobuf/third_party/utf8_range
+cp -r ../third_party/utf8_range/* ext/google/protobuf/third_party/utf8_range
 
 echo "Copied utf8_range from ../third_party -> ext/google/protobuf/third_party"
 
@@ -33,6 +33,6 @@ if [[ ! -f BUILD_STAMP ]] || [[ "$(cat BUILD_STAMP)" != "$FINGERPRINT" ]]; then
   echo "$FINGERPRINT" > BUILD_STAMP
 fi
 
-make
-TEST_PHP_ARGS="-q" make test
+make -j8
+TEST_PHP_ARGS="-q" make -j8 test
 popd > /dev/null

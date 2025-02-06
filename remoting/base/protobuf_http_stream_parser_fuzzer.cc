@@ -13,7 +13,6 @@
 #include "base/test/bind.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/protobuf_http_stream_parser.h"
-#include "third_party/protobuf/src/google/protobuf/stubs/logging.h"
 
 // Does initialization and holds state that's shared across all runs.
 class Environment {
@@ -22,9 +21,6 @@ class Environment {
     // Disable noisy logging.
     logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
-
- private:
-  google::protobuf::LogSilencer log_silencer_;
 };
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
