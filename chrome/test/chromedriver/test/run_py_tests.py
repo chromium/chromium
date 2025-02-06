@@ -6418,6 +6418,26 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     zip_1 = os.path.join(_TEST_DATA_DIR, 'ext_test_1.zip')
     self.CreateDriver(chrome_extensions=[self._PackExtension(zip_1)])
 
+  def testCanInspectExtensionWindows(self):
+    crx_unpacked = os.path.join(_TEST_DATA_DIR, 'extv2_new_window')
+    # This test exercises inspection of extension created new window.
+    # Extension created regular windows/tabs, unlike background_page, is not
+    # considered an extension target.
+    driver = self.CreateDriver(
+        chrome_switches=[
+          'disable-features=ExtensionManifestV2Disabled',
+          'load-extension=' + crx_unpacked
+        ])
+    time.sleep(0.5)
+    handles = driver.GetWindowHandles()
+    self.assertEqual(len(handles), 2)
+
+    for handle in handles:
+      driver.SwitchToWindow(handle)
+      if driver.GetCurrentUrl() == 'chrome://new-tab-page/':
+        return
+    self.fail("couldn't find extension-created window")
+
   def testCanInspectBackgroundPage(self):
     crx = os.path.join(_TEST_DATA_DIR, 'ext_bg_page.crx')
     # This test exercises inspection of an extension background page, which
