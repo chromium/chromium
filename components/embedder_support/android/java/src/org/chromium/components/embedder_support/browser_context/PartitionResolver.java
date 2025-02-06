@@ -4,9 +4,9 @@
 
 package org.chromium.components.embedder_support.browser_context;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
@@ -21,6 +21,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * strings for the current execution of the process, but may change upon upgrade. Callers should be
  * careful when their tokens could be from older versions.
  */
+@NullMarked
 public interface PartitionResolver {
     /**
      * Creates a serialized token that can be used to look up the given browser key later.
@@ -28,8 +29,7 @@ public interface PartitionResolver {
      * @return A serialized token corresponding to the given handle, or an empty string if handle is
      *         invalid.
      */
-    @Nullable
-    String tokenize(BrowserContextHandle handle);
+    @Nullable String tokenize(BrowserContextHandle handle);
 
     /**
      * Creates a serialized token that can be used to look up the given browser key later.
@@ -37,8 +37,7 @@ public interface PartitionResolver {
      * @return A serialized token corresponding to the given handle, or an empty string if handle is
      *         invalid
      */
-    @Nullable
-    String tokenize(SimpleFactoryKeyHandle handle);
+    @Nullable String tokenize(SimpleFactoryKeyHandle handle);
 
     /**
      * Resolves a token to a browser context. If resolution fails, null will be returned. Callers

@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.profiles;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Wrapper that allows passing a OtrProfileId reference around in the Java layer. */
+@NullMarked
 public class OtrProfileId {
     private final String mProfileId;
     // OtrProfileId value should be same with Profile::OtrProfileId::PrimaryID in native.
@@ -51,7 +53,7 @@ public class OtrProfileId {
      * @return A string that represents the given otrProfileId.
      */
     @CalledByNative
-    public static String serialize(OtrProfileId otrProfileId) {
+    public static @Nullable String serialize(OtrProfileId otrProfileId) {
         // The OtrProfileId might be null, if it represents the regular profile.
         if (otrProfileId == null) return null;
 
@@ -67,7 +69,7 @@ public class OtrProfileId {
      * @throws IllegalStateException when the OTR profile belongs to the OtrProfileId is not
      *     available. The off-the-record profile should exist when OtrProfileId will be used.
      */
-    public static OtrProfileId deserialize(String value) {
+    public static @Nullable OtrProfileId deserialize(String value) {
         OtrProfileId otrProfileId = deserializeWithoutVerify(value);
 
         // The off-the-record profile should exist for the given OtrProfileId, since OtrProfileId
@@ -92,7 +94,7 @@ public class OtrProfileId {
      * @return An OtrProfileId instance.
      */
     @CalledByNative
-    public static OtrProfileId deserializeWithoutVerify(String value) {
+    public static @Nullable OtrProfileId deserializeWithoutVerify(String value) {
         // The value might be null, if it represents the regular profile.
         if (TextUtils.isEmpty(value)) return null;
 
@@ -178,7 +180,7 @@ public class OtrProfileId {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (!(obj instanceof OtrProfileId)) return false;
         OtrProfileId other = (OtrProfileId) obj;
         return mProfileId.equals(other.mProfileId);

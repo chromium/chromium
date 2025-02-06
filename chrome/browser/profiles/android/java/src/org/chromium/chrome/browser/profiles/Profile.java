@@ -4,17 +4,19 @@
 
 package org.chromium.chrome.browser.profiles;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
 /** Wrapper that allows passing a Profile reference around in the Java layer. */
+@NullMarked
 public class Profile implements BrowserContextHandle {
     private final @Nullable OtrProfileId mOtrProfileId;
 
@@ -33,7 +35,7 @@ public class Profile implements BrowserContextHandle {
      * @param webContents {@link WebContents} object.
      * @return {@link Profile} object associated with the given WebContents.
      */
-    public static Profile fromWebContents(WebContents webContents) {
+    public static @Nullable Profile fromWebContents(@Nullable WebContents webContents) {
         return ProfileJni.get().fromWebContents(webContents);
     }
 
@@ -77,7 +79,8 @@ public class Profile implements BrowserContextHandle {
      * @param profileId {@link OtrProfileId} object.
      * @param createIfNeeded Boolean indicating the profile should be created if doesn't exist.
      */
-    public Profile getOffTheRecordProfile(OtrProfileId profileId, boolean createIfNeeded) {
+    public @Nullable Profile getOffTheRecordProfile(
+            OtrProfileId profileId, boolean createIfNeeded) {
         assert profileId != null;
         return ProfileJni.get().getOffTheRecordProfile(mNativeProfile, profileId, createIfNeeded);
     }
@@ -88,7 +91,7 @@ public class Profile implements BrowserContextHandle {
      *
      * @param createIfNeeded Boolean indicating the profile should be created if doesn't exist.
      */
-    public Profile getPrimaryOtrProfile(boolean createIfNeeded) {
+    public @Nullable Profile getPrimaryOtrProfile(boolean createIfNeeded) {
         return ProfileJni.get().getPrimaryOtrProfile(mNativeProfile, createIfNeeded);
     }
 
@@ -223,15 +226,16 @@ public class Profile implements BrowserContextHandle {
 
     @NativeMethods
     public interface Natives {
-        Profile fromWebContents(WebContents webContents);
+        @Nullable Profile fromWebContents(@Nullable WebContents webContents);
 
         Profile getOriginalProfile(long ptr);
 
         boolean isInitialProfile(long ptr);
 
-        Profile getOffTheRecordProfile(long ptr, OtrProfileId otrProfileId, boolean createIfNeeded);
+        @Nullable Profile getOffTheRecordProfile(
+                long ptr, OtrProfileId otrProfileId, boolean createIfNeeded);
 
-        Profile getPrimaryOtrProfile(long ptr, boolean createIfNeeded);
+        @Nullable Profile getPrimaryOtrProfile(long ptr, boolean createIfNeeded);
 
         boolean hasOffTheRecordProfile(long ptr, OtrProfileId otrProfileId);
 
