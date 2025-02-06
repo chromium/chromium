@@ -175,7 +175,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   self.nonPedalSuggestions = nil;
   self.currentPedals = nil;
 
-  self.hasResults = !self.autocompleteResult.empty();
+  self.hasResults = !result.empty();
   [self.consumer newResultsAvailable];
 
   if (self.debugInfoConsumer) {
@@ -248,8 +248,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 - (void)popupController:(OmniboxPopupController*)popupController
-         didSortResults:(const AutocompleteResult&)results {
-  NSArray<id<AutocompleteSuggestionGroup>>* groups = [self wrappedMatches];
+         didSortResults:(const AutocompleteResult&)result {
+  NSArray<id<AutocompleteSuggestionGroup>>* groups =
+      [self wrappedMatches:result];
 
   [self.consumer updateMatches:groups
       preselectedMatchGroupIndex:self.preselectedGroupIndex];
@@ -586,9 +587,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     (const AutocompleteResult&)autocompleteResult {
   NSMutableArray<id<AutocompleteSuggestion>>* wrappedMatches =
       [[NSMutableArray alloc] init];
-  for (size_t i = 0; i < self.autocompleteResult.size(); i++) {
-    const AutocompleteMatch& match =
-        self.autocompleteResult.match_at((NSUInteger)i);
+  for (size_t i = 0; i < autocompleteResult.size(); i++) {
+    const AutocompleteMatch& match = autocompleteResult.match_at((NSUInteger)i);
     if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
       DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
       for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
@@ -688,16 +688,17 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 /// Unpacks AutocompleteMatch into wrapped AutocompleteSuggestion and
 /// AutocompleteSuggestionGroup. Sets `preselectedGroupIndex`.
-- (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches {
+- (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches:
+    (const AutocompleteResult&)autocompleteResult {
   NSMutableArray<id<AutocompleteSuggestionGroup>>* groups =
       [[NSMutableArray alloc] init];
 
   // Group the suggestions by the section Id.
   NSMutableArray<id<AutocompleteSuggestion>>* allMatches =
-      [self extractMatches:self.autocompleteResult];
+      [self extractMatches:autocompleteResult];
   NSArray<id<AutocompleteSuggestionGroup>>* allGroups =
       [self groupSuggestions:allMatches
-          usingACResultAsHeaderMap:self.autocompleteResult];
+          usingACResultAsHeaderMap:autocompleteResult];
   [groups addObjectsFromArray:allGroups];
 
   // Before inserting pedals above all, back up non-pedal suggestions for
