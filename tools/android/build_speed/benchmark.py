@@ -303,6 +303,10 @@ def _run_and_time_cmd(cmd: List[str]) -> float:
     try:
         # Since output can be verbose, only show it for debug/errors.
         show_output = logging.getLogger().isEnabledFor(logging.DEBUG)
+        # Set autoninja stdout to /dev/null so that autoninja does not set this
+        # to an anonymous pipe.
+        env = os.environ.copy()
+        env['AUTONINJA_STDOUT_NAME'] = '/dev/null'
         # Ensure that stdout goes to stderr so that timing output does not get
         # mixed with logging output.
         subprocess.run(cmd,
@@ -310,7 +314,8 @@ def _run_and_time_cmd(cmd: List[str]) -> float:
                        capture_output=not show_output,
                        stdout=sys.stderr if show_output else None,
                        check=True,
-                       text=True)
+                       text=True,
+                       env=env)
     except subprocess.CalledProcessError as e:
         logging.error('Output was: %s', e.output)
         raise
