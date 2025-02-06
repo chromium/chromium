@@ -978,6 +978,13 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
   static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
       OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
 
+  SupportedDataTypes arg_min_max_input_supported_data_types = kFloatsAndInt32;
+  // crbug.com/388117627: On Intel devices, passing float input containing NaNs
+  // sometimes triggers a crash in Core ML.
+  if (base::mac::GetCPUType() != base::mac::CPUType::kArm) {
+    arg_min_max_input_supported_data_types = {OperandDataType::kInt32};
+  }
+
   static constexpr SupportedDataTypes kArgMinMaxOutputSupportedDataTypes{
       OperandDataType::kInt32};
 
@@ -997,7 +1004,8 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
       {/*input=*/kFloatsAndInt32,
        /*constant=*/kFloat16To32Int8To32AndUint8,
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.reduction.reduce_argmax
-       /*arg_min_max_input=*/{kFloatsAndInt32, kNonScalarMaxRank},
+       /*arg_min_max_input=*/
+       {arg_min_max_input_supported_data_types, kNonScalarMaxRank},
        /*arg_min_max_output=*/
        kArgMinMaxOutputSupportedDataTypes,
        /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
