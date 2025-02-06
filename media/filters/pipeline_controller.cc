@@ -460,6 +460,10 @@ void PipelineController::FireOnTrackChangeCompleteForTesting(State set_to) {
   OnTrackChangeComplete();
 }
 
+void PipelineController::SetRenderMutedAudio(bool render_muted_audio) {
+  pipeline_->SetRenderMutedAudio(render_muted_audio);
+}
+
 void PipelineController::OnTrackChangeComplete() {
   DCHECK(thread_checker_.CalledOnValidThread());
 

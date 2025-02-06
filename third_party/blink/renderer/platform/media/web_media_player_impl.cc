@@ -1670,6 +1670,10 @@ void WebMediaPlayerImpl::SetContentDecryptionModule(
   SetCdmInternal(cdm);
 }
 
+void WebMediaPlayerImpl::SetRenderMutedAudio(bool render_muted_audio) {
+  pipeline_controller_->SetRenderMutedAudio(render_muted_audio);
+}
+
 void WebMediaPlayerImpl::OnEncryptedMediaInitData(
     media::EmeInitDataType init_data_type,
     const std::vector<uint8_t>& init_data) {

@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/mediacapturefromelement/html_media_element_capture.h"
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -232,6 +234,7 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
         media_element_->GetWebMediaPlayer(),
         media_element_->GetExecutionContext()->GetTaskRunner(
             TaskType::kInternalMediaRealTime));
+    media_element_->GetWebMediaPlayer()->SetRenderMutedAudio(true);
   }
 
   MediaStreamComponentVector video_components = descriptor->VideoComponents();
@@ -352,6 +355,10 @@ MediaStream* HTMLMediaElementCapture::captureStream(
                                    element.GetWebMediaPlayer(),
                                    element.GetExecutionContext()->GetTaskRunner(
                                        TaskType::kInternalMediaRealTime));
+
+    if (base::FeatureList::IsEnabled(media::kRenderMutedAudio)) {
+      element.GetWebMediaPlayer()->SetRenderMutedAudio(true);
+    }
   }
   listener->UpdateSources(context);
 

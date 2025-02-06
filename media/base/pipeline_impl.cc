@@ -92,6 +92,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   void SetVolume(float volume);
   void SetLatencyHint(std::optional<base::TimeDelta> latency_hint);
   void SetPreservesPitch(bool preserves_pitch);
+  void SetRenderMutedAudio(bool render_muted_audio);
   void SetWasPlayedWithUserActivationAndHighMediaEngagement(
       bool was_played_with_user_activation_and_high_media_engagement);
   base::TimeDelta GetMediaTime() const;
@@ -232,6 +233,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   double playback_rate_;
   float volume_;
   std::optional<base::TimeDelta> latency_hint_;
+  bool render_muted_audio_ = false;
   raw_ptr<CdmContext, DanglingUntriaged> cdm_context_ = nullptr;
 
   // By default, apply pitch adjustments.
@@ -543,6 +545,20 @@ void PipelineImpl::RendererWrapper::SetPreservesPitch(bool preserves_pitch) {
   preserves_pitch_ = preserves_pitch;
   if (shared_state_.renderer)
     shared_state_.renderer->SetPreservesPitch(preserves_pitch_);
+}
+
+void PipelineImpl::RendererWrapper::SetRenderMutedAudio(
+    bool render_muted_audio) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
+  if (render_muted_audio_ == render_muted_audio) {
+    return;
+  }
+
+  render_muted_audio_ = render_muted_audio;
+  if (shared_state_.renderer) {
+    shared_state_.renderer->SetRenderMutedAudio(render_muted_audio_);
+  }
 }
 
 void PipelineImpl::RendererWrapper::
@@ -1188,6 +1204,10 @@ void PipelineImpl::RendererWrapper::InitializeRenderer(
   if (latency_hint_)
     shared_state_.renderer->SetLatencyHint(latency_hint_);
 
+  if (render_muted_audio_) {
+    shared_state_.renderer->SetRenderMutedAudio(render_muted_audio_);
+  }
+
   shared_state_.renderer->SetPreservesPitch(preserves_pitch_);
 
   // Calling SetVolume() before Initialize() allows renderers to optimize for
@@ -1529,6 +1549,15 @@ void PipelineImpl::SetPreservesPitch(bool preserves_pitch) {
       FROM_HERE, base::BindOnce(&RendererWrapper::SetPreservesPitch,
                                 base::Unretained(renderer_wrapper_.get()),
                                 preserves_pitch));
+}
+
+void PipelineImpl::SetRenderMutedAudio(bool render_muted_audio) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  media_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&RendererWrapper::SetRenderMutedAudio,
+                                base::Unretained(renderer_wrapper_.get()),
+                                render_muted_audio));
 }
 
 void PipelineImpl::SetWasPlayedWithUserActivationAndHighMediaEngagement(

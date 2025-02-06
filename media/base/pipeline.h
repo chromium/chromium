@@ -231,6 +231,10 @@ class MEDIA_EXPORT Pipeline {
   // different than 1.0.
   virtual void SetPreservesPitch(bool preserves_pitch) = 0;
 
+  // Sets a flag indicating whether to render muted audio to the active sink or
+  // switch to a null sink.
+  virtual void SetRenderMutedAudio(bool render_muted_audio) {}
+
   // Sets a flag indicating whether the audio stream was played with user
   // activation.
   virtual void SetWasPlayedWithUserActivationAndHighMediaEngagement(

@@ -270,6 +270,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void SetContentDecryptionModule(
       WebContentDecryptionModule* cdm,
       WebContentDecryptionModuleResult result) override;
+  void SetRenderMutedAudio(bool render_muted_audio) override;
 
   void EnteredFullscreen() override;
   void ExitedFullscreen() override;
