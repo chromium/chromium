@@ -153,6 +153,7 @@ if (!is_android) {
     if (enable_dice_support) {
       sources += [ "signin_view_controller_browsertest.cc" ]
       deps += [
+        "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation",
         "//chrome/test:test_support",
         "//components/sync:test_support",
       ]

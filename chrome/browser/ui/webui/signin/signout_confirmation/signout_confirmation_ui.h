@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation.mojom.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -51,6 +52,18 @@ class SignoutConfirmationUI
   void BindInterface(
       mojo::PendingReceiver<signout_confirmation::mojom::PageHandlerFactory>
           receiver);
+
+  // Returns the instance of this class for the provided `contents` or nullptr
+  // if `contents` does not display the signout confirmation UI.
+  static SignoutConfirmationUI* GetForTesting(content::WebContents* contents);
+
+  // Simulates accepting the signout confirmation dialog through a direct call
+  // to the `handler_`.
+  void AcceptDialogForTesting();
+
+  // Simulates cancelling the signout confirmation dialog through a direct call
+  // to the `handler_`.
+  void CancelDialogForTesting();
 
  private:
   // signout_confirmation::mojom::SignoutConfirmationFactory:

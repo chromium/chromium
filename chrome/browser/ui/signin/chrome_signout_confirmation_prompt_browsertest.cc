@@ -30,8 +30,24 @@ class ChromeSignoutConfirmationPromptPixelTest
   }
 
   void ShowUi(const std::string& name) override {
-    ShowChromeSignoutConfirmationPrompt(*browser(), GetVariant(),
-                                        base::DoNothing());
+    auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
+    content::TestNavigationObserver observer(url);
+    observer.StartWatchingNewWebContents();
+
+    // ShowUi() can sometimes return before the dialog widget is shown because
+    // the call to show the latter is asynchronous. Adding
+    // NamedWidgetShownWaiter will prevent that from happening.
+    views::NamedWidgetShownWaiter widget_waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "SigninViewControllerDelegateViews");
+
+    auto* controller = browser()->signin_view_controller();
+    controller->ShowSignoutConfirmationPrompt(
+        GetVariant(),
+        base::BindOnce([](ChromeSignoutConfirmationChoice choice) {}));
+
+    widget_waiter.WaitIfNeededAndGet();
+    observer.Wait();
   }
 
   static std::string GetTestSuffix(
@@ -64,37 +80,6 @@ IN_PROC_BROWSER_TEST_P(ChromeSignoutConfirmationPromptPixelTest,
   ShowAndVerifyUi();
 }
 
-// Same as the above test except with the WebUI version of the dialog.
-// TODO(crbug.com/390219535): Only use this version of the test once all
-// remaining tests that use the native UI version fo the dialog have finished
-// migrating and the native UI dialog can be fully replaced by the WebUI one.
-class ChromeSignoutConfirmationWebUIPromptPixelTest
-    : public ChromeSignoutConfirmationPromptPixelTest {
-  void ShowUi(const std::string& name) override {
-    auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
-    content::TestNavigationObserver observer(url);
-    observer.StartWatchingNewWebContents();
-
-    // ShowUi() can sometimes return before the dialog widget is shown because
-    // the call to show the latter is asynchronous. Adding
-    // NamedWidgetShownWaiter will prevent that from happening.
-    views::NamedWidgetShownWaiter widget_waiter(
-        views::test::AnyWidgetTestPasskey{},
-        "SigninViewControllerDelegateViews");
-
-    auto* controller = browser()->signin_view_controller();
-    controller->ShowSignoutConfirmationPromptForTesting(GetVariant());
-
-    widget_waiter.WaitIfNeededAndGet();
-    observer.Wait();
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(ChromeSignoutConfirmationWebUIPromptPixelTest,
-                       InvokeUi_Default) {
-  ShowAndVerifyUi();
-}
-
 INSTANTIATE_TEST_SUITE_P(
     ,
     ChromeSignoutConfirmationPromptPixelTest,
@@ -104,13 +89,3 @@ INSTANTIATE_TEST_SUITE_P(
         ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton,
         ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls),
     &ChromeSignoutConfirmationPromptPixelTest::GetTestSuffix);
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ChromeSignoutConfirmationWebUIPromptPixelTest,
-    testing::Values(
-        ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData,
-        ChromeSignoutConfirmationPromptVariant::kUnsyncedData,
-        ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton,
-        ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls),
-    &ChromeSignoutConfirmationWebUIPromptPixelTest::GetTestSuffix);

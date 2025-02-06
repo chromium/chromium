@@ -6,6 +6,8 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
+#include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -16,11 +18,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
-
-namespace {
 
 class SyncSettingsInteractiveTest
     : public SigninBrowserTestBaseT<
@@ -56,11 +57,11 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                                      "settings-sync-account-control",
                                      "cr-icon-button#dropdown-arrow"};
 
-  std::unique_ptr<views::NamedWidgetShownWaiter> widget_waiter;
+  std::unique_ptr<content::TestNavigationObserver> observer;
   if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-    widget_waiter = std::make_unique<views::NamedWidgetShownWaiter>(
-        views::test::AnyWidgetTestPasskey{},
-        "ChromeSignoutConfirmationChoicePrompt");
+    auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
+    observer = std::make_unique<content::TestNavigationObserver>(url);
+    observer->StartWatchingNewWebContents();
   }
 
   RunTestSequence(
@@ -75,18 +76,17 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                   "e => e.visibility === \"hidden\""),
       ExecuteJsAt(kFirstTabContents, turn_off_button_query, "e => e.click()"));
 
-  if (widget_waiter.get()) {
-    // The signout confirmation dialog is shown.
-    views::Widget* confirmation_prompt = widget_waiter->WaitIfNeededAndGet();
-    views::DialogDelegate* dialog_delegate =
-        confirmation_prompt->widget_delegate()->AsDialogDelegate();
-    ASSERT_TRUE(dialog_delegate);
-    // Click "Sign Out Anyway".
-    dialog_delegate->AcceptDialog();
+  if (observer.get()) {
+    observer->Wait();
+    auto* signin_view_controller = browser()->signin_view_controller();
+    CHECK(signin_view_controller->ShowsModalDialog());
+
+    auto* signout_ui = SignoutConfirmationUI::GetForTesting(
+        signin_view_controller->GetModalDialogWebContentsForTesting());
+    ASSERT_TRUE(signout_ui);
+    signout_ui->AcceptDialogForTesting();
   }
 
   ASSERT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
       signin::ConsentLevel::kSignin));
 }
-
-}  // namespace

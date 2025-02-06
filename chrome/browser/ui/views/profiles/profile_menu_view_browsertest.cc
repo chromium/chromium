@@ -118,6 +118,10 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 namespace {
 
 constexpr char kTestEmail[] = "foo@example.com";
@@ -456,26 +460,34 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
       return false;
     }
 
-    std::unique_ptr<views::NamedWidgetShownWaiter> widget_waiter;
+    std::unique_ptr<content::TestNavigationObserver> observer;
+
+    // Note: the signout dialog is only meant to be shown for DICE enabled
+    // users. See SigninViewController::ShowSignoutConfirmationPrompt.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-      widget_waiter = std::make_unique<views::NamedWidgetShownWaiter>(
-          views::test::AnyWidgetTestPasskey{},
-          "ChromeSignoutConfirmationChoicePrompt");
+      auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
+      observer = std::make_unique<content::TestNavigationObserver>(url);
+      observer->StartWatchingNewWebContents();
     }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
     static_cast<ProfileMenuView*>(profile_menu_view())
         ->OnSignoutButtonClicked();
 
-    if (widget_waiter.get()) {
-      views::Widget* confirmation_prompt = widget_waiter->WaitIfNeededAndGet();
-      views::DialogDelegate* dialog_delegate =
-          confirmation_prompt->widget_delegate()->AsDialogDelegate();
-      if (!dialog_delegate) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    if (observer.get()) {
+      observer->Wait();
+      auto* signin_view_controller = browser()->signin_view_controller();
+      auto* signout_ui = SignoutConfirmationUI::GetForTesting(
+          signin_view_controller->GetModalDialogWebContentsForTesting());
+      if (!signout_ui) {
         return false;
       }
       // Click "Sign Out Anyway".
-      dialog_delegate->AcceptDialog();
+      signout_ui->AcceptDialogForTesting();
     }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
     return true;
   }
