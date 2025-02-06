@@ -30,7 +30,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -424,7 +424,9 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
                                  HRESULTFromLastError());
 }
 
-ProcessExitResult InstallerMain(HMODULE module, bool& usage_stats_enable) {
+ProcessExitResult InstallerMain(HMODULE module,
+                                bool& usage_stats_enable,
+                                std::wstring& lang) {
   CHECK(EnableSecureDllLoading());
   EnableProcessHeapMetadataProtection();
 
@@ -458,6 +460,7 @@ ProcessExitResult InstallerMain(HMODULE module, bool& usage_stats_enable) {
   if (tag_args) {
     usage_stats_enable =
         tag_args->usage_stats_enable.value_or(usage_stats_enable);
+    lang = base::UTF8ToWide(tag_args->language);
   }
 
   if (!::IsUserAnAdmin() && IsSystemInstall(scope)) {
@@ -470,8 +473,7 @@ ProcessExitResult InstallerMain(HMODULE module, bool& usage_stats_enable) {
     // "needsadmin=prefers" case: Could not elevate. So fall through to
     // install as a per-user app.
     if (!cmd_line_args.append(L" --") ||
-        !cmd_line_args.append(
-            base::SysUTF8ToWide(kCmdLinePrefersUser).c_str())) {
+        !cmd_line_args.append(base::UTF8ToWide(kCmdLinePrefersUser).c_str())) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
     }
   } else if (::IsUserAnAdmin() && !IsSystemInstall(scope) && IsUACOn()) {
@@ -552,7 +554,7 @@ ProcessExitResult InstallerMain(HMODULE module, bool& usage_stats_enable) {
   const std::optional<base::FilePath> offline_dir = FindOfflineDir(unpack_path);
   if (offline_dir.has_value()) {
     if (!cmd_line_args.append(L" --") ||
-        !cmd_line_args.append(base::SysUTF8ToWide(kOfflineDirSwitch).c_str()) ||
+        !cmd_line_args.append(base::UTF8ToWide(kOfflineDirSwitch).c_str()) ||
         !cmd_line_args.append(L"=") ||
         !cmd_line_args.append(offline_dir->BaseName().value().c_str())) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
@@ -591,7 +593,9 @@ ProcessExitResult InstallerMain(HMODULE module, bool& usage_stats_enable) {
 int WMain(HMODULE module) {
   InitializeThreadPool("windows-installer");
   bool usage_stats_enable = false;
-  const ProcessExitResult result = InstallerMain(module, usage_stats_enable);
+  std::wstring lang;
+  const ProcessExitResult result =
+      InstallerMain(module, usage_stats_enable, lang);
   const DWORD wmain_exit_code = result.exit_code == UPDATER_EXIT_CODE
                                     ? result.windows_error
                                     : result.exit_code;
@@ -604,8 +608,8 @@ int WMain(HMODULE module) {
       base::FilePath exe_path;
       base::PathService::Get(base::FILE_EXE, &exe_path);
       ::MessageBoxEx(nullptr,
-                     GetLocalizedMetainstallerErrorString(result.exit_code,
-                                                          result.windows_error)
+                     GetLocalizedMetainstallerErrorString(
+                         result.exit_code, result.windows_error, lang)
                          .c_str(),
                      exe_path.BaseName().value().c_str(), 0, 0);
     }
