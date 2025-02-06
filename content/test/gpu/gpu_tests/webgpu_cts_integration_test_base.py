@@ -215,10 +215,6 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       # TODO(crbug.com/377296327): Remove once Tint IR is launched on Windows.
       enable_dawn_features.append('use_tint_ir')
 
-    # TODO(crbug.com/364675466): Remove this when Tint IR is launched on macOS.
-    if host_information.IsMac():
-      enable_dawn_features.append('use_tint_ir')
-
     if enable_dawn_features:
       browser_args.append('--enable-dawn-features=%s' %
                           ','.join(enable_dawn_features))

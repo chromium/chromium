@@ -1484,7 +1484,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough_macos",
+            "gpu_dawn_integration_gtests_passthrough",
             "gpu_dawn_isolated_scripts",
         ],
         mixins = [
@@ -1578,7 +1578,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough_macos",
+            "gpu_dawn_integration_gtests_passthrough",
             "gpu_dawn_isolated_scripts",
         ],
         mixins = [
@@ -1701,7 +1701,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough_macos",
+            "gpu_dawn_integration_gtests_passthrough",
             "gpu_dawn_isolated_scripts",
         ],
         mixins = [
@@ -1755,7 +1755,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough_macos",
+            "gpu_dawn_integration_gtests_passthrough",
             "gpu_dawn_isolated_scripts",
         ],
         mixins = [
@@ -1811,7 +1811,7 @@ ci.thin_tester(
         # should have the same test_suites as 'Dawn Mac x64 Release (AMD)'.
         targets = [
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough_macos",
+            "gpu_dawn_integration_gtests_passthrough",
             "gpu_dawn_isolated_scripts",
         ],
         mixins = [
@@ -1869,7 +1869,7 @@ ci.thin_tester(
         # should have the same test_suites as 'Dawn Mac x64 Release (Intel)'.
         targets = [
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough_macos",
+            "gpu_dawn_integration_gtests_passthrough",
             "gpu_dawn_isolated_scripts",
         ],
         mixins = [
@@ -1924,7 +1924,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough_macos",
+            "gpu_dawn_integration_gtests_passthrough",
             "gpu_dawn_isolated_scripts",
         ],
         mixins = [
@@ -1976,7 +1976,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough_macos",
+            "gpu_dawn_integration_gtests_passthrough",
             "gpu_dawn_isolated_scripts",
         ],
         mixins = [
