@@ -2315,10 +2315,6 @@ BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
 // Enables GIF search in Picker.
 BASE_FEATURE(kPickerGifs, "PickerGifs", base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPipDoubleTapToResize,
-             "PipDoubleTapToResize",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the tuck feature for Picture in Picture.
 BASE_FEATURE(kPipTuck, "PipTuck", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4207,10 +4203,6 @@ bool IsPhoneHubShortQuickActionPodsTitlesEnabled() {
 
 bool IsPinAutosubmitBackfillFeatureEnabled() {
   return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmitBackfill);
-}
-
-bool IsPipDoubleTapToResizeEnabled() {
-  return base::FeatureList::IsEnabled(kPipDoubleTapToResize);
 }
 
 bool IsPipTuckEnabled() {

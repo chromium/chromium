@@ -798,9 +798,6 @@ extern const char kEnableNetworkLoggingToFileDescription[];
 extern const char kEnableWindowsGamingInputDataFetcherName[];
 extern const char kEnableWindowsGamingInputDataFetcherDescription[];
 
-extern const char kPipDoubleTapToResizeName[];
-extern const char kPipDoubleTapToResizeDescription[];
-
 extern const char kPipTuckName[];
 extern const char kPipTuckDescription[];
 

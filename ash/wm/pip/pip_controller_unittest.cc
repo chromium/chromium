@@ -223,8 +223,7 @@ TEST_F(PipControllerTest, TuckHandleIsShownAtCorrectPosition) {
 class PipToggleResizeFeatureTest : public AshTestBase,
                                    public testing::WithParamInterface<bool> {
  public:
-  PipToggleResizeFeatureTest()
-      : scoped_feature_list_(features::kPipDoubleTapToResize) {}
+  PipToggleResizeFeatureTest() = default;
 
   PipToggleResizeFeatureTest(const PipToggleResizeFeatureTest&) = delete;
   PipToggleResizeFeatureTest& operator=(const PipToggleResizeFeatureTest&) =
@@ -278,9 +277,6 @@ class PipToggleResizeFeatureTest : public AshTestBase,
     event_generator->PressKeyAndModifierKeys(ui::VKEY_X, ui::EF_COMMAND_DOWN);
     event_generator->ReleaseKeyAndModifierKeys(ui::VKEY_X, ui::EF_COMMAND_DOWN);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(PipToggleResizeFeatureTest, TestSingleClick) {

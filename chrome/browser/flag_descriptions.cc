@@ -1527,12 +1527,6 @@ const char kEnableWindowsGamingInputDataFetcherDescription[] =
     "Enable Windows.Gaming.Input by default to provide game controller "
     "support on Windows 10 desktop.";
 
-const char kPipDoubleTapToResizeName[] =
-    "Enable double-tap to resize PiP windows";
-const char kPipDoubleTapToResizeDescription[] =
-    "Enables double-tapping on existing PiP windows to resize "
-    "them depending on its current state, such as minimizing or maximizing.";
-
 const char kPipTuckName[] = "Enable tuck for PiP windows";
 const char kPipTuckDescription[] = "Enables window tucking for PiP windows. ";
 

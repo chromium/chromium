@@ -7928,11 +7928,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityMouseKeysDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityMouseKeys)},
 
-    {"enable-pip-double-tap-to-resize",
-     flag_descriptions::kPipDoubleTapToResizeName,
-     flag_descriptions::kPipDoubleTapToResizeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPipDoubleTapToResize)},
-
     {"enable-pip-tuck", flag_descriptions::kPipTuckName,
      flag_descriptions::kPipTuckDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPipTuck)},
