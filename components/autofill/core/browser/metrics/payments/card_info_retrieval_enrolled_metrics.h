@@ -28,9 +28,23 @@ enum class CardInfoRetrievalEnrolledLoggingEvent {
   kMaxValue = kSuggestionSubmittedOnce,
 };
 
+// Enum for different types of unmask results. Used for metrics logging.
+// These values are used in enums.xml; do not reorder or renumber entries!
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CardInfoRetrievalEnrolledUnmaskResult {
+  // Card unmask completed successfully without further authentication steps.
+  kRiskBasedUnmasked = 0,
+  kMaxValue = kRiskBasedUnmasked,
+};
+
 // Log the suggestion event regarding card info retrieval enrolled.
 void LogCardInfoRetrievalEnrolledFormEventMetric(
     CardInfoRetrievalEnrolledLoggingEvent event);
+
+// Log the unmask result regarding card info retrieval enrolled.
+void LogCardInfoRetrievalEnrolledUnmaskResult(
+    CardInfoRetrievalEnrolledUnmaskResult unmask_result);
 
 }  // namespace autofill::autofill_metrics
 

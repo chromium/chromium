@@ -5159,6 +5159,11 @@ Called by update_autofill_enums.py.-->
   <int value="7" label="Form submitted after suggestion filled (once)"/>
 </enum>
 
+<enum name="CardInfoRetrievalEnrolledUnmaskResult">
+  <int value="0"
+      label="Completed risk-based unmasking, no user-facing authentication"/>
+</enum>
+
 <enum name="CheckBoxStatus">
   <int value="0" label="Not shown"/>
   <int value="1" label="Unchecked"/>
