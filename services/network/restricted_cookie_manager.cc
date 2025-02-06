@@ -4,6 +4,7 @@
 
 #include "services/network/restricted_cookie_manager.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <utility>
@@ -598,6 +599,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
         }));
   }
 
+  UpdateSharedMemoryVersionInvalidationTimer(result);
   std::move(callback).Run(result);
 
   // TODO(crbug.com/40632967): Stop reporting accesses of cookies with
@@ -634,6 +636,39 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   }
 
   notify_observer();
+}
+
+void RestrictedCookieManager::UpdateSharedMemoryVersionInvalidationTimer(
+    const std::vector<net::CookieWithAccessResult>& cookies) {
+  base::Time minimal_expiry = base::Time::Max();
+  for (const net::CookieWithAccessResult& cookie : cookies) {
+    if (cookie.cookie.IsPersistent()) {
+      if (cookie.cookie.ExpiryDate() < minimal_expiry) {
+        minimal_expiry = cookie.cookie.ExpiryDate();
+      }
+    }
+  }
+
+  if (minimal_expiry == base::Time::Max()) {
+    return;
+  }
+
+  const base::TimeDelta desired_expiry_delay =
+      minimal_expiry - base::Time::Now();
+  const base::TimeTicks desired_expiry_time =
+      base::TimeTicks::Now() + desired_expiry_delay;
+
+  if (!shared_memory_invalidation_timer_.IsRunning() ||
+      desired_expiry_time <
+          shared_memory_invalidation_timer_.desired_run_time()) {
+    // Schedule a task to invalidate the shared memory version on earliest
+    // expiry of cookies. This prevents clients from retaining access to expired
+    // cookies.
+    shared_memory_invalidation_timer_.Start(
+        FROM_HERE, desired_expiry_delay,
+        base::BindRepeating(&RestrictedCookieManager::OnCookieSettingsChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void RestrictedCookieManager::SetCanonicalCookie(
