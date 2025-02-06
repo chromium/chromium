@@ -422,7 +422,7 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
       icon = &vector_icons::kCardboardIcon;
       break;
     case TabAlertState::GLIC_ACCESSING:
-      icon = &vector_icons::kFitScreenIcon;
+      icon = &kTvIcon;
       break;
   }
   DCHECK(icon);
