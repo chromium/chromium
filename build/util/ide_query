@@ -83,9 +83,13 @@ def main():
   repo_root = os.path.join(this_dir, '..', '..')
 
   targets = []
+  use_prepare = True
   use_prepare_header_only = True
   for source in options.source:
     _, ext = os.path.splitext(source)
+    if ext == '.java':
+        # need to include generated *.jar for java.
+        use_prepare = False
     if ext not in ('.c', '.cc', '.cxx', '.cpp', '.m', '.mm', '.S',
                    '.h', '.hxx', '.hpp', '.inc'):
         use_prepare_header_only = False
@@ -105,10 +109,11 @@ def main():
     # use `-k=0` to build generated files as much as possible.
     args.extend([
         '-k=0',
-        '--prepare',
         '-C',
         options.out_dir,
     ])
+    if use_prepare:
+        args.extend(['--prepare'])
     if options.log_dir:
         args.extend(['-log_dir', options.log_dir])
     args.extend(targets)
