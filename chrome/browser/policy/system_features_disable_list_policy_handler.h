@@ -35,7 +35,15 @@ enum class SystemFeature : int {
   kPrintJobs = 12,            // The print jobs app on ChromeOS.
   kKeyShortcuts = 13,         // The Key Shortcuts app on ChromeOS.
   kRecorder = 14,             // The recorder app on ChromeOS.
-  kMaxValue = kRecorder
+  kGmail = 15,                // The Google Gmail app on ChromeOS.
+  kGoogleDocs = 16,           // The Google Docs app on ChromeOS.
+  kGoogleSlides = 17,         // The Google Slides app on ChromeOS.
+  kGoogleSheets = 18,         // The Google Sheets app on ChromeOS.
+  kGoogleDrive = 19,          // The Google Drive app on ChromeOS.
+  kGoogleKeep = 20,           // The Google Keep app on ChromeOS.
+  kGoogleCalendar = 21,       // The Google Calendar app on ChromeOS.
+  kGoogleChat = 22,           // The Google Chat app on ChromeOS.
+  kMaxValue = kGoogleChat
 };
 
 // A disabling mode that decides the user experience when a system feature is
@@ -60,6 +68,14 @@ extern const char kGalleryFeature[];
 extern const char kPrintJobsFeature[];
 extern const char kKeyShortcutsFeature[];
 extern const char kRecorderFeature[];
+extern const char kGmailFeature[];
+extern const char kGoogleDocsFeature[];
+extern const char kGoogleSlidesFeature[];
+extern const char kGoogleSheetsFeature[];
+extern const char kGoogleDriveFeature[];
+extern const char kGoogleKeepFeature[];
+extern const char kGoogleCalendarFeature[];
+extern const char kGoogleChatFeature[];
 
 extern const char kBlockedDisableMode[];
 extern const char kHiddenDisableMode[];
