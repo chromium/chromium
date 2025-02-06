@@ -38,6 +38,10 @@ def main():
       action='store_true',
       help='If specified, overwrites the expected results in place.')
   parser.add_argument('clang_path', help='The path to the clang binary.')
+  parser.add_argument('--quiet',
+                      action='store_true',
+                      help='If specified, suppresses printing the expected '
+                      'and actual output and only prints the diff.')
   parser.add_argument('--filter',
                       action='store',
                       help='Filter to test files that match a regex')
@@ -46,6 +50,7 @@ def main():
   return ChromeStylePluginTest(os.path.dirname(os.path.realpath(__file__)),
                                args.clang_path, ['raw-ptr-plugin'],
                                args.reset_results,
+                               args.quiet,
                                filename_regex=args.filter).Run()
 
 
