@@ -143,9 +143,11 @@ PolicyContainerPolicies::PolicyContainerPolicies(
           cross_origin_isolation_enabled_by_dip) {}
 
 PolicyContainerPolicies::PolicyContainerPolicies(
-    const blink::mojom::PolicyContainerPolicies& policies)
+    const blink::mojom::PolicyContainerPolicies& policies,
+    bool is_web_secure_context)
     : referrer_policy(policies.referrer_policy),
       ip_address_space(policies.ip_address_space),
+      is_web_secure_context(is_web_secure_context),
       content_security_policies(
           mojo::Clone(policies.content_security_policies)),
       cross_origin_embedder_policy(policies.cross_origin_embedder_policy),
