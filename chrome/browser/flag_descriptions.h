@@ -1108,9 +1108,6 @@ extern const char kFluentOverlayScrollbarsDescription[];
 extern const char kFluentScrollbarsName[];
 extern const char kFluentScrollbarsDescription[];
 
-extern const char kMutationEventsName[];
-extern const char kMutationEventsDescription[];
-
 extern const char kKeyboardFocusableScrollersName[];
 extern const char kKeyboardFocusableScrollersDescription[];
 

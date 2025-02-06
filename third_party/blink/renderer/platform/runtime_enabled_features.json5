@@ -2870,22 +2870,16 @@
       name: "MultiSmoothScrollIntoView",
       status: "stable",
     },
-    // crbug.com/1446498: This feature is being used for the deprecation of
-    // Mutation Events.
+    // crbug.com/1446498: This feature is being used for the deprecation/removal
+    // of Mutation Events. Timeline summary:
+    //  - Events disabled for the open web: M127 (July 23, 2024)
+    //  - Reminder email sent to all Origin trial registrants: December 12, 2024
+    //  - Origin trial disabled: M135 (April 1, 2025)
+    //  - Enterprise policy disabled: {not yet}
+    //  - Flag/code can be removed: {2 milestones after EP removal}
     {
       name: "MutationEvents",
-      origin_trial_feature_name: "MutationEvents",
-      origin_trial_type: "deprecation",
-      origin_trial_allows_insecure: true,
-      origin_trial_allows_third_party: true,
       public: true,
-    },
-    // crbug.com/1446498: This feature is just used as part of an "early trial"
-    // of disabling Mutation Events in Canary/Dev/Beta. If this feature is
-    // enabled *and* MutationEvents is disabled, then a special console error
-    // message is used to give more information.
-    {
-      name: "MutationEventsSpecialTrialMessage",
     },
     {
       name: "NavigateEventCommitBehavior",

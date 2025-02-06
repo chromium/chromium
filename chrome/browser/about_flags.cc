@@ -5985,9 +5985,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowReadyToPayDebugInfoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(payments::android::kShowReadyToPayDebugInfo)},
 #endif  // BUILDFLAG(IS_ANDROID)
-    {"mutation-events", flag_descriptions::kMutationEventsName,
-     flag_descriptions::kMutationEventsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kMutationEvents)},
     {"keyboard-focusable-scrollers",
      flag_descriptions::kKeyboardFocusableScrollersName,
      flag_descriptions::kKeyboardFocusableScrollersDescription, kOsAll,

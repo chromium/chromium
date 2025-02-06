@@ -1954,14 +1954,6 @@ const char kFluentScrollbarsName[] = "Fluent scrollbars.";
 const char kFluentScrollbarsDescription[] =
     "Stylizes scrollbars with Microsoft Fluent design.";
 
-const char kMutationEventsName[] =
-    "Enable (deprecated) synchronous mutation events";
-const char kMutationEventsDescription[] =
-    "Mutation Events are a deprecated set of events which cause performance "
-    "issues. Disabling this feature turns off Mutation Events. NOTE: Disabling "
-    "these events can cause breakage on some sites that are still reliant on "
-    "these deprecated features.";
-
 const char kKeyboardFocusableScrollersName[] =
     "Enables keyboard focusable scrollers";
 const char kKeyboardFocusableScrollersDescription[] =

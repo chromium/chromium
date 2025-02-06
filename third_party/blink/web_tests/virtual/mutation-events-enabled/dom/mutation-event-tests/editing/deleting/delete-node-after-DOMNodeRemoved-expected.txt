@@ -1,0 +1,8 @@
+CONSOLE WARNING: Listener added for a 'DOMNodeRemoved' mutation event. This event type is no longer supported, and will be removed from this browser VERY soon. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+This tests for a bug where delete would crash if a node just after the selection to delete is removed in a DOMNodeRemoved event handler for the last node in the selection to delete. <rdar://problem/5156801>
+
+foo
+
+foo
+
+PASS
