@@ -118,10 +118,6 @@ void LayoutImageResource::ResetAnimation() {
   layout_object_->SetShouldDoFullPaintInvalidation();
 }
 
-bool LayoutImageResource::HasIntrinsicSize() const {
-  return !cached_image_ || cached_image_->GetImage()->HasIntrinsicSize();
-}
-
 RespectImageOrientationEnum LayoutImageResource::ImageOrientation() const {
   DCHECK(cached_image_);
   // Always respect the orientation of opaque origin images to avoid leaking
@@ -149,7 +145,7 @@ NaturalSizingInfo LayoutImageResource::GetNaturalDimensions(
     sizing_info.size = gfx::SizeF(image.Size(ImageOrientation()));
     sizing_info.aspect_ratio = sizing_info.size;
   }
-  if (multiplier != 1 && HasIntrinsicSize()) {
+  if (multiplier != 1 && image.HasIntrinsicSize()) {
     sizing_info.size = ApplyClampedZoom(sizing_info.size, multiplier);
   }
   if (auto* layout_image = DynamicTo<LayoutImage>(*layout_object_)) {
