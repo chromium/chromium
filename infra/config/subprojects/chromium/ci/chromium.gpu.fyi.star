@@ -522,9 +522,9 @@ ci.thin_tester(
     ),
 )
 
-# TODO(crbug.com/40282670): Add a trybot for this builder when there's capacity.
 ci.thin_tester(
     name = "Android FYI Release (Samsung A23)",
+    description_html = "Runs GPU tests on Samsung A23 phones",
     triggered_by = ["GPU FYI Android arm Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,

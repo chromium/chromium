@@ -29,7 +29,6 @@ exempted_from_description_builders = {
         "Android FYI Release (Pixel 4)",
         "Android FYI Release (Pixel 6)",
         "Android FYI Release (Samsung A13)",
-        "Android FYI Release (Samsung A23)",
         "Android Release (Nexus 5X)",
         "Android WebView O (dbg)",
         "Android WebView P (dbg)",
