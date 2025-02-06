@@ -12,7 +12,7 @@ import {convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode, Voice
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createAndSetVoices, createSpeechSynthesisVoice, emitEvent, setVoices} from './common.js';
+import {createAndSetVoices, createApp, createSpeechSynthesisVoice, emitEvent, setVoices} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -29,14 +29,13 @@ suite('UpdateVoicePack', () => {
     ]);
   }
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
     speechSynthesis = new FakeSpeechSynthesis();
     app.synth = speechSynthesis;
     app.getSpeechSynthesisVoice();
@@ -285,16 +284,16 @@ suite('UpdateVoicePack', () => {
     });
 
     test('does not show with language menu open', async () => {
-      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
+      await emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
       await installLanguage();
       assertFalse(toast.$.toast.open);
     });
 
     test('shows again after language menu close', async () => {
-      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
+      await emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
       await installLanguage();
 
-      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_CLOSE);
+      await emitEvent(app, ToolbarEvent.LANGUAGE_MENU_CLOSE);
       await installLanguage();
       assertTrue(toast.$.toast.open);
     });
@@ -426,7 +425,7 @@ suite('UpdateVoicePack', () => {
 
   test(
       'with flag does not switch to newly available voices if it\'s not for the current language',
-      () => {
+      async () => {
         const installedLang = 'en-us';
         chrome.readingMode.baseLanguageForSpeech = 'pt-br';
         app.enabledLangs = [chrome.readingMode.baseLanguageForSpeech];
@@ -434,7 +433,7 @@ suite('UpdateVoicePack', () => {
           name: 'Portuguese voice 1',
           lang: chrome.readingMode.baseLanguageForSpeech,
         });
-        emitEvent(
+        await emitEvent(
             app, ToolbarEvent.VOICE, {detail: {selectedVoice: currentVoice}});
         chrome.readingMode.getStoredVoice = () => '';
         setVoices(app, speechSynthesis, [currentVoice]);

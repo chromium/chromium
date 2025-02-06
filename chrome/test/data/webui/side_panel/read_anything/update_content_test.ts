@@ -8,7 +8,7 @@ import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-c
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, emitEvent} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -25,15 +25,14 @@ suite('UpdateContent', () => {
     'That\'s ancient history, been there, done that!',
   ];
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
     new FakeTreeBuilder()
         .root(1)
         .addTag(2, /* parentId= */ 1, 'p')
@@ -50,8 +49,7 @@ suite('UpdateContent', () => {
 
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
-    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
-    return microtasksFinished();
+    return emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
   });
 
   test('playable if done with distillation', async () => {

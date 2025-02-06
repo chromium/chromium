@@ -6,9 +6,17 @@ import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/c
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MetricsBrowserProxyImpl, playFromSelectionTimeout, spinnerDebounceTimeout} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import type {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
+export async function createApp(): Promise<AppElement> {
+  const app = document.createElement('read-anything-app');
+  document.body.appendChild(app);
+  await microtasksFinished();
+  return app;
+}
 
 export function mockMetrics(): TestMetricsBrowserProxy {
   const metrics = new TestMetricsBrowserProxy();
@@ -16,12 +24,15 @@ export function mockMetrics(): TestMetricsBrowserProxy {
   return metrics;
 }
 
-// TODO(crbug.com/40927698): Remove this function.
-export function emitEvent(app: AppElement, name: string, options?: any): void {
-  emitEventWithTarget(app.$.toolbar, name, options);
+export function emitEvent(
+    app: AppElement, name: string, options?: any): Promise<void> {
+  app.$.toolbar.dispatchEvent(new CustomEvent(name, options));
+  return microtasksFinished();
 }
 
-export function emitEventWithTarget(
+// TODO(crbug.com/40927698): Remove this function and use the above one once
+// we've fully migrated away from polymer to Lit.
+export function emitEventForPolymer(
     target: HTMLElement, name: string, options?: any): void {
   target.dispatchEvent(new CustomEvent(name, options));
   flush();

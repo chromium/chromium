@@ -9,7 +9,7 @@ import {MetricsBrowserProxyImpl, ReadAnythingLogger, ReadAnythingSettingsChange,
 import type {LetterSpacingMenu} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {emitEventWithTarget} from './common.js';
+import {emitEventForPolymer} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -34,19 +34,19 @@ suite('LetterSpacing', () => {
 
   test('spacing change', async () => {
     const veryWide = chrome.readingMode.veryWideLetterSpacing;
-    emitEventWithTarget(
+    emitEventForPolymer(
         letterSpacingMenu.$.menu, ToolbarEvent.LETTER_SPACING,
         {detail: {data: veryWide}});
     assertEquals(veryWide, chrome.readingMode.letterSpacing);
 
     const wide = chrome.readingMode.wideLetterSpacing;
-    emitEventWithTarget(
+    emitEventForPolymer(
         letterSpacingMenu.$.menu, ToolbarEvent.LETTER_SPACING,
         {detail: {data: wide}});
     assertEquals(wide, chrome.readingMode.letterSpacing);
 
     const standard = chrome.readingMode.standardLetterSpacing;
-    emitEventWithTarget(
+    emitEventForPolymer(
         letterSpacingMenu.$.menu, ToolbarEvent.LETTER_SPACING,
         {detail: {data: standard}});
     assertEquals(standard, chrome.readingMode.letterSpacing);

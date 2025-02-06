@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AppElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {PauseActionSource, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechSynthesisVoice, emitEvent} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent} from './common.js';
 
 suite('WordBoundariesUsedForSpeech', () => {
   let app: AppElement;
@@ -54,7 +53,7 @@ suite('WordBoundariesUsedForSpeech', () => {
     ],
   };
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
@@ -62,13 +61,11 @@ suite('WordBoundariesUsedForSpeech', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
     app.enabledLangs = ['en-US'];
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
-    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
-    flush();
+    await emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
   });
 
@@ -163,7 +160,7 @@ suite('WordBoundariesUsedForSpeech', () => {
         assertEquals(0, state.speechUtteranceStartIndex);
       });
 
-  test('after voice change resets to unsupported boundary mode', () => {
+  test('after voice change resets to unsupported boundary mode', async () => {
     app.playSpeech();
     app.updateBoundary(10);
     assertEquals(
@@ -171,8 +168,7 @@ suite('WordBoundariesUsedForSpeech', () => {
 
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'es', name: 'Lauren'});
-    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
-    flush();
+    await emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
 
     // After a voice change, the word boundary state has been reset.
     const state: WordBoundaryState = app.wordBoundaryState;
@@ -189,7 +185,7 @@ suite('WordBoundariesUsedForSpeech', () => {
 
   test(
       'after voice change to same language does not reset word boundary mode',
-      () => {
+      async () => {
         app.playSpeech();
         app.updateBoundary(10);
         assertEquals(
@@ -197,8 +193,7 @@ suite('WordBoundariesUsedForSpeech', () => {
 
         const selectedVoice =
             createSpeechSynthesisVoice({lang: 'en', name: 'Lauren'});
-        emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
-        flush();
+        await emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
 
         // After a voice change to the same language, the word boundary state
         // has stayed the same.

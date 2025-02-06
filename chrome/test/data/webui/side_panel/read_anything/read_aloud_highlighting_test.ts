@@ -8,7 +8,7 @@ import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {emitEvent, waitForPlayFromSelection} from './common.js';
+import {createApp, emitEvent, waitForPlayFromSelection} from './common.js';
 
 suite('ReadAloudHighlight', () => {
   let app: AppElement;
@@ -50,16 +50,14 @@ suite('ReadAloudHighlight', () => {
   };
 
   function emitNextGranularity() {
-    emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
-    return microtasksFinished();
+    return emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
   }
 
   function emitPreviousGranularity() {
-    emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
-    return microtasksFinished();
+    return emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
   }
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
@@ -67,8 +65,7 @@ suite('ReadAloudHighlight', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, leafIds);
   });
 
@@ -87,11 +84,10 @@ suite('ReadAloudHighlight', () => {
     let currentHighlights: NodeListOf<Element>;
     let previousHighlights: NodeListOf<Element>;
 
-    setup(() => {
+    setup(async () => {
       app.playSpeech();
-      emitNextGranularity();
-      emitNextGranularity();
-      return microtasksFinished();
+      await emitNextGranularity();
+      return emitNextGranularity();
     });
 
     test('all segments highlighted', () => {
@@ -108,8 +104,8 @@ suite('ReadAloudHighlight', () => {
       assertEquals(sentenceSegment2, currentHighlights[1]!.textContent);
     });
 
-    test('going back after multiple segments resets all segments', () => {
-      emitPreviousGranularity();
+    test('going back after multiple segments resets all segments', async () => {
+      await emitPreviousGranularity();
 
       currentHighlights =
           app.$.container.querySelectorAll('.current-read-highlight');

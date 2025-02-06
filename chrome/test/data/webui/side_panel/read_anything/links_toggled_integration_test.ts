@@ -9,7 +9,7 @@ import {LINK_TOGGLE_BUTTON_ID, PauseActionSource, ToolbarEvent} from 'chrome-unt
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createSpeechSynthesisVoice, emitEvent} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent} from './common.js';
 
 suite('LinksToggledIntegration', () => {
   let app: AppElement;
@@ -69,9 +69,7 @@ suite('LinksToggledIntegration', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
-    await microtasksFinished();
+    app = await createApp();
     linksToggleButton =
         app.$.toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
             '#' + LINK_TOGGLE_BUTTON_ID);
@@ -80,8 +78,7 @@ suite('LinksToggledIntegration', () => {
     app.enabledLangs = ['en-US'];
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en-US', name: 'Google Kristi'});
-    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
-    return microtasksFinished();
+    return emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
   });
 
   test('container has links by default', () => {
@@ -123,8 +120,7 @@ suite('LinksToggledIntegration', () => {
     suite('and after speech finishes', () => {
       setup(async () => {
         for (let i = 0; i < axTree.nodes.length + 1; i++) {
-          emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
-          await microtasksFinished();
+          await emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
         }
         return microtasksFinished();
       });

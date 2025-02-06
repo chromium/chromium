@@ -9,7 +9,7 @@ import {MetricsBrowserProxyImpl, ReadAnythingLogger, ReadAnythingSettingsChange,
 import type {LineSpacingMenu} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {emitEventWithTarget} from './common.js';
+import {emitEventForPolymer} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -34,19 +34,19 @@ suite('LineSpacing', () => {
 
   test('spacing change', async () => {
     const veryLoose = chrome.readingMode.veryLooseLineSpacing;
-    emitEventWithTarget(
+    emitEventForPolymer(
         lineSpacingMenu.$.menu, ToolbarEvent.LINE_SPACING,
         {detail: {data: veryLoose}});
     assertEquals(veryLoose, chrome.readingMode.lineSpacing);
 
     const loose = chrome.readingMode.looseLineSpacing;
-    emitEventWithTarget(
+    emitEventForPolymer(
         lineSpacingMenu.$.menu, ToolbarEvent.LINE_SPACING,
         {detail: {data: loose}});
     assertEquals(loose, chrome.readingMode.lineSpacing);
 
     const standard = chrome.readingMode.standardLineSpacing;
-    emitEventWithTarget(
+    emitEventForPolymer(
         lineSpacingMenu.$.menu, ToolbarEvent.LINE_SPACING,
         {detail: {data: standard}});
     assertEquals(standard, chrome.readingMode.lineSpacing);

@@ -10,7 +10,7 @@ import {ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-a
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {emitEvent} from './common.js';
+import {createApp, emitEvent} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -46,43 +46,38 @@ suite('AppReceivesToolbarChanges', () => {
         actual.trim().toLowerCase().replaceAll('"', ''));
   }
 
-  function emitFont(fontName: string) {
+  function emitFont(fontName: string): Promise<void> {
     chrome.readingMode.fontName = fontName;
-    emitEvent(app, ToolbarEvent.FONT);
-    return microtasksFinished();
+    return emitEvent(app, ToolbarEvent.FONT);
   }
 
-  function emitFontSize(size: number) {
+  function emitFontSize(size: number): Promise<void> {
     chrome.readingMode.fontSize = size;
-    emitEvent(app, ToolbarEvent.FONT_SIZE);
-    return microtasksFinished();
+    return emitEvent(app, ToolbarEvent.FONT_SIZE);
   }
 
-  function emitLineSpacing(spacingEnumValue: number) {
+  function emitLineSpacing(spacingEnumValue: number): Promise<void> {
     chrome.readingMode.onLineSpacingChange(spacingEnumValue);
-    emitEvent(app, ToolbarEvent.LINE_SPACING);
-    return microtasksFinished();
+    return emitEvent(app, ToolbarEvent.LINE_SPACING);
   }
 
-  function emitLetterSpacing(spacingEnumValue: number) {
+  function emitLetterSpacing(spacingEnumValue: number): Promise<void> {
     chrome.readingMode.onLetterSpacingChange(spacingEnumValue);
-    emitEvent(app, ToolbarEvent.LETTER_SPACING);
-    return microtasksFinished();
+    return emitEvent(app, ToolbarEvent.LETTER_SPACING);
   }
 
-  function emitColorTheme(colorEnumValue: number): void {
+  function emitColorTheme(colorEnumValue: number): Promise<void> {
     chrome.readingMode.onThemeChange(colorEnumValue);
-    emitEvent(app, ToolbarEvent.THEME);
+    return emitEvent(app, ToolbarEvent.THEME);
   }
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
   });
 
   test(
@@ -116,12 +111,7 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   suite('on color theme change', () => {
-    setup(() => {
-      app = document.createElement('read-anything-app');
-      document.body.appendChild(app);
-    });
-
-    test('color theme updates container colors', () => {
+    test('color theme updates container colors', async () => {
       // Set background color css variables. In prod code this is done in a
       // parent element.
       app.style.setProperty(
@@ -132,25 +122,25 @@ suite('AppReceivesToolbarChanges', () => {
           '--color-read-anything-background-yellow', 'yellow');
       app.style.setProperty('--color-read-anything-background-blue', 'blue');
 
-      emitColorTheme(chrome.readingMode.darkTheme);
+      await emitColorTheme(chrome.readingMode.darkTheme);
       assertTrue(
           hasStyle(app.$.container, '--background-color', 'DarkSlateGray'));
 
-      emitColorTheme(chrome.readingMode.lightTheme);
+      await emitColorTheme(chrome.readingMode.lightTheme);
       assertTrue(hasStyle(app.$.container, '--background-color', 'LightGray'));
 
-      emitColorTheme(chrome.readingMode.yellowTheme);
+      await emitColorTheme(chrome.readingMode.yellowTheme);
       assertTrue(hasStyle(app.$.container, '--background-color', 'yellow'));
 
-      emitColorTheme(chrome.readingMode.blueTheme);
+      await emitColorTheme(chrome.readingMode.blueTheme);
       assertTrue(hasStyle(app.$.container, '--background-color', 'blue'));
     });
 
-    test('default theme uses default colors', () => {
+    test('default theme uses default colors', async () => {
       // Set background color css variables. In prod code this is done in a
       // parent element.
       app.style.setProperty('--color-sys-base-container-elevated', 'grey');
-      emitColorTheme(chrome.readingMode.defaultTheme);
+      await emitColorTheme(chrome.readingMode.defaultTheme);
 
       assertTrue(hasStyle(app.$.container, '--background-color', 'grey'));
     });
@@ -168,8 +158,8 @@ suite('AppReceivesToolbarChanges', () => {
 
   suite('on language toggle', () => {
     function emitLanguageToggle(lang: string) {
-      emitEvent(app, ToolbarEvent.LANGUAGE_TOGGLE, {detail: {language: lang}});
-      return microtasksFinished();
+      return emitEvent(
+          app, ToolbarEvent.LANGUAGE_TOGGLE, {detail: {language: lang}});
     }
 
     test('enabled languages are added', async () => {
@@ -246,8 +236,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   suite('on speech rate change', () => {
     function emitRate() {
-      emitEvent(app, ToolbarEvent.RATE);
-      return microtasksFinished();
+      return emitEvent(app, ToolbarEvent.RATE);
     }
 
     test('speech rate updated', async () => {
@@ -287,8 +276,7 @@ suite('AppReceivesToolbarChanges', () => {
     });
 
     function emitPlayPause() {
-      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-      return microtasksFinished();
+      return emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     }
 
     test('by default is paused', () => {
@@ -355,14 +343,13 @@ suite('AppReceivesToolbarChanges', () => {
       const highlightValue = highlightOn ? chrome.readingMode.autoHighlighting :
                                            chrome.readingMode.noHighlighting;
       chrome.readingMode.onHighlightGranularityChanged(highlightValue);
-      emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
+      return emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
         detail: {data: highlightValue},
       });
-      return microtasksFinished();
     }
 
-    setup(() => {
-      emitColorTheme(chrome.readingMode.defaultTheme);
+    setup(async () => {
+      await emitColorTheme(chrome.readingMode.defaultTheme);
       app.updateContent();
       app.playSpeech();
     });
@@ -379,7 +366,7 @@ suite('AppReceivesToolbarChanges', () => {
 
     test('new theme uses colored highlight with highlights on', async () => {
       await emitHighlight(true);
-      emitColorTheme(chrome.readingMode.blueTheme);
+      await emitColorTheme(chrome.readingMode.blueTheme);
       assertNotEquals('transparent', highlightColor());
     });
 
@@ -387,7 +374,7 @@ suite('AppReceivesToolbarChanges', () => {
         'new theme uses transparent highlight with highlights off',
         async () => {
           await emitHighlight(false);
-          emitColorTheme(chrome.readingMode.yellowTheme);
+          await emitColorTheme(chrome.readingMode.yellowTheme);
           assertEquals('transparent', highlightColor());
         });
   });
@@ -397,50 +384,48 @@ suite('AppReceivesToolbarChanges', () => {
       app.updateContent();
     });
 
-    function emitNextGranularity(): void {
-      emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
+    function emitNextGranularity(): Promise<void> {
+      return emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
     }
 
-    function emitPreviousGranularity(): void {
-      emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
+    function emitPreviousGranularity(): Promise<void> {
+      return emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
     }
 
-    suite('next', () => {
-      test('propagates change', () => {
-        let movedToNext = false;
-        chrome.readingMode.movePositionToNextGranularity = () => {
-          movedToNext = true;
-        };
+    test('next propagates change', async () => {
+      let movedToNext = false;
+      chrome.readingMode.movePositionToNextGranularity = () => {
+        movedToNext = true;
+      };
 
-        emitNextGranularity();
+      await emitNextGranularity();
 
-        assertTrue(movedToNext);
-      });
-
-      test('highlights text', () => {
-        emitNextGranularity();
-        const currentHighlight =
-            app.$.container.querySelector('.current-read-highlight');
-        assertTrue(!!currentHighlight!.textContent);
-      });
+      assertTrue(movedToNext);
     });
 
-    test('previous propagates change', () => {
+    test('next highlights text', async () => {
+      await emitNextGranularity();
+      const currentHighlight =
+          app.$.container.querySelector('.current-read-highlight');
+      assertTrue(!!currentHighlight!.textContent);
+    });
+
+    test('previous propagates change', async () => {
       let movedToPrevious: boolean = false;
       chrome.readingMode.movePositionToPreviousGranularity = () => {
         movedToPrevious = true;
       };
 
-      emitPreviousGranularity();
+      await emitPreviousGranularity();
 
       assertTrue(movedToPrevious);
     });
 
-    test('previous highlights text', () => {
-      emitPreviousGranularity();
+    test('previous highlights text', async () => {
+      await emitPreviousGranularity();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(!!currentHighlight!.textContent);
     });
-    });
+  });
 });

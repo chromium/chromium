@@ -8,7 +8,7 @@ import {MetricsBrowserProxyImpl, ReadAnythingLogger} from 'chrome-untrusted://re
 import type {AppElement, ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {stubAnimationFrame} from './common.js';
+import {createApp, stubAnimationFrame} from './common.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('PhraseHighlighting', () => {
@@ -56,7 +56,7 @@ suite('PhraseHighlighting', () => {
     ],
   };
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
@@ -67,10 +67,7 @@ suite('PhraseHighlighting', () => {
     metrics = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metrics);
     ReadAnythingLogger.setInstance(new ReadAnythingLogger());
-
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
-    flush();
+    app = await createApp();
 
     // Use a tree with just one sentence. For the actual implementation of
     // phrase segmentation, a more realistic example would be to use
