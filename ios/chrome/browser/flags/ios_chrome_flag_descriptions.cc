@@ -818,10 +818,6 @@ const char kNativeFindInPageDescription[] =
     "is replaced with a native implementation which also enables searching "
     "text in PDF files. Available for iOS 16 or later.";
 
-const char kNewSyncOptInIllustrationName[] = "New sync opt-in illustration";
-const char kNewSyncOptInIllustrationDescription[] =
-    "Uses the new illustration in the sync opt-in promotion view.";
-
 const char kNTPViewHierarchyRepairName[] = "NTP View Hierarchy Repair";
 const char kNTPViewHierarchyRepairDescription[] =
     "Checks if NTP view hierarchy is broken and fixes it if necessary.";
