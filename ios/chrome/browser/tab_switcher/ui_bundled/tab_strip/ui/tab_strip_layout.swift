@@ -683,6 +683,15 @@ class TabStripLayout: UICollectionViewFlowLayout {
   )
     -> UICollectionViewLayoutAttributes?
   {
+    if indexPathsOfDeletingItems.contains(itemIndexPath) {
+      // Animate the disappearing item by fading it out and translating it down
+      // by its height.
+      attributes.alpha = 0
+      attributes.transform = CGAffineTransform(
+        translationX: 0,
+        y: attributes.frame.size.height
+      )
+    }
     return attributes
   }
 
