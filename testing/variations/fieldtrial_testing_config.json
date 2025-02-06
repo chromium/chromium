@@ -23657,21 +23657,18 @@
             ]
         }
     ],
-    "TimedHTMLParserBudget": [
+    "TimedHTMLParserBudgetForAndroid": [
         {
             "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "group_10_500_6_20230911",
+                    "name": "Enabled_10_50_2",
                     "params": {
                         "default-parser-budget": "10ms",
-                        "long-parser-budget": "500ms",
-                        "num-yields-with-default-budget": "6"
+                        "long-parser-budget": "50ms",
+                        "num-yields-with-default-budget": "2"
                     },
                     "enable_features": [
                         "TimedHTMLParserBudget"
