@@ -19,9 +19,16 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/config/gpu_finch_features.h"
 
 namespace gpu {
+namespace {
+uint64_t GenerateCallbackId() {
+  static std::atomic_uint64_t next_callback_id{1u};
+  return next_callback_id.fetch_add(1, std::memory_order_relaxed);
+}
+}  // namespace
 
 SyncPointOrderData::OrderFence::OrderFence(
     uint32_t order,
@@ -151,7 +158,7 @@ uint64_t SyncPointOrderData::ValidateReleaseOrderNumber(
     return 0;
 
   if (sync_point_manager_->graph_validation_enabled()) {
-    return ++current_callback_id_;
+    return GenerateCallbackId();
   }
 
   // We should have unprocessed order numbers which could potentially release
@@ -171,7 +178,7 @@ uint64_t SyncPointOrderData::ValidateReleaseOrderNumber(
   // gets released eventually.
   uint32_t expected_order_num =
       std::min(unprocessed_order_nums_.back(), wait_order_num);
-  uint64_t callback_id = ++current_callback_id_;
+  uint64_t callback_id = GenerateCallbackId();
   order_fence_queue_.emplace(expected_order_num, fence_release,
                              std::move(client_state), callback_id);
   return callback_id;
@@ -245,6 +252,10 @@ bool SyncPointClientState::WaitForRelease(uint64_t release,
       order_data_->ValidateReleaseOrderNumber(this, wait_order_num, release);
   if (callback_id) {
     // Add the callback which will be called upon release.
+    TRACE_EVENT_WITH_FLOW0(
+        "gpu,toplevel.flow", "SyncToken::Wait",
+        TRACE_ID_WITH_SCOPE("SyncToken", TRACE_ID_LOCAL(callback_id)),
+        TRACE_EVENT_FLAG_FLOW_OUT);
     release_callback_queue_.emplace(release, std::move(callback), callback_id);
     return true;
   }
@@ -257,7 +268,7 @@ bool SyncPointClientState::WaitForRelease(uint64_t release,
 void SyncPointClientState::EnsureFenceSyncReleased(uint64_t release,
                                                    ReleaseCause cause) {
   // Call callbacks without the lock to avoid possible deadlocks.
-  std::vector<base::OnceClosure> callback_list;
+  std::vector<ReleaseCallback> callback_list;
   {
     base::AutoLock auto_lock(fence_sync_lock_);
 
@@ -302,13 +313,18 @@ void SyncPointClientState::EnsureFenceSyncReleased(uint64_t release,
            release_callback_queue_.top().release_count <= release) {
       ReleaseCallback& release_callback =
           const_cast<ReleaseCallback&>(release_callback_queue_.top());
-      callback_list.emplace_back(std::move(release_callback.callback_closure));
+      callback_list.emplace_back(std::move(release_callback));
       release_callback_queue_.pop();
     }
   }
 
-  for (base::OnceClosure& closure : callback_list)
-    std::move(closure).Run();
+  for (ReleaseCallback& callback : callback_list) {
+    TRACE_EVENT_WITH_FLOW0(
+        "gpu,toplevel.flow", "SyncToken::Release",
+        TRACE_ID_WITH_SCOPE("SyncToken", TRACE_ID_LOCAL(callback.callback_id)),
+        TRACE_EVENT_FLAG_FLOW_IN);
+    std::move(callback.callback_closure).Run();
+  }
 }
 
 void SyncPointClientState::EnsureWaitReleased(uint64_t release,
@@ -351,6 +367,10 @@ void SyncPointClientState::EnsureWaitReleased(uint64_t release,
   if (callback) {
     // This effectively releases the wait without releasing the fence.
     DLOG(ERROR) << "Client did not release sync token as expected";
+    TRACE_EVENT_WITH_FLOW0(
+        "gpu,toplevel.flow", "SyncToken::ForceEndWait",
+        TRACE_ID_WITH_SCOPE("SyncToken", TRACE_ID_LOCAL(callback_id)),
+        TRACE_EVENT_FLAG_FLOW_IN);
     std::move(callback).Run();
   }
 }
