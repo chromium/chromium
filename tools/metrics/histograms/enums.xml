@@ -21678,6 +21678,7 @@ Called by update_net_error_codes.py.-->
   <int value="22" label="DEMUXER_ERROR_DETECTED_HLS"/>
   <int value="23" label="PIPELINE_ERROR_HARDWARE_CONTEXT_RESET"/>
   <int value="24" label="PIPELINE_ERROR_DISCONNECTED"/>
+  <int value="25" label="DEMUXER_ERROR_BITSTREAM_CONVERSION_FAILED"/>
 </enum>
 
 <enum name="PixCodeDetectionResult">
