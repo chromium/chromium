@@ -113,8 +113,17 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
 customElements.define(
     MicrosoftAuthModuleElement.is, MicrosoftAuthModuleElement);
 
+async function createMicrosoftAuthElement():
+    Promise<MicrosoftAuthModuleElement|null> {
+  const {show} =
+      await MicrosoftAuthProxyImpl.getInstance().handler.shouldShowModule();
+  if (!show) {
+    return null;
+  } else {
+    return new MicrosoftAuthModuleElement();
+  }
+}
+
 export const microsoftAuthModuleDescriptor: ModuleDescriptor =
     new ModuleDescriptor(
-        /*id*/ 'microsoft_authentication',
-        async(): Promise<MicrosoftAuthModuleElement> =>
-            new MicrosoftAuthModuleElement());
+        /*id*/ 'microsoft_authentication', createMicrosoftAuthElement);

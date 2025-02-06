@@ -17,6 +17,9 @@ class Profile;
 class MicrosoftAuthPageHandler
     : public ntp::authentication::mojom::MicrosoftAuthPageHandler {
  public:
+  static const char kLastDismissedTimePrefName[];
+  static const base::TimeDelta kDismissDuration;
+
   explicit MicrosoftAuthPageHandler(
       mojo::PendingReceiver<
           ntp::authentication::mojom::MicrosoftAuthPageHandler> handler,
@@ -26,6 +29,7 @@ class MicrosoftAuthPageHandler
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // ntp::authentication::mojom::MicrosoftAuthPageHandler:
+  void ShouldShowModule(ShouldShowModuleCallback callback) override;
   void DismissModule() override;
   void RestoreModule() override;
 

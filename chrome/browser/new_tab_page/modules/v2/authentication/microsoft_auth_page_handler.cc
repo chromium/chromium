@@ -4,23 +4,24 @@
 
 #include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth_page_handler.h"
 
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 
-namespace {
-
-const char kMicrosoftAuthLastDismissedTimePrefName[] =
+// static
+const char MicrosoftAuthPageHandler::kLastDismissedTimePrefName[] =
     "NewTabPage.MicrosoftAuthentication.LastDimissedTime";
 
-}  // namespace
+// static
+const base::TimeDelta MicrosoftAuthPageHandler::kDismissDuration =
+    base::Hours(12);
 
 // static
 void MicrosoftAuthPageHandler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(kMicrosoftAuthLastDismissedTimePrefName,
-                             base::Time());
+  registry->RegisterTimePref(kLastDismissedTimePrefName, base::Time());
 }
 
 MicrosoftAuthPageHandler::MicrosoftAuthPageHandler(
@@ -33,12 +34,32 @@ MicrosoftAuthPageHandler::MicrosoftAuthPageHandler(
 
 MicrosoftAuthPageHandler::~MicrosoftAuthPageHandler() = default;
 
+void MicrosoftAuthPageHandler::ShouldShowModule(
+    ShouldShowModuleCallback callback) {
+  const base::Time last_dismissed_time =
+      pref_service_->GetTime(kLastDismissedTimePrefName);
+  if (!last_dismissed_time.is_null()) {
+    base::TimeDelta elapsed_time = base::Time::Now() - last_dismissed_time;
+    bool still_dismissed = elapsed_time < kDismissDuration;
+    if (still_dismissed) {
+      std::move(callback).Run(false);
+      const std::string remaining_hours =
+          base::NumberToString((kDismissDuration - elapsed_time).InHours());
+      LogModuleDismissed(ntp_features::kNtpMicrosoftAuthenticationModule, true,
+                         remaining_hours);
+      return;
+    }
+  }
+
+  std::move(callback).Run(true);
+  LogModuleDismissed(ntp_features::kNtpMicrosoftAuthenticationModule, false,
+                     /*remaining_hours=*/"0");
+}
+
 void MicrosoftAuthPageHandler::DismissModule() {
-  // TODO(b:377378212): Resurface module after 12 hours.
-  pref_service_->SetTime(kMicrosoftAuthLastDismissedTimePrefName,
-                         base::Time::Now());
+  pref_service_->SetTime(kLastDismissedTimePrefName, base::Time::Now());
 }
 
 void MicrosoftAuthPageHandler::RestoreModule() {
-  pref_service_->SetTime(kMicrosoftAuthLastDismissedTimePrefName, base::Time());
+  pref_service_->SetTime(kLastDismissedTimePrefName, base::Time());
 }
