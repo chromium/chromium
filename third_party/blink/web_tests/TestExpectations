@@ -9152,3 +9152,4 @@ crbug.com/389946963 [ Mac13 ] external/wpt/mediacapture-fromelement/capture.html
 
 # Gardener 2025-02-06
 crbug.com/385054996 external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Pass Crash Timeout ]
+crbug.com/394638725 [ Mac ] external/wpt/css/cssom/getComputedStyle-width-scroll.tentative.html [ Pass Failure ]
