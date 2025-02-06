@@ -1820,7 +1820,8 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, DISABLED_AllFilesBlocked) {
           }));
 }
 
-IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, SomeFilesBlocked) {
+// TODO(crbug.com/391682998): Re-enable this test
+IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, DISABLED_SomeFilesBlocked) {
   std::vector<base::FilePath> paths;
   paths.push_back(CreateTestFile(FILE_PATH_LITERAL("allow0"), "data"));
   paths.push_back(CreateTestFile(FILE_PATH_LITERAL("block1"), "data"));
