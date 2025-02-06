@@ -531,6 +531,9 @@ class ECKEncryptedMediaReportMetricsTest : public EncryptedMediaTestBase,
     if (GetCdmInterfaceVersion() > 10) {
       EXPECT_EQ(report_metric_entries.size(), 1u);
 
+      EXPECT_EQ(ukm::GetSourceIdType(report_metric_entries[0].source_id),
+                ukm::SourceIdType::CDM_ID);
+
       // The ClearKey cdm does not report kCertificateSerialNumber or
       // kDecoderBypassBlockCount, so the entries should not even be set in the
       // ukm data.

@@ -83,7 +83,6 @@ class MEDIA_MOJO_EXPORT MojoCdmHelper final : public CdmAuxiliaryHelper,
   mojo::Remote<ukm::mojom::UkmRecorderFactory> ukm_recorder_factory_;
 
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
-  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   std::unique_ptr<CdmAllocator> allocator_;
 
