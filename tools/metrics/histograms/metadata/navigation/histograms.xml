@@ -1578,6 +1578,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Navigation.OnBeforeUnloadOverheadTime.NoBeforeUnloadHandlerRegistered"
+    units="ms" expires_after="2025-08-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time a posted SendBeforeUnload task spends in the queue before
+    execution. It's only recorded when the browser process is already aware that
+    no beforeunload handler is registered. Recorded for each SendBeforeUnload
+    task (but only when `for_legacy` is true). Emitted when the task runs.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.OnBeforeUnloadTotalTime" units="ms"
     expires_after="2025-07-13">
   <owner>chikamune@chromium.org</owner>

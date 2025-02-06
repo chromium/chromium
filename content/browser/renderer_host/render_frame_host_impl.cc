@@ -16167,6 +16167,12 @@ void RenderFrameHostImpl::SendBeforeUnload(
             base::BindOnce(
                 [](blink::mojom::LocalFrame::BeforeUnloadCallback callback,
                    base::TimeTicks start_time, base::TimeTicks end_time) {
+                  // Measures the time a posted task spends in the queue before
+                  // execution. Recorded only when `for_legacy` is true.
+                  base::UmaHistogramTimes(
+                      "Navigation.OnBeforeUnloadOverheadTime."
+                      "NoBeforeUnloadHandlerRegistered",
+                      base::TimeTicks::Now() - end_time);
                   std::move(callback).Run(/*proceed=*/true, start_time,
                                           end_time);
                 },
