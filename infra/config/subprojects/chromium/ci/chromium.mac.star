@@ -566,7 +566,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_mac_gtests_no_nacl",
+            "chromium_mac_gtests_no_nacl_mac14_arm",
             "chromium_mac_rel_isolated_scripts",
         ],
         mixins = [
