@@ -287,11 +287,30 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   base::RecordAction(base::UserMetricsAction(kDeleteAllSavedDataButtonClicked));
   CredentialCounts counts = [_mediator passwordAndPasskeyCounts];
 
-  NSString* alertDescription = base::SysUTF16ToNSString(
-      base::i18n::MessageFormatter::FormatWithNamedArgs(
-          l10n_util::GetStringUTF16(
-              IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION),
-          "password", counts.passwordCounts, "passkey", counts.passkeyCounts));
+  NSString* alertDescription;
+  if (counts.passwordCounts == 0 && counts.passkeyCounts == 0) {
+    alertDescription = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION_BLOCK_SITES_ONLY);
+  } else if (counts.passwordCounts == 0) {
+    alertDescription = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION_NO_PASSWORDS),
+            "passkey_count", counts.passkeyCounts));
+  } else if (counts.passkeyCounts == 0) {
+    alertDescription = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION_NO_PASSKEYS),
+            "password_count", counts.passwordCounts));
+  } else {
+    alertDescription = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION),
+            "password_count", counts.passwordCounts, "passkey_count",
+            counts.passkeyCounts));
+  }
 
   UIAlertController* deletionConfirmation = [UIAlertController
       alertControllerWithTitle:

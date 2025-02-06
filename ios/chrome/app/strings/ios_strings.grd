@@ -4093,19 +4093,16 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         From Google Password Manager, including passwords and passkeys
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION" desc="Description of the confirmation alert when the user tap delete all data button. The 'list of sites &amp; apps' corresponds to the data shown in the 'Never Saved' section in the home page of Password Manager. [iOS only]">
-        {password, plural,
-        =0 {{passkey, plural,
-            =0 {You don't have any saved passwords or passkeys, but you can delete the list of sites &amp; apps you chose to never save sign-in info. Any account you created for sites and apps won't be deleted.}
-            =1 {You are about to delete 1 passkey and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}
-            other {You are about to delete {passkey} passkeys and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}}}
-        =1 {{passkey, plural,
-            =0 {You are about to delete 1 password and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}
-            =1 {You are about to delete 1 password, 1 passkey, and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}
-            other {You are about to delete 1 password, {passkey} passkeys, and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}}}
-        other {{passkey, plural,
-               =0 {You are about to delete {password} passwords and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}
-               =1 {You are about to delete {password} passwords, 1 passkey, and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}
-               other {You are about to delete {password} passwords, {passkey} passkeys, and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.}}}}
+        You are about to delete {password_count} passwords, {passkey_count} passkeys, and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION_BLOCK_SITES_ONLY" desc="Description of the confirmation alert when the user tap delete all data button and only blocked sites data were saved. The 'list of sites &amp; apps' corresponds to the data shown in the 'Never Saved' section in the home page of Password Manager. [iOS only]">
+        You don't have any saved passwords or passkeys, but you can delete the list of sites &amp; apps you chose to never save sign-in info. Any account you created for sites and apps won't be deleted.
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION_NO_PASSKEYS" desc="Description of the confirmation alert when the user tap delete all data button and no passkeys were saved. The 'list of sites &amp; apps' corresponds to the data shown in the 'Never Saved' section in the home page of Password Manager. [iOS only]">
+        You are about to delete {password_count} passwords and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_DESCRIPTION_NO_PASSWORDS" desc="Description of the confirmation alert when the user tap delete all data button and no passwords were saved. The 'list of sites &amp; apps' corresponds to the data shown in the 'Never Saved' section in the home page of Password Manager. [iOS only]">
+        You are about to delete {passkey_count} passkeys and the list of sites &amp; apps you chose to never save sign-in into. Any account you created for sites and apps won't be deleted.
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_CREDENTIALS_TITLE" desc="Title of the confirmation alert when the user tap delete all data button. [iOS only]">
         You're about to delete your Google Password Manager data
