@@ -56,6 +56,12 @@ class AURA_EXPORT CursorClient {
   // Gets the type of the mouse cursor icon.
   virtual ui::CursorSize GetCursorSize() const = 0;
 
+  // Sets the large cursor size in dip.
+  virtual void SetLargeCursorSizeInDip(int large_cursor_size_in_dip) = 0;
+
+  // Gets the large curssor size in dip.
+  virtual int GetLargeCursorSizeInDip() const = 0;
+
   // Sets the color of the cursor.
   virtual void SetCursorColor(SkColor color) = 0;
 

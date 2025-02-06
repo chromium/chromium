@@ -121,6 +121,29 @@ TEST_F(NativeCursorManagerAshTest, SetCursorColor) {
   EXPECT_EQ(ui::kDefaultCursorColor, cursor_manager->GetCursorColor());
 }
 
+TEST_F(NativeCursorManagerAshTest, SetLargeCursorSizeInDip) {
+  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
+
+  EXPECT_EQ(ui::kDefaultLargeCursorSize,
+            cursor_manager->GetLargeCursorSizeInDip());
+
+  cursor_manager->SetLargeCursorSizeInDip(ui::kMaxLargeCursorSize);
+  EXPECT_EQ(ui::kMaxLargeCursorSize, cursor_manager->GetLargeCursorSizeInDip());
+
+  cursor_manager->SetLargeCursorSizeInDip(ui::kMaxLargeCursorSize + 1);
+  EXPECT_EQ(ui::kMaxLargeCursorSize, cursor_manager->GetLargeCursorSizeInDip());
+
+  cursor_manager->SetLargeCursorSizeInDip(ui::kMinLargeCursorSize);
+  EXPECT_EQ(ui::kMinLargeCursorSize, cursor_manager->GetLargeCursorSizeInDip());
+
+  cursor_manager->SetLargeCursorSizeInDip(ui::kMinLargeCursorSize - 1);
+  EXPECT_EQ(ui::kMinLargeCursorSize, cursor_manager->GetLargeCursorSizeInDip());
+
+  cursor_manager->SetLargeCursorSizeInDip(ui::kDefaultLargeCursorSize);
+  EXPECT_EQ(ui::kDefaultLargeCursorSize,
+            cursor_manager->GetLargeCursorSizeInDip());
+}
+
 TEST_F(NativeCursorManagerAshTest, SetDeviceScaleFactorAndRotation) {
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
   const auto& cursor_shape_client = aura::client::GetCursorShapeClient();

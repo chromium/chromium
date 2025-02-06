@@ -11,8 +11,10 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_client_observer.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/wm/core/cursor_util.h"
 #include "ui/wm/core/native_cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
@@ -45,6 +47,11 @@ class CursorState {
     cursor_size_ = cursor_size;
   }
 
+  int large_cursor_size_in_dip() const { return large_cursor_size_in_dip_; }
+  void set_large_cursor_size_in_dip(int large_cursor_size_in_dip) {
+    large_cursor_size_in_dip_ = large_cursor_size_in_dip;
+  }
+
   SkColor cursor_color() const { return cursor_color_; }
   void set_cursor_color(SkColor cursor_color) { cursor_color_ = cursor_color; }
 
@@ -72,6 +79,7 @@ class CursorState {
   gfx::NativeCursor cursor_;
   bool visible_ = true;
   ui::CursorSize cursor_size_ = ui::CursorSize::kNormal;
+  int large_cursor_size_in_dip_ = ui::kDefaultLargeCursorSize;
   SkColor cursor_color_ = ui::kDefaultCursorColor;
   bool mouse_events_enabled_ = true;
 
@@ -154,6 +162,23 @@ void CursorManager::SetCursorSize(ui::CursorSize cursor_size) {
 
 ui::CursorSize CursorManager::GetCursorSize() const {
   return current_state_->cursor_size();
+}
+
+void CursorManager::SetLargeCursorSizeInDip(int large_cursor_size_in_dip) {
+  large_cursor_size_in_dip =
+      std::clamp(large_cursor_size_in_dip, ui::kMinLargeCursorSize,
+                 ui::kMaxLargeCursorSize);
+
+  state_on_unlock_->set_large_cursor_size_in_dip(large_cursor_size_in_dip);
+  if (GetLargeCursorSizeInDip() !=
+      state_on_unlock_->large_cursor_size_in_dip()) {
+    delegate_->SetLargeCursorSizeInDip(
+        state_on_unlock_->large_cursor_size_in_dip(), this);
+  }
+}
+
+int CursorManager::GetLargeCursorSizeInDip() const {
+  return current_state_->large_cursor_size_in_dip();
 }
 
 void CursorManager::SetCursorColor(SkColor color) {
@@ -272,6 +297,10 @@ void CursorManager::CommitVisibility(bool visible) {
 
 void CursorManager::CommitCursorSize(ui::CursorSize cursor_size) {
   current_state_->set_cursor_size(cursor_size);
+}
+
+void CursorManager::CommitLargeCursorSizeInDip(int large_cursor_size_in_dip) {
+  current_state_->set_large_cursor_size_in_dip(large_cursor_size_in_dip);
 }
 
 void CursorManager::CommitCursorColor(SkColor color) {

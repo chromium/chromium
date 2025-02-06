@@ -19,7 +19,9 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/wm/core/cursor_util.h"
 
 namespace wm {
@@ -29,6 +31,11 @@ namespace {
 using ::ui::mojom::CursorType;
 
 constexpr base::TimeDelta kAnimatedCursorFrameDelay = base::Milliseconds(25);
+
+// Converts DIPs (Device-independent pixels) to pixels.
+int ConvertDipToPixel(int dip, float scale) {
+  return dip * scale;
+}
 
 }  // namespace
 
@@ -44,10 +51,6 @@ CursorLoader::~CursorLoader() {
 
 void CursorLoader::OnThemeLoaded() {
   UnloadCursors();
-}
-
-void CursorLoader::UnloadCursors() {
-  image_cursors_.clear();
 }
 
 bool CursorLoader::SetDisplay(const display::Display& display) {
@@ -71,6 +74,15 @@ void CursorLoader::SetSize(ui::CursorSize size) {
     return;
 
   size_ = size;
+  UnloadCursors();
+}
+
+void CursorLoader::SetLargeCursorSizeInDip(int large_cursor_size_in_dip) {
+  if (large_cursor_size_in_dip_ == large_cursor_size_in_dip) {
+    return;
+  }
+
+  large_cursor_size_in_dip_ = large_cursor_size_in_dip;
   UnloadCursors();
 }
 
@@ -101,36 +113,67 @@ std::optional<ui::CursorData> CursorLoader::GetCursorData(
     return ui::CursorData();
 
   if (type == CursorType::kCustom) {
-    SkBitmap custom_bitmap =
-        color_ == ui::kDefaultCursorColor
-            ? cursor.custom_bitmap()
-            : wm::GetColorAdjustedBitmap(cursor.custom_bitmap(), color_);
-    return ui::CursorData({custom_bitmap}, cursor.custom_hotspot(),
-                          cursor.image_scale_factor());
+    auto cursor_data =
+        ui::CursorData({cursor.custom_bitmap()}, cursor.custom_hotspot(),
+                       cursor.image_scale_factor());
+    ApplyColorAndLargeSize(cursor_data);
+    return cursor_data;
   }
 
   if (use_platform_cursors_) {
+    // TODO(crbug.com/40175364): consider either passing `scale_` to
+    // `CursorFactory::GetCursorData`, or relying on having called
+    // `CursorFactory::SetDeviceScaleFactor`, instead of appending it here.
     auto cursor_data = factory_->GetCursorData(type);
     if (cursor_data) {
-      if (color_ != ui::kDefaultCursorColor) {
-        std::for_each(cursor_data->bitmaps.begin(), cursor_data->bitmaps.end(),
-                      [&](SkBitmap& bitmap) {
-                        bitmap = wm::GetColorAdjustedBitmap(bitmap, color_);
-                      });
-      }
-      // TODO(crbug.com/40175364): consider either passing `scale_` to
-      // `CursorFactory::GetCursorData`, or relying on having called
-      // `CursorFactory::SetDeviceScaleFactor`, instead of appending it here.
-      return ui::CursorData(std::move(cursor_data->bitmaps),
-                            std::move(cursor_data->hotspot), scale_);
+      cursor_data->scale_factor = scale_;
+      ApplyColorAndLargeSize(cursor_data.value());
+      return cursor_data;
     }
   }
+
+  const int large_cursor_size_in_px =
+      ConvertDipToPixel(large_cursor_size_in_dip_, scale_);
 
   // TODO(crbug.com/40175364): use the actual `rotation_` if that makes
   // sense for the current use cases of `GetCursorData` (e.g. Chrome Remote
   // Desktop, WebRTC and VideoRecordingWatcher).
-  return wm::GetCursorData(type, size_, resource_scale_, std::nullopt,
+  return wm::GetCursorData(type, size_, resource_scale_,
+                           size_ == ui::CursorSize::kLarge
+                               ? std::make_optional(large_cursor_size_in_px)
+                               : std::nullopt,
                            display::Display::ROTATE_0, color_);
+}
+
+void CursorLoader::UnloadCursors() {
+  image_cursors_.clear();
+}
+
+void CursorLoader::ApplyColorAndLargeSize(
+    ui::CursorData& data_in_and_out) const {
+  if (color_ != ui::kDefaultCursorColor) {
+    std::for_each(data_in_and_out.bitmaps.begin(),
+                  data_in_and_out.bitmaps.end(), [&](SkBitmap& bitmap) {
+                    bitmap = wm::GetColorAdjustedBitmap(bitmap, color_);
+                  });
+  }
+  if (size_ == ui::CursorSize::kLarge) {
+    const int large_cursor_size_in_px =
+        ConvertDipToPixel(large_cursor_size_in_dip_, scale_);
+    const gfx::Size cursor_size_in_px =
+        gfx::SkISizeToSize(data_in_and_out.bitmaps[0].dimensions());
+    if (large_cursor_size_in_px != cursor_size_in_px.height()) {
+      const float rescale = static_cast<float>(large_cursor_size_in_px) /
+                            static_cast<float>(cursor_size_in_px.height());
+      std::for_each(data_in_and_out.bitmaps.begin(),
+                    data_in_and_out.bitmaps.end(), [&](SkBitmap& bitmap) {
+                      wm::ScaleAndRotateCursorBitmapAndHotpoint(
+                          rescale, display::Display::ROTATE_0, &bitmap,
+                          &data_in_and_out.hotspot);
+                    });
+      data_in_and_out.scale_factor *= rescale;
+    }
+  }
 }
 
 scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
@@ -167,7 +210,11 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::CursorFromType(
 scoped_refptr<ui::PlatformCursor> CursorLoader::LoadCursorFromAsset(
     CursorType type) {
   std::optional<ui::CursorData> cursor_data = wm::GetCursorData(
-      type, size_, resource_scale_, std::nullopt, rotation_, color_);
+      type, size_, resource_scale_,
+      size_ == ui::CursorSize::kLarge ? std::make_optional(ConvertDipToPixel(
+                                            large_cursor_size_in_dip_, scale_))
+                                      : std::nullopt,
+      rotation_, color_);
   if (!cursor_data) {
     return nullptr;
   }

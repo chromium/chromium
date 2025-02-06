@@ -1341,7 +1341,7 @@ TEST_F(NightLightCrtcTest, TestAllDisplaysSupportCrtcMatrix) {
   // Test the cursor compositing behavior when Night Light is on (and doesn't
   // require the software cursor) while other accessibility settings that affect
   // the cursor are toggled.
-  for (const auto* const pref : {prefs::kAccessibilityLargeCursorEnabled,
+  for (const auto* const pref : {prefs::kDockedMagnifierEnabled,
                                  prefs::kAccessibilityHighContrastEnabled}) {
     user1_pref_service()->SetBoolean(pref, true);
     EXPECT_TRUE(IsCursorCompositingEnabled());

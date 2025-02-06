@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(UI_WM) NativeCursorManagerDelegate {
   virtual void CommitCursor(gfx::NativeCursor cursor) = 0;
   virtual void CommitVisibility(bool visible) = 0;
   virtual void CommitCursorSize(ui::CursorSize cursor_size) = 0;
+  virtual void CommitLargeCursorSizeInDip(int large_cursor_size_in_dip) = 0;
   virtual void CommitCursorColor(SkColor color) = 0;
   virtual void CommitMouseEventsEnabled(bool enabled) = 0;
   virtual void CommitSystemCursorSize(const gfx::Size& cursor_size) = 0;

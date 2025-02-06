@@ -568,8 +568,7 @@ bool Shell::HasPrimaryStatusArea() {
 }
 
 void Shell::SetLargeCursorSizeInDip(int large_cursor_size_in_dip) {
-  window_tree_host_manager_->cursor_window_controller()
-      ->SetLargeCursorSizeInDip(large_cursor_size_in_dip);
+  cursor_manager_->SetLargeCursorSizeInDip(large_cursor_size_in_dip);
 }
 
 void Shell::SetCursorColor(SkColor cursor_color) {
@@ -1497,9 +1496,6 @@ void Shell::Init(
   resolution_notification_controller_ =
       std::make_unique<ResolutionNotificationController>();
 
-  cursor_manager_->SetDisplay(
-      display::Screen::GetScreen()->GetPrimaryDisplay());
-
   // Initialize before AcceleratorController and AshAcceleratorConfiguration.
   accelerator_prefs_ = std::make_unique<AcceleratorPrefs>(
       shell_delegate_->CreateAcceleratorPrefsDelegate());
@@ -1746,6 +1742,12 @@ void Shell::Init(
 
   window_tree_host_manager_->InitHosts();
   display_manager_->NotifyDisplaysInitialized();
+  // Set display after `WindowTreeHostManager::InitHosts()`
+  // since root window controller is created in
+  // `WindowTreeHostManager::InitHosts()` and
+  // `CursorWindowManager::SetDisplay` depends on it.
+  cursor_manager_->SetDisplay(
+      display::Screen::GetScreen()->GetPrimaryDisplay());
 
   if (ash::features::IsBootAnimationEnabled()) {
     booting_animation_controller_ =

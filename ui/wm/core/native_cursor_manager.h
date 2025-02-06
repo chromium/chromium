@@ -49,6 +49,11 @@ class COMPONENT_EXPORT(UI_WM) NativeCursorManager {
   virtual void SetCursorSize(ui::CursorSize cursor_size,
                              NativeCursorManagerDelegate* delegate) = 0;
 
+  // A request to set the ui::CursorSize::kLarge dimensions in DIPs.
+  virtual void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      NativeCursorManagerDelegate* delegate) = 0;
+
   // A request to set whether mouse events are disabled. At minimum,
   // implementer should call NativeCursorManagerDelegate::
   // CommitMouseEventsEnabled() with whether mouse events are actually enabled.

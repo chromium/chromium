@@ -40,6 +40,9 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
                   ::wm::NativeCursorManagerDelegate* delegate) override;
   void SetCursor(gfx::NativeCursor cursor,
                  ::wm::NativeCursorManagerDelegate* delegate) override;
+  void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      ::wm::NativeCursorManagerDelegate* delegate) override;
   void SetVisibility(bool visible,
                      ::wm::NativeCursorManagerDelegate* delegate) override;
   void SetCursorSize(ui::CursorSize cursor_size,
