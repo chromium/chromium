@@ -97,10 +97,14 @@ class CustomTabToolbarAnimationDelegate {
         mAnimationEndRunnable = animationEndRunnable;
     }
 
+    void setSecurityButton(ImageButton securityButton) {
+        mSecurityButtonAnimationDelegate.setSecurityButton(securityButton);
+    }
+
     /**
      * Sets the width of the security button to properly offset the url bar. This should be set once
      * we know whether the security icon is nested or not. Currently, this is only called if the
-     * security icon is nested.
+     * security icon is nested or the omnibox is enabled.
      *
      * @param width The width of the security button in pixels.
      */
