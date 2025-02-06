@@ -30,6 +30,8 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
+  # 4GB RAM for 34+ API AVDs
+  ram_size: 4096
 }
 avd_variants {
   key: "swarming"
