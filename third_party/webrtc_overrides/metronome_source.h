@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <set>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
