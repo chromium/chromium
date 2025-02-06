@@ -16,7 +16,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -28,6 +27,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -97,7 +97,12 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
 
     @Override
     public void onClick(View view) {
-        if (ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
+        ShoppingService shoppingService = mShoppingServiceSupplier.get();
+        if (shoppingService == null) {
+            showErrorToastMessage();
+            return;
+        }
+        if (CommerceFeatureUtils.isDiscountInfoApiEnabled(shoppingService)) {
             assert mCommerceBottomSheetContentController.get() != null;
             mCommerceBottomSheetContentController.get().requestShowContent();
         } else {
@@ -113,9 +118,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
             } else {
                 Tab tab = mTabSupplier.get();
                 if (tab == null) {
-                    @StringRes
-                    int textResId = R.string.price_insights_content_price_tracking_error_message;
-                    Toast.makeText(mContext, textResId, Toast.LENGTH_SHORT).show();
+                    showErrorToastMessage();
                     return;
                 }
                 mBottomSheetCoordinator =
@@ -156,5 +159,10 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
             PriceInsightsBottomSheetCoordinator coordinator) {
         mBottomSheetCoordinatorForTesting = coordinator;
         ResettersForTesting.register(() -> mBottomSheetCoordinatorForTesting = null);
+    }
+
+    private void showErrorToastMessage() {
+        @StringRes int textResId = R.string.price_insights_content_price_tracking_error_message;
+        Toast.makeText(mContext, textResId, Toast.LENGTH_SHORT).show();
     }
 }
