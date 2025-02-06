@@ -694,7 +694,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "UseFrameIntervalDecider"
+                        "UseFrameIntervalDecider",
+                        "UseFrameIntervalDeciderNewAndroidFeatures"
                     ]
                 }
             ]
