@@ -101,6 +101,7 @@ public class PartnerBookmarksReader {
         }
         browserCustomizations.setOnInitializeAsyncFinished(
                 () -> {
+                    Log.i(TAG, "Browser customizations loading complete.");
                     if (browserCustomizations.isBookmarksEditingDisabled()) {
                         PartnerBookmarksReaderJni.get().disablePartnerBookmarksEditing();
                     }
@@ -213,7 +214,16 @@ public class PartnerBookmarksReader {
     }
 
     private void maybeMarkCreationComplete() {
-        if (!mFinishedReading || !mFinishedResolvingBrowserCustomizations) return;
+        if (!mFinishedReading || !mFinishedResolvingBrowserCustomizations) {
+            Log.i(
+                    TAG,
+                    "Failed to mark creation complete, mFinishedReading=%s,"
+                            + " mFinishedResolvingBrowserCustomizations=%s",
+                    mFinishedReading,
+                    mFinishedResolvingBrowserCustomizations);
+            return;
+        }
+        Log.i(TAG, "Partner bookmarks creation complete.");
         PartnerBookmarksReaderJni.get()
                 .partnerBookmarksCreationComplete(
                         mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
@@ -230,25 +240,24 @@ public class PartnerBookmarksReader {
      * Notifies the reader is complete, refreshes the partner bookmarks if necessary, and kills the
      * native object
      */
+    @GuardedBy("mProgressLock")
     protected void shutDown() {
-        synchronized (mProgressLock) {
-            if (mShutDown) return;
+        if (mShutDown) return;
 
-            if (mFaviconThrottle != null) {
-                mFaviconThrottle.commit();
-            }
-            // Make sure we refresh the bookmarks if we were fetching favicons from server, now that
-            // we have them all.
-            if (mFaviconsFetchedFromServer) {
-                for (FaviconUpdateObserver observer : sFaviconUpdateObservers) {
-                    observer.onCompletedFaviconLoading();
-                }
-            }
-            PartnerBookmarksReaderJni.get()
-                    .destroy(mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
-            mNativePartnerBookmarksReader = 0;
-            mShutDown = true;
+        if (mFaviconThrottle != null) {
+            mFaviconThrottle.commit();
         }
+        // Make sure we refresh the bookmarks if we were fetching favicons from server, now that
+        // we have them all.
+        if (mFaviconsFetchedFromServer) {
+            for (FaviconUpdateObserver observer : sFaviconUpdateObservers) {
+                observer.onCompletedFaviconLoading();
+            }
+        }
+        PartnerBookmarksReaderJni.get()
+                .destroy(mNativePartnerBookmarksReader, PartnerBookmarksReader.this);
+        mNativePartnerBookmarksReader = 0;
+        mShutDown = true;
     }
 
     /** Handles fetching partner bookmarks in a background thread. */
@@ -262,12 +271,16 @@ public class PartnerBookmarksReader {
 
         @Override
         protected Void doInBackground() {
+            Log.i(TAG, "Loading partner bookmarks.");
             if (mFaviconThrottle == null) {
                 // Initialize the throttle here since we need to load shared preferences on the
                 // background thread as well.
                 mFaviconThrottle = new PartnerBookmarksFaviconThrottle();
             }
-            if (mBookmarkIterator == null) return null;
+            if (mBookmarkIterator == null) {
+                Log.i(TAG, "Exiting early because the provided iterator was null.");
+                return null;
+            }
 
             // Get a snapshot of the bookmarks.
             LinkedHashMap<Long, PartnerBookmark> idMap = new LinkedHashMap<Long, PartnerBookmark>();
