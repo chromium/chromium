@@ -77,6 +77,9 @@ void GlicMetrics::OnResponseStarted() {
   // More details metrics.
   bool attached = controller_->IsAttached();
   base::UmaHistogramBoolean("Glic.Response.Attached", attached);
+  base::UmaHistogramEnumeration("Glic.Response.InvocationSource",
+                                invocation_source_);
+  base::UmaHistogramEnumeration("Glic.Response.InputMode", input_mode_);
 }
 
 void GlicMetrics::OnResponseStopped() {
@@ -104,9 +107,12 @@ void GlicMetrics::OnResponseRated(bool positive) {
   base::UmaHistogramBoolean("Glic.Response.Rated", positive);
 }
 
-void GlicMetrics::OnGlicWindowOpen() {
+void GlicMetrics::OnGlicWindowOpen(bool attached, InvocationSource source) {
   base::RecordAction(base::UserMetricsAction("GlicSessionBegin"));
   session_start_time_ = base::TimeTicks::Now();
+  invocation_source_ = source;
+  base::UmaHistogramBoolean("Glic.Session.Open.Attached", attached);
+  base::UmaHistogramEnumeration("Glic.Session.Open.InvocationSource", source);
 }
 
 void GlicMetrics::OnGlicWindowClose() {

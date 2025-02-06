@@ -67,11 +67,13 @@ TEST_F(GlicMetricsTest, BasicVisible) {
   controller_->showing_ = true;
   controller_->attached_ = true;
 
+  metrics_->OnGlicWindowOpen(/*attached=*/true, InvocationSource::kOsButton);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped();
   metrics_->OnResponseRated(/*positive=*/true);
   metrics_->OnSessionTerminated();
+  metrics_->OnGlicWindowClose();
 
   histogram_tester_.ExpectTotalCount("Glic.Response.StopTime", 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseInputSubmit"), 1);

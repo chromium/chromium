@@ -107,6 +107,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Response.InputMode" enum="GlicWebClientMode"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded after a turn. Records the input mode of the original user input.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Response.InvocationSource" enum="GlicInvocationSource"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded after a turn. Records the source of the invocation of the glic
+    window.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Response.Rated" enum="BooleanPositive"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
@@ -180,6 +201,26 @@ chromium-metrics-reviews@google.com.
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>Recorded when a session ends. The duration of the session.</summary>
+</histogram>
+
+<histogram name="Glic.Session.Open.Attached" enum="Boolean"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a session starts. Records whether the window is attached.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Session.Open.InvocationSource"
+    enum="GlicInvocationSource" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a session starts. Records the source of the invocation.
+  </summary>
 </histogram>
 
 <histogram name="Glic.Session.ResponseCount" units="count"
