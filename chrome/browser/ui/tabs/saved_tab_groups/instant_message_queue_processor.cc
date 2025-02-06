@@ -8,6 +8,7 @@
 #include "base/containers/queue.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
@@ -124,17 +125,21 @@ Browser* InstantMessageQueueProcessor::GetBrowser(
   const bool is_member_added_message =
       message.collaboration_event ==
       CollaborationEvent::COLLABORATION_MEMBER_ADDED;
-  const bool is_collaboration_removed_message =
-      message.collaboration_event == CollaborationEvent::COLLABORATION_REMOVED;
+  const bool is_tab_group_removed_message =
+      message.collaboration_event == CollaborationEvent::TAB_GROUP_REMOVED;
 
   if (is_tab_removed_message || is_member_added_message ||
-      is_collaboration_removed_message) {
-    // In the case of COLLABORATON_REMOVED, the group may or may not be open.
-    // TODO(crbug.com/390380633): Find a fallback browser for this profile.
+      is_tab_group_removed_message) {
     if (std::optional<LocalTabGroupID> local_tab_group_id =
             UnwrapTabGroupID(message)) {
       browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(
           local_tab_group_id.value());
+    }
+
+    // In the case of TAB_GROUP_REMOVED, the group may or may not be open.
+    // Find a fallback browser for this profile.
+    if (!browser) {
+      browser = chrome::FindLastActiveWithProfile(profile_);
     }
   }
 
@@ -191,7 +196,7 @@ std::optional<ToastParams> InstantMessageQueueProcessor::GetParamsForMessage(
     }
     case CollaborationEvent::COLLABORATION_MEMBER_ADDED: {
       std::optional<data_sharing::GroupMember> user =
-          message.attribution.triggering_user;
+          message.attribution.affected_user;
       std::optional<TabGroupMessageMetadata> tab_group_metadata =
           message.attribution.tab_group_metadata;
       const bool has_group_title =
@@ -208,7 +213,7 @@ std::optional<ToastParams> InstantMessageQueueProcessor::GetParamsForMessage(
       };
       return params;
     }
-    case CollaborationEvent::COLLABORATION_REMOVED: {
+    case CollaborationEvent::TAB_GROUP_REMOVED: {
       std::optional<TabGroupMessageMetadata> tab_group_metadata =
           message.attribution.tab_group_metadata;
       const bool has_group_title =
