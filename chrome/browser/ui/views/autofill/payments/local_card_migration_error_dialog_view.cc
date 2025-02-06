@@ -91,11 +91,10 @@ void LocalCardMigrationErrorDialogView::Init() {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   auto* image = new views::ImageView();
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  image->SetImage(
-      rb.GetImageSkiaNamed(GetNativeTheme()->ShouldUseDarkColors()
-                               ? IDR_AUTOFILL_MIGRATION_DIALOG_HEADER_DARK
-                               : IDR_AUTOFILL_MIGRATION_DIALOG_HEADER));
+  image->SetImage(ui::ImageModel::FromResourceId(
+      GetNativeTheme()->ShouldUseDarkColors()
+          ? IDR_AUTOFILL_MIGRATION_DIALOG_HEADER_DARK
+          : IDR_AUTOFILL_MIGRATION_DIALOG_HEADER));
   image->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME));
   AddChildView(image);

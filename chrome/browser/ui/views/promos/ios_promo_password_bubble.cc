@@ -115,10 +115,10 @@ std::unique_ptr<views::View> CreateFooter(
   auto footer_title_container =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .AddChild(views::Builder<views::ImageView>()
-                        .SetImage(ui::ResourceBundle::GetSharedInstance()
-                                      .GetImageSkiaNamed(IDR_PRODUCT_LOGO_32))
-                        .SetImageSize(gfx::Size(20, 20)))
+          .AddChild(
+              views::Builder<views::ImageView>()
+                  .SetImage(ui::ImageModel::FromResourceId(IDR_PRODUCT_LOGO_32))
+                  .SetImageSize(gfx::Size(20, 20)))
           .AddChild(views::Builder<views::Label>()
                         .SetText(l10n_util::GetStringUTF16(
                             IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE))
@@ -231,7 +231,7 @@ std::unique_ptr<views::View> CreateFooter(
   views::ImageView* image_view =
       views::AsViewClass<views::ImageView>(qr_code_views.front());
 
-  image_view->SetImage(qr_image.value());
+  image_view->SetImage(ui::ImageModel::FromImageSkia(qr_image.value()));
 
   return built_footer_view;
 }

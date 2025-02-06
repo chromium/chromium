@@ -195,8 +195,10 @@ void InformedRestoreItemView::OnAllFaviconsLoaded(
           .SetBackground(views::CreateThemedRoundedRectBackground(
               cros_tokens::kCrosSysPrimary, kFaviconPreferredSize.width()));
     } else {
-      builder.SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-          favicon, skia::ImageOperations::RESIZE_BEST, kFaviconPreferredSize));
+      builder.SetImage(ui::ImageModel::FromImageSkia(
+          gfx::ImageSkiaOperations::CreateResizedImage(
+              favicon, skia::ImageOperations::RESIZE_BEST,
+              kFaviconPreferredSize)));
     }
 
     favicon_container_view_->AddChildView(std::move(builder).Build());

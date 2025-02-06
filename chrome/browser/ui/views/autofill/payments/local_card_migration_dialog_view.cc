@@ -78,7 +78,7 @@ class AutofillMigrationHeaderView : public views::ImageView {
   // views::Label:
   void OnThemeChanged() override {
     ImageView::OnThemeChanged();
-    SetImage(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+    SetImage(ui::ImageModel::FromResourceId(
         GetNativeTheme()->ShouldUseDarkColors()
             ? IDR_AUTOFILL_MIGRATION_DIALOG_HEADER_DARK
             : IDR_AUTOFILL_MIGRATION_DIALOG_HEADER));

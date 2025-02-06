@@ -135,7 +135,7 @@ void PolicyDialogBase::AddRowIcon(const gfx::ImageSkia& icon,
   views::ImageView* icon_view =
       row->AddChildView(std::make_unique<views::ImageView>());
   icon_view->SetImageSize(gfx::Size(kFaviconSize, kFaviconSize));
-  icon_view->SetImage(icon);
+  icon_view->SetImage(ui::ImageModel::FromImageSkia(icon));
 }
 
 views::Label* PolicyDialogBase::AddRowTitle(const std::u16string& title,

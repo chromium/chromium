@@ -62,8 +62,9 @@ constexpr int kPlaceholderGSuiteIconSpacing = 8;
 
 // Create a builder for an image view for the given G Suite icon.
 views::Builder<views::ImageView> CreateGSuiteIcon(const gfx::VectorIcon& icon) {
-  return views::Builder<views::ImageView>().SetImage(gfx::CreateVectorIcon(
-      icon, kPlaceholderGSuiteIconSize, gfx::kPlaceholderColor));
+  return views::Builder<views::ImageView>().SetImage(
+      ui::ImageModel::FromVectorIcon(icon, gfx::kPlaceholderColor,
+                                     kPlaceholderGSuiteIconSize));
 }
 #endif
 

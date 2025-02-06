@@ -421,7 +421,7 @@ void InformedRestoreContentsView::CreateChildViews() {
                 views::Builder<views::ImageView>()
                     .CopyAddressTo(&image_view_)
                     .SetPaintToLayer()
-                    .SetImage(image)
+                    .SetImage(ui::ImageModel::FromImageSkia(image))
                     .SetImageSize(screenshot_size))
             .Build());
 

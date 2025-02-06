@@ -138,12 +138,11 @@ DisclaimerView::DisclaimerView(
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysDialogContainer, kRadius));
   SetPaintToLayer();
-  AddChildView(
-      views::Builder<views::ImageView>()
-          .SetImage(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              IDR_MAGIC_BOOST_DISCLAIMER_ILLUSTRATION))
-          .SetPreferredSize(kImagePreferredSize)
-          .Build());
+  AddChildView(views::Builder<views::ImageView>()
+                   .SetImage(ui::ImageModel::FromResourceId(
+                       IDR_MAGIC_BOOST_DISCLAIMER_ILLUSTRATION))
+                   .SetPreferredSize(kImagePreferredSize)
+                   .Build());
 
   AddChildView(
       views::Builder<views::ScrollView>()
