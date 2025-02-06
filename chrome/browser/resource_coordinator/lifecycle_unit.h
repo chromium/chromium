@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/decision_details.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
@@ -92,13 +92,6 @@ class LifecycleUnit {
   // Returns the loading state associated with a LifecycleUnit.
   virtual LifecycleUnitLoadingState GetLoadingState() const = 0;
 
-  // Returns the process hosting this LifecycleUnit. Used to distribute OOM
-  // scores.
-  //
-  // TODO(fdoray): Change this to take into account the fact that a
-  // LifecycleUnit can be hosted in multiple processes. https://crbug.com/775644
-  virtual base::ProcessHandle GetProcessHandle() const = 0;
-
   // Returns a key that can be used to evaluate the relative importance of this
   // LifecycleUnit. This key may not be trivial to calculate, so this should not
   // be called repeatedly if the value will be reused, e.g. during a sort.
@@ -119,15 +112,6 @@ class LifecycleUnit {
   // Request that the LifecycleUnit be loaded, return true if the request is
   // successful.
   virtual bool Load() = 0;
-
-  // Returns the estimated number of kilobytes that would be freed if this
-  // LifecycleUnit was discarded.
-  //
-  // TODO(fdoray): Consider exposing this only on a new class that represents a
-  // group of LifecycleUnits. It is easier to compute memory consumption
-  // accurately for a group of LifecycleUnits that live in the same process(es)
-  // than for individual LifecycleUnits. https://crbug.com/775644
-  virtual int GetEstimatedMemoryFreedOnDiscardKB() const = 0;
 
   // Returns true if this LifecycleUnit can be discarded. Full details regarding
   // the policy decision are recorded in the |decision_details|, for logging.

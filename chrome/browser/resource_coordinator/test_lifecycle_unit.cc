@@ -10,11 +10,9 @@
 namespace resource_coordinator {
 
 TestLifecycleUnit::TestLifecycleUnit(base::TimeTicks last_focused_time,
-                                     base::ProcessHandle process_handle,
                                      bool can_discard)
     : LifecycleUnitBase(nullptr, content::Visibility::VISIBLE, nullptr),
       last_focused_time_ticks_(last_focused_time),
-      process_handle_(process_handle),
       sort_key_(last_focused_time),
       can_discard_(can_discard) {}
 
@@ -45,10 +43,6 @@ base::Time TestLifecycleUnit::GetLastFocusedTime() const {
   return last_focused_time_;
 }
 
-base::ProcessHandle TestLifecycleUnit::GetProcessHandle() const {
-  return process_handle_;
-}
-
 LifecycleUnit::SortKey TestLifecycleUnit::GetSortKey() const {
   return sort_key_;
 }
@@ -63,10 +57,6 @@ mojom::LifecycleUnitLoadingState TestLifecycleUnit::GetLoadingState() const {
 
 bool TestLifecycleUnit::Load() {
   return false;
-}
-
-int TestLifecycleUnit::GetEstimatedMemoryFreedOnDiscardKB() const {
-  return estimated_memory_freed_kb_;
 }
 
 bool TestLifecycleUnit::CanDiscard(mojom::LifecycleUnitDiscardReason reason,
