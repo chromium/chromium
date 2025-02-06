@@ -2002,6 +2002,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Renderer.PrivateSwapFootprint" units="MB"
+    expires_after="2025-06-22">
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    An amount of private memory of the renderer process placed in swap (VmSwap).
+    Available on Android, Linux and ChromeOS.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Renderer.ResidentSet" units="MiB" expires_after="never">
 <!-- expires-never: Generic system health metric used to diagnose various performance issues. -->
 
