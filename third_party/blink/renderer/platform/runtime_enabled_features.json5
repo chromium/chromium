@@ -1419,6 +1419,12 @@
       origin_trial_allows_third_party: true,
       origin_trial_type: "deprecation",
     },
+    {
+      // Remove this feature when the removal of the WebGPU limit
+      // maxInterStageShaderComponents has been stable long enough.
+      // See https://crbug.com/364338810
+      name: "DeprecateMaxInterStageShaderComponents",
+    },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.
