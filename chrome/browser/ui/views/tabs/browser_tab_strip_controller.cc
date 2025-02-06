@@ -828,10 +828,6 @@ void BrowserTabStripController::OnTabGroupChanged(
       tabstrip_->OnGroupEditorOpened(change.group);
       break;
     }
-    case TabGroupChange::kContentsChanged: {
-      tabstrip_->OnGroupContentsChanged(change.group);
-      break;
-    }
     case TabGroupChange::kVisualsChanged: {
       const TabGroupChange::VisualsChange* visuals_delta =
           change.GetVisualsChange();
@@ -894,7 +890,15 @@ void BrowserTabStripController::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> new_group,
     tabs::TabInterface* tab,
     int index) {
-  tabstrip_->AddTabToGroup(std::move(new_group), index);
+  tabstrip_->AddTabToGroup(new_group, index);
+
+  if (old_group.has_value()) {
+    tabstrip_->OnGroupContentsChanged(old_group.value());
+  }
+
+  if (new_group.has_value()) {
+    tabstrip_->OnGroupContentsChanged(new_group.value());
+  }
 }
 
 void BrowserTabStripController::SetTabNeedsAttentionAt(int index,

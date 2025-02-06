@@ -74,7 +74,6 @@ void TabGroup::AddTab() {
     TabGroupChange::VisualsChange visuals;
     controller_->ChangeTabGroupVisuals(id_, visuals);
   }
-  controller_->ChangeTabGroupContents(id_);
   ++tab_count_;
 }
 
@@ -83,8 +82,6 @@ void TabGroup::RemoveTab() {
   --tab_count_;
   if (tab_count_ == 0) {
     controller_->CloseTabGroup(id_);
-  } else {
-    controller_->ChangeTabGroupContents(id_);
   }
 }
 

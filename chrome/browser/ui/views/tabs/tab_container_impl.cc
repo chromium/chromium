@@ -170,6 +170,12 @@ void TabContainerImpl::MoveTab(int from_model_index, int to_model_index) {
   layout_helper_->SetTabPinned(to_model_index, tab->data().pinned
                                                    ? TabPinned::kPinned
                                                    : TabPinned::kUnpinned);
+  // TODO(shibalik): Replace by a content changed observer method after
+  // group features is enabled. This handles the case where a tab is moved
+  // within a group.
+  if (tab->group().has_value()) {
+    group_views_[tab->group().value()]->header()->OnGroupContentsChanged();
+  }
 
   AnimateToIdealBounds();
 

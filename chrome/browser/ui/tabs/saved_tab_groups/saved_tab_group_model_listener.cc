@@ -118,8 +118,6 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
       return;
     }
 
-    // Ignored because contents changes are handled in TabGroupedStateChanged.
-    case TabGroupChange::kContentsChanged:
     // kEditorOpened doesn't affect the SavedTabGroup.
     case TabGroupChange::kEditorOpened:
     // kMoved doesn't affect the order of the saved tab groups.

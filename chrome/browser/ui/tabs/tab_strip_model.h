@@ -561,7 +561,6 @@ class TabStripModel : public TabGroupController {
   // TabGroupController:
   void CreateTabGroup(const tab_groups::TabGroupId& group) override;
   void OpenTabGroupEditor(const tab_groups::TabGroupId& group) override;
-  void ChangeTabGroupContents(const tab_groups::TabGroupId& group) override;
   void ChangeTabGroupVisuals(
       const tab_groups::TabGroupId& group,
       const TabGroupChange::VisualsChange& visuals) override;

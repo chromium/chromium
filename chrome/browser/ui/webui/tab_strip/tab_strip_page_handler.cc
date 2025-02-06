@@ -212,14 +212,7 @@ void TabStripPageHandler::OnTabGroupChanged(const TabGroupChange& change) {
   switch (change.type) {
     case TabGroupChange::kCreated:
     case TabGroupChange::kEditorOpened:
-    case TabGroupChange::kContentsChanged: {
-      // TabGroupChange::kCreated events are unnecessary as the front-end will
-      // assume a group was created if there is a tab-group-state-changed event
-      // with a new group ID. TabGroupChange::kContentsChanged events are
-      // handled by TabGroupStateChanged.
       break;
-    }
-
     case TabGroupChange::kVisualsChanged: {
       TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
       if (group_model) {
