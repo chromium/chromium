@@ -264,8 +264,6 @@
 
 // Starts the sign-in flow.
 - (void)startSignInOnlyFlow {
-  // TODO(crbug.com/375605482): Handle the case where the chosen identity is
-  // assigned to a different profile.
   [self showActivityOverlay];
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   // If this was triggered by the user tapping the default button in the sign-in
