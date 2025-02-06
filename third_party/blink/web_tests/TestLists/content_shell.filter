@@ -817,9 +817,7 @@ external/wpt/IndexedDB/idbindex_getAll.any.*
 external/wpt/IndexedDB/idbindex_getAllRecords.tentative.any.*
 external/wpt/IndexedDB/idbobjectstore_getAllRecords.tentative.any.*
 external/wpt/inert/inert-iframe-hittest.html
-external/wpt/input-events/contenteditable-insertfrompaste-type-inputevent-data.html
 external/wpt/input-events/input-events-exec-command.html
-external/wpt/input-events/textarea-insertfrompaste-type-inputevent-data*
 external/wpt/intersection-observer/callback-cross-realm-report-exception.html
 external/wpt/intersection-observer/root-margin.html
 external/wpt/largest-contentful-paint/broken-image-icon.html
