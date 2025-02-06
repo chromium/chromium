@@ -11172,11 +11172,21 @@ void NavigationRequest::MaybeRecordNavigationStartAdjustments() {
     return;
   }
 
+  if (IsSameDocument()) {
+    // No adjustments are made for same-document navigations.
+    CHECK(original_navigation_start_.is_null());
+    return;
+  }
+
   // Some navigations do not adjust the start time, in which case
   // `original_navigation_start_` is left as null.
   if (original_navigation_start_.is_null()) {
-    base::UmaHistogramEnumeration("Navigation.StartAdjustment",
+    base::UmaHistogramEnumeration("Navigation.StartAdjustment.AllFrames",
                                   NavigationStartAdjustmentType::kNone);
+    if (IsInPrimaryMainFrame()) {
+      base::UmaHistogramEnumeration("Navigation.StartAdjustment.MainFrameOnly",
+                                    NavigationStartAdjustmentType::kNone);
+    }
     return;
   }
 
@@ -11208,7 +11218,12 @@ void NavigationRequest::MaybeRecordNavigationStartAdjustments() {
     adjustment_type = NavigationStartAdjustmentType::kBeforeUnloadDialog;
     histogram_name += ".BeforeUnloadDialog";
   }
-  base::UmaHistogramEnumeration("Navigation.StartAdjustment", adjustment_type);
+  base::UmaHistogramEnumeration("Navigation.StartAdjustment.AllFrames",
+                                adjustment_type);
+  if (IsInPrimaryMainFrame()) {
+    base::UmaHistogramEnumeration("Navigation.StartAdjustment.MainFrameOnly",
+                                  adjustment_type);
+  }
 
   // It is currently possible for the adjustment to be negative, due to a bug
   // where the updated start time from an earlier navigation is applied to the

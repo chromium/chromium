@@ -2109,14 +2109,17 @@ chromium-metrics-reviews@google.com.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
-<histogram name="Navigation.StartAdjustment"
-    enum="NavigationStartAdjustmentType" expires_after="2026-01-03">
+<histogram name="Navigation.StartAdjustment.AllFrames"
+    enum="NavigationStartAdjustmentType" expires_after="2026-02-03">
   <owner>creis@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <summary>
-    Records whether an adjustment was made to the navigation start time, and
-    what the reason was if so. This metric is recorded each time a navigation
-    finishes.
+    Records whether an adjustment was made to the start time of a cross-document
+    navigation, and what the reason was if so. This metric is recorded each time
+    a cross-document navigation finishes. (Same-document navigations never have
+    adjustments.) This includes both main frame and subframe navigations, the
+    latter of which are less likely to have adjustments. See also
+    Navigation.StartAdjustment.MainFrameOnly.
   </summary>
 </histogram>
 
@@ -2222,6 +2225,19 @@ chromium-metrics-reviews@google.com.
     Records the percentage of navigation time that was ignored, in cases where
     the start time was adjusted to after a legacy PostTask was run, when no
     beforeunload handlers were registered.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.StartAdjustment.MainFrameOnly"
+    enum="NavigationStartAdjustmentType" expires_after="2026-02-03">
+  <owner>creis@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <summary>
+    Records whether an adjustment was made to the navigation start time in a
+    cross-document navigation targeting a primary main frame, and what the
+    reason was if so. This metric is recorded each time a cross-document
+    navigation finishes in a primary main frame. (Same-document navigations
+    never have adjustments.)
   </summary>
 </histogram>
 
