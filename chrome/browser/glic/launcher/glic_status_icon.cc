@@ -39,11 +39,9 @@ gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
           ? IDR_GLIC_GLIC_STATUS_ICON_DARK_PNG
           : IDR_GLIC_GLIC_STATUS_ICON_LIGHT_PNG);
 #else
-  return gfx::CreateVectorIcon(
-      kGlicButtonIcon,
-      (native_theme->ShouldUseDarkColorsForSystemIntegratedUI())
-          ? SK_ColorWHITE
-          : SK_ColorBLACK);
+  // On Mac and Linux, theming is handled by the system and does not require
+  // different images for light/dark mode.
+  return gfx::CreateVectorIcon(kGlicButtonIcon, SK_ColorWHITE);
 #endif
 }
 }  // namespace
@@ -68,7 +66,6 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   //  Set a vector icon for proper themeing on Linux.
   status_icon_->SetIcon(kGlicButtonIcon);
 #else
-  native_theme_observer_.Observe(native_theme);
   // Linux doesn't activate icon on click so no need to observe.
   status_icon_->AddObserver(this);
 #endif
@@ -76,7 +73,14 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   if (features::kGlicStatusIconOpenMenuWithSecondaryClick.Get()) {
     status_icon_->SetOpenMenuWithSecondaryClick(true);
   }
+  // This sets the NSImage template property which makes the icon light/dark
+  // based on contrast with the wallpaper.
   status_icon_->SetImageTemplate(true);
+#endif
+#if BUILDFLAG(IS_WIN)
+  // Observe the native theme so we can update the image for the icon to reflect
+  // light/dark mode.
+  native_theme_observer_.Observe(native_theme);
 #endif
 
   std::unique_ptr<StatusIconMenuModel> menu = CreateStatusIconMenu();
