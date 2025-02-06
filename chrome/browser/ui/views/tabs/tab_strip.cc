@@ -357,10 +357,12 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     views::View::ConvertPointToScreen(view, &screen_location);
 
     // Note: `tab_strip_` can be destroyed during drag, also destroying `this`.
-    base::WeakPtr<TabDragContext> weak_ptr(weak_factory_.GetWeakPtr());
-    drag_controller_->Drag(screen_location);
+    const TabDragController::Liveness drag_controller_alive =
+        drag_controller_->Drag(screen_location);
 
-    return weak_ptr ? Liveness::kAlive : Liveness::kDeleted;
+    return drag_controller_alive == TabDragController::Liveness::ALIVE
+               ? Liveness::kAlive
+               : Liveness::kDeleted;
   }
 
   bool EndDrag(EndDragReason reason) {

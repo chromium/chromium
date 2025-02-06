@@ -2888,12 +2888,14 @@ void DoubleNestedRunLoopStep2(DetachToBrowserTabDragControllerTest* test,
   // Drag to target_tab_strip. This should cause TabDragController to ask to end
   // the nested run loop. Normally, we'd return from here to allow the nested
   // loop to exit, but to reproduce the conditions for the crash, we won't.
-  drag_controller->Drag(target_center);
+  ASSERT_EQ(drag_controller->Drag(target_center),
+            TabDragController::Liveness::ALIVE);
 
   // Call Drag directly - still on the nested run loop! - in a way that would
   // spawn a nested run loop if processed.
-  drag_controller->Drag(target_center +
-                        gfx::Vector2d(0, GetDetachY(target_tab_strip)));
+  ASSERT_EQ(drag_controller->Drag(
+                target_center + gfx::Vector2d(0, GetDetachY(target_tab_strip))),
+            TabDragController::Liveness::ALIVE);
 
   // Release input to ensure the nested run loop does actually exit.
   EXPECT_TRUE(test->ReleaseInput(0, /*async=*/true));
