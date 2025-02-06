@@ -233,9 +233,6 @@ extern const char kDisableInstanceLimitName[];
 extern const char kDisableInstanceLimitDescription[];
 #endif
 
-extern const char kDownloadWarningImprovementsName[];
-extern const char kDownloadWarningImprovementsDescription[];
-
 extern const char kEnableBenchmarkingName[];
 extern const char kEnableBenchmarkingDescription[];
 extern const char kEnableBenchmarkingChoiceDisabled[];

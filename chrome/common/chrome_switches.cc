@@ -253,11 +253,6 @@ const char kEnableCloudPrintProxy[] = "enable-cloud-print-proxy";
 // Enables Domain Reliability Monitoring.
 const char kEnableDomainReliability[] = "enable-domain-reliability";
 
-// Enables a number of UI improvements to downloads, download scanning, and
-// download warnings.
-const char kEnableDownloadWarningImprovements[] =
-    "enable-download-warning-improvements";
-
 // Enables logging for extension activity.
 const char kEnableExtensionActivityLogging[] =
     "enable-extension-activity-logging";

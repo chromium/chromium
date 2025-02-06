@@ -2106,11 +2106,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "download-warning-improvements",
-    "owners": [ "chlily@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "downloaded-pdf-opening-ios",
     "owners": [ "erahmaoui@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 135

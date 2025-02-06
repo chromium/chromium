@@ -364,11 +364,6 @@ const char kDisableInstanceLimitDescription[] =
     "Disable limit on number of app instances allowed (current limit is 5).";
 #endif
 
-const char kDownloadWarningImprovementsName[] = "Download Warning Improvements";
-const char kDownloadWarningImprovementsDescription[] =
-    "Enable UI improvements for downloads, download scanning, and download "
-    "warnings. The enabled features are subject to change at any time.";
-
 const char kEnableBenchmarkingName[] = "Enable benchmarking";
 const char kEnableBenchmarkingDescription[] =
     "Sets all features to a fixed state; that is, disables randomization for "

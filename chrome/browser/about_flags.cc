@@ -2705,16 +2705,6 @@ const FeatureEntry::Choice kWebOtpBackendChoices[] = {
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// The choices for --enable-download-warning-improvements. This really should
-// just be a SINGLE_VALUE_TYPE, but it is misleading to have the choices be
-// labeled "Disabled"/"Enabled". So instead this is made to be a
-// MULTI_VALUE_TYPE with choices "Default"/"Enabled".
-const FeatureEntry::Choice kDownloadWarningImprovementsChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flags_ui::kGenericExperimentChoiceEnabled,
-     switches::kEnableDownloadWarningImprovements, ""},
-};
-
 // The choices for --enable-experimental-cookie-features. This really should
 // just be a SINGLE_VALUE_TYPE, but it is misleading to have the choices be
 // labeled "Disabled"/"Enabled". So instead this is made to be a
@@ -9309,12 +9299,6 @@ const FeatureEntry kFeatureEntries[] = {
          kIsolateSandboxedIframesGroupingVariations,
          "IsolateSandboxedIframes" /* trial name */)},
 #endif
-
-    {"download-warning-improvements",
-     flag_descriptions::kDownloadWarningImprovementsName,
-     flag_descriptions::kDownloadWarningImprovementsDescription,
-     kOsLinux | kOsMac | kOsWin | kOsCrOS,
-     MULTI_VALUE_TYPE(kDownloadWarningImprovementsChoices)},
 
     {"reduce-accept-language", flag_descriptions::kReduceAcceptLanguageName,
      flag_descriptions::kReduceAcceptLanguageDescription, kOsAll,
