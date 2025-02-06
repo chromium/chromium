@@ -32,6 +32,8 @@ public class PdfUtilsUnitTest {
 
     private static final String DEFAULT_TAB_TITLE = "Loading PDF…";
     private static final String CONTENT_URL = "content://media/external/downloads/1000000022";
+    private static final String CONTENT_URL_SPECIAL_CHARACTER =
+            "content://com.android.chrome.DownloadFileProvider/external_volume?file=abc%20(1).pdf";
     private static final String FILE_URL = "file:///media/external/downloads/sample.pdf";
     private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
     private static final String PDF_LINK_ENCODED =
@@ -204,5 +206,13 @@ public class PdfUtilsUnitTest {
         String decodedUrl = PdfUtils.decodePdfPageUrl(PDF_LINK_ENCODED);
         Assert.assertEquals("The decoded url should match", PDF_LINK, decodedUrl);
         histogramExpectation.assertExpected();
+    }
+
+    @Test
+    public void testEncodeDecodeUrlWithSpecialCharacter() {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL_SPECIAL_CHARACTER);
+        String decodedUrl = PdfUtils.decodePdfPageUrl(encodedUrl);
+        Assert.assertEquals(
+                "The decoded url should match", CONTENT_URL_SPECIAL_CHARACTER, decodedUrl);
     }
 }

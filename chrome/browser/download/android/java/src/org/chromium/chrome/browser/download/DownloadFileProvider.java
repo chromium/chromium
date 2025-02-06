@@ -227,7 +227,9 @@ public class DownloadFileProvider extends FileProvider {
     }
 
     private static @Nullable String getMimeTypeFromUri(Uri fileUri) {
-        String extension = MimeTypeMap.getFileExtensionFromUrl(fileUri.toString());
+        // #getFileExtensionFromUrl does not support white space.
+        String extension =
+                MimeTypeMap.getFileExtensionFromUrl(fileUri.toString().replace(' ', '_'));
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
     }
 
