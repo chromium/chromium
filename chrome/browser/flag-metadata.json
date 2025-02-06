@@ -5630,7 +5630,7 @@
   {
     "name": "lens-overlay-enable-ipad-compatibility",
     "owners": ["radunitescu@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 142
   },
   {
     "name": "lens-overlay-enable-location-bar-entrypoint",
