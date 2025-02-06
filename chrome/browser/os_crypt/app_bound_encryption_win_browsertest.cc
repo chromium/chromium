@@ -302,11 +302,12 @@ IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinTestWithPolicy,
 class AppBoundEncryptionWinDecryptionNotAvailableTest
     : public AppBoundEncryptionWinTest {
   void SetUp() override {
+    if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY) {
+      GTEST_SKIP() << "Elevation is required for this test.";
+    }
+
     // Install the service only for the pre-test part.
     if (IsPreTest()) {
-      if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY) {
-        GTEST_SKIP() << "Elevation is required for this test.";
-      }
       maybe_uninstall_service_ = InstallService(log_grabber_);
       EXPECT_TRUE(maybe_uninstall_service_.has_value());
     }
