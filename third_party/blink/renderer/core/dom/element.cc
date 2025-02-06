@@ -1289,7 +1289,6 @@ void Element::RemoveInterestInvokerData() {
     data->RemoveInterestInvokerData();
   }
 }
-
 InterestInvokerData& Element::EnsureInterestInvokerData() {
   return EnsureElementRareData().EnsureInterestInvokerData();
 }
@@ -6335,6 +6334,9 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
         // We are removing the attribute, so remove interest invoker data.
         RemoveInterestInvokerData();
       }
+      // Changing the `interesttarget` attribute could change the state of the
+      // `:has-interest` pseudo class, e.g. by pointing to a different target.
+      PseudoStateChanged(CSSSelector::kPseudoHasInterest);
     }
   }
 }
@@ -10373,15 +10375,48 @@ bool Element::GainOrLoseInterest(Element* invoker,
   // We've reached the point where interest has officially been
   // gained or lost. Fire the event and run any default actions.
   if (interest_gained) {
+    if (Element* existing_invoker = target->GetInterestInvoker()) {
+      // We're gaining interest, but the target already has an active interest
+      // invoker. There are two cases:
+      //  1. This is the same invoker. An example case is that the gain interest
+      //     delay is short, but the lose interest delay is long, and we just
+      //     de-hovered and then re-hovered the invoker. In this case, we can
+      //     just cancel any interest lost event and move on.
+      //  2. This is a different invoker. An example is that again, the lose
+      //     interest delay is long, and we've hovered a different invoker for
+      //     the same target. In this case, we need to immediately lose interest
+      //     from the old invoker before gaining it via the new one.
+      if (existing_invoker == invoker) {
+        // Case 1.
+        auto* invoker_data = invoker->GetInterestInvokerData();
+        CHECK(!invoker_data->hasInterestGainedTask());
+        invoker_data->cancelInterestLostTask();
+        return false;
+      } else {
+        // Case 2.
+        if (!existing_invoker->GainOrLoseInterest(existing_invoker, target,
+                                                  /*interest_gained*/ false)) {
+          return false;
+        }
+        // Event handlers might have changed things around, so re-check.
+        if (!invoker || !target || !invoker->IsInTreeScope() ||
+            !invoker->GetDocument().IsActive() ||
+            invoker->interestTargetElement() != target) {
+          return false;
+        }
+      }
+    }
     if (!invoker->InterestGained(*target)) {
       return false;  // event was cancelled.
     }
     // This is now the target's interest invoker
+    CHECK(!target->GetInterestInvoker());
     target->EnsureElementRareData()
         .EnsureInterestInvokerTargetData()
         .setInterestInvoker(invoker);
     invoker->PseudoStateChanged(CSSSelector::kPseudoHasInterest);
   } else {
+    CHECK_EQ(target->GetInterestInvoker(), invoker);
     if (!invoker->InterestLost(*target)) {
       return false;  // event was cancelled.
     }
