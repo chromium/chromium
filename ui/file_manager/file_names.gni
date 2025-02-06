@@ -510,14 +510,12 @@ ts_generated_templates += [
   "file_manager/foreground/elements/files_tooltip.html.ts",
 ]
 
-# d.ts. files that are automatically generated from the JS file.
-generate_definitions_js_files = [ "file_manager/definitions/quick_view.js" ]
-
 # d.ts. files that are manually created and checked-in in the repo.
 checked_in_dts_files = [
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
   "file_manager/definitions/navigator_connection.d.ts",
+  "file_manager/definitions/quick_view.d.ts",
 ]
 
 other_dts_files = [

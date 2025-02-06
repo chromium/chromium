@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,42 +9,39 @@
  * @see `//ash/webui/file_manager/untrusted_resources/` for its usage.
  */
 
-/**
+/*
  * File preview content. Sent from <files-quick-view> to a sandboxed page, as
  * part of UntrustedPreviewData. |data| field holds a Blob/File, or a content
  * URL. |dataType| specifies 'blob' or 'url' accordingly (other values are
  * interpreted as no preview data).
- * @typedef {{
- *   data: ?(Blob|string|undefined),
- *   dataType: string
- * }}
  */
-let FilePreviewContent;
+declare interface FilePreviewContent {
+  dataType: string;
+  data?: Blob|string|null;
+}
 
-/**
+/*
  * Parameters gathered to set the Quick View dialog properties.
- * @typedef {{
- *   type: string,
- *   subtype: string,
- *   filePath: string,
- *   hasTask: boolean,
- *   canDelete: boolean,
- *   sourceContent: (?FilePreviewContent|undefined),
- *   videoPoster: (?FilePreviewContent|undefined),
- *   audioArtwork: (?FilePreviewContent|undefined),
- *   autoplay: (?boolean|undefined),
- *   browsable: (?boolean|undefined),
- * }}
  */
-let QuickViewParams;
+declare interface QuickViewParams {
+  type: string;
+  subtype: string;
+  filePath: string;
+  hasTask: boolean;
+  canDelete: boolean;
+  sourceContent?: FilePreviewContent|null;
+  videoPoster?: FilePreviewContent|null;
+  audioArtwork?: FilePreviewContent|null;
+  autoplay?: boolean|null;
+  browsable?: boolean|null;
+}
 
 /**
  * Preview data that we send from the trusted context (Files app) to
  * the untrusted context. |type| specifies the type of file to preview ('audio',
  * 'image', etc...).
- * @typedef {{
- *   type: string,
- *   sourceContent: !FilePreviewContent
- * }}
  */
-let UntrustedPreviewData;
+declare interface UntrustedPreviewData {
+  type: string;
+  sourceContent: FilePreviewContent;
+}

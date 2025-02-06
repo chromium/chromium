@@ -10,7 +10,6 @@ import(
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_definitions.gni")
 import("//tools/typescript/webui_ts_library.gni")
 import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -85,7 +84,6 @@ webui_ts_library("build_ts") {
   extra_deps = [
     ":copy_definitions_to_gen",
     ":copy_definitions_to_preprocess",
-    ":generate_definitions",
     ":preprocess_generated",
     "//ash/webui/common/resources:generate_definitions",
   ]
@@ -111,10 +109,6 @@ webui_ts_library("build_ts") {
              ts_generated_templates + shared_image_loader_ts
 
   definitions = other_dts_files
-  foreach(_file, generate_definitions_js_files) {
-    definitions +=
-        [ "$target_gen_dir/" + string_replace(_file, ".js", ".d.ts") ]
-  }
   foreach(_file, checked_in_dts_files) {
     definitions += [ "$preprocess_folder/$_file" ]
   }
@@ -186,15 +180,6 @@ webui_ts_library("test_build_ts") {
   } else {
     extra_deps += [ ":copy_ts" ]
   }
-}
-
-ts_definitions("generate_definitions") {
-  root_dir = "."
-  out_dir = target_gen_dir
-
-  extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
-
-  js_files = generate_definitions_js_files
 }
 
 # Copy definition files to GEN folder, so they can import relatively the
