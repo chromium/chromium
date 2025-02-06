@@ -8,12 +8,16 @@ import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -31,6 +35,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -91,6 +96,9 @@ public class AuthTabIntentDataProviderUnitTest {
                 "Download button shouldn't be shown.",
                 mIntentDataProvider.shouldShowDownloadButton());
         assertTrue("Should be an Auth Tab.", mIntentDataProvider.isAuthTab());
+        assertNotNull(
+                "Should display default close button icon.",
+                mIntentDataProvider.getCloseButtonDrawable());
     }
 
     @Test
@@ -167,6 +175,28 @@ public class AuthTabIntentDataProviderUnitTest {
                 "CustomTabMode should be ephemeral.",
                 CustomTabProfileType.EPHEMERAL,
                 mIntentDataProvider.getCustomTabMode());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testIntentData_closeButtonIcon() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM,
+                                CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_CLOSE_BUTTON_ICON)
+                        .allowExtraRecordsForHistogramsAbove()
+                        .build();
+        Bitmap icon =
+                BitmapFactory.decodeResource(
+                        mActivity.getResources(), R.drawable.ic_arrow_back_white_24dp);
+        mIntent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON, icon);
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
+
+        assertEquals(
+                "Close button icon should be the one provided.",
+                icon,
+                ((BitmapDrawable) mIntentDataProvider.getCloseButtonDrawable()).getBitmap());
         histogramWatcher.assertExpected();
     }
 }

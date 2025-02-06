@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
@@ -71,7 +72,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
                 IntentUtils.safeGetStringExtra(
                         intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
         mColorProvider = new AuthTabColorProvider(intent, context, colorScheme);
-        mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
+        mCloseButtonIcon = retrieveCloseButtonIcon(intent, context);
         // TODO(crbug.com/353586171): We should disallow http/https and other known schemes such as
         // content://, file://, chrome:// etc. Can be handled using methods in UrlUtilities, but we
         // might want to disallow more.
@@ -197,6 +198,9 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
         CustomTabsFeatureUsage featureUsage = new CustomTabsFeatureUsage();
 
         // Ordering: Log all the features ordered by enum, when they apply.
+        if (IntentUtils.safeHasExtra(intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON)) {
+            featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_CLOSE_BUTTON_ICON);
+        }
         if (colorScheme == CustomTabsIntent.COLOR_SCHEME_DARK) {
             featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.CTF_DARK);
         }
@@ -223,6 +227,24 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
         if (mRedirectPath != null) {
             featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_HTTPS_REDIRECT_PATH);
         }
+    }
+
+    private static Drawable retrieveCloseButtonIcon(Intent intent, Context context) {
+        Bitmap bitmap =
+                IntentUtils.safeGetParcelableExtra(
+                        intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
+        if (bitmap == null) {
+            return TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
+        }
+
+        int size = context.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
+        if (bitmap.getWidth() == size && bitmap.getHeight() == size) {
+            return new TintedDrawable(context, bitmap);
+        }
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, size, size, true);
+        bitmap.recycle();
+        return new TintedDrawable(context, scaledBitmap);
     }
 
     private static boolean isEphemeralTab(Intent intent) {
