@@ -397,13 +397,13 @@
                 {
                     "name": "Enabled_20240718",
                     "enable_features": [
+                        "AndroidBcivZeroBrowserFrames",
                         "AndroidBrowserControlsInViz"
                     ],
                     "disable_features": [
                         "AndroidBcivBottomControls",
                         "AndroidBcivWithSimpleScheduler",
-                        "AndroidBcivWithSuppression",
-                        "AndroidBcivZeroBrowserFrames"
+                        "AndroidBcivWithSuppression"
                     ]
                 }
             ]

@@ -169,6 +169,13 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     default_args = super(SkiaGoldIntegrationTestBase,
                          cls).GenerateBrowserArgs(additional_args)
     default_args.extend([cba.ENABLE_GPU_BENCHMARKING, cba.TEST_TYPE_GPU])
+
+    # TODO(crbug.com/394842006): This flag is an android optimization which
+    # results in the toolbar hairline # being always drawn. The hariline
+    # overlaps with the page's contents and interferes with the tests. Disable
+    # it so the hairline isn't drawn.
+    default_args.extend(['--disable-features=AndroidBcivZeroBrowserFrames'])
+
     force_color_profile_arg = [
         arg for arg in default_args if arg.startswith('--force-color-profile=')
     ]
