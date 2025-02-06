@@ -222,7 +222,7 @@ TEST_F(MerchantTrustServiceTest, SampleData) {
             ASSERT_TRUE(info.has_value());
             ASSERT_EQ(info->page_url,
                       GURL("https://customerreviews.google.com/v/"
-                           "merchant?q=amazon.com&c=AE&v=19"));
+                           "merchant?q=amazon.com&c=US&gl=US"));
             run_loop->Quit();
           },
           &run_loop));

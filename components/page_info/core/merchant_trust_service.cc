@@ -77,7 +77,7 @@ std::optional<page_info::MerchantData> GetSampleData() {
   merchant_data.star_rating = 4.5;
   merchant_data.count_rating = 100;
   merchant_data.page_url = GURL(
-      "https://customerreviews.google.com/v/merchant?q=amazon.com&c=AE&v=19");
+      "https://customerreviews.google.com/v/merchant?q=amazon.com&c=US&gl=US");
   merchant_data.reviews_summary =
       "This is a test summary for the merchant trust side panel.";
   return merchant_data;
