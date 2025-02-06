@@ -195,6 +195,7 @@ class BinaryUploadService : public KeyedService {
         enterprise_connectors::ContentAnalysisRequest::Reason reason);
     void set_require_metadata_verdict(bool require_metadata_verdict);
     void set_blocking(bool blocking);
+    void add_local_ips(const std::string& ip_address);
 
     std::string SetRandomRequestToken();
 

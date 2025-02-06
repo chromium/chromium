@@ -4,12 +4,14 @@
 
 #include "components/enterprise/connectors/core/reporting_utils.h"
 
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
+#include "net/base/network_interfaces.h"
 
 namespace enterprise_connectors {
 
@@ -206,6 +208,19 @@ proto::BrowserCrashEvent GetBrowserCrashEvent(const std::string& channel,
   event.set_platform(platform);
 
   return event;
+}
+
+base::Value::List GetLocalIpAddresses() {
+  net::NetworkInterfaceList list;
+  base::Value::List ip_addresses;
+  if (!net::GetNetworkList(&list, net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES)) {
+    LOG(ERROR) << "GetNetworkList failed";
+    return ip_addresses;
+  }
+  for (const auto& network_interface : list) {
+    ip_addresses.Append(network_interface.address.ToString());
+  }
+  return ip_addresses;
 }
 
 }  // namespace enterprise_connectors

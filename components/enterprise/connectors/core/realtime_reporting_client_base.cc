@@ -7,11 +7,11 @@
 #include "base/i18n/time_formatting.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "net/base/network_interfaces.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace enterprise_connectors {
@@ -240,19 +240,6 @@ void RealtimeReportingClientBase::UploadSecurityEventReport(
   client->UploadSecurityEventReport(
       ShouldIncludeDeviceInfo(settings.per_profile), std::move(report),
       std::move(upload_callback));
-}
-
-base::Value::List RealtimeReportingClientBase::GetLocalIpAddresses() {
-  net::NetworkInterfaceList list;
-  base::Value::List ip_addresses;
-  if (!net::GetNetworkList(&list, net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES)) {
-    LOG(ERROR) << "GetNetworkList failed";
-    return ip_addresses;
-  }
-  for (const auto& network_interface : list) {
-    ip_addresses.Append(network_interface.address.ToString());
-  }
-  return ip_addresses;
 }
 
 const std::string

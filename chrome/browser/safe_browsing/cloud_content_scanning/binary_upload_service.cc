@@ -266,6 +266,11 @@ void BinaryUploadService::Request::set_blocking(bool blocking) {
   content_analysis_request_.set_blocking(blocking);
 }
 
+void BinaryUploadService::Request::add_local_ips(
+    const std::string& ip_address) {
+  content_analysis_request_.add_local_ips(ip_address);
+}
+
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
   content_analysis_request_.set_request_token(
