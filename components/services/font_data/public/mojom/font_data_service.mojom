@@ -73,4 +73,9 @@ interface FontDataService {
     array<string> bcp47s,
     int32 character) =>
      (MatchFamilyNameResult? result);
+
+  // Returns all the available font families on the system. Usage of this
+  // function is strongly discouraged as it iterates over all installed fonts.
+  [Sync]
+  GetAllFamilyNames() => (array<string> result);
 };

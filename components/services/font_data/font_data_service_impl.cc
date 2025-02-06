@@ -139,6 +139,24 @@ void FontDataServiceImpl::MatchFamilyNameCharacter(
   std::move(callback).Run(CreateMatchFamilyNameResult(typeface));
 }
 
+void FontDataServiceImpl::GetAllFamilyNames(
+    GetAllFamilyNamesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT("fonts", "FontDataServiceImpl::GetAllFamilyNames");
+
+  int family_count = font_manager_->countFamilies();
+  std::vector<std::string> result;
+  result.reserve(family_count);
+
+  for (int i = 0; i < family_count; ++i) {
+    SkString out;
+    font_manager_->getFamilyName(i, &out);
+    result.emplace_back(out.begin(), out.end());
+  }
+
+  std::move(callback).Run(std::move(result));
+}
+
 size_t FontDataServiceImpl::GetOrCreateAssetIndex(
     std::unique_ptr<SkStreamAsset> asset) {
   TRACE_EVENT("fonts", "FontDataServiceImpl::GetOrCreateAssetIndex");
