@@ -156,7 +156,9 @@ class GlicKeyedService : public KeyedService {
 
  private:
   GlicPageHandler* GetPageHandler(const content::WebContents* webui_contents);
-  void OnFocusedTabChanged(const content::WebContents* focused_tab);
+
+  // Callback from ProfilePicker::Show().
+  void DidSelectProfile(Profile* profile);
 
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.

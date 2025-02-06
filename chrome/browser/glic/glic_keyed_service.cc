@@ -106,6 +106,15 @@ GlicPageHandler* GlicKeyedService::GetPageHandler(
   return nullptr;
 }
 
+void GlicKeyedService::DidSelectProfile(Profile* profile) {
+  // If the user selected a different profile, toggle glic in the new profile.
+  if (profile && profile != profile_) {
+    GlicKeyedService* service =
+        GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+    service->ToggleUI(nullptr);
+  }
+}
+
 base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
     FocusedTabChangedCallback callback) {
   return focused_tab_manager_.AddFocusedTabChangedCallback(callback);
@@ -164,14 +173,8 @@ void GlicKeyedService::ResizePanel(const gfx::Size& size,
 }
 
 void GlicKeyedService::ShowProfilePicker() {
-  base::OnceCallback<void(Profile*)> callback =
-      base::BindOnce([](Profile* profile) {
-        if (profile) {
-          GlicKeyedService* service =
-              GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-          service->ToggleUI(nullptr);
-        }
-      });
+  base::OnceCallback<void(Profile*)> callback = base::BindOnce(
+      &GlicKeyedService::DidSelectProfile, weak_ptr_factory_.GetWeakPtr());
   ProfilePicker::Show(
       ProfilePicker::Params::ForGlicManager(std::move(callback)));
 }
