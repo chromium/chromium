@@ -50,21 +50,20 @@ constexpr optimization_guide::ModelBasedCapabilityKey kFeatureKey =
 
 constexpr char kRenderedText[] = "rendered_text";
 constexpr char kSessionCreationSuccessHistogram[] =
-    "Permissions.GenAiOnDeviceModelSessionCreationSuccess";
+    "Permissions.AIv1.SessionCreationSuccess";
 constexpr char kModelAvailableAtInquiryTimeHistogram[] =
-    "Permissions.GenAiOnDeviceModelAvailableAtInquiryTime";
+    "Permissions.AIv1.AvailableAtInquiryTime";
 constexpr char kModelDownloadSuccessHistogram[] =
-    "Permissions.GenAiOnDeviceModelDownloadSuccess";
-constexpr char kModelFetchTimeHistogram[] =
-    "Permissions.GenAiOnDeviceModelFetchTime";
+    "Permissions.AIv1.DownloadSuccess";
+constexpr char kModelFetchTimeHistogram[] = "Permissions.AIv1.FetchTime";
 constexpr char kSessionCreationTimeHistogram[] =
-    "Permissions.GenAiOnDeviceModelSessionCreationTime";
+    "Permissions.AIv1.SessionCreationTime";
 constexpr char kExecutionDurationHistogram[] =
-    "Permissions.GenAiOnDeviceModelExecutionDuration";
+    "Permissions.AIv1.ExecutionDuration";
 constexpr char kExecutionSuccessHistogram[] =
-    "Permissions.GenAiOnDeviceModelExecutionSuccess";
+    "Permissions.AIv1.ExecutionSuccess";
 constexpr char kResponseParseSuccessHistogram[] =
-    "Permissions.GenAiOnDeviceModelResponseParseSuccess";
+    "Permissions.AIv1.ResponseParseSuccess";
 
 }  // namespace
 
