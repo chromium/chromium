@@ -184,9 +184,9 @@ TEST_F(BatchUploadServiceTest, NoLocalDataReturned) {
   // Lists the requested types.
   EXPECT_CALL(sync_service_mock(),
               GetLocalDataDescriptions(
-                  syncer::DataTypeSet{syncer::DataType::PASSWORDS,
-                                      syncer::DataType::BOOKMARKS,
-                                      syncer::DataType::CONTACT_INFO},
+                  syncer::DataTypeSet{
+                      syncer::DataType::PASSWORDS, syncer::DataType::BOOKMARKS,
+                      syncer::DataType::CONTACT_INFO, syncer::DataType::THEMES},
                   _))
       .Times(1);
   EXPECT_CALL(delegate_mock(), ShowBatchUploadDialog(_, _, _, _)).Times(0);

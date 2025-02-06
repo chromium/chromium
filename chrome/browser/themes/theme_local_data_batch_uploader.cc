@@ -6,11 +6,13 @@
 
 #include <variant>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/service/local_data_description.h"
 
@@ -29,7 +31,8 @@ void ThemeLocalDataBatchUploader::GetLocalDataDescription(
   syncer::LocalDataDescription desc;
   desc.type = syncer::THEMES;
   // Avoid offering batch upload for local default theme.
-  if (HasNonDefaultSavedLocalTheme()) {
+  if (base::FeatureList::IsEnabled(syncer::kThemesBatchUpload) &&
+      HasNonDefaultSavedLocalTheme()) {
     syncer::LocalDataItemModel item;
     item.id = kThemesLocalDataItemModelId;
     desc.local_data_models.push_back(std::move(item));
@@ -38,6 +41,7 @@ void ThemeLocalDataBatchUploader::GetLocalDataDescription(
 }
 
 void ThemeLocalDataBatchUploader::TriggerLocalDataMigration() {
+  CHECK(base::FeatureList::IsEnabled(syncer::kThemesBatchUpload));
   // Avoid migrating local default theme.
   if (HasNonDefaultSavedLocalTheme()) {
     delegate_->ApplySavedLocalThemeIfExistsAndClear();
