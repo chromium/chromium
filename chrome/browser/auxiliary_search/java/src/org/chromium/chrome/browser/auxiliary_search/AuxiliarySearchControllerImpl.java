@@ -118,9 +118,6 @@ public class AuxiliarySearchControllerImpl
             mActivityLifecycleDispatcher.unregister(this);
             mActivityLifecycleDispatcher = null;
         }
-        if (mAuxiliarySearchProvider != null) {
-            mAuxiliarySearchProvider.destroy();
-        }
 
         mFaviconHelper.destroy();
     }
