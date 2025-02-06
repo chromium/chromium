@@ -89,6 +89,13 @@ BASE_FEATURE(kWebViewMuteAudio,
              "WebViewMuteAudio",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, WebView records if a site with partitioned cookies has any
+// cookies excluded due to a different cookie partition key than the current
+// site's.
+BASE_FEATURE(kWebViewPartitionedCookiesExcluded,
+             "WebViewPartitionedCookiesExcluded",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Only allow extra headers added via loadUrl() to be sent to the original
 // origin; strip them from the request if a cross-origin redirect occurs.
 BASE_FEATURE(kWebViewExtraHeadersSameOriginOnly,

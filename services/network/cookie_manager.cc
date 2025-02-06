@@ -175,6 +175,14 @@ void CookieManager::DeleteCanonicalCookie(
               }).Then(std::move(callback)));
 }
 
+void CookieManager::SiteHasCookieInOtherPartition(
+    const net::SchemefulSite& schemeful_site,
+    const std::optional<net::CookiePartitionKey>& cookie_partition_key,
+    SiteHasCookieInOtherPartitionCallback callback) {
+  std::move(callback).Run(cookie_store_->SiteHasCookieInOtherPartition(
+      schemeful_site, cookie_partition_key));
+}
+
 void CookieManager::SetContentSettings(
     ContentSettingsType content_settings_type,
     const ContentSettingsForOneType& settings,
