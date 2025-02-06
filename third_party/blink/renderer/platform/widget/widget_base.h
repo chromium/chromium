@@ -535,9 +535,6 @@ class PLATFORM_EXPORT WidgetBase
   // Stores the current type of composition text rendering of |webwidget_|.
   bool can_compose_inline_ = true;
 
-  // Stores whether the IME should always be hidden for |webwidget_|.
-  bool always_hide_ime_ = false;
-
   // Used to inform didChangeSelection() when it is called in the context
   // of handling a FrameInputHandler::SelectRange IPC.
   bool handling_select_range_ = false;

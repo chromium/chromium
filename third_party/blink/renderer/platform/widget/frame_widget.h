@@ -177,7 +177,6 @@ class PLATFORM_EXPORT FrameWidget {
   virtual WebTextInputInfo TextInputInfo() = 0;
   virtual ui::mojom::blink::VirtualKeyboardVisibilityRequest
   GetLastVirtualKeyboardVisibilityRequest() = 0;
-  virtual bool ShouldSuppressKeyboardForFocusedElement() = 0;
 
   // Return the edit context bounds in window coordinates.
   virtual void GetEditContextBoundsInWindow(

@@ -1382,61 +1382,6 @@ TEST_F(RenderViewImplTextInputStateChanged, OnImeTypeChanged) {
 }
 
 TEST_F(RenderViewImplTextInputStateChanged,
-       ShouldSuppressKeyboardIsPropagated) {
-  class TestAutofillClient : public blink::WebAutofillClient {
-   public:
-    TestAutofillClient() = default;
-    ~TestAutofillClient() override = default;
-
-    bool ShouldSuppressKeyboard(const blink::WebFormControlElement&) override {
-      return should_suppress_keyboard_;
-    }
-
-    void SetShouldSuppressKeyboard(bool should_suppress_keyboard) {
-      should_suppress_keyboard_ = should_suppress_keyboard;
-    }
-
-   private:
-    bool should_suppress_keyboard_ = false;
-  };
-
-  // Set-up the fake autofill client.
-  TestAutofillClient client;
-  GetMainFrame()->SetAutofillClient(&client);
-
-  // Load an HTML page consisting of one input fields.
-  LoadHTML(
-      "<html>"
-      "<head>"
-      "</head>"
-      "<body>"
-      "<input id=\"test\" type=\"text\"></input>"
-      "</body>"
-      "</html>");
-
-  // Focus the text field, trigger a state update and check that the right IPC
-  // is sent.
-  ExecuteJavaScriptForTests("document.getElementById('test').focus();");
-  main_frame_widget()->UpdateTextInputState();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, updated_states().size());
-  EXPECT_FALSE(updated_states()[0]->always_hide_ime);
-  ClearState();
-
-  // Tell the client to suppress the keyboard. Check whether always_hide_ime is
-  // set correctly.
-  client.SetShouldSuppressKeyboard(true);
-  main_frame_widget()->UpdateTextInputState();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, updated_states().size());
-  EXPECT_TRUE(updated_states()[0]->always_hide_ime);
-
-  // Explicitly clean-up the autofill client, as otherwise a use-after-free
-  // happens.
-  GetMainFrame()->SetAutofillClient(nullptr);
-}
-
-TEST_F(RenderViewImplTextInputStateChanged,
        EditContextGetLayoutBoundsAndInputPanelPolicy) {
   // Load an HTML page.
   LoadHTML(

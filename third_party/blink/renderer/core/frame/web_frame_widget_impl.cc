@@ -3791,13 +3791,6 @@ WebFrameWidgetImpl::GetLastVirtualKeyboardVisibilityRequest() {
   return controller->GetLastVirtualKeyboardVisibilityRequest();
 }
 
-bool WebFrameWidgetImpl::ShouldSuppressKeyboardForFocusedElement() {
-  WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
-  if (!focused_frame)
-    return false;
-  return focused_frame->ShouldSuppressKeyboardForFocusedElement();
-}
-
 void WebFrameWidgetImpl::GetEditContextBoundsInWindow(
     std::optional<gfx::Rect>* edit_context_control_bounds,
     std::optional<gfx::Rect>* edit_context_selection_bounds) {

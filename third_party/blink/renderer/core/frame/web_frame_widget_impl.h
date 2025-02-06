@@ -265,7 +265,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   WebTextInputInfo TextInputInfo() override;
   ui::mojom::VirtualKeyboardVisibilityRequest
   GetLastVirtualKeyboardVisibilityRequest() override;
-  bool ShouldSuppressKeyboardForFocusedElement() override;
   void GetEditContextBoundsInWindow(
       std::optional<gfx::Rect>* control_bounds,
       std::optional<gfx::Rect>* selection_bounds) override;
