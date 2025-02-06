@@ -21,7 +21,8 @@ void SetThreadTypeOnLauncherThread(base::ProcessId peer_pid,
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
 
   bool ns_pid_supported = false;
-  pid_t peer_tid = base::FindThreadID(peer_pid, ns_tid, &ns_pid_supported);
+  pid_t peer_tid =
+      base::FindThreadID(peer_pid, ns_tid.raw(), &ns_pid_supported);
   if (peer_tid == -1) {
     if (ns_pid_supported) {
       DVLOG(1) << "Could not find tid";
@@ -37,8 +38,9 @@ void SetThreadTypeOnLauncherThread(base::ProcessId peer_pid,
     return;
   }
 
-  base::PlatformThread::SetThreadType(peer_pid, peer_tid, thread_type,
-                                      base::IsViaIPC(true));
+  base::PlatformThread::SetThreadType(peer_pid,
+                                      base::PlatformThreadId(peer_tid),
+                                      thread_type, base::IsViaIPC(true));
 }
 
 }  // namespace
@@ -69,14 +71,16 @@ void ChildThreadTypeSwitcher::SetPid(base::ProcessId child_pid) {
 
 void ChildThreadTypeSwitcher::SetThreadType(int32_t ns_tid,
                                             base::ThreadType thread_type) {
+  // This function is only used on platforms with 32-bit thread ids.
+  static_assert(sizeof(ns_tid) == sizeof(base::PlatformThreadId));
+
   // Post this task to process launcher task runner. All thread type changes
   // (nice value, c-group setting) of renderer process would be performed on the
   // same sequence as renderer process priority changes, to guarantee that
   // there's no race of c-group manipulations.
   GetProcessLauncherTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SetThreadTypeOnLauncherThread, child_pid_,
-                     static_cast<base::PlatformThreadId>(ns_tid), thread_type));
+      FROM_HERE, base::BindOnce(&SetThreadTypeOnLauncherThread, child_pid_,
+                                base::PlatformThreadId(ns_tid), thread_type));
 }
 
 }  // namespace content

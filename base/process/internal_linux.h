@@ -158,10 +158,11 @@ void ForEachProcessTask(base::ProcessHandle process, Lambda&& lambda) {
       continue;
     }
 
-    PlatformThreadId tid;
-    if (!StringToInt(tid_str, &tid)) {
+    PlatformThreadId::UnderlyingType tid_value;
+    if (!StringToInt(tid_str, &tid_value)) {
       continue;
     }
+    PlatformThreadId tid(tid_value);
 
     FilePath task_path = fd_path.Append(tid_str);
     lambda(tid, task_path);

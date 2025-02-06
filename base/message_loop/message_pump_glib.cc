@@ -53,7 +53,7 @@ int GetTimeIntervalMilliseconds(TimeTicks next_task_time) {
 
 bool RunningOnMainThread() {
   auto pid = getpid();
-  auto tid = PlatformThread::CurrentId();
+  auto tid = PlatformThread::CurrentId().raw();
   return pid > 0 && tid > 0 && pid == tid;
 }
 

@@ -664,7 +664,7 @@ class BASE_EXPORT HangWatchState {
 
   // A unique ID of the thread under watch. Used for logging in crash reports
   // only.
-  PlatformThreadId thread_id_;
+  PlatformThreadId thread_id_ = kInvalidThreadId;
 
 #if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/40187449): Remove this once macOS uses system-wide ids.

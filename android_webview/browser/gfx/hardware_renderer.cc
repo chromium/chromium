@@ -477,16 +477,20 @@ void HardwareRenderer::OnViz::PostDrawOnViz(
   *timing_details = without_gpu_->TakeChildFrameTimingDetailsMap();
 
   auto renderer_thread_ids = without_gpu_->GetChildFrameRendererThreadIds();
-  *rendering_thread_ids = std::vector<pid_t>(renderer_thread_ids.begin(),
-                                             renderer_thread_ids.end());
+  *rendering_thread_ids = std::vector<pid_t>();
+  rendering_thread_ids->reserve(renderer_thread_ids.size());
+  std::transform(renderer_thread_ids.begin(), renderer_thread_ids.end(),
+                 std::back_inserter(*rendering_thread_ids),
+                 [](const base::PlatformThreadId& tid) { return tid.raw(); });
 
   auto gpu_thread_ids =
       VizCompositorThreadRunnerWebView::GetInstance()->GetThreadIds();
-  std::copy(gpu_thread_ids.begin(), gpu_thread_ids.end(),
-            std::back_inserter(*rendering_thread_ids));
+  std::transform(gpu_thread_ids.begin(), gpu_thread_ids.end(),
+                 std::back_inserter(*rendering_thread_ids),
+                 [](const base::PlatformThreadId& tid) { return tid.raw(); });
 
   if (browser_io_thread_id_ != base::kInvalidThreadId) {
-    rendering_thread_ids->push_back(browser_io_thread_id_);
+    rendering_thread_ids->push_back(browser_io_thread_id_.raw());
   }
 
   *preferred_frame_interval = preferred_frame_interval_;

@@ -118,10 +118,11 @@ void ScopedFxLogger::LogMessage(std::string_view file,
   // global logs to the system logger.
 
   fuchsia_syslog::LogBuffer buffer;
-  buffer.BeginRecord(
-      fuchsia_severity, cpp17::string_view(file.data(), file.size()),
-      line_number, cpp17::string_view(msg.data(), msg.size()), socket_.borrow(),
-      0, base::Process::Current().Pid(), base::PlatformThread::CurrentId());
+  buffer.BeginRecord(fuchsia_severity,
+                     cpp17::string_view(file.data(), file.size()), line_number,
+                     cpp17::string_view(msg.data(), msg.size()),
+                     socket_.borrow(), 0, base::Process::Current().Pid(),
+                     base::PlatformThread::CurrentId().raw());
   for (const auto& tag : tags_) {
     buffer.WriteKeyValue("tag", tag);
   }

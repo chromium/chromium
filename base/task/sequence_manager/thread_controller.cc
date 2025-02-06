@@ -154,7 +154,8 @@ void ThreadController::RunLevelTracker::TimeKeeper::EnableRecording(
       // In the non-SDK version, ThreadTrack::Current() returns a different
       // track id on some platforms (for example Mac OS), which results in
       // async tracks not being associated with their thread.
-      perfetto::ThreadTrack::ForThread(base::PlatformThread::CurrentId()));
+      perfetto::ThreadTrack::ForThread(
+          base::PlatformThread::CurrentId().raw()));
   // TODO(crbug.com/42050015): Use Perfetto library to name this Track.
   // auto desc = perfetto_track_->Serialize();
   // desc.set_name(JoinString({"MessagePumpPhases", thread_name}, " "));

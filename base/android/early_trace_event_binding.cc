@@ -28,8 +28,8 @@ static void JNI_EarlyTraceEvent_RecordEarlyBeginEvent(JNIEnv* env,
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(internal::kJavaTraceCategory);
   trace_event_internal::AddTraceEventWithThreadIdAndTimestamps(
       TRACE_EVENT_PHASE_BEGIN, category_group_enabled, name.c_str(),
-      /*scope=*/nullptr, trace_event_internal::kNoId, thread_id,
-      TimeTicks::FromJavaNanoTime(time_ns),
+      /*scope=*/nullptr, trace_event_internal::kNoId,
+      PlatformThreadId(thread_id), TimeTicks::FromJavaNanoTime(time_ns),
       ThreadTicks() + Milliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
@@ -45,8 +45,8 @@ static void JNI_EarlyTraceEvent_RecordEarlyEndEvent(JNIEnv* env,
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(internal::kJavaTraceCategory);
   trace_event_internal::AddTraceEventWithThreadIdAndTimestamps(
       TRACE_EVENT_PHASE_END, category_group_enabled, name.c_str(),
-      /*scope=*/nullptr, trace_event_internal::kNoId, thread_id,
-      TimeTicks::FromJavaNanoTime(time_ns),
+      /*scope=*/nullptr, trace_event_internal::kNoId,
+      PlatformThreadId(thread_id), TimeTicks::FromJavaNanoTime(time_ns),
       ThreadTicks() + Milliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
@@ -64,8 +64,8 @@ static void JNI_EarlyTraceEvent_RecordEarlyToplevelBeginEvent(
           internal::kToplevelTraceCategory);
   trace_event_internal::AddTraceEventWithThreadIdAndTimestamps(
       TRACE_EVENT_PHASE_BEGIN, category_group_enabled, name.c_str(),
-      /*scope=*/nullptr, trace_event_internal::kNoId, thread_id,
-      TimeTicks::FromJavaNanoTime(time_ns),
+      /*scope=*/nullptr, trace_event_internal::kNoId,
+      PlatformThreadId(thread_id), TimeTicks::FromJavaNanoTime(time_ns),
       ThreadTicks() + Milliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
@@ -83,8 +83,8 @@ static void JNI_EarlyTraceEvent_RecordEarlyToplevelEndEvent(
           internal::kToplevelTraceCategory);
   trace_event_internal::AddTraceEventWithThreadIdAndTimestamps(
       TRACE_EVENT_PHASE_END, category_group_enabled, name.c_str(),
-      /*scope=*/nullptr, trace_event_internal::kNoId, thread_id,
-      TimeTicks::FromJavaNanoTime(time_ns),
+      /*scope=*/nullptr, trace_event_internal::kNoId,
+      PlatformThreadId(thread_id), TimeTicks::FromJavaNanoTime(time_ns),
       ThreadTicks() + Milliseconds(thread_time_ms),
       TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)

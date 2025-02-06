@@ -646,7 +646,7 @@ class HangWatcherSnapshotTest : public testing::Test {
     constexpr char kSeparator{'|'};
 
     for (PlatformThreadId id : ids) {
-      result += base::NumberToString(id) + kSeparator;
+      result += base::NumberToString(id.raw()) + kSeparator;
     }
 
     return result;

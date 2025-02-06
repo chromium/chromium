@@ -101,7 +101,7 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
   watched_thread_id_str_ = base::NumberToString(watched_thread_id);
 #else
   watched_thread_id_str_ =
-      base::NumberToString(base::PlatformThread::CurrentId());
+      base::NumberToString(base::PlatformThread::CurrentId().raw());
 #endif
 
 #if BUILDFLAG(IS_WIN)

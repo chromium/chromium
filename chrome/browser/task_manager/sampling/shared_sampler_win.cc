@@ -138,7 +138,9 @@ bool QuerySystemProcessInformation(ByteBuffer* buffer) {
 // Per-thread data extracted from SYSTEM_THREAD_INFORMATION and stored in a
 // snapshot. This structure is accessed only on the worker thread.
 struct ThreadData {
-  base::PlatformThreadId thread_id;
+  // Don't use base::PlatformThreadId for thread id, because
+  // SYSTEM_THREAD_INFORMATION uses a HANDLE for the utid.
+  HANDLE thread_id;
   ULONG context_switches;
 };
 
@@ -430,8 +432,7 @@ std::unique_ptr<ProcessDataSnapshot> SharedSampler::CaptureSnapshot() {
             continue;
 
           ThreadData thread_data;
-          thread_data.thread_id = static_cast<base::PlatformThreadId>(
-              reinterpret_cast<uintptr_t>(ti->ClientId.UniqueThread));
+          thread_data.thread_id = ti->ClientId.UniqueThread;
           thread_data.context_switches = ti->ContextSwitchCount;
           process_data.threads.push_back(thread_data);
         }

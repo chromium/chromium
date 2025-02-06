@@ -62,7 +62,7 @@ void SetNameInternal(PlatformThreadId thread_id, const char* name) {
   THREADNAME_INFO info;
   info.dwType = 0x1000;
   info.szName = name;
-  info.dwThreadID = thread_id;
+  info.dwThreadID = thread_id.raw();
   info.dwFlags = 0;
 
   __try {
@@ -237,7 +237,7 @@ void AssertMemoryPriority(HANDLE thread, int memory_priority) {
 
 // static
 PlatformThreadId PlatformThread::CurrentId() {
-  return ::GetCurrentThreadId();
+  return PlatformThreadId(::GetCurrentThreadId());
 }
 
 // static

@@ -453,8 +453,22 @@ bool TestResultsTracker::SaveSummaryAsJSON(
             static_cast<int>(test_result.elapsed_time.InMilliseconds()));
 
         if (test_result.thread_id) {
-          test_result_value.Set("thread_id",
-                                static_cast<int>(*test_result.thread_id));
+          // The thread id might be an int64, however int64 values are not
+          // representable in JS and JSON (cf. crbug.com/40228085) since JS
+          // numbers are float64. Since thread IDs are likely to be allocated
+          // sequentially, truncation of the high bits is preferable to loss of
+          // precision in the low bits, as threads are more likely to differ in
+          // their low bit values, so we truncate the value to int32. Since this
+          // is only used for dumping test runner state, the loss of information
+          // is not catastrophic and won't happen in normal browser execution.
+          // Additionally, the test launcher tid is also truncated, so the
+          // truncated values should match.
+          //
+          // LINT.IfChange(TestLauncherTidTruncation)
+          test_result_value.Set(
+              "thread_id",
+              test_result.thread_id->truncate_to_int32_for_display_only());
+          // LINT.ThenChange(test_launcher_tracer.cc:TestLauncherTidTruncation)
         }
         if (test_result.process_num) {
           test_result_value.Set("process_num", *test_result.process_num);

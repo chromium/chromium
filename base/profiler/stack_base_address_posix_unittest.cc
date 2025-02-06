@@ -40,8 +40,8 @@ TEST(GetThreadStackBaseAddressTest, MAYBE_CurrentThread) {
 TEST(GetThreadStackBaseAddressTest, MainThread) {
   // GetThreadStackBaseAddress does not use pthread_id for main thread on these
   // platforms.
-  std::optional<uintptr_t> base =
-      GetThreadStackBaseAddress(GetCurrentProcId(), pthread_t());
+  std::optional<uintptr_t> base = GetThreadStackBaseAddress(
+      PlatformThreadId(GetCurrentProcId()), pthread_t());
   EXPECT_THAT(base, Optional(Gt(0u)));
 }
 

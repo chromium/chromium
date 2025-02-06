@@ -268,7 +268,9 @@ bool UserfaultFD::DrainPendingFaults() {
             pending_fault.arg.pagefault.flags & UFFD_PAGEFAULT_FLAG_WRITE
                 ? UserfaultFDHandler::PagefaultFlags::kWriteFault
                 : UserfaultFDHandler::PagefaultFlags::kReadFault,
-            pending_fault.arg.pagefault.feat.ptid)) {
+            base::PlatformThreadId(
+                static_cast<base::PlatformThreadId::UnderlyingType>(
+                    pending_fault.arg.pagefault.feat.ptid)))) {
       // It'll get retried later (it wasn't popped).
       return false;
     }

@@ -36,10 +36,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/thread_cache.h"
@@ -47,10 +47,10 @@
 
 namespace partition_alloc::tools {
 
-using ::base::PlatformThreadId;
 using partition_alloc::internal::BucketIndexLookup;
 using partition_alloc::internal::MetadataKind;
 using partition_alloc::internal::PartitionBucket;
+using partition_alloc::internal::base::PlatformThreadId;
 template <MetadataKind kind>
 using SlotSpanMetadata = partition_alloc::internal::SlotSpanMetadata<kind>;
 
@@ -63,8 +63,8 @@ uintptr_t FindThreadCacheRegistry(RemoteProcessMemoryReader& reader) {
 }
 
 // List all thread names for a given PID.
-std::map<base::PlatformThreadId, std::string> ThreadNames(pid_t pid) {
-  std::map<base::PlatformThreadId, std::string> result;
+std::map<PlatformThreadId, std::string> ThreadNames(pid_t pid) {
+  std::map<PlatformThreadId, std::string> result;
 
   base::FilePath root_path =
       base::FilePath(base::StringPrintf("/proc/%d/task", pid));
@@ -114,7 +114,7 @@ std::map<base::PlatformThreadId, std::string> ThreadNames(pid_t pid) {
       }
     }
 
-    result[base::PlatformThreadId(process_id)] = std::string(name);
+    result[PlatformThreadId(process_id)] = std::string(name);
   }
 
   return result;
@@ -362,7 +362,7 @@ void DisplayBucket(const ThreadCacheInspector::BucketStats& bucket,
 
 void DisplayPerThreadData(
     ThreadCacheInspector& inspector,
-    std::map<base::PlatformThreadId, std::string>& tid_to_name) {
+    std::map<PlatformThreadId, std::string>& tid_to_name) {
   std::cout << "Found " << inspector.thread_caches().size()
             << " caches, total cached memory = "
             << inspector.CachedMemory() / 1024 << "kiB"
@@ -557,6 +557,8 @@ base::Value::Dict Dump(PartitionRootInspector& root_inspector) {
 }  // namespace partition_alloc::tools
 
 int main(int argc, char** argv) {
+  using partition_alloc::tools::PlatformThreadId;
+
   base::CommandLine::Init(argc, argv);
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch("pid")) {
@@ -581,7 +583,7 @@ int main(int argc, char** argv) {
   LOG(INFO) << "Getting the thread cache registry";
   partition_alloc::tools::ThreadCacheInspector thread_cache_inspector{
       registry_address, pid};
-  std::map<base::PlatformThreadId, std::string> tid_to_name;
+  std::map<PlatformThreadId, std::string> tid_to_name;
 
   size_t iter = 0;
   while (true) {

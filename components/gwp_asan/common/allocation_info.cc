@@ -32,9 +32,9 @@ size_t AllocationInfo::GetStackTrace(base::span<const void*> trace) {
 // base::PlatformThread::CurrentId() returns.
 uint64_t AllocationInfo::GetCurrentTid() {
 #if !BUILDFLAG(IS_APPLE)
-  return base::PlatformThread::CurrentId();
+  return static_cast<uint64_t>(base::PlatformThread::CurrentId());
 #else
-  uint64_t tid = base::kInvalidThreadId;
+  uint64_t tid = 0;
   pthread_threadid_np(nullptr, &tid);
   return tid;
 #endif

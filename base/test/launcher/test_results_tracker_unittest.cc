@@ -138,7 +138,7 @@ TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithTimestampInResult) {
   TestResultsTracker tracker;
   TestResult result;
   result.full_name = "A.B";
-  result.thread_id = 123;
+  result.thread_id = base::PlatformThreadId::ForTest(123);
   result.process_num = 456;
   result.timestamp = Time::Now();
 
