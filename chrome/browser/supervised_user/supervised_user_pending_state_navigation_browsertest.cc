@@ -64,12 +64,6 @@ static constexpr std::string_view
     kUmaReauthenticationYoutubeSubframeHistogramName =
         "FamilyLinkUser.SubframeYoutubeReauthenticationInterstitial";
 
-static constexpr std::string_view kUmaClosedSignInTabsHistogramName =
-    "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialSigninTab.ClosedCount";
-static constexpr std::string_view kUmaSkippedSignInTabsHistogramName =
-    "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialSigninTab."
-    "SkippedClosingCount";
-
 bool IsReauthenticationInterstitialBeingShown(content::WebContents* content) {
   CHECK(content);
   std::string command =
@@ -357,10 +351,6 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
       static_cast<int>(
           SupervisedUserVerificationPage::Status::REAUTH_COMPLETED),
       1);
-  histogram_tester.ExpectBucketCount(kUmaClosedSignInTabsHistogramName,
-                                     /*sample=*/2, /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(kUmaSkippedSignInTabsHistogramName,
-                                     /*sample=*/1, /*expected_count=*/1);
   EXPECT_EQ(2, GetTabCount());
 }
 

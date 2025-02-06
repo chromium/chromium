@@ -342,23 +342,6 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
-<histogram
-    name="FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialSigninTab.{TabState}Count"
-    units="Number of tabs" expires_after="2025-02-10">
-  <owner>anthie@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Records the number of spawned sign-in tabs that the blocked site
-    re-authentication interstitial {TabState}. The re-authentication
-    interstitial will close the sign-in tab, unless the user has used to this
-    tab to navigate to a new url.
-  </summary>
-  <token key="TabState">
-    <variant name="Closed" summary="closes"/>
-    <variant name="SkippedClosing" summary="leaves open"/>
-  </token>
-</histogram>
-
 <histogram name="FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState"
     enum="FamilyLinkUserReauthenticationInterstitialState"
     expires_after="2025-06-08">
