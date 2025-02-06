@@ -50,3 +50,32 @@
 
 # crbug.com/376528174
 -org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncIntegrationTest.testScreenRotation
+
+# crbug.com/394668480
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenu
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuBeforeFirstRun
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuForOfflinePage
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuNoCustomEntries
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testMaxMenuItems
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testNoHistoryItem_FeatureDisabled
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testNoHistoryItem_NoClientPackage
+
+# crbug.com/394671175
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_PostLongPressClickNoSelectionEditor
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_ShareActionAllFilterableTabs
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSetup_WithStartSurface
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSelectionEditorPosition
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testStripDialog_TabListEditorCloseAll_CustomHomepage
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testStripDialog_TabListEditorCloseAll_NoCustomHomepage
+
+# crbug.com/394673741
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesImageLinkOptions
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesLinkOptions
+
+# crbug.com/394674606
+-org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfBookmarksIsManagedByPolicy
+-org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfDataTypesSyncing
+
+# crbug.com/394675204
+-org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testChromePage
+-org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testShowOnSecureWebsiteDark
