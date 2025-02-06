@@ -15,6 +15,7 @@
 #include "url/gurl.h"
 
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
@@ -22,6 +23,7 @@ namespace net {
 
 TEST(LocalSetDeclarationTest, Valid_EmptySet) {
   EXPECT_THAT(LocalSetDeclaration(), IsEmpty());
+  EXPECT_THAT(LocalSetDeclaration::Create({}, {}), Optional(IsEmpty()));
 }
 
 TEST(LocalSetDeclarationTest, Valid_Basic) {
@@ -34,7 +36,9 @@ TEST(LocalSetDeclarationTest, Valid_Basic) {
   });
 
   EXPECT_THAT(
-      LocalSetDeclaration(entries, /*aliases=*/{}).ComputeMutation(),
+      LocalSetDeclaration::Create(entries, /*aliases=*/{})
+          .value()
+          .ComputeMutation(),
       SetsMutation(
           /*replacement_sets=*/
           {
@@ -62,7 +66,8 @@ TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
   base::flat_map<SchemefulSite, SchemefulSite> aliases(
       {{primary_cctld, primary}, {associated_cctld, associated}});
 
-  LocalSetDeclaration local_set(entries, aliases);
+  LocalSetDeclaration local_set =
+      LocalSetDeclaration::Create(entries, aliases).value();
 
   // LocalSetDeclaration should allow these to pass through, after passing
   // validation.
@@ -88,6 +93,56 @@ TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
               {associated_cctld, associated},
               {primary_cctld, primary},
           }));
+}
+
+TEST(LocalSetDeclarationTest, Invalid) {
+  SchemefulSite primary(GURL("https://primary.test"));
+  SchemefulSite primary_cctld(GURL("https://primary.cctld"));
+  SchemefulSite primary2(GURL("https://primary2.test"));
+  SchemefulSite associated(GURL("https://associated.test"));
+  SchemefulSite associated_cctld(GURL("https://associated.cctld"));
+  SchemefulSite associated2(GURL("https://associated2.test"));
+  SchemefulSite associated2_cctld(GURL("https://associated2.cctld"));
+
+  // All aliases must refer to a canonical site that has an entry in the set.
+  EXPECT_FALSE(LocalSetDeclaration::Create(
+      {
+          {primary,
+           FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
+          {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+      },
+      {{associated2_cctld, associated2}}));
+
+  // If an alias has an explicit entry, it must match the canonical's entry.
+  EXPECT_FALSE(LocalSetDeclaration::Create(
+      {
+          {primary,
+           FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
+          {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+          {associated_cctld,
+           FirstPartySetEntry(primary, SiteType::kAssociated, 1)},
+      },
+      {{associated_cctld, associated}}));
+
+  // No singleton sets.
+  EXPECT_FALSE(LocalSetDeclaration::Create(
+      {
+          {primary,
+           FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
+      },
+      {}));
+
+  // Multiple sets aren't supported.
+  EXPECT_FALSE(LocalSetDeclaration::Create(
+      {
+          {primary,
+           FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
+          {primary2,
+           FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
+          {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+          {associated2, FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+      },
+      {}));
 }
 
 }  // namespace net

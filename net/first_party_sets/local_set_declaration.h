@@ -5,6 +5,8 @@
 #ifndef NET_FIRST_PARTY_SETS_LOCAL_SET_DECLARATION_H_
 #define NET_FIRST_PARTY_SETS_LOCAL_SET_DECLARATION_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
@@ -35,9 +37,12 @@ class NET_EXPORT LocalSetDeclaration {
   // * It must map to some canonical site that is in `set_entries`.
   // * If the alias is also present in `set_entries`, its entry must be
   // identical to the canonical's entry.
-  LocalSetDeclaration(
+  //
+  // Returns std::nullopt if any invariants are violated.
+  static std::optional<LocalSetDeclaration> Create(
       base::flat_map<SchemefulSite, FirstPartySetEntry> set_entries,
-      base::flat_map<SchemefulSite, SchemefulSite> aliases);
+      base::flat_map<SchemefulSite, SchemefulSite> aliases,
+      bool emit_errors = false);
 
   ~LocalSetDeclaration();
 
@@ -55,6 +60,10 @@ class NET_EXPORT LocalSetDeclaration {
   SetsMutation ComputeMutation() const;
 
  private:
+  LocalSetDeclaration(
+      base::flat_map<SchemefulSite, FirstPartySetEntry> set_entries,
+      base::flat_map<SchemefulSite, SchemefulSite> aliases);
+
   // Stores the set of entries, without ccTLD aliases. This may be empty if no
   // set was locally defined.
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries_;
