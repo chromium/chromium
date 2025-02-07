@@ -50,6 +50,7 @@ public class AppHooks {
      * @return An iterator of partner bookmarks.
      */
     @Nullable
+    @Deprecated
     public PartnerBookmark.BookmarkIterator getPartnerBookmarkIterator() {
         return PartnerBookmarksProviderIterator.createIfAvailable();
     }

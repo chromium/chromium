@@ -435,13 +435,7 @@ public class ProcessInitializationHandler {
         // Give BookmarkModel a provider of PartnerBookmark.BookmarkIterator so that
         // PartnerBookmarksShim can be loaded lazily when BookmarkModel is needed.
         BookmarkModel.setPartnerBookmarkIteratorProvider(
-                (callback) -> {
-                    callback.onResult(AppHooks.get().getPartnerBookmarkIterator());
-                });
-        // TODO(crbug.com/384197258): Replace with the above call once the downstream code has
-        // landed.
-        // BookmarkModel.setPartnerBookmarkIteratorProvider(
-        //        AppHooks.get()::requestPartnerBookmarkIterator);
+                AppHooks.get()::requestPartnerBookmarkIterator);
 
         List<Profile> profiles = ProfileManager.getLoadedProfiles();
         assert !profiles.isEmpty()
