@@ -2,7 +2,7 @@ Name: libFuzzer
 URL: http://llvm.org/docs/LibFuzzer.html
 Version: N/A
 Revision: DEPS
-License: NCSA
+License: Apache-with-LLVM-Exception
 License File: LICENSE.TXT
 Security Critical: no
 Shipped: no
