@@ -244,7 +244,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
         internal_content_bounds_, raster_caps.tile_format, gfx::ColorSpace());
 
     if (!pool_resource.gpu_backing()) {
-      auto backing = std::make_unique<ResourcePool::GpuBacking>();
+      auto backing = std::make_unique<ResourcePool::Backing>();
       auto* sii = raster_context_provider->SharedImageInterface();
       backing->overlay_candidate = raster_caps.tile_overlay_candidate;
 
@@ -281,7 +281,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
                                            gfx::ColorSpace());
 
     if (!pool_resource.software_backing()) {
-      auto backing = std::make_unique<ResourcePool::SoftwareBacking>();
+      auto backing = std::make_unique<ResourcePool::Backing>();
       backing->shared_image_interface = sii;
       backing->shared_image = sii->CreateSharedImageForSoftwareCompositor(
           {pool_resource.format(), pool_resource.size(),
