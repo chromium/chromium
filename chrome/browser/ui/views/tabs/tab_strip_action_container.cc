@@ -41,6 +41,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_vector_icon_manager.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 namespace {
@@ -273,7 +274,13 @@ TabStripActionContainer::CreateGlicNudgeButton(
       base::BindRepeating(&TabStripActionContainer::OnGlicNudgeButtonDismissed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE),
-      kGlicNudgeButtonElementId, Edge::kNone, kGlicButtonIcon);
+      kGlicNudgeButtonElementId, Edge::kNone,
+#if BUILDFLAG(ENABLE_GLIC)
+      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON)
+#else
+      gfx::VectorIcon::EmptyIcon()
+#endif
+  );
 
   button->SetTooltipText(l10n_util::GetStringUTF16(IDS_GLIC_PROMO_TITLE));
   button->GetViewAccessibility().SetName(

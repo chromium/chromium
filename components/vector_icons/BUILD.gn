@@ -8,6 +8,8 @@ import("//components/vector_icons/vector_icons.gni")
 aggregate_vector_icons("components_vector_icons") {
   icon_directory = "."
 
+  generate_unittests = true
+
   sources = [
     "${branding_path_component}/product.icon",
     "${branding_path_component}/product_refresh.icon",
@@ -308,6 +310,20 @@ static_library("vector_icons") {
     ":components_vector_icons",
     "//base",
     "//skia",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = filter_include(get_target_outputs(":components_vector_icons"),
+                           [ "*unittest.h" ])
+  sources += [ "vector_icons_unittest.cc" ]
+
+  deps = [
+    ":components_vector_icons",
+    "//base",
+    "//testing/gtest",
     "//ui/gfx",
   ]
 }

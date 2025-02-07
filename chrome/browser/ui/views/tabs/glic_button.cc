@@ -23,6 +23,7 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_vector_icon_manager.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace glic {
@@ -32,7 +33,12 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller)
           tab_strip_controller,
           PressedCallback(base::BindRepeating(&GlicButton::ToggleUI,
                                               base::Unretained(this))),
-          kGlicButtonIcon) {
+#if BUILDFLAG(ENABLE_GLIC)
+          GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON)
+#else
+          gfx::VectorIcon::EmptyIcon()
+#endif
+      ) {
   tab_strip_controller_ = tab_strip_controller;
   SetProperty(views::kElementIdentifierKey, kGlicButtonElementId);
 
