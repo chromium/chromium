@@ -108,7 +108,6 @@
                                    self.browser->GetProfile())
         autocompleteController:self.autocompleteController
       remoteSuggestionsService:remoteSuggestionsService
-                      delegate:_popupView.get()
                        tracker:feature_engagement::TrackerFactory::
                                    GetForProfile(self.browser->GetProfile())];
 

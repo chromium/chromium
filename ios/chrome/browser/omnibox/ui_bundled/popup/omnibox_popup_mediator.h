@@ -42,18 +42,6 @@ namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
 
-class OmniboxPopupMediatorDelegate {
- public:
-  virtual bool IsStarredMatch(const AutocompleteMatch& match) const = 0;
-  virtual void OnMatchSelected(const AutocompleteMatch& match,
-                               size_t row,
-                               WindowOpenDisposition disposition) = 0;
-  virtual void OnMatchSelectedForAppending(const AutocompleteMatch& match) = 0;
-  virtual void OnMatchSelectedForDeletion(const AutocompleteMatch& match) = 0;
-  virtual void OnScroll() = 0;
-  virtual void OnCallActionTap() = 0;
-};
-
 /// Provider that returns protocols and services that are instantiated after
 /// OmniboxPopupCoordinator.
 @protocol OmniboxPopupMediatorProtocolProvider
@@ -135,7 +123,6 @@ class OmniboxPopupMediatorDelegate {
                faviconLoader:(FaviconLoader*)faviconLoader
       autocompleteController:(AutocompleteController*)autocompleteController
     remoteSuggestionsService:(RemoteSuggestionsService*)remoteSuggestionsService
-                    delegate:(OmniboxPopupMediatorDelegate*)delegate
                      tracker:(feature_engagement::Tracker*)tracker;
 
 /// Sets the text alignment of the popup content.

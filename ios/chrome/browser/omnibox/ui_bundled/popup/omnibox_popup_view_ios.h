@@ -17,17 +17,14 @@
 @class OmniboxAutocompleteController;
 @class OmniboxPopupMediator;
 class OmniboxController;
-class OmniboxPopupViewSuggestionsDelegate;
 struct AutocompleteMatch;
 
 // iOS implementation of OmniboxPopupView.
 class OmniboxPopupViewIOS : public OmniboxPopupView,
-                            public OmniboxPopupMediatorDelegate,
                             public OmniboxPopupProvider {
  public:
   OmniboxPopupViewIOS(
       OmniboxController* controller,
-      OmniboxPopupViewSuggestionsDelegate* delegate,
       OmniboxAutocompleteController* omniboxAutocompleteController);
   ~OmniboxPopupViewIOS() override;
 
@@ -48,22 +45,9 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
   bool IsPopupOpen() override;
   void SetHasThumbnail(bool has_thumbnail) override;
 
-  // OmniboxPopupViewControllerDelegate implementation.
-  bool IsStarredMatch(const AutocompleteMatch& match) const override;
-  // `disposition` should be CURRENT_TAB is the match should be loaded,
-  // SWITCH_TO_TAB if it should switch to this tab.
-  void OnMatchSelected(const AutocompleteMatch& match,
-                       size_t row,
-                       WindowOpenDisposition disposition) override;
-  void OnMatchSelectedForAppending(const AutocompleteMatch& match) override;
-  void OnMatchSelectedForDeletion(const AutocompleteMatch& match) override;
-  void OnScroll() override;
-  void OnCallActionTap() override;
-
   void SetMediator(OmniboxPopupMediator* mediator) { mediator_ = mediator; }
 
  private:
-  raw_ptr<OmniboxPopupViewSuggestionsDelegate> delegate_;  // weak
   OmniboxPopupMediator* mediator_;
   __weak OmniboxAutocompleteController* omnibox_autocomplete_controller_;
 };

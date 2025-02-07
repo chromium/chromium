@@ -202,7 +202,8 @@
   }
 
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
-      initWithOmniboxController:_editView->controller()];
+      initWithOmniboxController:_editView->controller()
+                 omniboxViewIOS:_editView.get()];
   _omniboxPopupController = [[OmniboxPopupController alloc] init];
   _omniboxPopupController.omniboxAutocompleteController =
       _omniboxAutocompleteController;
@@ -307,7 +308,6 @@
   DCHECK(!_popupCoordinator);
   std::unique_ptr<OmniboxPopupViewIOS> popupView =
       std::make_unique<OmniboxPopupViewIOS>(_editView->controller(),
-                                            _editView.get(),
                                             _omniboxAutocompleteController);
 
   _editView->SetPopupProvider(popupView.get());
