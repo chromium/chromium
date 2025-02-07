@@ -10400,15 +10400,21 @@ NavigationRequest::ComputeCrossOriginIsolationKey() {
 
   // If the navigation doesn't have an origin, we cannot create a
   // CrossOriginIsolationKey for it, since it must be tied to an origin.
-  if (!GetOriginToCommit().has_value()) {
-    return std::nullopt;
+  url::Origin origin;
+  if (state_ < WILL_PROCESS_RESPONSE) {
+    origin = GetTentativeOriginAtRequestTime();
+  } else {
+    std::optional<url::Origin> origin_to_commit = GetOriginToCommit();
+    if (!origin_to_commit.has_value()) {
+      return std::nullopt;
+    }
+    origin = origin_to_commit.value();
   }
 
   // Inform the PolicyContainer that DocumentIsolationPolicy has enabled
   // crossOriginIsolation for the document.
   policy_container_builder_->SetCrossOriginIsolationEnabledByDIP();
 
-  url::Origin origin = GetOriginToCommit().value();
   return AgentClusterKey::CrossOriginIsolationKey(
       origin, CrossOriginIsolationMode::kConcrete);
 }

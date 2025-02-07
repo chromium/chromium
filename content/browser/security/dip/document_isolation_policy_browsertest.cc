@@ -1827,6 +1827,28 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
             sub_document->GetSiteInstance()->GetProcess());
 }
 
+// Regression test for crbug.com/394350439.
+// Doing a cross-document navigation to a local scheme that inherits DIP should
+// not cause a crash.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
+                       DIPNavigationToLocalScheme) {
+  // Navigate to a page with DocumentIsolationPolicy.
+  GURL main_url = GetDocumentIsolationPolicyURL("a.test");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Now navigate the top-level frame to about:blank. It should be cross-origin
+  // isolated because it inherits the DocumentIsolationPolicy of its navigation
+  // initiator (the current document).
+  EXPECT_TRUE(ExecJs(current_frame_host(), "location = 'about:blank';"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(url::kAboutBlankURL, current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(current_frame_host()
+                ->policy_container_host()
+                ->policies()
+                .document_isolation_policy,
+            GetDocumentIsolationPolicy());
+}
+
 // TODO(crbug.com/349104385): Add a test checking that the
 // Document-Isolation-Policy header is ignored on redirect responses.
 
