@@ -1651,6 +1651,9 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
         "userTier",
         features::kDevToolsAiAssistancePerformanceAgentUserTier.GetName(
             features::kDevToolsAiAssistancePerformanceAgentUserTier.Get()));
+    ai_assistance_performance_agent_dict.Set(
+        "insightsEnabled",
+        features::kDevToolsAiAssistancePerformanceAgentInsightsEnabled.Get());
     response_dict.Set("devToolsAiAssistancePerformanceAgent",
                       std::move(ai_assistance_performance_agent_dict));
   }

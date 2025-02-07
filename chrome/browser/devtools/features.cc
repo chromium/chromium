@@ -92,6 +92,10 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         &kDevToolsAiAssistancePerformanceAgent, "user_tier",
         /*default_value=*/DevToolsFreestylerUserTier::kPublic,
         &devtools_freestyler_user_tier_options};
+const base::FeatureParam<bool>
+    kDevToolsAiAssistancePerformanceAgentInsightsEnabled{
+        &kDevToolsAiAssistancePerformanceAgent, "insights_enabled",
+        /*default_value=*/false};
 
 // Whether the DevTools AI Assistance File Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistanceFileAgent,
