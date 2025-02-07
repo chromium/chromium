@@ -95,8 +95,6 @@ class Canvas2dGPUTransferOption;
 class CanvasPattern;
 class CanvasRenderingContextHost;
 class CanvasResourceProvider;
-class DOMMatrix;
-class DOMMatrixInit;
 class ExceptionState;
 class ExecutionContext;
 class Font;
@@ -206,25 +204,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   int LayerCount() const { return layer_count_; }
   virtual void reset();  // Called by the javascript interface
   void ResetInternal();  // Called from within blink
-
-  void scale(double sx, double sy);
-  void rotate(double angle_in_radians);
-  void translate(double tx, double ty);
-  void transform(double m11,
-                 double m12,
-                 double m21,
-                 double m22,
-                 double dx,
-                 double dy);
-  void setTransform(double m11,
-                    double m12,
-                    double m21,
-                    double m22,
-                    double dx,
-                    double dy);
-  void setTransform(DOMMatrixInit*, ExceptionState&);
-  virtual DOMMatrix* getTransform();
-  virtual void resetTransform();
 
   void beginPath();
 
@@ -398,7 +377,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   // the current color.
   virtual Color GetCurrentColor() const = 0;
 
-  virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
   virtual const cc::PaintCanvas* GetPaintCanvas() const = 0;
   cc::PaintCanvas* GetPaintCanvas() {
     return const_cast<cc::PaintCanvas*>(
@@ -723,8 +701,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   void ValidateStateStackImpl(const cc::PaintCanvas* canvas = nullptr) const;
 
   bool ShouldDrawImageAntialiased(const gfx::RectF& dest_rect) const;
-
-  void SetTransform(const AffineTransform&);
 
   AffineTransform GetTransform() const override;
 
@@ -1177,12 +1153,6 @@ void BaseRenderingContext2D::AdjustRectForCanvas(T& x,
     height = -height;
     y -= height;
   }
-}
-
-ALWAYS_INLINE void BaseRenderingContext2D::SetTransform(
-    const AffineTransform& matrix) {
-  GetState().SetTransform(matrix);
-  SetIsTransformInvertible(matrix.IsInvertible());
 }
 
 ALWAYS_INLINE bool BaseRenderingContext2D::IsFullCanvasCompositeMode(

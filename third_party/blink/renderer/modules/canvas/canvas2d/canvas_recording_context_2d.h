@@ -12,8 +12,12 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
+
+class DOMMatrix;
+class DOMMatrixInit;
 
 // CanvasRecordingContext2D implements the canvas_recording_context_2d.idl, a 2D
 // context API that records PaintOps. This class holds the canvas recording API
@@ -23,6 +27,26 @@ class MODULES_EXPORT CanvasRecordingContext2D : public CanvasPath {
  public:
   CanvasRecordingContext2D(const CanvasRecordingContext2D&) = delete;
   CanvasRecordingContext2D& operator=(const CanvasRecordingContext2D&) = delete;
+
+  // Functions implementing the CanvasTransform Interface.
+  void scale(double sx, double sy);
+  void rotate(double angle_in_radians);
+  void translate(double tx, double ty);
+  void transform(double m11,
+                 double m12,
+                 double m21,
+                 double m22,
+                 double dx,
+                 double dy);
+  void setTransform(double m11,
+                    double m12,
+                    double m21,
+                    double m22,
+                    double dx,
+                    double dy);
+  void setTransform(DOMMatrixInit*, ExceptionState&);
+  virtual DOMMatrix* getTransform();
+  virtual void resetTransform();
 
   // Functions implementing the CanvasShadowStyles interface.
   virtual double shadowOffsetX() const;
@@ -34,6 +58,7 @@ class MODULES_EXPORT CanvasRecordingContext2D : public CanvasPath {
   virtual double shadowBlur() const;
   virtual void setShadowBlur(double);
 
+  virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
   void Trace(Visitor*) const override;
 
  protected:
@@ -43,7 +68,16 @@ class MODULES_EXPORT CanvasRecordingContext2D : public CanvasPath {
   }
 
   HeapVector<Member<CanvasRenderingContext2DState>> state_stack_;
+
+ private:
+  void SetTransform(const AffineTransform&);
 };
+
+ALWAYS_INLINE void CanvasRecordingContext2D::SetTransform(
+    const AffineTransform& matrix) {
+  GetState().SetTransform(matrix);
+  SetIsTransformInvertible(matrix.IsInvertible());
+}
 
 }  // namespace blink
 
