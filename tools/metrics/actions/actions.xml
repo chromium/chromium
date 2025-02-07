@@ -26912,6 +26912,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileToolbarStartReorderGroup">
+  <owner>clank-app-team@google.com</owner>
+  <owner>nemco@google.com</owner>
+  <description>
+    User started to drag a group to re-order in tablet tab strip. Android only.
+  </description>
+</action>
+
 <action name="MobileToolbarStartReorderTab">
   <owner>clank-app-team@google.com</owner>
   <owner>twellington@chromium.org</owner>
