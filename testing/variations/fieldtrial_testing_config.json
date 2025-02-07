@@ -5118,11 +5118,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_M131",
+                    "name": "Enabled",
                     "enable_features": [
                         "EnableLensOverlay",
                         "IPH_iOSLensOverlayEntrypointTip",
+                        "LensClearcutBackgroundUploadEnabled",
                         "LensClearcutLoggerFastQosEnabled",
+                        "LensInkMultiSampleModeDisabled",
                         "LensOverlayEnableLocationBarEntrypoint"
                     ]
                 }
