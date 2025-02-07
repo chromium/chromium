@@ -80,6 +80,8 @@ BASE_DECLARE_FEATURE(kDevToolsAnimationStylesInStylesTab);
 
 BASE_DECLARE_FEATURE(kDevToolsImprovedWorkspaces);
 
+BASE_DECLARE_FEATURE(kDevToolsWellKnown);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

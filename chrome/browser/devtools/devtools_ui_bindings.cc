@@ -1681,6 +1681,11 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsImprovedWorkspaces",
                     std::move(devtools_improved_workspaces_dict));
 
+  base::Value::Dict devtools_well_known_dict;
+  devtools_well_known_dict.Set(
+      "enabled", base::FeatureList::IsEnabled(::features::kDevToolsWellKnown));
+  response_dict.Set("devToolsWellKnown", std::move(devtools_well_known_dict));
+
   base::Value::Dict ve_logging_dict;
   ve_logging_dict.Set(
       "enabled", base::FeatureList::IsEnabled(::features::kDevToolsVeLogging));

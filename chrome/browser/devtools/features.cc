@@ -133,4 +133,10 @@ BASE_FEATURE(kDevToolsImprovedWorkspaces,
              "DevToolsImprovedWorkspaces",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether DevTools will attempt to load project settings from a well-known
+// URI. See https://goo.gle/devtools-json-design for additional details.
+BASE_FEATURE(kDevToolsWellKnown,
+             "DevToolsWellKnown",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
