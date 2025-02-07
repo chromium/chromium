@@ -577,22 +577,22 @@
   },
   {
     "name": "autofill-enable-buy-now-pay-later-for-affirm",
-    "owners": ["alexandertekle@google.com", "payments-autofill-team@google.com"],
+    "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
   },
   {
     "name": "autofill-enable-buy-now-pay-later-for-zip",
-    "owners": ["alexandertekle@google.com", "payments-autofill-team@google.com"],
+    "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
   },
   {
     "name": "autofill-enable-buy-now-pay-later-syncing",
-    "owners": ["alexandertekle@google.com", "payments-autofill-team@google.com"],
+    "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
   },
   {
     "name": "autofill-enable-card-benefits-for-american-express",
-    "owners": [ "alexandertekle@google.com"],
+    "owners": [ "viplavkadam@google.com"],
     "expiry_milestone": 135
   },
   {
@@ -607,7 +607,7 @@
   },
   {
     "name": "autofill-enable-card-benefits-sync",
-    "owners": [ "alexandertekle@google.com", "yishuil@google.com" ],
+    "owners": [ "yishuil@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 135
   },
   {
@@ -617,7 +617,7 @@
   },
   {
     "name": "autofill-enable-card-product-name",
-    "owners": [ "vishwasuppoor@chromium.org", "siyua@chromium.org", "alexandertekle@chromium.org" ],
+    "owners": [ "vishwasuppoor@chromium.org", "siyua@chromium.org"],
     "expiry_milestone": 130
   },
   {
@@ -650,7 +650,7 @@
   },
   {
     "name": "autofill-enable-log-form-events-to-all-parsed-form-types",
-    "owners": [ "alexandertekle@google.com", "payments-autofill-team@google.com" ],
+    "owners": [ "jsaul@google.com",  "vinnypersky@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 136
   },
   {
@@ -683,12 +683,12 @@
   },
   {
     "name": "autofill-enable-ranking-formula-address-profiles",
-    "owners": [ "alexandertekle@google.com", "koerber@google.com" ],
+    "owners": [ "jamessun@google.com", "koerber@google.com" ],
     "expiry_milestone": 125
   },
   {
     "name": "autofill-enable-ranking-formula-credit-cards",
-    "owners": [ "alexandertekle@google.com", "koerber@google.com" ],
+    "owners": [ "jamessun@google.com", "koerber@google.com" ],
     "expiry_milestone": 125
   },
   {
