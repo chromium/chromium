@@ -48,7 +48,7 @@ class FeedTopSectionMediatorTest : public PlatformTest {
     feed_top_section_view_controller_ =
         [[FeedTopSectionViewController alloc] init];
     feed_top_section_mediator_ = [[FeedTopSectionMediator alloc]
-        initWithConsumer:[[FeedTopSectionViewController alloc] init]
+        initWithConsumer:feed_top_section_view_controller_
          identityManager:IdentityManagerFactory::GetForProfile(
                              fake_profile_.get())
              authService:fake_authentication_service_
