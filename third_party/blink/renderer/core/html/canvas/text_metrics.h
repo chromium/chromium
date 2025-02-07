@@ -42,6 +42,7 @@
 namespace blink {
 
 class DOMRectReadOnly;
+class ExceptionState;
 class TextClusterOptions;
 
 class CORE_EXPORT TextMetrics final : public ScriptWrappable {

@@ -22,6 +22,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class GPUTexelCopyBufferLayout;
 class GPUTexelCopyTextureInfo;
 class V8UnionGPUAutoLayoutModeOrGPUPipelineLayout;

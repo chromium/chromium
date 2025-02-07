@@ -15,6 +15,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class ReadableStream;
 
 class AITranslator final : public ScriptWrappable {
