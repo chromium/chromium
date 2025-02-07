@@ -13,6 +13,7 @@
 #include "base/threading/thread_checker.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
 class ImageSkia;
@@ -44,7 +45,17 @@ class MessageBox {
 
   ~MessageBox();
 
+  // Shows the message box widget in `ash::kShellWindowId_SystemModalContainer`
+  // container. The message box is only visible when an active user session is
+  // present.
   void Show();
+
+  // Shows the message box in a suggested parent view. The message box's
+  // visibility is tied to the parent's visibility. A suitable parent can be
+  // chosen from the containers in `ash::ShellWindowIds`.
+  void ShowInParentContainer(gfx::NativeView parent);
+
+  void ChangeParentContainer(gfx::NativeView parent);
 
  private:
   class Core;

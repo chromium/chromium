@@ -14,6 +14,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -43,9 +44,10 @@ class MessageBox::Core : public views::DialogDelegateView {
   Core(const Core&) = delete;
   Core& operator=(const Core&) = delete;
 
-  // Mirrors the public MessageBox interface.
-  void Show();
+  void Show(gfx::NativeView parent);
   void Hide();
+
+  void ChangeParentContainer(gfx::NativeView container);
 
   // views::DialogDelegateView:
   ui::mojom::ModalType GetModalType() const override;
@@ -105,14 +107,21 @@ MessageBox::Core::Core(const std::u16string& title_label,
       this));
 }
 
-void MessageBox::Core::Show() {
+void MessageBox::Core::Show(gfx::NativeView parent) {
   // The widget is owned by the NativeWidget.  See  comments in widget.h.
   views::Widget* widget =
-      CreateDialogWidget(this, /* delegate */
-                         nullptr /* parent window*/, nullptr /* parent view */);
+      CreateDialogWidget(/* delegate=*/this,
+                         /*context=*/nullptr, /*parent=*/parent);
 
   if (widget) {
     widget->Show();
+  }
+}
+
+void MessageBox::Core::ChangeParentContainer(gfx::NativeView parent) {
+  if (GetWidget()) {
+    views::Widget::ReparentNativeView(GetWidget()->GetNativeView(),
+                                      /*new_parent=*/parent);
   }
 }
 
@@ -167,7 +176,15 @@ MessageBox::MessageBox(const std::u16string& title_label,
                      this)) {}
 
 void MessageBox::Show() {
-  core_->Show();
+  core_->Show(nullptr);
+}
+
+void MessageBox::ShowInParentContainer(gfx::NativeView parent) {
+  core_->Show(parent);
+}
+
+void MessageBox::ChangeParentContainer(gfx::NativeView parent) {
+  core_->ChangeParentContainer(parent);
 }
 
 MessageBox::~MessageBox() {

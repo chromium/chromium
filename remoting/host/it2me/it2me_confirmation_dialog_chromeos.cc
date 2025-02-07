@@ -10,12 +10,19 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/message_formatter.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/session_manager/session_manager_types.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/message_box.h"
@@ -29,6 +36,8 @@
 namespace remoting {
 
 namespace {
+
+using session_manager::SessionState;
 
 constexpr char kConfirmationNotificationId[] = "CRD_CONFIRMATION_NOTIFICATION";
 constexpr char kConfirmationNotifierId[] = "crd.confirmation_notification";
@@ -58,6 +67,34 @@ std::u16string GetDeclineButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_DECLINE);
 }
 
+ash::SessionControllerImpl* session_controller() {
+  return ash::Shell::Get()->session_controller();
+}
+
+ash::ShellWindowId GetParentContainerId() {
+  switch (session_controller()->GetSessionState()) {
+    case SessionState::LOCKED:
+    case SessionState::LOGIN_PRIMARY:
+    case SessionState::LOGIN_SECONDARY:
+    case SessionState::LOGGED_IN_NOT_ACTIVE:
+      return ash::kShellWindowId_LockSystemModalContainer;
+
+    case SessionState::ACTIVE:
+      return ash::kShellWindowId_SystemModalContainer;
+
+    case SessionState::OOBE:
+    case SessionState::RMA:
+    case SessionState::UNKNOWN:
+      NOTREACHED() << "CRD is not supported for the session state:"
+                   << static_cast<int>(session_controller()->GetSessionState());
+  }
+}
+
+gfx::NativeView GetParentContainer() {
+  return ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
+                                  GetParentContainerId());
+}
+
 }  // namespace
 
 class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
@@ -81,8 +118,7 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
   void ShowConfirmationNotification(const std::string& remote_user_email);
   void OnConfirmationNotificationResult(std::optional<int> button_index);
 
-  void ShowConfirmationDialog(const std::string& remote_user_email);
-  void OnConfirmationDialogResult(MessageBox::Result result);
+  void OnConfirmationDialogResult(Result result);
 
   const gfx::VectorIcon& GetIcon() const {
     switch (style_) {
@@ -103,7 +139,7 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
   DialogStyle style_;
 };
 
-class It2MeConfirmationDialogChromeOS::Core {
+class It2MeConfirmationDialogChromeOS::Core : public ash::SessionObserver {
  public:
   explicit Core(const std::u16string& title_label,
                 const std::u16string& message_label,
@@ -111,11 +147,15 @@ class It2MeConfirmationDialogChromeOS::Core {
                 const std::u16string& cancel_label,
                 const std::optional<ui::ImageModel> icon,
                 ResultCallback callback);
+  ~Core() override;
 
   void ShowConfirmationDialog();
 
  private:
   void OnConfirmationDialogResult(MessageBox::Result result);
+
+  // Implements ash::SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   ResultCallback callback_;
   std::unique_ptr<MessageBox> message_box_;
@@ -128,6 +168,7 @@ It2MeConfirmationDialogChromeOS::Core::Core(
     const std::u16string& cancel_label,
     const std::optional<ui::ImageModel> icon,
     ResultCallback callback) {
+  session_controller()->AddObserver(this);
   message_box_ = std::make_unique<MessageBox>(
       title_label, message_label, ok_label, cancel_label, icon,
       base::BindOnce(
@@ -136,14 +177,24 @@ It2MeConfirmationDialogChromeOS::Core::Core(
   callback_ = std::move(callback);
 }
 
+It2MeConfirmationDialogChromeOS::Core::~Core() {
+  session_controller()->RemoveObserver(this);
+}
+
 void It2MeConfirmationDialogChromeOS::Core::ShowConfirmationDialog() {
-  message_box_->Show();
+  // Ensure the message box remains visible when the user logs in/out.
+  message_box_->ShowInParentContainer(GetParentContainer());
 }
 
 void It2MeConfirmationDialogChromeOS::Core::OnConfirmationDialogResult(
     MessageBox::Result result) {
   std::move(callback_).Run(result == MessageBox::Result::OK ? Result::OK
                                                             : Result::CANCEL);
+}
+
+void It2MeConfirmationDialogChromeOS::Core::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  message_box_->ChangeParentContainer(GetParentContainer());
 }
 
 It2MeConfirmationDialogChromeOS::It2MeConfirmationDialogChromeOS(
@@ -159,6 +210,7 @@ It2MeConfirmationDialogChromeOS::~It2MeConfirmationDialogChromeOS() {
 void It2MeConfirmationDialogChromeOS::Show(const std::string& remote_user_email,
                                            ResultCallback callback) {
   DCHECK(!remote_user_email.empty());
+  callback_ = std::move(callback);
 
   if (base::FeatureList::IsEnabled(
           remoting::features::kEnableCrdSharedSessionToUnattendedDevice)) {
@@ -168,10 +220,12 @@ void It2MeConfirmationDialogChromeOS::Show(const std::string& remote_user_email,
         /*ok_button_label=*/GetConfirmButtonLabel(),
         /*cancel_button_label=*/GetDeclineButtonLabel(),
         /*icon=*/GetDialogIcon(),
-        /*callback=*/std::move(callback));
+        /*callback=*/
+        base::BindOnce(
+            &It2MeConfirmationDialogChromeOS::OnConfirmationDialogResult,
+            base::Unretained(this)));
     core_->ShowConfirmationDialog();
   } else {
-    callback_ = std::move(callback);
     ShowConfirmationNotification(remote_user_email);
   }
 }
@@ -224,6 +278,12 @@ void It2MeConfirmationDialogChromeOS::OnConfirmationNotificationResult(
       /*by_user=*/false);
 
   std::move(callback_).Run(*button_index == 0 ? Result::CANCEL : Result::OK);
+}
+
+void It2MeConfirmationDialogChromeOS::OnConfirmationDialogResult(
+    Result result) {
+  core_.reset();
+  std::move(callback_).Run(result);
 }
 
 std::unique_ptr<It2MeConfirmationDialog>
