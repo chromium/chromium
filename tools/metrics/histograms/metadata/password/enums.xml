@@ -388,6 +388,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Url override was available and used"/>
   <int value="2" label="No url override was available"/>
   <int value="3" label="Url override was available in the FacetGroup and used"/>
+  <int value="4" label="Url override was available for the main domain"/>
 </enum>
 
 <enum name="HandleSubmittedFormStatus">
