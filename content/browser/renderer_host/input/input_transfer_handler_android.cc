@@ -28,7 +28,7 @@ class JniDelegateImpl : public InputTransferHandlerAndroid::JniDelegate {
  public:
   ~JniDelegateImpl() override = default;
 
-  bool MaybeTransferInputToViz(int surface_id, float raw_x) override {
+  int MaybeTransferInputToViz(int surface_id, float raw_x) override {
     return Java_InputTransferHandler_maybeTransferInputToViz(
         base::android::AttachCurrentThread(), surface_id, raw_x);
   }
@@ -76,12 +76,22 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
   }
 
   if (event.GetToolType() != ui::MotionEvent::ToolType::FINGER) {
+    base::UmaHistogramEnumeration(kTransferInputToVizResultHistogram,
+                                  TransferInputToVizResult::kNonFingerToolType);
     return false;
   }
 
   // Use "RawX" to account for multi-window cases
-  touch_transferred_ = jni_delegate_->MaybeTransferInputToViz(
-      client_->GetRootSurfaceHandle(), event.GetRawXPix(/*pointer_index=*/0));
+  auto transfer_result = static_cast<TransferInputToVizResult>(
+      jni_delegate_->MaybeTransferInputToViz(
+          client_->GetRootSurfaceHandle(),
+          event.GetRawXPix(/*pointer_index=*/0)));
+  touch_transferred_ =
+      (transfer_result == TransferInputToVizResult::kSuccessfullyTransferred);
+
+  base::UmaHistogramEnumeration(kTransferInputToVizResultHistogram,
+                                transfer_result);
+
   if (touch_transferred_) {
     cached_transferred_sequence_down_time_ms_ = event.GetDownTime();
     client_->SendStateOnTouchTransfer(event);
