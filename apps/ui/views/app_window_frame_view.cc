@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/grit/theme_resources.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -147,9 +146,7 @@ gfx::Rect AppWindowFrameView::GetBoundsForClientView() const {
 gfx::Rect AppWindowFrameView::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
   gfx::Rect window_bounds = client_bounds;
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // Get the difference between the widget's client area bounds and window
   // bounds, and grow |window_bounds| by that amount.
   gfx::Insets native_frame_insets =

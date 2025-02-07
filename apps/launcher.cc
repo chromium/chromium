@@ -21,7 +21,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -398,7 +397,7 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
   // check in case this scenario does occur.
   if (extensions::KioskModeInfo::IsKioskOnly(app)) {
     bool in_kiosk_mode = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     in_kiosk_mode = user_manager && user_manager->IsLoggedInAsKioskApp();
 #endif
@@ -475,7 +474,7 @@ void LaunchPlatformAppWithFileHandler(
     const Extension* app,
     const std::string& handler_id,
     const std::vector<base::FilePath>& entry_paths) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
       app->id(), handler_id, entry_paths);
   full_restore::SaveAppLaunchInfo(context->GetPath(), std::move(launch_info));
