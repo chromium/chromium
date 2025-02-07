@@ -224,7 +224,7 @@
   {
     "name": "android-open-pdf-inline",
     "owners": [ "shuyng@google.com", "qinmin@chromium.org", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "android-open-pdf-inline-backport",
@@ -264,7 +264,7 @@
   {
     "name": "animated-image-drag-shadow",
     "owners": [ "shuyng@google.com", "wenyufu@chromium.org", "clank-app-team@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "animated-image-resume",
