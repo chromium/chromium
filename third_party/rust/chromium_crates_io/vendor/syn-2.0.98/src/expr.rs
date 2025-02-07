@@ -2243,7 +2243,6 @@ pub(crate) mod parsing {
                 if lookahead.peek(Token![if]) {
                     expr.else_branch = Some((else_token, Box::new(Expr::PLACEHOLDER)));
                     clauses.push(expr);
-                    continue;
                 } else if lookahead.peek(token::Brace) {
                     expr.else_branch = Some((
                         else_token,

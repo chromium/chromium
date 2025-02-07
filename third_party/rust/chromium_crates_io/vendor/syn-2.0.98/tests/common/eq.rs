@@ -648,7 +648,7 @@ spanless_eq_enum!(ItemKind; ExternCrate(0) Use(0) Static(0) Const(0) Fn(0)
 spanless_eq_enum!(LitKind; Str(0 1) ByteStr(0 1) CStr(0 1) Byte(0) Char(0)
     Int(0 1) Float(0 1) Bool(0) Err(0));
 spanless_eq_enum!(PatKind; Wild Ident(0 1 2) Struct(0 1 2 3) TupleStruct(0 1 2)
-    Or(0) Path(0 1) Tuple(0) Box(0) Deref(0) Ref(0 1) Lit(0) Range(0 1 2)
+    Or(0) Path(0 1) Tuple(0) Box(0) Deref(0) Ref(0 1) Expr(0) Range(0 1 2)
     Slice(0) Rest Never Guard(0 1) Paren(0) MacCall(0) Err(0));
 spanless_eq_enum!(TyKind; Slice(0) Array(0 1) Ptr(0) Ref(0 1) PinnedRef(0 1)
     BareFn(0) UnsafeBinder(0) Never Tup(0) Path(0 1) TraitObject(0 1)

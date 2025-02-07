@@ -501,6 +501,7 @@ macro_rules! define_delimiters {
 
             impl $name {
                 #[cfg(feature = "printing")]
+                #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
                 pub fn surround<F>(&self, tokens: &mut TokenStream, f: F)
                 where
                     F: FnOnce(&mut TokenStream),
@@ -630,6 +631,7 @@ impl Hash for Group {
 
 impl Group {
     #[cfg(feature = "printing")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     pub fn surround<F>(&self, tokens: &mut TokenStream, f: F)
     where
         F: FnOnce(&mut TokenStream),

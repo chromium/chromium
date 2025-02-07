@@ -502,7 +502,7 @@ impl<'a> ParseBuffer<'a> {
     ///     }
     /// }
     /// ```
-    pub fn call<T>(&self, function: fn(ParseStream) -> Result<T>) -> Result<T> {
+    pub fn call<T>(&'a self, function: fn(ParseStream<'a>) -> Result<T>) -> Result<T> {
         function(self)
     }
 
@@ -732,8 +732,8 @@ impl<'a> ParseBuffer<'a> {
     /// }
     /// ```
     pub fn parse_terminated<T, P>(
-        &self,
-        parser: fn(ParseStream) -> Result<T>,
+        &'a self,
+        parser: fn(ParseStream<'a>) -> Result<T>,
         separator: P,
     ) -> Result<Punctuated<T, P::Token>>
     where

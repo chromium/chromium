@@ -100,7 +100,7 @@ mod librustc_parse {
             if let Err(diagnostic) = parser.parse_crate_mod() {
                 diagnostic.cancel();
                 return Err(());
-            };
+            }
             Ok(())
         })
     }

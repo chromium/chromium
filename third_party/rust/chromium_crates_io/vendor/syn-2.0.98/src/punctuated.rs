@@ -305,9 +305,9 @@ impl<T, P> Punctuated<T, P> {
     /// [`parse_terminated`]: Punctuated::parse_terminated
     #[cfg(feature = "parsing")]
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
-    pub fn parse_terminated_with(
-        input: ParseStream,
-        parser: fn(ParseStream) -> Result<T>,
+    pub fn parse_terminated_with<'a>(
+        input: ParseStream<'a>,
+        parser: fn(ParseStream<'a>) -> Result<T>,
     ) -> Result<Self>
     where
         P: Parse,
@@ -357,9 +357,9 @@ impl<T, P> Punctuated<T, P> {
     /// [`parse_separated_nonempty`]: Punctuated::parse_separated_nonempty
     #[cfg(feature = "parsing")]
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
-    pub fn parse_separated_nonempty_with(
-        input: ParseStream,
-        parser: fn(ParseStream) -> Result<T>,
+    pub fn parse_separated_nonempty_with<'a>(
+        input: ParseStream<'a>,
+        parser: fn(ParseStream<'a>) -> Result<T>,
     ) -> Result<Self>
     where
         P: Token + Parse,
