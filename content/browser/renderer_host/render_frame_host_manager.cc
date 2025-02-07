@@ -2961,11 +2961,15 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       new_instance_descriptor, candidate_instance, source_instance);
   DCHECK(IsSiteInstanceCompatibleWithWebExposedIsolation(
       new_instance.get(), dest_url_info.web_exposed_isolation_info));
-  CHECK(!new_instance->GetSiteInfo().agent_cluster_key() ||
-        new_instance->GetSiteInfo()
-                .agent_cluster_key()
-                ->GetCrossOriginIsolationKey() ==
-            dest_url_info.cross_origin_isolation_key);
+  // TODO(crbug.com/395036622): Always apply this check once error pages in COI
+  // subframes are committed in the isolated error process.
+  if (error_page_process != NavigationRequest::kCurrentProcess) {
+    CHECK(!new_instance->GetSiteInfo().agent_cluster_key() ||
+          new_instance->GetSiteInfo()
+                  .agent_cluster_key()
+                  ->GetCrossOriginIsolationKey() ==
+              dest_url_info.cross_origin_isolation_key);
+  }
 
   // If `should_swap_result.ShouldSwap()` is true, we must use a different
   // SiteInstance in a different BrowsingInstance as the current one.

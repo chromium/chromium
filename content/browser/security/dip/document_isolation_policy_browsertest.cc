@@ -1956,6 +1956,32 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyOriginTrialBrowserTest,
             network::mojom::DocumentIsolationPolicyValue::kNone);
 }
 
+// Regression test for crbug.com/393480086.
+// Blocking a navigation at BeginNavigation stage in a child frame of a document
+// with DocumentIsolationPolicy should not cause a crash.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
+                       IframeLoadCancelledInBeginNavigation) {
+  GURL main_url = GetDocumentIsolationPolicyURL(
+      "a.test", "Content-Security-Policy: frame-src 'none';");
+  GURL iframe_url = https_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("g_iframe = document.createElement('iframe');"
+                               "g_iframe.src = $1;"
+                               "document.body.appendChild(g_iframe);",
+                               iframe_url)));
+  WaitForLoadStop(web_contents());
+
+  // TODO(crbug.com/395036622): The subframe error page should commit in the
+  // isolated error page process.
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_EQ(main_document->GetSiteInstance()->GetProcess(),
+            sub_document->GetSiteInstance()->GetProcess());
+  EXPECT_FALSE(sub_document->GetSiteInstance()->GetSiteInfo().is_error_page());
+}
+
 static auto kTestParams =
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
                      testing::Bool(),
