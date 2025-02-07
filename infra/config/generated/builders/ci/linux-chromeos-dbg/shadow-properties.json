@@ -7,9 +7,7 @@
     "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
-    "experiments": [
-      "no-fast-deps"
-    ],
+    "experiments": [],
     "metrics_project": "chromium-reclient-metrics",
     "output_local_strategy": "minimum",
     "project": "rbe-chromium-untrusted",
