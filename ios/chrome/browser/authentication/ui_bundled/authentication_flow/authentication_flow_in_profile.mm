@@ -347,13 +347,15 @@ enum class AuthenticationFlowInProfileState {
 #pragma mark - AuthenticationFlowPerformerDelegate
 
 - (void)didSignOut {
-  // TODO(crbug.com/375605482): It might be relevant to split
-  // `AuthenticationFlowPerformer` into 2 classes. This would avoid having
-  // all those NOTREACHED methods.
-  NOTREACHED();
+  CHECK_EQ(AuthenticationFlowInProfileState::kSignOutIfNeeded, _state,
+           base::NotFatalUntil::M138);
+  [self continueFlow];
 }
 
 - (void)didClearData {
+  // TODO(crbug.com/375605482): It might be relevant to split
+  // `AuthenticationFlowPerformer` into 2 classes. This would avoid having
+  // all those NOTREACHED methods.
   NOTREACHED();
 }
 
@@ -386,6 +388,7 @@ enum class AuthenticationFlowInProfileState {
 }
 
 - (void)didFetchUserPolicyWithSuccess:(BOOL)success {
+  // The result can be ignored, the goal was to prefetch the user policy.
   CHECK_EQ(AuthenticationFlowInProfileState::kFetchUserPolicy, _state,
            base::NotFatalUntil::M138);
   DLOG_IF(ERROR, !success) << "Error fetching policy for user";
