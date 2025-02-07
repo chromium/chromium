@@ -1585,8 +1585,7 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   CHECK([self.appState.connectedScenes containsObject:sceneState]);
 
   ProfileManagerIOS* manager = GetApplicationContext()->GetProfileManager();
-  CHECK(manager->HasProfileWithName(profileName) ||
-        manager->CanCreateProfileWithName(profileName));
+  CHECK(manager->HasProfileWithName(profileName));
 
   // Get the SceneDelegate from the SceneState.
   UIWindowScene* scene = sceneState.scene;
@@ -1609,11 +1608,6 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   if (profileName != storage->GetProfileNameForSceneID(sceneIdentifier)) {
     // The UI has to be destroyed, start animating.
     [animator startAnimation];
-
-    // Ensure the profile exists.
-    if (!storage->HasProfileWithName(profileName)) {
-      storage->AddProfile(profileName);
-    }
 
     // Set the mapping between profile and scene.
     storage->SetProfileNameForSceneID(sceneIdentifier, profileName);
