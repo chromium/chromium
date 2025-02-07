@@ -4285,6 +4285,34 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void tabClosure_resetTabsListForTabGroupUpdate_insideTabSwitcher() {
+        initAndAssertAllProperties();
+
+        // Mock that tab1 and tab3 are in the same group and group root id is TAB1_ID.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), true);
+        ThumbnailFetcher fetcherBefore =
+                mModelList.get(0).model.get(TabProperties.THUMBNAIL_FETCHER);
+        assertEquals(2, mModelList.size());
+        assertEquals(mModelList.get(0).model.get(TabProperties.TAB_ID), mTab1.getId());
+
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+
+        mMediator.resetWithListOfTabs(List.of(tab3, mTab2), true);
+
+        assertEquals(2, mModelList.size());
+
+        ThumbnailFetcher fetcherAfter =
+                mModelList.get(0).model.get(TabProperties.THUMBNAIL_FETCHER);
+        assertThat(fetcherBefore, not(fetcherAfter));
+
+        assertEquals(mModelList.get(0).model.get(TabProperties.TAB_ID), tab3.getId());
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PANE_ANDROID, ChromeFeatureList.DATA_SHARING})
     public void testIsTabGroup_TabSwitcher() {
         mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
