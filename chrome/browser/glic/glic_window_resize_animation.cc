@@ -15,29 +15,18 @@
 #endif
 
 namespace glic {
-namespace {
-
-void RunCallbackList(std::unique_ptr<base::OnceClosureList> callbacks) {
-  callbacks->Notify();
-}
-
-}  // namespace
 
 GlicWindowResizeAnimation::GlicWindowResizeAnimation(
     GlicWindowController* window_controller,
     const gfx::Rect& target_bounds,
     base::TimeDelta duration,
-    base::OnceClosure destruction_callback)
+    DestructionCallback destruction_callback)
     : gfx::LinearAnimation(duration, kDefaultFrameRate, this),
       window_controller_(window_controller),
       initial_bounds_(
           window_controller_->GetGlicWidget()->GetWindowBoundsInScreen()),
       new_bounds_(target_bounds),
-      destruction_callbacks_(std::make_unique<base::OnceClosureList>()) {
-  // Using AddUnsafe() because the callback list is run on a task posted on
-  // destruction of `this`, so we aren't able to hold CallbackSubscriptions
-  // here.
-  destruction_callbacks_->AddUnsafe(std::move(destruction_callback));
+      destruction_callback_(std::move(destruction_callback)) {
   // TODO(crbug.com/389238233): CompositorAnimationRunner does not appear to
   // be fully functional.
   // Use a CompositorAnimationRunner for smoother vsync driven resize animation.
@@ -50,10 +39,9 @@ GlicWindowResizeAnimation::GlicWindowResizeAnimation(
 }
 
 GlicWindowResizeAnimation::~GlicWindowResizeAnimation() {
-  if (!destruction_callbacks_->empty()) {
+  if (destruction_callback_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RunCallbackList, std::move(destruction_callbacks_)));
+        FROM_HERE, std::move(destruction_callback_));
   }
 }
 
@@ -66,19 +54,6 @@ void GlicWindowResizeAnimation::AnimateToState(double state) {
 void GlicWindowResizeAnimation::AnimationEnded(const Animation* animation) {
   // Destroys `this`.
   window_controller_->ResizeFinished();
-}
-
-void GlicWindowResizeAnimation::UpdateTargetPosition(
-    const gfx::Point& point,
-    base::OnceClosure callback) {
-  new_bounds_.set_origin(point);
-  destruction_callbacks_->AddUnsafe(std::move(callback));
-}
-
-void GlicWindowResizeAnimation::UpdateTargetSize(const gfx::Size& size,
-                                                 base::OnceClosure callback) {
-  new_bounds_.set_size(size);
-  destruction_callbacks_->AddUnsafe(std::move(callback));
 }
 
 }  // namespace glic

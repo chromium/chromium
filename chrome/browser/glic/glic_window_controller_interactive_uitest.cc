@@ -84,15 +84,7 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
       std::make_unique<GlicController>();
 };
 
-// TODO(394945970): Re-enable on Linux; failing the top right corner position
-// check.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ShowAndCloseAttachedWidget DISABLED_ShowAndCloseAttachedWidget
-#else
-#define MAYBE_ShowAndCloseAttachedWidget ShowAndCloseAttachedWidget
-#endif
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       MAYBE_ShowAndCloseAttachedWidget) {
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseAttachedWidget) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kAttached),
       // Verify glic is open in attached mode.
@@ -161,8 +153,14 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 }
 
 // Disabled due to flakes Mac; see https://crbug.com/394350688.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OpenDetachedAndThenOpenAttached \
+  DISABLED_OpenDetachedAndThenOpenAttached
+#else
+#define MAYBE_OpenDetachedAndThenOpenAttached OpenDetachedAndThenOpenAttached
+#endif
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       DISABLED_OpenDetachedAndThenOpenAttached) {
+                       MAYBE_OpenDetachedAndThenOpenAttached) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
                   PressButton(kGlicButtonElementId),
                   WaitForEvent(kGlicButtonElementId, kGlicWidgetAttached),

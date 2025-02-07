@@ -272,8 +272,7 @@ class GlicWindowController : public views::WidgetObserver {
   // detached state. The top right of the widget should be placed here.
   gfx::Point GetTopRightPositionForDetachedGlicWindow();
 
-  // Reparents the glic widget under 'browser' and runs an animation to move it
-  // to its target position.
+  // Reparents the glic widget under 'browser'.
   void AttachToBrowser(Browser* browser);
 
   // If glic is within attachment distance of a browser window's glic
@@ -296,9 +295,6 @@ class GlicWindowController : public views::WidgetObserver {
   // `browser`'s window. This position change is animated if `animate` is true.
   void MovePositionToBrowserGlicButton(Browser* browser, bool animate);
 
-  // Called when the move animation finishes when attaching.
-  void AttachAnimationFinished();
-
   // Checks if 'browser' is compatible with glic.
   bool IsBrowserGlicCompatible(Browser* browser);
 
@@ -311,27 +307,18 @@ class GlicWindowController : public views::WidgetObserver {
   // When the attached browser is closed, this is invoked so we can clean up.
   void AttachedBrowserDidClose(BrowserWindowInterface* browser);
 
-  // Sets target bounds for the widget (must exist) and creates a
-  // GlicWindowResizeAnimation instance to begin a new animation. If a bounds
-  // animation is already running, end it and start a new one. Duration is set
-  // to 0 if negative.
+  // Sets target bounds for the widget and creates a WindowResizeAnimation
+  // instance to begin a new animation. Blocks any calls to animate if the
+  // widget it not yet visible.
   void AnimateBounds(const gfx::Rect& target_bounds,
                      base::TimeDelta duration,
                      base::OnceClosure callback);
 
-  // Animate the window size, maintaining the position of the top right corner.
-  // If there is already a running bounds change animation, update that
-  // animation's target size.
+  // Convenience method for AnimateBounds that takes a gfx::Size and maintains
+  // the top-right corner.
   void AnimateSize(const gfx::Size& target_size,
                    base::TimeDelta duration,
                    base::OnceClosure callback);
-
-  // Animate the window's top left position maintaining size. If there is
-  // already a running bounds change animation, update that animation's target
-  // origin.
-  void AnimatePosition(const gfx::Point& target_position,
-                       base::TimeDelta duration,
-                       base::OnceClosure callback);
 
   // Creates the glic widget.
   std::unique_ptr<views::Widget> CreateGlicWidget(
