@@ -2084,6 +2084,10 @@ bool StyleCascade::ResolveIfInto(CSSParserTokenStream& stream,
   bool eval_result = EvalIfCondition(stream, resolver, context);
   while (!eval_result) {
     stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
+    if (stream.AtEnd()) {
+      // None of the conditions matched, so should be IACVT.
+      return false;
+    }
     stream.ConsumeIncludingWhitespace();  // kSemicolonToken
     if (stream.AtEnd()) {
       // None of the conditions matched, so should be IACVT.

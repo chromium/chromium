@@ -470,6 +470,8 @@
   test_if('if(style(--x: 0): true_value;)', [['--x', '3']], '');
   test_if('if(style(--non-existent): true_value;)', [['--x', '3']], '');
   test_if('if(style(--non-existent: 3): true_value;)', [['--x', '3']], '');
+  test_if('if(style(--invalid): value)', [], '');
+  test_if('if(style(--invalid): var(--x))', [['--x', 'true_value']], '');
   test_if(`if(style(--x: 1): value1;
           style(--y: green): value2;
           style(--z: 3px): value3;)`,
