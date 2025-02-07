@@ -76,6 +76,10 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   return _detentsManager.sheetDimension;
 }
 
+- (UIWindow*)presentationWindow {
+  return _baseViewController.view.window;
+}
+
 - (void)setDelegate:(id<LensOverlayResultsPagePresenterDelegate>)delegate {
   if (delegate != _delegate) {
     _delegate = delegate;
@@ -84,12 +88,11 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 }
 
 - (void)presentResultsPageAnimated:(BOOL)animated
-                        sceneState:(SceneState*)sceneState
                      maximizeSheet:(BOOL)maximizeSheet
                   startInTranslate:(BOOL)startInTranslate
                         completion:(void (^)(void))completion {
-  __weak UIWindow* window = sceneState.window;
-  if (!_baseViewController || !_resultViewController || !window) {
+  if (!_baseViewController || !_resultViewController ||
+      !self.presentationWindow) {
     if (completion) {
       completion();
     }
@@ -102,7 +105,8 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   sheet.prefersGrabberVisible = YES;
   sheet.preferredCornerRadius = kPreferredCornerRadius;
 
-  _windowPanTracker = [[LensOverlayPanTracker alloc] initWithView:window];
+  _windowPanTracker =
+      [[LensOverlayPanTracker alloc] initWithView:self.presentationWindow];
   _windowPanTracker.delegate = self;
   [_windowPanTracker startTracking];
 
@@ -113,10 +117,10 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   SheetDetentPresentationStategy strategy =
       startInTranslate ? SheetDetentPresentationStategyTranslate
                        : SheetDetentPresentationStategySelection;
-  _detentsManager =
-      [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet
-                                                      window:window
-                                        presentationStrategy:strategy];
+  _detentsManager = [[LensOverlayDetentsManager alloc]
+       initWithBottomSheet:sheet
+                    window:self.presentationWindow
+      presentationStrategy:strategy];
   _detentsManager.observer = self;
   [_detentsManager adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
 
@@ -138,7 +142,7 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   // To prevent such a behavior, extract the recognizers added as a consequence
   // of presenting and allow touches to be delivered to views.
   __block NSSet<UIGestureRecognizer*>* panRecognizersBeforePresenting =
-      [self panGestureRecognizersOnWindow:window];
+      [self panGestureRecognizersOnWindow];
 
   __weak __typeof(self) weakSelf = self;
   [_baseViewController
@@ -147,12 +151,36 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
                  completion:^{
                    [weakSelf monitorResultsBottomSheetPosition];
                    [weakSelf handlePanRecognizersAddedAfter:
-                                 panRecognizersBeforePresenting
-                                                   onWindow:window];
+                                 panRecognizersBeforePresenting];
                    if (completion) {
                      completion();
                    }
                  }];
+}
+
+- (void)revealBottomSheetIfHidden {
+  BOOL resultsPageExists = _resultViewController != nil;
+  BOOL isPresentingResultsPage =
+      _baseViewController.presentedViewController != nil;
+  BOOL isHidden = resultsPageExists && !isPresentingResultsPage;
+  if (isHidden) {
+    BOOL startInTranslate = _detentsManager.presentationStrategy ==
+                            SheetDetentPresentationStategyTranslate;
+    [self presentResultsPageAnimated:YES
+                       maximizeSheet:NO
+                    startInTranslate:startInTranslate
+                          completion:nil];
+  }
+}
+
+- (void)hideBottomSheet {
+  [_displayLink invalidate];
+  [_windowPanTracker stopTracking];
+  [_basePanTracker stopTracking];
+  _detentsManager = nil;
+
+  UIViewController* presentedVC = _baseViewController.presentedViewController;
+  [presentedVC dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)dismissResultsPageAnimated:(BOOL)animated
@@ -160,6 +188,8 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   [_displayLink invalidate];
   [_windowPanTracker stopTracking];
   [_basePanTracker stopTracking];
+  _detentsManager = nil;
+  _resultViewController = nil;
 
   UIViewController* presentedVC = _baseViewController.presentedViewController;
   if (!presentedVC) {
@@ -227,16 +257,16 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 
 #pragma mark - UIPanGestureRecognizer handlers
 
-- (NSSet<UIPanGestureRecognizer*>*)panGestureRecognizersOnWindow:
-    (UIWindow*)window {
+- (NSSet<UIPanGestureRecognizer*>*)panGestureRecognizersOnWindow {
   NSMutableSet<UIPanGestureRecognizer*>* panRecognizersOnWindow =
       [[NSMutableSet alloc] init];
 
-  if (!window) {
+  if (!self.presentationWindow) {
     return panRecognizersOnWindow;
   }
 
-  for (UIGestureRecognizer* recognizer in window.gestureRecognizers) {
+  for (UIGestureRecognizer* recognizer in self.presentationWindow
+           .gestureRecognizers) {
     if (recognizer &&
         [recognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
       [panRecognizersOnWindow addObject:(UIPanGestureRecognizer*)recognizer];
@@ -249,10 +279,9 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 // Allow touches from gesture recognizers added by UIKit as a consequence of
 // presenting a view controller.
 - (void)handlePanRecognizersAddedAfter:
-            (NSSet<UIGestureRecognizer*>*)panRecognizersBeforePresenting
-                              onWindow:(UIWindow*)window {
+    (NSSet<UIGestureRecognizer*>*)panRecognizersBeforePresenting {
   NSMutableSet<UIGestureRecognizer*>* panRecognizersAfterPresenting =
-      [[self panGestureRecognizersOnWindow:window] mutableCopy];
+      [[self panGestureRecognizersOnWindow] mutableCopy];
   [panRecognizersAfterPresenting minusSet:panRecognizersBeforePresenting];
   for (UIGestureRecognizer* recognizer in panRecognizersAfterPresenting) {
     recognizer.cancelsTouchesInView = NO;

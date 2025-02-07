@@ -398,7 +398,13 @@ const int kExpectedExitAnimationCount = 2;
     }
     [self presentConsentFlow];
   } else if (self.isResultsBottomSheetOpen) {
-    [self showResultsBottomSheet];
+    // Only show the bottom sheet when in selection. For translate, build the
+    // necessary infrastructure but don't show it, effectively starting it
+    // hidden.
+    [self buildResultsBottomSheetPresentation];
+    if (!_selectionViewController.translateFilterActive) {
+      [self showResultsBottomSheet];
+    }
   }
 
   // The auxiliary window should be retained until the container is confirmed
@@ -444,9 +450,9 @@ const int kExpectedExitAnimationCount = 2;
                       [weakCommands
                           lensOverlayDidDismissWithCause:
                               LensOverlayDismissalCauseExternalNavigation];
-                      // If the result page is still visible, dismiss it before
+                      // If the result page is still present, dismiss it before
                       // calling the completion.
-                      if (weakResultsPagePresenter.isResultPageVisible) {
+                      if (weakResultsPagePresenter) {
                         [weakResultsPagePresenter
                             dismissResultsPageAnimated:animated
                                             completion:completion];
@@ -835,6 +841,7 @@ const int kExpectedExitAnimationCount = 2;
   _resultMediator.webViewContainer = _resultViewController.webViewContainer;
   _resultMediator.contextMenuProvider = _resultContextMenuProvider;
 
+  [self buildResultsBottomSheetPresentation];
   [self showResultsBottomSheet];
 
   // TODO(crbug.com/355179986): Implement omnibox navigation with
@@ -1018,11 +1025,7 @@ const int kExpectedExitAnimationCount = 2;
   [_selectionViewController start];
 }
 
-- (void)showResultsBottomSheet {
-  if (!_associatedTabHelper) {
-    return;
-  }
-
+- (void)buildResultsBottomSheetPresentation {
   _resultsPagePresenter = [[LensOverlayResultsPagePresenter alloc]
       initWithBaseViewController:_containerViewController
         resultPageViewController:_resultViewController];
@@ -1030,6 +1033,12 @@ const int kExpectedExitAnimationCount = 2;
   _resultsPagePresenter.delegate = self;
   _resultMediator.presentationDelegate = _resultsPagePresenter;
   _mediator.presentationDelegate = _resultsPagePresenter;
+}
+
+- (void)showResultsBottomSheet {
+  if (!_associatedTabHelper) {
+    return;
+  }
 
   __weak __typeof(self) weakSelf = self;
 
@@ -1039,7 +1048,6 @@ const int kExpectedExitAnimationCount = 2;
   BOOL maximizeSheet = restoredSheetState == SheetDimensionStateLarge;
   [_resultsPagePresenter
       presentResultsPageAnimated:!isStateRestoration
-                      sceneState:self.browser->GetSceneState()
                    maximizeSheet:maximizeSheet
                 startInTranslate:_selectionViewController.translateFilterActive
                       completion:^{
