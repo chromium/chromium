@@ -617,7 +617,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   previously_selected_category_ = GetSelectedTabIndex();
   ConfigureUIForNewPane(previously_selected_category_);
 
-  bool modal_dialog = IsMediaPickerModalWindow(params.web_contents);
+  bool modal_dialog = MediaPickerCanShowAsWebModal(params.web_contents);
   views::Widget* widget = CreateMediaPickerDialogWidget(
       modal_dialog ? chrome::FindBrowserWithTab(params.web_contents) : nullptr,
       params.web_contents,
