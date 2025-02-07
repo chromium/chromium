@@ -453,6 +453,11 @@ void PinnedToolbarActionsContainer::MaybeRemovePoppedOutButtonFor(
 
 void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     const actions::ActionId& id) {
+  // Pinned buttons shouldn't appear in web apps.
+  if (browser_view_->browser() && browser_view_->browser()->app_controller()) {
+    return;
+  }
+
   actions::ActionItem* action_item = GetActionItemFor(id);
   // If the action item doesn't exist (i.e. a new id synced from an
   // update-to-date device to an out-of-date device) we do not want to create a
