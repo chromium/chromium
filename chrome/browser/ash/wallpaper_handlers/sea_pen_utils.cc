@@ -109,6 +109,11 @@ manta::proto::Request CreateMantaRequest(
     expt_template_option.set_tag("use_expt_template");
     expt_template_option.set_text("true");
   }
+  if (query->is_text_query() && ash::features::IsSeaPenPromptRewriteEnabled()) {
+    manta::proto::InputData& rewrite_input_data = *request.add_input_data();
+    rewrite_input_data.set_tag("use_prompt_rewrite");
+    rewrite_input_data.set_text("true");
+  }
   return request;
 }
 
