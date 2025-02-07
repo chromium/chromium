@@ -1164,6 +1164,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3076865167425975822">Operační systémy</translation>
 <translation id="3080254622891793721">Obrázek</translation>
 <translation id="3082007635241601060">Nechte Google vyhledávat na základě nákupních košíků dostupné personalizované slevy</translation>
+<translation id="3086269988715347183">Web <ph name="BLOCKED_URL" /> jste dříve neschválili</translation>
 <translation id="3086579638707268289">Vaše aktivita na webu je sledována</translation>
 <translation id="3087734570205094154">Až dolů</translation>
 <translation id="3090667236485488075">Sklo</translation>
@@ -1236,6 +1237,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3203025201812691413">Adresa URL nesmí být prázdná</translation>
 <translation id="320323717674993345">Zrušit platbu</translation>
 <translation id="3203366800380907218">Z webu</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> může zahrnovat obsah nevhodný pro děti</translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
 <translation id="3208701679386778924">Pošlete nám hlášení, abychom mohli vylepšit další aktualizace systému ChromeOS.</translation>
 <translation id="3209034400446768650">Stránka může účtovat poplatky</translation>
@@ -2968,6 +2970,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6254436959401408446">K otevření této stránky není k dispozici dostatek paměti</translation>
 <translation id="625463612687472648">Odebrat oprávnění</translation>
 <translation id="6259156558325130047">&amp;Opakovat změnu uspořádání</translation>
+<translation id="6259282549512536479">Web <ph name="BLOCKED_URL" /> jste dříve zablokovali</translation>
 <translation id="6263376278284652872">Záložky webu <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Přesto stáhnout</translation>
 <translation id="6264485186158353794">Zpět na bezpečnější stránku</translation>

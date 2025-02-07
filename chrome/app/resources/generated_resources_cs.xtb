@@ -4733,6 +4733,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4305402730127028764">Kopírovat do zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Přejít</translation>
 <translation id="4306119971288449206">Aplikace musí být poskytovány s typem obsahu <ph name="CONTENT_TYPE" /></translation>
+<translation id="4306810703452026910">Chrome přestane označovat oznámení z tohoto webu jako spam</translation>
 <translation id="4307992518367153382">Základy</translation>
 <translation id="4309165024397827958">Povolte aplikacím a službám pro Android s oprávněním pro přístup k poloze využívat polohu vašeho zařízení. Google může pravidelně shromažďovat údaje o poloze a anonymně je používat ke zlepšování přesnosti polohy a služeb založených na poloze.</translation>
 <translation id="4309183709806093061">Sdílet také systémový zvuk. Zařízení bude ztlumeno, aby nedocházelo k ozvěně.</translation>
@@ -8028,6 +8029,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6713233729292711163">Přidat pracovní profil</translation>
 <translation id="6713441551032149301">Podržením spouštěcí klávesy můžete přepínat mezi funkčními klávesami a horní řadou systémových kláves</translation>
 <translation id="6713668088933662563">U těchto jazyků překlad nikdy nenabízet</translation>
+<translation id="6714871567554212732">Zobrazit další podrobnosti o skupině <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Weby nemají povoleno používat váš mikrofon</translation>
 <translation id="6715803357256707211">Při instalaci aplikace pro Linux došlo k chybě. Podrobnosti zobrazíte kliknutím na oznámení.</translation>
 <translation id="6716049856796700977">Vaši polohu nic používat nemůže. Aplikace a weby ji však přesto můžou dokázat zjistit podle IP adresy. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>

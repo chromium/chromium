@@ -2124,6 +2124,8 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2462332841984057083">Aplikacja Steam jest już konfigurowana. Poczekaj na zakończenie tego procesu.</translation>
 <translation id="2462724976360937186">Identyfikator klucza urzędu certyfikacji</translation>
 <translation id="2462752602710430187">Dodano: <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Widzisz sugerowane pliki, aby łatwiej było Ci wrócić do swojej ostatniej aktywności w Microsoft SharePoint i OneDrive.
+        <ph name="BREAK" /><ph name="BREAK" />Możesz zarządzać ustawieniami w menu karty lub zobaczyć więcej opcji w sekcji dostosowania Chrome.</translation>
 <translation id="2464079411014186876">Lody</translation>
 <translation id="2467755475704469005">Nie wykryto urządzeń. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i inne osoby (<ph name="NUM_OTHER_MEMBERS" />)</translation>
@@ -3980,6 +3982,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3787434344076711519">Czekam na tłumaczenie</translation>
 <translation id="3788301286821743879">Nie udało się uruchomić aplikacji kiosku.</translation>
 <translation id="3788401245189148511">Uprawnienia, o które prosi, to:</translation>
+<translation id="3789432704615470433">Pliki SharePoint i OneDrive</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="3790417903123637354">Coś poszło nie tak. Spróbuj ponownie później</translation>
 <translation id="379082410132524484">Twoja karta straciła ważność</translation>
@@ -6167,6 +6170,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5360150013186312835">Pokaż na pasku narzędzi</translation>
 <translation id="5362741141255528695">Wybierz plik kluczy prywatnych.</translation>
 <translation id="536278396489099088">Stan systemu ChromeOS i dotyczące go raporty</translation>
+<translation id="5362916924854054326">Nie pokazuj plików SharePoint ani OneDrive</translation>
 <translation id="5363109466694494651">Wykonaj Powerwash i przywróć</translation>
 <translation id="5365881113273618889">Wybrany folder zawiera poufne pliki. Czy na pewno chcesz, by aplikacja „<ph name="APP_NAME" />” miała do niego stały dostęp z uprawnieniami do zapisu?</translation>
 <translation id="536638840841140142">Brak</translation>
@@ -10751,6 +10755,8 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="865936634714975126">Dodaj parametr zapytania w adresie URL, aby wybrać typy podczas wczytywania strony. Przykład: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> – kontakty</translation>
 <translation id="8659609431223166673">Okno zostało przeniesione w dół</translation>
+<translation id="8660288500924118793">Widząc kalendarz, możesz łatwiej przejść do następnego wydarzenia w Kalendarzu Google.
+       <ph name="BREAK" /><ph name="BREAK" />Możesz zarządzać ustawieniami w menu karty lub zobaczyć więcej opcji w sekcji dostosowania Chrome.</translation>
 <translation id="8661290697478713397">Otwórz link w oknie inco&amp;gnito</translation>
 <translation id="8662474268934425487">Zaloguj się w usłudze <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Połącz z siecią <ph name="TYPE" /></translation>

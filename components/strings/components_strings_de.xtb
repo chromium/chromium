@@ -1164,6 +1164,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3076865167425975822">Betriebssysteme</translation>
 <translation id="3080254622891793721">Grafik</translation>
 <translation id="3082007635241601060">Zulassen, das Google personalisierte Rabatte für deinen Einkaufswagen findet</translation>
+<translation id="3086269988715347183">Du hast für <ph name="BLOCKED_URL" /> noch keine Erlaubnis erteilt</translation>
 <translation id="3086579638707268289">Deine Aktivitäten im Web werden überwacht</translation>
 <translation id="3087734570205094154">Unten</translation>
 <translation id="3090667236485488075">Glas</translation>
@@ -1239,6 +1240,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3203025201812691413">URL darf nicht leer sein</translation>
 <translation id="320323717674993345">Zahlung abbrechen</translation>
 <translation id="3203366800380907218">Aus dem Web</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> enthält möglicherweise nicht jugendfreie Inhalte</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3208701679386778924">Bitte sende einen Bericht, damit wir ChromeOS-Updates weiter verbessern können.</translation>
 <translation id="3209034400446768650">Auf der Seite wird möglicherweise Geld verlangt</translation>
@@ -2971,6 +2973,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6254436959401408446">Nicht genügend Speicher, um diese Seite zu öffnen</translation>
 <translation id="625463612687472648">Nicht mehr zulassen</translation>
 <translation id="6259156558325130047">&amp;Neu anordnen rückgängig machen</translation>
+<translation id="6259282549512536479">Du hast <ph name="BLOCKED_URL" /> zuvor blockiert</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-Lesezeichen</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
 <translation id="6264485186158353794">Zurück zu sicherer Website</translation>

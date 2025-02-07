@@ -23,6 +23,7 @@
 <translation id="1066060668811609597">Шайкештирүүнү башкаруу</translation>
 <translation id="1076421457278169141">Код скандалды</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} өтмөк}other{{count} өтмөк}}</translation>
+<translation id="1082554859195167538">Сиз үчүн тандалган товарлар тууралуу сын-пикирлер</translation>
 <translation id="1084365883616172403">Facebook'ка жайгаштырылды.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ачылган жок</translation>
 <translation id="1086468407802688066"><ph name="USER_EMAIL" /> аккаунтун <ph name="HOSTED_DOMAIN" /> тескейт. Ал айрым маалыматтарды көрө алат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -342,6 +343,7 @@
 <translation id="2384692388811649784">Жашыруун өтмөктөрүн жашыруу</translation>
 <translation id="2386793615875593361">1 тандалды</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" функциясын жашыруу</translation>
+<translation id="2393230427496852974">Колдонуучулардын сын-пикирлерин окуу</translation>
 <translation id="2394659309569789395">Сайтты баары бир ачуу</translation>
 <translation id="2403129868389095715">Таңгагыңызды жеткирүү мүмкүн эмес</translation>
 <translation id="2410754283952462441">Аккаунт тандоо</translation>
@@ -454,6 +456,7 @@
 <translation id="2894757982205307093">Топтогу жаңы өтмөк</translation>
 <translation id="2902312830803030883">Көбүрөөк аракеттер</translation>
 <translation id="2905479111267140204">Коопсуздугуңузду тобокелге салуучу <ph name="NUMBER_OF_PASSWORDS" /> кайра колдонулган сырсөзүңүз бар.</translation>
+<translation id="29153882450867370">"Баага көз салуу" картасын жашыруу</translation>
 <translation id="291754862089661335">QR кодду же штрих кодду бул алкакка жайгаштырыңыз</translation>
 <translation id="2918688092312652908">Окула элек деп белгилөө</translation>
 <translation id="2920866371965792875">Бул сайттагы жаңыртууларды көрүү үчүн ага бул жерден жазылыңыз.</translation>
@@ -905,6 +908,7 @@
 <translation id="4989065233040279145"><ph name="FILENAME" /> файлы кайда сакталарын тандаңыз</translation>
 <translation id="4992255726304765516">Өтмөктөр тобунун түсү: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Сырсөздү көчүрүү</translation>
+<translation id="5012914568031465281">Баага көз салуу мүмкүн болгон жок.</translation>
 <translation id="5016420433031926653">Кимге: <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Акыркы 15 мүнөттө</translation>
 <translation id="5020732097997376541">"Lens сүрөтчөсүн" таптап коюңуз</translation>
@@ -1667,8 +1671,10 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8211406090763984747">Туташуу коопсуз</translation>
 <translation id="8214293972734702249"><ph name="TAB_TITLE" />, кадалды</translation>
 <translation id="8219424187226230983">Оффлайн версиясын жаңы өтмөктөн көрүү</translation>
+<translation id="8221665793629393739">Кайра баш багуу тууралуу эстеткич</translation>
 <translation id="8230355548492839438">Мурункусун табуу</translation>
 <translation id="8232956427053453090">Дайындарды сактоо</translation>
+<translation id="8238711781852526820">"Бааларга көз салуу" картасын жашыруу</translation>
 <translation id="8258999165172757081">Кошулду</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="82619448491672958">Башка өтмөктөрдү көрүү</translation>
@@ -1789,6 +1795,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8717864919010420084">Шилтемени көчүрүү</translation>
 <translation id="8722229818691036192">Ушул түзмөктөгү аккаунттар</translation>
 <translation id="8722649775263832315">Google Lens аркылуу издөө үчүн объектти таптап же бөлүп көрсөтүңүз</translation>
+<translation id="8723088494871522141">"Сиз үчүн тандалган товарлар тууралуу сын-пикирлер" картасын жашыруу</translation>
 <translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>
 <translation id="8728922029615312208">Баарын жабуу</translation>
 <translation id="8730621377337864115">Бүттү</translation>

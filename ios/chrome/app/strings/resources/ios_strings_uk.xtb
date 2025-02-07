@@ -23,6 +23,7 @@
 <translation id="1066060668811609597">Керуйте синхронізацією</translation>
 <translation id="1076421457278169141">Код зіскановано</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
+<translation id="1082554859195167538">Вибрані відгуки про товари</translation>
 <translation id="1084365883616172403">Опубліковано у Facebook</translation>
 <translation id="1085677983426914530">Не вдалося відкрити файл <ph name="FILENAME" /></translation>
 <translation id="1086468407802688066">Обліковим записом <ph name="USER_EMAIL" /> керує адміністратор домену <ph name="HOSTED_DOMAIN" />, який може переглядати певну інформацію. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -342,6 +343,7 @@
 <translation id="2384692388811649784">Приховувати анонімні вкладки</translation>
 <translation id="2386793615875593361">Вибрано 1</translation>
 <translation id="2390457533592708044">Приховати модуль "<ph name="MODULE_NAME" />"</translation>
+<translation id="2393230427496852974">Відгуки інших користувачів</translation>
 <translation id="2394659309569789395">Усе одно відкрити сайт</translation>
 <translation id="2403129868389095715">Не вдалося доставити посилку</translation>
 <translation id="2410754283952462441">Виберіть обліковий запис</translation>
@@ -454,6 +456,7 @@
 <translation id="2894757982205307093">Нова вкладка в групі</translation>
 <translation id="2902312830803030883">Додаткові дії</translation>
 <translation id="2905479111267140204">У вас є повторно використані паролі (<ph name="NUMBER_OF_PASSWORDS" />), які можуть загрожувати вашій безпеці.</translation>
+<translation id="29153882450867370">Сховати опцію "Відстежувати ціну"</translation>
 <translation id="291754862089661335">Розмістіть QR-код або штрих-код у цій рамці</translation>
 <translation id="2918688092312652908">Позначити як непрочитане</translation>
 <translation id="2920866371965792875">Щоб отримувати новини з цього сайту, підпишіться на нього тут.</translation>
@@ -905,6 +908,7 @@
 <translation id="4989065233040279145">Виберіть, де зберегти <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Колір групи вкладок: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
+<translation id="5012914568031465281">Не вдалося ввімкнути відстеження цін.</translation>
 <translation id="5016420433031926653">Надсилати на адресу <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Останні 15 хвилин</translation>
 <translation id="5020732097997376541">Натисніть значок Об’єктива</translation>
@@ -1667,8 +1671,10 @@
 <translation id="8211406090763984747">З’єднання безпечне</translation>
 <translation id="8214293972734702249">Вкладку "<ph name="TAB_TITLE" />" закріплено</translation>
 <translation id="8219424187226230983">Переглянути офлайн-версію в новій вкладці</translation>
+<translation id="8221665793629393739">Нагадування відвідати цей сайт повторно</translation>
 <translation id="8230355548492839438">Знайти попереднє</translation>
 <translation id="8232956427053453090">Зберігати дані</translation>
+<translation id="8238711781852526820">Сховати модуль "Відстеження цін"</translation>
 <translation id="8258999165172757081">Додано</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="82619448491672958">Переглянути інші вкладки</translation>
@@ -1789,6 +1795,7 @@
 <translation id="8717864919010420084">Скопіювати посилання</translation>
 <translation id="8722229818691036192">Облікові записи на цьому пристрої</translation>
 <translation id="8722649775263832315">Натисніть або виділіть об’єкт, щоб виконати пошук за допомогою Google Об’єктива</translation>
+<translation id="8723088494871522141">Сховати розділ "Вибрані відгуки про товари"</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
 <translation id="8728922029615312208">Закрити всі</translation>
 <translation id="8730621377337864115">Готово</translation>

@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Streść</translation>
 <translation id="123124571410524056">Podejrzany portal</translation>
 <translation id="1232610416724362657">wodospad</translation>
+<translation id="1238163879850290856">Zresetuj, aby uniemożliwić innym dostęp do danych. Używaj tylko zaufanych metod wprowadzania.</translation>
 <translation id="1238612778414822719">Opóźnienie HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Podejrzany portal przechwytujący</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Prawy shift</translation>
 <translation id="4654549501020883054">Zmieniaj codziennie</translation>
 <translation id="4655868084888499342">Obraz został ustawiony jako tapeta</translation>
+<translation id="4660989616054030633">Generatywna AI może popełniać błędy, także dotyczące osób, dlatego sprawdzaj uzyskane odpowiedzi</translation>
 <translation id="4661249927038176904">Surrealistyczne</translation>
 <translation id="4661392828086261436">Ta aktualizacja jest dostarczana przez producenta urządzenia i nie została zweryfikowana przez Google</translation>
 <translation id="4664651912255946953">futra</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Ukryj podsumowanie</translation>
 <translation id="6075872808778243331">(Android) Opóźnienie HTTP</translation>
 <translation id="6078323886959318429">Dodaj skrót</translation>
+<translation id="6079693086494835199">Zresetuj, aby upewnić się, że domyślna strona główna nie jest witryną wyłudzającą informacje. Korzystaj tylko z witryn, którym ufasz.</translation>
 <translation id="6091080061796993741">żółty</translation>
 <translation id="6104112872696127344">Skanowanie zostało anulowane</translation>
 <translation id="6106186594183574873">Aby zakończyć, wpisz stare hasło</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">fioletowych i różowych</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Zresetuj, aby uniemożliwić innym korzystanie z mikrofonu lub kamery. Przyznawaj uprawnienia tylko witrynom, którym ufasz.</translation>
 <translation id="6188737759358894319">Utworzono <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Pojemność baterii zmniejsza się w miarę jej zużycia</translation>
 <translation id="6189987971574353264">Odtwórz</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">przyciemnianie klawiatury</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> został anulowany</translation>
 <translation id="631063167932043783">Aplikacja Odkrywaj</translation>
+<translation id="6314333689576767865">Chromebook został zresetowany do bezpiecznych wartości domyślnych. W każdej chwili możesz wprowadzić zmiany w Ustawieniach.</translation>
 <translation id="6318437367327684789">bez końca</translation>
 <translation id="6319207335391420837">Aktualizacja oprogramowania układowego na urządzeniu <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Włącz wygaszacz ekranu</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Opinia przesłana</translation>
 <translation id="6866732840889595464">stokrotka</translation>
 <translation id="6871256179359663621">jasnofioletowy</translation>
+<translation id="6887967050249348172">Rozszerzenia zostały wyłączone, aby nie wprowadziły zmian w ustawieniach. Włączaj tylko te rozszerzenia, którym ufasz.</translation>
 <translation id="6889786074662672253">Podczas ponownego uruchamiania nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Ponowne uruchamianie potrwa kilka minut – w tym czasie urządzenie zewnętrzne może nie działać.</translation>
 <translation id="6899460405678814458">Pokaż podsumowanie</translation>
 <translation id="6900701049656042631">Ten album nie zawiera zdjęć. Aby je dodać, wejdź na <ph name="LINK" /></translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Skrót został przywrócony</translation>
 <translation id="725133483556299729">Wybierz adres e-mail</translation>
 <translation id="7255187042098209569">różowym i fioletowym</translation>
+<translation id="7267918995585557751">Zresetuj, aby upewnić się, że domyślna strona startowa nie jest witryną wyłudzającą informacje. Korzystaj tylko z witryn, którym ufasz.</translation>
 <translation id="7271000785316964275">klasycystycznym</translation>
 <translation id="7271040990581020067">Skaner jest obecnie używany. Spróbuj ponownie później.</translation>
 <translation id="7271932918253517778">Skrót wykorzystujący górny rząd klawiszy na klawiaturze musi zawierać klawisz <ph name="META_KEY" />.</translation>
@@ -1484,6 +1491,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7903695460270716054">Wybierz wyselekcjonowane obrazy i zdjęcia</translation>
 <translation id="7912005977894000746">Powrót na stronę główną</translation>
 <translation id="7915220255123750251">Zarządzaj ustawieniami APN sieci. Punkty APN nawiązują połączenie między siecią komórkową a internetem.</translation>
+<translation id="7915759923880480519">Zresetuj, aby chronić dane przesyłane przez sieci. Używaj tylko sieci, którym ufasz.</translation>
 <translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="7942349550061667556">Czerwony</translation>
 <translation id="7943235353293548836">Trwały odstęp utrzymywania aktywności</translation>
@@ -1709,6 +1717,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="89945434909472341">wieś</translation>
 <translation id="8997710128084572139">Poziom naładowania baterii urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8998289560386111590">Niedostępne na Twoim urządzeniu</translation>
+<translation id="9000871120886759611">Zresetuj, aby mieć dostęp do informacji w preferowanym języku. Sprawdź, czy używane są tylko preferowane języki.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Częstotliwość</translation>
 <translation id="901834265349196618">e-mail</translation>

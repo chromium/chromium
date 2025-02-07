@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">ऑपरेटिंग सिस्टीम</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
 <translation id="3082007635241601060">उपलब्ध असतील, तेव्हा पर्सनलाइझ केलेल्या सवलती शोधण्यासाठी Google ला तुमची कार्ट वापरू द्या</translation>
+<translation id="3086269988715347183">तुम्ही याआधी <ph name="BLOCKED_URL" /> ला मंजुरी दिलेली नाही</translation>
 <translation id="3086579638707268289">वेबवरील तुमच्या ॲक्टिव्हिटीचे नियंत्रण केले जात आहे</translation>
 <translation id="3087734570205094154">तळाकडील</translation>
 <translation id="3090667236485488075">ग्लास</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3203025201812691413">URL रिकामी असू शकत नाही</translation>
 <translation id="320323717674993345">पेमेंट रद्द करा</translation>
 <translation id="3203366800380907218">वेबवरील</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> मध्ये प्रौढ आशय असू शकतो</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
 <translation id="3208701679386778924">कृपया अहवाल पाठवा, जेणेकरून आम्ही पुढील ChromeOS अपडेटमध्ये सुधारणा करू शकू.</translation>
 <translation id="3209034400446768650">पेज कदाचित शुल्क आकारू शकते</translation>
@@ -2973,6 +2975,7 @@
 <translation id="6254436959401408446">हे पेज उघडण्‍यासाठी पुरेशी मेमरी नाही</translation>
 <translation id="625463612687472648">अनुमती देणे थांबवा</translation>
 <translation id="6259156558325130047">&amp;पुनर्क्रमित करा पुन्हा करा</translation>
+<translation id="6259282549512536479">तुम्ही याआधी <ph name="BLOCKED_URL" /> ब्लॉक केलेली आहे</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
 <translation id="6264485186158353794">सुरक्षिततेकडे परत</translation>

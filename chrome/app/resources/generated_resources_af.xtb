@@ -4747,6 +4747,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4305402730127028764">Kopieer na <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Skakel oor</translation>
 <translation id="4306119971288449206">Programme moet met inhoudtipe "<ph name="CONTENT_TYPE" />" bedien word</translation>
+<translation id="4306810703452026910">Chrome sal ophou om kennisgewings van hierdie werf af as strooipos te merk</translation>
 <translation id="4307992518367153382">Basies</translation>
 <translation id="4309165024397827958">Laat Android-programme en -dienste met liggingtoestemming toe om jou toestel se ligging te gebruik. Google kan van tyd tot tyd liggingdata insamel en hierdie data op anonieme wyse gebruik om liggingakkuraatheid en ligginggegronde dienste beter te maak.</translation>
 <translation id="4309183709806093061">Deel ook stelseloudio. Hierdie toestel sal gedemp word om ’n oudioterugvoerlus te voorkom.</translation>
@@ -8044,6 +8045,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6713233729292711163">Voeg werkprofiel by</translation>
 <translation id="6713441551032149301">Hou die lanseerdersleutel in om tussen funksiesleutels en die stelsel se boonste ry sleutels te wissel</translation>
 <translation id="6713668088933662563">Moet nooit aanbied om hierdie tale te vertaal nie</translation>
+<translation id="6714871567554212732">Bekyk meer besonderhede oor <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Webwerwe word nie toegelaat om jou mikrofoon te gebruik nie</translation>
 <translation id="6715803357256707211">Kon nie jou Linux-program installeer nie. Klik op kennisgewing vir besonderhede.</translation>
 <translation id="6716049856796700977">Niks kan jou ligging gebruik nie. Jou ligging kan egter steeds via jou IP-adres sigbaar wees vir apps en webwerwe. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>

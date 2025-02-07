@@ -1164,6 +1164,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3076865167425975822">Stýrikerfi</translation>
 <translation id="3080254622891793721">Grafík</translation>
 <translation id="3082007635241601060">Leyfðu Google að nota innkaupakörfurnar þínar til að finna sérsniðna afslætti sem eru í boði</translation>
+<translation id="3086269988715347183">Þú hefur ekki samþykkt <ph name="BLOCKED_URL" /> áður</translation>
 <translation id="3086579638707268289">Verið er að fylgjast með aðgerðum þínum á vefnum</translation>
 <translation id="3087734570205094154">Neðst</translation>
 <translation id="3090667236485488075">Gler</translation>
@@ -1239,6 +1240,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3203025201812691413">Vefslóðin má ekki vera tóm</translation>
 <translation id="320323717674993345">Hætta við greiðslu</translation>
 <translation id="3203366800380907218">Af vefnum</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> gæti innihaldið efni fyrir fullorðna</translation>
 <translation id="3207960819495026254">Í bókamerkjum</translation>
 <translation id="3208701679386778924">Sendu okkur skýrslu svo við getum gert ChromeOS-uppfærslur enn betri.</translation>
 <translation id="3209034400446768650">Síðan kann að rukka gjald</translation>
@@ -2973,6 +2975,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6254436959401408446">Ekki nóg minni til að birta þessa síðu</translation>
 <translation id="625463612687472648">Hætta að leyfa</translation>
 <translation id="6259156558325130047">Endu&amp;rtaka nýja röðun</translation>
+<translation id="6259282549512536479">Þú hefur áður sett <ph name="BLOCKED_URL" /> á bannlista</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> bókamerki</translation>
 <translation id="6264376385120300461">Sækja samt</translation>
 <translation id="6264485186158353794">Aftur í öruggt skjól</translation>

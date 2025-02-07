@@ -4743,6 +4743,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4305402730127028764">Kopioi: <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Vaihda</translation>
 <translation id="4306119971288449206">Sovellusten näyttämiseen tulee käyttää sisältötyyppiä <ph name="CONTENT_TYPE" />.</translation>
+<translation id="4306810703452026910">Chrome ei enää merkitse tämän sivuston ilmoituksia roskasisällöksi</translation>
 <translation id="4307992518367153382">Perustiedot</translation>
 <translation id="4309165024397827958">Salli laitteen sijainnin käyttäminen Android-sovelluksille ja ‑palveluille, joilla on sijaintilupa. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä ei-yksilöivästi sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen.</translation>
 <translation id="4309183709806093061">Jaa myös järjestelmän audio. Laite mykistetään palautteen estämiseksi.</translation>
@@ -8039,6 +8040,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6713233729292711163">Lisää työprofiili</translation>
 <translation id="6713441551032149301">Vaihda toimintonäppäinten ja järjestelmän ylärivin näppäinten välillä painamalla käynnistysohjelmanäppäintä pitkään</translation>
 <translation id="6713668088933662563">Älä koskaan ehdota näiden kielten kääntämistä</translation>
+<translation id="6714871567554212732">Katso lisätietoa tästä: <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Verkkosivustot eivät saa käyttää mikrofoniasi</translation>
 <translation id="6715803357256707211">Linux-sovelluksen asennuksessa tapahtui virhe. Katso lisätietoja klikkaamalla ilmoitusta.</translation>
 <translation id="6716049856796700977">Sijaintiasi ei voi käyttää. Sijaintisi voi kuitenkin näkyä sovelluksille ja verkkosivustoille IP-osoitteesi perusteella. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>

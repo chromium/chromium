@@ -1164,6 +1164,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3076865167425975822">Operating systems</translation>
 <translation id="3080254622891793721">Graphic</translation>
 <translation id="3082007635241601060">Let Google use your baskets to find personalised discounts when available</translation>
+<translation id="3086269988715347183">You haven't approved <ph name="BLOCKED_URL" /> before</translation>
 <translation id="3086579638707268289">Your activity on the web is being monitored</translation>
 <translation id="3087734570205094154">Bottom</translation>
 <translation id="3090667236485488075">Glass</translation>
@@ -1239,6 +1240,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3203025201812691413">URL can't be empty</translation>
 <translation id="320323717674993345">Cancel payment</translation>
 <translation id="3203366800380907218">From the web</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> may have mature content</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208701679386778924">Please send a report so that we can improve further ChromeOS updates.</translation>
 <translation id="3209034400446768650">Page may charge money</translation>
@@ -2973,6 +2975,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6254436959401408446">Not enough memory to open this page</translation>
 <translation id="625463612687472648">Stop allowing</translation>
 <translation id="6259156558325130047">&amp;Redo Reorder</translation>
+<translation id="6259282549512536479">You previously blocked <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> bookmarks</translation>
 <translation id="6264376385120300461">Download anyway</translation>
 <translation id="6264485186158353794">Back to safety</translation>

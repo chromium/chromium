@@ -1164,6 +1164,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3076865167425975822">Sistemet operative</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Lejo që Google të përdorë grumbujt e tu të artikujve për të gjetur zbritje të personalizuara kur ato ofrohen</translation>
+<translation id="3086269988715347183">Nuk e ke miratuar <ph name="BLOCKED_URL" /> më parë</translation>
 <translation id="3086579638707268289">Aktiviteti yt në ueb po monitorohet</translation>
 <translation id="3087734570205094154">Në fund</translation>
 <translation id="3090667236485488075">Qelq</translation>
@@ -1239,6 +1240,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3203025201812691413">URL-ja nuk mund të jetë bosh</translation>
 <translation id="320323717674993345">Anulo pagesën</translation>
 <translation id="3203366800380907218">Nga uebi</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> mund të ketë përmbajtje për të rritur</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3208701679386778924">Dërgo një raport që të mund t'i përmirësojmë përditësimet e mëtejshme të ChromeOS.</translation>
 <translation id="3209034400446768650">Faqja mund të tarifojë para</translation>
@@ -2971,6 +2973,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6254436959401408446">Nuk ka memorie të mjaftueshme për të hapur këtë faqe</translation>
 <translation id="625463612687472648">Ndalo lejimin</translation>
 <translation id="6259156558325130047">&amp;Ribëj riporosinë</translation>
+<translation id="6259282549512536479">Ke bllokuar më parë <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872">Faqeshënuesit e <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
 <translation id="6264485186158353794">Kthehu aty ku je i sigurt</translation>

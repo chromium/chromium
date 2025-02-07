@@ -4729,6 +4729,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4305402730127028764">Auf <ph name="DEVICE_NAME" /> kopieren</translation>
 <translation id="4305817255990598646">Wechseln</translation>
 <translation id="4306119971288449206">Für Apps muss der Inhaltstyp "<ph name="CONTENT_TYPE" />" bereitgestellt werden</translation>
+<translation id="4306810703452026910">Benachrichtigungen von dieser Website werden in Chrome nicht mehr als Spam gemeldet</translation>
 <translation id="4307992518367153382">Grundeinstellungen</translation>
 <translation id="4309165024397827958">Android-Apps und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Google kann in regelmäßigen Abständen anonymisierte Standortdaten erfassen und diese zur Verbesserung der Standortgenauigkeit und standortbasierter Dienste verwenden.</translation>
 <translation id="4309183709806093061">Auch Audio des Systems teilen. Dieses Gerät wird stummgeschaltet, um eine Rückkopplung zu verhindern.</translation>
@@ -8020,6 +8021,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6713233729292711163">Arbeitsprofil hinzufügen</translation>
 <translation id="6713441551032149301">Launcher-Taste gedrückt halten, um zwischen Funktionstasten und Tasten der obersten Reihe zu wechseln</translation>
 <translation id="6713668088933662563">Für diese Sprachen nie eine Übersetzung anbieten</translation>
+<translation id="6714871567554212732">Weitere Details zu „<ph name="GROUP_NAME" />“ anzeigen</translation>
 <translation id="6715735940363172819">Websites dürfen dein Mikrofon nicht verwenden</translation>
 <translation id="6715803357256707211">Bei der Installation deiner Linux-Anwendung ist ein Fehler aufgetreten. Klicke auf die Benachrichtigung, um Details zu sehen.</translation>
 <translation id="6716049856796700977">Apps, Websites und Systemdienste dürfen deinen Standort nicht verwenden. Apps und Websites können ihn aber möglicherweise anhand deiner IP-Adresse sehen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>

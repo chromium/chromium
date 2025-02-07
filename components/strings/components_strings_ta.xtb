@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">ஆப்ரேட்டிங் சிஸ்டங்கள்</translation>
 <translation id="3080254622891793721">கிராஃபிக்</translation>
 <translation id="3082007635241601060">பிரத்தியேகத் தள்ளுபடிகள் கிடைக்கும்போது அவற்றைத் தெரியப்படுத்த, உங்கள் கார்ட்டை Google பயன்படுத்த அனுமதியுங்கள்</translation>
+<translation id="3086269988715347183">இதற்கு முன் <ph name="BLOCKED_URL" /> தளத்தை அனுமதிக்கவில்லை</translation>
 <translation id="3086579638707268289">உங்களின் இணையச் செயல்பாடு கண்காணிக்கப்படுகிறது</translation>
 <translation id="3087734570205094154">கீழே</translation>
 <translation id="3090667236485488075">கண்ணாடி</translation>
@@ -1236,6 +1237,7 @@
 <translation id="3203025201812691413">URL காலியாக இருக்கக்கூடாது</translation>
 <translation id="320323717674993345">கட்டணம் செலுத்துவதை ரத்துசெய்</translation>
 <translation id="3203366800380907218">இணையத்தில் இருந்து</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> தளத்தில் பெரியவர்களுக்கான உள்ளடக்கம் இருக்கக்கூடும்</translation>
 <translation id="3207960819495026254">புக்மார்க் செய்யப்பட்டது</translation>
 <translation id="3208701679386778924">புதுப்பிப்பு குறித்த புகாரை எங்களுக்கு அனுப்புங்கள். இதனால் அடுத்து வரும் ChromeOS புதுப்பிப்புகளை எங்களால் மேம்படுத்த முடியும்.</translation>
 <translation id="3209034400446768650">இந்தப் பக்கத்திற்குச் சென்றால் கட்டணம் விதிக்கக்கூடும்</translation>
@@ -2968,6 +2970,7 @@
 <translation id="6254436959401408446">பக்கத்தைத் திறப்பதற்குப் போதுமான நினைவகம் இல்லை</translation>
 <translation id="625463612687472648">அனுமதியை நிறுத்து</translation>
 <translation id="6259156558325130047">&amp;மறுவரிசைப்படுத்தலை மீண்டும் செய்</translation>
+<translation id="6259282549512536479">இதற்கு முன் <ph name="BLOCKED_URL" /> தளத்தைத் தடுத்துள்ளீர்கள்</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> புக்மார்க்குகள்</translation>
 <translation id="6264376385120300461">பரவாயில்லை, பதிவிறக்கு</translation>
 <translation id="6264485186158353794">பாதுகாப்பான நிலைக்குத் திரும்பு</translation>

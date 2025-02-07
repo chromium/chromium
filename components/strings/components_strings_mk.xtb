@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">Оперативни системи</translation>
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3082007635241601060">Дозволете Google да ги користи вашите кошнички за да најде персонализирани попусти кога има</translation>
+<translation id="3086269988715347183">Не сте го одобриле веб-сајтот <ph name="BLOCKED_URL" /> претходно</translation>
 <translation id="3086579638707268289">Вашата активност на интернет е под надзор</translation>
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090667236485488075">Стакло</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3203025201812691413">URL-адресата не може да биде празна</translation>
 <translation id="320323717674993345">Откажи го плаќањето</translation>
 <translation id="3203366800380907218">Од интернет</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> може да има содржини за возрасни</translation>
 <translation id="3207960819495026254">Обележано</translation>
 <translation id="3208701679386778924">Испратете извештај за да ги подобриме следните ажурирања за ChromeOS.</translation>
 <translation id="3209034400446768650">Страницата може да наплаќа</translation>
@@ -2973,6 +2975,7 @@
 <translation id="6254436959401408446">Нема доволно меморија за да се отвори страницава</translation>
 <translation id="625463612687472648">Сопри ја дозволата</translation>
 <translation id="6259156558325130047">&amp;Повтори прередување</translation>
+<translation id="6259282549512536479">Сте го блокирале веб-сајтот <ph name="BLOCKED_URL" /> претходно</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> обележувачи</translation>
 <translation id="6264376385120300461">Сепак преземи</translation>
 <translation id="6264485186158353794">Назад во безбедност</translation>

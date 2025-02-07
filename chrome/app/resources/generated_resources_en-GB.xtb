@@ -4747,6 +4747,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4305402730127028764">Copy to <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Switch</translation>
 <translation id="4306119971288449206">Apps must be served with content-type '<ph name="CONTENT_TYPE" />'</translation>
+<translation id="4306810703452026910">Chrome will stop flagging notifications from this site as spam</translation>
 <translation id="4307992518367153382">Basics</translation>
 <translation id="4309165024397827958">Allow Android apps and services with location permission to use your device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.</translation>
 <translation id="4309183709806093061">Also share system audio. This device will be muted to prevent feedback.</translation>
@@ -8043,6 +8044,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6713233729292711163">Add work profile</translation>
 <translation id="6713441551032149301">Hold the launcher key to change between function keys and system top-row keys</translation>
 <translation id="6713668088933662563">Never offer to translate these languages</translation>
+<translation id="6714871567554212732">View more details about <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Websites are not allowed to use your microphone</translation>
 <translation id="6715803357256707211">An error occurred during installation of your Linux application. Click on the notification for details.</translation>
 <translation id="6716049856796700977">Nothing can use your location. However, your location may still be visible to apps and websites through your IP address. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>

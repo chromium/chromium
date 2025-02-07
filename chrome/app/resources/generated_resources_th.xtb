@@ -2134,6 +2134,10 @@
 <translation id="2462332841984057083">กําลังตั้งค่า Steam อยู่แล้ว โปรดรอให้การตั้งค่าเสร็จสมบูรณ์</translation>
 <translation id="2462724976360937186">รหัสคีย์ผู้ออกใบรับรอง</translation>
 <translation id="2462752602710430187">เพิ่ม <ph name="PRINTER_NAME" /> แล้ว</translation>
+<translation id="2464075479326723132">สิ่งที่เห็นนี้คือไฟล์แนะนำซึ่งช่วยให้คุณกลับไปยังกิจกรรมล่าสุดใน SharePoint และ OneDrive ของ Microsoft ได้อย่างง่ายดาย
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        คุณสามารถจัดการการตั้งค่าจากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
 <translation id="2464079411014186876">ไอศกรีม</translation>
 <translation id="2467755475704469005">ไม่พบอุปกรณ์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก <ph name="NUM_OTHER_MEMBERS" /> คน</translation>
@@ -3994,6 +3998,7 @@
 <translation id="3787434344076711519">กำลังรอการแปล</translation>
 <translation id="3788301286821743879">เปิดแอปพลิเคชันคีออสก์ไม่ได้</translation>
 <translation id="3788401245189148511">ส่วนขยายต้องการจะ:</translation>
+<translation id="3789432704615470433">ไฟล์ SharePoint และ OneDrive</translation>
 <translation id="3789841737615482174">ติดตั้ง</translation>
 <translation id="3790417903123637354">เกิดข้อผิดพลาด ลองอีกครั้งภายหลัง</translation>
 <translation id="379082410132524484">บัตรของคุณหมดอายุแล้ว</translation>
@@ -6181,6 +6186,7 @@
 <translation id="5360150013186312835">แสดงในแถบเครื่องมือ</translation>
 <translation id="5362741141255528695">เลือกไฟล์กุญแจส่วนตัว</translation>
 <translation id="536278396489099088">สถานะและรายงานระบบ ChromeOS</translation>
+<translation id="5362916924854054326">ไม่ต้องแสดงไฟล์ SharePoint และ OneDrive</translation>
 <translation id="5363109466694494651">Powerwash และเปลี่ยนกลับ</translation>
 <translation id="5365881113273618889">โฟลเดอร์ที่คุณเลือกมีไฟล์ที่ละเอียดอ่อน แน่ใจไหมว่าต้องการให้สิทธิ์การเข้าถึงในการเขียนโฟลเดอร์นี้อย่างถาวรแก่ "<ph name="APP_NAME" />"</translation>
 <translation id="536638840841140142">ไม่มี</translation>
@@ -10761,6 +10767,10 @@
 <translation id="865936634714975126">เพิ่มพารามิเตอร์การค้นหาใน URL เพื่อเลือกประเภทเมื่อโหลดหน้าเว็บ ตัวอย่างเช่น chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">รายชื่อติดต่อของ<ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">หน้าต่างเลื่อนลง</translation>
+<translation id="8660288500924118793">สิ่งที่เห็นนี้คือปฏิทินซึ่งช่วยให้คุณไปยังกิจกรรมถัดไปในปฏิทิน Outlook ได้อย่างง่ายดาย
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        คุณสามารถจัดการการตั้งค่าจากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
 <translation id="8661290697478713397">เปิดลิงก์ในหน้าต่าง&amp;ที่ไม่ระบุตัวตน</translation>
 <translation id="8662474268934425487">ลงชื่อเข้าใช้ <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">เข้าร่วมเครือข่าย <ph name="TYPE" /></translation>

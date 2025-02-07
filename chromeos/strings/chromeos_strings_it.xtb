@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Riassumi</translation>
 <translation id="123124571410524056">Portale sospetto</translation>
 <translation id="1232610416724362657">una cascata</translation>
+<translation id="1238163879850290856">Reimposta per impedire ad altre persone di accedere ai tuoi dati. Utilizza solo metodi di immissione che ritieni affidabili.</translation>
 <translation id="1238612778414822719">Latenza HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">Il sistema sospetta la presenza di un captive portal</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Maiusc destro</translation>
 <translation id="4654549501020883054">Cambia ogni giorno</translation>
 <translation id="4655868084888499342">Immagine impostata come sfondo</translation>
+<translation id="4660989616054030633">L'AI generativa può fare errori, anche riguardo a persone, quindi verifica le sue risposte</translation>
 <translation id="4661249927038176904">Surreale</translation>
 <translation id="4661392828086261436">Questo aggiornamento è fornito dal produttore del dispositivo e non è stato verificato da Google</translation>
 <translation id="4664651912255946953">pelliccia</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Nascondi riepilogo</translation>
 <translation id="6075872808778243331">(Android) Latenza HTTP</translation>
 <translation id="6078323886959318429">Scorciatoia</translation>
+<translation id="6079693086494835199">Reimposta per assicurarti che la home page predefinita non sia un sito di phishing. Utilizza solo siti web che ritieni affidabili.</translation>
 <translation id="6091080061796993741">giallo</translation>
 <translation id="6104112872696127344">La scansione è stata annullata</translation>
 <translation id="6106186594183574873">Per terminare, inserisci la vecchia password</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">granata e rosa</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Reimposta per impedire ad altre persone di utilizzare il microfono o la videocamera. Concedi autorizzazioni solo ai siti che ritieni affidabili.</translation>
 <translation id="6188737759358894319">Creato il giorno <ph name="DATE" /></translation>
 <translation id="6189418609903030344">La capacità della batteria si riduce con l'utilizzo</translation>
 <translation id="6189987971574353264">Riproduci</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">Oscuramento della tastiera</translation>
 <translation id="6302401976930124515">Il test <ph name="TEST_NAME" /> è stato annullato</translation>
 <translation id="631063167932043783">App Esplora</translation>
+<translation id="6314333689576767865">Su Chromebook sono state ripristinate le impostazioni predefinite sicure. Puoi apportare modifiche in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="6318437367327684789">per sempre</translation>
 <translation id="6319207335391420837">Aggiorna il firmware su <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Attiva salvaschermo</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Feedback inviato</translation>
 <translation id="6866732840889595464">margherite</translation>
 <translation id="6871256179359663621">viola chiaro</translation>
+<translation id="6887967050249348172">Estensioni disattivate per impedire modifiche alle impostazioni. Attiva solo le estensioni che ritieni affidabili.</translation>
 <translation id="6889786074662672253">Durante il riavvio, non scollegare questo dispositivo esterno o non arrestare il computer. Puoi ridurre a icona questa finestra. Questa operazione potrebbe richiedere qualche minuto e nel frattempo il dispositivo esterno potrebbe non funzionare.</translation>
 <translation id="6899460405678814458">Mostra riepilogo</translation>
 <translation id="6900701049656042631">Questo album non contiene foto. Per aggiungere foto, visita la pagina <ph name="LINK" />.</translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Scorciatoia ripristinata</translation>
 <translation id="725133483556299729">Seleziona email</translation>
 <translation id="7255187042098209569">rosa e viola</translation>
+<translation id="7267918995585557751">Reimposta per assicurarti che la pagina iniziale predefinita non sia un sito web di phishing. Utilizza solo siti web che ritieni affidabili.</translation>
 <translation id="7271000785316964275">classicista</translation>
 <translation id="7271040990581020067">Lo scanner è attualmente in uso. Riprova più tardi.</translation>
 <translation id="7271932918253517778">La scorciatoia con tasti della fila superiore deve includere il tasto <ph name="META_KEY" />.</translation>
@@ -1486,6 +1493,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7903695460270716054">Scegli opere d'arte e immagini selezionate</translation>
 <translation id="7912005977894000746">Torna alla pagina principale</translation>
 <translation id="7915220255123750251">Gestisci le impostazioni APN di rete. Gli APN stabiliscono una connessione tra una rete mobile e Internet.</translation>
+<translation id="7915759923880480519">Reimposta per proteggere i dati inviati attraverso le tue reti. Utilizza solo reti che ritieni affidabili.</translation>
 <translation id="7936303884198020182">nessun server dei nomi trovato</translation>
 <translation id="7942349550061667556">Rosso</translation>
 <translation id="7943235353293548836">Intervallo keepalive persistente</translation>
@@ -1711,6 +1719,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="89945434909472341">un villaggio</translation>
 <translation id="8997710128084572139">Percentuale di batteria del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8998289560386111590">Non disponibile sul tuo dispositivo</translation>
+<translation id="9000871120886759611">Reimposta per assicurarti di poter accedere alle informazioni nella tua lingua preferita. Verifica che vengano utilizzate solo le lingue preferite.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frequenza</translation>
 <translation id="901834265349196618">email</translation>

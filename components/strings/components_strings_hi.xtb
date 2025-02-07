@@ -1165,6 +1165,7 @@
 <translation id="3076865167425975822">ऑपरेटिंग सिस्टम</translation>
 <translation id="3080254622891793721">ग्राफ़िक</translation>
 <translation id="3082007635241601060">Google को अपने कार्ट का ऐक्सेस दें, ताकि वह आपके हिसाब से उपलब्ध छूट का पता लगा सके</translation>
+<translation id="3086269988715347183">आपने <ph name="BLOCKED_URL" /> को पहले अनुमति नहीं दी है</translation>
 <translation id="3086579638707268289">वेब पर की जा रही आपकी गतिविधि पर नज़र रखी जा रही है</translation>
 <translation id="3087734570205094154">नीचे</translation>
 <translation id="3090667236485488075">ग्लास</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3203025201812691413">यूआरएल वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
 <translation id="320323717674993345">भुगतान रद्द करें</translation>
 <translation id="3203366800380907218">वेब से</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> में वयस्कों के लिए बना कॉन्टेंट मौजूद हो सकता है</translation>
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
 <translation id="3208701679386778924">कृपया एक रिपोर्ट भेजें, ताकि हम ChromeOS के आने वाले अपडेट में सुधार कर सकें.</translation>
 <translation id="3209034400446768650">पेज पर शुल्क लिया जा सकता है</translation>
@@ -2973,6 +2975,7 @@
 <translation id="6254436959401408446">यह पेज खोलने के लिए ज़रूरी जगह नहीं है</translation>
 <translation id="625463612687472648">ऐक्सेस करने की अनुमति वापस लें</translation>
 <translation id="6259156558325130047">&amp;पुन: क्रमित करना फिर से करें</translation>
+<translation id="6259282549512536479">आपने पहले <ph name="BLOCKED_URL" /> को ब्लॉक किया था</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="6264376385120300461">फिर भी डाउनलोड करें</translation>
 <translation id="6264485186158353794">वापस सुरक्षित पेज पर जाएं</translation>

@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Ibuod</translation>
 <translation id="123124571410524056">May pinaghihinalaang portal</translation>
 <translation id="1232610416724362657">waterfall</translation>
+<translation id="1238163879850290856">Mag-reset para mapigilan ang ibang taong ma-access ang data. Gumamit lang ng mga paraan ng pag-input na pinagkakatiwalaan mo.</translation>
 <translation id="1238612778414822719">Latency ng HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
 <translation id="1270369111467284986">May pinaghihinalaang captive portal</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Kanang shift</translation>
 <translation id="4654549501020883054">Baguhin Araw-araw</translation>
 <translation id="4655868084888499342">Itinakda ang larawan bilang wallpaper</translation>
+<translation id="4660989616054030633">Puwedeng magkamali ang generative AI, kabilang ang tungkol sa mga tao, kaya i-double check ito</translation>
 <translation id="4661249927038176904">Surreal</translation>
 <translation id="4661392828086261436">Ang update na ito ay galing sa manufacturer ng device at hindi pa nave-verify ng Google</translation>
 <translation id="4664651912255946953">balahibo</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">I-hide ang buod</translation>
 <translation id="6075872808778243331">(Android) Latency ng HTTP</translation>
 <translation id="6078323886959318429">Magdagdag ng shortcut</translation>
+<translation id="6079693086494835199">Mag-reset para matiyak na hindi site ng phishing ang default na homepage. Gumamit lang ng mga website na pinagkakatiwalaan mo.</translation>
 <translation id="6091080061796993741">dilaw</translation>
 <translation id="6104112872696127344">Nakansela ang pag-scan</translation>
 <translation id="6106186594183574873">Para tapusin, ilagay ang iyong lumang password</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">maroon at pink</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Mag-reset para mapigilan ang ibang tao sa paggamit ng iyong mikropono o camera. Magbigay lang ng mga pahintulot sa mga site na pinagkakatiwalaan mo.</translation>
 <translation id="6188737759358894319">Ginawa noong <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Nababawasan ang kapasidad ng baterya sa paggamit</translation>
 <translation id="6189987971574353264">I-play</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">pag-dim ng keyboard</translation>
 <translation id="6302401976930124515">Nakansela ang pagsubok na <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Explore app</translation>
+<translation id="6314333689576767865">Na-reset ang iyong Chromebook sa mga ligtas na default. Puwede kang gumawa ng mga pagbabago anumang oras sa Mga Setting.</translation>
 <translation id="6318437367327684789">habambuhay</translation>
 <translation id="6319207335391420837">I-update ang firmware sa <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">I-on ang screen saver</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Isinumite ang feedback</translation>
 <translation id="6866732840889595464">daisy</translation>
 <translation id="6871256179359663621">light purple</translation>
+<translation id="6887967050249348172">Naka-disable ang mga extension para mapigilan ang mga pagbabago sa mga setting. I-on lang ang mga extension na pinagkakatiwalaan mo.</translation>
 <translation id="6889786074662672253">Habang nagre-restart, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posible itong abutin nang ilang minuto at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
 <translation id="6899460405678814458">Ipakita ang buod</translation>
 <translation id="6900701049656042631">Walang anumang larawan ang album na ito. Para magdagdag ng mga larawan, pumunta sa <ph name="LINK" /></translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Na-restore ang shortcut</translation>
 <translation id="725133483556299729">Pumili ng email</translation>
 <translation id="7255187042098209569">pink at lila</translation>
+<translation id="7267918995585557751">Mag-reset para matiyak na hindi website ng phishing ang default na page sa pagsisimula. Gumamit lang ng mga website na pinagkakatiwalaan mo.</translation>
 <translation id="7271000785316964275">classicist</translation>
 <translation id="7271040990581020067">Kasalukuyang ginagamit ang scanner. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="7271932918253517778">Kailangang kasama ang <ph name="META_KEY" /> key sa shortcut na may mga top row key.</translation>
@@ -1486,6 +1493,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7903695460270716054">Pumili ng na-curate na artwork at mga larawan</translation>
 <translation id="7912005977894000746">Bumalik sa pangunahing page</translation>
 <translation id="7915220255123750251">Pamahalaan ang mga setting ng APN ng network. Nagtatatag ang mga APN ng koneksyon sa pagitan ng isang cellular network at internet.</translation>
+<translation id="7915759923880480519">Mag-reset para maprotektahan ang data na ipinapadala sa pamamagitan ng iyong mga network. Gumamit lang ng mga network na pinagkakatiwalaan mo.</translation>
 <translation id="7936303884198020182">Walang nakitang name server</translation>
 <translation id="7942349550061667556">Pula</translation>
 <translation id="7943235353293548836">Persistent keepalive Interval</translation>
@@ -1711,6 +1719,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="89945434909472341">village</translation>
 <translation id="8997710128084572139">May <ph name="BATTERY_PERCENTAGE" />% baterya ang device.</translation>
 <translation id="8998289560386111590">Hindi available sa iyong device</translation>
+<translation id="9000871120886759611">Mag-reset para matiyak na maa-access mo ang impormasyon sa iyong gustong wika. Tingnan kung ang mga gustong wika lang ang ginagamit.</translation>
 <translation id="9003499805101629690">pizza</translation>
 <translation id="9003704114456258138">Frequency</translation>
 <translation id="901834265349196618">email</translation>

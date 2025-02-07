@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">Операциялык тутумдар</translation>
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3082007635241601060">Жекелештирилген арзандатуулар жеткиликтүү болгондо, аларды табуу үчүн Google'га арабаларыңызды колдонууга уруксат бериңиз</translation>
+<translation id="3086269988715347183"><ph name="BLOCKED_URL" /> сайтын ырастай элексиз</translation>
 <translation id="3086579638707268289">Интернеттеги аракеттериңиз көзөмөлдөнүүдө</translation>
 <translation id="3087734570205094154">Аягы</translation>
 <translation id="3090667236485488075">Айнек</translation>
@@ -1239,6 +1240,7 @@
 <translation id="3203025201812691413">URL бош болбошу керек</translation>
 <translation id="320323717674993345">Төлөмдү жокко чыгаруу</translation>
 <translation id="3203366800380907218">Интернеттен алынды</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> сайтында чоңдорго арналган материалдар болушу мүмкүн</translation>
 <translation id="3207960819495026254">Кыстармаланды</translation>
 <translation id="3208701679386778924">ChromeOS тутумунун кийинки жаңыртууларын жакшыртуубуз үчүн отчёт жөнөтүңүз.</translation>
 <translation id="3209034400446768650">Барак төлөм өндүрүшү мүмкүн</translation>
@@ -2972,6 +2974,7 @@
 <translation id="6254436959401408446">Бул баракчаны ачууга эстутум жетишсиз</translation>
 <translation id="625463612687472648">Төмөнкүнү колдонууга тыюу салуу:</translation>
 <translation id="6259156558325130047">Иреттештирүүнү &amp;кайталоо</translation>
+<translation id="6259282549512536479"><ph name="BLOCKED_URL" /> сайтын бөгөттөгөнсүз</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> кыстармалар</translation>
 <translation id="6264376385120300461">Баары бир жүктөп алуу</translation>
 <translation id="6264485186158353794">Коопсуздукка кайтуу</translation>

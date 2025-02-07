@@ -4732,6 +4732,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4305402730127028764">Kopiatu <ph name="DEVICE_NAME" /> gailuan</translation>
 <translation id="4305817255990598646">Aldatu</translation>
 <translation id="4306119971288449206">"<ph name="CONTENT_TYPE" />" eduki motarekin hornitu behar dira aplikazioak</translation>
+<translation id="4306810703452026910">Chrome-k webgune honen jakinarazpenak spam gisa markatzeari utziko dio</translation>
 <translation id="4307992518367153382">Oinarrizko informazioa</translation>
 <translation id="4309165024397827958">Eman gailuaren kokapena erabiltzeko baimena kokapena erabiltzeko baimena duten Android-erako aplikazio eta zerbitzuei. Google-k kokapen-datu anonimoak biltzen ditu noizean behin, kokapenaren zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko.</translation>
 <translation id="4309183709806093061">Partekatu sistemaren audioa ere. Audio bidezko erantzunak saihesteko, gailuaren audioa desaktibatuko da.</translation>
@@ -8023,6 +8024,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6713233729292711163">Gehitu laneko profila</translation>
 <translation id="6713441551032149301">Funtzio-teklen eta sistemaren goiko errenkadako teklen artean aldatzeko, eduki sakatuta Exekutatzeko tresnaren tekla</translation>
 <translation id="6713668088933662563">Ez eskaini inoiz hizkuntza hauen itzulpenik</translation>
+<translation id="6714871567554212732">Ikusi <ph name="GROUP_NAME" /> taldeari buruzko xehetasun gehiago</translation>
 <translation id="6715735940363172819">Webguneek ez dute zure mikrofonoa erabiltzeko baimenik</translation>
 <translation id="6715803357256707211">Errore bat gertatu da Linux aplikazioa instalatzean. Xehetasunak ikusteko, sakatu jakinarazpena.</translation>
 <translation id="6716049856796700977">Ezerk ezin du erabili zure kokapena. Hala ere, baliteke aplikazioek eta webguneek kokapena ikustea IP helbidearen bidez. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>

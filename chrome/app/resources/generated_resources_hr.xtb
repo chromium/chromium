@@ -2137,6 +2137,10 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2462332841984057083">Steam se već postavlja. Pričekajte da postavljanje završi.</translation>
 <translation id="2462724976360937186">ID ključa tijela za izdavanje certifikata</translation>
 <translation id="2462752602710430187">Dodano: <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Prikazuju vam se predložene datoteke kako biste se lakše vratili na svoju posljednju aktivnost u Microsoft SharePointu i OneDriveu.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Postavkama možete upravljati putem izbornika kartice ili možete vidjeti više opcija u odjeljku Prilagodba Chromea.</translation>
 <translation id="2464079411014186876">Sladoled</translation>
 <translation id="2467755475704469005">Nije otkriven nijedan uređaj. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Pridružite se grupi kartica s korisnikom <ph name="OWNER_FIRST_NAME" /> i još ovoliko osoba: <ph name="NUM_OTHER_MEMBERS" /></translation>
@@ -3998,6 +4002,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3787434344076711519">Čekanje na prijevod</translation>
 <translation id="3788301286821743879">Aplikacija kioska ne može se pokrenuti.</translation>
 <translation id="3788401245189148511">Proširenje ili aplikacija mogli bi:</translation>
+<translation id="3789432704615470433">Datoteke na SharePointu i OneDriveu</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="3790417903123637354">Nešto nije u redu. Pokušajte ponovo kasnije</translation>
 <translation id="379082410132524484">Vaša je kartica istekla</translation>
@@ -6185,6 +6190,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5360150013186312835">Prikaži na alatnoj traci</translation>
 <translation id="5362741141255528695">Odaberite datoteku s osobnim ključem.</translation>
 <translation id="536278396489099088">Stanje i izvješća sustava ChromeOS</translation>
+<translation id="5362916924854054326">Nemoj prikazivati datoteke na SharePointu i OneDriveu</translation>
 <translation id="5363109466694494651">Powerwash i vraćanje u prethodno stanje</translation>
 <translation id="5365881113273618889">Mapa koju ste odabrali sadrži osjetljive datoteke. Jeste li sigurni da želite dodijeliti aplikaciji "<ph name="APP_NAME" />" trajni pristup za zapisivanje za tu mapu?</translation>
 <translation id="536638840841140142">Nema</translation>
@@ -10770,6 +10776,10 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="865936634714975126">Dodajte parametar upita u URL da biste odabrali vrste pri učitavanju stranice. Primjer: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Kontakti značajke <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Prozor je premješten prema dolje</translation>
+<translation id="8660288500924118793">Prikazuje vam se kalendar da biste lakše prešli na sljedeći događaj u Outlook kalendaru.
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        Postavkama možete upravljati putem izbornika kartice ili možete vidjeti više opcija u odjeljku Prilagodba Chromea.</translation>
 <translation id="8661290697478713397">Otvori vezu u anoni&amp;mnom prozoru</translation>
 <translation id="8662474268934425487">Prijavite se na <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Pridruži se mreži <ph name="TYPE" /></translation>

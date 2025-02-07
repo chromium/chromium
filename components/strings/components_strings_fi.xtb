@@ -1164,6 +1164,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3076865167425975822">Käyttöjärjestelmät</translation>
 <translation id="3080254622891793721">Graafinen</translation>
 <translation id="3082007635241601060">Salli Googlelle pääsy ostoskoreihisi, jotta se voi löytää sinulle personoituja alennuksia</translation>
+<translation id="3086269988715347183">Et ole aiemmin hyväksynyt tätä: <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Toimintaasi verkossa valvotaan</translation>
 <translation id="3087734570205094154">Alaosassa</translation>
 <translation id="3090667236485488075">Lasi</translation>
@@ -1240,6 +1241,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3203025201812691413">URL-osoite ei voi olla tyhjä</translation>
 <translation id="320323717674993345">Peru maksu</translation>
 <translation id="3203366800380907218">Verkosta</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> saattaa sisältää aikuisille suunnattua sisältöä</translation>
 <translation id="3207960819495026254">Kirjanmerkeissä</translation>
 <translation id="3208701679386778924">Lähetä palauteraportti, jotta voimme parantaa ChromeOS:n päivityksiä.</translation>
 <translation id="3209034400446768650">Sivu voi veloittaa</translation>
@@ -2974,6 +2976,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6254436959401408446">Muisti ei riitä sivun avaamiseen</translation>
 <translation id="625463612687472648">Estä</translation>
 <translation id="6259156558325130047">&amp;Toista uudelleenjärjestely</translation>
+<translation id="6259282549512536479"><ph name="BLOCKED_URL" /> on estetty aiemmin</translation>
 <translation id="6263376278284652872">Verkkotunnuksen <ph name="DOMAIN" /> kirjanmerkit</translation>
 <translation id="6264376385120300461">Lataa silti</translation>
 <translation id="6264485186158353794">Takaisin suojaukseen</translation>

@@ -4734,6 +4734,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4305402730127028764">Kopēt uz ierīci <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Pāriet</translation>
 <translation id="4306119971288449206">Instalētajām lietotnēm ir jābūt ar šāda veida saturu: <ph name="CONTENT_TYPE" />.</translation>
+<translation id="4306810703452026910">Paziņojumi no šīs vietnes pārlūkā Chrome vairs netiks atzīmēti kā mēstules.</translation>
 <translation id="4307992518367153382">Pamata</translation>
 <translation id="4309165024397827958">Atļaujiet Android lietotnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot jūsu ierīces atrašanās vietas datus. Google varēs periodiski vākt atrašanās vietas datus un tos anonīmi izmantot, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus.</translation>
 <translation id="4309183709806093061">Kopīgot arī sistēmas audio. Lai izvairītos no akustiskiem traucējumiem, šīs ierīces skaņa būs izslēgta.</translation>
@@ -8030,6 +8031,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6713233729292711163">Pievienot darba profilu</translation>
 <translation id="6713441551032149301">Turiet palaidēja taustiņu, lai pārslēgtu funkciju taustiņus un sistēmas augšējās rindas taustiņus.</translation>
 <translation id="6713668088933662563">Nekad nepiedāvāt tulkot no šīm valodām</translation>
+<translation id="6714871567554212732">Skatīt plašāku informāciju par grupu “<ph name="GROUP_NAME" />”</translation>
 <translation id="6715735940363172819">Vietnēm nav atļauts izmantot jūsu mikrofonu</translation>
 <translation id="6715803357256707211">Linux lietojumprogrammas instalēšanas laikā radās kļūda. Noklikšķiniet uz paziņojuma, lai iegūtu detalizētu informāciju.</translation>
 <translation id="6716049856796700977">Jūsu atrašanās vietas datus nevar izmantot. Tomēr jūsu atrašanās vieta joprojām var būt redzama lietotnēm un vietnēm, izmantojot jūsu IP adresi. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>

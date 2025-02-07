@@ -1164,6 +1164,7 @@
 <translation id="3076865167425975822">ଅପରେଟିଂ ସିଷ୍ଟମଗୁଡ଼ିକ</translation>
 <translation id="3080254622891793721">ଗ୍ରାଫିକ୍</translation>
 <translation id="3082007635241601060">ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ରିହାତିଗୁଡ଼ିକ ଉପଲବ୍ଧ ହେଲେ ତାହା ଖୋଜିବା ପାଇଁ Googleକୁ ଆପଣଙ୍କ କାର୍ଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ଦିଅନ୍ତୁ</translation>
+<translation id="3086269988715347183">ଆପଣ ପୂର୍ବରୁ <ph name="BLOCKED_URL" /> ଅନୁମୋଦନ କରିନାହାଁନ୍ତି</translation>
 <translation id="3086579638707268289">ୱେବ୍‍‍ରେ ଆପଣଙ୍କର କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରାଯାଉଛି</translation>
 <translation id="3087734570205094154">ନିମ୍ନଭାଗ</translation>
 <translation id="3090667236485488075">କାଚ</translation>
@@ -1237,6 +1238,7 @@
 <translation id="3203025201812691413">URL ଖାଲି ରହିପାରିବ ନାହିଁ</translation>
 <translation id="320323717674993345">ପେମେଣ୍ଟ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="3203366800380907218">ୱେବରୁ</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" />ରେ ପ୍ରାପ୍ତ ବୟସ୍କଙ୍କ ପାଇଁ ବିଷୟବସ୍ତୁ ଥାଇପାରେ</translation>
 <translation id="3207960819495026254">ବୁକ୍‍ମାର୍କ କରାଯାଇଛି</translation>
 <translation id="3208701679386778924">ଦୟାକରି ଏକ ରିପୋର୍ଟ ପଠାନ୍ତୁ, ଫଳରେ ଆମେ ପରବର୍ତ୍ତୀ ChromeOS ଅପଡେଟଗୁଡ଼ିକୁ ଉନ୍ନତ କରିପାରିବୁ।</translation>
 <translation id="3209034400446768650">ପୃଷ୍ଠା ଶୁଳ୍କ ଲାଗୁ ହୋଇପାରେ</translation>
@@ -2969,6 +2971,7 @@
 <translation id="6254436959401408446">ଏହି ପୃଷ୍ଠା ଖୋଲିବା ପାଇଁ ପର୍ଯ୍ୟାପ୍ତ ମେମୋରୀ ନାହିଁ</translation>
 <translation id="625463612687472648">ଅନୁମତି ଦେବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6259156558325130047">&amp;ରି-ଡୁକୁ ପୁନଃକ୍ରମରେ ରଖନ୍ତୁ</translation>
+<translation id="6259282549512536479">ଆପଣ ପୂର୍ବରୁ <ph name="BLOCKED_URL" /> ବ୍ଲକ କରିଛନ୍ତି</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ବୁକମାର୍କଗୁଡ଼ିକ</translation>
 <translation id="6264376385120300461">ଯେ କୌଣସି ମତେ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="6264485186158353794">ନିରାପତ୍ତାକୁ ଫେରନ୍ତୁ</translation>

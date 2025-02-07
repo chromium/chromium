@@ -4730,6 +4730,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4305402730127028764">Kopjo te <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Ndërro</translation>
 <translation id="4306119971288449206">Aplikacionet duhet të shërbehen me llojin "<ph name="CONTENT_TYPE" />" të përmbajtjes</translation>
+<translation id="4306810703452026910">Chrome nuk do t'i raportojë më njoftimet nga ky sajt si të bezdisshme</translation>
 <translation id="4307992518367153382">Bazat</translation>
 <translation id="4309165024397827958">Jepu aplikacioneve dhe shërbimeve të Android leje për të përdorur vendndodhjen e pajisjes sate. Google mund të mbledhë të dhëna të vendndodhjes në mënyrë periodike dhe t'i përdorë ato në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara në vendndodhje.</translation>
 <translation id="4309183709806093061">Ndaj po ashtu audion e sistemit. Kjo pajisje do të vendoset në heshtje për të parandaluar reagimet.</translation>
@@ -8022,6 +8023,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6713233729292711163">Shto profilin e punës</translation>
 <translation id="6713441551032149301">Mbaj shtypur tastin e nisësit për të ndryshuar mes tasteve të funksioneve dhe tasteve të rreshtit të sipërm të sistemit</translation>
 <translation id="6713668088933662563">Mos ofro asnjëherë përkthimin nga këto gjuhë</translation>
+<translation id="6714871567554212732">Shiko më shumë detaje rreth "<ph name="GROUP_NAME" />"</translation>
 <translation id="6715735940363172819">Uebsajtet nuk lejohen që të përdorin mikrofonin tënd</translation>
 <translation id="6715803357256707211">Ndodhi një gabim gjatë instalimit të aplikacionit tënd në Linux. Kliko mbi njoftim për detaje.</translation>
 <translation id="6716049856796700977">Asgjë nuk mund ta përdorë vendndodhjen tënde. Megjithatë, vendndodhja jote mund të jetë ende e dukshme për aplikacionet dhe uebsajtet nëpërmjet adresës sate IP. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>

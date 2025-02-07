@@ -2134,6 +2134,10 @@
 <translation id="2462332841984057083">其他程序正在設定 Steam，請等待設定完成。</translation>
 <translation id="2462724976360937186">憑證授權單位金鑰識別碼</translation>
 <translation id="2462752602710430187">已新增「<ph name="PRINTER_NAME" />」</translation>
+<translation id="2464075479326723132">畫面會顯示建議的檔案，方便你繼續進行最近在 Microsoft SharePoint 和 OneDrive 中的活動。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        你可以透過資訊卡選單管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="2464079411014186876">冰淇淋</translation>
 <translation id="2467755475704469005">未偵測到任何裝置。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人的分頁群組</translation>
@@ -3993,6 +3997,7 @@
 <translation id="3787434344076711519">正在等待翻譯</translation>
 <translation id="3788301286821743879">無法啟動資訊站應用程式。</translation>
 <translation id="3788401245189148511">要求下列權限：</translation>
+<translation id="3789432704615470433">SharePoint 和 OneDrive 檔案</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3790417903123637354">發生錯誤，請稍後再試</translation>
 <translation id="379082410132524484">你的卡片已過期</translation>
@@ -6179,6 +6184,7 @@
 <translation id="5360150013186312835">顯示在工具列中</translation>
 <translation id="5362741141255528695">選取秘密金鑰檔案。</translation>
 <translation id="536278396489099088">ChromeOS 系統狀態和報告</translation>
+<translation id="5362916924854054326">不要顯示 SharePoint 和 OneDrive 檔案</translation>
 <translation id="5363109466694494651">執行 Powerwash 並恢復原廠設定</translation>
 <translation id="5365881113273618889">你選取的資料夾包含敏感檔案。你確定要將這個資料夾的寫入權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="536638840841140142">無</translation>
@@ -10758,6 +10764,10 @@
 <translation id="865936634714975126">在網址中新增查詢參數，以便在網頁載入時選取類型，例如 chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" />的聯絡人</translation>
 <translation id="8659609431223166673">視窗已向下移動</translation>
+<translation id="8660288500924118793">你可以使用畫面上的日曆輕鬆瀏覽 Outlook 行事曆中的下一個活動。
+        <ph name="BREAK" />
+       <ph name="BREAK" />
+       你可以透過資訊卡選單管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="8661290697478713397">在無痕視窗中開啟連結(&amp;G)</translation>
 <translation id="8662474268934425487">登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">加入 <ph name="TYPE" /> 網路</translation>

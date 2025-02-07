@@ -23,6 +23,7 @@
 <translation id="1066060668811609597">සමමුහූර්තය කළමනා කරන්න</translation>
 <translation id="1076421457278169141">කේතය ස්කෑන් කරන ලදී</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} පටිත්තක්}one{පටිති {count}ක්}other{පටිති {count}ක්}}</translation>
+<translation id="1082554859195167538">ඔබ වෙනුවෙන් නිෂ්පාදන සමාලෝචන</translation>
 <translation id="1084365883616172403">Facebook පළ කිරීම සම්පූර්ණයි.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> විවෘත කළ නොහැකි විය</translation>
 <translation id="1086468407802688066"><ph name="USER_EMAIL" /> ගිණුම <ph name="HOSTED_DOMAIN" /> විසින් කළමනාකරණය කරනු ලබන අතර, සමහර තොරතුරු බැලීමට එයට හැක. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
@@ -342,6 +343,7 @@
 <translation id="2384692388811649784">අප්‍රකට පටිති සඟවන්න</translation>
 <translation id="2386793615875593361">0 ක් තෝරා ගන්නා ලදි</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" සඟවන්න</translation>
+<translation id="2393230427496852974">පුද්ගලයින් කියන දේ කියවන්න</translation>
 <translation id="2394659309569789395">කෙසේ හෝ අඩවිය විවෘත කරන්න</translation>
 <translation id="2403129868389095715">ඔබේ පැකේජය භාර දිය නොහැක</translation>
 <translation id="2410754283952462441">ගිණුමක් තෝරා ගන්න</translation>
@@ -454,6 +456,7 @@
 <translation id="2894757982205307093">කණ්ඩායම තුළ නව පටිත්ත</translation>
 <translation id="2902312830803030883">තවත් ක්‍රියා</translation>
 <translation id="2905479111267140204">ඔබේ ආරක්ෂාව අවදානමට ලක් කළ හැකි නැවත භාවිතා කළ මුරපද <ph name="NUMBER_OF_PASSWORDS" />ක් ඔබ සතුව ඇත.</translation>
+<translation id="29153882450867370">"මිල ලුහුබැඳීම" සඟවන්න</translation>
 <translation id="291754862089661335">මෙම රාමුව තුළ QR කේතය හෝ තීරු කේතය ස්ථානගත කරන්න</translation>
 <translation id="2918688092312652908">නොකියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="2920866371965792875">මෙම අඩවියෙන් යාවත්කාලීන බැලීමට, එය මෙහි අනුගමනය කරන්න.</translation>
@@ -905,6 +908,7 @@
 <translation id="4989065233040279145"><ph name="FILENAME" /> සුරකින ස්ථානය තෝරා ගන්න</translation>
 <translation id="4992255726304765516">පටිති සමූහ වර්ණය <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">මුරපදය පිටපත් කරන්න</translation>
+<translation id="5012914568031465281">මිල ලුහුබැඳීමට නොහැකි විය.</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> වෙත යවන්න</translation>
 <translation id="5017529052065664584">පසුගිය මිනිත්තු 15</translation>
 <translation id="5020732097997376541">"Lens නිරූපකය" තට්ටු කරන්න</translation>
@@ -1667,8 +1671,10 @@
 <translation id="8211406090763984747">සම්බන්ධතාවය ආරක්ෂිත වේ</translation>
 <translation id="8214293972734702249">අමුණා ඇත, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">අලුත් ටැබයේ නොබැඳි අනුවාදය බලන්න</translation>
+<translation id="8221665793629393739">නැවත බැලීමට ඔබේ සිහිකැඳවීම</translation>
 <translation id="8230355548492839438">පෙර එක සොයන්න</translation>
 <translation id="8232956427053453090">දත්ත තබා ගන්න</translation>
+<translation id="8238711781852526820">"මිල ලුහුබැඳීම" සඟවන්න</translation>
 <translation id="8258999165172757081">එක් කළේය</translation>
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="82619448491672958">අනෙකුත් ටැබ බලන්න</translation>
@@ -1789,6 +1795,7 @@
 <translation id="8717864919010420084">සබැඳිය පිටපත් කරන්න</translation>
 <translation id="8722229818691036192">මෙම උපාංගයෙහි ගිණුම්</translation>
 <translation id="8722649775263832315">Google Lens සමග ඕනෑම දෙයක් සෙවීමට තට්ටු කරන්න හෝ උද්දීපනය කරන්න</translation>
+<translation id="8723088494871522141">"ඔබ සඳහා නිෂ්පාදන සමාලෝචන" සඟවන්න</translation>
 <translation id="8725066075913043281">නැවත උත්සහ කරන්න</translation>
 <translation id="8728922029615312208">සියල්ල වසන්න</translation>
 <translation id="8730621377337864115">අවසන්</translation>

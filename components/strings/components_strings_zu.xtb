@@ -1164,6 +1164,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3076865167425975822">Amasistimu okusebenza</translation>
 <translation id="3080254622891793721">Umfanekiso</translation>
 <translation id="3082007635241601060">Vumela i-Google isebenzise amakalishi akho ukuthola izaphulelo eziqondene nawe uma zitholakala</translation>
+<translation id="3086269988715347183">Awukaze uyigunyaze i-<ph name="BLOCKED_URL" /> ngaphambilini</translation>
 <translation id="3086579638707268289">Umsebenzi wakho kuwebhu uyangamelwa</translation>
 <translation id="3087734570205094154">Ngaphansi</translation>
 <translation id="3090667236485488075">Ingilazi</translation>
@@ -1237,6 +1238,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3203025201812691413">I-URL ayikwazi ukungabi nalutho</translation>
 <translation id="320323717674993345">Khansela inkokhelo</translation>
 <translation id="3203366800380907218">Kusuka kuwebhu</translation>
+<translation id="3207830513221832868">I-<ph name="BLOCKED_URL" /> kungenzeka iqukethe okwabantu abadala</translation>
 <translation id="3207960819495026254">Kubekwe uphawu lokubekisa</translation>
 <translation id="3208701679386778924">Sicela uthumele umbiko ukuze sikwazi ukuthuthukisa ezinye izibuyekezo ze-ChromeOS.</translation>
 <translation id="3209034400446768650">Ikhasi lingakhokhisa imali</translation>
@@ -2970,6 +2972,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6254436959401408446">Ayikho imemori eyanele ukuvula leli khasi</translation>
 <translation id="625463612687472648">Yeka ukuvumela okuthi</translation>
 <translation id="6259156558325130047">&amp;Yenza futhi ukuhlela kabusha</translation>
+<translation id="6259282549512536479">Ngokudlule uyivimbile i-<ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> amabhukhimakhi</translation>
 <translation id="6264376385120300461">Dawuniloda noma kunjalo</translation>
 <translation id="6264485186158353794">Buyela ekuvikeleni</translation>

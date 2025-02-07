@@ -2148,6 +2148,10 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2462332841984057083">Sine-set up na ang Steam. Hintaying matapos ang pag-set up.</translation>
 <translation id="2462724976360937186">Certification Authority Key ID</translation>
 <translation id="2462752602710430187">Idinagdag ang <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Nakikita mo ang mga iminumungkahing file para madali mong mabalikan ang iyong pinakakamakailang aktibidad sa Microsoft SharePoint at OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Puwede mong pamahalaan ang mga setting mula sa menu ng card o tingnan ang higit pang opsyon sa I-customize ang Chrome.</translation>
 <translation id="2464079411014186876">Ice cream</translation>
 <translation id="2467755475704469005">Walang na-detect na device. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Sumali sa Grupo ng Tab kasama ni <ph name="OWNER_FIRST_NAME" /> at <ph name="NUM_OTHER_MEMBERS" /> Pang Iba</translation>
@@ -4010,6 +4014,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3787434344076711519">Naghihintay na isalin</translation>
 <translation id="3788301286821743879">Hindi mailunsad ang kiosk application.</translation>
 <translation id="3788401245189148511">Maaari itong:</translation>
+<translation id="3789432704615470433">Mga file sa SharePoint at OneDrive</translation>
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3790417903123637354">Nagkaproblema. Subukan ulit sa ibang pagkakataon</translation>
 <translation id="379082410132524484">Nag-expire na ang iyong card</translation>
@@ -6199,6 +6204,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5360150013186312835">Ipakita sa Toolbar</translation>
 <translation id="5362741141255528695">Piliin ang file ng private na key.</translation>
 <translation id="536278396489099088">Status at Mga Ulat ng System ng ChromeOS</translation>
+<translation id="5362916924854054326">Huwag ipakita ang mga file sa SharePoint at OneDrive</translation>
 <translation id="5363109466694494651">I-Powerwash at I-revert</translation>
 <translation id="5365881113273618889">Naglalaman ng mga sensitibong file ang pinili mong folder. Sigurado ka bang gusto mong bigyan ang "<ph name="APP_NAME" />" ng permanenteng access sa pag-write sa folder na ito?</translation>
 <translation id="536638840841140142">Wala</translation>
@@ -10786,6 +10792,10 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="865936634714975126">Magdagdag ng query param sa URL para pumili ng mga uri sa pag-load ng page. Halimbawa: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Mga contact sa <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Inilipat ang window pababa</translation>
+<translation id="8660288500924118793">Nakikita mo ang iyong kalendaryo para madali kang makapag-navigate sa susunod mong event sa Outlook Calendar.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Puwede mong pamahalaan ang mga setting mula sa menu ng card o tingnan ang higit pang opsyon sa I-customize ang Chrome.</translation>
 <translation id="8661290697478713397">Buksan ang link sa Inco&amp;gnito Window</translation>
 <translation id="8662474268934425487">Mag-sign in sa <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Sumali sa <ph name="TYPE" /> network</translation>

@@ -2136,6 +2136,10 @@
 <translation id="2462332841984057083">Приложение Steam уже устанавливается. Дождитесь завершения процесса.</translation>
 <translation id="2462724976360937186">Идентификатор ключа ЦС</translation>
 <translation id="2462752602710430187">Добавлен принтер <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Рекомендованные файлы помогают легко вернуться к недавним действиям в Microsoft SharePoint и OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Вы можете изменить настройки в меню карточки или посмотреть дополнительные параметры на панели "Настроить Chrome".</translation>
 <translation id="2464079411014186876">Мороженое</translation>
 <translation id="2467755475704469005">Нет устройств. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и другие пользователи (<ph name="NUM_OTHER_MEMBERS" />)</translation>
@@ -3998,6 +4002,7 @@
 <translation id="3787434344076711519">Ожидается выполнение перевода</translation>
 <translation id="3788301286821743879">Не удалось запустить киоск-приложение.</translation>
 <translation id="3788401245189148511">Разрешения:</translation>
+<translation id="3789432704615470433">Файлы SharePoint и OneDrive</translation>
 <translation id="3789841737615482174">Установить</translation>
 <translation id="3790417903123637354">Произошла ошибка. Повторите попытку позже.</translation>
 <translation id="379082410132524484">Срок действия карты истек</translation>
@@ -6186,6 +6191,7 @@
 <translation id="5360150013186312835">Показывать на панели инструментов</translation>
 <translation id="5362741141255528695">Выберите файл закрытого ключа.</translation>
 <translation id="536278396489099088">Состояние системы ChromeOS и отчеты о ней</translation>
+<translation id="5362916924854054326">Не показывать файлы SharePoint и OneDrive</translation>
 <translation id="5363109466694494651">Powerwash и откат</translation>
 <translation id="5365881113273618889">Выбранная папка содержит конфиденциальные файлы. Предоставить приложению "<ph name="APP_NAME" />" постоянный доступ для записи данных?</translation>
 <translation id="536638840841140142">Нет</translation>
@@ -10775,6 +10781,10 @@
 <translation id="865936634714975126">Добавьте в URL параметр запроса, чтобы задать типы при загрузке страницы, например: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Контакты (<ph name="FEATURE_NAME" />)</translation>
 <translation id="8659609431223166673">Окно перемещено вниз</translation>
+<translation id="8660288500924118793">Этот модуль позволяет легко переключаться между мероприятиями в календаре Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Вы можете изменить настройки в меню карточки или посмотреть дополнительные параметры на панели "Настроить Chrome".</translation>
 <translation id="8661290697478713397">Открыть ссылку в режиме инкогнито</translation>
 <translation id="8662474268934425487">Вход в <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Присоединиться к сети <ph name="TYPE" /></translation>

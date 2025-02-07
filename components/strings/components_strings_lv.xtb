@@ -1164,6 +1164,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3076865167425975822">Operētājsistēmas</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Ļaujiet uzņēmumam Google izmantot jūsu grozus, lai atrastu personalizētas atlaides, kad tās pieejamas.</translation>
+<translation id="3086269988715347183">Jūs iepriekš neesat apstiprinājis vietni <ph name="BLOCKED_URL" />.</translation>
 <translation id="3086579638707268289">Jūsu darbības tīmeklī tiek uzraudzītas</translation>
 <translation id="3087734570205094154">Apakšā</translation>
 <translation id="3090667236485488075">Stikls</translation>
@@ -1239,6 +1240,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3203025201812691413">URL lauks nedrīkst būt tukšs.</translation>
 <translation id="320323717674993345">Atcelt maksājumu</translation>
 <translation id="3203366800380907218">No tīmekļa</translation>
+<translation id="3207830513221832868">Vietnē <ph name="BLOCKED_URL" /> var būt ietverts galvenokārt pieaugušajiem paredzēts saturs.</translation>
 <translation id="3207960819495026254">Atzīmēts kā grāmatzīme</translation>
 <translation id="3208701679386778924">Lūdzu, nosūtiet atsauksmes, lai mēs varētu uzlabot nākamos Chrome OS atjauninājumus.</translation>
 <translation id="3209034400446768650">Lapā var tikt iekasēta nauda</translation>
@@ -2971,6 +2973,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6254436959401408446">Nav pietiekami daudz vietas atmiņā, lai atvērtu šo lapu</translation>
 <translation id="625463612687472648">Atsaukt atļauju</translation>
 <translation id="6259156558325130047">&amp;Pārkārtošanas atsaukuma atcelšana</translation>
+<translation id="6259282549512536479">Jūs iepriekš bloķējāt vietni <ph name="BLOCKED_URL" />.</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> grāmatzīmes</translation>
 <translation id="6264376385120300461">Tomēr lejupielādēt</translation>
 <translation id="6264485186158353794">Atpakaļ drošībā</translation>

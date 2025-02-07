@@ -2147,6 +2147,10 @@
 <translation id="2462332841984057083">Γίνεται ήδη ρύθμιση του Steam. Περιμένετε μέχρι να ολοκληρωθεί η ρύθμιση.</translation>
 <translation id="2462724976360937186">Αναγνωριστικό κλειδιού Αρχής πιστοποίησης</translation>
 <translation id="2462752602710430187">Προστέθηκε <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Βλέπετε προτεινόμενα αρχεία που μπορούν να σας βοηθήσουν να επιστρέψετε εύκολα στην πιο πρόσφατη δραστηριότητά σας στο Microsoft SharePoint και στο OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Μπορείτε να διαχειριστείτε τις ρυθμίσεις από το μενού κάρτας ή να δείτε περισσότερες επιλογές στην ενότητα Προσαρμογή του Chrome.</translation>
 <translation id="2464079411014186876">Παγωτό</translation>
 <translation id="2467755475704469005">Δεν εντοπίστηκε συσκευή. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Συμμετοχή στην ομάδα καρτελών με τον χρήστη <ph name="OWNER_FIRST_NAME" /> και <ph name="NUM_OTHER_MEMBERS" /> ακόμη χρήστες</translation>
@@ -4009,6 +4013,7 @@
 <translation id="3787434344076711519">Αναμονή για μετάφραση</translation>
 <translation id="3788301286821743879">Δεν ήταν δυνατή η εκκίνηση της εφαρμογής kiosk.</translation>
 <translation id="3788401245189148511">Θα μπορούσε να εκτελέσει τις εξής ενέργειες:</translation>
+<translation id="3789432704615470433">Αρχεία SharePoint και OneDrive</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
 <translation id="3790417903123637354">Παρουσιάστηκε κάποιο πρόβλημα. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="379082410132524484">Η κάρτα σας έληξε</translation>
@@ -6198,6 +6203,7 @@
 <translation id="5360150013186312835">Εμφάνιση στη γραμμή εργαλείων</translation>
 <translation id="5362741141255528695">Επιλέξτε το αρχείο ιδιωτικού κλειδιού.</translation>
 <translation id="536278396489099088">Κατάσταση συστήματος Chrome OS και αναφορές</translation>
+<translation id="5362916924854054326">Να μην εμφανίζονται αρχεία SharePoint και OneDrive</translation>
 <translation id="5363109466694494651">Powerwash και Επαναφορά</translation>
 <translation id="5365881113273618889">Ο φάκελος που επιλέξατε περιέχει ευαίσθητα αρχεία. Είστε βέβαιοι ότι θέλετε να παραχωρήσετε στο "<ph name="APP_NAME" />" μόνιμη πρόσβαση εγγραφής σε αυτόν τον φάκελο;</translation>
 <translation id="536638840841140142">Κανένα</translation>
@@ -10783,6 +10789,10 @@
 <translation id="865936634714975126">Προσθέστε μια παράμετρο ερωτήματος στο URL, για να επιλέξετε τύπους κατά τη φόρτωση σελίδας. Παράδειγμα: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Επαφές στη λειτουργία <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Το παράθυρο μετακινήθηκε προς τα κάτω</translation>
+<translation id="8660288500924118793">Βλέπετε το ημερολόγιό σας για να πλοηγηθείτε εύκολα στο επόμενο συμβάν σας στο Ημερολόγιο Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Μπορείτε να διαχειριστείτε τις ρυθμίσεις από το μενού κάρτας ή να δείτε περισσότερες επιλογές στην ενότητα Προσαρμογή του Chrome.</translation>
 <translation id="8661290697478713397">Άνοιγμα Συνδέσμου σε Παράθυρο Ανών&amp;υμης Περιήγησης</translation>
 <translation id="8662474268934425487">Σύνδεση στο <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Συμμετοχή στο δίκτυο <ph name="TYPE" /></translation>

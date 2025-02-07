@@ -4736,6 +4736,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4305402730127028764">Copiar en <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Cambiar</translation>
 <translation id="4306119971288449206">As aplicacións deben incluír o tipo de contido "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4306810703452026910">Chrome deixará de marcar como spam as notificacións deste sitio</translation>
 <translation id="4307992518367153382">Opcións básicas</translation>
 <translation id="4309165024397827958">Permite que as aplicacións e os servizos de Android con permiso de localización utilicen a do teu dispositivo. Google pode recompilar datos de localización periodicamente e utilizalos de forma anónima para mellorar a precisión da localización e os servizos baseados nela.</translation>
 <translation id="4309183709806093061">Compartir tamén o audio do sistema. Este dispositivo silenciarase para evitar que se acople o son.</translation>
@@ -8029,6 +8030,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6713233729292711163">Engadir perfil de traballo</translation>
 <translation id="6713441551032149301">Mantén premida a tecla do menú de aplicacións para cambiar entre as teclas de función e as teclas da fila superior do sistema</translation>
 <translation id="6713668088933662563">Non ofrecer nunca que se traduzan estes idiomas</translation>
+<translation id="6714871567554212732">Ver máis detalles sobre <ph name="GROUP_NAME" /></translation>
 <translation id="6715735940363172819">Os sitios web non teñen permiso para usar o teu micrófono</translation>
 <translation id="6715803357256707211">Produciuse un erro durante a instalación da aplicación Linux. Fai clic na notificación para ver os detalles.</translation>
 <translation id="6716049856796700977">Nada pode usar a túa localización. Con todo, poida que siga sendo visible para os sitios web e as aplicacións mediante o teu enderezo IP. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>

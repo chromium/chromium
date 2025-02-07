@@ -2148,6 +2148,10 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2462332841984057083">Uppsetning Steam er þegar í gangi. Bíddu þar til uppsetningu lýkur.</translation>
 <translation id="2462724976360937186">Lykilsauðkenni vottunarstöðvar</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> var bætt við</translation>
+<translation id="2464075479326723132">Þú sérð tillögur að skrám til að auðvelda þér að komast aftur í nýjustu virknina þína á Microsoft SharePoint og OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Þú getur stjórnað stillingum á valmynd spjaldsins eða skoðað fleiri valkosti í „Sérsníða Chrome“.</translation>
 <translation id="2464079411014186876">Ís</translation>
 <translation id="2467755475704469005">Ekkert tæki fannst. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Taktu þátt í flipahópnum sem <ph name="OWNER_FIRST_NAME" /> og <ph name="NUM_OTHER_MEMBERS" /> til viðbótar eru í</translation>
@@ -4010,6 +4014,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3787434344076711519">Bíður eftir þýðingu</translation>
 <translation id="3788301286821743879">Ekki var hægt að ræsa sjálfsalaforritið.</translation>
 <translation id="3788401245189148511">Þetta kann að:</translation>
+<translation id="3789432704615470433">SharePoint- og OneDrive-skrár</translation>
 <translation id="3789841737615482174">Setja upp</translation>
 <translation id="3790417903123637354">Eitthvað fór úrskeiðis. Reyndu aftur síðar</translation>
 <translation id="379082410132524484">Kortið þitt er útrunnið</translation>
@@ -4748,6 +4753,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4305402730127028764">Afrita í <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Skipta</translation>
 <translation id="4306119971288449206">Forrit verða að vera birt með efnistegundinni „<ph name="CONTENT_TYPE" />“</translation>
+<translation id="4306810703452026910">Chrome mun hætta að merkja tilkynningar frá þessu vefsvæði sem rusl</translation>
 <translation id="4307992518367153382">Grunnatriði</translation>
 <translation id="4309165024397827958">Leyfa Android forritum og þjónustum sem hafa staðsetningarheimild að nota staðsetningu tækisins. Google kann að safna staðsetningargögnum öðru hverju og nota þau gögn á nafnlausan hátt til að bæta staðsetningarnákvæmni og þjónustur sem styðjast við staðsetningar.</translation>
 <translation id="4309183709806093061">Deila einnig kerfishljóði. Slökkt verður á hljóði tækisins til að koma í veg fyrir hljóðtruflanir.</translation>
@@ -6198,6 +6204,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5360150013186312835">Sýna á stiku</translation>
 <translation id="5362741141255528695">Veldu einkalykilsskrá.</translation>
 <translation id="536278396489099088">Kerfisstaða og skýrslur ChromeOS</translation>
+<translation id="5362916924854054326">Ekki sýna SharePoint- og OneDrive-skrár</translation>
 <translation id="5363109466694494651">Djúphreinsa og færa í fyrra horf</translation>
 <translation id="5365881113273618889">Mappan sem þú valdir inniheldur viðkvæmar skrár. Ertu viss um að þú viljir veita „<ph name="APP_NAME" />“ varanlegan skrifaðgang að þessari möppu?</translation>
 <translation id="536638840841140142">Engar</translation>
@@ -8046,6 +8053,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6713233729292711163">Bæta við vinnusniði</translation>
 <translation id="6713441551032149301">Haltu ræsilyklinum inni til að skipta á milli virknilykla og kerfislykla í efstu röð</translation>
 <translation id="6713668088933662563">Aldrei bjóðast til að þýða þessi tungumál</translation>
+<translation id="6714871567554212732">Sjá frekari upplýsingar um „<ph name="GROUP_NAME" />“</translation>
 <translation id="6715735940363172819">Vefsvæði hafa ekki heimild til að nota hljóðnemann</translation>
 <translation id="6715803357256707211">Villa kom upp við uppsetningu Linux-forritsins. Smelltu á tilkynninguna til að fá nánari upplýsingar.</translation>
 <translation id="6716049856796700977">Ekkert getur notað staðsetninguna þína. Aftur á móti kann staðsetningin þín enn að vera sýnileg forritum og vefsvæðum í gegnum IP-töluna þína. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
@@ -10781,6 +10789,10 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="865936634714975126">Bættu fyrirspurnarbreytu við vefslóðina til að velja gerðir þegar síðu er hlaðið. Dæmi: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Tengiliðir í „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8659609431223166673">Gluggi færðist niður</translation>
+<translation id="8660288500924118793">Þú sérð dagatalið þitt til að auðveldara sé að fletta yfir á næsta viðburð í Outlook-dagatali.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Þú getur stjórnað stillingum á valmynd spjaldsins eða skoðað fleiri valkosti í „Sérsníða Chrome“.</translation>
 <translation id="8661290697478713397">Opna ten&amp;gil í huliðsglugga</translation>
 <translation id="8662474268934425487">Skráðu þig inn á <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Tengjast <ph name="TYPE" /> neti</translation>

@@ -5418,6 +5418,7 @@ Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle
 <translation id="5030415914668947893">Autoriser la collecte de métriques avec clé d'URL </translation>
 <translation id="5033070732967197381">Autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="5034504101537897433">Activer les rapports d'erreur de l'appareil</translation>
+<translation id="5035980227219807711">Désactiver le provisionnement des certificats client pour les navigateurs</translation>
 <translation id="5036013147560568855">Version du protocole de provisionnement de certificat. La valeur par défaut est 1. 1 correspond au protocole "statique". 2 correspond au protocole "dynamique".</translation>
 <translation id="5036559232677914717">Cette règle permet de définir le comportement du système au démarrage. Désactiver cette règle revient à ne pas la configurer, car le comportement de <ph name="PRODUCT_NAME" /> au démarrage doit être spécifié.
 
@@ -8575,6 +8576,7 @@ Si cette règle est désactivée, les utilisateurs ne peuvent pas contourner la 
 <translation id="7174158612490351828">Liste de clés publiques de certificat qui ne devraient plus être approuvées par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur TLS.
 
 La valeur de la règle est une liste de certificats X.509 encodés en base64. Les certificats associés à un SPKI (SubjectPublicKeyInfo) correspondant ne seront plus approuvés.</translation>
+<translation id="7174997120839381414">Activer le provisionnement des certificats client pour les navigateurs</translation>
 <translation id="717630378807352957">Autorise toutes les imprimantes répertoriées dans le fichier de configuration.</translation>
 <translation id="7177293255621000064">Si vous définissez cette règle sur "True", tous les types de supports de stockage externes (clés USB, disques durs externes, cartes SD, autres cartes mémoire, etc.) sont alors indisponibles dans l'explorateur de fichiers. Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les utilisateurs peuvent utiliser des supports de stockage externes sur leur appareil.
 
@@ -9050,6 +9052,7 @@ Si cette règle est vide, aucune exception à <ph name="FLOATING_SSO_DOMAIN_BLOC
       Si elle est désactivée, la conversion d'unités pour Réponses rapides est désactivée.</translation>
 <translation id="7584363090329234690">Autoriser l'arrière-plan de visioconférence par IA générative sans améliorer les modèles d'IA</translation>
 <translation id="7585312329612243723">Activer le flux d'attestation <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL dans les navigateurs gérés</translation>
+<translation id="7586199729147257934">Activer le provisionnement des certificats client pour les navigateurs gérés</translation>
 <translation id="7587345076013230465">Demander à l'utilisateur de sélectionner le certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats sur l'écran de connexion</translation>
 <translation id="7587921466180902617">Active la version dogfood de l'enregistreur d'écran pour les utilisateurs de Family Link</translation>
 <translation id="7595074040612182185">Permet de lister les formats d'URL indiquant quels sites peuvent afficher des images.
@@ -10091,6 +10094,9 @@ Les certificats doivent être encodés en base64.</translation>
 <translation id="8399825694820904218">Si cette règle est définie sur un nombre, <ph name="PRODUCT_NAME" /> affiche un message pendant le nombre de millisecondes défini, puis ouvre un navigateur secondaire.
 
 Si cette règle n'est pas configurée ou qu'elle est définie sur 0, l'URL sélectionnée s'ouvre automatiquement dans un navigateur secondaire.</translation>
+<translation id="8400225642589806131">Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" /> (valeur 1), <ph name="PRODUCT_NAME" /> demandera un certificat client au serveur de gestion des appareils pour une session de navigateur gérée. Ce certificat sera disponible, par exemple, pour les connexions mTLS.
+
+Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (valeur 0) ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> ne pourra pas demander de certificat client. Si le certificat client géré d'un navigateur a déjà été provisionné en raison de l'activation de cette règle auparavant, il ne sera pas supprimé. Toutefois, il ne sera pas disponible pour les connexions mTLS ni renouvelé quand il arrivera à expiration.</translation>
 <translation id="8402079500086185021">Toujours ouvrir les fichiers PDF en externe</translation>
 <translation id="8402357110539568621">Permet d'activer la fonctionnalité d'accessibilité de clavier virtuel.
 

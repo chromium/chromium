@@ -23,6 +23,7 @@
 <translation id="1066060668811609597">Menaxho sinkronizimin</translation>
 <translation id="1076421457278169141">Kodi u skanua</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} skedë}other{{count} skeda}}</translation>
+<translation id="1082554859195167538">Komentet për produktet për ty</translation>
 <translation id="1084365883616172403">Postimi në Facebook u krye.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> nuk mund të hapej</translation>
 <translation id="1086468407802688066">Llogaria <ph name="USER_EMAIL" /> menaxhohet nga <ph name="HOSTED_DOMAIN" />, i cili mund të shikojë disa informacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -342,6 +343,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2384692388811649784">Fshih skedat "e fshehta"</translation>
 <translation id="2386793615875593361">1 e përzgjedhur</translation>
 <translation id="2390457533592708044">Fshih "<ph name="MODULE_NAME" />"</translation>
+<translation id="2393230427496852974">Lexo se çfarë po thonë të tjerët</translation>
 <translation id="2394659309569789395">Hape sajtin gjithsesi</translation>
 <translation id="2403129868389095715">Pakoja jote nuk mund të dorëzohet</translation>
 <translation id="2410754283952462441">Zgjidh një llogari</translation>
@@ -454,6 +456,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2894757982205307093">Skedë e re në grup</translation>
 <translation id="2902312830803030883">Më shumë veprime</translation>
 <translation id="2905479111267140204">Ke <ph name="NUMBER_OF_PASSWORDS" /> fjalëkalime të ripërdorura që mund ta rrezikojnë sigurinë tënde.</translation>
+<translation id="29153882450867370">Fshih "Monitoro çmimin"</translation>
 <translation id="291754862089661335">Pozicionoje kodin QR ose barkodin në këtë kornizë</translation>
 <translation id="2918688092312652908">Shëno si të palexuar</translation>
 <translation id="2920866371965792875">Për të parë përditësimet nga ky sajt, ndiqe atë këtu.</translation>
@@ -901,6 +904,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4989065233040279145">Zgjidh se ku do ta ruash skedarin <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Ngjyra e grupit të skedave: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
+<translation id="5012914568031465281">Çmimi nuk mund të monitorohej.</translation>
 <translation id="5016420433031926653">Dërgo te <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">15 minutat e fundit</translation>
 <translation id="5020732097997376541">Trokit tek "Ikona e 'Lentes'"</translation>
@@ -1660,8 +1664,10 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8211406090763984747">Lidhja është e sigurt</translation>
 <translation id="8214293972734702249">Gozhduar, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Shiko versionin offline në një skedë të re</translation>
+<translation id="8221665793629393739">Alarmi yt rikujtues për t'u vizituar përsëri</translation>
 <translation id="8230355548492839438">Gjej të mëparshmin</translation>
 <translation id="8232956427053453090">Mbaj të dhënat</translation>
+<translation id="8238711781852526820">Fshih "Monitorimin e çmimeve"</translation>
 <translation id="8258999165172757081">U shtua</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="82619448491672958">Shiko skedat e tjera</translation>
@@ -1782,6 +1788,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8717864919010420084">Kopjo lidhjen</translation>
 <translation id="8722229818691036192">Llogaritë në këtë pajisje</translation>
 <translation id="8722649775263832315">Trokit ose thekso për të kërkuar për çdo gjë me "Lenten e Google"</translation>
+<translation id="8723088494871522141">Fshihe "Komentet për produktet për ty"</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8728922029615312208">Mbylli të gjitha</translation>
 <translation id="8730621377337864115">U krye</translation>

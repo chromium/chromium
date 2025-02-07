@@ -5514,6 +5514,7 @@ Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD
 <translation id="5030415914668947893">URL içeren veya URL'lerle ilişkili metrik toplamaya izin ver</translation>
 <translation id="5033070732967197381">Sorunlu TLS sertifikalarına sahip sitelerde WebAuthn API isteklerine izin ver.</translation>
 <translation id="5034504101537897433">Cihaz kilitlenme raporu bilgi raporlamasını etkinleştir</translation>
+<translation id="5035980227219807711">Tarayıcılar için istemci sertifikası temel hazırlığını devre dışı bırak</translation>
 <translation id="5036013147560568855">Sertifika temel hazırlığı protokolünün sürümü. Varsayılan olarak 1 değerine ayarlanır. 1, "statik" protokoldür. 2, "dinamik" protokoldür.</translation>
 <translation id="5036559232677914717">Politikayı ayarlamak, başlangıçta sistem davranışını belirtmenize olanak tanır. <ph name="PRODUCT_NAME" /> ürününün, başlangıç davranışını belirtmesi gerektiğinden bu ayarı kapatmak, politikanın ayarlanmadan bırakılması anlamına gelir.
 
@@ -8728,6 +8729,7 @@ listesi.
 
 Politika değeri, base64 kodlu X.509 sertifikalarının listesidir. Eşleşen
 bir SPKI (SubjectPublicKeyInfo) içeren sertifikalara güvenilmez.</translation>
+<translation id="7174997120839381414">Tarayıcılar için istemci sertifikası temel hazırlığını etkinleştir</translation>
 <translation id="717630378807352957">Yapılandırma dosyasındaki tüm yazıcılara izin verin.</translation>
 <translation id="7177293255621000064">Politikayı Doğru (True) değerine ayarlarsanız dosya tarayıcısında her türlü harici depolama ortamı (USB flash sürücüler, harici sabit sürücüler, SD ve diğer bellek kartları, optik depolama) kullanılamaz duruma gelir. Politikayı Yanlış (False) değerine ayarlarsanız veya ayarlamadan bırakırsanız kullanıcılar cihazlarında harici depolama alanı kullanabilirler.
 
@@ -9209,6 +9211,7 @@ Politika ayarlanmadan bırakılırsa <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_POL
       Politika devre dışı bırakılırsa Bil bakalım birim dönüşümü devre dışı bırakılır.</translation>
 <translation id="7584363090329234690">Yapay zeka modellerini daha iyi hale getirmeden Generative AI VC Background özelliğine izin ver</translation>
 <translation id="7585312329612243723">Yönetilen Tarayıcılarda URL listesi için <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> onay akışını etkinleştir</translation>
+<translation id="7586199729147257934">Yönetilen tarayıcılar için istemci sertifikalarının temel hazırlığını etkinleştirir</translation>
 <translation id="7587345076013230465">Otomatik seçim politikası, oturum açma ekranında birden fazla sertifikayla eşleştiğinde kullanıcıdan istemci sertifikasını seçmesini iste</translation>
 <translation id="7587921466180902617">Family Link kullanıcıları için Ekran Kaydı test sürümünü etkinleştir</translation>
 <translation id="7595074040612182185">Politikayı ayarlayarak, görselleri olan siteleri belirten URL kalıplarının listesini oluşturabilirsiniz.
@@ -10281,6 +10284,9 @@ Sertifikalar, base64 kodlu olmalıdır.</translation>
 <translation id="8399825694820904218">Bu politika bir sayıya ayarlanırsa <ph name="PRODUCT_NAME" />, ayarlanan milisaniye süresince bir mesaj görüntüler, ardından alternatif tarayıcıyı açar.
 
 Bu politika ayarlanmadan bırakılırsa veya 0 değerine ayarlanırsa tanımlanan bir URL'ye gidildiğinde URL hemen alternatif tarayıcıda açılır.</translation>
+<translation id="8400225642589806131">Bu politika <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" /> (1 değeri) olarak ayarlanırsa <ph name="PRODUCT_NAME" />, yönetilen bir tarayıcı oturumu için cihaz yönetim sunucusundan istemci sertifikası ister. Bu sertifika, örneğin mTLS bağlantılarında kullanılabilir.
+
+Bu politika <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (0 değeri) olarak ayarlanırsa veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, istemci sertifikası istemez. Bir tarayıcının yönetilen istemci sertifikasının temel hazırlığı daha önce yapılmışsa bu politikanın daha önce etkinleştirilmesi nedeniyle sertifika silinmez ancak mTLS bağlantılarında kullanılamaz ve süresi dolduğunda yenilenmez.</translation>
 <translation id="8402079500086185021">PDF dosyalarını her zaman harici olarak aç</translation>
 <translation id="8402357110539568621">Sanal klavye erişilebilirlik özelliğini etkinleştirin.
 

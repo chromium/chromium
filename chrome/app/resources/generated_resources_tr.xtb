@@ -4730,6 +4730,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> cihazına kopyala</translation>
 <translation id="4305817255990598646">Anahtar</translation>
 <translation id="4306119971288449206">Uygulamalar "<ph name="CONTENT_TYPE" />" içerik türüyle yayınlanmalıdır</translation>
+<translation id="4306810703452026910">Chrome, bu siteden gönderilen bildirimleri spam olarak işaretlemeyi durduracak</translation>
 <translation id="4307992518367153382">Temel Bilgiler</translation>
 <translation id="4309165024397827958">Konum izinleri olan Android uygulama ve hizmetlerinin cihazınızın konumunu kullanmasına izin verin. Google, konum verilerini düzenli olarak toplayabilir ve konum doğruluğu ile konuma dayalı hizmetleri iyileştirmek için bu verileri anonim bir şekilde kullanabilir.</translation>
 <translation id="4309183709806093061">Sistem sesini de paylaşın. Geri bildirim gönderilmemesi için bu cihazın sesi kapatılacak.</translation>
@@ -8026,6 +8027,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6713233729292711163">Çalışma Profili ekle</translation>
 <translation id="6713441551032149301">İşlev tuşları ve sistem üst sıra tuşları arasında geçiş yapmak için başlatıcı tuşunu basılı tutun</translation>
 <translation id="6713668088933662563">Şu dilleri çevirmeyi hiçbir zaman önerme</translation>
+<translation id="6714871567554212732"><ph name="GROUP_NAME" /> hakkında daha fazla ayrıntı göster</translation>
 <translation id="6715735940363172819">Web sitelerinin mikrofonunuzu kullanmasına izin verilmiyor</translation>
 <translation id="6715803357256707211">Linux uygulamanızın yüklenmesi sırasında bir hata oluştu. Ayrıntılar için bildirimi tıklayın.</translation>
 <translation id="6716049856796700977">Konumunuzu hiçbir hizmet kullanamaz. Ancak uygulamalar ve web siteleri, IP adresiniz aracılığıyla konumunuzu görmeye devam edebilir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>

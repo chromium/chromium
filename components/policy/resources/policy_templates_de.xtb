@@ -5418,6 +5418,7 @@ Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAM
 <translation id="5030415914668947893">Erfassen von URL-Messwerten zulassen</translation>
 <translation id="5033070732967197381">WebAuthn-API-Anfragen auf Websites mit fehlerhaften TLS-Zertifikaten zulassen.</translation>
 <translation id="5034504101537897433">Melden von Informationen zu Absturzberichten auf Geräten aktivieren</translation>
+<translation id="5035980227219807711">Bereitstellung von Clientzertifikaten für Browser deaktivieren</translation>
 <translation id="5036013147560568855">Version des Zertifikatbereitstellungsprotokolls. Der Standardwert ist 1. 1 entspricht dem statischen Protokoll. 2 entspricht dem dynamischen Protokoll.</translation>
 <translation id="5036559232677914717">Mit dieser Richtlinie kannst du festlegen, wie sich das System beim Start verhält. Wenn diese Einstellung deaktiviert ist, hat das den gleichen Effekt, als wäre sie nicht konfiguriert, da <ph name="PRODUCT_NAME" /> ein festgelegtes Verhalten beim Start benötigt.
 
@@ -8563,6 +8564,7 @@ Wenn die Richtlinie deaktiviert ist, kann eine verzögerungsfreie automatische A
 <translation id="7174158612490351828">Eine Liste der öffentlichen Zertifikatschlüssel, die von <ph name="PRODUCT_NAME" /> für die TLS-Serverauthentifizierung als nicht vertrauenswürdig eingestuft werden sollen.
 
 Der Richtlinienwert ist eine Liste von base64-codierten X.509-Zertifikaten. Alle Zertifikate mit einer übereinstimmenden SPKI (SubjectPublicKeyInfo) werden als nicht vertrauenswürdig eingestuft.</translation>
+<translation id="7174997120839381414">Bereitstellung von Clientzertifikaten für Browser aktivieren</translation>
 <translation id="717630378807352957">Alle Drucker der Konfigurationsdatei zulassen.</translation>
 <translation id="7177293255621000064">Das Festlegen der Richtlinie auf "True" sorgt dafür, dass externe Speichermedien aller Art, wie etwa USB-Flashlaufwerke, externe Festplatten, SD- und sonstige Speicherkarten oder optische Speichergeräte, im Dateibrowser nicht verfügbar sind. Wenn die Richtlinie auf "False" festgelegt oder keine Einstellung gewählt ist, können Nutzer externen Speicher auf ihrem Gerät verwenden.
 
@@ -9035,6 +9037,7 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
       Wenn die Richtlinie deaktiviert ist, ist die Einheitenumrechnung über „Schnellinfo“ deaktiviert.</translation>
 <translation id="7584363090329234690">VC-Hintergrund basierend auf generativer KI ohne Verbesserung von KI‑Modellen zulassen</translation>
 <translation id="7585312329612243723">Attestierungsablauf <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> für eine Liste von URLs in verwalteten Browsern aktivieren</translation>
+<translation id="7586199729147257934">Aktiviert die Bereitstellung von Clientzertifikaten für verwaltete Browser</translation>
 <translation id="7587345076013230465">Nutzer auffordern, auf dem Anmeldebildschirm das Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt</translation>
 <translation id="7587921466180902617">Screencast-Dogfood für Family Link-Nutzer aktivieren</translation>
 <translation id="7595074040612182185">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, durch die angegeben wird, welche Websites Bilder anzeigen dürfen.
@@ -10073,6 +10076,9 @@ Zertifikate müssen mit Base64 codiert sein.</translation>
 <translation id="8399825694820904218">Wenn für die Richtlinie eine Zahl festgelegt ist, zeigt <ph name="PRODUCT_NAME" /> für genau diese Anzahl von Millisekunden eine Nachricht an und öffnet dann den alternativen Browser.
 
 Ist die Richtlinie nicht konfiguriert oder auf 0 gesetzt, wird eine bestimmte aufgerufene URL sofort in einem alternativen Browser geöffnet.</translation>
+<translation id="8400225642589806131">Wenn diese Richtlinie auf „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" />“ (Wert 1) gesetzt ist, fordert <ph name="PRODUCT_NAME" /> für eine verwaltete Browsersitzung ein Clientzertifikat vom Geräteverwaltungsserver an. Dieses Zertifikat wird z. B. für mTLS-Verbindungen zur Verfügung gestellt.
+
+Wenn diese Richtlinie auf „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" />“ (Wert 0) gesetzt ist oder nicht konfiguriert wird, kann <ph name="PRODUCT_NAME" /> das Clientzertifikat nicht anfordern. Wenn das Clientzertifikat eines verwalteten Browsers bereits zur Verfügung gestellt wurde, weil diese Richtlinie zuvor aktiviert war, wird es nicht gelöscht, aber es ist nicht für mTLS-Verbindungen verfügbar und wird nach seinem Ablauf nicht verlängert.</translation>
 <translation id="8402079500086185021">PDF-Dateien immer extern öffnen</translation>
 <translation id="8402357110539568621">Aktiviert die Bedienungshilfe „Bildschirmtastatur“.
 

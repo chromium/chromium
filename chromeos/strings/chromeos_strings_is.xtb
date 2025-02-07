@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">Samantekt</translation>
 <translation id="123124571410524056">Grunur um gátt</translation>
 <translation id="1232610416724362657">fossi</translation>
+<translation id="1238163879850290856">Endurstilla til að koma í veg fyrir að aðrir hafi aðgang að gögnum. Notaðu aðeins innfærsluaðferðir sem þú treystir.</translation>
 <translation id="1238612778414822719">HTTPS-biðtími</translation>
 <translation id="1252766349417594414">Stýripinni</translation>
 <translation id="1270369111467284986">Grunur um innskráningarsíðu</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Hægri Shift-lykill</translation>
 <translation id="4654549501020883054">Breyta daglega</translation>
 <translation id="4655868084888499342">Mynd sett upp sem veggfóður</translation>
+<translation id="4660989616054030633">Skapandi gervigreind getur gert mistök, þar á meðal varðandi fólk, svo að þú skalt gæta þess að fara yfir öll svör sem þú færð</translation>
 <translation id="4661249927038176904">Súrrealískt</translation>
 <translation id="4661392828086261436">Þessi uppfærsla er veitt af framleiðanda tækisins og Google hefur ekki staðfest hana</translation>
 <translation id="4664651912255946953">feldi</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">Fela samantekt</translation>
 <translation id="6075872808778243331">(Android) HTTP-biðtími</translation>
 <translation id="6078323886959318429">Bæta flýtileið við</translation>
+<translation id="6079693086494835199">Endurstilla til að tryggja að sjálfgefin heimasíða sé ekki vefsvæði sem stundar vefveiðar. Notaðu aðeins vefsvæði sem þú treystir.</translation>
 <translation id="6091080061796993741">gulur</translation>
 <translation id="6104112872696127344">Hætt var við að skanna</translation>
 <translation id="6106186594183574873">Sláðu inn gamla aðgangsorðið þitt til að ganga frá þessu</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">rauðbrúnum og bleikum lit</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">Endurstilla til að koma í veg fyrir að aðrir noti hljóðnemann þinn eða myndavélina. Veittu aðeins vefsvæðum sem þú treystir aðgang.</translation>
 <translation id="6188737759358894319">Búið til <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Hleðslugeta rafhlöðunnar minnkar með notkun</translation>
 <translation id="6189987971574353264">Spila</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">lyklaborð dekkt</translation>
 <translation id="6302401976930124515">Hætt var við prófunina: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Skoða forrit</translation>
+<translation id="6314333689576767865">Chromebook var endurstillt á öruggar, sjálfgefnar stillingar. Þú getur gert breytingar hvenær sem er í stillingunum.</translation>
 <translation id="6318437367327684789">endalaust</translation>
 <translation id="6319207335391420837">Uppfæra fastbúnað í <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Kveikja á skjávara</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">Ábending send inn</translation>
 <translation id="6866732840889595464">fagurfífill</translation>
 <translation id="6871256179359663621">ljósfjólublá(r)</translation>
+<translation id="6887967050249348172">Slökkt á viðbótum til að koma í veg fyrir breytingar á stillingum. Kveiktu bara á viðbótum sem þú treystir.</translation>
 <translation id="6889786074662672253">Ekki skal taka þetta ytra tæki úr sambandi eða slökkva á tölvunni meðan á endurræsingu stendur. Þú getur minnkað þennan glugga. Þetta gæti tekið nokkrar mínútur og óvíst er að ytra tækið virki á meðan.</translation>
 <translation id="6899460405678814458">Sýna samantekt</translation>
 <translation id="6900701049656042631">Engar myndir eru í þessu albúmi. Opnaðu <ph name="LINK" /> til að bæta við myndum</translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">Flýtilykill endurheimtur</translation>
 <translation id="725133483556299729">Velja netfang</translation>
 <translation id="7255187042098209569">bleikum og fjólubláum lit</translation>
+<translation id="7267918995585557751">Endurstilla til að tryggja að sjálfgefin ræsisíða sé ekki vefsvæði sem stundar vefveiðar. Notaðu aðeins vefsvæði sem þú treystir.</translation>
 <translation id="7271000785316964275">klassískum stíl</translation>
 <translation id="7271040990581020067">Skanninn er í notkun núna. Reyndu aftur síðar.</translation>
 <translation id="7271932918253517778">Flýtilyklar sem innihalda lykla í efstu röð lyklaborðsins verða að innihalda <ph name="META_KEY" />-lykilinn.</translation>
@@ -1486,6 +1493,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7903695460270716054">Veldu sérvalin listaverk og myndir</translation>
 <translation id="7912005977894000746">Til baka á aðalsíðu</translation>
 <translation id="7915220255123750251">Stjórna stillingum aðgangsstaðar netkerfis. Aðgangsstaðir tengja saman farsímakerfi og internetið.</translation>
+<translation id="7915759923880480519">Endurstilla til að vernda gögn sem eru send í gegnum þín netkerfi. Notaðu aðeins netkerfi sem þú treystir.</translation>
 <translation id="7936303884198020182">Engir nafnaþjónar fundust</translation>
 <translation id="7942349550061667556">Rauður</translation>
 <translation id="7943235353293548836">Viðvarandi bil til að halda tengingu</translation>
@@ -1711,6 +1719,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="89945434909472341">þorpi</translation>
 <translation id="8997710128084572139">Rafhleðsla tækisins er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8998289560386111590">Ekki í boði í tækinu þínu</translation>
+<translation id="9000871120886759611">Endurstilla til að tryggja að þú getir nálgast upplýsingar á því tungumáli sem þú kýst. Athugaðu að aðeins valin tungumál eru notuð.</translation>
 <translation id="9003499805101629690">pítsa</translation>
 <translation id="9003704114456258138">Tíðni</translation>
 <translation id="901834265349196618">tölvupóstur</translation>
