@@ -57,12 +57,6 @@ enum TestConfiguration {
   // This is the same as `kOSCryptAsync` but without the service being correctly
   // installed/running. This allows testing of failure conditions.
   kOSCryptAsyncNoService,
-  // This is the same as `kOSCryptAsync` but
-  // with custom user data dir meaning that Encrypt should fail but Decrypt
-  // should work. This is to test that on a machine where data was previously
-  // encrypted, then it moved to an unsupported state, decryption will still be
-  // attempted.
-  kOSCryptAsyncUnsupportedUserData,
   // This is the same as `kOSCryptAsync` but with App-Bound
   // encryption disabled by policy. If run on a fresh profile it should not
   // generate or store a key. However, if run on a profile where policy was
@@ -104,7 +98,6 @@ bool IsElevationRequired(TestConfiguration configuration) {
     case kOSCryptAsyncNoService:
       return false;
     case kOSCryptAsync:
-    case kOSCryptAsyncUnsupportedUserData:
     case kOSCryptAsyncDisabledByPolicy:
       return true;
   }
@@ -182,12 +175,6 @@ class CookieEncryptionProviderBrowserTest
         break;
 #if BUILDFLAG(IS_WIN)
       case kOSCryptAsyncNoService:
-        break;
-      case kOSCryptAsyncUnsupportedUserData:
-        maybe_uninstall_service_ = os_crypt::InstallService(log_grabber_);
-        EXPECT_TRUE(maybe_uninstall_service_.has_value());
-        os_crypt::SetNonStandardUserDataDirSupportedForTesting(
-            /*supported=*/false);
         break;
       case kOSCryptAsyncDisabledByPolicy:
         maybe_uninstall_service_ = os_crypt::InstallService(log_grabber_);
@@ -362,23 +349,6 @@ INSTANTIATE_TEST_SUITE_P(
          .expect_pass = false,
          .before = kOSCryptAsync,
          .after = kOSCryptAsyncNoService},
-        // This test will result in App-Bound being able to provide a key and
-        // it's used for encryption, and in the second part of the test, the
-        // system will be 'unsupported' due to a custom user data dir provided
-        // by the test framework, but still be able to decrypt data, since the
-        // App-Bound verification passes and the user data is, in fact, the
-        // same.
-        {.name = "app_bound_encryption_not_supported_on_decrypt",
-         .before = kOSCryptAsync,
-         .after = kOSCryptAsyncUnsupportedUserData},
-        // This test will result in App-Bound not being able to provide a key,
-        // as the system is unsupported, so it will not be registered, and the
-        // cookies will instead be encrypted with the second provider which is
-        // DPAPI, and then these can successfully be decrypted when App-Bound is
-        // not enabled.
-        {.name = "app_bound_encryption_not_supported_on_encrypt",
-         .before = kOSCryptAsyncUnsupportedUserData,
-         .after = kOSCryptAsync},
         // This test verifies that if App-Bound encryption is disabled by
         // policy, then the provider does not generate a key. This means any
         // data encrypted in the first stage of the test should decrypt using

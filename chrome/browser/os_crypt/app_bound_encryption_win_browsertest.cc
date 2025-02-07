@@ -728,4 +728,136 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTestMultiProcess,
 }
 #endif  // !defined(COMPONENT_BUILD)
 
+struct AppBoundTestCase {
+  // Test case name.
+  std::string name;
+  // If true, then the temporary dir used by tests for --user-data-dir is
+  // considered a 'default user data dir' by the PRE part of the test.
+  bool allow_non_standard_udd_in_pre;
+  // If true, then the temporary dir used by tests for --user-data-dir is
+  // considered a 'default user data dir' by the main part of the test.
+  bool allow_non_standard_udd_in_main;
+  // Whether or not the data will start with the 'v20' app-bound header,
+  // indicating that it's secured with App-Bound encryption.
+  bool expect_encrypt_with_app_bound;
+  // Whether or not the Decrypt operation succeeds. If false, then the
+  // `temporarily_unavailable` is also expected to be true.
+  bool expect_decrypt_works;
+  // If decrypt works, whether or not OSCrypt indicates that the data should be
+  // re-encrypted.
+  bool should_reencrypt = false;
+  // Support level for the PRE part of the test.
+  SupportLevel expected_support_level_in_pre;
+  // Support level for the main part of the test.
+  SupportLevel expected_support_level_in_main;
+};
+
+class AppBoundEncryptionWinTestWithUserDataDir
+    : public AppBoundEncryptionWinTest,
+      public testing::WithParamInterface<AppBoundTestCase> {
+ public:
+  void SetUp() override {
+    if (IsPreTest()) {
+      os_crypt::SetNonStandardUserDataDirSupportedForTesting(
+          /*supported=*/GetParam().allow_non_standard_udd_in_pre);
+    } else {
+      os_crypt::SetNonStandardUserDataDirSupportedForTesting(
+          /*supported=*/GetParam().allow_non_standard_udd_in_main);
+    }
+    AppBoundEncryptionWinTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinTestWithUserDataDir,
+                       PRE_EncryptionDecryption) {
+  EXPECT_EQ(GetAppBoundEncryptionSupportLevel(g_browser_process->local_state()),
+            GetParam().expected_support_level_in_pre);
+
+  auto encryptor = GetInstanceSync(*g_browser_process->os_crypt_async());
+
+  const auto encrypted_data = encryptor.EncryptString("super secret");
+  ASSERT_TRUE(encrypted_data);
+  if (GetParam().expect_encrypt_with_app_bound) {
+    ASSERT_GT(encrypted_data->size(), 3u);
+    // kAppBoundDataPrefix for App-Bound.
+    constexpr uint8_t kV20Header[] = {'v', '2', '0'};
+    EXPECT_THAT(base::span(*encrypted_data).first<3>(),
+                ::testing::ElementsAreArray(kV20Header));
+  }
+  ASSERT_NO_FATAL_FAILURE(StoreData(*encrypted_data));
+}
+
+IN_PROC_BROWSER_TEST_P(AppBoundEncryptionWinTestWithUserDataDir,
+                       EncryptionDecryption) {
+  EXPECT_EQ(GetAppBoundEncryptionSupportLevel(g_browser_process->local_state()),
+            GetParam().expected_support_level_in_main);
+
+  auto encryptor = GetInstanceSync(*g_browser_process->os_crypt_async());
+
+  const auto previous_data = RetrieveData();
+  ASSERT_TRUE(previous_data);
+
+  os_crypt_async::Encryptor::DecryptFlags flags;
+  const auto plaintext = encryptor.DecryptData(*previous_data, &flags);
+  if (GetParam().expect_decrypt_works) {
+    ASSERT_TRUE(plaintext);
+    EXPECT_EQ("super secret", *plaintext);
+    EXPECT_EQ(flags.should_reencrypt, GetParam().should_reencrypt);
+  } else {
+    EXPECT_FALSE(plaintext);
+    EXPECT_TRUE(flags.temporarily_unavailable);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    AppBoundEncryptionWinTestWithUserDataDir,
+    testing::ValuesIn<AppBoundTestCase>({
+        {.name = "standard_udd",
+         .allow_non_standard_udd_in_pre = true,
+         .allow_non_standard_udd_in_main = true,
+         .expect_encrypt_with_app_bound = true,
+         .expect_decrypt_works = true,
+         .should_reencrypt = false,
+         .expected_support_level_in_pre = SupportLevel::kSupported,
+         .expected_support_level_in_main = SupportLevel::kSupported},
+        {.name = "non_standard_udd",
+         .allow_non_standard_udd_in_pre = false,
+         .allow_non_standard_udd_in_main = false,
+         .expect_encrypt_with_app_bound = false,
+         .expect_decrypt_works = true,
+         .should_reencrypt = false,
+         .expected_support_level_in_pre =
+             SupportLevel::kNotUsingDefaultUserDataDir,
+         .expected_support_level_in_main =
+             SupportLevel::kNotUsingDefaultUserDataDir},
+        // Switch from a standard UDD to a non-standard UDD. The encrypt that
+        // took place in the first stage was app-bound and should not be
+        // decryptable by the second stage.
+        {.name = "was_standard_udd_now_non_standard_udd",
+         .allow_non_standard_udd_in_pre = true,
+         .allow_non_standard_udd_in_main = false,
+         .expect_encrypt_with_app_bound = true,
+         // This is the only configuration where decryption should fail.
+         .expect_decrypt_works = false,
+         .expected_support_level_in_pre = SupportLevel::kSupported,
+         .expected_support_level_in_main =
+             SupportLevel::kNotUsingDefaultUserDataDir},
+        // Switch from a non-standard UDD to a standard UDD. The encrypt that
+        // took place in the first stage would have been using non-app-bound
+        // since it did not provide a key, but should still be decryptable with
+        // the other Key Provider(s) (e.g. DPAPI). Because DPAPI is weaker than
+        // App-Bound, OSCrypt indicates `should_reencrypt` as true.
+        {.name = "was_non_standard_udd_now_standard_udd",
+         .allow_non_standard_udd_in_pre = false,
+         .allow_non_standard_udd_in_main = true,
+         .expect_encrypt_with_app_bound = false,
+         .expect_decrypt_works = true,
+         .should_reencrypt = true,
+         .expected_support_level_in_pre =
+             SupportLevel::kNotUsingDefaultUserDataDir,
+         .expected_support_level_in_main = SupportLevel::kSupported},
+    }),
+    [](const auto& info) { return info.param.name; });
+
 }  // namespace os_crypt

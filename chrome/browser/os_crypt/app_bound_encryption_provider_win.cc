@@ -46,6 +46,12 @@ constexpr ProtectionLevel kCurrentProtectionLevel =
 
 }  // namespace
 
+namespace features {
+BASE_FEATURE(kAppBoundUserDataDirProtection,
+             "AppBoundUserDataDirProtection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
+
 AppBoundEncryptionProviderWin::AppBoundEncryptionProviderWin(
     PrefService* local_state)
     : local_state_(local_state),
@@ -141,6 +147,17 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
     std::move(callback).Run(
         kAppBoundDataPrefix,
         base::unexpected(KeyError::kPermanentlyUnavailable));
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kAppBoundUserDataDirProtection) &&
+      support_level_ == os_crypt::SupportLevel::kNotUsingDefaultUserDataDir) {
+    // Modified user data dir, signal temporarily unavailable. This means
+    // decrypts will not work, but neither will new encrypts. Since the key is
+    // temporarily unavailable, no data should be lost.
+    std::move(callback).Run(
+        kAppBoundDataPrefix,
+        base::unexpected(KeyError::kTemporarilyUnavailable));
     return;
   }
 
