@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -282,7 +283,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testCloseMultipleTabs_HidingTabGroup() {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
-        when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
+        when(mTabGroupModelFilter.getLazyAllTabGroupIds(any(), anyBoolean()))
                 .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
         when(mTabGroupModelFilter.isTabGroupHiding(TOKEN_1)).thenReturn(true);
         mTabModelObserverCaptor
@@ -296,7 +297,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testCloseMultipleTabs_HidingTabGroup_NotLastTabInGroup() {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
-        when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
+        when(mTabGroupModelFilter.getLazyAllTabGroupIds(any(), anyBoolean()))
                 .thenReturn(LazyOneshotSupplier.fromValue(Set.of(TOKEN_1)));
         when(mTabGroupModelFilter.isTabGroupHiding(TOKEN_1)).thenReturn(true);
         mTabModelObserverCaptor

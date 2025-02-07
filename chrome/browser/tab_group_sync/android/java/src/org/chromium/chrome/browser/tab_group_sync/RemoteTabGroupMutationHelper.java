@@ -177,7 +177,8 @@ public class RemoteTabGroupMutationHelper {
         LogUtils.log(TAG, "handleMultipleTabClosure, tabs# " + tabs.size());
 
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
-                mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(tabs);
+                mTabGroupModelFilter.getLazyAllTabGroupIds(
+                        tabs, /* includePendingClosures= */ true);
         for (Tab tab : tabs) {
             if (tab.getTabGroupId() == null) {
                 continue;

@@ -1594,7 +1594,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
         Set<Token> processedTabGroups = new HashSet<>();
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
-                getLazyAllTabGroupIdsInComprehensiveModel(tabs);
+                getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ true);
         for (Tab tab : tabs) {
             @Nullable Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId == null) continue;
@@ -1614,13 +1614,14 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIdsInComprehensiveModel(
-            List<Tab> tabsToExclude) {
+    public LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIds(
+            List<Tab> tabsToExclude, boolean includePendingClosures) {
         return LazyOneshotSupplier.fromSupplier(
                 () -> {
                     Set<Token> tabGroupIds = new HashSet<>();
-                    forEachTabInComprehensiveModelExcept(
+                    forEachTabInTabListExcept(
                             tabsToExclude,
+                            includePendingClosures,
                             tab -> {
                                 @Nullable Token tabGroupId = tab.getTabGroupId();
                                 if (tabGroupId != null) {
@@ -1632,13 +1633,14 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public LazyOneshotSupplier<Set<Integer>> getLazyAllRootIdsInComprehensiveModel(
-            List<Tab> tabsToExclude) {
+    public LazyOneshotSupplier<Set<Integer>> getLazyAllRootIds(
+            List<Tab> tabsToExclude, boolean includePendingClosures) {
         return LazyOneshotSupplier.fromSupplier(
                 () -> {
                     Set<Integer> rootIds = new HashSet<>();
-                    forEachTabInComprehensiveModelExcept(
+                    forEachTabInTabListExcept(
                             tabsToExclude,
+                            includePendingClosures,
                             tab -> {
                                 rootIds.add(tab.getRootId());
                             });
@@ -1646,10 +1648,11 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 });
     }
 
-    private void forEachTabInComprehensiveModelExcept(
-            List<Tab> tabsToExclude, Callback<Tab> callback) {
+    private void forEachTabInTabListExcept(
+            List<Tab> tabsToExclude, boolean includePendingClosures, Callback<Tab> callback) {
         Set<Tab> tabsToExcludeSet = new HashSet<>(tabsToExclude);
-        TabList tabList = getTabModel().getComprehensiveModel();
+        TabList tabList =
+                includePendingClosures ? getTabModel().getComprehensiveModel() : getTabModel();
         for (int i = 0; i < tabList.getCount(); i++) {
             Tab tab = tabList.getTabAt(i);
             if (tabsToExcludeSet.contains(tab)) continue;

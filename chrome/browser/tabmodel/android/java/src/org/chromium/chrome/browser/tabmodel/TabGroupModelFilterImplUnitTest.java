@@ -2314,7 +2314,7 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
-    public void testGetLazyAllTabRootIdsInComprehensiveModel() {
+    public void testGetLazyAllTabRootIds() {
         // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
         // group. Tabs 1 and 4 are also unique.
         Set<Integer> rootIds = new ArraySet<>();
@@ -2326,12 +2326,12 @@ public class TabGroupModelFilterImplUnitTest {
         assertEquals(
                 rootIds,
                 mTabGroupModelFilter
-                        .getLazyAllRootIdsInComprehensiveModel(new ArrayList<Tab>())
+                        .getLazyAllRootIds(new ArrayList<Tab>(), /* includePendingClosures= */ true)
                         .get());
     }
 
     @Test
-    public void testGetLazyAllTabGroupIdsInComprehensiveModel() {
+    public void testGetLazyAllTabGroupIds() {
         // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
         // group.
         Set<Token> tabGroupIds = new ArraySet<>();
@@ -2341,12 +2341,13 @@ public class TabGroupModelFilterImplUnitTest {
         assertEquals(
                 tabGroupIds,
                 mTabGroupModelFilter
-                        .getLazyAllTabGroupIdsInComprehensiveModel(new ArrayList<Tab>())
+                        .getLazyAllTabGroupIds(
+                                new ArrayList<Tab>(), /* includePendingClosures= */ true)
                         .get());
     }
 
     @Test
-    public void testGetLazyAllTabGroupIdsInComprehensiveModel_ExcludePartial() {
+    public void testGetLazyAllTabGroupIds_ExcludePartial() {
         // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
         // group.
         Set<Token> tabGroupIds = new ArraySet<>();
@@ -2356,12 +2357,13 @@ public class TabGroupModelFilterImplUnitTest {
         assertEquals(
                 tabGroupIds,
                 mTabGroupModelFilter
-                        .getLazyAllTabGroupIdsInComprehensiveModel(List.of(mTab2, mTab5))
+                        .getLazyAllTabGroupIds(
+                                List.of(mTab2, mTab5), /* includePendingClosures= */ false)
                         .get());
     }
 
     @Test
-    public void testGetLazyAllTabGroupIdsInComprehensiveModel_ExcludeFull() {
+    public void testGetLazyAllTabGroupIds_ExcludeFull() {
         // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
         // group.
         Set<Token> tabGroupIds = new ArraySet<>();
@@ -2370,7 +2372,8 @@ public class TabGroupModelFilterImplUnitTest {
         assertEquals(
                 tabGroupIds,
                 mTabGroupModelFilter
-                        .getLazyAllTabGroupIdsInComprehensiveModel(List.of(mTab2, mTab3))
+                        .getLazyAllTabGroupIds(
+                                List.of(mTab2, mTab3), /* includePendingClosures= */ true)
                         .get());
     }
 
