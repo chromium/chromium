@@ -2744,8 +2744,6 @@ crbug.com/392927699 external/wpt/css/css-lists/list-style-position-001.html [ Fa
 crbug.com/392927987 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]
 crbug.com/392948859 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?1-2 [ Crash Failure ]
 crbug.com/392180059 [ Linux ] external/wpt/digital-credentials/disabled-by-permissions-policy.https.sub.html [ Failure Timeout ]
-crbug.com/391975648 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-5-test [ Crash Failure ]
-crbug.com/391975648 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-8-test [ Crash Failure ]
 crbug.com/391728750 [ Win11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.html [ Skip Timeout ]
 crbug.com/391728750 [ Win11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.serviceworker.html [ Skip Timeout ]
 crbug.com/391728750 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.serviceworker.html [ Skip Timeout ]

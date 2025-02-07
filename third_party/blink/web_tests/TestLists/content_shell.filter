@@ -862,7 +862,6 @@ external/wpt/paint-timing/fcp-only/fcp-document-opacity-text.html
 external/wpt/paint-timing/with-first-paint/first-contentful-canvas-webgl2.html
 external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html
 external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html
-external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html
 external/wpt/payment-request/onpaymentmethodchange-attribute.https.html
 external/wpt/payment-request/show-consume-activation.https.html
 external/wpt/performance-timeline/navigation-id-reset.tentative.html
@@ -1094,7 +1093,8 @@ virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-conten
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_sandbox_window_open_download_allow_downloads.tentative.html
 virtual/no-forced-frame-updates/external/wpt/html/browsers/browsing-the-web/history-traversal/pagereveal/order-in-bfcache-restore-iframe.html
 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/element-render-blocking-036.html
-virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-*
+virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html
+virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html
 virtual/permission-element/external/wpt/html/semantics/permission-element/display-css-property-reftest.tentative.html
 virtual/permission-element/external/wpt/html/semantics/permission-element/large-min-size-reftest.tentative.html
 virtual/permission-element/external/wpt/html/semantics/permission-element/unbounded-width-with-border-reftest.tentative.html
