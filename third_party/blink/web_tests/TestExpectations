@@ -9130,6 +9130,8 @@ crbug.com/390565845 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wp
 # Gardener 2025-02-04
 crbug.com/389946963 [ Mac13 ] external/wpt/mediacapture-fromelement/capture.html [ Failure Pass ]
 
+crbug.com/394287937 http/tests/devtools/storage-panel-dom-storage-update.js [ Failure Pass ]
+
 # Gardener 2025-02-06
 crbug.com/385054996 external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Pass Crash Timeout ]
 crbug.com/394638725 [ Mac ] external/wpt/css/cssom/getComputedStyle-width-scroll.tentative.html [ Pass Failure ]
