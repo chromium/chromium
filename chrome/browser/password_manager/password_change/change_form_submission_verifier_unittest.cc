@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -182,6 +183,7 @@ class ChangeFormSubmissionVerifierTest
 };
 
 TEST_F(ChangeFormSubmissionVerifierTest, Succeeded) {
+  base::HistogramTester histogram_tester;
   auto form_manager = CreateFormManager();
 
   base::test::TestFuture<bool> completion_future;
@@ -193,6 +195,8 @@ TEST_F(ChangeFormSubmissionVerifierTest, Succeeded) {
   verifier->OnPasswordFormSubmission(web_contents());
 
   EXPECT_TRUE(completion_future.Get());
+  histogram_tester.ExpectUniqueSample(
+      ChangeFormSubmissionVerifier::kPasswordChangeSubmittedHistogram, true, 1);
 }
 
 TEST_F(ChangeFormSubmissionVerifierTest, Failed) {
@@ -210,6 +214,7 @@ TEST_F(ChangeFormSubmissionVerifierTest, Failed) {
 }
 
 TEST_F(ChangeFormSubmissionVerifierTest, OnTimeout) {
+  base::HistogramTester histogram_tester;
   auto form_manager = CreateFormManager();
 
   base::test::TestFuture<bool> completion_future;
@@ -228,4 +233,7 @@ TEST_F(ChangeFormSubmissionVerifierTest, OnTimeout) {
 
   EXPECT_TRUE(completion_future.Wait());
   EXPECT_TRUE(completion_future.Take());
+  histogram_tester.ExpectUniqueSample(
+      ChangeFormSubmissionVerifier::kPasswordChangeSubmittedHistogram, false,
+      1);
 }

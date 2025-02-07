@@ -2652,6 +2652,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.PasswordChangeVerificationTriggeredAutomatically"
+    enum="Boolean" expires_after="2025-11-30">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records whether the password change form submission was detected in the
+    password change flow. The metric is recorded when verifying whether the
+    submission was successful (when the submission is not detected
+    automatically, the verification is triggered on timeout).
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordCheckup.Launch.Success"
     enum="BooleanSuccess" expires_after="2025-07-13">
   <owner>ioanap@chromium.org</owner>
