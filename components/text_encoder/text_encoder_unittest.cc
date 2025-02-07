@@ -117,15 +117,18 @@ TEST_F(TestTextEncoder, BasicTest) {
   EXPECT_EQ("97", Run("new TextEncoder().encode(\"ab\")[0]"));
   EXPECT_EQ("98", Run("new TextEncoder().encode(\"ab\")[1]"));
   // Verify we can save a TextEncoder in a variable.
-  EXPECT_EQ("97", Run("te = new TextEncoder(); \
+  EXPECT_EQ("97", Run("let te = new TextEncoder(); \
                        te.encode(\"a\")[0]"));
   // Verify we can encode two strings.
-  EXPECT_EQ("97",
-            Run("te = new TextEncoder();te.encode(\"b\");te.encode(\"a\")[0]"));
+  EXPECT_EQ("97", Run("let te = new TextEncoder(); \
+                       te.encode(\"b\"); \
+                       te.encode(\"a\")[0]"));
+
   // Verify we can encode two strings without modifying first string.
-  EXPECT_EQ(
-      "98",
-      Run("te = new TextEncoder();x = te.encode(\"b\");te.encode(\"a\");x[0]"));
+  EXPECT_EQ("98", Run("let te = new TextEncoder(); \
+                       let x = te.encode(\"b\"); \
+                       te.encode(\"a\"); \
+                       x[0]"));
   // Encode a 3 byte UTF character.
   EXPECT_EQ("226,130,172", Run("new TextEncoder().encode('€')"));
   // Encode a 4 byte UTF character.
