@@ -78,11 +78,13 @@ const char kGetChangePasswordURLMetricName[] =
 
 struct AffiliationServiceImpl::FetchInfo {
   FetchInfo(std::unique_ptr<AffiliationFetcherInterface> pending_fetcher,
-            std::vector<FacetURI> facets,
+            FacetURI facet,
             base::OnceClosure result_callback)
       : fetcher(std::move(pending_fetcher)),
-        requested_facets(std::move(facets)),
-        callback(std::move(result_callback)) {}
+        requested_facet(std::move(facet)),
+        callback(std::move(result_callback)) {
+    fetcher->StartRequest({requested_facet}, kChangePasswordUrlRequestInfo);
+  }
 
   FetchInfo(FetchInfo&& other) = default;
 
@@ -97,7 +99,7 @@ struct AffiliationServiceImpl::FetchInfo {
   }
 
   std::unique_ptr<AffiliationFetcherInterface> fetcher;
-  std::vector<FacetURI> requested_facets;
+  FacetURI requested_facet;
   // Callback is passed in PrefetchChangePasswordURLs and is run to indicate the
   // prefetch has finished or got canceled.
   base::OnceClosure callback;
@@ -133,27 +135,16 @@ void AffiliationServiceImpl::Shutdown() {
   }
 }
 
-void AffiliationServiceImpl::PrefetchChangePasswordURLs(
-    const std::vector<GURL>& urls,
+void AffiliationServiceImpl::PrefetchChangePasswordURL(
+    const GURL& url,
     base::OnceClosure callback) {
-  std::vector<FacetURI> facets;
-  for (const auto& url : urls) {
-    FacetURI facet_uri = ConvertGURLToFacet(url);
+  FacetURI facet_uri = ConvertGURLToFacet(url);
 
-    if (!facet_uri.is_valid()) {
-      continue;
-    }
-    if (base::Contains(change_password_urls_, facet_uri)) {
-      continue;
-    }
-    facets.push_back(std::move(facet_uri));
-  }
-
-  if (!facets.empty()) {
+  if (facet_uri.is_valid() &&
+      !base::Contains(change_password_urls_, facet_uri)) {
     auto fetcher = fetcher_factory_->CreateInstance(url_loader_factory_, this);
     if (fetcher) {
-      fetcher->StartRequest(facets, kChangePasswordUrlRequestInfo);
-      pending_fetches_.emplace_back(std::move(fetcher), std::move(facets),
+      pending_fetches_.emplace_back(std::move(fetcher), std::move(facet_uri),
                                     std::move(callback));
       return;
     }
@@ -177,7 +168,7 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
   }
 
   if (std::ranges::any_of(pending_fetches_, [&uri](const auto& info) {
-        return base::Contains(info.requested_facets, uri);
+        return uri == info.requested_facet;
       })) {
     LogFetchResult(GetChangePasswordUrlMetric::kNotFetchedYet);
   } else {
@@ -197,11 +188,10 @@ void AffiliationServiceImpl::OnFetchSucceeded(
 
   std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch>
       uri_to_url = CreateFacetUriToChangePasswordUrlMap(result->groupings);
-  for (const auto& requested_facets : processed_fetch->requested_facets) {
-    auto it = uri_to_url.find(requested_facets);
-    if (it != uri_to_url.end()) {
-      change_password_urls_[requested_facets] = it->second;
-    }
+
+  auto it = uri_to_url.find(processed_fetch->requested_facet);
+  if (it != uri_to_url.end()) {
+    change_password_urls_[processed_fetch->requested_facet] = it->second;
   }
 
   pending_fetches_.erase(processed_fetch);

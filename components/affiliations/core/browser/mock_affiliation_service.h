@@ -26,8 +26,8 @@ class MockAffiliationService : public AffiliationService {
   ~MockAffiliationService() override;
 
   MOCK_METHOD(void,
-              PrefetchChangePasswordURLs,
-              (const std::vector<GURL>&, base::OnceClosure),
+              PrefetchChangePasswordURL,
+              (const GURL&, base::OnceClosure),
               (override));
   MOCK_METHOD(GURL, GetChangePasswordURL, (const GURL&), (override, const));
   MOCK_METHOD(void,

@@ -87,8 +87,8 @@ class AffiliationServiceImpl : public AffiliationService,
   // map. Creates a unique fetcher and appends it to |pending_fetches_|
   // along with |urls| and |callback|. When prefetch is finished or a fetcher
   // gets destroyed as a result of Clear() a callback is run.
-  void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
-                                  base::OnceClosure callback) override;
+  void PrefetchChangePasswordURL(const GURL& url,
+                                 base::OnceClosure callback) override;
 
   // In case no valid URL was found, a method returns an empty URL.
   GURL GetChangePasswordURL(const GURL& url) const override;
