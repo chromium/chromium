@@ -20,6 +20,10 @@ namespace content {
 class WebContents;
 }
 
+namespace tabs {
+class ScopedTabModalUI;
+}
+
 namespace version_info {
 enum class Channel;
 }
@@ -77,6 +81,9 @@ class GlicFreController {
   raw_ptr<GlicFreDialogView> fre_view_;
   bool first_time_pref_check_done_ = false;
   AuthController auth_controller_;
+  // Prevents other features from showing tab-modal UI.
+  std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
+
   base::WeakPtrFactory<GlicFreController> weak_ptr_factory_{this};
 };
 
