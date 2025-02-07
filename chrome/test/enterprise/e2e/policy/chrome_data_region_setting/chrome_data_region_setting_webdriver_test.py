@@ -3,25 +3,44 @@
 # found in the LICENSE file.
 
 import os
-from absl import app
 import time
+
+from absl import app, flags
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-from test_util import create_chrome_webdriver
+from test_util import create_chrome_webdriver, sign_in
 from test_util import getElementFromShadowRoot
 from test_util import getElementsFromShadowRoot
+
+FLAGS = flags.FLAGS
+flags.DEFINE_string(
+    "account", None,
+    "Sign into the browser as this account before refreshing policies")
+flags.DEFINE_string("password", None, "Account password")
 
 _POLICY_CHROME_DATA_REGION_SETTING = "ChromeDataRegionSetting"
 
 
 def main(argv):
   options = webdriver.ChromeOptions()
+  # Expose Chrome UI elements to `pywinauto`.
+  options.add_argument("--force-renderer-accessibility")
+  # Bypass a basic CAPTCHA by not identifying as a WebDriver-controlled browser
+  # (i.e., sets `navigator.webdriver` to false).
+  options.add_argument("--disable-blink-features=AutomationControlled")
+  # Override chromedriver's default of disabling sync/sign-in.
+  options.add_experimental_option("excludeSwitches", ["disable-sync"])
   os.environ["CHROME_LOG_FILE"] = r"C:\temp\chrome_log.txt"
 
   driver = create_chrome_webdriver(chrome_options=options)
+  # Wait up to 10s for finding elements.
+  driver.implicitly_wait(10)
 
   try:
+    if FLAGS.account and FLAGS.password:
+      sign_in(driver, FLAGS.account, FLAGS.password)
+
     # Verify Policy status legend in chrome://policy page
     policy_url = "chrome://policy"
     driver.get(policy_url)

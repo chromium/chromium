@@ -27,6 +27,10 @@ class ChromeDataRegionSettingTest(ChromeEnterpriseTestCase):
     self.InstallWebDriver('cbcmdrz-nopref')
     self.InstallChrome('cbcmdrz-europe')
     self.InstallWebDriver('cbcmdrz-europe')
+    self.InstallChrome("drz-user-nopref")
+    self.EnableUITest("drz-user-nopref")
+    self.InstallChrome("drz-user-europe")
+    self.EnableUITest("drz-user-europe")
 
   @test
   def test_cloudMachine_ChromeDataRegionSettingNoPreference(self):
@@ -76,3 +80,47 @@ class ChromeDataRegionSettingTest(ChromeEnterpriseTestCase):
     self.assertIn('source=Cloud', output)
     self.assertIn('scope=Machine', output)
     self.assertIn('status=OK', output)
+
+  @test
+  def test_cloudUser_ChromeDataRegionSettingNoPreference(self):
+    # Domain: chromepizzatest.com / OrgUnit: CBCM-DRZ > No Preference
+    # User belongs to an OU with ChromeDataRegionSetting set to No Preference (0)
+    account = "drz-nopref@chromepizzatest.com"
+    path = f"gs://{self.gsbucket}/secrets/ChromeDataRegionSettingNoPref-password"
+    cmd = r"gsutil cat " + path
+    password = self.RunCommand(self.win_config["dc"], cmd).strip().decode()
+
+    instance_name = "drz-user-nopref"
+    d = os.path.dirname(os.path.abspath(__file__))
+    output = self.RunUITest(
+        instance_name,
+        os.path.join(d, "chrome_data_region_setting_webdriver_test.py"),
+        args=["--account", account, "--password", password])
+
+    # Assert that ChromeDataRegionSetting is set to No Preference (0)
+    self.assertIn("value=0", output)
+    self.assertIn("source=Cloud", output)
+    self.assertIn("scope=Current user", output)
+    self.assertIn("status=OK", output)
+
+  @test
+  def test_cloudUser_ChromeDataRegionSettingEurope(self):
+    # Domain: chromepizzatest.com / OrgUnit: CBCM-DRZ > Europe
+    # User belongs to an OU with ChromeDataRegionSetting set to Europe (2)
+    account = "drz-europe@chromepizzatest.com"
+    path = f"gs://{self.gsbucket}/secrets/ChromeDataRegionSettingEurope-password"
+    cmd = r"gsutil cat " + path
+    password = self.RunCommand(self.win_config["dc"], cmd).strip().decode()
+
+    instance_name = "drz-user-europe"
+    d = os.path.dirname(os.path.abspath(__file__))
+    output = self.RunUITest(
+        instance_name,
+        os.path.join(d, "chrome_data_region_setting_webdriver_test.py"),
+        args=["--account", account, "--password", password])
+
+    # Assert that ChromeDataRegionSetting is set to Europe (2)
+    self.assertIn("value=2", output)
+    self.assertIn("source=Cloud", output)
+    self.assertIn("scope=Current user", output)
+    self.assertIn("status=OK", output)
