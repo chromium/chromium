@@ -12,6 +12,7 @@
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -105,12 +106,16 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
         autofill::AttributeType::FromFieldType(*autofill_ai_server_prediction);
     CHECK(field_attribute_type);
     // TODO(crbug.com/389629676): Save data format.
+    std::u16string value = field->value(autofill::ValueSemantics::kCurrent);
+    base::TrimWhitespace(value, base::TRIM_ALL, &value);
+    if (value.empty()) {
+      continue;
+    }
+
     section_to_entity_types_attributes[field->section()][field_attribute_type
                                                              ->entity_type()]
-        .emplace_back(
-            *field_attribute_type,
-            base::UTF16ToUTF8(field->value(autofill::ValueSemantics::kCurrent)),
-            autofill::AttributeInstance::Context{});
+        .emplace_back(*field_attribute_type, base::UTF16ToUTF8(value),
+                      autofill::AttributeInstance::Context{});
   }
 
   std::vector<autofill::EntityInstance> entities_found_in_form;
@@ -131,16 +136,55 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
   return entities_found_in_form;
 }
 
-bool ShouldEntityBeSaved(
+// Returns true if `entity` cannot be merged in any of the `current_entities`
+// nor is a subset of any of them. This means that a save prompt should be
+// displayed.
+bool ShouldShowNewEntitySavePrompt(
     const autofill::EntityInstance& entity,
     base::span<const autofill::EntityInstance> current_entities) {
-  if (!base::Contains(current_entities, entity.type(),
-                      &autofill::EntityInstance::type)) {
-    return true;
+  return std::ranges::none_of(
+      current_entities, [&](const autofill::EntityInstance& existing_entity) {
+        autofill::EntityInstance::EntityMergeability mergeability =
+            existing_entity.GetEntityMergeability(entity);
+        // If `entity` can be merged into `existing_entity`, a save prompt
+        // should not be shown.
+        if (!mergeability.mergeable_attributes.empty()) {
+          return true;
+        }
+        // If `entity` is a subset of another entity, we should also not show a
+        // save prompt.
+        if (mergeability.is_subset) {
+          return true;
+        }
+        return false;
+      });
+}
+
+// Finds an entity in `current_entities` which `entity` can be merged into.
+// Returns `std::nullopt` if no suitable entity is found.
+std::optional<autofill::EntityInstance> MaybeUpdateEntity(
+    const autofill::EntityInstance& entity,
+    base::span<const autofill::EntityInstance> current_entities) {
+  for (const autofill::EntityInstance& existing_entity : current_entities) {
+    autofill::EntityInstance::EntityMergeability mergeability =
+        existing_entity.GetEntityMergeability(entity);
+    if (mergeability.mergeable_attributes.empty()) {
+      continue;
+    }
+
+    // Merges attributes into `existing_entity` and returns an updated entity
+    // that contains both existing and new attributes.
+    std::vector<autofill::AttributeInstance> new_attributes =
+        base::ToVector(mergeability.mergeable_attributes);
+    for (autofill::AttributeInstance curr_attribute :
+         existing_entity.attributes()) {
+      new_attributes.emplace_back(std::move(curr_attribute));
+    }
+    return autofill::EntityInstance(
+        existing_entity.type(), std::move(new_attributes),
+        existing_entity.guid(), existing_entity.nickname(), base::Time::Now());
   }
-  // TODO(crbug.com/389629676): Handle the entity existing but not being
-  // mergeable.
-  return false;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -493,21 +537,28 @@ void AutofillAiManager::MaybeImportForm(
           std::move(autofill_callback).Run(std::move(form), false);
           return;
         }
-        // TODO(crbug.com/389629676): Add proper import logic. For now blindly
-        // import the first instance seen in the form. This should however
-        // depend on `current_entities`.
         for (const autofill::EntityType& entity_type :
              kEntitiesOrderedByImportPreference) {
-          for (autofill::EntityInstance& entity : entity_instances_from_form) {
+          for (autofill::EntityInstance& entity :
+               entity_instances_from_form) {
             if (entity.type() != entity_type) {
               continue;
             }
 
-            if (ShouldEntityBeSaved(entity, current_entities)) {
+            if (ShouldShowNewEntitySavePrompt(entity, current_entities)) {
               self->client_->ShowSaveAutofillAiBubble(
                   std::move(entity),
                   BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
                            AutofillAiManager::EntityUpdateType::kSave));
+              std::move(autofill_callback).Run(std::move(form), true);
+              return;
+            } else if (std::optional<autofill::EntityInstance>
+                           maybe_entity_to_update =
+                               MaybeUpdateEntity(entity, current_entities)) {
+              self->client_->ShowSaveAutofillAiBubble(
+                  std::move(*maybe_entity_to_update),
+                  BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
+                           AutofillAiManager::EntityUpdateType::kUpdate));
               std::move(autofill_callback).Run(std::move(form), true);
               return;
             }

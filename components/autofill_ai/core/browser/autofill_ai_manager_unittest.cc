@@ -441,8 +441,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   AutofillAiClient::SavePromptAcceptanceCallback save_callback;
   EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
       .WillOnce(
-          testing::DoAll(SaveArg<0>(&entity),  // Capture param 0 by reference
-                         MoveArg<1>(&save_callback)));
+          testing::DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
   manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
@@ -563,6 +562,123 @@ TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
   std::vector<autofill::EntityInstance> saved_entities =
       saved_instances_callback.Take();
   EXPECT_EQ(saved_entities.size(), 1u);
+}
+
+TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {autofill::PASSPORT_NAME_TAG, autofill::PASSPORT_NUMBER,
+       autofill::PHONE_HOME_WHOLE_NUMBER});
+  autofill::EntityInstance existing_entity =
+      autofill::test::GetPassportEntityInstance();
+  test_entity_data_manager_.AddEntityInstance(existing_entity);
+  // Set the filled values to be different to the ones already stored.
+  form->field(0)->set_value(u"Jon Doe");
+  form->field(1)->set_value(u"1234321");
+
+  std::optional<autofill::EntityInstance> entity;
+  AutofillAiClient::SavePromptAcceptanceCallback save_callback;
+  EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
+      .WillOnce(
+          testing::DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
+  base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
+      autofill_callback;
+  manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
+  // Tell the caller the bubble was shown.
+  const bool autofill_ai_shows_bubble = std::get<1>(autofill_callback.Take());
+  EXPECT_TRUE(autofill_ai_shows_bubble);
+
+  // Accept the bubble.
+  AutofillAiClient::SavePromptAcceptanceResult callback_result =
+      AutofillAiClient::SavePromptAcceptanceResult(
+          /*prompt_was_accepted=*/true);
+  callback_result.entity = entity;
+  std::move(save_callback).Run(callback_result);
+  // Tests that the expected entity was saved.
+  base::test::TestFuture<std::vector<autofill::EntityInstance>>
+      saved_instances_callback;
+  test_entity_data_manager_.LoadEntityInstances(
+      saved_instances_callback.GetCallback());
+  std::vector<autofill::EntityInstance> saved_entities =
+      saved_instances_callback.Take();
+  EXPECT_EQ(saved_entities.size(), 2u);
+  EXPECT_EQ(saved_entities[1], *entity);
+  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
+                saved_entities[1], autofill::AttributeTypeName::kPassportName),
+            u"Jon Doe");
+  EXPECT_EQ(
+      GetValueFromEntityForAttributeTypeName(
+          saved_entities[1], autofill::AttributeTypeName::kPassportNumber),
+      u"1234321");
+}
+
+TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
+  // The submitted form will have issue date info.
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {autofill::PASSPORT_NAME_TAG, autofill::PASSPORT_NUMBER,
+       autofill::PASSPORT_ISSUE_DATE_TAG,
+       autofill::PASSPORT_EXPIRATION_DATE_TAG});
+
+  // The current entity however does not.
+  autofill::test::PassportEntityOptions
+      passport_without_issue_date_and_expiry_date;
+  passport_without_issue_date_and_expiry_date.issue_date = nullptr;
+  passport_without_issue_date_and_expiry_date.expiry_date = "";
+  autofill::EntityInstance existing_entity_without_issue_date =
+      autofill::test::GetPassportEntityInstance(
+          passport_without_issue_date_and_expiry_date);
+  test_entity_data_manager_.AddEntityInstance(
+      existing_entity_without_issue_date);
+
+  // Set the filled values to be the same as the ones already stored in the
+  // existing entity, also fill the issue and expiry dates.
+  form->field(0)->set_value(GetValueFromEntityForFieldType(
+      existing_entity_without_issue_date, autofill::PASSPORT_NAME_TAG));
+  form->field(1)->set_value(GetValueFromEntityForFieldType(
+      existing_entity_without_issue_date, autofill::PASSPORT_NUMBER));
+  // Issue date
+  form->field(2)->set_value(u"01/02/2016");
+  // Expirty date
+  form->field(3)->set_value(u"01/02/2020");
+
+  std::optional<autofill::EntityInstance> entity;
+  AutofillAiClient::SavePromptAcceptanceCallback save_callback;
+  EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
+      .WillOnce(
+          testing::DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
+  base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
+      autofill_callback;
+  manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
+  // Tell the caller the bubble was shown.
+  const bool autofill_ai_shows_bubble = std::get<1>(autofill_callback.Take());
+  EXPECT_TRUE(autofill_ai_shows_bubble);
+
+  // Accept the bubble.
+  AutofillAiClient::SavePromptAcceptanceResult callback_result =
+      AutofillAiClient::SavePromptAcceptanceResult(
+          /*prompt_was_accepted=*/true);
+  callback_result.entity = entity;
+  std::move(save_callback).Run(callback_result);
+  // Tests that the expected entity was updated.
+  base::test::TestFuture<std::vector<autofill::EntityInstance>>
+      saved_instances_callback;
+  test_entity_data_manager_.LoadEntityInstances(
+      saved_instances_callback.GetCallback());
+  std::vector<autofill::EntityInstance> saved_entities =
+      saved_instances_callback.Take();
+
+  // Only one entity should exist, as it was updated.
+  EXPECT_EQ(saved_entities.size(), 1u);
+  EXPECT_EQ(saved_entities[0], *entity);
+  EXPECT_EQ(saved_entities[0].guid(),
+            existing_entity_without_issue_date.guid());
+  EXPECT_EQ(
+      GetValueFromEntityForAttributeTypeName(
+          saved_entities[0], autofill::AttributeTypeName::kPassportIssueDate),
+      u"01/02/2016");
+  EXPECT_EQ(
+      GetValueFromEntityForAttributeTypeName(
+          saved_entities[0], autofill::AttributeTypeName::kPassportExpiryDate),
+      u"01/02/2020");
 }
 
 // Tests that `import_form_callback` is run with an empty list of entries when
