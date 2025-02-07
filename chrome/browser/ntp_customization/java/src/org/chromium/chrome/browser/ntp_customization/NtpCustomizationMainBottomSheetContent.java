@@ -5,18 +5,19 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Bottom sheet content of the new tab page customization. */
-@NullMarked
-public class NewTabPageCustomizationBottomSheetContent implements BottomSheetContent {
+public class NtpCustomizationMainBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
 
-    public NewTabPageCustomizationBottomSheetContent(View view) {
+    public NtpCustomizationMainBottomSheetContent(@NonNull View view) {
         mContentView = view;
     }
 
@@ -59,22 +60,24 @@ public class NewTabPageCustomizationBottomSheetContent implements BottomSheetCon
     }
 
     @Override
-    public String getSheetContentDescription(Context context) {
-        return "";
+    public String getSheetContentDescription(@NonNull Context context) {
+        return context.getString(R.string.ntp_customization_main_bottom_sheet_content_description);
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return 0;
+        // Half-height is disabled so no need for an accessibility string.
+        assert false : "This method should not be called";
+        return Resources.ID_NULL;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return 0;
+        return R.string.ntp_customization_main_bottom_sheet_opened_full;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return 0;
+        return R.string.ntp_customization_main_bottom_sheet_closed;
     }
 }

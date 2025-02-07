@@ -126,6 +126,7 @@ if (is_android) {
     "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/model_execution/android:delegate_java",
     "//chrome/browser/notifications:java",
+    "//chrome/browser/ntp_customization:java",
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/omaha/android:update_proto_java",
     "//chrome/browser/optimization_guide/android:java",

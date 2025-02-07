@@ -1283,6 +1283,15 @@
       <message name="IDS_NTP_CUSTOMIZATION_FEED_SECTION_ON" desc="This texts show the feed section is visible at the new tab page">
         On
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the new tab page customization main bottom sheet.">
+        Customize your new tab page bottom sheet
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes fully opening the new tab page customization main bottom sheet.">
+        Customize your new tab page bottom sheet opened at full height
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CLOSED" desc="Accessibility string that describes closing the new tab page customization main bottom sheet">
+        Customize your new tab page bottom sheet closed
+      </message>
 
       <!-- What's New page strings -->
       <!-- TODO(crbug.com/390190615): Make the strings translateable. -->

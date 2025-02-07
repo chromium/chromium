@@ -158,6 +158,9 @@ found in the LICENSE file.
         <item android:id="@+id/preferences_id"
             android:title="@string/menu_settings"
             android:icon="@drawable/settings_cog" />
+        <item android:id="@+id/ntp_customization_id"
+            android:title="@string/menu_ntp_customization"
+            android:icon="@drawable/edit_icon" />
         <item android:id="@+id/help_id"
             android:title="@string/menu_help"
             android:icon="@drawable/help_outline" />

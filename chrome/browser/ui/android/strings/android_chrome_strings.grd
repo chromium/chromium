@@ -4349,6 +4349,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_SETTINGS" desc="Menu item for opening browser settings. [CHAR_LIMIT=27]">
         Settings
       </message>
+      <message name="IDS_MENU_NTP_CUSTOMIZATION" desc="Option in item menu. User can click the 'Customize new tab page' option to open the 'Customize your new tab page' bottom sheet. [CHAR_LIMIT=27]">
+        Customize new tab page
+      </message>
       <message name="IDS_MENU_SETTINGS_ACCOUNT_ERROR" desc="Accessibility string for settings menu item with a badge on the icon in case of sync/identity error.">
         Settings, Google Account error
       </message>

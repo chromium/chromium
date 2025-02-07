@@ -162,6 +162,7 @@ import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
@@ -3091,6 +3092,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         } else if (id == R.id.switch_out_of_incognito_menu_id) {
             mTabModelSelector.selectModel(false);
             RecordUserAction.record("MobileMenuSwitchOutOfIncognito");
+        } else if (id == R.id.ntp_customization_id) {
+            new NtpCustomizationCoordinator(this, mRootUiCoordinator.getBottomSheetController())
+                    .showBottomSheet();
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }
