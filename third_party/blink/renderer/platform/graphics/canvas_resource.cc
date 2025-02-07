@@ -339,15 +339,9 @@ void CanvasResourceSharedBitmap::NotifyResourceLost() {
 
 void CanvasResourceSharedBitmap::UploadSoftwareRenderingResults(
     SkSurface* sk_surface) {
-  auto image = sk_surface->makeImageSnapshot();
-
-  SkImageInfo image_info = CreateSkImageInfo();
   auto scoped_mapping = shared_image_->Map();
-  base::span<uint8_t> bytes = scoped_mapping->GetMemoryForPlane(0);
-  CHECK_GE(bytes.size(), image_info.computeByteSize(image_info.minRowBytes()));
-  bool read_pixels_successful = image->readPixels(
-      image_info, bytes.data(), image_info.minRowBytes(), 0, 0);
-  DCHECK(read_pixels_successful);
+  sk_surface->readPixels(
+      scoped_mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()), 0, 0);
 }
 
 // CanvasResourceSharedImage
