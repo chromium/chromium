@@ -928,7 +928,8 @@ v8::Isolate* V8Initializer::InitializeMainThread() {
   v8::Isolate* isolate = V8PerIsolateData::Initialize(
       scheduler->V8TaskRunner(), scheduler->V8UserVisibleTaskRunner(),
       scheduler->V8BestEffortTaskRunner(), snapshot_mode,
-      create_histogram_callback, add_histogram_sample_callback);
+      create_histogram_callback, add_histogram_sample_callback,
+      ThreadState::Current()->ReleaseCppHeap());
   scheduler->SetV8Isolate(isolate);
 
   // ThreadState::isolate_ needs to be set before setting the EmbedderHeapTracer
