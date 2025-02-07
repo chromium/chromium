@@ -65,7 +65,8 @@ class CC_EXPORT PictureLayerImpl
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   void NotifyTileStateChanged(const Tile* tile) override;
   gfx::Rect GetDamageRect() const override;

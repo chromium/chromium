@@ -40,7 +40,8 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
 
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
   gfx::Rect ComputeThumbQuadRect() const override;

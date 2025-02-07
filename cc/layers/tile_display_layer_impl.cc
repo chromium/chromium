@@ -165,7 +165,8 @@ void TileDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   NOTREACHED();
 }
 
-void TileDisplayLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                       viz::CompositorRenderPass* render_pass,
                                        AppendQuadsData* append_quads_data) {
   if (tilings_.empty()) {
     return;

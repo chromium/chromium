@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/ptr_util.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/render_surface_impl.h"
@@ -9,6 +11,7 @@
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/fake_picture_layer_impl.h"
+#include "cc/test/fake_raster_source.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -18,9 +21,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/transform.h"
-
-#include "base/memory/ptr_util.h"
-#include "cc/test/fake_raster_source.h"
 
 namespace cc {
 namespace {
@@ -58,7 +58,8 @@ class FakePictureLayerImplForRenderSurfaceTest : public FakePictureLayerImpl {
 
   bool HasValidTilePriorities() const override { return false; }
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
     viz::SharedQuadState* shared_quad_state =
         render_pass->CreateAndAppendSharedQuadState();
@@ -162,8 +163,8 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectSharedQuadState) {
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData append_quads_data;
 
-  render_surface->AppendQuads(DRAW_MODE_HARDWARE, render_pass.get(),
-                              &append_quads_data);
+  render_surface->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE},
+                              render_pass.get(), &append_quads_data);
 
   ASSERT_EQ(1u, render_pass->shared_quad_state_list.size());
   viz::SharedQuadState* shared_quad_state =
@@ -246,8 +247,8 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceIgnoreMaskLayerOcclusion) {
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData append_quads_data;
 
-  render_surface->AppendQuads(DRAW_MODE_HARDWARE, render_pass.get(),
-                              &append_quads_data);
+  render_surface->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE},
+                              render_pass.get(), &append_quads_data);
 
   ASSERT_EQ(1u, render_pass->shared_quad_state_list.size());
   viz::SharedQuadState* shared_quad_state =

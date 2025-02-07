@@ -57,7 +57,8 @@ void NinePatchLayerImpl::SetLayout(const gfx::Rect& aperture,
   NoteLayerPropertyChanged();
 }
 
-void NinePatchLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void NinePatchLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                     viz::CompositorRenderPass* render_pass,
                                      AppendQuadsData* append_quads_data) {
   DCHECK(!bounds().IsEmpty());
   quad_generator_.CheckGeometryLimitations();

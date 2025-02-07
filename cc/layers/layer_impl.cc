@@ -104,8 +104,7 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
       transform_tree_index_(kInvalidPropertyNodeId),
       effect_tree_index_(kInvalidPropertyNodeId),
       clip_tree_index_(kInvalidPropertyNodeId),
-      scroll_tree_index_(kInvalidPropertyNodeId),
-      current_draw_mode_(DRAW_MODE_NONE) {
+      scroll_tree_index_(kInvalidPropertyNodeId) {
   DCHECK_GT(layer_id_, 0);
 
   DCHECK(layer_tree_impl_);
@@ -293,12 +292,7 @@ bool LayerImpl::WillDraw(DrawMode draw_mode,
       return false;
   }
 
-  current_draw_mode_ = draw_mode;
   return true;
-}
-
-void LayerImpl::DidDraw(viz::ClientResourceProvider* resource_provider) {
-  current_draw_mode_ = DRAW_MODE_NONE;
 }
 
 bool LayerImpl::ShowDebugBorders(DebugBorderType type) const {

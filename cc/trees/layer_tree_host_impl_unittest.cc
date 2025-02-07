@@ -34,6 +34,7 @@
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar_controller.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
@@ -1009,7 +1010,8 @@ class FluentOverlayScrollbarOpacityLayerTreeHostImplTest
     scrollbar->SetThumbThicknessScaleFactor(thickness);
     auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData append_quads_data;
-    scrollbar->AppendQuads(render_pass.get(), &append_quads_data);
+    scrollbar->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE}, render_pass.get(),
+                           &append_quads_data);
     if (expected_opacity == 0.f) {
       // If the opacity of the track is expected to be zero, the layer code
       // makes an early return and doesn't append the track's quads.
@@ -3726,7 +3728,8 @@ class IncompleteRecordingLayer : public LayerImpl {
   IncompleteRecordingLayer(LayerTreeImpl* layer_tree_impl, int id)
       : LayerImpl(layer_tree_impl, id) {}
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
     append_quads_data->checkerboarded_needs_record = true;
     append_quads_data->visible_layer_area += 200;
@@ -6508,10 +6511,11 @@ class DidDrawCheckLayer : public LayerImpl {
     return true;
   }
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
     append_quads_called_ = true;
-    LayerImpl::AppendQuads(render_pass, append_quads_data);
+    LayerImpl::AppendQuads(context, render_pass, append_quads_data);
   }
 
   void DidDraw(viz::ClientResourceProvider* provider) override {
@@ -6765,9 +6769,10 @@ class MissingTextureAnimatingLayer : public DidDrawCheckLayer {
         tree_impl, id, tile_missing, had_incomplete_tile, animating, timeline));
   }
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
-    LayerImpl::AppendQuads(render_pass, append_quads_data);
+    LayerImpl::AppendQuads(context, render_pass, append_quads_data);
     if (had_incomplete_tile_) {
       append_quads_data->checkerboarded_needs_raster = true;
     }
@@ -10690,7 +10695,8 @@ class BlendStateCheckLayer : public LayerImpl {
     resource_provider_->RemoveImportedResource(resource_id_);
   }
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
     quads_appended_ = true;
 
@@ -11378,7 +11384,8 @@ class FakeLayerWithQuads : public LayerImpl {
     return base::WrapUnique(new FakeLayerWithQuads(tree_impl, id));
   }
 
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
     viz::SharedQuadState* shared_quad_state =
         render_pass->CreateAndAppendSharedQuadState();

@@ -30,6 +30,7 @@
 
 namespace cc {
 
+struct AppendQuadsContext;
 class AppendQuadsData;
 class DamageTracker;
 class FilterOperations;
@@ -243,7 +244,7 @@ class CC_EXPORT RenderSurfaceImpl {
   viz::ResourceId GetMaskResourceFromLayer(PictureLayerImpl* mask_layer,
                                            gfx::Size* mask_texture_size,
                                            gfx::RectF* mask_uv_rect) const;
-  void AppendQuads(DrawMode draw_mode,
+  void AppendQuads(const AppendQuadsContext& context,
                    viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data);
 
