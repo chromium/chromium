@@ -316,7 +316,7 @@ class CookieEncryptionProviderBrowserTest
 IN_PROC_BROWSER_TEST_P(CookieEncryptionProviderBrowserTest, PRE_CookieStorage) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/setcookie.html")));
+      browser(), embedded_test_server()->GetURL("/set_cookie_header.html")));
 }
 
 IN_PROC_BROWSER_TEST_P(CookieEncryptionProviderBrowserTest, CookieStorage) {

@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceMigrationBrowserTest,
   EXPECT_FALSE(
       base::FeatureList::IsEnabled(features::kTriggerNetworkDataMigration));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/setcookie.html")));
+      browser(), embedded_test_server()->GetURL("/set_cookie_header.html")));
   ASSERT_NO_FATAL_FAILURE(VerifyCookiePresent());
   EXPECT_TRUE(base::PathExists(GetOldCookieLocation()));
   EXPECT_FALSE(base::PathExists(GetNewCookieLocation()));
