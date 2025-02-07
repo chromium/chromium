@@ -2769,42 +2769,6 @@ void BaseRenderingContext2D::InflateStrokeRect(gfx::RectF& rect) const {
   rect.Outset(ClampTo<float>(delta));
 }
 
-bool BaseRenderingContext2D::imageSmoothingEnabled() const {
-  return GetState().ImageSmoothingEnabled();
-}
-
-void BaseRenderingContext2D::setImageSmoothingEnabled(bool enabled) {
-  CanvasRenderingContext2DState& state = GetState();
-  if (enabled == state.ImageSmoothingEnabled()) {
-    return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetImageSmoothingEnabled, enabled);
-  }
-
-  state.SetImageSmoothingEnabled(enabled);
-}
-
-V8ImageSmoothingQuality BaseRenderingContext2D::imageSmoothingQuality() const {
-  return GetState().ImageSmoothingQuality();
-}
-
-void BaseRenderingContext2D::setImageSmoothingQuality(
-    const V8ImageSmoothingQuality& quality) {
-  CanvasRenderingContext2DState& state = GetState();
-  if (quality == state.ImageSmoothingQuality()) {
-    return;
-  }
-
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetImageSmoothingQuality,
-        IdentifiabilitySensitiveStringToken(quality.AsString()));
-  }
-  state.SetImageSmoothingQuality(quality);
-}
-
 String BaseRenderingContext2D::letterSpacing() const {
   return GetState().GetLetterSpacing();
 }

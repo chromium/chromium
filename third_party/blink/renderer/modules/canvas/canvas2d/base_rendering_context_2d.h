@@ -23,7 +23,6 @@
 #include "cc/paint/record_paint_canvas.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_fill_rule.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_image_smoothing_quality.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -326,11 +325,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
                     int dirty_width,
                     int dirty_height,
                     ExceptionState&);
-
-  bool imageSmoothingEnabled() const;
-  void setImageSmoothingEnabled(bool);
-  V8ImageSmoothingQuality imageSmoothingQuality() const;
-  void setImageSmoothingQuality(const V8ImageSmoothingQuality&);
 
   // Transfers a canvas' existing back-buffer to a GPUTexture for use in a
   // WebGPU pipeline. The canvas' image can be used as a texture, or the texture

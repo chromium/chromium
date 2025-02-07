@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_image_smoothing_quality.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -338,6 +339,43 @@ void CanvasRecordingContext2D::setFilter(
       break;
     }
   }
+}
+
+bool CanvasRecordingContext2D::imageSmoothingEnabled() const {
+  return GetState().ImageSmoothingEnabled();
+}
+
+void CanvasRecordingContext2D::setImageSmoothingEnabled(bool enabled) {
+  CanvasRenderingContext2DState& state = GetState();
+  if (enabled == state.ImageSmoothingEnabled()) {
+    return;
+  }
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kSetImageSmoothingEnabled, enabled);
+  }
+
+  state.SetImageSmoothingEnabled(enabled);
+}
+
+V8ImageSmoothingQuality CanvasRecordingContext2D::imageSmoothingQuality()
+    const {
+  return GetState().ImageSmoothingQuality();
+}
+
+void CanvasRecordingContext2D::setImageSmoothingQuality(
+    const V8ImageSmoothingQuality& quality) {
+  CanvasRenderingContext2DState& state = GetState();
+  if (quality == state.ImageSmoothingQuality()) {
+    return;
+  }
+
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kSetImageSmoothingQuality,
+        IdentifiabilitySensitiveStringToken(quality.AsString()));
+  }
+  state.SetImageSmoothingQuality(quality);
 }
 
 double CanvasRecordingContext2D::shadowOffsetX() const {

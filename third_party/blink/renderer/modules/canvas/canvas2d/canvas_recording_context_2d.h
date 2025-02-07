@@ -19,6 +19,7 @@ namespace blink {
 class DOMMatrix;
 class DOMMatrixInit;
 class HTMLCanvasElement;
+class V8ImageSmoothingQuality;
 class V8UnionCanvasFilterOrString;
 
 // CanvasRecordingContext2D implements the canvas_recording_context_2d.idl, a 2D
@@ -60,6 +61,12 @@ class MODULES_EXPORT CanvasRecordingContext2D : public CanvasPath {
 
   const V8UnionCanvasFilterOrString* filter() const;
   void setFilter(ScriptState*, const V8UnionCanvasFilterOrString* input);
+
+  // Functions implementing the CanvasImageSmoothing interface.
+  bool imageSmoothingEnabled() const;
+  void setImageSmoothingEnabled(bool);
+  V8ImageSmoothingQuality imageSmoothingQuality() const;
+  void setImageSmoothingQuality(const V8ImageSmoothingQuality&);
 
   // Functions implementing the CanvasShadowStyles interface.
   virtual double shadowOffsetX() const;
