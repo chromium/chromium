@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
 
@@ -20,7 +21,7 @@ public abstract class AwContentsBackgroundThreadClient {
     private static final String TAG = "AwBgThreadClient";
 
     public abstract void shouldInterceptRequest(
-            AwContentsClient.AwWebResourceRequest request, WebResponseCallback callback);
+            AwWebResourceRequest request, WebResponseCallback callback);
 
     // Protected methods ---------------------------------------------------------------------------
 
@@ -33,17 +34,17 @@ public abstract class AwContentsBackgroundThreadClient {
             String[] requestHeaderNames,
             String[] requestHeaderValues,
             int requestId) {
-        WebResponseCallback callback = new WebResponseCallback(requestId);
+        AwWebResourceRequest request =
+                new AwWebResourceRequest(
+                        url,
+                        isMainFrame,
+                        hasUserGesture,
+                        method,
+                        requestHeaderNames,
+                        requestHeaderValues);
+        WebResponseCallback callback = new WebResponseCallback(requestId, request);
         try {
-            shouldInterceptRequest(
-                    new AwContentsClient.AwWebResourceRequest(
-                            url,
-                            isMainFrame,
-                            hasUserGesture,
-                            method,
-                            requestHeaderNames,
-                            requestHeaderValues),
-                    callback);
+            shouldInterceptRequest(request, callback);
         } catch (Throwable e) {
             Log.e(
                     TAG,

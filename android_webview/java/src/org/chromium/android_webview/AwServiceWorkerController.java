@@ -18,8 +18,12 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 /** Manages clients and settings for Service Workers. */
 @Lifetime.Profile
 public class AwServiceWorkerController {
-    @GuardedBy("mAwServiceWorkerClientLock")
+    @GuardedBy("mLock")
     private AwServiceWorkerClient mServiceWorkerClient;
+
+    @GuardedBy("mLock")
+    @Nullable
+    private AsyncShouldInterceptRequestCallback mAsyncShouldInterceptRequestCallback;
 
     @DoNotInline // Native stores this as a weak reference.
     @NonNull
@@ -29,8 +33,9 @@ public class AwServiceWorkerController {
     @NonNull private final AwServiceWorkerSettings mServiceWorkerSettings;
     @NonNull private final AwBrowserContext mBrowserContext;
 
-    // Lock to protect access to the |mServiceWorkerClient|
-    private final Object mAwServiceWorkerClientLock = new Object();
+    // Lock to protect access to the |mServiceWorkerClient| and
+    // |mAsyncShouldInterceptRequestCallback|
+    private final Object mLock = new Object();
 
     public AwServiceWorkerController(
             @NonNull Context applicationContext, @NonNull AwBrowserContext browserContext) {
@@ -48,7 +53,7 @@ public class AwServiceWorkerController {
 
     /** Set custom client to receive callbacks from Service Workers. Can be null. */
     public void setServiceWorkerClient(@Nullable AwServiceWorkerClient client) {
-        synchronized (mAwServiceWorkerClientLock) {
+        synchronized (mLock) {
             mServiceWorkerClient = client;
         }
     }
@@ -106,6 +111,19 @@ public class AwServiceWorkerController {
         }
     }
 
+    public void setAsyncShouldInterceptRequestCallback(
+            AsyncShouldInterceptRequestCallback callback) {
+        synchronized (mLock) {
+            mAsyncShouldInterceptRequestCallback = callback;
+        }
+    }
+
+    public void clearAsyncShouldInterceptRequestCallback() {
+        synchronized (mLock) {
+            mAsyncShouldInterceptRequestCallback = null;
+        }
+    }
+
     private class ServiceWorkerBackgroundThreadClientImpl extends AwContentsBackgroundThreadClient {
         // All methods are called on the background thread.
         @Override
@@ -114,12 +132,17 @@ public class AwServiceWorkerController {
             // TODO: Consider analogy with AwContentsClient, i.e.
             //  - do we need an onloadresource callback?
             //  - do we need to post an error if the response data == null?
-            synchronized (mAwServiceWorkerClientLock) {
-                WebResourceResponseInfo response = null;
-                if (mServiceWorkerClient != null) {
-                    response = mServiceWorkerClient.shouldInterceptRequest(request);
+            synchronized (mLock) {
+                if (mAsyncShouldInterceptRequestCallback == null) {
+                    WebResourceResponseInfo response = null;
+                    if (mServiceWorkerClient != null) {
+                        response = mServiceWorkerClient.shouldInterceptRequest(request);
+                    }
+                    callback.intercept(response);
+                } else {
+                    mAsyncShouldInterceptRequestCallback.shouldInterceptRequestAsync(
+                            request, callback);
                 }
-                callback.intercept(response, request);
             }
         }
     }
