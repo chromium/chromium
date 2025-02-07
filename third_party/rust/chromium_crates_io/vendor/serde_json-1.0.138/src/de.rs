@@ -45,11 +45,17 @@ where
     /// Create a JSON deserializer from one of the possible serde_json input
     /// sources.
     ///
+    /// When reading from a source against which short reads are not efficient, such
+    /// as a [`File`], you will want to apply your own buffering because serde_json
+    /// will not buffer the input. See [`std::io::BufReader`].
+    ///
     /// Typically it is more convenient to use one of these methods instead:
     ///
     ///   - Deserializer::from_str
     ///   - Deserializer::from_slice
     ///   - Deserializer::from_reader
+    ///
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     pub fn new(read: R) -> Self {
         Deserializer {
             read,
@@ -2567,6 +2573,7 @@ where
 /// use serde::Deserialize;
 ///
 /// use std::error::Error;
+/// use std::io::BufReader;
 /// use std::net::{TcpListener, TcpStream};
 ///
 /// #[derive(Deserialize, Debug)]
@@ -2575,8 +2582,8 @@ where
 ///     location: String,
 /// }
 ///
-/// fn read_user_from_stream(tcp_stream: TcpStream) -> Result<User, Box<dyn Error>> {
-///     let mut de = serde_json::Deserializer::from_reader(tcp_stream);
+/// fn read_user_from_stream(stream: &mut BufReader<TcpStream>) -> Result<User, Box<dyn Error>> {
+///     let mut de = serde_json::Deserializer::from_reader(stream);
 ///     let u = User::deserialize(&mut de)?;
 ///
 ///     Ok(u)
@@ -2587,8 +2594,9 @@ where
 /// # fn fake_main() {
 ///     let listener = TcpListener::bind("127.0.0.1:4000").unwrap();
 ///
-///     for stream in listener.incoming() {
-///         println!("{:#?}", read_user_from_stream(stream.unwrap()));
+///     for tcp_stream in listener.incoming() {
+///         let mut buffered = BufReader::new(tcp_stream.unwrap());
+///         println!("{:#?}", read_user_from_stream(&mut buffered));
 ///     }
 /// }
 /// ```

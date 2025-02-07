@@ -191,6 +191,12 @@ where
     R: io::Read,
 {
     /// Create a JSON input source to read from a std::io input stream.
+    ///
+    /// When reading from a source against which short reads are not efficient, such
+    /// as a [`File`], you will want to apply your own buffering because serde_json
+    /// will not buffer the input. See [`std::io::BufReader`].
+    ///
+    /// [`File`]: https://doc.rust-lang.org/std/fs/struct.File.html
     pub fn new(reader: R) -> Self {
         IoRead {
             iter: LineColIterator::new(reader.bytes()),
