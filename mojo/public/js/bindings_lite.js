@@ -9,6 +9,12 @@ mojo.internal.kArrayHeaderSize = 8;
 mojo.internal.kStructHeaderSize = 8;
 
 /** @const {number} */
+mojo.internal.kStructHeaderSizeOffset = 0;
+
+/** @const {number} */
+mojo.internal.kStructHeaderVersionOffset = 4;
+
+/** @const {number} */
 mojo.internal.kUnionHeaderSize = 8;
 
 /** @const {number} */
@@ -1006,42 +1012,57 @@ mojo.internal.Decoder = class {
   }
 
   /**
+   * Wraps a data buffer into a data view that can decode each field as needed.
+   * @param {!mojo.internal.StructSpec} structSpec
+   * @param {!number} byteOffset
+   * @param {?} dataViewType
+   * @returns {*} instance of dataViewType
+   */
+  wrapStructInDataView(structSpec, byteOffset, dataViewType) {
+    const structOffset = this.decodeOffset(byteOffset);
+    if (!structOffset)
+      return null;
+
+    const decoder = new mojo.internal.Decoder(
+        new DataView(this.data_.buffer, structOffset), this.handles_,
+        this.context_);
+
+    const size = decoder.decodeUint32(mojo.internal.kStructHeaderSizeOffset);
+    const version =
+        decoder.decodeUint32(mojo.internal.kStructHeaderVersionOffset);
+    if (!decoder.isStructHeaderValid(structSpec, size, version)) {
+      throw new Error(
+          `Received ${structSpec.name} of invalid size (${size}) and/or ` +
+          `version (${version})`);
+    }
+    return new dataViewType(decoder, version, structSpec.fields);
+  }
+
+  /**
    * @param {!mojo.internal.StructSpec} structSpec
    * @return {!Object}
    */
   decodeStructInline(structSpec) {
-    const size = this.decodeUint32(0);
-    const version = this.decodeUint32(4);
+    const size = this.decodeUint32(mojo.internal.kStructHeaderSizeOffset);
+    const version = this.decodeUint32(mojo.internal.kStructHeaderVersionOffset);
     if (!this.isStructHeaderValid(structSpec, size, version)) {
       throw new Error(
           `Received ${structSpec.name} of invalid size (${size}) and/or ` +
           `version (${version})`);
     }
 
-    const decodeStructField = (structField) => {
-      const byteOffset =
-        mojo.internal.kStructHeaderSize + structField.packedOffset;
-      const value = structField.type.$.decode(
-        this, byteOffset, structField.packedBitOffset, !!structField.nullable);
-
-      if (value === null && !structField.nullable) {
-        throw new Error(
-          `Received ${structSpec.name} with invalid null field ` +
-          `"${structField.name}"`)
-      }
-      return value;
-    };
-
     const result = {};
     for (const field of structSpec.fields) {
       // Decode an optional numeric pair into a single
       // field.
+      // Please keep this in sync with
+      // converter_interface_declarations.tmpl.
       if (mojo.internal.isNullableValueKindField(field)) {
         const props = field.nullableValueKindProperties;
         if (props.isPrimary && field.minVersion > version) {
           result[props.originalFieldName] = null;
         } else if (props.isPrimary) {
-          const hasValue = decodeStructField(field);
+          const hasValue = this.decodeStructField(field, version);
           // If the field is null, set it here. If it isn't,
           // the value will be decoded as part of decoding
           // the non-primary field below.
@@ -1053,20 +1074,45 @@ mojo.internal.Decoder = class {
           // null and we need to decode the value.
           if (!(props.originalFieldName in result)) {
             result[props.originalFieldName] =
-              decodeStructField(field);
+                this.decodeStructField(field, version);
           }
         }
         continue;
       }
 
-      if (field.minVersion > version) {
-        result[field.name] = field.defaultValue;
-        continue;
-      }
-      result[field.name] = decodeStructField(field);
+      result[field.name] = this.decodeStructField(field, version);
     }
 
     return result;
+  }
+
+  /**
+   * Decodes a struct field for a given version
+   * @param {!mojo.internal.StructFieldSpec} structField
+   * @param {!number} version
+   * @returns {*}
+   */
+  decodeStructField(structField, version) {
+    const decode =
+        (field) => {
+          const byteOffset =
+              mojo.internal.kStructHeaderSize + field.packedOffset;
+          const value = field.type.$.decode(
+              this, byteOffset, field.packedBitOffset, !!field.nullable);
+
+          if (value === null && !field.nullable) {
+            throw new Error(
+                `Received ${field.name} with invalid null field ` +
+                `"${field.name}"`)
+          }
+          return value;
+        }
+
+    if (structField.minVersion > version) {
+      return structField.defaultValue;
+    }
+
+    return decode(structField);
   }
 
   /**
@@ -1760,27 +1806,17 @@ mojo.internal.Struct = function(
 };
 
 /**
- * Bridges typemapped types to mojo types. The adapter includes a function which
- * will convert a mapped type to mojo type and vice versa.
- * @export
- */
-mojo.internal.TypemapAdapter = class {
-  constructor(toMappedTypeFn) {
-    this.toMappedTypeFn = toMappedTypeFn;
-  }
-}
-
-/**
  * Represents a struct that has been typemapped.
  * @param {!Object} objectToBlessAsType
  * @param {string} name
- * @param {!mojo.internal.TypemapAdapter} typemapAdapter
+ * @param {!typeof Object} dataViewType
+ * @param {*} converter
  * @param {!Array<!mojo.internal.StructFieldSpec>} fields
  * @param {Array<!Array<number>>=} versionData
  * @export
  */
 mojo.internal.TypemappedStruct = function(
-    objectToBlessAsType, name, typemapAdapter, fields, versionData) {
+    objectToBlessAsType, name, dataViewType, converter, fields, versionData) {
   const versions = versionData.map(v => ({version: v[0], packedSize: v[1]}));
   const packedSize = versions[versions.length - 1].packedSize;
   const structSpec = {name, packedSize, fields, versions};
@@ -1791,11 +1827,12 @@ mojo.internal.TypemappedStruct = function(
     },
     encodeNull: function(encoder, byteOffset) {},
     decode: function(decoder, byteOffset, bitOffset, nullable) {
-      const mojoType = decoder.decodeStruct(structSpec, byteOffset);
-      if (mojoType === null || mojoType === undefined) {
-        return mojoType;
-      }
-      return typemapAdapter.toMappedTypeFn(mojoType);
+      const view =
+          decoder.wrapStructInDataView(structSpec, byteOffset, dataViewType);
+      // Property access here is used to prevent Closure Compiler from mangling
+      // the method name.
+      return mojo.internal.isNullOrUndefined(view) ? null :
+                                                     converter['convert'](view);
     },
     computeDimensions: function(value, nullable) {
       return mojo.internal.computeStructDimensions(structSpec, value);
@@ -1966,3 +2003,16 @@ mojo.internal.AssociatedInterfaceRequest = function(type) {
     },
   };
 };
+
+/**
+ * A helper function to avoid having to export many of the types and
+ * functions in this class. This is used by typemapping.
+ * @param {!mojo.internal.Decoder} decoder
+ * @param {!mojo.internal.StructFieldSpec} fieldSpec
+ * @param {!number} version
+ * @return {*}
+ * @export
+ */
+mojo.internal.decodeStructField = function(decoder, fieldSpec, version) {
+  return decoder.decodeStructField(fieldSpec, version);
+}

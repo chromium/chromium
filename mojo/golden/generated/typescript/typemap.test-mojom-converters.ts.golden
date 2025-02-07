@@ -3,21 +3,26 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import type {
-  TypemappedMojoType
-} from './typemap.test-mojom-webui.js';
+import {mojo} from '//resources/mojo/mojo/public/js/bindings.js';
 
 
 
 export class TypemappedDataView {
-  private readonly mojoType: TypemappedMojoType;
+  private readonly decoder_: mojo.internal.Decoder;
+  private readonly version_: number;
+  private readonly fieldSpecs_: Array<mojo.internal.StructFieldSpec<any, any>>;
 
-  constructor(mojoType: TypemappedMojoType) {
-    this.mojoType = mojoType;
+  constructor(decoder: mojo.internal.Decoder,
+              version: number,
+              fieldSpecs: Array<mojo.internal.StructFieldSpec<any, any>>) {
+    this.decoder_ = decoder;
+    this.version_ = version;
+    this.fieldSpecs_ = fieldSpecs;
   }
 
-  field(): number {
-    return this.mojoType.field;
+  get field(): number {
+    const field = this.fieldSpecs_[0];
+    return mojo.internal.decodeStructField(this.decoder_, field!, this.version_);
   }
 }
 

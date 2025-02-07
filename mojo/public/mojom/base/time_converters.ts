@@ -11,6 +11,6 @@ export class JsTimeConverter implements JSTimeTypeMapper<Date> {
 
   // Decoding
   convert(view: JSTimeDataView): Date {
-    return new Date(view.msec());
+    return new Date(view.msec);
   }
 }

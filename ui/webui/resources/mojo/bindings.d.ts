@@ -208,6 +208,8 @@ export namespace mojo {
       }
     }
 
+    class Decoder {}
+
     interface MojomType {}
     class Bool implements MojomType {}
     class Int8 implements MojomType {}
@@ -275,8 +277,15 @@ export namespace mojo {
       );
     }
 
+    class MojoDataView<StructType> {
+      constructor(
+          decoder: mojo.internal.Decoder, version: number,
+          fieldSpecs: Array<mojo.internal.StructFieldSpec<StructType, any>>);
+    }
+
     function TypemappedStruct<MappedType, MojoType>(
         objectToBlessAsType: object, name: string,
+        dataViewType: MojoDataView<MappedType>,
         adapter: TypemapAdapter<MappedType, MojoType>,
         fields: Array<StructFieldSpec<MappedType, any>>,
         versionData: number[][]): void;
@@ -296,5 +305,8 @@ export namespace mojo {
     function InterfaceRequest(type: {name: string}): MojomType;
     function AssociatedInterfaceProxy(type: {name: string}): MojomType;
     function AssociatedInterfaceRequest(type: {name: string}): MojomType;
+    function decodeStructField(
+        decoder: Decoder, fieldSpec: StructFieldSpec<any, any>,
+        version: number): any;
   }
 }

@@ -36,13 +36,6 @@ export type {{struct.name}} = {{struct.name}}MojoType;
 const converterFor{{struct.name}}: {{struct.name}}TypeMapper<{{typemap.typename}}>
     = new {{typemap.converter}}();
 
-{#- TODO(ffred): there's a lot of dups with mojo type decl, refactor and move #}
-{# them into macros #}
-const adapterFor{{struct.name}} = new mojo.internal.TypemapAdapter(
-  (mojoType: {{struct.name}}MojoType) =>
-      converterFor{{struct.name}}.convert(new {{struct.name}}DataView(mojoType)),
-);
-
 mojo.internal.TypemappedStruct<{{struct_type}}, {{struct.name}}MojoType> (
 {%- else %}
 mojo.internal.Struct<{{struct_type}}>(
@@ -50,7 +43,8 @@ mojo.internal.Struct<{{struct_type}}>(
     {{struct.name}}Spec.$,
     '{{struct.name}}',
 {%- if struct in typemapped_structs %}
-    adapterFor{{struct.name}},
+    {{struct.name}}DataView,
+    converterFor{{struct.name}},
 {%- endif %}
     [
 {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}

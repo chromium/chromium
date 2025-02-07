@@ -17,8 +17,8 @@ export class MappedDictConverter implements
 
   convert(view: MappedDictDataView): MappedDictType {
     const converted = new Map<string, string>();
-    for (let k in view.data()) {
-      converted.set(k, view.data()[k]!);
+    for (let k in view.data) {
+      converted.set(k, view.data[k]!);
     }
     return converted;
   }

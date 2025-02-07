@@ -13,7 +13,7 @@ export class NestedTypeConverter implements
   }
 
   convert(dataView: NestedMappedTypeDataView): TestNode {
-    return new TestNode(dataView.nested());
+    return new TestNode(dataView.nested);
   }
 }
 
@@ -28,6 +28,6 @@ export class StringDictConverter implements
   }
 
   convert(view: StringDictDataView): StringDictType {
-    return view.data();
+    return view.data;
   }
 }
