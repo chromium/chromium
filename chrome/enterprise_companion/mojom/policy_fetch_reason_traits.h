@@ -5,7 +5,7 @@
 #ifndef CHROME_ENTERPRISE_COMPANION_MOJOM_POLICY_FETCH_REASON_TRAITS_H_
 #define CHROME_ENTERPRISE_COMPANION_MOJOM_POLICY_FETCH_REASON_TRAITS_H_
 
-#include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
+#include "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom.h"
 #include "components/policy/core/common/policy_types.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 

@@ -2,6 +2,17 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "enterprise_companion.mojom" ]
 
+  visibility = [
+    "//chrome/enterprise_companion:*",
+    "//chrome/updater:*",
+  ]
+
+  deps = [ ":policy_fetch_reason_mojom" ]
+}
+
+mojom("policy_fetch_reason_mojom") {
+  sources = [ "policy_fetch_reason.mojom" ]
+
   cpp_typemaps = [
     {
       types = [
@@ -21,7 +32,7 @@ mojom("mojom") {
   ]
 
   visibility = [
-    "//chrome/enterprise_companion:*",
-    "//chrome/updater:*",
+    "//chrome/enterprise_companion/mojom:mojom",
+    "//chrome/updater/mojom:*",
   ]
 }
