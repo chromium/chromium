@@ -241,6 +241,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private onTextInputFocused_() {
     // Show suggestions when there is text input.
     this.shouldShowSuggestions_ = !!this.textValue_;
+    window.scrollTo(0, 0);
   }
 
   private onClickInputQuerySearchButton_(event: Event) {
