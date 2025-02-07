@@ -1126,16 +1126,15 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
 // Verifies that Chrome doesn't crash on browser window close when the sync
 // confirmation dialog is waiting for its size.
 // Regression test for https://crbug.com/1304055.
-// TODO(crbug.com/393557607): Test is flaky on certain bots
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
-                       DISABLED_CloseBrowserWhileInitializingSyncConfirmation) {
+                       CloseBrowserWhileInitializingSyncConfirmation) {
   content::TestNavigationObserver sync_confirmation_url_observer(
       GURL("chrome://sync-confirmation?style=0&is_sync_promo=true"));
   sync_confirmation_url_observer.StartWatchingNewWebContents();
 
   // Signin using the Chrome Sync endpoint.
   browser()->signin_view_controller()->ShowDiceEnableSyncTab(
-      signin_metrics::AccessPoint::kSettings,
+      signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
 
