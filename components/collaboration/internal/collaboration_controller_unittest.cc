@@ -248,7 +248,7 @@ TEST_F(CollaborationControllerTest, UrlHandlingError) {
 
   // Simulate an error parsing join URL.
   base::OnceCallback<void(Outcome)> error_ui_callback;
-  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kGenericError),
+  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kInvalidUrl),
                                     IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&error_ui_callback));
   std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
@@ -282,7 +282,7 @@ TEST_F(CollaborationControllerTest, DelegateOutcomeError) {
   run_loop.Run();
 }
 
-TEST_F(CollaborationControllerTest, PreviewDataFailures) {
+TEST_F(CollaborationControllerTest, PreviewDataUrlInvalidFailure) {
   // Start Join flow.
   InitializeJoinController(base::DoNothing());
 
@@ -296,13 +296,13 @@ TEST_F(CollaborationControllerTest, PreviewDataFailures) {
       .WillOnce(MoveArg<1>(&preview_callback));
   controller_->SetStateForTesting(StateId::kAddingUserToGroup);
   base::OnceCallback<void(Outcome)> error_ui_callback;
-  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kGenericError),
+  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kInvalidUrl),
                                     IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&error_ui_callback));
 
   std::move(preview_callback)
       .Run(base::unexpected(data_sharing::DataSharingService::
-                                DataPreviewActionFailure::kOtherFailure));
+                                DataPreviewActionFailure::kPermissionDenied));
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
 }
 

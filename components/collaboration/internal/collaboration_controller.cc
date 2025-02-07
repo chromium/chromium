@@ -11,6 +11,7 @@
 #include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
 #include "components/collaboration/public/collaboration_service.h"
+#include "components/data_sharing/public/data_sharing_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sync/service/sync_service.h"
@@ -92,6 +93,10 @@ class ControllerState {
                              ErrorInfo(ErrorInfo::Type::kGenericError));
   }
 
+  virtual void HandleErrorWithType(ErrorInfo::Type type) {
+    controller->TransitionTo(StateId::kError, ErrorInfo(type));
+  }
+
   // Called when the state outcome processing is finished.
   virtual void OnProcessingFinishedWithSuccess() {}
 
@@ -143,7 +148,7 @@ class PendingState : public ControllerState {
     if (controller->flow().type == FlowType::kJoin) {
       // Handle URL parsing errors.
       if (!controller->flow().join_token().IsValid()) {
-        HandleError();
+        HandleErrorWithType(ErrorInfo::Type::kInvalidUrl);
         return;
       }
     }
@@ -298,7 +303,7 @@ class CheckingFlowRequirementsState : public ControllerState {
       const GroupDataOrFailureOutcome& group_outcome) {
     // TODO(crbug.com/373403973): add version check.
     if (!group_outcome.has_value()) {
-      HandleError();
+      HandleErrorWithType(ErrorInfo::Type::kInvalidUrl);
     }
 
     OnProcessingFinishedWithSuccess();
@@ -351,9 +356,16 @@ class AddingUserToGroupState : public ControllerState {
   void ProcessSharedDataPreviewOrFailureOutcome(
       const data_sharing::DataSharingService::SharedDataPreviewOrFailureOutcome&
           preview_outcome) {
+    if (!preview_outcome.has_value() &&
+        preview_outcome.error() == data_sharing::DataSharingService::
+                                       DataPreviewActionFailure::kGroupFull) {
+      HandleError();
+      return;
+    }
+
     if (!preview_outcome.has_value() ||
         !preview_outcome.value().shared_tab_group_preview.has_value()) {
-      HandleError();
+      HandleErrorWithType(ErrorInfo::Type::kInvalidUrl);
       return;
     }
 

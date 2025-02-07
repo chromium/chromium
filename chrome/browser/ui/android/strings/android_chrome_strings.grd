@@ -6692,9 +6692,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_COLLABORATION_PREVIEW_DIALOG_DETAILS_TITLE" desc="The title for the details page of the dialog that shows a preview of a tab group.">
         Tab group details
       </message>
-      <message name="IDS_COLLABORATION_LINK_FAILED_TITLE" desc="The title for the link failed dialog.">
-        This link doesn’t work
-      </message>
       <!-- Data Sharing Preview Dialog -->
 
       <!-- Data Sharing Leave Dialog -->
@@ -6783,9 +6780,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_COLLABORATION_PREVIEW_DIALOG_DETAILS_TABS_IN_GROUP" desc="The title for the tabs in group section in the preview details for a group.">
         Tabs in group
-      </message>
-      <message name="IDS_COLLABORATION_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
-        Contact the sender to ask for a new link
       </message>
       <message name ="IDS_COLLABORATION_JOIN_GROUP_AS" desc="A sublabel showing which profile the shared group is being joined as.">
         Join as <ph name="MEMBER_FULL_NAME">%1$s<ex>John Doe</ex></ph>
