@@ -27,8 +27,8 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
                  blink::AcceleratedImageInfo> {
-  static const gpu::ExportedSharedImage& shared_image(
-      const blink::AcceleratedImageInfo& input) {
+  static gpu::ExportedSharedImage& shared_image(
+      blink::AcceleratedImageInfo& input) {
     return input.shared_image;
   }
 
