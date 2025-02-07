@@ -4584,8 +4584,6 @@ static_library("browser") {
       "accessibility/media_app/ax_media_app_service_factory.h",
       "accessibility/media_app/ax_media_app_untrusted_service.cc",
       "accessibility/media_app/ax_media_app_untrusted_service.h",
-      "apps/digital_goods/digital_goods_ash.cc",
-      "apps/digital_goods/digital_goods_ash.h",
       "apps/digital_goods/digital_goods_factory_impl.cc",
       "apps/digital_goods/digital_goods_factory_impl.h",
       "apps/digital_goods/digital_goods_impl.cc",

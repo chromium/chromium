@@ -25,10 +25,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "printing/buildflags/buildflags.h"
 
-namespace apps {
-class DigitalGoodsFactoryAsh;
-}
-
 namespace ash {
 class DiagnosticsServiceAsh;
 class ProbeServiceAsh;
@@ -174,8 +170,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DeviceOAuth2TokenService> receiver) override;
   void BindDiagnosticsService(
       mojo::PendingReceiver<mojom::DiagnosticsService> receiver) override;
-  void BindDigitalGoodsFactory(
-      mojo::PendingReceiver<mojom::DigitalGoodsFactory> receiver) override;
   void BindDocumentScan(
       mojo::PendingReceiver<mojom::DocumentScan> receiver) override;
   void BindDownloadController(
@@ -523,7 +517,6 @@ class CrosapiAsh : public mojom::Crosapi {
       device_local_account_extension_service_ash_;
   std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
-  std::unique_ptr<apps::DigitalGoodsFactoryAsh> digital_goods_factory_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
   std::unique_ptr<DownloadControllerAsh> download_controller_ash_;
   std::unique_ptr<DriveIntegrationServiceAsh> drive_integration_service_ash_;
