@@ -302,7 +302,10 @@ base::expected<void, Error> DeobfuscateFileInPlace(
 
   // If deobfuscation is successful, replace the original file.
   if (!base::ReplaceFile(temp_file.path(), file_path, /*error=*/nullptr)) {
-    return base::unexpected(Error::kFileOperationError);
+    // For cross-device errors, fallback to move for copy/delete instead.
+    if (!base::Move(temp_file.path(), file_path)) {
+      return base::unexpected(Error::kFileOperationError);
+    }
   }
   return base::ok();
 }
