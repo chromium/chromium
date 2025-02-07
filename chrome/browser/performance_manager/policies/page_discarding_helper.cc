@@ -262,11 +262,21 @@ void PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
     const std::vector<const PageNode*>& page_nodes,
     DiscardReason discard_reason,
     DiscardCallback post_discard_cb) {
+  // Pass 0 TimeDelta to bypass the minimum time in background check.
+  ImmediatelyDiscardMultiplePages(
+      page_nodes, discard_reason,
+      /*minimum_time_in_background=*/base::TimeDelta(),
+      std::move(post_discard_cb));
+}
+
+void PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
+    const std::vector<const PageNode*>& page_nodes,
+    DiscardReason discard_reason,
+    base::TimeDelta minimum_time_in_background,
+    DiscardCallback post_discard_cb) {
   std::vector<const PageNode*> eligible_nodes;
   for (const PageNode* node : page_nodes) {
-    // Pass 0 TimeDelta to bypass the minimum time in background check.
-    if (CanDiscard(node, discard_reason,
-                   /*minimum_time_in_background=*/base::TimeDelta()) ==
+    if (CanDiscard(node, discard_reason, minimum_time_in_background) ==
         CanDiscardResult::kEligible) {
       eligible_nodes.emplace_back(node);
     }

@@ -164,9 +164,20 @@ class PageDiscardingHelper
       base::TimeDelta minimum_time_in_background =
           kNonVisiblePagesUrgentProtectionTime);
 
+  // Immediately discards as many pages as possible in `page_nodes`. Does not
+  // check for a minimum time in the background.
   void ImmediatelyDiscardMultiplePages(
       const std::vector<const PageNode*>& page_nodes,
       DiscardReason discard_reason,
+      DiscardCallback post_discard_cb = base::DoNothing());
+
+  // Immediately discards as many pages as possible in `page_nodes`.
+  // `minimum_time_in_background` is passed to `CanDiscard()`, see the comment
+  // there about its usage.
+  void ImmediatelyDiscardMultiplePages(
+      const std::vector<const PageNode*>& page_nodes,
+      DiscardReason discard_reason,
+      base::TimeDelta minimum_time_in_background,
       DiscardCallback post_discard_cb = base::DoNothing());
 
   void SetNoDiscardPatternsForProfile(const std::string& browser_context_id,
