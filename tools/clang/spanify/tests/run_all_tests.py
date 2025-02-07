@@ -9,10 +9,10 @@ import sys
 
 
 def RunRewritingTests():
-    subprocess.run([
+    return subprocess.run([
         "tools/clang/scripts/test_tool.py", "--extract-edits-path", "..",
         "--apply-edits", "spanify"
-    ])
+    ]).returncode
 
 
 def main():
@@ -26,8 +26,8 @@ def main():
         sys.stderr.write("Please build spanify first")
         return -1
 
-    RunRewritingTests()
+    return RunRewritingTests()
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
