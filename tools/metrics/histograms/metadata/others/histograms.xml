@@ -9665,6 +9665,7 @@ should be kept until we use this API.  -->
   <token key="Event">
     <variant name="Active"/>
     <variant name="Clone"/>
+    <variant name="Error"/>
     <variant name="Idle"/>
     <variant name="Recording"/>
     <variant name="SaveTrace"/>

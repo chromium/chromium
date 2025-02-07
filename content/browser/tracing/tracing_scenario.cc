@@ -606,7 +606,7 @@ void TracingScenario::OnTracingError(perfetto::TracingError error) {
   DisableNestedScenarios();
   SetState(State::kStopping);
   tracing_session_->Stop();
-  // TODO(crbug.com/40257548): Consider reporting |error|.
+  scenario_delegate_->OnScenarioError(this, error);
 }
 
 void TracingScenario::OnTracingStart() {

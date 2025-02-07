@@ -698,6 +698,14 @@ bool BackgroundTracingManagerImpl::OnScenarioIdle(
          delegate_->IsRecordingAllowed(idle_scenario->privacy_filter_enabled());
 }
 
+void BackgroundTracingManagerImpl::OnScenarioError(
+    TracingScenario* scenario,
+    perfetto::TracingError error) {
+  base::UmaHistogramSparse("Tracing.Background.Scenario.Error",
+                           variations::HashName(scenario->scenario_name()));
+  DLOG(ERROR) << "Background tracing error: " << error.message;
+}
+
 bool BackgroundTracingManagerImpl::OnScenarioCloned(
     TracingScenario* cloned_scenario) {
   DCHECK_EQ(active_scenario_, cloned_scenario);

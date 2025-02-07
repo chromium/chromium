@@ -163,6 +163,9 @@ class CONTENT_EXPORT TracingScenario : public TracingScenarioBase,
     virtual bool OnScenarioCloned(TracingScenario* scenario) = 0;
     // Called when |scenario| starts recording a trace.
     virtual void OnScenarioRecording(TracingScenario* scenario) = 0;
+    // Called when |scenario| has an error.
+    virtual void OnScenarioError(TracingScenario* scenario,
+                                 perfetto::TracingError error) = 0;
     // Called when a trace was collected.
     virtual void SaveTrace(TracingScenario* scenario,
                            base::Token trace_uuid,

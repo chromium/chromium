@@ -130,6 +130,8 @@ class BackgroundTracingManagerImpl
   // TracingScenario::Delegate:
   bool OnScenarioActive(TracingScenario* scenario) override;
   bool OnScenarioIdle(TracingScenario* scenario) override;
+  void OnScenarioError(TracingScenario* scenario,
+                       perfetto::TracingError error) override;
   bool OnScenarioCloned(TracingScenario* scenario) override;
   void OnScenarioRecording(TracingScenario* scenario) override;
   void SaveTrace(TracingScenario* scenario,
