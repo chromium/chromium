@@ -36,7 +36,8 @@ class UntrustedCallerStub final : public mojom::EnterpriseCompanion {
             .ToMojomStatus());
   }
 
-  void FetchPolicies(FetchPoliciesCallback callback) override {
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     FetchPoliciesCallback callback) override {
     std::move(callback).Run(
         EnterpriseCompanionStatus(ApplicationError::kIpcCallerNotAllowed)
             .ToMojomStatus());
@@ -82,15 +83,13 @@ class Stub final : public mojom::EnterpriseCompanion {
                        EnterpriseCompanionStatus::Success().ToMojomStatus()));
   }
 
-  void FetchPolicies(FetchPoliciesCallback callback) override {
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     FetchPoliciesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     service_->FetchPolicies(
-        // TODO(crbug.com/391394116): forward the actual reason once this
-        // function takes an argument for reason.
-        policy::PolicyFetchReason::kUnspecified,
-        base::BindOnce([](const EnterpriseCompanionStatus& status) {
-          return status.ToMojomStatus();
-        }).Then(std::move(callback)));
+        reason, base::BindOnce([](const EnterpriseCompanionStatus& status) {
+                  return status.ToMojomStatus();
+                }).Then(std::move(callback)));
   }
 
  private:
