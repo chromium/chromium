@@ -266,7 +266,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
   // List of items in the tab strip when a drag operation starts.
   // Should be set back to `nil` when the drag operation ends.
-  NSMutableArray<TabStripItemIdentifier*>* _dragItems;
+  NSMutableArray<TabStripItemIdentifier*>* _visibleItemsDuringDrag;
 
   // Used to get info about saved groups and to mutate them.
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
@@ -280,6 +280,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   std::set<tab_groups::LocalTabID> _dirtyTabs;
   // A set of a shared group ID that has changed and a user has not seen it yet.
   std::set<tab_groups::LocalTabGroupID> _dirtyGroups;
+  // `YES` if a local drag operation is in progress.
+  BOOL _localDragInProgress;
 }
 
 - (instancetype)
@@ -978,28 +980,35 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)item {
-  _dragItems = CreateItemIdentifiers(_webStateList,
-                                     /*including_hidden_tab_items=*/false);
+  _localDragInProgress = YES;
+  _visibleItemsDuringDrag =
+      CreateItemIdentifiers(_webStateList,
+                            /*including_hidden_tab_items=*/false);
   // When a tab is dragged, it is visually removed from the collection view.
-  [_dragItems removeObject:[TabStripItemIdentifier tabIdentifier:item]];
+  [_visibleItemsDuringDrag
+      removeObject:[TabStripItemIdentifier tabIdentifier:item]];
 }
 
 - (void)dragWillBeginForTabGroupItem:(TabGroupItem*)item {
-  _dragItems = CreateItemIdentifiers(_webStateList,
-                                     /*including_hidden_tab_items=*/false);
+  _localDragInProgress = YES;
+  _visibleItemsDuringDrag =
+      CreateItemIdentifiers(_webStateList,
+                            /*including_hidden_tab_items=*/false);
   // When a group is dragged, it is visually removed from the collection view,
   // along with all the tabs within that group.
-  [_dragItems removeObject:[TabStripItemIdentifier groupIdentifier:item]];
+  [_visibleItemsDuringDrag
+      removeObject:[TabStripItemIdentifier groupIdentifier:item]];
   CHECK(item.tabGroup);
   for (int childWebStateIndex : item.tabGroup->range()) {
     TabStripItemIdentifier* childItemIdentifier = CreateTabItemIdentifier(
         _webStateList->GetWebStateAt(childWebStateIndex));
-    [_dragItems removeObject:childItemIdentifier];
+    [_visibleItemsDuringDrag removeObject:childItemIdentifier];
   }
 }
 
 - (void)dragSessionDidEnd {
-  _dragItems = nil;
+  _localDragInProgress = NO;
+  _visibleItemsDuringDrag = nil;
 }
 
 - (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session
@@ -1035,8 +1044,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       // Tabs from different profiles cannot be dropped.
       return UIDropOperationForbidden;
     }
-    if (_dragItems && destinationItemIndex < _dragItems.count &&
-        _dragItems[destinationItemIndex].tabSwitcherItem) {
+    if (_visibleItemsDuringDrag &&
+        destinationItemIndex < _visibleItemsDuringDrag.count &&
+        _visibleItemsDuringDrag[destinationItemIndex].tabSwitcherItem) {
       // If the drop originates from the same collection, then it is forbidden
       // to drop a group before an already grouped tab. If the drop originates
       // from a different collection view, a group can be dropped anywhere, but
@@ -1044,12 +1054,20 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       int webStateIndex = GetWebStateIndex(
           _webStateList,
           WebStateSearchCriteria{
-              .identifier =
-                  _dragItems[destinationItemIndex].tabSwitcherItem.identifier});
+              .identifier = _visibleItemsDuringDrag[destinationItemIndex]
+                                .tabSwitcherItem.identifier});
       if (_webStateList->ContainsIndex(webStateIndex) &&
           _webStateList->GetGroupOfWebStateAt(webStateIndex)) {
         return UIDropOperationForbidden;
       }
+    }
+
+    // The count of `_visibleItemsDuringDrag` could be less than
+    // `destinationItemIndex` if the local dragged group is not yet collapsed.
+    // In that case, prevent drop operations.
+    if (_localDragInProgress &&
+        _visibleItemsDuringDrag.count < destinationItemIndex) {
+      return UIDropOperationForbidden;
     }
 
     if (self.profile->IsOffTheRecord() == tabGroupInfo.incognito) {
@@ -1121,7 +1139,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       // Reorder tabs.
       const WebStateList::InsertionParams insertionParams =
           [self insertionParamsForDestinationItemIndex:destinationIndex
-                                                 items:_dragItems];
+                                                 items:_visibleItemsDuringDrag];
       MoveWebStateWithIdentifierToInsertionParams(
           tabInfo.tabID, insertionParams, _webStateList, fromSameCollection);
     } else {
@@ -1153,7 +1171,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                     DragItemOrigin::kOtherBrowser);
     }
     // Determine the tab strip item before which the group should be moved.
-    NSArray<TabStripItemIdentifier*>* items = _dragItems;
+    NSArray<TabStripItemIdentifier*>* items = _visibleItemsDuringDrag;
     if (!items) {
       items = CreateItemIdentifiers(self.webStateList,
                                     /*including_hidden_tab_items=*/false);
