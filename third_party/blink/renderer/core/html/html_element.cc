@@ -2288,7 +2288,7 @@ bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
          command == CommandEventType::kTogglePopover ||
          command == CommandEventType::kHidePopover ||
          command == CommandEventType::kShowPopover ||
-         (RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled() &&
+         (RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled() &&
           (command == CommandEventType::kToggleFullscreen ||
            command == CommandEventType::kRequestFullscreen ||
            command == CommandEventType::kExitFullscreen));
@@ -2349,7 +2349,7 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
     return true;
   }
 
-  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {
     return false;
   }
 

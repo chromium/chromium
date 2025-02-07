@@ -1431,7 +1431,7 @@ LocalFrame* HTMLMediaElement::LocalFrameForPlayer() {
 
 bool HTMLMediaElement::IsValidBuiltinCommand(HTMLElement& invoker,
                                              CommandEventType command) {
-  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {
     return HTMLElement::IsValidBuiltinCommand(invoker, command);
   }
 

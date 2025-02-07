@@ -40,7 +40,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onchange;
   attribute EventHandler onclick;
   attribute EventHandler onclose;
-  [RuntimeEnabled=HTMLInvokeTargetAttribute] attribute EventHandler oncommand;
+  [RuntimeEnabled=HTMLCommandAttributes] attribute EventHandler oncommand;
   attribute EventHandler oncontentvisibilityautostatechange;
   attribute EventHandler oncontextlost;
   attribute EventHandler oncontextmenu;

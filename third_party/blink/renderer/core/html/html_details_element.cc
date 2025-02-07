@@ -337,7 +337,7 @@ bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
 bool HTMLDetailsElement::IsValidBuiltinCommand(HTMLElement& invoker,
                                                CommandEventType command) {
   bool parent_is_valid = HTMLElement::IsValidBuiltinCommand(invoker, command);
-  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {
     return parent_is_valid;
   }
   return parent_is_valid || command == CommandEventType::kToggle ||
