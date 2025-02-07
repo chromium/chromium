@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 49
+// Next tag: 50
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -1413,4 +1413,74 @@ message SystemProfileProto {
   // Identifying information of Trusted Platform Module on the device. This
   // field is only filled in on Windows devices.
   optional TpmIdentifier tpm_identifier = 47;
+
+  message AccessibilityState {
+    enum AXMode {
+      // Native accessibility APIs, specific to each platform, are enabled.
+      // When this mode is set that indicates the presence of a third-party
+      // client accessing Chrome via accessibility APIs. However, unless one
+      // of the modes below is set, the contents of web pages will not be
+      // accessible.
+      NATIVE_APIS = 0;
+
+      // The renderer process will generate an accessibility tree containing
+      // basic information about all nodes, including role, name, value,
+      // state, and location. This is the minimum mode required in order for
+      // web contents to be accessible, and the remaining modes are meaningless
+      // unless this one is set.
+      //
+      // Note that sometimes this mode will be set when kNativeAPI is not, when
+      // the content layer embedder is providing accessibility support via some
+      // other mechanism other than what's implemented in content/browser.
+      WEB_CONTENTS = 1;
+
+      // The accessibility tree will contain inline text boxes, which are
+      // necessary to expose information about line breaks and word boundaries.
+      // Without this mode, you can retrieve the plaintext value of a text field
+      // but not the information about how it's broken down into lines.
+      //
+      // Note that when this mode is off it's still possible to request inline
+      // text boxes for a specific node on-demand, asynchronously.
+      INLINE_TEXT_BOXES = 2;
+
+      // The accessibility tree will contain extra accessibility
+      // attributes typically only needed by screen readers and other
+      // assistive technology for blind users. Examples include text style
+      // attributes, table cell information, live region properties, range
+      // values, and relationship attributes. Note that the HTML tag, ID, class,
+      // and display attributes will also be included.
+      SCREEN_READER = 3;
+
+      // The accessibility tree will contain all the HTML attributes for all
+      // accessibility nodes that come from web content. This effectively dumps
+      // all the HTML attributes as found in the HTML source, or as created by
+      // Javascript, in the accessibility tree, potentially taking up a lot of
+      // memory.
+      HTML = 4;
+
+      // The accessibility tree will contain some metadata from the
+      // HTML HEAD, such as <meta> tags, in AXTreeData. Only supported
+      // when doing a tree snapshot, there's no support for keeping these
+      // in sync if a page changes them dynamically.
+      HTML_METADATA = 5;
+
+      // The accessibility tree will contain automatic image annotations.
+      LABEL_IMAGES = 6;
+
+      // The accessibility tree will contain enough information to export
+      // an accessible PDF when printing to PDF.
+      PDF_PRINTING = 7;
+
+      // The PDF renderer process will run OCR to extract text from an
+      // inaccessible PDF and add it to the accessibility tree.
+      PDF_OCR = 8;
+
+      // The accessibility tree will have the main node annotated.
+      ANNOTATE_MAIN_NODE = 9;
+    }
+    // Indicates which accessibility mode flags are set.
+    repeated AXMode enabled_modes = 1 [packed = true];
+  }
+  // The current state of accessibility features on the client.
+  optional AccessibilityState accessibility_state = 49;
 }

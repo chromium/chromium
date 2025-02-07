@@ -696,6 +696,8 @@ static_library("browser") {
     "memory/enterprise_memory_limit_pref_observer.h",
     "memory_details.cc",
     "memory_details.h",
+    "metrics/accessibility_state_provider.cc",
+    "metrics/accessibility_state_provider.h",
     "metrics/cached_metrics_profile.cc",
     "metrics/cached_metrics_profile.h",
     "metrics/chrome_browser_main_extra_parts_metrics.cc",
