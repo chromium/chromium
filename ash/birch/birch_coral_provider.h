@@ -133,8 +133,9 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   void HandleCoralResponse(std::unique_ptr<CoralResponse> response);
 
   // Erases from the ContentItem list any items which have been removed by the
-  // user. The list is mutated in place.
-  void FilterCoralContentItems(std::vector<coral::mojom::EntityPtr>* items);
+  // user and the items with an empty title. The list is mutated in place.
+  void FilterCoralContentItems(std::vector<coral::mojom::EntityPtr>* items,
+                               CoralSource source);
 
   // Only cache embeddings for valid tabs/windows.
   void MaybeCacheTabEmbedding(TabClusterUIItem* tab_item);

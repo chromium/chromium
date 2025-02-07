@@ -559,6 +559,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="SaveAsDeskTemplate"/>
 </enum>
 
+<enum name="CoralSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="PostLogin"/>
+  <int value="2" label="InSession"/>
+</enum>
+
 <enum name="CriticalNotificationOutcome">
   <int value="0" label="NotificationShown"/>
   <int value="1" label="Crashed"/>
