@@ -502,7 +502,7 @@ input[type="search" i]::-webkit-search-cancel-button {
     flex: none;
     -webkit-user-modify: read-only !important;
     margin-inline-start: 1px;
-    margin-right: 3px;
+    margin-inline-end: 3px;
     opacity: 0;
     pointer-events: none;
     user-select: none !important;
