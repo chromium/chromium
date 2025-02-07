@@ -201,6 +201,20 @@ buildflag_header("chromecast_sandbox_allowlist_buildflags") {
   flags = [ "ENABLE_CHROMECAST_GPU_SANDBOX_ALLOWLIST=$is_castos" ]
 }
 
+if (is_win) {
+  static_library("win_hook_util") {
+    # This library is used and tested in chrome_elf and must not dep on anything
+    # beyond //base:base_static.
+    sources = [
+      "win/hook_util/hook_util.cc",
+      "win/hook_util/hook_util.h",
+    ]
+    deps = [
+      "//base:base_static",  # pe_image
+    ]
+  }
+}
+
 # TODO(crbug.com/40136586): Figure out a better organization for //sandbox
 # tests.
 source_set("tests") {

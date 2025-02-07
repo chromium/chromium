@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "hook_util.h"
+#include "sandbox/policy/win/hook_util/hook_util.h"
 
 #include <assert.h>
 #include <versionhelpers.h>  // windows.h must be before
@@ -18,8 +18,9 @@ namespace {
 // Change the page protections to writable, copy the data,
 // restore protections. Returns a winerror code.
 DWORD PatchMem(void* target, void* new_bytes, size_t length) {
-  if (target == nullptr || new_bytes == nullptr || length == 0)
+  if (target == nullptr || new_bytes == nullptr || length == 0) {
     return ERROR_INVALID_PARAMETER;
+  }
 
   // Preserve executable state.
   MEMORY_BASIC_INFORMATION memory_info = {};
@@ -59,8 +60,9 @@ DWORD PatchMem(void* target, void* new_bytes, size_t length) {
 //------------------------------------------------------------------------------
 
 void* GetIATFunctionPtr(IMAGE_THUNK_DATA* iat_thunk) {
-  if (iat_thunk == nullptr)
+  if (iat_thunk == nullptr) {
     return nullptr;
+  }
 
   // Works around the 64 bit portability warning:
   // The Function member inside IMAGE_THUNK_DATA is really a pointer
@@ -68,7 +70,7 @@ void* GetIATFunctionPtr(IMAGE_THUNK_DATA* iat_thunk) {
   // or IMAGE_THUNK_DATA64 for correct pointer size.
   union FunctionThunk {
     IMAGE_THUNK_DATA thunk;
-    void* pointer;
+    TEMP_RAW_PTR_EXCLUSION void* pointer;
   } iat_function;
 
   iat_function.thunk = *iat_thunk;
@@ -80,9 +82,9 @@ struct IATHookFunctionInfo {
   bool finished_operation;
   const char* imported_from_module;
   const char* function_name;
-  void* new_function;
-  void** old_function;
-  IMAGE_THUNK_DATA** iat_thunk;
+  TEMP_RAW_PTR_EXCLUSION void* new_function;
+  TEMP_RAW_PTR_EXCLUSION void** old_function;
+  TEMP_RAW_PTR_EXCLUSION IMAGE_THUNK_DATA** iat_thunk;
   DWORD return_code;
 };
 
@@ -98,14 +100,16 @@ bool IATFindHookFuncCallback(const base::win::PEImage& image,
                              void* cookie) {
   IATHookFunctionInfo* hook_func_info =
       reinterpret_cast<IATHookFunctionInfo*>(cookie);
-  if (hook_func_info == nullptr)
+  if (hook_func_info == nullptr) {
     return false;
+  }
 
   // Check for the right function.
   if (import_name == nullptr ||
       ::strnicmp(import_name, hook_func_info->function_name,
-                 ::strlen(import_name)) != 0)
+                 ::strlen(import_name)) != 0) {
     return true;
+  }
 
   // At this point, the target function was found.  Even if something fails now,
   // don't do any further enumerating.
@@ -155,8 +159,9 @@ DWORD ApplyIATHook(HMODULE module_handle,
                    void** old_function,
                    IMAGE_THUNK_DATA** iat_thunk) {
   base::win::PEImage target_image(module_handle);
-  if (!target_image.VerifyMagic())
+  if (!target_image.VerifyMagic()) {
     return ERROR_INVALID_PARAMETER;
+  }
 
   IATHookFunctionInfo hook_info = {false,
                                    imported_from_module,
@@ -182,9 +187,10 @@ DWORD ApplyIATHook(HMODULE module_handle,
 DWORD RemoveIATHook(void* intercept_function,
                     void* original_function,
                     IMAGE_THUNK_DATA* iat_thunk) {
-  if (GetIATFunctionPtr(iat_thunk) != intercept_function)
+  if (GetIATFunctionPtr(iat_thunk) != intercept_function) {
     // Someone else has messed with the same target. Cannot unpatch.
     return ERROR_INVALID_FUNCTION;
+  }
 
   return PatchMem(&(iat_thunk->u1.Function), &original_function,
                   sizeof(original_function));
@@ -192,7 +198,7 @@ DWORD RemoveIATHook(void* intercept_function,
 
 }  // namespace
 
-namespace elf_hook {
+namespace sandbox::policy {
 
 //------------------------------------------------------------------------------
 // Import Address Table hooking support
@@ -219,25 +225,29 @@ DWORD IATHook::Hook(HMODULE module,
                     void* new_function) {
   if ((module == 0 || module == INVALID_HANDLE_VALUE) ||
       imported_from_module == nullptr || function_name == nullptr ||
-      new_function == nullptr)
+      new_function == nullptr) {
     return ERROR_INVALID_PARAMETER;
+  }
 
   // Only hook once per object, to ensure unhook.
-  if (intercept_function_ || original_function_ || iat_thunk_)
+  if (intercept_function_ || original_function_ || iat_thunk_) {
     return ERROR_SHARING_VIOLATION;
+  }
 
   DWORD winerror = ApplyIATHook(module, imported_from_module, function_name,
                                 new_function, &original_function_, &iat_thunk_);
-  if (winerror == NO_ERROR)
+  if (winerror == NO_ERROR) {
     intercept_function_ = new_function;
+  }
 
   return winerror;
 }
 
 DWORD IATHook::Unhook() {
   if (intercept_function_ == nullptr || original_function_ == nullptr ||
-      iat_thunk_ == nullptr)
+      iat_thunk_ == nullptr) {
     return ERROR_INVALID_PARAMETER;
+  }
 
   DWORD winerror =
       RemoveIATHook(intercept_function_, original_function_, iat_thunk_);
@@ -249,4 +259,4 @@ DWORD IATHook::Unhook() {
   return winerror;
 }
 
-}  // namespace elf_hook
+}  // namespace sandbox::policy
