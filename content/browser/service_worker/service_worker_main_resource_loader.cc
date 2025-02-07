@@ -187,18 +187,25 @@ ServiceWorkerMainResourceLoader::AsWeakPtr() {
 }
 
 void ServiceWorkerMainResourceLoader::StartRequest(
-    const network::ResourceRequest& resource_request,
-    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+    mojo::PendingReceiver<network::mojom::URLLoader> loader,
+    int32_t request_id,
+    uint32_t options,
+    const network::ResourceRequest& request,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   TRACE_EVENT_WITH_FLOW1("ServiceWorker",
                          "ServiceWorkerMainResourceLoader::StartRequest", this,
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "url", resource_request.url.spec());
+                         "url", request.url.spec());
   DCHECK(blink::ServiceWorkerLoaderHelpers::IsMainRequestDestination(
-      resource_request.destination));
+      request.destination));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  resource_request_ = resource_request;
+  request_id_ = request_id;
+  options_ = options;
+  resource_request_ = request;
+  traffic_annotation_ = traffic_annotation;
+
   if (service_worker_client_ &&
       service_worker_client_->fetch_request_window_id()) {
     resource_request_.fetch_window_id =
@@ -207,7 +214,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 
   DCHECK(!receiver_.is_bound());
   DCHECK(!url_loader_client_.is_bound());
-  receiver_.Bind(std::move(receiver));
+  receiver_.Bind(std::move(loader));
   receiver_.set_disconnect_handler(
       base::BindOnce(&ServiceWorkerMainResourceLoader::OnConnectionClosed,
                      base::Unretained(this)));
@@ -279,19 +286,6 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 
       switch (source_type) {
         case network::mojom::ServiceWorkerRouterSourceType::kNetwork: {
-          // Network fallback is requested.
-          // URLLoader in |fallback_callback_|, in other words |url_loader_|
-          // which is referred in
-          // NavigationURLLoaderImpl::FallbackToNonInterceptedRequest() is not
-          // ready until ServiceWorkerMainResourceLoader::StartRequest()
-          // finishes, so calling the fallback at this point doesn't correctly
-          // handle the fallback process. Use PostTask to run the callback after
-          // finishing StartRequest().
-          //
-          // If the kServiceWorkerStaticRouterStartServiceWorker feature is
-          // enabled, it starts the ServiceWorker manually since we don't
-          // instantiate ServiceWorkerFetchDispatcher, which involves the
-          // ServiceWorker startup.
           response_head_->service_worker_router_info->actual_source_type =
               network::mojom::ServiceWorkerRouterSourceType::kNetwork;
           // `initial_service_worker_status_` should be set if `active_worker`
@@ -303,27 +297,29 @@ void ServiceWorkerMainResourceLoader::StartRequest(
           head_update_params.load_timing_info = response_head_->load_timing;
           head_update_params.initial_service_worker_status =
               initial_service_worker_status_.value();
-          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  [](base::WeakPtr<ServiceWorkerMainResourceLoader> self,
-                     scoped_refptr<ServiceWorkerVersion> active_worker,
-                     ResponseHeadUpdateParams head_update_params) {
-                    if (self) {
-                      self->Fallback(std::move(head_update_params));
-                    }
-                    if (active_worker->running_status() !=
-                            blink::EmbeddedWorkerStatus::kRunning &&
-                        base::FeatureList::IsEnabled(
-                            features::
-                                kServiceWorkerStaticRouterStartServiceWorker)) {
-                      active_worker->StartWorker(
-                          ServiceWorkerMetrics::EventType::STATIC_ROUTER,
-                          base::DoNothing());
-                    }
-                  },
-                  weak_factory_.GetWeakPtr(), active_worker,
-                  std::move(head_update_params)));
+          Fallback(std::move(head_update_params));
+
+          // If the kServiceWorkerStaticRouterStartServiceWorker feature is
+          // enabled, it starts the ServiceWorker manually since we don't
+          // instantiate ServiceWorkerFetchDispatcher, which involves the
+          // ServiceWorker startup.
+          // This is done asynchronously because this is for subresources and
+          // not on the critical path for main resource loading.
+          if (base::FeatureList::IsEnabled(
+                  features::kServiceWorkerStaticRouterStartServiceWorker)) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](scoped_refptr<ServiceWorkerVersion> active_worker) {
+                      if (active_worker->running_status() !=
+                          blink::EmbeddedWorkerStatus::kRunning) {
+                        active_worker->StartWorker(
+                            ServiceWorkerMetrics::EventType::STATIC_ROUTER,
+                            base::DoNothing());
+                      }
+                    },
+                    active_worker));
+          }
           return;
         }
         case network::mojom::ServiceWorkerRouterSourceType::kRace:
@@ -956,9 +952,28 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
 
 void ServiceWorkerMainResourceLoader::Fallback(
     ResponseHeadUpdateParams response_header_params) {
+  CHECK(url_loader_client_.is_bound());
+  CHECK(receiver_.is_bound());
+  mojo::PendingRemote<network::mojom::URLLoaderClient> client =
+      url_loader_client_.Unbind();
+  mojo::PendingReceiver<network::mojom::URLLoader> receiver =
+      receiver_.Unbind();
+
   if (fallback_callback_) {
-    std::move(fallback_callback_).Run(std::move(response_header_params));
+    if (network::mojom::URLLoaderFactory* factory =
+            std::move(fallback_callback_)
+                .Run(std::move(response_header_params))) {
+      // Fallback to the default factory, and pass the original parameters/mojo
+      // pipes of the initial request received in `StartRequest()`.
+      factory->CreateLoaderAndStart(std::move(receiver), request_id_, options_,
+                                    resource_request_, std::move(client),
+                                    traffic_annotation_);
+      return;
+    }
   }
+
+  // The fallback factory isn't available. The pending remote/receiver are
+  // destroyed here and the loading is terminated.
 }
 
 void ServiceWorkerMainResourceLoader::StartResponse(

@@ -29,10 +29,6 @@ namespace net {
 class IsolationInfo;
 }  // namespace net
 
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
-
 namespace content {
 
 class BrowserContext;
@@ -106,6 +102,10 @@ class CONTENT_EXPORT WorkerScriptLoader
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   void OnFetcherCallbackCalled();
+
+  static network::mojom::URLLoaderFactory* Fallback(
+      base::WeakPtr<WorkerScriptLoader> self,
+      ResponseHeadUpdateParams);
 
   base::WeakPtr<WorkerScriptLoader> GetWeakPtr();
 

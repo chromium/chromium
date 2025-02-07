@@ -73,7 +73,8 @@ namespace {
 const char kDNSCanaryCheckAddress[] = "http://testdnscanarycheck.com";
 const char kTLSCanaryCheckAddress[] = "http://testtlscanarycheck.com";
 
-void UnreachableFallback(ResponseHeadUpdateParams) {
+network::mojom::URLLoaderFactory* UnreachableFallback(
+    ResponseHeadUpdateParams) {
   NOTREACHED();
 }
 

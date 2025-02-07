@@ -91,18 +91,21 @@ void WorkerScriptLoader::Start() {
         resource_request_, browser_context,
         base::BindOnce(&WorkerScriptLoader::MaybeStartLoader,
                        weak_factory_.GetWeakPtr(), interceptor_.get()),
-        base::BindOnce(
-            [](base::WeakPtr<WorkerScriptLoader> self,
-               ResponseHeadUpdateParams) {
-              if (self) {
-                self->LoadFromNetwork();
-              }
-            },
-            weak_factory_.GetWeakPtr()));
+        base::BindOnce(&WorkerScriptLoader::Fallback,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 
   LoadFromNetwork();
+}
+
+network::mojom::URLLoaderFactory* WorkerScriptLoader::Fallback(
+    base::WeakPtr<WorkerScriptLoader> self,
+    ResponseHeadUpdateParams) {
+  if (!self) {
+    return nullptr;
+  }
+  return self->default_loader_factory_.get();
 }
 
 void WorkerScriptLoader::MaybeStartLoader(

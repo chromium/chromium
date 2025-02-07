@@ -831,26 +831,26 @@ void NavigationURLLoaderImpl::StartNonInterceptedRequest(
   CreateThrottlingLoaderAndStart(std::move(factory),
                                  /*additional_throttles=*/{});
 }
-void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
-    ResponseHeadUpdateParams head_update_params) {
-  head_update_params_ = std::move(head_update_params);
-  scoped_refptr<network::SharedURLLoaderFactory> factory;
-  if (network::IsURLHandledByNetworkService(resource_request_->url)) {
-    factory = network_loader_factory_;
-    default_loader_used_ = true;
-  } else {
-    factory = GetOrCreateNonNetworkLoaderFactory();
-  }
-  uint32_t options =
-      GetURLLoaderOptions(resource_request_->is_outermost_main_frame);
 
-  // As `FallbackToNonInterceptedRequest()` is called only from ServiceWorker
-  // after initially setting `interceptor_result->single_request_factory`,
-  // `url_loader_` should be non-null and pointing to the
-  // service-worker-intercepting loader. Restart it with the non-interceptor
-  // factory.
-  CHECK(url_loader_);
-  url_loader_->RestartWithFactory(std::move(factory), options);
+network::mojom::URLLoaderFactory*
+NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
+    base::WeakPtr<NavigationURLLoaderImpl> self,
+    ResponseHeadUpdateParams head_update_params) {
+  if (!self) {
+    return nullptr;
+  }
+
+  self->head_update_params_ = std::move(head_update_params);
+  if (network::IsURLHandledByNetworkService(self->resource_request_->url)) {
+    // `NavigationURLLoaderImpl::default_loader_used_` is NOT set to true here,
+    // because the underlying URLLoaderFactory of
+    // `NavigationURLLoaderImpl::url_loader_` is still ServiceWorker-provided
+    // one (that finally delegates to `network_loader_factory_` though) and thus
+    // isn't e.g. unsafe to reuse after redirects.
+    return self->network_loader_factory_.get();
+  } else {
+    return self->GetOrCreateNonNetworkLoaderFactory().get();
+  }
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
