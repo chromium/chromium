@@ -102,8 +102,8 @@ void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
   // session creation better.
   client->SetActiveSession(nullptr);
   LobsterClient* lobster_client_ptr = client.get();
-  active_session_ =
-      std::make_unique<LobsterSessionImpl>(std::move(client), entry_point);
+  active_session_ = std::make_unique<LobsterSessionImpl>(std::move(client),
+                                                         entry_point, mode);
   lobster_client_ptr->SetActiveSession(active_session_.get());
 
   LobsterStatus lobster_status = lobster_client_ptr->GetSystemState().status;
@@ -117,7 +117,7 @@ void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
 
   switch (lobster_status) {
     case LobsterStatus::kConsentNeeded:
-      active_session_->ShowDisclaimerUIAndCacheQuery(query);
+      active_session_->ShowDisclaimerUIAndCacheContext(query, caret_bounds);
       return;
     case LobsterStatus::kEnabled:
       active_session_->LoadUI(query, mode, caret_bounds);

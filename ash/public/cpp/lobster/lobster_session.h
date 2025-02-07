@@ -45,8 +45,9 @@ class ASH_PUBLIC_EXPORT LobsterSession {
                                LobsterPreviewFeedbackCallback) = 0;
   virtual bool SubmitFeedback(int candidate_id,
                               const std::string& description) = 0;
-  virtual void ShowDisclaimerUIAndCacheQuery(
-      std::optional<std::string> query) = 0;
+  virtual void ShowDisclaimerUIAndCacheContext(
+      std::optional<std::string> query,
+      const gfx::Rect& caret_bounds) = 0;
   virtual void LoadUI(std::optional<std::string> query,
                       LobsterMode mode,
                       const gfx::Rect& caret_bounds) = 0;
