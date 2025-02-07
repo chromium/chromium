@@ -85,7 +85,6 @@ MirroringGpuFactoriesFactory::GetInstance() {
       cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kMain),
       cast_environment_->GetTaskRunner(CastEnvironment::ThreadId::kVideo),
       context_provider_, std::move(codec_factory),
-      gpu_->gpu_memory_buffer_manager(),
       /*enable_video_gpu_memory_buffers=*/true,
       /*enable_media_stream_gpu_memory_buffers=*/false,
       /*enable_video_decode_accelerator=*/false,

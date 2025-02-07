@@ -18,7 +18,6 @@
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
-#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/context_result.h"
@@ -508,8 +507,7 @@ class MojoGpuVideoAcceleratorFactoriesTest : public testing::Test {
     auto gpu_factories = MojoGpuVideoAcceleratorFactories::Create(
         gpu_channel_host_, task_environment_.GetMainThreadTaskRunner(),
         task_environment_.GetMainThreadTaskRunner(), mock_context_provider_,
-        std::move(codec_factory), &gpu_memory_buffer_manager_,
-        true, /* enable_video_gpu_memory_buffers */
+        std::move(codec_factory), true, /* enable_video_gpu_memory_buffers */
         true, /* enable_media_stream_gpu_memory_buffers */
         enable_video_decode_accelerator, enable_video_encode_accelerator);
 
@@ -533,7 +531,6 @@ class MojoGpuVideoAcceleratorFactoriesTest : public testing::Test {
 
   NiceMock<gpu::MockGpuChannel> mock_gpu_channel_;
   NiceMock<MockGLESInterface> mock_context_gl_;
-  gpu::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   scoped_refptr<TestGpuChannelHost> gpu_channel_host_;
   scoped_refptr<MockContextProviderCommandBuffer> mock_context_provider_;
   std::unique_ptr<gpu::CommandBufferProxyImpl> gpu_command_buffer_proxy_;

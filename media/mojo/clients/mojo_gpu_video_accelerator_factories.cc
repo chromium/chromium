@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/decoder.h"
@@ -54,7 +53,6 @@ MojoGpuVideoAcceleratorFactories::Create(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
     std::unique_ptr<MojoCodecFactory> codec_factory,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     bool enable_video_gpu_memory_buffers,
     bool enable_media_stream_gpu_memory_buffers,
     bool enable_video_decode_accelerator,
@@ -62,9 +60,8 @@ MojoGpuVideoAcceleratorFactories::Create(
   return base::WrapUnique(new MojoGpuVideoAcceleratorFactories(
       std::move(gpu_channel_host), main_thread_task_runner, task_runner,
       std::move(context_provider), std::move(codec_factory),
-      std::move(gpu_memory_buffer_manager), enable_video_gpu_memory_buffers,
-      enable_media_stream_gpu_memory_buffers, enable_video_decode_accelerator,
-      enable_video_encode_accelerator));
+      enable_video_gpu_memory_buffers, enable_media_stream_gpu_memory_buffers,
+      enable_video_decode_accelerator, enable_video_encode_accelerator));
 }
 
 MojoGpuVideoAcceleratorFactories::MojoGpuVideoAcceleratorFactories(
@@ -73,7 +70,6 @@ MojoGpuVideoAcceleratorFactories::MojoGpuVideoAcceleratorFactories(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
     std::unique_ptr<MojoCodecFactory> codec_factory,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     bool enable_video_gpu_memory_buffers,
     bool enable_media_stream_gpu_memory_buffers,
     bool enable_video_decode_accelerator,
@@ -87,8 +83,7 @@ MojoGpuVideoAcceleratorFactories::MojoGpuVideoAcceleratorFactories(
       enable_media_stream_gpu_memory_buffers_(
           enable_media_stream_gpu_memory_buffers),
       video_decode_accelerator_enabled_(enable_video_decode_accelerator),
-      video_encode_accelerator_enabled_(enable_video_encode_accelerator),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager) {
+      video_encode_accelerator_enabled_(enable_video_encode_accelerator) {
   DCHECK(main_thread_task_runner_);
   DCHECK(gpu_channel_host_);
 
@@ -368,11 +363,6 @@ gpu::SharedImageInterface*
 MojoGpuVideoAcceleratorFactories::SharedImageInterface() {
   return CheckContextLost() ? nullptr
                             : context_provider_->SharedImageInterface();
-}
-
-gpu::GpuMemoryBufferManager*
-MojoGpuVideoAcceleratorFactories::GpuMemoryBufferManager() {
-  return gpu_memory_buffer_manager_;
 }
 
 base::UnsafeSharedMemoryRegion
