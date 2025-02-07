@@ -986,8 +986,8 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
       .WillOnce(SaveArg<0>(&last_persistent_message_dot_tab_group));
   tg_notifier_observer_->OnTabRemoved(tab3, tab_groups::TriggerSource::REMOTE);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
-                           collaboration_pb::TAB_REMOVED, DirtyType::kNone,
-                           now.ToTimeT());
+                           collaboration_pb::TAB_REMOVED,
+                           DirtyType::kTombstoned, now.ToTimeT());
   EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
   EXPECT_EQ(tab3.saved_tab_guid().AsLowercaseString(),
             message.tab_data().sync_tab_id());

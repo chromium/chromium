@@ -72,6 +72,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
+import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.PersistentMessageObserver;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
@@ -1341,13 +1342,25 @@ public class TabGridDialogMediator
                 mMessagingBackendService.getMessagesForGroup(
                         eitherGroupId,
                         /* type= */ Optional.of(PersistentNotificationType.DIRTY_TAB));
+
         Map<Integer, Integer> collaborationEventCounts = new HashMap<>();
         for (PersistentMessage message : messages) {
             collaborationEventCounts.merge(message.collaborationEvent, 1, Integer::sum);
         }
         int tabsAdded = collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_ADDED, 0);
         int tabsChanged = collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_UPDATED, 0);
-        int tabsClosed = collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_REMOVED, 0);
+
+        // Query for tombstoned entries from backend and look for the tab removals.
+        List<PersistentMessage> tombstonedMessages =
+                mMessagingBackendService.getMessages(
+                        Optional.of(PersistentNotificationType.TOMBSTONED));
+        int tabsClosed = 0;
+        for (PersistentMessage message : tombstonedMessages) {
+            if (message.collaborationEvent != CollaborationEvent.TAB_REMOVED) continue;
+            if (!currentTabGroupId.equals(MessageUtils.extractTabGroupId(message))) continue;
+            tabsClosed++;
+        }
+
         if (tabsAdded == 0 && tabsChanged == 0 && tabsClosed == 0) {
             removeCollaborationActivityMessageCard();
             return;

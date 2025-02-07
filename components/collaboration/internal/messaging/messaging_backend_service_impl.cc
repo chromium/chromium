@@ -759,17 +759,19 @@ void MessagingBackendServiceImpl::OnTabRemoved(
 
   collaboration_pb::Message message =
       CreateTabMessage(*collaboration_group_id, removed_tab,
-                       collaboration_pb::TAB_REMOVED, DirtyType::kNone);
+                       collaboration_pb::TAB_REMOVED, DirtyType::kTombstoned);
   if (source == tab_groups::TriggerSource::REMOTE) {
     // Create a new message only if the tab was removed from remote.
     store_->AddMessage(message);
   }
 
-  // Tab no longer available, so should not contribute to any dirty tab groups.
+  // Tab is no longer available, so should not contribute to any dirty tab
+  // groups.
   store_->ClearDirtyMessageForTab(*collaboration_group_id,
                                   removed_tab.saved_tab_guid(),
                                   DirtyType::kDotAndChip);
 
+  // Hide any existing persistent dot or chip messages already showing.
   PersistentMessage persistent_message =
       CreatePersistentMessage(message, std::nullopt, removed_tab, std::nullopt);
 
@@ -777,6 +779,7 @@ void MessagingBackendServiceImpl::OnTabRemoved(
                                        {PersistentNotificationType::CHIP,
                                         PersistentNotificationType::DIRTY_TAB});
 
+  // Hide any dirty dot on the tab group.
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            removed_tab.saved_group_guid());
 
