@@ -29,7 +29,9 @@ class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
 
   TestCookieSynchronizer(content::BrowserContext* context,
                          signin::IdentityManager* identity_manager)
-      : GlicCookieSynchronizer(context, identity_manager) {}
+      : GlicCookieSynchronizer(context,
+                               identity_manager,
+                               /*use_for_fre=*/false) {}
 
   void CopyCookiesToWebviewStoragePartition(
       base::OnceCallback<void(bool)> callback) override {

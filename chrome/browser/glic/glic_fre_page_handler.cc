@@ -31,8 +31,7 @@ GlicKeyedService* GlicFrePageHandler::GetGlicService() {
 }
 
 void GlicFrePageHandler::AcceptFre() {
-  GetGlicService()->window_controller().fre_controller()->AcceptFre(
-      Profile::FromBrowserContext(browser_context()));
+  GetGlicService()->window_controller().fre_controller()->AcceptFre();
 }
 
 void GlicFrePageHandler::DismissFre() {
@@ -44,11 +43,6 @@ void GlicFrePageHandler::ValidateAndOpenLinkInNewTab(const GURL& url) {
     GetGlicService()->CreateTab(url, /*open_in_background=*/true, std::nullopt,
                                 base::DoNothing());
   }
-}
-
-void GlicFrePageHandler::SyncWebviewCookies(
-    SyncWebviewCookiesCallback callback) {
-  GetGlicService()->SyncWebviewCookiesForFre(std::move(callback));
 }
 
 }  // namespace glic

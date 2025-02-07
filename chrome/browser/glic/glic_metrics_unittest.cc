@@ -9,6 +9,8 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,8 +21,11 @@ namespace {
 // exposed to GlicMetrics. It doesn't do anything.
 class MockWindowController : public GlicWindowController {
  public:
-  MockWindowController()
-      : GlicWindowController(/*profile=*/nullptr, /*service=*/nullptr) {}
+  MockWindowController(Profile* profile,
+                       signin::IdentityManager* identity_manager)
+      : GlicWindowController(profile,
+                             identity_manager,
+                             /*service=*/nullptr) {}
   ~MockWindowController() override = default;
 
   bool IsShowing() const override { return showing_; }
@@ -32,7 +37,8 @@ class MockWindowController : public GlicWindowController {
 class GlicMetricsTest : public testing::Test {
  public:
   void SetUp() override {
-    controller_ = std::make_unique<MockWindowController>();
+    controller_ = std::make_unique<MockWindowController>(
+        &profile_, identity_env_.identity_manager());
     metrics_ = std::make_unique<GlicMetrics>();
     metrics_->SetWindowController(controller_.get());
   }
@@ -44,6 +50,7 @@ class GlicMetricsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   TestingProfile profile_;
+  signin::IdentityTestEnvironment identity_env_;
 
   std::unique_ptr<MockWindowController> controller_;
   std::unique_ptr<GlicMetrics> metrics_;
