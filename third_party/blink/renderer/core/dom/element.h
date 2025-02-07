@@ -1035,6 +1035,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     kAssertNoLayoutUpdates,
   };
 
+  // Whether the element is clickable. This checks for whether the node is
+  // a clickable control (e.g. form control elements) or has activation
+  // behavior. It also checks for whether the node has a click handler.
+  // Note: this should not be taken as a guarantee that the element is
+  // clickable; this is used as a heuristic to determine whether the element
+  // is likely to be clickable.
+  bool IsMaybeClickable();
+
   // Focusability logic:
   //   IsFocusable: true if the element can be focused via element.focus().
   //   IsMouseFocusable: true if clicking on the element will focus it.

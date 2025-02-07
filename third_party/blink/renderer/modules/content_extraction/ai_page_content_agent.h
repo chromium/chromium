@@ -88,6 +88,9 @@ class MODULES_EXPORT AIPageContentAgent final
     void AddNodeGeometry(
         const LayoutObject& object,
         mojom::blink::AIPageContentAttributes& attributes) const;
+    void AddNodeInteractionInfo(
+        const LayoutObject& object,
+        mojom::blink::AIPageContentAttributes& attributes) const;
 
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
   };

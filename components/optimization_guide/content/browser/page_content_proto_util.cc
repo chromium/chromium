@@ -95,8 +95,6 @@ void ConvertGeometry(const blink::mojom::AIPageContentGeometry& mojom_geometry,
               proto_geometry->mutable_visible_bounding_box());
   proto_geometry->set_is_fixed_or_sticky_position(
       mojom_geometry.is_fixed_or_sticky_position);
-  proto_geometry->set_scrolls_overflow_x(mojom_geometry.scrolls_overflow_x);
-  proto_geometry->set_scrolls_overflow_y(mojom_geometry.scrolls_overflow_y);
 }
 
 optimization_guide::proto::TextSize ConvertTextSize(
