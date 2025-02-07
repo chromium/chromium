@@ -50,7 +50,7 @@ PersistentMessage CollaborationUpdateMessage() {
 
 // Creates a PersistentMessage about a removed tab group.
 PersistentMessage TabGroupRemovedMessage(std::string last_known_title) {
-  return CreateMessage(PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED,
+  return CreateMessage(PersistentNotificationType::TOMBSTONED,
                        CollaborationEvent::TAB_GROUP_REMOVED, last_known_title);
 }
 

@@ -863,8 +863,7 @@ public class TabGroupListMediatorUnitTest {
         assertEquals(3, mModelList.size());
         verify(mMessagingBackendService)
                 .clearPersistentMessage(
-                        MESSAGE_ID2,
-                        Optional.of(PersistentNotificationType.DIRTY_TAB_GROUP_REMOVED));
+                        MESSAGE_ID2, Optional.of(PersistentNotificationType.TOMBSTONED));
 
         PropertyModel model1 = mModelList.get(0).model;
         assertEquals("Shopping tab group no longer available", model1.get(DESCRIPTION_TEXT));
@@ -904,7 +903,7 @@ public class TabGroupListMediatorUnitTest {
 
     private PersistentMessage makeTabGroupRemovedMessage(String messageId, String groupName) {
         PersistentMessage message = new PersistentMessage();
-        message.type = PersistentNotificationType.DIRTY_TAB_GROUP_REMOVED;
+        message.type = PersistentNotificationType.TOMBSTONED;
         message.collaborationEvent = CollaborationEvent.TAB_GROUP_REMOVED;
         message.attribution = new MessageAttribution();
         message.attribution.id = messageId;

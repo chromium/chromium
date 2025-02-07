@@ -283,8 +283,8 @@ DirtyType GetDirtyTypeFromPersistentNotificationTypeForQuery(
     return DirtyType::kDot;
   } else if (*type == PersistentNotificationType::CHIP) {
     return DirtyType::kChip;
-  } else if (*type == PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED) {
-    return DirtyType::kTabGroupRemoved;
+  } else if (*type == PersistentNotificationType::TOMBSTONED) {
+    return DirtyType::kTombstoned;
   } else {
     // Ask for all dirty messages.
     return DirtyType::kAll;
@@ -657,17 +657,16 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
   collaboration_pb::Message message =
       CreateTabGroupMessage(*collaboration_group_id, removed_group,
                             collaboration_pb::TAB_GROUP_REMOVED,
-                            DirtyType::kTabGroupRemovedAndInstantMessage);
+                            DirtyType::kTombstonedAndInstantMessage);
   store_->AddMessage(message);
 
-  PersistentMessage persistent_message = CreatePersistentMessage(
-      message, removed_group, std::nullopt,
-      PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED);
+  PersistentMessage persistent_message =
+      CreatePersistentMessage(message, removed_group, std::nullopt,
+                              PersistentNotificationType::TOMBSTONED);
   persistent_message.collaboration_event =
       CollaborationEvent::TAB_GROUP_REMOVED;
   NotifyDisplayPersistentMessagesForTypes(
-      persistent_message,
-      {PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED});
+      persistent_message, {PersistentNotificationType::TOMBSTONED});
 
   if (instant_message_delegate_) {
     InstantMessage instant_message =
@@ -1399,16 +1398,15 @@ MessagingBackendServiceImpl::ConvertMessageToPersistentMessages(
   std::optional<tab_groups::SavedTabGroup> tab_group =
       GetTabGroupFromMessage(message);
 
-  // Special case: First handle if it's of type DIRTY_TAB_GROUP_REMOVED.
-  bool has_tab_group_removed =
-      message.dirty() & static_cast<int>(DirtyType::kTabGroupRemoved);
-  bool looking_for_tab_group_removed =
-      lookup_dirty_type == DirtyType::kAll ||
-      lookup_dirty_type == DirtyType::kTabGroupRemoved;
-  if (has_tab_group_removed && looking_for_tab_group_removed) {
-    persistent_messages.push_back(CreatePersistentMessage(
-        message, tab_group, std::nullopt,
-        PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED));
+  // Special case: First handle if it's of type TOMBSTONED.
+  bool has_tombstoned =
+      message.dirty() & static_cast<int>(DirtyType::kTombstoned);
+  bool looking_for_tombstoned = lookup_dirty_type == DirtyType::kAll ||
+                                lookup_dirty_type == DirtyType::kTombstoned;
+  if (has_tombstoned && looking_for_tombstoned) {
+    persistent_messages.push_back(
+        CreatePersistentMessage(message, tab_group, std::nullopt,
+                                PersistentNotificationType::TOMBSTONED));
     return persistent_messages;
   }
 

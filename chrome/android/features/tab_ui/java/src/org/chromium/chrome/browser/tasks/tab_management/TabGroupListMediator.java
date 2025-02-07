@@ -303,7 +303,7 @@ public class TabGroupListMediator {
     private List<PropertyModel> getTabGroupRemovedMessageModelList() {
         List<PersistentMessage> messages =
                 mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.DIRTY_TAB_GROUP_REMOVED));
+                        Optional.of(PersistentNotificationType.TOMBSTONED));
 
         List<PropertyModel> tabGroupRemovedMessages = new ArrayList<>();
         for (PersistentMessage message : messages) {
@@ -399,7 +399,7 @@ public class TabGroupListMediator {
     private void dismissActionProvider(String messageId) {
         removeMessageCardItemFromModelList(messageId);
         mMessagingBackendService.clearPersistentMessage(
-                messageId, Optional.of(PersistentNotificationType.DIRTY_TAB_GROUP_REMOVED));
+                messageId, Optional.of(PersistentNotificationType.TOMBSTONED));
     }
 
     // TODO(crbug.com/394312504): Make the method general and move to ModelList Util.
