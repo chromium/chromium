@@ -88,6 +88,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/navigation_handle_observer.h"
@@ -127,6 +128,7 @@ namespace content {
 namespace {
 using MainResourceLoadCompletedUkmEntry =
     ukm::builders::ServiceWorker_MainResourceLoadCompleted;
+using net::test_server::EmbeddedTestServer;
 
 // V8ScriptRunner::setCacheTimeStamp() stores 16 byte data (marker + tag +
 // timestamp).
@@ -7491,7 +7493,8 @@ class ServiceWorkerSyntheticResponseBrowserTest
     : public ServiceWorkerBrowserTest {
  public:
   static constexpr char kHostname[] = "synthetic-response.test";
-  static constexpr char kTargetPath[] = "/service_worker/empty.html?query=";
+  static constexpr char kTargetPath[] =
+      "/service_worker/synthetic_response?query=";
 
   ServiceWorkerSyntheticResponseBrowserTest()
       : allowed_url_(GURL(base::StrCat({"https://", kHostname, kTargetPath}))) {
@@ -7505,10 +7508,13 @@ class ServiceWorkerSyntheticResponseBrowserTest
   ~ServiceWorkerSyntheticResponseBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+    RegisterRequestHandlerForSlowResponsePage(embedded_test_server());
     https_server_->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    RegisterRequestHandlerForSlowResponsePage(https_server());
     ASSERT_TRUE(https_server_->InitializeAndListen());
     https_server_->StartAcceptingConnections();
     ServiceWorkerBrowserTest::SetUpOnMainThread();
@@ -7518,15 +7524,70 @@ class ServiceWorkerSyntheticResponseBrowserTest
     return web_contents()->GetPrimaryMainFrame();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ServiceWorkerBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ServiceWorkerBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ServiceWorkerBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+    ASSERT_TRUE(https_server_->ShutdownAndWaitUntilComplete());
+  }
+
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
   WebContents* web_contents() const { return shell()->web_contents(); }
 
   const GURL& allowed_url() const { return allowed_url_; }
 
+  EvalJsResult GetInnerText() {
+    return EvalJs(GetPrimaryMainFrame(), "document.body.innerText;");
+  }
+
  private:
+  void RegisterRequestHandlerForSlowResponsePage(
+      net::EmbeddedTestServer* test_server) {
+    test_server->RegisterRequestHandler(base::BindRepeating(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (!base::Contains(request.GetURL().path(),
+                              "/service_worker/synthetic_response")) {
+            return nullptr;
+          }
+
+          const bool is_slow =
+              base::Contains(request.GetURL().query(), "server_slow");
+          auto http_response =
+              is_slow ? std::make_unique<net::test_server::DelayedHttpResponse>(
+                            base::Seconds(2))
+                      : std::make_unique<net::test_server::BasicHttpResponse>();
+
+          if (base::Contains(request.GetURL().query(), "echo=foo")) {
+            http_response->set_content("[SyntheticResponse] foo");
+          } else if (base::Contains(request.GetURL().query(), "echo=bar")) {
+            http_response->set_content("[SyntheticResponse] bar");
+          } else {
+            http_response->set_content(is_slow
+                                           ? "[SyntheticResponse] "
+                                             "Slow response from the network"
+                                           : "[SyntheticResponse] "
+                                             "Response from the network");
+          }
+
+          http_response->set_code(net::HTTP_OK);
+          return http_response;
+        }));
+  }
+
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
   GURL allowed_url_;
+  ContentMockCertVerifier mock_cert_verifier_;
 };
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
@@ -7538,27 +7599,69 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
 
   // Ensure `client_url` has a fake service worker registration if the
   // URL is in the allowed URLs.
-  EXPECT_EQ(FindRegistration(GURL(client_url.spec() + "/empty.html?query=")),
-            blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_EQ(FindRegistration(GURL(client_url.spec() + "/empty.html?query=foo")),
+  EXPECT_EQ(
+      FindRegistration(GURL(client_url.spec() + "/synthetic_response?query=")),
+      blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(FindRegistration(
+                GURL(client_url.spec() + "/synthetic_response?query=foo")),
             blink::ServiceWorkerStatusCode::kOk);
 
   // The registration is not found if the query param is added to the allowlist,
   // and not in the client url.
-  EXPECT_EQ(FindRegistration(GURL(client_url.spec() + "/empty.html")),
+  EXPECT_EQ(FindRegistration(GURL(client_url.spec() + "/synthetic_response")),
             blink::ServiceWorkerStatusCode::kErrorNotFound);
   // The registration is not found if the query param is wrong.
-  EXPECT_EQ(FindRegistration(GURL(client_url.spec() + "/empty.html?foo=")),
-            blink::ServiceWorkerStatusCode::kErrorNotFound);
-  // The registration is not found if the pathname is wrong.
-  EXPECT_EQ(FindRegistration(GURL(client_url.spec() + "/empty2.html")),
-            blink::ServiceWorkerStatusCode::kErrorNotFound);
   EXPECT_EQ(
-      FindRegistration(GURL(client_url.spec() + "/empty2.html?query=foo")),
+      FindRegistration(GURL(client_url.spec() + "/synthetic_response?foo=")),
       blink::ServiceWorkerStatusCode::kErrorNotFound);
+  // The registration is not found if the pathname is wrong.
+  EXPECT_EQ(FindRegistration(GURL(client_url.spec() + "/empty.html")),
+            blink::ServiceWorkerStatusCode::kErrorNotFound);
+  EXPECT_EQ(FindRegistration(GURL(client_url.spec() + "/empty.html?query=foo")),
+            blink::ServiceWorkerStatusCode::kErrorNotFound);
   // The registration is not found if the origin is different.
   EXPECT_EQ(FindRegistration(embedded_test_server()->GetURL(
-                base::StrCat({"/service_worker/empty.html?foo="}))),
+                base::StrCat({"/service_worker/synthetic_response?foo="}))),
             blink::ServiceWorkerStatusCode::kErrorNotFound);
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
+                       MatchedPageIsServiceWorkerControlled) {
+  // Navigated URL matched with the URL in the allowlist is controlled by
+  // ServiceWorker.
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL(kHostname, base::StrCat({kTargetPath, "foo"}))));
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "!!navigator.serviceWorker.controller"));
+  EXPECT_EQ("[SyntheticResponse] Response from the network", GetInnerText());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerSyntheticResponseBrowserTest,
+                       ResponseHeaderIsStored) {
+  // Navigate and store the response header.
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL(
+          kHostname, base::StrCat({kTargetPath, "foo&echo=foo&server_slow"}))));
+  EXPECT_EQ("[SyntheticResponse] foo", GetInnerText());
+  // Without SyntheticResponse, `responseStart` is 2000ms due to the server
+  // delay.
+  EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                     "Math.ceil(performance.getEntriesByType('navigation')[0]."
+                     "responseStart) >= 2000"));
+
+  // The second navigation. The browser should have stored the response header
+  // from the previous navigation, and receive the response header locally.
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL(
+          kHostname, base::StrCat({kTargetPath, "foo&echo=bar&server_slow"}))));
+  EXPECT_EQ("[SyntheticResponse] bar", GetInnerText());
+  // Without SyntheticResponse, `responseStart` doesn't wait for the actual
+  // server response.
+  EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                     "Math.ceil(performance.getEntriesByType('navigation')[0]."
+                     "responseStart) < 2000"));
 }
 }  // namespace content

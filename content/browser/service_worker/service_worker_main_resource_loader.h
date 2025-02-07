@@ -15,6 +15,7 @@
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/service_worker/service_worker_cache_storage_matcher.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
+#include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
 #include "content/common/content_export.h"
 #include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
@@ -259,6 +260,28 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   bool MaybeStartNavigationPreload(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper);
 
+  // If the request URL is eligible, and it's an outermost main frame,
+  // SyntheticResponse is triggered.
+  //
+  // This initiates a network request, and stores its response header to
+  // `ServiceWorkerVersion` so that it can be used for the next navigation with
+  // SyntheticResponse. The stored header is always refreshed with the new one.
+  //
+  // If the header already exists at the time of navigation, this method
+  // immediately return the response with the stored header and empty body. The
+  // remaining body is appended after receiving the actual response from the
+  // network.
+  bool MaybeStartSyntheticNetworkRequest(
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  void OnReceiveResponseFromSyntheticNetworkRequest(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body);
+
+  void OnCompleteSyntheticNetworkRequest(
+      const network::URLLoaderCompletionStatus& status);
+
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
   int32_t request_id_ = 0;
@@ -304,6 +327,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   std::optional<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
       forwarded_race_network_request_url_loader_factory_;
 
+  std::optional<ServiceWorkerSyntheticResponseManager>
+      synthetic_response_manager_;
+
   base::TimeTicks find_registration_start_time_;
 
   // FetchEvent.clientId
@@ -311,6 +337,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   const std::string fetch_event_client_id_;
 
   bool has_fetch_event_finished_ = false;
+
+  bool is_synthetic_response_used_ = false;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceLoader> weak_factory_{this};
 };

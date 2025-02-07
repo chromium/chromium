@@ -29,6 +29,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
+#include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/features.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
@@ -52,6 +53,9 @@
 namespace content {
 
 namespace {
+
+using SyntheticResponseStatus =
+    ServiceWorkerSyntheticResponseManager::SyntheticResponseStatus;
 
 const char kHistogramLoadTiming[] =
     "ServiceWorker.LoadTiming.MainFrame.MainResource";
@@ -244,6 +248,10 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   }
   scoped_refptr<ServiceWorkerContextWrapper> context = core->wrapper();
   DCHECK(context);
+
+  if (MaybeStartSyntheticNetworkRequest(context, active_worker)) {
+    return;
+  }
 
   RaceNetworkRequestMode race_network_request_mode =
       RaceNetworkRequestMode::kDefault;
@@ -678,7 +686,10 @@ void ServiceWorkerMainResourceLoader::CommitCompleted(int error_code,
         RecordTimingMetricsForFetchHandlerHandledCase();
         break;
       case FetchResponseFrom::kWithoutServiceWorker:
-        RecordTimingMetricsForRaceNetworkRequestCase();
+        if (dispatched_preload_type() ==
+            DispatchedPreloadType::kRaceNetworkRequest) {
+          RecordTimingMetricsForRaceNetworkRequestCase();
+        }
         break;
     }
   }
@@ -889,7 +900,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
   // with `fetch-event` or `race`. This is used for
   // PerformanceResourceTiming#fetchStart and
   // PerformanceResourceTiming#requestStart.
-  if (ShouldRecordServiceWorkerFetchStart()) {
+  if (ShouldRecordServiceWorkerFetchStart() || is_synthetic_response_used_) {
     response_head_->load_timing.service_worker_ready_time =
         fetch_event_timing_->dispatch_event_time;
     // Exposed as PerformanceResourceTiming#requestStart.
@@ -974,6 +985,81 @@ void ServiceWorkerMainResourceLoader::Fallback(
 
   // The fallback factory isn't available. The pending remote/receiver are
   // destroyed here and the loading is terminated.
+}
+
+bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
+    scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+    scoped_refptr<ServiceWorkerVersion> version) {
+  is_synthetic_response_used_ =
+      service_worker_loader_helpers::IsEligibleForSyntheticResponse(
+          resource_request_.url) &&
+      resource_request_.is_outermost_main_frame;
+  if (!is_synthetic_response_used_) {
+    return false;
+  }
+
+  synthetic_response_manager_.emplace(
+      ServiceWorkerFetchDispatcher::CreateNetworkURLLoaderFactory(
+          context_wrapper, frame_tree_node_id_),
+      version);
+
+  // Initiate the network request. If the request URL is eligible for the
+  // SyntheticResponse feature, the request is always expected to be called.
+  //
+  // Here is how the response is used:
+  // - In the initial navigation, there is no local response header to be
+  //   returned early to the client. The response of this request will be used
+  //   to store the header clone and pass through to the client.
+  // - The response header is kept on memory by ServiceWorkerVersion. Subsequent
+  //   navigations use it as a initial response locally and pass it to the
+  //   client with an empty body.
+  // - In subsequent navigations, append the response body to the response.
+  synthetic_response_manager_->StartRequest(
+      GlobalRequestID::MakeBrowserInitiated().request_id,
+      NavigationURLLoader::GetURLLoaderOptions(
+          resource_request_.is_outermost_main_frame),
+      resource_request_,
+      base::BindRepeating(&ServiceWorkerMainResourceLoader::
+                              OnReceiveResponseFromSyntheticNetworkRequest,
+                          weak_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &ServiceWorkerMainResourceLoader::OnCompleteSyntheticNetworkRequest,
+          weak_factory_.GetWeakPtr()));
+
+  switch (synthetic_response_manager_->Status()) {
+    case SyntheticResponseStatus::kNotReady:
+      // When it's not ready, the header is not stored yet. That means we don't
+      // create a synthetic response locally, and wait for the response from the
+      // network.
+      break;
+    case SyntheticResponseStatus::kReady:
+      synthetic_response_manager_->StartSyntheticResponse(base::BindOnce(
+          &ServiceWorkerMainResourceLoader::DidDispatchFetchEvent,
+          weak_factory_.GetWeakPtr()));
+      break;
+  }
+
+  return true;
+}
+
+void ServiceWorkerMainResourceLoader::
+    OnReceiveResponseFromSyntheticNetworkRequest(
+        network::mojom::URLResponseHeadPtr response_head,
+        mojo::ScopedDataPipeConsumerHandle body) {
+  CHECK(synthetic_response_manager_);
+  // When `kNotReady`, the response is not returned with the local response
+  // yet. Return the response from the network to the client here.
+  CHECK_EQ(synthetic_response_manager_->Status(),
+           SyntheticResponseStatus::kNotReady);
+  SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
+  CommitResponseHeaders(response_head);
+  CommitResponseBody(response_head, std::move(body), std::nullopt);
+}
+
+void ServiceWorkerMainResourceLoader::OnCompleteSyntheticNetworkRequest(
+    const network::URLLoaderCompletionStatus& status) {
+  CHECK(synthetic_response_manager_);
+  CommitCompleted(status.error_code, "Synthetic response");
 }
 
 void ServiceWorkerMainResourceLoader::StartResponse(

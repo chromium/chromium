@@ -2133,6 +2133,8 @@ source_set("browser") {
     "service_worker/service_worker_security_utils.h",
     "service_worker/service_worker_single_script_update_checker.cc",
     "service_worker/service_worker_single_script_update_checker.h",
+    "service_worker/service_worker_synthetic_response_manager.cc",
+    "service_worker/service_worker_synthetic_response_manager.h",
     "service_worker/service_worker_type_converters.cc",
     "service_worker/service_worker_type_converters.h",
     "service_worker/service_worker_unregister_job.cc",
