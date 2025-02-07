@@ -1935,11 +1935,9 @@ static CSSToLengthConversionData LineHeightToLengthConversionData(
   }
 
   if (!state.StyleBuilder().GetTextSizeAdjust().IsAuto()) {
-    if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
-      Settings* settings = state.GetDocument().GetSettings();
-      if (settings && settings->GetTextAutosizingEnabled()) {
-        multiplier *= state.StyleBuilder().GetTextSizeAdjust().Multiplier();
-      }
+    Settings* settings = state.GetDocument().GetSettings();
+    if (settings && settings->GetTextAutosizingEnabled()) {
+      multiplier *= state.StyleBuilder().GetTextSizeAdjust().Multiplier();
     }
   }
   return state.CssToLengthConversionData().CopyWithAdjustedZoom(multiplier);

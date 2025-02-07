@@ -5996,26 +5996,11 @@ crbug.com/1281792 external/wpt/event-timing/min-duration-threshold.html [ Failur
 crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Failure Pass ]
 
 # These virtual suites enable text autosizing and should pass.
-crbug.com/340389272 virtual/new-text-size-adjust/wpt_internal/css/css-size-adjust/* [ Pass ]
-crbug.com/340389272 virtual/new-text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/* [ Pass ]
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/* [ Pass ]
-crbug.com/340389272 virtual/old-text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/* [ Pass ]
-
-# These tests fail without the new text-size-adjust implementation.
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-with-narrow-page.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-with-narrow-page.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/text-size-adjust-none.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-large.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-large.html [ Failure ]
+crbug.com/340389272 virtual/text-size-adjust/wpt_internal/css/css-size-adjust/* [ Pass ]
+crbug.com/340389272 virtual/text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/* [ Pass ]
 
 # Blocked on https://github.com/w3c/csswg-drafts/issues/4456 resolution.
 crbug.com/373478544 wpt_internal/css/css-overflow/column-scroll-marker-009.html [ Failure ]
-
-# These tests fail because the old text size adjust wasn't applied if the page didn't run the autosizer.
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-nested-change.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-nested.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/webkit-text-size-adjust-affects-font-size.html [ Failure ]
 
 # Sheriff 2022-01-04
 crbug.com/1283865 external/wpt/webmessaging/without-ports/020.html [ Failure Pass ]

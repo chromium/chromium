@@ -1960,52 +1960,26 @@
     "expires": "Feb 1, 2025"
   },
   {
-    "prefix": "new-text-size-adjust",
+    "prefix": "text-size-adjust",
     "owners": ["pdr@chromium.org"],
     "platforms": ["Linux", "Mac"],
     "bases": ["wpt_internal/css/css-size-adjust",
               "external/wpt/css/css-size-adjust"],
     "args": ["--enable-threaded-compositing",
-             "--enable-blink-features=TextSizeAdjustImprovements",
              "--enable-viewport",
              "--blink-settings=textAutosizingEnabled=true,viewportMetaEnabled=true"],
-    "expires": "Jan 1, 2026"
+    "expires": "never"
   },
   {
-    "prefix": "new-text-size-adjust-with-os-font-scale",
+    "prefix": "text-size-adjust-with-os-font-scale",
     "owners": ["pdr@chromium.org"],
     "platforms": ["Linux", "Mac"],
     "bases": ["wpt_internal/css/css-size-adjust",
               "external/wpt/css/css-size-adjust"],
     "args": ["--enable-threaded-compositing",
-             "--enable-blink-features=TextSizeAdjustImprovements",
              "--enable-viewport",
              "--blink-settings=textAutosizingEnabled=true,accessibilityFontScaleFactor=2,deviceScaleAdjustment=3,viewportMetaEnabled=true"],
-    "expires": "Jan 1, 2026"
-  },
-  {
-    "prefix": "old-text-size-adjust",
-    "owners": ["pdr@chromium.org"],
-    "platforms": ["Linux", "Mac"],
-    "bases": ["wpt_internal/css/css-size-adjust",
-              "external/wpt/css/css-size-adjust"],
-    "args": ["--enable-threaded-compositing",
-             "--disable-blink-features=TextSizeAdjustImprovements",
-             "--enable-viewport",
-             "--blink-settings=textAutosizingEnabled=true,viewportMetaEnabled=true"],
-    "expires": "Jan 1, 2026"
-  },
-  {
-    "prefix": "old-text-size-adjust-with-os-font-scale",
-    "owners": ["pdr@chromium.org"],
-    "platforms": ["Linux", "Mac"],
-    "bases": ["wpt_internal/css/css-size-adjust",
-              "external/wpt/css/css-size-adjust"],
-    "args": ["--enable-threaded-compositing",
-             "--disable-blink-features=TextSizeAdjustImprovements",
-             "--enable-viewport",
-             "--blink-settings=textAutosizingEnabled=true,accessibilityFontScaleFactor=2,deviceScaleAdjustment=3,viewportMetaEnabled=true"],
-    "expires": "Jan 1, 2026"
+    "expires": "never"
   },
   {
     "prefix": "produce-compile-hints",

@@ -22,10 +22,8 @@ virtual/task-tracking/wpt_internal/*
 virtual/fenced-frame-mparch-internal/wpt_internal/*
 virtual/prefetch-no-vary-search/wpt_internal/*
 virtual/js-shared-memory/wpt_internal/*
-virtual/new-text-size-adjust/wpt_internal/*
-virtual/new-text-size-adjust-with-os-font-scale/wpt_internal/*
-virtual/old-text-size-adjust/wpt_internal/*
-virtual/old-text-size-adjust-with-os-font-scale/wpt_internal/*
+virtual/text-size-adjust/wpt_internal/*
+virtual/text-size-adjust-with-os-font-scale/wpt_internal/*
 virtual/generic-sensor-extra-classes/wpt_internal/*
 virtual/unload-allowed/wpt_internal/*
 virtual/single-import-map/wpt_internal/*
