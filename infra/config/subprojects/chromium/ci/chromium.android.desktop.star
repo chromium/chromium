@@ -21,7 +21,6 @@ ci.defaults.set(
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
-    priority = ci.DEFAULT_FYI_PRIORITY,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
@@ -251,7 +250,9 @@ ci.thin_tester(
         targets = [
             "android_desktop_junit_tests",
             targets.bundle(
-                targets = "android_desktop_tests",
+                targets = [
+                    "android_desktop_tests",
+                ],
                 mixins = [
                     "14-desktop-x64-emulator",
                     "emulator-8-cores",
@@ -327,10 +328,10 @@ ci.thin_tester(
                     shards = 10,
                 ),
             ),
-            "chrome_public_test_apk": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.chrome_public_test_apk.filter",
-                ],
+            "chrome_junit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
             ),
             "chrome_public_unit_test_apk": targets.mixin(
                 args = [
@@ -348,7 +349,6 @@ ci.thin_tester(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
-    builderless = True,
     cores = 8,
     console_view_entry = consoles.console_view_entry(
         category = "tester|x64",

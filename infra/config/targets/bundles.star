@@ -341,6 +341,27 @@ targets.bundle(
     ],
 )
 
+# Android desktop FYI tests that run on AVDs or devices. Specific emulator or
+# device mixins should be added where this is used.
+targets.bundle(
+    name = "android_desktop_fyi_tests",
+    targets = [
+        "chrome_public_test_apk",
+    ],
+    mixins = [
+        "has_native_resultdb_integration",
+        "linux-jammy",
+        "x86-64",
+    ],
+    per_test_modifications = {
+        "chrome_public_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 15,
+            ),
+        ),
+    },
+)
+
 # Android desktop tests that run on a Linux host.
 targets.bundle(
     name = "android_desktop_junit_tests",
@@ -361,7 +382,6 @@ targets.bundle(
     name = "android_desktop_tests",
     targets = [
         "android_browsertests",
-        "chrome_public_test_apk",
         "chrome_public_unit_test_apk",
         "extensions_unittests",
         "unit_tests",
@@ -372,12 +392,6 @@ targets.bundle(
         "x86-64",
     ],
     per_test_modifications = {
-        "chrome_public_test_apk": targets.mixin(
-            swarming = targets.swarming(
-                shards = 15,
-            ),
-            experiment_percentage = 100,
-        ),
         "chrome_public_unit_test_apk": targets.mixin(
             swarming = targets.swarming(
                 shards = 2,
