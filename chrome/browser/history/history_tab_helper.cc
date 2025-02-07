@@ -375,9 +375,21 @@ void HistoryTabHelper::DidFinishNavigation(
     return;
   }
 
+  // Before some error navigations are filtered out with ShouldUpdateHistory(),
+  // we need to estimate the proportion of navigatons with [4XX - 5XX] HTTP
+  // status codes.
+  int http_response_code = 0;
+  if (navigation_handle->GetResponseHeaders()) {
+    http_response_code =
+        navigation_handle->GetResponseHeaders()->response_code();
+  }
+  UMA_HISTOGRAM_BOOLEAN(
+      "History.Is4XXOr5XXStatusCode",
+      (http_response_code >= 400) && (http_response_code < 600));
+
   // Update history. Note that this needs to happen after the entry is complete,
   // which WillNavigate[Main,Sub]Frame will do before this function is called.
-  UMA_HISTOGRAM_BOOLEAN("History.IsErrorNavigation",
+  UMA_HISTOGRAM_BOOLEAN("History.ShouldUpdateHistory",
                         navigation_handle->ShouldUpdateHistory());
   if (!navigation_handle->ShouldUpdateHistory())
     return;
