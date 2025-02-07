@@ -150,12 +150,6 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
                     acceptThisTimeDelegate();
                 }
             }
-            case EmbeddedPromptVariant.ADMINISTRATOR_GRANTED -> {
-                acknowledgeDelegate();
-            }
-            case EmbeddedPromptVariant.ADMINISTRATOR_DENIED -> {
-                acknowledgeDelegate();
-            }
             case EmbeddedPromptVariant.OS_SYSTEM_SETTINGS -> {
                 Intent intent =
                         (mDialogDelegate.getContentSettingsTypes()[0]
@@ -200,6 +194,12 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
             }
             case EmbeddedPromptVariant.PREVIOUSLY_DENIED -> {
                 acceptThisTimeDelegate();
+            }
+            case EmbeddedPromptVariant.ADMINISTRATOR_GRANTED -> {
+                acknowledgeDelegate();
+            }
+            case EmbeddedPromptVariant.ADMINISTRATOR_DENIED -> {
+                acknowledgeDelegate();
             }
 
             default -> {
