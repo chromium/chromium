@@ -9,6 +9,7 @@
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
+#include "components/passage_embeddings/embedder.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
@@ -47,6 +48,9 @@ class PassageEmbeddingsServiceController {
   // Returns the metadata about the embeddings model. This is only valid when
   // EmbedderReady() returns true.
   EmbedderMetadata GetEmbedderMetadata();
+
+  // Returns an embedder that can be used to generate passage embeddings.
+  std::unique_ptr<Embedder> MakeEmbedder();
 
  protected:
   // Launches the passage embeddings service and binds `cpu_logger_` to the

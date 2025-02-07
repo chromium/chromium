@@ -31,16 +31,17 @@ class MockEmbedderWithDelay : public MockEmbedder {
   ~MockEmbedderWithDelay() override = default;
 
   // Embedder:
-  void ComputePassagesEmbeddings(
+  TaskId ComputePassagesEmbeddings(
       passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::move(passages),
-                       ComputeEmbeddingsForPassages(passages),
+                       ComputeEmbeddingsForPassages(passages), kInvalidTaskId,
                        passage_embeddings::ComputeEmbeddingsStatus::kSuccess),
         kTimeout);
+    return kInvalidTaskId;
   }
 };
 

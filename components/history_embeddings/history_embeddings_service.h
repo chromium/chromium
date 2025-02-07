@@ -33,8 +33,8 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/passage_embeddings/embedder.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
-#include "components/passage_embeddings/scheduling_embedder.h"
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
@@ -334,7 +334,7 @@ class HistoryEmbeddingsService : public KeyedService,
       UrlData url_passages,
       std::vector<std::string> passages,
       std::vector<passage_embeddings::Embedding> embeddings,
-      passage_embeddings::SchedulingEmbedder::TaskId task_id,
+      passage_embeddings::Embedder::TaskId task_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Invoked after the embedding for the original search query has been
@@ -344,7 +344,7 @@ class HistoryEmbeddingsService : public KeyedService,
       SearchResult result,
       std::vector<std::string> query_passages,
       std::vector<passage_embeddings::Embedding> query_embedding,
-      passage_embeddings::SchedulingEmbedder::TaskId task_id,
+      passage_embeddings::Embedder::TaskId task_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Finishes a search result by combining found data with additional data from
@@ -424,7 +424,7 @@ class HistoryEmbeddingsService : public KeyedService,
       history_service_observation_{this};
 
   // The embedder used to compute embeddings.
-  std::unique_ptr<passage_embeddings::SchedulingEmbedder> embedder_;
+  std::unique_ptr<passage_embeddings::Embedder> embedder_;
 
   // The answerer used to answer queries with context. May be nullptr if
   // the kHistoryEmbeddingsAnswers feature is disabled.
@@ -454,8 +454,8 @@ class HistoryEmbeddingsService : public KeyedService,
   std::atomic<size_t> query_id_ = 0u;
 
   // Used to cancel the in-flight embedding task for the previous stale query.
-  passage_embeddings::SchedulingEmbedder::TaskId query_embedding_task_id_ =
-      passage_embeddings::SchedulingEmbedder::kInvalidTaskId;
+  passage_embeddings::Embedder::TaskId query_embedding_task_id_ =
+      passage_embeddings::Embedder::kInvalidTaskId;
 
   base::CallbackListSubscription subscription_;
 

@@ -34,22 +34,17 @@ namespace passage_embeddings {
 // changes, all existing passages need their embeddings recomputed, which can
 // take a very long time and should be done at lower priority.
 class SchedulingEmbedder
+    : public Embedder
 #if BUILDFLAG(USE_BLINK)
-    : public blink::performance_scenarios::PerformanceScenarioObserver
+    ,
+      public blink::performance_scenarios::PerformanceScenarioObserver
 #endif
 {
  public:
-  using TaskId = uint64_t;
-  static constexpr TaskId kInvalidTaskId = 0;
-
   SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
                      size_t scheduled_max,
                      bool use_performance_scenario);
-#if BUILDFLAG(USE_BLINK)
   ~SchedulingEmbedder() override;
-#else
-  ~SchedulingEmbedder();
-#endif
 
   // Computes embeddings for each entry in `passages`. Will invoke callback on
   // done. If successful, it is guaranteed that the number of passages in
@@ -57,26 +52,20 @@ class SchedulingEmbedder
   // the same order. If unsuccessful, the callback will still return the
   // original passages but with an empty embeddings vector and an appropriate
   // status.
-  using ComputePassagesEmbeddingsCallback = base::OnceCallback<void(
+  TaskId ComputePassagesEmbeddings(
+      PassagePriority priority,
       std::vector<std::string> passages,
-      std::vector<Embedding> embeddings,
-      TaskId task_id,
-      passage_embeddings::ComputeEmbeddingsStatus status)>;
-  TaskId ComputePassagesEmbeddings(passage_embeddings::PassagePriority priority,
-                                   std::vector<std::string> passages,
-                                   ComputePassagesEmbeddingsCallback callback);
+      ComputePassagesEmbeddingsCallback callback) override;
 
   // Sets the callback to run when the embedder is ready to process requests.
   // The callback is invoked immediately if the embedder is ready beforehand.
-  using OnEmbedderReadyCallback =
-      base::OnceCallback<void(passage_embeddings::EmbedderMetadata metadata)>;
-  void SetOnEmbedderReady(OnEmbedderReadyCallback callback);
+  void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
 
   // Cancels computation of embeddings iff none of the passages given to
   // `ComputePassagesEmbeddings()` has been submitted to the embedder yet.
   // If successful, the callback for the canceled task will be invoked with
   // `ComputeEmbeddingsStatus::kCanceled` status.
-  bool TryCancel(TaskId task_id);
+  bool TryCancel(TaskId task_id) override;
 
 #if BUILDFLAG(USE_BLINK)
   // PerformanceScenarioObserver:
@@ -97,7 +86,7 @@ class SchedulingEmbedder
   // when submitting work to the `embedder_`, and jobs can also be broken
   // down so that partial progress is made across multiple work submissions.
   struct Job {
-    Job(passage_embeddings::PassagePriority priority,
+    Job(PassagePriority priority,
         TaskId task_id,
         std::vector<std::string> passages,
         ComputePassagesEmbeddingsCallback callback);
@@ -108,7 +97,7 @@ class SchedulingEmbedder
     Job& operator=(Job&&);
 
     // Data for the job is saved from calls to `ComputePassagesEmbeddings`.
-    passage_embeddings::PassagePriority priority;
+    PassagePriority priority;
     TaskId task_id = kInvalidTaskId;
     bool in_progress = false;
     std::vector<std::string> passages;
@@ -125,13 +114,14 @@ class SchedulingEmbedder
   // embedder isn't ready. For the MlEmbedder, this avoids failing when the
   // model hasn't loaded yet. We just wait until it's ready, then start work.
   void OnEmbedderReady(OnEmbedderReadyCallback callback,
-                       passage_embeddings::EmbedderMetadata metadata);
+                       EmbedderMetadata metadata);
 
   // Invoked after the embedding for the current job has been computed.
   // Continues processing next job if one is pending.
   void OnEmbeddingsComputed(std::vector<std::string> passages,
                             std::vector<Embedding> embedding,
-                            passage_embeddings::ComputeEmbeddingsStatus status);
+                            TaskId task_id,
+                            ComputeEmbeddingsStatus status);
 
   // Stable-sort jobs by priority and submit a batch of work to embedder.
   // This will only submit new work if the embedder is not already working.

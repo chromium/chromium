@@ -26,14 +26,20 @@ Embedding ComputeEmbeddingForPassage(const std::string& passage) {
 MockEmbedder::MockEmbedder() = default;
 MockEmbedder::~MockEmbedder() = default;
 
-void MockEmbedder::ComputePassagesEmbeddings(
+Embedder::TaskId MockEmbedder::ComputePassagesEmbeddings(
     PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(passages),
-                                ComputeEmbeddingsForPassages(passages),
-                                ComputeEmbeddingsStatus::kSuccess));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(passages),
+                     ComputeEmbeddingsForPassages(passages), kInvalidTaskId,
+                     ComputeEmbeddingsStatus::kSuccess));
+  return kInvalidTaskId;
+}
+
+bool MockEmbedder::TryCancel(TaskId task_id) {
+  return false;
 }
 
 void MockEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {

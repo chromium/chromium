@@ -29,7 +29,7 @@ MlEmbedder::~MlEmbedder() {
   }
 }
 
-void MlEmbedder::ComputePassagesEmbeddings(
+Embedder::TaskId MlEmbedder::ComputePassagesEmbeddings(
     passage_embeddings::PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
@@ -48,9 +48,15 @@ void MlEmbedder::ComputePassagesEmbeddings(
               result_embeddings.back().Normalize();
             }
             std::move(callback).Run(std::move(result_passages),
-                                    std::move(result_embeddings), status);
+                                    std::move(result_embeddings),
+                                    kInvalidTaskId, status);
           },
           std::move(callback)));
+  return kInvalidTaskId;
+}
+
+bool MlEmbedder::TryCancel(TaskId task_id) {
+  return false;
 }
 
 void MlEmbedder::OnModelUpdated(

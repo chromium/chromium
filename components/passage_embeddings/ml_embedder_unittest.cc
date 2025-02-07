@@ -38,6 +38,7 @@ constexpr size_t kEmbeddingsModelOutputSize = 768ul;
 using ComputePassagesEmbeddingsFuture =
     base::test::TestFuture<std::vector<std::string>,
                            std::vector<passage_embeddings::Embedding>,
+                           Embedder::TaskId,
                            ComputeEmbeddingsStatus>;
 
 // Returns a model info builder preloaded with valid model info.
@@ -337,7 +338,7 @@ TEST_F(MlEmbedderTest, ReturnsEmbeddings) {
   ComputePassagesEmbeddingsFuture future;
   ml_embedder->ComputePassagesEmbeddings(PassagePriority::kPassive,
                                          {"foo", "bar"}, future.GetCallback());
-  auto [passages, embeddings, status] = future.Get();
+  auto [passages, embeddings, task_id, status] = future.Get();
 
   EXPECT_EQ(status, ComputeEmbeddingsStatus::kSuccess);
   EXPECT_EQ(passages[0], "foo");
@@ -358,7 +359,7 @@ TEST_F(MlEmbedderTest, ReturnsModelUnavailableErrorIfModelInfoNotValid) {
   ComputePassagesEmbeddingsFuture future;
   ml_embedder->ComputePassagesEmbeddings(PassagePriority::kPassive,
                                          {"foo", "bar"}, future.GetCallback());
-  auto [passages, embeddings, status] = future.Get();
+  auto [passages, embeddings, task_id, status] = future.Get();
 
   EXPECT_EQ(status, ComputeEmbeddingsStatus::kModelUnavailable);
   EXPECT_TRUE(passages.empty());
@@ -376,7 +377,7 @@ TEST_F(MlEmbedderTest, ReturnsExecutionFailure) {
   ComputePassagesEmbeddingsFuture future;
   ml_embedder->ComputePassagesEmbeddings(PassagePriority::kPassive, {"error"},
                                          future.GetCallback());
-  auto [passages, embeddings, status] = future.Get();
+  auto [passages, embeddings, task_id, status] = future.Get();
 
   EXPECT_EQ(status, ComputeEmbeddingsStatus::kExecutionFailure);
   EXPECT_TRUE(passages.empty());
@@ -401,12 +402,12 @@ TEST_F(MlEmbedderTest, EmbedderRunningStatus) {
     // Embedder is running.
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    auto status1 = future1.Get<2>();
+    auto status1 = future1.Get<3>();
     EXPECT_EQ(status1, ComputeEmbeddingsStatus::kSuccess);
     // Embedder is still running.
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    auto status2 = future2.Get<2>();
+    auto status2 = future2.Get<3>();
     EXPECT_EQ(status2, ComputeEmbeddingsStatus::kSuccess);
     // Embedder is NOT running.
     EXPECT_FALSE(service_controller_->EmbedderRunning());
@@ -429,9 +430,9 @@ TEST_F(MlEmbedderTest, EmbedderRunningStatus) {
     // Embedder is NOT running.
     EXPECT_FALSE(service_controller_->EmbedderRunning());
 
-    auto status1 = future1.Get<2>();
+    auto status1 = future1.Get<3>();
     EXPECT_EQ(status1, ComputeEmbeddingsStatus::kExecutionFailure);
-    auto status2 = future2.Get<2>();
+    auto status2 = future2.Get<3>();
     EXPECT_EQ(status2, ComputeEmbeddingsStatus::kExecutionFailure);
   }
   {
@@ -448,12 +449,12 @@ TEST_F(MlEmbedderTest, EmbedderRunningStatus) {
     // Embedder is running.
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    auto status1 = future1.Get<2>();
+    auto status1 = future1.Get<3>();
     EXPECT_EQ(status1, ComputeEmbeddingsStatus::kSuccess);
     // Embedder is still running.
     EXPECT_TRUE(service_controller_->EmbedderRunning());
 
-    auto status2 = future2.Get<2>();
+    auto status2 = future2.Get<3>();
     EXPECT_EQ(status2, ComputeEmbeddingsStatus::kSuccess);
     // Embedder is NOT running.
     EXPECT_FALSE(service_controller_->EmbedderRunning());
@@ -476,9 +477,9 @@ TEST_F(MlEmbedderTest, EmbedderRunningStatus) {
     // Embedder is NOT running.
     EXPECT_FALSE(service_controller_->EmbedderRunning());
 
-    auto status1 = future1.Get<2>();
+    auto status1 = future1.Get<3>();
     EXPECT_EQ(status1, ComputeEmbeddingsStatus::kExecutionFailure);
-    auto status2 = future2.Get<2>();
+    auto status2 = future2.Get<3>();
     EXPECT_EQ(status2, ComputeEmbeddingsStatus::kExecutionFailure);
   }
 }

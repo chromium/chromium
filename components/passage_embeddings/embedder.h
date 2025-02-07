@@ -55,6 +55,9 @@ class Embedding {
 // Base class that hides implementation details for how text is embedded.
 class Embedder {
  public:
+  using TaskId = uint64_t;
+  static constexpr TaskId kInvalidTaskId = 0;
+
   virtual ~Embedder() = default;
 
   // Computes embeddings for each entry in `passages`. Will invoke callback on
@@ -65,11 +68,18 @@ class Embedder {
   using ComputePassagesEmbeddingsCallback =
       base::OnceCallback<void(std::vector<std::string> passages,
                               std::vector<Embedding> embeddings,
+                              TaskId task_id,
                               ComputeEmbeddingsStatus status)>;
-  virtual void ComputePassagesEmbeddings(
+  virtual TaskId ComputePassagesEmbeddings(
       PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) = 0;
+
+  // Cancels computation of embeddings iff none of the passages given to
+  // `ComputePassagesEmbeddings()` has been submitted for embedding yet.
+  // If successful, the callback for the canceled task will be invoked with
+  // `ComputeEmbeddingsStatus::kCanceled` status.
+  virtual bool TryCancel(TaskId task_id) = 0;
 
   // Sets the callback to run when the embedder is ready to process requests.
   // The callback is invoked immediately if the embedder is ready beforehand.

@@ -18,10 +18,12 @@ class MockEmbedder : public Embedder {
   ~MockEmbedder() override;
 
   // Embedder:
-  void ComputePassagesEmbeddings(
+  TaskId ComputePassagesEmbeddings(
       PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
+
+  bool TryCancel(TaskId task_id) override;
 
   void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
 

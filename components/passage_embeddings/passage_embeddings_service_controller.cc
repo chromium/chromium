@@ -11,8 +11,10 @@
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/passage_embeddings/ml_embedder.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/scheduling_embedder.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom-shared.h"
 
@@ -160,6 +162,13 @@ EmbedderMetadata PassageEmbeddingsServiceController::GetEmbedderMetadata() {
   }
 
   return EmbedderMetadata(model_version_, model_metadata_->output_size());
+}
+
+std::unique_ptr<Embedder> PassageEmbeddingsServiceController::MakeEmbedder() {
+  // TODO(crbug.com/394893724): Rework embedder readiness and use central
+  //  SchedulingEmbedder. The existing observation is more complex than
+  //  necessary and can be simplified now since this class knows readiness.
+  return std::make_unique<MlEmbedder>(nullptr, this);
 }
 
 void PassageEmbeddingsServiceController::GetEmbeddings(

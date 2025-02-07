@@ -406,7 +406,7 @@ SearchResult HistoryEmbeddingsService::Search(
 
   // Try to cancel the embedding task for the previous query, if any.
   if (query_embedding_task_id_ !=
-      passage_embeddings::SchedulingEmbedder::kInvalidTaskId) {
+      passage_embeddings::Embedder::kInvalidTaskId) {
     embedder_->TryCancel(query_embedding_task_id_);
   }
 
@@ -423,7 +423,7 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
     SearchResult result,
     std::vector<std::string> query_passages,
     std::vector<passage_embeddings::Embedding> query_embeddings,
-    passage_embeddings::SchedulingEmbedder::TaskId task_id,
+    passage_embeddings::Embedder::TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   bool succeeded =
       status == passage_embeddings::ComputeEmbeddingsStatus::kSuccess;
@@ -441,8 +441,7 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
   }
 
   // Reset the query embedding task ID to avoid attempting to cancel it later.
-  query_embedding_task_id_ =
-      passage_embeddings::SchedulingEmbedder::kInvalidTaskId;
+  query_embedding_task_id_ = passage_embeddings::Embedder::kInvalidTaskId;
 
   if (!succeeded) {
     std::move(callback).Run(std::move(result));
@@ -908,7 +907,7 @@ void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
     UrlData url_passages,
     std::vector<std::string> passages,
     std::vector<passage_embeddings::Embedding> embeddings,
-    passage_embeddings::SchedulingEmbedder::TaskId task_id,
+    passage_embeddings::Embedder::TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
     return;

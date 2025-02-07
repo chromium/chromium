@@ -240,6 +240,7 @@ void SchedulingEmbedder::OnEmbedderReady(
 void SchedulingEmbedder::OnEmbeddingsComputed(
     std::vector<std::string> passages,
     std::vector<Embedding> embeddings,
+    TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   VLOG(3) << embeddings.size() << " embeddings computed for " << passages.size()
           << " passages with status " << static_cast<int>(status);

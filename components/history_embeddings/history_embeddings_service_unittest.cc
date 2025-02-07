@@ -196,9 +196,6 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     service_->embedder_metadata_->search_score_threshold = threshold;
   }
 
-  passage_embeddings::SchedulingEmbedder* GetEmbedder() {
-    return service_->embedder_.get();
-  }
   Answerer* GetAnswerer() { return service_->answerer_.get(); }
   IntentClassifier* GetIntentClassifier() {
     return service_->intent_classifier_.get();

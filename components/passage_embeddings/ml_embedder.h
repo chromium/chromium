@@ -26,10 +26,12 @@ class MlEmbedder : public Embedder,
   ~MlEmbedder() override;
 
   // Embedder:
-  void ComputePassagesEmbeddings(
+  TaskId ComputePassagesEmbeddings(
       PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
+
+  bool TryCancel(TaskId task_id) override;
 
   void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
 
