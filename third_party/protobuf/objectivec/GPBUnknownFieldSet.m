@@ -1,30 +1,47 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
+// https://developers.google.com/protocol-buffers/
 //
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file or at
-// https://developers.google.com/open-source/licenses/bsd
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//     * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import "GPBUnknownFieldSet.h"
 #import "GPBUnknownFieldSet_PackagePrivate.h"
 
-#import "GPBCodedInputStream.h"
 #import "GPBCodedInputStream_PackagePrivate.h"
 #import "GPBCodedOutputStream.h"
-#import "GPBUnknownField.h"
 #import "GPBUnknownField_PackagePrivate.h"
 #import "GPBUtilities.h"
 #import "GPBWireFormat.h"
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 
 #pragma mark Helpers
 
 static void checkNumber(int32_t number) {
   if (number == 0) {
-    [NSException raise:NSInvalidArgumentException format:@"Zero is not a valid field number."];
+    [NSException raise:NSInvalidArgumentException
+                format:@"Zero is not a valid field number."];
   }
 }
 
@@ -33,7 +50,8 @@ static void checkNumber(int32_t number) {
   CFMutableDictionaryRef fields_;
 }
 
-static void CopyWorker(__unused const void *key, const void *value, void *context) {
+static void CopyWorker(const void *key, const void *value, void *context) {
+#pragma unused(key)
   GPBUnknownField *field = value;
   GPBUnknownFieldSet *result = context;
 
@@ -93,7 +111,8 @@ static void CopyWorker(__unused const void *key, const void *value, void *contex
 
 - (GPBUnknownField *)getField:(int32_t)number {
   ssize_t key = number;
-  GPBUnknownField *result = fields_ ? CFDictionaryGetValue(fields_, (void *)key) : nil;
+  GPBUnknownField *result =
+      fields_ ? CFDictionaryGetValue(fields_, (void *)key) : nil;
   return result;
 }
 
@@ -106,7 +125,8 @@ static void CopyWorker(__unused const void *key, const void *value, void *contex
   size_t count = CFDictionaryGetCount(fields_);
   ssize_t keys[count];
   GPBUnknownField *values[count];
-  CFDictionaryGetKeysAndValues(fields_, (const void **)keys, (const void **)values);
+  CFDictionaryGetKeysAndValues(fields_, (const void **)keys,
+                               (const void **)values);
   struct GPBFieldPair {
     ssize_t key;
     GPBUnknownField *value;
@@ -115,11 +135,12 @@ static void CopyWorker(__unused const void *key, const void *value, void *contex
     pairs[i].key = keys[i];
     pairs[i].value = values[i];
   };
-  qsort_b(pairs, count, sizeof(struct GPBFieldPair), ^(const void *first, const void *second) {
-    const struct GPBFieldPair *a = first;
-    const struct GPBFieldPair *b = second;
-    return (a->key > b->key) ? 1 : ((a->key == b->key) ? 0 : -1);
-  });
+  qsort_b(pairs, count, sizeof(struct GPBFieldPair),
+          ^(const void *first, const void *second) {
+            const struct GPBFieldPair *a = first;
+            const struct GPBFieldPair *b = second;
+            return (a->key > b->key) ? 1 : ((a->key == b->key) ? 0 : -1);
+          });
   for (size_t i = 0; i < count; ++i) {
     values[i] = pairs[i].value;
   };
@@ -133,7 +154,8 @@ static void CopyWorker(__unused const void *key, const void *value, void *contex
   size_t count = CFDictionaryGetCount(fields_);
   ssize_t keys[count];
   GPBUnknownField *values[count];
-  CFDictionaryGetKeysAndValues(fields_, (const void **)keys, (const void **)values);
+  CFDictionaryGetKeysAndValues(fields_, (const void **)keys,
+                               (const void **)values);
   if (count > 1) {
     struct GPBFieldPair {
       ssize_t key;
@@ -144,11 +166,12 @@ static void CopyWorker(__unused const void *key, const void *value, void *contex
       pairs[i].key = keys[i];
       pairs[i].value = values[i];
     };
-    qsort_b(pairs, count, sizeof(struct GPBFieldPair), ^(const void *first, const void *second) {
-      const struct GPBFieldPair *a = first;
-      const struct GPBFieldPair *b = second;
-      return (a->key > b->key) ? 1 : ((a->key == b->key) ? 0 : -1);
-    });
+    qsort_b(pairs, count, sizeof(struct GPBFieldPair),
+            ^(const void *first, const void *second) {
+              const struct GPBFieldPair *a = first;
+              const struct GPBFieldPair *b = second;
+              return (a->key > b->key) ? 1 : ((a->key == b->key) ? 0 : -1);
+            });
     for (size_t i = 0; i < count; ++i) {
       GPBUnknownField *value = pairs[i].value;
       [value writeToOutput:output];
@@ -159,16 +182,17 @@ static void CopyWorker(__unused const void *key, const void *value, void *contex
 }
 
 - (NSString *)description {
-  NSMutableString *description =
-      [NSMutableString stringWithFormat:@"<%@ %p>: TextFormat: {\n", [self class], self];
+  NSMutableString *description = [NSMutableString
+      stringWithFormat:@"<%@ %p>: TextFormat: {\n", [self class], self];
   NSString *textFormat = GPBTextFormatForUnknownFieldSet(self, @"  ");
   [description appendString:textFormat];
   [description appendString:@"}"];
   return description;
 }
 
-static void GPBUnknownFieldSetSerializedSize(__unused const void *key, const void *value,
+static void GPBUnknownFieldSetSerializedSize(const void *key, const void *value,
                                              void *context) {
+#pragma unused(key)
   GPBUnknownField *field = value;
   size_t *result = context;
   *result += [field serializedSize];
@@ -177,13 +201,16 @@ static void GPBUnknownFieldSetSerializedSize(__unused const void *key, const voi
 - (size_t)serializedSize {
   size_t result = 0;
   if (fields_) {
-    CFDictionaryApplyFunction(fields_, GPBUnknownFieldSetSerializedSize, &result);
+    CFDictionaryApplyFunction(fields_, GPBUnknownFieldSetSerializedSize,
+                              &result);
   }
   return result;
 }
 
-static void GPBUnknownFieldSetWriteAsMessageSetTo(__unused const void *key, const void *value,
+static void GPBUnknownFieldSetWriteAsMessageSetTo(const void *key,
+                                                  const void *value,
                                                   void *context) {
+#pragma unused(key)
   GPBUnknownField *field = value;
   GPBCodedOutputStream *output = context;
   [field writeAsMessageSetExtensionToOutput:output];
@@ -191,12 +218,15 @@ static void GPBUnknownFieldSetWriteAsMessageSetTo(__unused const void *key, cons
 
 - (void)writeAsMessageSetTo:(GPBCodedOutputStream *)output {
   if (fields_) {
-    CFDictionaryApplyFunction(fields_, GPBUnknownFieldSetWriteAsMessageSetTo, output);
+    CFDictionaryApplyFunction(fields_, GPBUnknownFieldSetWriteAsMessageSetTo,
+                              output);
   }
 }
 
-static void GPBUnknownFieldSetSerializedSizeAsMessageSet(__unused const void *key,
-                                                         const void *value, void *context) {
+static void GPBUnknownFieldSetSerializedSizeAsMessageSet(const void *key,
+                                                         const void *value,
+                                                         void *context) {
+#pragma unused(key)
   GPBUnknownField *field = value;
   size_t *result = context;
   *result += [field serializedSizeAsMessageSetExtension];
@@ -205,18 +235,23 @@ static void GPBUnknownFieldSetSerializedSizeAsMessageSet(__unused const void *ke
 - (size_t)serializedSizeAsMessageSet {
   size_t result = 0;
   if (fields_) {
-    CFDictionaryApplyFunction(fields_, GPBUnknownFieldSetSerializedSizeAsMessageSet, &result);
+    CFDictionaryApplyFunction(
+        fields_, GPBUnknownFieldSetSerializedSizeAsMessageSet, &result);
   }
   return result;
 }
 
 - (NSData *)data {
   NSMutableData *data = [NSMutableData dataWithLength:self.serializedSize];
-  GPBCodedOutputStream *output = [[GPBCodedOutputStream alloc] initWithData:data];
+  GPBCodedOutputStream *output =
+      [[GPBCodedOutputStream alloc] initWithData:data];
   [self writeToCodedOutputStream:output];
-  [output flush];
   [output release];
   return data;
+}
+
++ (BOOL)isFieldTag:(int32_t)tag {
+  return GPBWireFormatGetTagWireType(tag) != GPBWireFormatEndGroup;
 }
 
 - (void)addField:(GPBUnknownField *)field {
@@ -225,8 +260,8 @@ static void GPBUnknownFieldSetSerializedSizeAsMessageSet(__unused const void *ke
   if (!fields_) {
     // Use a custom dictionary here because the keys are numbers and conversion
     // back and forth from NSNumber isn't worth the cost.
-    fields_ =
-        CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, &kCFTypeDictionaryValueCallBacks);
+    fields_ = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL,
+                                        &kCFTypeDictionaryValueCallBacks);
   }
   ssize_t key = number;
   CFDictionarySetValue(fields_, (const void *)key, field);
@@ -234,7 +269,8 @@ static void GPBUnknownFieldSetSerializedSizeAsMessageSet(__unused const void *ke
 
 - (GPBUnknownField *)mutableFieldForNumber:(int32_t)number create:(BOOL)create {
   ssize_t key = number;
-  GPBUnknownField *existing = fields_ ? CFDictionaryGetValue(fields_, (const void *)key) : nil;
+  GPBUnknownField *existing =
+      fields_ ? CFDictionaryGetValue(fields_, (const void *)key) : nil;
   if (!existing && create) {
     existing = [[GPBUnknownField alloc] initWithNumber:number];
     // This retains existing.
@@ -244,8 +280,10 @@ static void GPBUnknownFieldSetSerializedSizeAsMessageSet(__unused const void *ke
   return existing;
 }
 
-static void GPBUnknownFieldSetMergeUnknownFields(__unused const void *key, const void *value,
+static void GPBUnknownFieldSetMergeUnknownFields(const void *key,
+                                                 const void *value,
                                                  void *context) {
+#pragma unused(key)
   GPBUnknownField *field = value;
   GPBUnknownFieldSet *self = context;
 
@@ -266,18 +304,21 @@ static void GPBUnknownFieldSetMergeUnknownFields(__unused const void *key, const
 
 - (void)mergeUnknownFields:(GPBUnknownFieldSet *)other {
   if (other && other->fields_) {
-    CFDictionaryApplyFunction(other->fields_, GPBUnknownFieldSetMergeUnknownFields, self);
+    CFDictionaryApplyFunction(other->fields_,
+                              GPBUnknownFieldSetMergeUnknownFields, self);
   }
+}
+
+- (void)mergeFromData:(NSData *)data {
+  GPBCodedInputStream *input = [[GPBCodedInputStream alloc] initWithData:data];
+  [self mergeFromCodedInputStream:input];
+  [input checkLastTagWas:0];
+  [input release];
 }
 
 - (void)mergeVarintField:(int32_t)number value:(int32_t)value {
   checkNumber(number);
   [[self mutableFieldForNumber:number create:YES] addVarint:value];
-}
-
-- (void)mergeLengthDelimited:(int32_t)fieldNum value:(NSData *)value {
-  checkNumber(fieldNum);
-  [[self mutableFieldForNumber:fieldNum create:YES] addLengthDelimited:value];
 }
 
 - (BOOL)mergeFieldFrom:(int32_t)tag input:(GPBCodedInputStream *)input {
@@ -304,12 +345,10 @@ static void GPBUnknownFieldSetMergeUnknownFields(__unused const void *key, const
     }
     case GPBWireFormatStartGroup: {
       GPBUnknownFieldSet *unknownFieldSet = [[GPBUnknownFieldSet alloc] init];
+      [input readUnknownGroup:number message:unknownFieldSet];
       GPBUnknownField *field = [self mutableFieldForNumber:number create:YES];
       [field addGroup:unknownFieldSet];
-      // The field will now retain unknownFieldSet, so go ahead and release it in case
-      // -readUnknownGroup:message: throws so it won't be leaked.
       [unknownFieldSet release];
-      [input readUnknownGroup:number message:unknownFieldSet];
       return YES;
     }
     case GPBWireFormatEndGroup:
@@ -320,6 +359,16 @@ static void GPBUnknownFieldSetMergeUnknownFields(__unused const void *key, const
       return YES;
     }
   }
+}
+
+- (void)mergeMessageSetMessage:(int32_t)number data:(NSData *)messageData {
+  [[self mutableFieldForNumber:number create:YES]
+      addLengthDelimited:messageData];
+}
+
+- (void)addUnknownMapEntry:(int32_t)fieldNum value:(NSData *)data {
+  GPBUnknownField *field = [self mutableFieldForNumber:fieldNum create:YES];
+  [field addLengthDelimited:data];
 }
 
 - (void)mergeFromCodedInputStream:(GPBCodedInputStream *)input {
@@ -344,5 +393,3 @@ static void GPBUnknownFieldSetMergeUnknownFields(__unused const void *key, const
 #pragma clang diagnostic pop
 
 @end
-
-#pragma clang diagnostic pop  // -Wdeprecated-declarations suppression

@@ -1,9 +1,32 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
+// https://developers.google.com/protocol-buffers/
 //
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file or at
-// https://developers.google.com/open-source/licenses/bsd
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//     * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Mappings and Sequences of descriptors.
 // Used by Descriptor.fields_by_name, EnumDescriptor.values...
@@ -26,21 +49,14 @@
 // because the Python API is based on C, and does not play well with C++
 // inheritance.
 
-// clang-format off
 #define PY_SSIZE_T_CLEAN
-// This inclusion must appear before all the others.
 #include <Python.h>
 
-#include <string>
-
-#include "google/protobuf/pyext/descriptor_containers.h"
-// clang-format on
-
-#include "google/protobuf/descriptor.h"
-#include "google/protobuf/pyext/descriptor.h"
-#include "google/protobuf/pyext/descriptor_pool.h"
-#include "google/protobuf/pyext/scoped_pyobject_ptr.h"
-#include "absl/strings/string_view.h"
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/pyext/descriptor_containers.h>
+#include <google/protobuf/pyext/descriptor_pool.h>
+#include <google/protobuf/pyext/descriptor.h>
+#include <google/protobuf/pyext/scoped_pyobject_ptr.h>
 
 #define PyString_AsStringAndSize(ob, charpp, sizep)              \
   (PyUnicode_Check(ob)                                           \
@@ -59,13 +75,14 @@ struct PyContainer;
 typedef int (*CountMethod)(PyContainer* self);
 typedef const void* (*GetByIndexMethod)(PyContainer* self, int index);
 typedef const void* (*GetByNameMethod)(PyContainer* self,
-                                       absl::string_view name);
+                                       ConstStringParam name);
 typedef const void* (*GetByCamelcaseNameMethod)(PyContainer* self,
-                                                absl::string_view name);
+                                                ConstStringParam name);
 typedef const void* (*GetByNumberMethod)(PyContainer* self, int index);
 typedef PyObject* (*NewObjectFromItemMethod)(const void* descriptor);
-typedef absl::string_view (*GetItemNameMethod)(const void* descriptor);
-typedef absl::string_view (*GetItemCamelcaseNameMethod)(const void* descriptor);
+typedef const std::string& (*GetItemNameMethod)(const void* descriptor);
+typedef const std::string& (*GetItemCamelcaseNameMethod)(
+    const void* descriptor);
 typedef int (*GetItemNumberMethod)(const void* descriptor);
 typedef int (*GetItemIndexMethod)(const void* descriptor);
 
@@ -158,8 +175,8 @@ static bool _GetItemByKey(PyContainer* self, PyObject* key, const void** item) {
         }
         return false;
       }
-      *item = self->container_def->get_by_name_fn(
-          self, absl::string_view(name, name_size));
+      *item = self->container_def->get_by_name_fn(self,
+                                                  StringParam(name, name_size));
       return true;
     }
     case PyContainer::KIND_BYCAMELCASENAME: {
@@ -175,7 +192,7 @@ static bool _GetItemByKey(PyContainer* self, PyObject* key, const void** item) {
         return false;
       }
       *item = self->container_def->get_by_camelcase_name_fn(
-          self, absl::string_view(camelcase_name, name_size));
+          self, StringParam(camelcase_name, name_size));
       return true;
     }
     case PyContainer::KIND_BYNUMBER: {
@@ -204,13 +221,13 @@ static PyObject* _NewKey_ByIndex(PyContainer* self, Py_ssize_t index) {
   const void* item = self->container_def->get_by_index_fn(self, index);
   switch (self->kind) {
     case PyContainer::KIND_BYNAME: {
-      absl::string_view name = self->container_def->get_item_name_fn(item);
-      return PyUnicode_FromStringAndSize(name.data(), name.size());
+      const std::string& name(self->container_def->get_item_name_fn(item));
+      return PyUnicode_FromStringAndSize(name.c_str(), name.size());
     }
     case PyContainer::KIND_BYCAMELCASENAME: {
-      absl::string_view name =
-          self->container_def->get_item_camelcase_name_fn(item);
-      return PyUnicode_FromStringAndSize(name.data(), name.size());
+      const std::string& name(
+          self->container_def->get_item_camelcase_name_fn(item));
+      return PyUnicode_FromStringAndSize(name.c_str(), name.size());
     }
     case PyContainer::KIND_BYNUMBER: {
       int value = self->container_def->get_item_number_fn(item);
@@ -941,12 +958,12 @@ static int Count(PyContainer* self) {
   return GetDescriptor(self)->field_count();
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindFieldByName(name);
 }
 
 static const void* GetByCamelcaseName(PyContainer* self,
-                                      absl::string_view name) {
+                                      ConstStringParam name) {
   return GetDescriptor(self)->FindFieldByCamelcaseName(name);
 }
 
@@ -962,11 +979,11 @@ static PyObject* NewObjectFromItem(const void* item) {
   return PyFieldDescriptor_FromDescriptor(static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 
-static absl::string_view GetItemCamelcaseName(const void* item) {
+static const std::string& GetItemCamelcaseName(const void* item) {
   return static_cast<ItemDescriptor>(item)->camelcase_name();
 }
 
@@ -1011,7 +1028,7 @@ static int Count(PyContainer* self) {
   return GetDescriptor(self)->nested_type_count();
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindNestedTypeByName(name);
 }
 
@@ -1023,7 +1040,7 @@ static PyObject* NewObjectFromItem(const void* item) {
   return PyMessageDescriptor_FromDescriptor(static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 
@@ -1063,7 +1080,7 @@ static int Count(PyContainer* self) {
   return GetDescriptor(self)->enum_type_count();
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindEnumTypeByName(name);
 }
 
@@ -1075,7 +1092,7 @@ static PyObject* NewObjectFromItem(const void* item) {
   return PyEnumDescriptor_FromDescriptor(static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 
@@ -1126,7 +1143,7 @@ static int Count(PyContainer* self) {
   return count;
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindEnumValueByName(name);
 }
 
@@ -1154,7 +1171,7 @@ static PyObject* NewObjectFromItem(const void* item) {
       static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 
@@ -1177,7 +1194,7 @@ static int Count(PyContainer* self) {
   return GetDescriptor(self)->extension_count();
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindExtensionByName(name);
 }
 
@@ -1189,7 +1206,7 @@ static PyObject* NewObjectFromItem(const void* item) {
   return PyFieldDescriptor_FromDescriptor(static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 
@@ -1229,7 +1246,7 @@ static int Count(PyContainer* self) {
   return GetDescriptor(self)->oneof_decl_count();
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindOneofByName(name);
 }
 
@@ -1241,7 +1258,7 @@ static PyObject* NewObjectFromItem(const void* item) {
   return PyOneofDescriptor_FromDescriptor(static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 
@@ -1287,7 +1304,7 @@ static const void* GetByIndex(PyContainer* self, int index) {
   return GetDescriptor(self)->value(index);
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindValueByName(name);
 }
 
@@ -1300,7 +1317,7 @@ static PyObject* NewObjectFromItem(const void* item) {
       static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 
@@ -1391,7 +1408,7 @@ static int Count(PyContainer* self) {
   return GetDescriptor(self)->method_count();
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindMethodByName(name);
 }
 
@@ -1403,7 +1420,7 @@ static PyObject* NewObjectFromItem(const void* item) {
   return PyMethodDescriptor_FromDescriptor(static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 
@@ -1445,7 +1462,7 @@ static int Count(PyContainer* self) {
   return GetDescriptor(self)->message_type_count();
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindMessageTypeByName(name);
 }
 
@@ -1457,7 +1474,7 @@ static PyObject* NewObjectFromItem(const void* item) {
   return PyMessageDescriptor_FromDescriptor(static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 
@@ -1485,7 +1502,7 @@ static int Count(PyContainer* self) {
   return GetDescriptor(self)->enum_type_count();
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindEnumTypeByName(name);
 }
 
@@ -1497,7 +1514,7 @@ static PyObject* NewObjectFromItem(const void* item) {
   return PyEnumDescriptor_FromDescriptor(static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 
@@ -1525,7 +1542,7 @@ static int Count(PyContainer* self) {
   return GetDescriptor(self)->extension_count();
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindExtensionByName(name);
 }
 
@@ -1537,7 +1554,7 @@ static PyObject* NewObjectFromItem(const void* item) {
   return PyFieldDescriptor_FromDescriptor(static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 
@@ -1565,7 +1582,7 @@ static int Count(PyContainer* self) {
   return GetDescriptor(self)->service_count();
 }
 
-static const void* GetByName(PyContainer* self, absl::string_view name) {
+static const void* GetByName(PyContainer* self, ConstStringParam name) {
   return GetDescriptor(self)->FindServiceByName(name);
 }
 
@@ -1577,7 +1594,7 @@ static PyObject* NewObjectFromItem(const void* item) {
   return PyServiceDescriptor_FromDescriptor(static_cast<ItemDescriptor>(item));
 }
 
-static absl::string_view GetItemName(const void* item) {
+static const std::string& GetItemName(const void* item) {
   return static_cast<ItemDescriptor>(item)->name();
 }
 

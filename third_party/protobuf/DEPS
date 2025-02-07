@@ -1,15 +1,6 @@
 skip_child_includes = [
   'benchmarks',
   'conformance',
-  'editions',
-  'hpb',
-  'hpb_generator',
-  'lua',
   'objectivec',
-  'python',
-  'rust',
   'src',
-  'third_party',
-  'upb',
-  'upb_generator',
 ]
