@@ -52,6 +52,23 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               (override));
 };
 
+class MockCreditCardAccessManager : public CreditCardAccessManager {
+ public:
+  explicit MockCreditCardAccessManager(BrowserAutofillManager* bam);
+  ~MockCreditCardAccessManager() override;
+  MOCK_METHOD(void,
+              FetchCreditCard,
+              (const CreditCard* card,
+               OnCreditCardFetchedCallback on_credit_card_fetched),
+              (override));
+};
+
+class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
+ public:
+  explicit TestBrowserAutofillManager(AutofillDriver* driver);
+  void Reset() override;
+};
+
 class AutofillMetricsBaseTest {
  public:
   AutofillMetricsBaseTest();
@@ -169,15 +186,8 @@ class AutofillMetricsBaseTest {
         form, mojom::SubmissionSource::FORM_SUBMISSION);
   }
 
-  // Mocks a credit card fetching was completed. This mock starts from the
-  // BrowserAutofillManager. Use these if your test does not depends on
-  // OnDidGetRealPan but just need to mock the card fetching result (so that
-  // you don't need to branch on what auth method was used).
-  void OnCreditCardFetchingSuccessful(const FormData& form,
-                                      const FormFieldData& field,
-                                      AutofillTriggerSource trigger_source,
-                                      const std::u16string& real_pan,
-                                      bool is_virtual_card = false);
+  static CreditCard BuildCard(const std::u16string& real_pan,
+                              bool is_virtual_card = false);
 
   FormData GetAndAddSeenForm(const test::FormDescription& form_description) {
     FormData form = test::GetFormData(form_description);
@@ -245,6 +255,11 @@ class AutofillMetricsBaseTest {
     return *test_api(autofill_manager()).external_delegate();
   }
 
+  MockCreditCardAccessManager& credit_card_access_manager() {
+    return static_cast<MockCreditCardAccessManager&>(
+        autofill_manager().GetCreditCardAccessManager());
+  }
+
   TestPersonalDataManager& personal_data() {
     return autofill_client_->GetPersonalDataManager();
   }
@@ -267,8 +282,6 @@ class AutofillMetricsBaseTest {
 
  private:
   void CreateTestAutofillProfiles();
-
-  CreditCard credit_card_ = test::WithCvc(test::GetMaskedServerCard());
 };
 
 }  // namespace autofill::autofill_metrics

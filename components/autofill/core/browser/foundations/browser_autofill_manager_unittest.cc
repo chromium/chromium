@@ -660,8 +660,23 @@ std::string kElvisProfileGuid = MakeGuid(1);
 
 class MockCreditCardAccessManager : public CreditCardAccessManager {
  public:
-  using CreditCardAccessManager::CreditCardAccessManager;
+  explicit MockCreditCardAccessManager(BrowserAutofillManager* bam)
+      : CreditCardAccessManager(
+            bam,
+            test_api(*bam).credit_card_form_event_logger()) {
+    ON_CALL(*this, FetchCreditCard)
+        .WillByDefault(
+            [this](const CreditCard* card, OnCreditCardFetchedCallback cb) {
+              CreditCardAccessManager::FetchCreditCard(card, std::move(cb));
+            });
+  }
+
   MOCK_METHOD(void, PrepareToFetchCreditCard, (), (override));
+  MOCK_METHOD(void,
+              FetchCreditCard,
+              (const CreditCard* card,
+               OnCreditCardFetchedCallback on_credit_card_fetched),
+              (override));
 };
 
 class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
@@ -880,8 +895,7 @@ class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
             &*manager,
             /*call_parent_methods=*/true));
     test_api(*manager).set_credit_card_access_manager(
-        std::make_unique<NiceMock<MockCreditCardAccessManager>>(
-            &*manager, test_api(*manager).credit_card_form_event_logger()));
+        std::make_unique<NiceMock<MockCreditCardAccessManager>>(&*manager));
     test_api(*manager).set_amount_extraction_manager(
         std::make_unique<NiceMock<MockAmountExtractionManager>>(&*manager));
     return manager;
@@ -3243,9 +3257,16 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
 TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_LocalCreditCard) {
   const CreditCard local_card = test::GetCreditCard();
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
+      .WillOnce(base::test::RunOnceCallback<1>(local_card));
   EXPECT_CALL(payments_client(), OnCardDataAvailable).Times(0);
 
-  manager().OnCreditCardFetchedSuccessfully(local_card);
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
+                                               /*use_month_type=*/false);
+  FormsSeen({form});
+  manager().FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      local_card, AutofillTriggerSource::kPopup);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(local_card.instrument_id()));
 }
@@ -3253,9 +3274,16 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_ServerCreditCard) {
   const CreditCard server_card = test::GetMaskedServerCard();
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
+      .WillOnce(base::test::RunOnceCallback<1>(server_card));
   EXPECT_CALL(payments_client(), OnCardDataAvailable).Times(0);
 
-  manager().OnCreditCardFetchedSuccessfully(server_card);
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
+                                               /*use_month_type=*/false);
+  FormsSeen({form});
+  manager().FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      server_card, AutofillTriggerSource::kPopup);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(server_card.instrument_id()));
 }
@@ -3264,6 +3292,8 @@ TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_VirtualCreditCard) {
   const CreditCard filled_card = test::WithCvc(test::GetVirtualCard());
   using Options = FilledCardInformationBubbleOptions;
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
+      .WillOnce(base::test::RunOnceCallback<1>(filled_card));
   EXPECT_CALL(
       payments_client(),
       OnCardDataAvailable(
@@ -3274,7 +3304,12 @@ TEST_F(BrowserAutofillManagerTest,
                 Field(&Options::cvc, filled_card.cvc()),
                 Field(&Options::filled_card, filled_card))));
 
-  manager().OnCreditCardFetchedSuccessfully(filled_card);
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
+                                               /*use_month_type=*/false);
+  FormsSeen({form});
+  manager().FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      filled_card, AutofillTriggerSource::kPopup);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(filled_card.instrument_id()));
 }
@@ -3285,6 +3320,8 @@ TEST_F(BrowserAutofillManagerTest,
   filled_card.set_card_info_retrieval_enrollment_state(
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
   using Options = FilledCardInformationBubbleOptions;
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
+      .WillOnce(base::test::RunOnceCallback<1>(filled_card));
   EXPECT_CALL(
       payments_client(),
       OnCardDataAvailable(
@@ -3295,7 +3332,12 @@ TEST_F(BrowserAutofillManagerTest,
                 Field(&Options::cvc, filled_card.cvc()),
                 Field(&Options::filled_card, filled_card))));
 
-  manager().OnCreditCardFetchedSuccessfully(filled_card);
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
+                                               /*use_month_type=*/false);
+  FormsSeen({form});
+  manager().FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
+      test::GetMaskedServerCard(), AutofillTriggerSource::kPopup);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
               testing::Optional(filled_card.instrument_id()));
 }

@@ -313,11 +313,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FormFieldData& field) const;
 
-  // Notifies the `BrowserAutofillManager` that `credit_card` has been fetched
-  // from the server. Opens a manual filling dialog for virtual credit cards.
-  // Caches the credit card data for server and virtual credit cards.
-  void OnCreditCardFetchedSuccessfully(const CreditCard& credit_card);
-
   autofill_metrics::CreditCardFormEventLogger& GetCreditCardFormEventLogger() {
     return metrics_->credit_card_form_event_logger;
   }
@@ -396,26 +391,6 @@ class BrowserAutofillManager : public AutofillManager {
   // Emits all metrics that should be recorded at submission time.
   void LogSubmissionMetrics(const FormStructure* submitted_form,
                             const base::TimeTicks& form_submitted_timestamp);
-
-  // See `BrowserAutofillManager::FillOrPreviewCreditCardForm()` for initial
-  // documentation. `require_card_fetching` denotes whether we need to fetch the
-  // full card represented by `credit_card`.
-  void FillOrPreviewCreditCardFormImpl(
-      bool require_card_fetching,
-      mojom::ActionPersistence action_persistence,
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      const CreditCard& credit_card,
-      AutofillTriggerSource trigger_source);
-
-  // When `AuthenticateThenFillCreditCardForm()` fetches a credit card, this
-  // gets called once the fetching has finished. If successful, the
-  // `credit_card` is filled.
-  void OnCreditCardFetched(
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      AutofillTriggerSource fetched_credit_card_trigger_source,
-      const CreditCard& credit_card);
 
   // Updates event loggers with information about data stored for Autofill.
   void UpdateLoggersReadinessData();

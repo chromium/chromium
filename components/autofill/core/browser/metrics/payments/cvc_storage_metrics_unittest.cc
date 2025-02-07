@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/payments/cvc_storage_metrics.h"
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
@@ -219,16 +220,15 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
       true);
 
   // Simulate filling the suggestion with CVC.
+  if (!using_local_card()) {
+    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+        .WillOnce(base::test::RunOnceCallback<1>(card()));
+  }
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(),
       form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       AutofillTriggerSource::kPopup);
-  if (!using_local_card()) {
-    test_api(autofill_manager())
-        .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                             AutofillTriggerSource::kPopup, card());
-  }
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetExpectedHistogramName()),
@@ -242,16 +242,15 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
                        1)));
 
   // Fill the suggestion again.
+  if (!using_local_card()) {
+    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+        .WillOnce(base::test::RunOnceCallback<1>(card()));
+  }
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(),
       form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       AutofillTriggerSource::kPopup);
-  if (!using_local_card()) {
-    test_api(autofill_manager())
-        .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                             AutofillTriggerSource::kPopup, card());
-  }
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetExpectedHistogramName()),
@@ -278,16 +277,15 @@ TEST_P(CvcStorageMetricsTest, LogSubmitMetrics) {
   // Simulate filling and then submitting the card with CVC.
   autofill_manager().OnAskForValuesToFillTest(
       form(), form().fields().front().global_id());
+  if (!using_local_card()) {
+    EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
+        .WillOnce(base::test::RunOnceCallback<1>(card()));
+  }
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(),
       form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       AutofillTriggerSource::kPopup);
-  if (!using_local_card()) {
-    test_api(autofill_manager())
-        .OnCreditCardFetched(form(), form().fields().front().global_id(),
-                             AutofillTriggerSource::kPopup, card());
-  }
   SubmitForm(form());
 
   EXPECT_THAT(
