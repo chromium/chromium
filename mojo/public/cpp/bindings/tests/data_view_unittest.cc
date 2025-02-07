@@ -70,8 +70,7 @@ TEST_F(DataViewTest, String) {
   data_view.GetFStringDataView(&string_data_view);
 
   ASSERT_FALSE(string_data_view.is_null());
-  EXPECT_EQ(std::string("hello"),
-            std::string(string_data_view.storage(), string_data_view.size()));
+  EXPECT_EQ(std::string("hello"), string_data_view.value());
 }
 
 TEST_F(DataViewTest, NestedStruct) {
