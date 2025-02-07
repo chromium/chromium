@@ -108,8 +108,6 @@ using base::UserMetricsAction;
   AutocompleteMatch matchCopy = match;
 
   if (matchCopy.type == AutocompleteMatchType::CLIPBOARD_URL) {
-    // TODO(crbug.com/326989399): MobileOmniboxClipboardToURL action is not
-    // defined in actions.xml
     base::RecordAction(UserMetricsAction("MobileOmniboxClipboardToURL"));
     UMA_HISTOGRAM_LONG_TIMES_100(
         "MobileOmnibox.PressedClipboardSuggestionAge",

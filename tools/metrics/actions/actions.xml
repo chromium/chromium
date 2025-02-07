@@ -24426,6 +24426,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileOmniboxClipboardToURL">
+  <owner>christianxu@chromium.org</owner>
+  <description>
+    Emitted when a URL clipboard match is selected in the omnibox.
+  </description>
+</action>
+
 <action name="MobileOmniboxDeleteGesture">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of the metric.</description>
