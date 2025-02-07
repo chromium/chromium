@@ -169,6 +169,11 @@ public class SemanticColorUtils {
         return MaterialColors.getColor(context, R.attr.globalLinkTextColor, fallback);
     }
 
+    /** Returns the semantic color value that corresponds to menu_bg_color. */
+    public static @ColorInt int getMenuBgColor(Context context) {
+        return resolveSurfaceColorElev(R.dimen.menu_bg_color_elev, context);
+    }
+
     /** Returns the semantic color values that corresponds to colorPrimaryContainer. */
     public static @ColorInt int getColorPrimaryContainer(Context context) {
         return resolve(R.attr.colorPrimaryContainer, context);
