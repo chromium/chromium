@@ -13,14 +13,9 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/resource_manager.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace performance_manager::policies {
 
@@ -42,7 +37,7 @@ constexpr base::TimeDelta kReportProcessesMinimalInterval = base::Seconds(3);
 void ReportPageProcessesOnUIThread(
     const base::flat_map<base::ProcessId, ReportPageProcessesPolicy::PageState>&
         page_processes) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ResourcedClient* client = ash::ResourcedClient::Get();
   if (!client) {
     return;
@@ -60,44 +55,7 @@ void ReportPageProcessesOnUIThread(
 
   client->ReportBrowserProcesses(ash::ResourcedClient::Component::kAsh,
                                  processes);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  // Check LacrosService availability to avoid crashing
-  // lacros_chrome_browsertests.
-  if (!service || !service->IsAvailable<crosapi::mojom::ResourceManager>()) {
-    LOG(ERROR) << "ResourceManager is not available";
-    return;
-  }
-
-  int resource_manager_version =
-      service->GetInterfaceVersion<crosapi::mojom::ResourceManager>();
-  if (resource_manager_version <
-      int{crosapi::mojom::ResourceManager::MethodMinVersions::
-              kReportPageProcessesMinVersion}) {
-    LOG(WARNING) << "Resource Manager version " << resource_manager_version
-                 << " does not support reporting page processes.";
-    return;
-  }
-
-  std::vector<crosapi::mojom::PageProcessPtr> processes;
-  processes.reserve(page_processes.size());
-
-  for (const auto& page_process : page_processes) {
-    crosapi::mojom::PageProcessPtr process = crosapi::mojom::PageProcess::New();
-    process->pid = page_process.first;
-    process->host_protected_page = page_process.second.host_protected_page;
-    process->host_visible_page = page_process.second.host_visible_page;
-    process->host_focused_page = page_process.second.host_focused_page;
-    process->last_visible_ms =
-        page_process.second.last_visible.since_origin().InMilliseconds();
-    processes.push_back(std::move(process));
-  }
-
-  service->GetRemote<crosapi::mojom::ResourceManager>()->ReportPageProcesses(
-      std::move(processes));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace

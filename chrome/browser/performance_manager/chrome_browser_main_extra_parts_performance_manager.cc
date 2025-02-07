@@ -15,7 +15,6 @@
 #include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/decorators/helpers/page_live_state_decorator_helper.h"
 #include "chrome/browser/performance_manager/execution_context_priority/side_panel_loading_voter.h"
@@ -51,8 +50,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/allocator/buildflags.h"
+#include "chrome/browser/performance_manager/policies/oom_score_policy_chromeos.h"
+#include "chrome/browser/performance_manager/policies/report_page_processes_policy.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/performance_manager/power/battery_level_provider_chromeos.h"
 #include "components/performance_manager/power/dbus_power_manager_sampling_event_source.h"
@@ -61,11 +62,6 @@
 #include "chrome/browser/performance_manager/policies/userspace_swap_policy_chromeos.h"
 #endif  // defined(ARCH_CPU_X86_64)
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/performance_manager/policies/oom_score_policy_chromeos.h"
-#include "chrome/browser/performance_manager/policies/report_page_processes_policy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -164,7 +160,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
                            CreatePolicyForPlatform());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #if defined(ARCH_CPU_X86_64)
   if (performance_manager::policies::UserspaceSwapPolicy::
           UserspaceSwapSupportedAndEnabled()) {
@@ -173,9 +169,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   }
 #endif  // defined(ARCH_CPU_X86_64)
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
   graph->PassToGraph(std::make_unique<
                      performance_manager::policies::OomScorePolicyChromeOS>());
   graph->PassToGraph(
@@ -343,7 +336,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
     // TODO(crbug.com/40871810): All of the battery level machinery should be in
     // the same location, and the ifdefs should be contained to the
     // `BatteryLevelProvider` and SamplingEventSource` instantiation functions.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     battery_state_sampler_ = std::make_unique<base::BatteryStateSampler>(
         std::make_unique<
             performance_manager::power::DbusPowerManagerSamplingEventSource>(

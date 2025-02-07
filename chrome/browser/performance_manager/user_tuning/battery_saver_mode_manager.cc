@@ -36,7 +36,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/content_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #endif
@@ -59,15 +59,14 @@ using BatterySaverModeState =
 // threshold on those platforms, by being added to the 20% threshold value (so
 // setting this parameter to 3 would result in battery saver being activated at
 // 23% actual battery level).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
+#if BUILDFLAG(IS_CHROMEOS)
 // On ChromeOS, the adjustment generally seems to be around 3%, sometimes 2%. We
 // choose 3% because it gets us close enough, or overestimates (which is better
 // than underestimating in this instance).
 constexpr int kBatterySaverModeThresholdAdjustmentForDisplayLevel = 3;
 #else
 constexpr int kBatterySaverModeThresholdAdjustmentForDisplayLevel = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class FrameThrottlingDelegateImpl
     : public performance_manager::user_tuning::BatterySaverModeManager::
@@ -407,7 +406,7 @@ class DesktopBatterySaverProvider
   raw_ptr<BatterySaverModeManager> manager_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ChromeOSBatterySaverProvider
     : public BatterySaverModeManager::BatterySaverProvider,
       public chromeos::PowerManagerClient::Observer {
@@ -594,7 +593,7 @@ BatterySaverModeManager::BatterySaverModeManager(
 }
 
 void BatterySaverModeManager::Start() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::features::IsBatterySaverAvailable()) {
     battery_saver_provider_ =
         std::make_unique<ChromeOSBatterySaverProvider>(this);

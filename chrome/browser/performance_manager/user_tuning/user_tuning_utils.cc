@@ -24,12 +24,8 @@
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace performance_manager::user_tuning {
@@ -48,10 +44,8 @@ bool IsRefreshRateThrottled() {
 }
 
 bool IsBatterySaverModeManagedByOS() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return ash::features::IsBatterySaverAvailable();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsCrosBatterySaverAvailable();
 #else
   return false;
 #endif

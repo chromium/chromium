@@ -6,9 +6,8 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer_chromeos.h"
 #endif
 
@@ -31,7 +30,7 @@ class NoOpWorkingSetTrimmer : public WorkingSetTrimmer {
 }  // namespace
 
 WorkingSetTrimmer* WorkingSetTrimmer::GetInstance() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   static base::NoDestructor<WorkingSetTrimmerChromeOS> trimmer;
 #else
   static base::NoDestructor<NoOpWorkingSetTrimmer> trimmer;
