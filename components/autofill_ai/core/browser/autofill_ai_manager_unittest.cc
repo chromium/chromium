@@ -709,25 +709,6 @@ TEST_F(AutofillAiManagerTest, OpenSettingsWhenManagePILinkIsClicked) {
   manager().UserClickedLearnMore();
 }
 
-// Tests that calling `OnLoadingSuggestionShown()` is a no-op if the
-// `kTriggerAutomatically` parameter is disabled.
-TEST_F(AutofillAiManagerTest,
-       OnLoadingSuggestionShownDoesNothingIfParamNotEnabled) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST,
-                  .label = u"First Name",
-                  .value = u"Jane"}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  EXPECT_CALL(update_suggestions_callback, Run).Times(0);
-  EXPECT_CALL(client(), GetAXTree).Times(0);
-  manager().OnSuggestionsShown({kAutofillAiLoadingState}, form,
-                               form.fields().front(),
-                               update_suggestions_callback.Get());
-}
-
 // TODO(crbug.com/376016081): Refactor test to expect if suggestions are
 // included so that `ShouldSkipAutofillSuggestion()` can be move to the
 // anonymous namespace.
@@ -759,48 +740,6 @@ TEST_F(AutofillAiManagerTest, ShouldSkipAutofillSuggestion) {
   EXPECT_TRUE(
       ShouldSkipAutofillSuggestion(client(), cache, form, autofill_suggestion));
 }
-
-class AutofillAiManagerTriggerAutomaticallyTest
-    : public BaseAutofillAiManagerTest,
-      public testing::WithParamInterface<bool> {
- public:
-  AutofillAiManagerTriggerAutomaticallyTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillAi,
-        {{"skip_allowlist", "true"},
-         {"trigger_automatically", "true"},
-         {"extract_ax_tree_for_predictions", GetParam() ? "true" : "false"}});
-    ON_CALL(client(), GetLastCommittedOrigin)
-        .WillByDefault(ReturnRef(origin()));
-    ON_CALL(client(), GetModelExecutor)
-        .WillByDefault(Return(&model_executor()));
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that calling `OnLoadingSuggestionShown()` results in retrieving the AX
-// tree (implying predictions will be attempted to be retrieved) if the
-// `kTriggerAutomatically` parameter is enabled.
-TEST_P(AutofillAiManagerTriggerAutomaticallyTest,
-       OnLoadingSuggestionShownGetsAXTreeIfParamEnabled) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  if (GetParam()) {
-    EXPECT_CALL(client(), GetAXTree);
-  }
-  manager().OnSuggestionsShown({kAutofillAiLoadingState}, form,
-                               form.fields().front(),
-                               update_suggestions_callback.Get());
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         AutofillAiManagerTriggerAutomaticallyTest,
-                         testing::Bool());
 
 class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
  public:

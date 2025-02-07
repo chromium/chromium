@@ -3057,12 +3057,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="FillingSuggestionAfterLoading"
         summary="Given a form where the user triggered FormsAI filling
                  suggestions, records whether filling suggestions where
-                 generated for the form or not."/>
+                 generated for the form or not. (Deprecated)"/>
     <variant name="LoadingAfterSuggestion"
         summary="Given a form where the user saw a FormsAI trigger
                  suggestion, records whether the user accepted the trigger
                  suggestion and went to the state of waiting for filling
-                 suggestions to load, or not."/>
+                 suggestions to load, or not. (Deprecated)"/>
     <variant name="ReadinessAfterEligibility"
         summary="Given a FormsAI-eligible form, this metric records whether
                  the user has stored data to fill the form."/>

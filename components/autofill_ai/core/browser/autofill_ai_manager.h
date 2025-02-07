@@ -115,17 +115,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       EntityUpdateType update_type,
       AutofillAiClient::SavePromptAcceptanceResult result);
 
-  // Event handler called when the loading suggestion is shown. Used for the
-  // automatic triggering path.
-  void OnLoadingSuggestionShown(
-      const autofill::FormData& form,
-      const autofill::FormFieldData& trigger_field,
-      UpdateSuggestionsCallback update_suggestions_callback);
-
-  // Event handler called when either error or no info suggestion is shown. Used
-  // for ensuring the respective popups are not shown more than once.
-  void OnErrorOrNoInfoSuggestionShown();
-
   // Receives prediction improvements for all fields in `form`, then calls
   // `update_suggestions_callback_`.
   void RetrievePredictions(
@@ -176,10 +165,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // Current state for retrieving predictions.
   PredictionRetrievalState prediction_retrieval_state_ =
       PredictionRetrievalState::kReady;
-
-  // Used to ensure that then error / no info suggestions will only be shown
-  // once after a failed retrieval of predictions or one with an empty response.
-  bool error_or_no_info_suggestion_shown_ = false;
 
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.

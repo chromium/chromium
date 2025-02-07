@@ -46,11 +46,6 @@ class AutofillAiManagerTestApi {
     manager_->prediction_retrieval_state_ = prediction_retrieval_state;
   }
 
-  void SetErrorOrNoInfoSuggestionShown(bool error_or_no_info_suggestion_shown) {
-    manager_->error_or_no_info_suggestion_shown_ =
-        error_or_no_info_suggestion_shown;
-  }
-
   AutofillAiLogger& logger() { return manager_->logger_; }
 
  private:

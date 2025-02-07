@@ -402,49 +402,12 @@ void AutofillAiManager::OnClickedTriggerSuggestion(
                       /*update_to_loading_suggestion=*/true);
 }
 
-void AutofillAiManager::OnLoadingSuggestionShown(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field,
-    AutofillAiManager::UpdateSuggestionsCallback update_suggestions_callback) {
-  logger_.OnTriggeredFillingSuggestions(form.global_id());
-  if (kTriggerAutomatically.Get() &&
-      prediction_retrieval_state_ !=
-          PredictionRetrievalState::kIsLoadingPredictions) {
-    RetrievePredictions(form, trigger_field,
-                        std::move(update_suggestions_callback),
-                        /*update_to_loading_suggestion=*/false);
-  } else if (prediction_retrieval_state_ ==
-             PredictionRetrievalState::kIsLoadingPredictions) {
-    // Update the `update_suggestions_callback_` to the current instance. This
-    // is necessary when the loading suggestion was closed (by defocusing the
-    // triggering field) and an eligible form field is focused again, while
-    // retrieving the predictions is still ongoing. In that case the loading
-    // suggestion will be shown again and potentially updated later to error or
-    // filling suggestions.
-    // Note that this might overwrite the original callback set in
-    // `OnClickedTriggerSuggestion()` to one with the same
-    // `AutofillClient::SuggestionUiSessionId`, which doesn't matter though.
-    update_suggestions_callback_ = std::move(update_suggestions_callback);
-  }
-}
-
-void AutofillAiManager::OnErrorOrNoInfoSuggestionShown() {
-  error_or_no_info_suggestion_shown_ = true;
-}
-
 void AutofillAiManager::OnSuggestionsShown(
     const autofill::DenseSet<SuggestionType>& shown_suggestion_types,
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback) {
   logger_.OnSuggestionsShown(form.global_id());
-  if (shown_suggestion_types.contains(
-          SuggestionType::kAutofillAiLoadingState)) {
-    OnLoadingSuggestionShown(form, trigger_field, update_suggestions_callback);
-  }
-  if (shown_suggestion_types.contains(SuggestionType::kAutofillAiError)) {
-    OnErrorOrNoInfoSuggestionShown();
-  }
   if (shown_suggestion_types.contains(SuggestionType::kFillAutofillAi)) {
     logger_.OnFillingSuggestionsShown(form.global_id());
   }
@@ -490,7 +453,6 @@ void AutofillAiManager::Reset() {
   update_suggestions_callback_ = base::NullCallback();
   loading_suggestion_timer_.Stop();
   prediction_retrieval_state_ = PredictionRetrievalState::kReady;
-  error_or_no_info_suggestion_shown_ = false;
 }
 
 void AutofillAiManager::UpdateSuggestions(
