@@ -32,6 +32,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.EntryPoint.Impression" enum="GlicEntryPointImpression"
+    expires_after="2026-01-15">
+  <owner>erikchen@chromium.org</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Recorded every 15 minutes, but only if the glic feature flag is enabled.
+    This is a rough estimate of whether a user is seeing an impression of glic
+    entry points. The entry point is shown if fre has not been completed, or if
+    fre has been completed and glic is enabled. The entry point is not shown if
+    fre is completed and glic is disabled.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Metrics.Error" enum="GlicMetricsError"
     expires_after="2026-01-15">
   <owner>dewittj@google.com</owner>

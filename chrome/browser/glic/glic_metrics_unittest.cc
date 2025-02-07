@@ -6,9 +6,13 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -36,10 +40,12 @@ class MockWindowController : public GlicWindowController {
 
 class GlicMetricsTest : public testing::Test {
  public:
+  GlicMetricsTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
     controller_ = std::make_unique<MockWindowController>(
         &profile_, identity_env_.identity_manager());
-    metrics_ = std::make_unique<GlicMetrics>();
+    metrics_ = std::make_unique<GlicMetrics>(&profile_);
     metrics_->SetWindowController(controller_.get());
   }
 
@@ -87,6 +93,35 @@ TEST_F(GlicMetricsTest, BasicVisible) {
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStart"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponseStop"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("GlicResponse"), 1);
+}
+
+TEST_F(GlicMetricsTest, ImpressionBeforeFre) {
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
+
+  task_environment_.FastForwardBy(base::Minutes(16));
+  histogram_tester_.ExpectTotalCount("Glic.EntryPoint.Impression", 1);
+  histogram_tester_.ExpectBucketCount("Glic.EntryPoint.Impression",
+                                      /*kBeforeFre=*/0, /*expected_count=*/1);
+}
+
+TEST_F(GlicMetricsTest, ImpressionAfterFre) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {
+          features::kGlic,
+          features::kTabstripComboButton,
+      },
+      {});
+  profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicSettingsPolicy,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+
+  task_environment_.FastForwardBy(base::Minutes(16));
+  histogram_tester_.ExpectTotalCount("Glic.EntryPoint.Impression", 1);
+  histogram_tester_.ExpectBucketCount("Glic.EntryPoint.Impression",
+                                      /*kAfterFreGlicEnabled=*/1,
+                                      /*expected_count=*/1);
 }
 
 }  // namespace

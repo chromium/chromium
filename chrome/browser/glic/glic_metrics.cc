@@ -6,6 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 
 namespace glic {
@@ -24,9 +26,23 @@ enum class Error {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseError)
 
+// LINT.IfChange(EntryPointImpression)
+enum class EntryPointImpression {
+  kBeforeFre = 0,
+  kAfterFreGlicEnabled = 1,
+  kAfterFreGlicDisabled = 2,
+  kMaxValue = kAfterFreGlicDisabled,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntryPointImpression)
+
 }  // namespace
 
-GlicMetrics::GlicMetrics() = default;
+GlicMetrics::GlicMetrics(Profile* profile) : profile_(profile) {
+  impression_timer_.Start(
+      FROM_HERE, base::Minutes(15),
+      base::BindRepeating(&GlicMetrics::OnImpressionTimerFired,
+                          base::Unretained(this)));
+}
 GlicMetrics::~GlicMetrics() = default;
 
 void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
@@ -134,6 +150,22 @@ void GlicMetrics::OnGlicWindowClose() {
 
 void GlicMetrics::SetWindowController(GlicWindowController* controller) {
   controller_ = controller;
+}
+
+void GlicMetrics::OnImpressionTimerFired() {
+  bool passed_fre = !controller_->fre_controller()->ShouldShowFreDialog();
+  EntryPointImpression impression;
+  if (passed_fre) {
+    bool glic_enabled = GlicEnabling::IsEnabledForProfile(profile_);
+    if (glic_enabled) {
+      impression = EntryPointImpression::kAfterFreGlicEnabled;
+    } else {
+      impression = EntryPointImpression::kAfterFreGlicDisabled;
+    }
+  } else {
+    impression = EntryPointImpression::kBeforeFre;
+  }
+  base::UmaHistogramEnumeration("Glic.EntryPoint.Impression", impression);
 }
 
 }  // namespace glic

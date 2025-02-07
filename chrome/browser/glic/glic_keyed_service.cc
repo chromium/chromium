@@ -39,7 +39,7 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
                                    GlicProfileManager* profile_manager)
     : profile_(profile),
       configuration_(profile),
-      metrics_(std::make_unique<GlicMetrics>()),
+      metrics_(std::make_unique<GlicMetrics>(profile)),
       window_controller_(
           std::make_unique<GlicWindowController>(profile,
                                                  identity_manager,
