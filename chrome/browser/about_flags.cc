@@ -2060,17 +2060,6 @@ const FeatureEntry::FeatureVariation
          std::size(kContextualSearchSuppressShortViewWith600Dp), nullptr},
 };
 
-const FeatureEntry::FeatureParam kRichAutocompletionFullUrl[] = {
-    {"rich_autocomplete_full_url", "true"}};
-const FeatureEntry::FeatureParam kRichAutocompletionNoFullUrl[] = {
-    {"rich_autocomplete_full_url", "false"}};
-const FeatureEntry::FeatureVariation kRichAutocompletionAndroidVariations[] = {
-    {"(full url)", kRichAutocompletionFullUrl,
-     std::size(kRichAutocompletionFullUrl), nullptr},
-    {"(no full url)", kRichAutocompletionNoFullUrl,
-     std::size(kRichAutocompletionNoFullUrl), nullptr},
-};
-
 const FeatureEntry::FeatureParam kJumpStartOmnibox1Minute[] = {
     {"jump_start_min_away_time_minutes", "1"},
     {"jump_start_cover_recently_visited_page", "true"}};
@@ -4479,9 +4468,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-rich-autocompletion-android",
      flag_descriptions::kRichAutocompletionAndroidName,
      flag_descriptions::kRichAutocompletionAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRichAutocompletion,
-                                    kRichAutocompletionAndroidVariations,
-                                    "OmniboxRichAutocompletion")},
+     FEATURE_VALUE_TYPE(omnibox::kRichAutocompletion)},
     {"safe-browsing-sync-checker-check-allowlist",
      flag_descriptions::kSafeBrowsingSyncCheckerCheckAllowlistName,
      flag_descriptions::kSafeBrowsingSyncCheckerCheckAllowlistDescription,

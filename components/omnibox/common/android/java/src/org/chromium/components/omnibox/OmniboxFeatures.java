@@ -158,9 +158,6 @@ public class OmniboxFeatures {
                     "max_prefetches_per_omnibox_session",
                     DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION);
 
-    public static final BooleanCachedFeatureParam sRichInlineShowFullUrl =
-            newBooleanParam(sRichInlineAutocomplete, "rich_autocomplete_full_url", true);
-
     public static final IntCachedFeatureParam sJumpStartOmniboxMemoryThresholdKb =
             newIntParam(sJumpStartOmnibox, "jump_start_memory_threshold_kb", 2 * 1024 * 1024);
 
@@ -338,9 +335,7 @@ public class OmniboxFeatures {
      * @return Whether the rich inline autocomplete URL should be shown.
      */
     public static boolean shouldShowRichInlineAutocompleteUrl(int inputCount) {
-        return sRichInlineAutocomplete.isEnabled()
-                && sRichInlineShowFullUrl.getValue()
-                && inputCount >= DEFAULT_RICH_INLINE_MIN_CHAR;
+        return sRichInlineAutocomplete.isEnabled() && inputCount >= DEFAULT_RICH_INLINE_MIN_CHAR;
     }
 
     /** Modifies the output of {@link #shouldRetainOmniboxOnFocus()} for testing. */
