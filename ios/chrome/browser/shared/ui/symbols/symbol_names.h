@@ -232,6 +232,7 @@ extern NSString* const kShippingBoxSymbol;
 extern NSString* const kSliderHorizontalSymbol;
 extern NSString* const kMacbookAndIPhoneSymbol;
 extern NSString* const kCheckmarkShieldSymbol;
+extern NSString* const kListBulletSymbol;
 extern NSString* const kListBulletClipboardSymbol;
 extern NSString* const kListBulletRectangleSymbol;
 extern NSString* const kBoxTruckFillSymbol;
