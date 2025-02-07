@@ -746,7 +746,7 @@ void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
   sizing_info.aspect_ratio = info->aspect_ratio;
   sizing_info.has_width = info->has_width;
   sizing_info.has_height = info->has_height;
-  View()->SetIntrinsicSizeInfo(sizing_info);
+  View()->SetNaturalDimensions(sizing_info);
 
   owner->IntrinsicSizingInfoChanged();
 }

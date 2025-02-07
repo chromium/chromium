@@ -156,7 +156,8 @@ class CORE_EXPORT SVGImage final : public Image {
 
   // Get the intrinsic dimensions (width, height and aspect ratio) from this
   // SVGImage. Returns true if successful.
-  bool GetIntrinsicSizingInfo(const SVGViewSpec*, NaturalSizingInfo&) const;
+  std::optional<NaturalSizingInfo> GetNaturalDimensions(
+      const SVGViewSpec*) const;
 
   String FilenameExtension() const override;
 

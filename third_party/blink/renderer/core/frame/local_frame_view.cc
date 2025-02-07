@@ -1055,13 +1055,11 @@ LayoutSVGRoot* LocalFrameView::EmbeddedReplacedContent() const {
   return DynamicTo<LayoutSVGRoot>(first_child);
 }
 
-bool LocalFrameView::GetIntrinsicSizingInfo(
-    NaturalSizingInfo& intrinsic_sizing_info) const {
+std::optional<NaturalSizingInfo> LocalFrameView::GetNaturalDimensions() const {
   if (LayoutSVGRoot* content_layout_object = EmbeddedReplacedContent()) {
-    content_layout_object->UnscaledIntrinsicSizingInfo(intrinsic_sizing_info);
-    return true;
+    return content_layout_object->UnscaledNaturalSizingInfo();
   }
-  return false;
+  return std::nullopt;
 }
 
 void LocalFrameView::UpdateGeometry() {

@@ -48,11 +48,11 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   bool IsEmbeddedThroughFrameContainingSVGDocument() const;
 
   void IntrinsicSizingInfoChanged();
-  void UnscaledIntrinsicSizingInfo(const SVGRect* override_viewbox,
-                                   NaturalSizingInfo&) const;
-  void UnscaledIntrinsicSizingInfo(NaturalSizingInfo& sizing_info) const {
+  NaturalSizingInfo UnscaledNaturalSizingInfo(
+      const SVGRect* override_viewbox) const;
+  NaturalSizingInfo UnscaledNaturalSizingInfo() const {
     NOT_DESTROYED();
-    UnscaledIntrinsicSizingInfo(nullptr, sizing_info);
+    return UnscaledNaturalSizingInfo(nullptr);
   }
 
   // This is a special case for SVG documents with percentage dimensions which

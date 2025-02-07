@@ -870,13 +870,12 @@ gfx::Size ImageLoader::AccessNaturalSize() const {
 
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     gfx::Size concrete_object_size;
-    NaturalSizingInfo sizing_info;
-    if (SVGImageForContainer::GetNaturalDimensions(*svg_image, nullptr,
-                                                   sizing_info)) {
+    if (std::optional<NaturalSizingInfo> sizing_info =
+            SVGImageForContainer::GetNaturalDimensions(*svg_image, nullptr)) {
       concrete_object_size =
           ToRoundedSize(PhysicalSize::FromSizeFFloor(blink::ConcreteObjectSize(
-              sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
-                                      LayoutReplaced::kDefaultHeight))));
+              *sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
+                                       LayoutReplaced::kDefaultHeight))));
     }
     if (size != concrete_object_size) {
       element_->GetDocument().CountUse(

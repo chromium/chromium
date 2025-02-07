@@ -137,13 +137,12 @@ NaturalSizingInfo LayoutImageResource::GetNaturalDimensions(
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     const SVGImageViewInfo* view_info = SVGImageForContainer::CreateViewInfo(
         *svg_image, layout_object_->GetNode());
-    if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info,
-                                                    sizing_info)) {
-      sizing_info = NaturalSizingInfo::None();
-    }
+    sizing_info =
+        SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info)
+            .value_or(NaturalSizingInfo::None());
   } else {
-    sizing_info.size = gfx::SizeF(image.Size(ImageOrientation()));
-    sizing_info.aspect_ratio = sizing_info.size;
+    sizing_info = NaturalSizingInfo::MakeFixed(
+        gfx::SizeF(image.Size(ImageOrientation())));
   }
   if (multiplier != 1 && image.HasIntrinsicSize()) {
     sizing_info.size = ApplyClampedZoom(sizing_info.size, multiplier);

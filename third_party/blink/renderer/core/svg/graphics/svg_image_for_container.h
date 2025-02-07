@@ -105,9 +105,9 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
   // Get the natural dimensions for the SVGImage with the view info
   // applied. Returns false if the SVGImage lacks a document element, otherwise
   // true.
-  static bool GetNaturalDimensions(SVGImage& image,
-                                   const SVGImageViewInfo* info,
-                                   NaturalSizingInfo& sizing_info);
+  static std::optional<NaturalSizingInfo> GetNaturalDimensions(
+      SVGImage& image,
+      const SVGImageViewInfo* info);
 
   // Determine the concrete object size of this SVGImage with the view info
   // applied using the specified default object size (in CSS pixels).

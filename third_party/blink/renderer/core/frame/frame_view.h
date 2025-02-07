@@ -35,7 +35,7 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
       unsigned parent_flags,
       ComputeIntersectionsContext&) = 0;
 
-  virtual bool GetIntrinsicSizingInfo(NaturalSizingInfo&) const = 0;
+  virtual std::optional<NaturalSizingInfo> GetNaturalDimensions() const = 0;
 
   // Returns true if this frame could potentially skip rendering and avoid
   // scheduling visual updates.

@@ -275,7 +275,7 @@ class CORE_EXPORT LocalFrameView final
     return layout_size_fixed_to_frame_size_;
   }
 
-  bool GetIntrinsicSizingInfo(NaturalSizingInfo&) const override;
+  std::optional<NaturalSizingInfo> GetNaturalDimensions() const override;
 
   void Dispose() override;
   void PropagateFrameRects() override;

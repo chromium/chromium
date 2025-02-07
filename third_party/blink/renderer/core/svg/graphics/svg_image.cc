@@ -217,17 +217,17 @@ void SVGImage::ApplyViewInfo(const SVGImageViewInfo* viewinfo) {
   root_element->SetViewSpec(viewspec);
 }
 
-bool SVGImage::GetIntrinsicSizingInfo(
-    const SVGViewSpec* override_viewspec,
-    NaturalSizingInfo& intrinsic_sizing_info) const {
+std::optional<NaturalSizingInfo> SVGImage::GetNaturalDimensions(
+    const SVGViewSpec* override_viewspec) const {
   const LayoutSVGRoot* layout_root = LayoutRoot();
-  if (!layout_root)
-    return false;
-  layout_root->UnscaledIntrinsicSizingInfo(
-      override_viewspec ? override_viewspec->ViewBox() : nullptr,
-      intrinsic_sizing_info);
+  if (!layout_root) {
+    return std::nullopt;
+  }
+  NaturalSizingInfo natural_sizing_info =
+      layout_root->UnscaledNaturalSizingInfo(
+          override_viewspec ? override_viewspec->ViewBox() : nullptr);
 
-  if (!intrinsic_sizing_info.has_width || !intrinsic_sizing_info.has_height) {
+  if (!natural_sizing_info.has_width || !natural_sizing_info.has_height) {
     // We're not using an intrinsic aspect ratio to resolve a missing
     // intrinsic width or height when preserveAspectRatio is none.
     // (Ref: crbug.com/584172)
@@ -236,12 +236,10 @@ bool SVGImage::GetIntrinsicSizingInfo(
         SVGPreserveAspectRatio::kSvgPreserveaspectratioNone) {
       // Clear all the fields so that the concrete object size will equal the
       // default object size.
-      intrinsic_sizing_info = NaturalSizingInfo();
-      intrinsic_sizing_info.has_width = false;
-      intrinsic_sizing_info.has_height = false;
+      natural_sizing_info = NaturalSizingInfo::None();
     }
   }
-  return true;
+  return natural_sizing_info;
 }
 
 SVGImage::DrawInfo::DrawInfo(const gfx::SizeF& container_size,

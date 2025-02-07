@@ -174,38 +174,32 @@ NaturalSizingInfo StyleFetchedImage::GetNaturalSizingInfo(
     float multiplier,
     RespectImageOrientationEnum respect_orientation) const {
   Image& image = *image_->GetImage();
-  NaturalSizingInfo intrinsic_sizing_info;
+  NaturalSizingInfo sizing_info;
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     const SVGImageViewInfo* view_info =
         SVGImageForContainer::CreateViewInfo(*svg_image, url_);
-    if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info,
-                                                    intrinsic_sizing_info)) {
-      intrinsic_sizing_info = NaturalSizingInfo::None();
-    }
+    sizing_info =
+        SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info)
+            .value_or(NaturalSizingInfo::None());
   } else {
     gfx::SizeF size(
         image.Size(ForceOrientationIfNecessary(respect_orientation)));
-    intrinsic_sizing_info.size = size;
-    intrinsic_sizing_info.aspect_ratio = size;
+    sizing_info = NaturalSizingInfo::MakeFixed(size);
   }
 
   multiplier = ApplyImageResolution(multiplier);
-  intrinsic_sizing_info.size =
-      ApplyZoom(intrinsic_sizing_info.size, multiplier);
-  return intrinsic_sizing_info;
+  sizing_info.size = ApplyZoom(sizing_info.size, multiplier);
+  return sizing_info;
 }
 
 bool StyleFetchedImage::HasIntrinsicSize() const {
   Image& image = *image_->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    NaturalSizingInfo intrinsic_sizing_info;
     const SVGImageViewInfo* view_info =
         SVGImageForContainer::CreateViewInfo(*svg_image, url_);
-    if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info,
-                                                    intrinsic_sizing_info)) {
-      return false;
-    }
-    return !intrinsic_sizing_info.IsNone();
+    std::optional<NaturalSizingInfo> natural_sizing_info =
+        SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info);
+    return natural_sizing_info && !natural_sizing_info->IsNone();
   }
   return image.HasIntrinsicSize();
 }
