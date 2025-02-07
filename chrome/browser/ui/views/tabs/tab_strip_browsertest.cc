@@ -388,6 +388,27 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_Failure_Pinned) {
   EXPECT_EQ(contentses, GetWebContentses());
 }
 
+// Regression test for crbug.com/394381780. When active tab is the tab right
+// after the collapsed group and a new foreground tab is added to the end of the
+// group, the group should expand.
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
+                       AddForegroundTabToCollapsedGroupExpandsGroup) {
+  AppendTab();
+  AppendTab();
+  ASSERT_EQ(3, tab_strip_model()->count());
+
+  tab_groups::TabGroupId group = AddTabToNewGroup(1);
+  tab_strip_model()->ActivateTabAt(2);
+
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
+
+  // Add a tab to the group.
+  chrome::AddTabAt(browser(), GURL(), 2, true, group);
+
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+}
+
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabFirst_NoPinnedTabs_Success) {
   AppendTab();
   AppendTab();
