@@ -2702,6 +2702,12 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac15 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+[ Mac14-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+[ Mac14 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+[ Mac13-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+[ Mac12-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+[ Mac12 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
 crbug.com/394656809 [ Mac13 ] external/wpt/css/css-overflow/scroll-marker-group-keeps-active-in-view.html [ Failure ]
 crbug.com/394331189 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?7-8 [ Crash Failure ]
 crbug.com/394331189 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/popup-unsafe-none-with-same-origin.https.html [ Crash ]
@@ -9133,5 +9139,5 @@ crbug.com/389946963 [ Mac13 ] external/wpt/mediacapture-fromelement/capture.html
 crbug.com/394287937 http/tests/devtools/storage-panel-dom-storage-update.js [ Failure Pass ]
 
 # Gardener 2025-02-06
-crbug.com/385054996 external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Pass Crash Timeout ]
-crbug.com/394638725 [ Mac ] external/wpt/css/cssom/getComputedStyle-width-scroll.tentative.html [ Pass Failure ]
+crbug.com/385054996 external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Crash Pass Timeout ]
+crbug.com/394638725 [ Mac ] external/wpt/css/cssom/getComputedStyle-width-scroll.tentative.html [ Failure Pass ]
