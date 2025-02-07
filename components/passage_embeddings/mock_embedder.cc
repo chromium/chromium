@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/mock_embedder.h"
+#include "components/passage_embeddings/mock_embedder.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/history_embeddings/vector_database.h"
 
-namespace history_embeddings {
+namespace passage_embeddings {
 
 namespace {
 
@@ -28,14 +27,13 @@ MockEmbedder::MockEmbedder() = default;
 MockEmbedder::~MockEmbedder() = default;
 
 void MockEmbedder::ComputePassagesEmbeddings(
-    passage_embeddings::PassagePriority priority,
+    PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), std::move(passages),
-                     ComputeEmbeddingsForPassages(passages),
-                     passage_embeddings::ComputeEmbeddingsStatus::kSuccess));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(passages),
+                                ComputeEmbeddingsForPassages(passages),
+                                ComputeEmbeddingsStatus::kSuccess));
 }
 
 void MockEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
@@ -49,4 +47,4 @@ std::vector<Embedding> MockEmbedder::ComputeEmbeddingsForPassages(
                                 ComputeEmbeddingForPassage(""));
 }
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings

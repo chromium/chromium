@@ -28,13 +28,13 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/core/search_strings_update_listener.h"
 #include "components/history_embeddings/history_embeddings_features.h"
-#include "components/history_embeddings/scheduling_embedder.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/scheduling_embedder.h"
 #include "url/gurl.h"
 
 namespace history_embeddings {
@@ -228,14 +228,14 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    std::unique_ptr<Embedder> embedder,
+    std::unique_ptr<passage_embeddings::Embedder> embedder,
     std::unique_ptr<Answerer> answerer,
     std::unique_ptr<IntentClassifier> intent_classifier)
     : os_crypt_async_(os_crypt_async),
       history_service_(history_service),
       page_content_annotations_service_(page_content_annotations_service),
       optimization_guide_decider_(optimization_guide_decider),
-      embedder_(std::make_unique<SchedulingEmbedder>(
+      embedder_(std::make_unique<passage_embeddings::SchedulingEmbedder>(
           std::move(embedder),
           GetFeatureParameters().scheduled_embeddings_max,
           GetFeatureParameters().use_performance_scenario)),
@@ -405,7 +405,8 @@ SearchResult HistoryEmbeddingsService::Search(
   }
 
   // Try to cancel the embedding task for the previous query, if any.
-  if (query_embedding_task_id_ != SchedulingEmbedder::kInvalidTaskId) {
+  if (query_embedding_task_id_ !=
+      passage_embeddings::SchedulingEmbedder::kInvalidTaskId) {
     embedder_->TryCancel(query_embedding_task_id_);
   }
 
@@ -421,8 +422,8 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
     SearchResultCallback callback,
     SearchResult result,
     std::vector<std::string> query_passages,
-    std::vector<Embedding> query_embeddings,
-    SchedulingEmbedder::TaskId task_id,
+    std::vector<passage_embeddings::Embedding> query_embeddings,
+    passage_embeddings::SchedulingEmbedder::TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   bool succeeded =
       status == passage_embeddings::ComputeEmbeddingsStatus::kSuccess;
@@ -440,7 +441,8 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
   }
 
   // Reset the query embedding task ID to avoid attempting to cancel it later.
-  query_embedding_task_id_ = SchedulingEmbedder::kInvalidTaskId;
+  query_embedding_task_id_ =
+      passage_embeddings::SchedulingEmbedder::kInvalidTaskId;
 
   if (!succeeded) {
     std::move(callback).Run(std::move(result));
@@ -665,7 +667,7 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
     base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
     size_t query_id,
     SearchParams search_params,
-    Embedding query_embedding,
+    passage_embeddings::Embedding query_embedding,
     std::optional<base::Time> time_range_start,
     size_t count) {
   base::ElapsedTimer timer;
@@ -826,7 +828,8 @@ void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddingsWithExistingData(
 
   // Move existing passages and associated embeddings into map for quick
   // hash-based lookup instead of many string comparisons.
-  std::unordered_map<std::string, Embedding> embedding_cache;
+  std::unordered_map<std::string, passage_embeddings::Embedding>
+      embedding_cache;
   if (existing_url_data.has_value()) {
     size_t passages_size = existing_url_data->passages.passages_size();
     // It's possible to get passages but no embeddings if the model version
@@ -904,8 +907,8 @@ void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddingsWithExistingData(
 void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(
     UrlData url_passages,
     std::vector<std::string> passages,
-    std::vector<Embedding> embeddings,
-    SchedulingEmbedder::TaskId task_id,
+    std::vector<passage_embeddings::Embedding> embeddings,
+    passage_embeddings::SchedulingEmbedder::TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
     return;
@@ -1210,8 +1213,9 @@ void HistoryEmbeddingsService::RebuildAbsentEmbeddings(
             << " with " << passages.size() << " passages";
 
     // Reserve room for the embeddings to be filled in once computed.
-    url_passages.embeddings = std::vector<Embedding>(
-        url_passages.passages.passages_size(), Embedding(std::vector<float>{}));
+    url_passages.embeddings = std::vector<passage_embeddings::Embedding>(
+        url_passages.passages.passages_size(),
+        passage_embeddings::Embedding(std::vector<float>{}));
 
     // TODO(crbug.com/390241271): Move this inside Embedder implementations once
     //  they are no longer wrapped inside the SchedulingEmbedder.

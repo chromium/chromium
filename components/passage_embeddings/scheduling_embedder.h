@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_SCHEDULING_EMBEDDER_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_SCHEDULING_EMBEDDER_H_
+#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_SCHEDULING_EMBEDDER_H_
+#define COMPONENTS_PASSAGE_EMBEDDINGS_SCHEDULING_EMBEDDER_H_
 
 #include <memory>
 #include <optional>
@@ -17,7 +17,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "components/history_embeddings/embedder.h"
+#include "components/passage_embeddings/embedder.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
 #if BUILDFLAG(USE_BLINK)
@@ -25,7 +25,7 @@
 #include "third_party/blink/public/common/performance/performance_scenarios.h"
 #endif
 
-namespace history_embeddings {
+namespace passage_embeddings {
 
 // The SchedulingEmbedder wraps a primary embedder and adds scheduling control
 // with batching and priorities so that high priority queries can be computed as
@@ -185,6 +185,6 @@ class SchedulingEmbedder
   base::WeakPtrFactory<SchedulingEmbedder> weak_ptr_factory_{this};
 };
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_SCHEDULING_EMBEDDER_H_
+#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_SCHEDULING_EMBEDDER_H_

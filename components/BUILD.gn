@@ -498,6 +498,7 @@ test("components_unittests") {
       "//components/paint_preview/common:unit_tests",
       "//components/paint_preview/player:unit_tests",
       "//components/paint_preview/renderer:unit_tests",
+      "//components/passage_embeddings:unit_tests",
       "//components/password_manager/content/browser:unit_tests",
       "//components/password_manager/services/csv_password:unit_tests",
       "//components/payments/content:unit_tests",

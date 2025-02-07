@@ -26,7 +26,7 @@ ChromeHistoryEmbeddingsService::ChromeHistoryEmbeddingsService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    std::unique_ptr<Embedder> embedder,
+    std::unique_ptr<passage_embeddings::Embedder> embedder,
     std::unique_ptr<Answerer> answerer,
     std::unique_ptr<IntentClassifier> intent_classifier)
     : HistoryEmbeddingsService(g_browser_process->os_crypt_async(),

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/scheduling_embedder.h"
+#include "components/passage_embeddings/scheduling_embedder.h"
 
 #include <memory>
 
@@ -11,12 +11,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/history_embeddings/embedder.h"
-#include "components/history_embeddings/mock_embedder.h"
-#include "components/history_embeddings/vector_database.h"
+#include "components/passage_embeddings/embedder.h"
+#include "components/passage_embeddings/mock_embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace history_embeddings {
+namespace passage_embeddings {
 
 using ComputePassagesEmbeddingsFuture =
     base::test::TestFuture<std::vector<std::string>,
@@ -142,4 +141,4 @@ TEST_F(SchedulingEmbedderTest, JobCompletionRecordsHistograms) {
       "History.Embeddings.ScheduledPassageCount", 3, 1);
 }
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings

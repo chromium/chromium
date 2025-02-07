@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/scheduling_embedder.h"
+#include "components/passage_embeddings/scheduling_embedder.h"
 
 #include <atomic>
 #include <memory>
@@ -15,10 +15,9 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "components/history_embeddings/vector_database.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 
-namespace history_embeddings {
+namespace passage_embeddings {
 
 namespace {
 
@@ -295,4 +294,4 @@ void SchedulingEmbedder::OnEmbeddingsComputed(
   SubmitWorkToEmbedder();
 }
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings

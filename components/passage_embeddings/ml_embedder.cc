@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/ml_embedder.h"
+#include "components/passage_embeddings/ml_embedder.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/passage_embeddings/passage_embeddings_service_controller.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 
-namespace history_embeddings {
+namespace passage_embeddings {
 
 MlEmbedder::MlEmbedder(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -42,7 +41,7 @@ void MlEmbedder::ComputePassagesEmbeddings(
                  results,
              passage_embeddings::ComputeEmbeddingsStatus status) {
             std::vector<std::string> result_passages;
-            std::vector<Embedding> result_embeddings;
+            std::vector<passage_embeddings::Embedding> result_embeddings;
             for (auto& result : results) {
               result_passages.push_back(result->passage);
               result_embeddings.emplace_back(result->embeddings);
@@ -80,4 +79,4 @@ void MlEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
   }
 }
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings

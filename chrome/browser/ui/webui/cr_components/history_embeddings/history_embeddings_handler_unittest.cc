@@ -27,7 +27,6 @@
 #include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
-#include "components/history_embeddings/mock_embedder.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/browser_context.h"
@@ -67,7 +66,7 @@ std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
     content::BrowserContext* browser_context) {
   return HistoryEmbeddingsServiceFactory::
       BuildServiceInstanceForBrowserContextForTesting(
-          browser_context, std::make_unique<history_embeddings::MockEmbedder>(),
+          browser_context,
           /*answerer=*/nullptr,
           /*intent_classifier=*/nullptr);
 }

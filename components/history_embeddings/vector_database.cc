@@ -88,54 +88,6 @@ void CountTermsInPassage(std::vector<size_t>& term_counts,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Embedding::Embedding(std::vector<float> data) : data_(std::move(data)) {}
-Embedding::Embedding() = default;
-Embedding::Embedding(std::vector<float> data, size_t passage_word_count)
-    : Embedding(data) {
-  passage_word_count_ = passage_word_count;
-}
-Embedding::~Embedding() = default;
-Embedding::Embedding(const Embedding&) = default;
-Embedding& Embedding::operator=(const Embedding&) = default;
-Embedding::Embedding(Embedding&&) = default;
-Embedding& Embedding::operator=(Embedding&&) = default;
-bool Embedding::operator==(const Embedding&) const = default;
-
-size_t Embedding::Dimensions() const {
-  return data_.size();
-}
-
-float Embedding::Magnitude() const {
-  float sum = 0.0f;
-  for (float s : data_) {
-    sum += s * s;
-  }
-  return std::sqrt(sum);
-}
-
-void Embedding::Normalize() {
-  float magnitude = Magnitude();
-  CHECK_GT(magnitude, kEpsilon);
-  for (float& s : data_) {
-    s /= magnitude;
-  }
-}
-
-float Embedding::ScoreWith(const Embedding& other_embedding) const {
-  // This check is redundant since the database layers ensure embeddings
-  // always have a fixed consistent size, but code can change with time,
-  // and being sure directly before use may eventually catch a bug.
-  CHECK_EQ(data_.size(), other_embedding.data_.size());
-
-  float embedding_score = 0.0f;
-  for (size_t i = 0; i < data_.size(); i++) {
-    embedding_score += data_[i] * other_embedding.data_[i];
-  }
-  return embedding_score;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 ScoredUrl::ScoredUrl(history::URLID url_id,
                      history::VisitID visit_id,
                      base::Time visit_time,
@@ -190,10 +142,11 @@ bool UrlData::operator==(const UrlData& other) const {
   return false;
 }
 
-UrlScore UrlData::BestScoreWith(SearchInfo& search_info,
-                                const SearchParams& search_params,
-                                const Embedding& query_embedding,
-                                size_t min_passage_word_count) const {
+UrlScore UrlData::BestScoreWith(
+    SearchInfo& search_info,
+    const SearchParams& search_params,
+    const passage_embeddings::Embedding& query_embedding,
+    size_t min_passage_word_count) const {
   constexpr float kMaxFloat = std::numeric_limits<float>::max();
   float word_match_required_score =
       search_params.word_match_minimum_embedding_score;
@@ -213,7 +166,7 @@ UrlScore UrlData::BestScoreWith(SearchInfo& search_info,
   std::string modified_passage;
   const std::string* passage = nullptr;
   for (size_t i = 0; i < embeddings.size(); i++) {
-    const Embedding& embedding = embeddings[i];
+    const passage_embeddings::Embedding& embedding = embeddings[i];
     passage = &passages.passages(i);
 
     // Skip non-ASCII strings to avoid scoring problems with the model.
@@ -300,7 +253,7 @@ SearchInfo VectorDatabase::FindNearest(
     std::optional<base::Time> time_range_start,
     size_t count,
     const SearchParams& search_params,
-    const Embedding& query_embedding,
+    const passage_embeddings::Embedding& query_embedding,
     base::RepeatingCallback<bool()> is_search_halted) {
   if (count == 0) {
     return {};
@@ -423,7 +376,7 @@ bool VectorDatabaseInMemory::AddUrlData(UrlData url_data) {
   CHECK_EQ(static_cast<size_t>(url_data.passages.passages_size()),
            url_data.embeddings.size());
   if (!data_.empty()) {
-    for (const Embedding& embedding : url_data.embeddings) {
+    for (const passage_embeddings::Embedding& embedding : url_data.embeddings) {
       // All embeddings in the database must have equal dimensions.
       CHECK_EQ(embedding.Dimensions(), data_[0].embeddings[0].Dimensions());
       // All embeddings in the database are expected to be normalized.

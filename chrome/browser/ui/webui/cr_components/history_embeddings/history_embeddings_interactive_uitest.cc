@@ -16,7 +16,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
-#include "components/history_embeddings/mock_embedder.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -49,8 +48,7 @@ class HistoryEmbeddingsInteractiveTest
         base::BindLambdaForTesting([](content::BrowserContext* context) {
           return HistoryEmbeddingsServiceFactory::
               BuildServiceInstanceForBrowserContextForTesting(
-                  context, std::make_unique<history_embeddings::MockEmbedder>(),
-                  /*answerer=*/nullptr, /*intent_classifier=*/nullptr);
+                  context, /*answerer=*/nullptr, /*intent_classifier=*/nullptr);
         }));
 
     InteractiveBrowserTest::SetUpOnMainThread();

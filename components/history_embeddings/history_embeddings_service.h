@@ -27,7 +27,6 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/intent_classifier.h"
-#include "components/history_embeddings/scheduling_embedder.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -35,6 +34,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/scheduling_embedder.h"
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
@@ -161,7 +161,7 @@ class HistoryEmbeddingsService : public KeyedService,
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      std::unique_ptr<Embedder> embedder,
+      std::unique_ptr<passage_embeddings::Embedder> embedder,
       std::unique_ptr<Answerer> answerer,
       std::unique_ptr<IntentClassifier> intent_classifier);
   HistoryEmbeddingsService(const HistoryEmbeddingsService&) = delete;
@@ -272,7 +272,7 @@ class HistoryEmbeddingsService : public KeyedService,
         base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
         size_t query_id,
         SearchParams search_params,
-        Embedding query_embedding,
+        passage_embeddings::Embedding query_embedding,
         std::optional<base::Time> time_range_start,
         size_t count);
 
@@ -333,8 +333,8 @@ class HistoryEmbeddingsService : public KeyedService,
   void OnPassagesEmbeddingsComputed(
       UrlData url_passages,
       std::vector<std::string> passages,
-      std::vector<Embedding> embeddings,
-      SchedulingEmbedder::TaskId task_id,
+      std::vector<passage_embeddings::Embedding> embeddings,
+      passage_embeddings::SchedulingEmbedder::TaskId task_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Invoked after the embedding for the original search query has been
@@ -343,8 +343,8 @@ class HistoryEmbeddingsService : public KeyedService,
       SearchResultCallback callback,
       SearchResult result,
       std::vector<std::string> query_passages,
-      std::vector<Embedding> query_embedding,
-      SchedulingEmbedder::TaskId task_id,
+      std::vector<passage_embeddings::Embedding> query_embedding,
+      passage_embeddings::SchedulingEmbedder::TaskId task_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Finishes a search result by combining found data with additional data from
@@ -424,7 +424,7 @@ class HistoryEmbeddingsService : public KeyedService,
       history_service_observation_{this};
 
   // The embedder used to compute embeddings.
-  std::unique_ptr<SchedulingEmbedder> embedder_;
+  std::unique_ptr<passage_embeddings::SchedulingEmbedder> embedder_;
 
   // The answerer used to answer queries with context. May be nullptr if
   // the kHistoryEmbeddingsAnswers feature is disabled.
@@ -454,8 +454,8 @@ class HistoryEmbeddingsService : public KeyedService,
   std::atomic<size_t> query_id_ = 0u;
 
   // Used to cancel the in-flight embedding task for the previous stale query.
-  SchedulingEmbedder::TaskId query_embedding_task_id_ =
-      SchedulingEmbedder::kInvalidTaskId;
+  passage_embeddings::SchedulingEmbedder::TaskId query_embedding_task_id_ =
+      passage_embeddings::SchedulingEmbedder::kInvalidTaskId;
 
   base::CallbackListSubscription subscription_;
 

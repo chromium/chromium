@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_EMBEDDINGS_MOCK_EMBEDDER_H_
-#define COMPONENTS_HISTORY_EMBEDDINGS_MOCK_EMBEDDER_H_
+#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_MOCK_EMBEDDER_H_
+#define COMPONENTS_PASSAGE_EMBEDDINGS_MOCK_EMBEDDER_H_
 
 #include <string>
 #include <vector>
 
-#include "components/history_embeddings/embedder.h"
+#include "components/passage_embeddings/embedder.h"
 
-namespace history_embeddings {
+namespace passage_embeddings {
 
 class MockEmbedder : public Embedder {
  public:
@@ -19,7 +19,7 @@ class MockEmbedder : public Embedder {
 
   // Embedder:
   void ComputePassagesEmbeddings(
-      passage_embeddings::PassagePriority priority,
+      PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
 
@@ -30,6 +30,6 @@ class MockEmbedder : public Embedder {
       const std::vector<std::string>& passages);
 };
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings
 
-#endif  // COMPONENTS_HISTORY_EMBEDDINGS_MOCK_EMBEDDER_H_
+#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_MOCK_EMBEDDER_H_

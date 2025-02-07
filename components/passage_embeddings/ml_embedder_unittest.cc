@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_embeddings/ml_embedder.h"
+#include "components/passage_embeddings/ml_embedder.h"
 
 #include <memory>
 
@@ -11,17 +11,17 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/passage_embeddings/embedder.h"
 #include "components/passage_embeddings/passage_embeddings_service_controller.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace history_embeddings {
+namespace passage_embeddings {
 
 using passage_embeddings::ComputeEmbeddingsStatus;
 using passage_embeddings::EmbedderMetadata;
@@ -37,7 +37,7 @@ constexpr size_t kEmbeddingsModelOutputSize = 768ul;
 
 using ComputePassagesEmbeddingsFuture =
     base::test::TestFuture<std::vector<std::string>,
-                           std::vector<Embedding>,
+                           std::vector<passage_embeddings::Embedding>,
                            ComputeEmbeddingsStatus>;
 
 // Returns a model info builder preloaded with valid model info.
@@ -48,7 +48,7 @@ optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo() {
   test_data_dir = test_data_dir.AppendASCII("components")
                       .AppendASCII("test")
                       .AppendASCII("data")
-                      .AppendASCII("history_embeddings");
+                      .AppendASCII("passage_embeddings");
 
   // The files only exist to appease the mojo run-time check for null arguments,
   // and they are not read by the fake embedder.
@@ -83,7 +83,7 @@ class FakePassageEmbedder : public passage_embeddings::mojom::PassageEmbedder {
                           passage_embeddings::mojom::PassagePriority priority,
                           GenerateEmbeddingsCallback callback) override {
     std::vector<std::string> passages = inputs;
-    std::vector<Embedding> embeddings;
+    std::vector<passage_embeddings::Embedding> embeddings;
     std::vector<passage_embeddings::mojom::PassageEmbeddingsResultPtr> results;
     for (const std::string& input : inputs) {
       // Fails the generation on an "error" string to simulate failed model
@@ -483,4 +483,4 @@ TEST_F(MlEmbedderTest, EmbedderRunningStatus) {
   }
 }
 
-}  // namespace history_embeddings
+}  // namespace passage_embeddings

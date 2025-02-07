@@ -9,11 +9,11 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/passage_embeddings/embedder.h"
 #include "content/public/browser/browser_context.h"
 
 namespace history_embeddings {
 class Answerer;
-class Embedder;
 class HistoryEmbeddingsService;
 class IntentClassifier;
 }  // namespace history_embeddings
@@ -28,7 +28,6 @@ class HistoryEmbeddingsServiceFactory : public ProfileKeyedServiceFactory {
   static std::unique_ptr<KeyedService>
   BuildServiceInstanceForBrowserContextForTesting(
       content::BrowserContext* context,
-      std::unique_ptr<history_embeddings::Embedder> embedder,
       std::unique_ptr<history_embeddings::Answerer> answerer,
       std::unique_ptr<history_embeddings::IntentClassifier> intent_classifier);
 
