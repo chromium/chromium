@@ -104,21 +104,18 @@ void LogVideoCaptureTimestamps(CastEnvironment* cast_environment,
 }  // namespace
 
 VideoSender::VideoSender(
+    std::unique_ptr<VideoEncoder> video_encoder,
     scoped_refptr<CastEnvironment> cast_environment,
     const FrameSenderConfig& video_config,
-    StatusChangeCallback status_change_cb,
-    const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     std::unique_ptr<openscreen::cast::Sender> sender,
-    std::unique_ptr<media::VideoEncoderMetricsProvider>
-        encoder_metrics_provider,
     VideoSender::PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_cb,
-    VideoBitrateSuggester::GetVideoNetworkBandwidthCB get_bandwidth_cb,
-    media::GpuVideoAcceleratorFactories* gpu_factories)
+    VideoBitrateSuggester::GetVideoNetworkBandwidthCB get_bandwidth_cb)
     : frame_sender_(FrameSender::Create(cast_environment,
                                         video_config,
                                         std::move(sender),
                                         *this)),
+      video_encoder_(std::move(video_encoder)),
       cast_environment_(cast_environment),
       bitrate_suggester_(
           std::make_unique<VideoBitrateSuggester>(video_config,
@@ -127,9 +124,6 @@ VideoSender::VideoSender(
       max_playout_delay_(video_config.max_playout_delay),
       playout_delay_change_cb_(std::move(playout_delay_change_cb)),
       feedback_cb_(feedback_cb) {
-  video_encoder_ = VideoEncoder::Create(
-      cast_environment_, video_config, std::move(encoder_metrics_provider),
-      status_change_cb, create_vea_cb, gpu_factories);
   CHECK(video_encoder_);
 }
 
