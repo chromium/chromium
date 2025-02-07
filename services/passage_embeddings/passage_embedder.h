@@ -23,7 +23,8 @@ inline constexpr char kCacheHitMetricName[] =
 class PassageEmbedder : public mojom::PassageEmbedder {
  public:
   PassageEmbedder(mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
-                  mojom::PassageEmbedderParamsPtr embedder_params);
+                  mojom::PassageEmbedderParamsPtr embedder_params,
+                  base::OnceCallback<void()> on_disconnect);
   PassageEmbedder(const PassageEmbedder&) = delete;
   PassageEmbedder& operator=(const PassageEmbedder) = delete;
   ~PassageEmbedder() override;
