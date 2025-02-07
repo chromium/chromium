@@ -175,6 +175,7 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="doneButton" inverse on-click="onDoneButton"
+        disabled="[[!isSetupDoneButtonEnabled]]"
         class="focus-on-show" text-key="discoverPinSetupDone">
     </oobe-text-button>
   </div>
