@@ -283,6 +283,8 @@ class USER_MANAGER_EXPORT UserManager {
 
   // Switches to active user identified by |account_id|. User has to be logged
   // in.
+  // NOTE: Please do not call this method directly. Instead, please use
+  // SessionManager::SwitchActiveSession().
   virtual void SwitchActiveUser(const AccountId& account_id) = 0;
 
   // Switches to the last active user (called after crash happens and session

@@ -57,6 +57,11 @@ class SESSION_EXPORT SessionManager
                                const std::string& user_id_hash,
                                bool new_user);
 
+  // Switches the active user session to the one specified by `account_id`.
+  // The User has to be logged in already (i.e. CreateSession* needs to be
+  // called in advance).
+  void SwitchActiveSession(const AccountId& account_id);
+
   // Returns true if we're logged in and browser has been started i.e.
   // browser_creator.LaunchBrowser(...) was called after sign in
   // or restart after crash.
