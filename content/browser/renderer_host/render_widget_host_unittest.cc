@@ -220,6 +220,11 @@ class TestView : public TestRenderWidgetHostView {
     requested_rect.Inset(insets_);
     return requested_rect.size();
   }
+  gfx::Size GetVisibleViewportSizeDevicePx() override {
+    gfx::Rect requested_rect(GetRequestedRendererSizeDevicePx());
+    requested_rect.Inset(insets_);
+    return requested_rect.size();
+  }
 
   void ProcessAckedTouchEvent(
       const input::TouchEventWithLatencyInfo& touch,
@@ -1180,6 +1185,10 @@ TEST_F(RenderWidgetHostTest, NewSizeIncludesScaleFactor) {
   auto new_size = widget_.ReceivedVisualProperties()[0].new_size_device_px;
   EXPECT_EQ(202, new_size.width());
   EXPECT_EQ(200, new_size.height());
+  auto visible_viewport_size =
+      widget_.ReceivedVisualProperties()[0].visible_viewport_size;
+  EXPECT_EQ(202, visible_viewport_size.width());
+  EXPECT_EQ(200, visible_viewport_size.height());
   EXPECT_TRUE(host_->visual_properties_ack_pending_);
 }
 

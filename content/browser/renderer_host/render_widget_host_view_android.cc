@@ -1211,6 +1211,15 @@ gfx::Size RenderWidgetHostViewAndroid::GetVisibleViewportSize() {
   return requested_rect.size();
 }
 
+gfx::Size RenderWidgetHostViewAndroid::GetVisibleViewportSizeDevicePx() {
+  int pinned_bottom_adjust_device_px =
+      std::max(0, (int)(view_.GetViewportInsetBottom()));
+  gfx::Rect requested_rect(GetRequestedRendererSizeDevicePx());
+  requested_rect.Inset(
+      gfx::Insets::TLBR(0, 0, pinned_bottom_adjust_device_px, 0));
+  return requested_rect.size();
+}
+
 void RenderWidgetHostViewAndroid::SetInsets(const gfx::Insets& insets) {
   NOTREACHED();
 }

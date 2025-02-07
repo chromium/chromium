@@ -129,6 +129,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::Rect GetViewBounds() override;
   bool IsPointerLocked() override;
   gfx::Size GetVisibleViewportSize() override;
+  gfx::Size GetVisibleViewportSizeDevicePx() override;
   void SetInsets(const gfx::Insets& insets) override;
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;

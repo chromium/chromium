@@ -874,6 +874,13 @@ gfx::Size RenderWidgetHostViewAura::GetVisibleViewportSize() {
   return requested_rect.size();
 }
 
+gfx::Size RenderWidgetHostViewAura::GetVisibleViewportSizeDevicePx() {
+  gfx::Rect requested_rect(GetRequestedRendererSizeDevicePx());
+  auto scaled_insets = ScaleToCeiledInsets(insets_, GetDeviceScaleFactor());
+  requested_rect.Inset(scaled_insets);
+  return requested_rect.size();
+}
+
 void RenderWidgetHostViewAura::SetInsets(const gfx::Insets& insets) {
   TRACE_EVENT0("vk", "RenderWidgetHostViewAura::SetInsets");
   if (insets != insets_) {
