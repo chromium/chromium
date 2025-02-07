@@ -851,6 +851,34 @@ TEST_F(InterestGroupCachingStorageTest, DontLoadCachedInterestGroupsIfExpired) {
   ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
 }
 
+// See crbug.com/395087859 for why this test is necessary.
+TEST_F(InterestGroupCachingStorageTest,
+       UpdateCachedOriginsWithNullPriorResult) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFledgeUsePreconnectCache);
+  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
+      CreateCachingStorage();
+
+  GURL test_url("https://www.test.test");
+  url::Origin owner = url::Origin::Create(GURL("https://www.example.test/"));
+  blink::InterestGroup ig = MakeInterestGroup(owner, "1");
+
+  JoinInterestGroup(caching_storage.get(), ig, test_url);
+
+  // Get a previous cached result, but let it expire + go out of scope.
+  {
+    std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+        GetInterestGroupsForOwner(caching_storage.get(), owner);
+
+    ASSERT_TRUE(loaded_igs.value());
+    task_environment_.FastForwardBy(
+        InterestGroupCachingStorage::kMinimumCacheHoldTime + base::Seconds(1));
+  }
+
+  // Make sure we don't crash when we try UpdateCachedOrigins.
+  caching_storage->UpdateCachedOriginsIfEnabled(owner);
+}
+
 TEST_F(InterestGroupCachingStorageTest, GetCachedOwnerAndSignalsOrigins) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFledgeUsePreconnectCache);
