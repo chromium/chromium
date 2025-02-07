@@ -3688,6 +3688,21 @@
             ]
         }
     ],
+    "CCTEphemeralMediaViewerExperiment": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CCTEphemeralMediaViewerExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "CCTGoogleBottomBar": [
         {
             "platforms": [
