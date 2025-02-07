@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/notimplemented.h"
 #include "base/numerics/angle_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/vr/fov_rectangle.h"
 #include "chrome/browser/vr/frame_type.h"
 #include "chrome/browser/vr/model/camera_model.h"
