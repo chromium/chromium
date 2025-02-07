@@ -51,7 +51,12 @@ const bool kTailoredSecurityEnabled = true;
 const bool kTailoredSecurityDisabled = false;
 
 namespace {
-// Test implementation of ChromeTailoredSecurityService.
+// (TODO:crbug.com/394659061): We extracted the preference based retry logic to
+// a new class, however, we need to find a way to mock the new handler and test
+// the intended behavior. Explicitly the history sync on and policy controlled
+// scenario. But it is working as intended for now based on manual testing and
+// the retry handler unit testing. Test implementation of
+// ChromeTailoredSecurityService.
 class TestChromeTailoredSecurityService : public ChromeTailoredSecurityService {
  public:
   explicit TestChromeTailoredSecurityService(Profile* profile)

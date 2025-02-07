@@ -20,9 +20,6 @@ class MessageRetryHandler {
   // Callback signature for the retry action.
   using RetryCallback = base::OnceClosure;
 
-  // Callback signature for retrieving the history sync state.
-  using HistorySyncStateCallback = base::OnceCallback<bool()>;
-
   // Enum for the retry state preference.
   enum class RetryState {
     // Initialization value meaning that the service  has not
@@ -55,20 +52,6 @@ class MessageRetryHandler {
     kMaxValue = kUnsetStillWaiting,
   };
 
-  // The amount of time to wait after construction before checking if a retry is
-  // needed.
-  static constexpr const base::TimeDelta kRetryAttemptStartupDelay =
-      base::Minutes(2);
-
-  // The amount of time to wait between retry attempts.
-  static constexpr const base::TimeDelta kRetryNextAttemptDelay = base::Days(1);
-
-  // Length of time that the retry mechanism will wait before running. This
-  // delay is used for the case where the service can't tell
-  // if it succeeded in the past.
-  static constexpr const base::TimeDelta kWaitingPeriodInterval =
-      base::Days(90);
-
   // Constructor.
   // |profile|: The profile associated with this retry handler. Used to access
   //     preferences and other profile-specific data.
@@ -77,8 +60,22 @@ class MessageRetryHandler {
   // |next_retry_timestamp_pref|: The name of the preference used to store the
   //     timestamp of the next retry attempt (e.g.,
   //     "my_feature.next_retry_time").
-  // |retry_delay|: The time to wait before retrying the action (e.g.,
-  //     base::Days(1)).
+  // |retry_attempt_startup_delay|: The amount of time to wait after
+  //     construction before checking if a retry is needed. To avoid resource
+  //     contention at startup and to try to wait for a tab to be available,
+  //     this delay is used for the initial check after the MessageRetryHandler
+  //     is created.
+  // |retry_next_attempt_delay|: The amount of time to wait between subsequent
+  //     retry attempts. This delay is used when a retry is necessary but the
+  //     previous attempt failed.
+  // |waiting_period_interval|: Time that the retry mechanism will wait before
+  //     checking the retry state again. This delay is used in the case where
+  //     the service hasn't yet determined whether a retry is necessary (e.g.,
+  //     when the initial state is UNSET and the retry_state_dependent_pref_ (is
+  //     false). This delay is different from retry_next_attempt_delay because
+  //     retry_next_attempt_delay is used when a retry is necessary but the
+  //     previous attempt failed, while waiting_period_interval is used when the
+  //     service hasn't yet determined whether a retry is necessary.
   // |retry_callback|: The callback to be executed when retrying the action.
   //     This callback should perform the action that needs to be retried.
   // |history_sync_enabled|: Whether history sync is enabled for the user.
@@ -94,9 +91,10 @@ class MessageRetryHandler {
   MessageRetryHandler(Profile* profile,
                       const std::string& retry_state_pref,
                       const std::string& next_retry_timestamp_pref,
-                      base::TimeDelta retry_delay,
+                      base::TimeDelta retry_attempt_startup_delay,
+                      base::TimeDelta retry_next_attempt_delay,
+                      base::TimeDelta waiting_period_interval,
                       RetryCallback retry_callback,
-                      HistorySyncStateCallback history_sync_state_callback,
                       const std::string& histogram_name,
                       const std::string& last_update_timestamp_pref,
                       const std::string& retry_state_dependent_pref);
@@ -106,11 +104,9 @@ class MessageRetryHandler {
 
   ~MessageRetryHandler();
 
-  // Starts the retry logic if needed. This function checks if the required
-  // conditions are met (e.g., history sync is enabled and Safe Browsing is not
-  // controlled by policy) and starts a timer to retry the action if necessary.
-  // This function should be called when the feature is first initialized.
-  void MaybeStartRetryTimer();
+  // Starts the retry logic. This function should be called when your feature is
+  // first initialized.
+  void StartRetryTimer();
 
   // Checks if the retry_callback should be retried.
   bool ShouldRetry();
@@ -135,14 +131,17 @@ class MessageRetryHandler {
   // The preference for storing the timestamp of the next retry attempt.
   std::string next_retry_timestamp_pref_;
 
-  // The time to wait before retrying.
-  base::TimeDelta retry_delay_;
+  // Time to wait initially.
+  base::TimeDelta retry_attempt_startup_delay_;
+
+  // Time to wait between retries.
+  base::TimeDelta retry_next_attempt_delay_;
+
+  // Time before checking state again.
+  base::TimeDelta waiting_period_interval_;
 
   // The callback to be executed when retrying the action.
   RetryCallback retry_callback_;
-
-  // The callback to retrieve the history sync state.
-  HistorySyncStateCallback history_sync_state_callback_;
 
   // The timer used to retry the action.
   base::OneShotTimer retry_timer_;
