@@ -32,11 +32,13 @@ class AppFetchPolicies : public AppClientBase {
   void OnRemoteReady() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    remote_->FetchPolicies(mojo::WrapCallbackWithDropHandler(
-        base::BindOnce(&AppFetchPolicies::OnPoliciesFetched,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&AppFetchPolicies::OnRPCDropped,
-                       weak_ptr_factory_.GetWeakPtr())));
+    remote_->FetchPolicies(
+        policy::PolicyFetchReason::kUserRequest,
+        mojo::WrapCallbackWithDropHandler(
+            base::BindOnce(&AppFetchPolicies::OnPoliciesFetched,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindOnce(&AppFetchPolicies::OnRPCDropped,
+                           weak_ptr_factory_.GetWeakPtr())));
   }
 
   void OnPoliciesFetched(mojom::StatusPtr status) {

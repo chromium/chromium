@@ -105,17 +105,20 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     SystemClockClient::InitializeFake();
 
+    session_manager_.SetSessionState(
+        session_manager::SessionState::LOGIN_PRIMARY);
+
     profile_ = std::make_unique<TestingProfile>();
     profile_->SetIsSupervisedProfile();
+    // TODO(hidehiko): we should set up kChild account from the beginning,
+    // but ArcAppTest does not support such a case. Fix the test helper.
     arc_test_.SetUp(profile());
 
     session_manager_.CreateSession(
         account_id(),
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id()),
-        user_manager::UserType::kChild,
+        /*new_user=*/false,
         /*has_active_session=*/false);
-    session_manager_.SetSessionState(
-        session_manager::SessionState::LOGIN_PRIMARY);
 
     ChildStatusReportingServiceFactory::GetInstance()->SetTestingFactory(
         profile(),

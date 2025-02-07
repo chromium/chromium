@@ -335,6 +335,9 @@ constexpr base::FeatureParam<bool> kHandleSidePanelTextDirectives{
 constexpr base::FeatureParam<bool> kZstdCompressPdfBytes{
     &kLensOverlayContextualSearchbox, "ztsd-compress-pdf-bytes", false};
 
+constexpr base::FeatureParam<bool> kPageContentUploadRequestIdFix{
+    &kLensOverlayContextualSearchbox, "page-content-request-id-fix", false};
+
 constexpr base::FeatureParam<int> kZstdCompressionLevel{
     &kLensOverlayContextualSearchbox, "zstd-compression-level", 3};
 
@@ -815,5 +818,9 @@ int GetZstdCompressionLevel() {
 
 bool IsSimplifiedSelectionEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlaySimplifiedSelection);
+}
+
+bool PageContentUploadRequestIdFixEnabled() {
+  return kPageContentUploadRequestIdFix.Get();
 }
 }  // namespace lens::features

@@ -123,7 +123,8 @@ class SessionControllerClientImplTest : public testing::Test {
         // TODO(crbug.com/278643115): Looks incorrect.
         // User's username_hash should be set inside CreateSession via
         // UserManager::UserLoggedIn().
-        user->username_hash(), user->GetType(),
+        user->username_hash(),
+        /*new_user=*/false,
         /*has_active_session=*/false);
 
     // Simulate that user profile is loaded.
@@ -428,7 +429,8 @@ TEST_F(SessionControllerClientImplTest, SendUserSession) {
       // TODO(crbug.com/278643115): Looks incorrect.
       // User's username_hash should be set inside CreateSession via
       // UserManager::UserLoggedIn().
-      user->username_hash(), user->GetType(),
+      user->username_hash(),
+      /*new_user=*/false,
       /*has_active_session=*/false);
   session_manager().SetSessionState(SessionState::ACTIVE);
 
@@ -485,7 +487,8 @@ TEST_F(SessionControllerClientImplTest, UserPrefsChange) {
       // TODO(crbug.com/278643115): Looks incorrect.
       // User's username_hash should be set inside CreateSession via
       // UserManager::UserLoggedIn().
-      user->username_hash(), user->GetType(),
+      user->username_hash(),
+      /*new_user=*/false,
       /*has_active_session=*/false);
 
   // Simulate the notification that the profile is ready.

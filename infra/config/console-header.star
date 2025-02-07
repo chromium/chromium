@@ -146,6 +146,12 @@ HEADER = headers.header(
                     alt = "Chromium Android console",
                 ),
                 headers.link(
+                    text = "android.desktop",
+                    branch_selector = branches.selector.ANDROID_BRANCHES,
+                    url = "/p/{}/g/chromium.android.desktop".format(settings.project),
+                    alt = "Chromium Android Desktop console",
+                ),
+                headers.link(
                     text = "angle",
                     url = "/p/{}/g/chromium.angle".format(settings.project),
                     alt = "Chromium ANGLE console",

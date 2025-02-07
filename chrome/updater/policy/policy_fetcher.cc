@@ -32,6 +32,7 @@
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
+#include "components/policy/core/common/policy_types.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
@@ -291,11 +292,15 @@ void OutOfProcessPolicyFetcher::OnConnected(
 
   connection_ = std::move(connection);
   remote_ = std::move(remote);
-  remote_->FetchPolicies(mojo::WrapCallbackWithDropHandler(
-      base::BindOnce(&OutOfProcessPolicyFetcher::OnPoliciesFetched,
-                     base::WrapRefCounted(this)),
-      base::BindOnce(&OutOfProcessPolicyFetcher::OnRPCDropped,
-                     base::WrapRefCounted(this))));
+  remote_->FetchPolicies(
+      // TODO(crbug.com/391394116): forward the actual policy fetch reason
+      // once this function accepts the reason argument.
+      policy::PolicyFetchReason::kUnspecified,
+      mojo::WrapCallbackWithDropHandler(
+          base::BindOnce(&OutOfProcessPolicyFetcher::OnPoliciesFetched,
+                         base::WrapRefCounted(this)),
+          base::BindOnce(&OutOfProcessPolicyFetcher::OnRPCDropped,
+                         base::WrapRefCounted(this))));
 }
 
 void OutOfProcessPolicyFetcher::OnPoliciesFetched(

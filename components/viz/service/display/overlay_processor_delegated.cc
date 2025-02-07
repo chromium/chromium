@@ -76,10 +76,10 @@ namespace viz {
 OverlayProcessorDelegated::OverlayProcessorDelegated(
     std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates,
     std::vector<OverlayStrategy> available_strategies,
-    gpu::SharedImageInterface* shared_image_interface)
+    std::unique_ptr<PixmapProvider> pixmap_provider)
     : OverlayProcessorOzone(std::move(overlay_candidates),
                             available_strategies,
-                            shared_image_interface) {
+                            std::move(pixmap_provider)) {
   // TODO(msisov, petermcneeley): remove this once Wayland uses only delegated
   // context. May be null in tests.
   if (ui::OzonePlatform::GetInstance()->GetOverlayManager()) {

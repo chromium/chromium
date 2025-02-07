@@ -858,8 +858,6 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
     return std::nullopt;
   }
 
-  const std::string url_spec = url.spec();
-
   std::optional<webapps::AppId> best_app_id;
   int best_score = 0;
 
@@ -874,9 +872,7 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
       continue;
     }
 
-    // TODO(crbug.com/341337420): Audit call sites and ideally have scope
-    // extensions be considered by default.
-    int score = GetUrlInAppScopeScore(url_spec, app_id);
+    int score = GetAppExtendedScopeScore(url, app_id);
     if (score > 0 && score > best_score) {
       best_app_id = app_id;
       best_score = score;
@@ -888,48 +884,6 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
   }
 
   return std::nullopt;
-}
-
-// DEPRECATED:
-std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
-    const GURL& url,
-    std::initializer_list<proto::InstallState> states,
-    AppFilterOptions options) const {
-  CHECK_NE(states.size(), 0ul);
-  if (!url.is_valid()) {
-    return std::nullopt;
-  }
-
-  const std::string url_spec = url.spec();
-
-  std::optional<webapps::AppId> best_app_id;
-  int best_score = 0;
-
-  for (const webapps::AppId& app_id :
-       GetAppIdsForAppSet(GetAppsIncludingStubs())) {
-    if (!IsInstallState(app_id, states)) {
-      continue;
-    }
-
-    if (!GetAppScope(app_id).is_valid()) {
-      continue;
-    }
-
-    int score;
-    // TODO(crbug.com/341337420): Audit call sites and ideally have scope
-    // extensions be considered by default.
-    if (options.include_extended_scope) {
-      score = GetAppExtendedScopeScore(url, app_id);
-    } else {
-      score = GetUrlInAppScopeScore(url_spec, app_id);
-    }
-
-    if (score > 0 && score > best_score) {
-      best_app_id = app_id;
-      best_score = score;
-    }
-  }
-  return best_app_id;
 }
 
 // Returns all apps that have the given `url` in scope and match the filter.

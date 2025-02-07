@@ -47,6 +47,24 @@ void SignoutConfirmationUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
+// static
+SignoutConfirmationUI* SignoutConfirmationUI::GetForTesting(
+    content::WebContents* contents) {
+  content::WebUI* web_ui = contents->GetWebUI();
+  return web_ui ? web_ui->GetController()->GetAs<SignoutConfirmationUI>()
+                : nullptr;
+}
+
+void SignoutConfirmationUI::AcceptDialogForTesting() {
+  CHECK(handler_);
+  handler_->Accept();
+}
+
+void SignoutConfirmationUI::CancelDialogForTesting() {
+  CHECK(handler_);
+  handler_->Cancel();
+}
+
 void SignoutConfirmationUI::CreateSignoutConfirmationHandler(
     mojo::PendingRemote<signout_confirmation::mojom::Page> page,
     mojo::PendingReceiver<signout_confirmation::mojom::PageHandler> receiver) {

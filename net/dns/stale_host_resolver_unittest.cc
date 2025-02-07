@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/stale_host_resolver.h"
 
 #include <memory>
@@ -562,7 +557,7 @@ TEST_F(StaleHostResolverTest, ReturnStaleCacheSync) {
 #define MAYBE_StaleUsability StaleUsability
 #endif
 TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
-  const struct {
+  struct TestCase {
     int max_expired_time_sec;
     int max_stale_uses;
     bool allow_other_network;
@@ -573,7 +568,9 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
     int error;
 
     bool usable;
-  } kUsabilityTestCases[] = {
+  };
+
+  const auto kUsabilityTestCases = std::to_array<TestCase>({
       // Fresh data always accepted.
       {0, 0, true, -1, 1, 0, OK, true},
       {1, 1, false, -1, 1, 0, OK, true},
@@ -614,11 +611,12 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
       {2, 2, true, 1, 2, 0, ERR_NAME_NOT_RESOLVED, false},
       {2, 0, true, 1, 1, 1, ERR_NAME_NOT_RESOLVED, false},
       {2, 0, false, 1, 1, 0, ERR_NAME_NOT_RESOLVED, false},
-  };
+  });
 
   SetStaleDelay(kNoStaleDelaySec);
 
-  for (size_t i = 0; i < std::size(kUsabilityTestCases); ++i) {
+  for (size_t i = 0; i < kUsabilityTestCases.size(); ++i) {
+    SCOPED_TRACE(i);
     const auto& test_case = kUsabilityTestCases[i];
 
     SetStaleUsability(test_case.max_expired_time_sec, test_case.max_stale_uses,
@@ -639,24 +637,24 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
     AdvanceTickClock(base::Milliseconds(1));
     Resolve(std::nullopt);
     WaitForResolve();
-    EXPECT_TRUE(resolve_complete()) << i;
+    EXPECT_TRUE(resolve_complete());
 
     if (test_case.error == OK) {
-      EXPECT_EQ(test_case.error, resolve_error()) << i;
-      EXPECT_EQ(1u, resolve_addresses().size()) << i;
+      EXPECT_EQ(test_case.error, resolve_error());
+      EXPECT_EQ(1u, resolve_addresses().size());
       {
         const char* expected =
             test_case.usable ? kCacheAddress : kNetworkAddress;
-        EXPECT_EQ(expected, resolve_addresses()[0].ToStringWithoutPort()) << i;
+        EXPECT_EQ(expected, resolve_addresses()[0].ToStringWithoutPort());
       }
     } else {
       if (test_case.usable) {
-        EXPECT_EQ(test_case.error, resolve_error()) << i;
+        EXPECT_EQ(test_case.error, resolve_error());
       } else {
-        EXPECT_EQ(OK, resolve_error()) << i;
-        EXPECT_EQ(1u, resolve_addresses().size()) << i;
-        EXPECT_EQ(kNetworkAddress, resolve_addresses()[0].ToStringWithoutPort())
-            << i;
+        EXPECT_EQ(OK, resolve_error());
+        EXPECT_EQ(1u, resolve_addresses().size());
+        EXPECT_EQ(kNetworkAddress,
+                  resolve_addresses()[0].ToStringWithoutPort());
       }
     }
     // Make sure that all tasks complete so jobs are freed properly.

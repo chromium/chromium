@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic.mojom.h"
+#include "chrome/browser/glic/glic_enums.h"
 
 namespace glic {
 
@@ -31,11 +32,12 @@ class GlicMetrics {
   void OnSessionTerminated();
   void OnResponseRated(bool positive);
 
-  // Public API called by other glic classes.
+  // ----Public API called by other glic classes-----
   // Called when the glic window starts to open.
-  void OnGlicWindowOpen();
+  void OnGlicWindowOpen(bool attached, InvocationSource source);
   // Called when the glic window finishes closing.
   void OnGlicWindowClose();
+  // Called when the glic window attaches or detaches.
 
   // Must be called immediately after constructor before any calls from
   // glic.mojom.
@@ -47,9 +49,12 @@ class GlicMetrics {
   mojom::WebClientMode input_mode_;
   base::TimeTicks response_started_time_;
 
-  // Cleared in OnGlicWindowClose.
+  // Session state. `session_start_time_` is a sentinel that is cleared in
+  // OnGlicWindowClose() and is used to determine whether OnGlicWindowOpen was
+  // called.
   int session_responses_ = 0;
   base::TimeTicks session_start_time_;
+  InvocationSource invocation_source_ = InvocationSource::kOsButton;
 
   // The owner of this class is responsible for maintaining appropriate lifetime
   // for controller_.

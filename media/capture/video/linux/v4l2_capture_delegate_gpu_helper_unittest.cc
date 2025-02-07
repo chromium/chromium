@@ -13,7 +13,6 @@
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/test_data_util.h"
-#include "media/capture/video/mock_gpu_memory_buffer_manager.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"

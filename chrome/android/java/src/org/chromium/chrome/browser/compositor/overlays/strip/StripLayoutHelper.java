@@ -489,8 +489,9 @@ public class StripLayoutHelper
     private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
 
     // Tab group share.
+    @NonNull private DataSharingService mDataSharingService;
+    @NonNull private CollaborationService mCollaborationService;
     @Nullable private DataSharingTabManager mDataSharingTabManager;
-    @Nullable private DataSharingService mDataSharingService;
     @Nullable private DataSharingService.Observer mDataSharingObserver;
     @Nullable private TabGroupSyncService mTabGroupSyncService;
     @Nullable private TabGroupSyncService.Observer mTabGroupSyncObserver;
@@ -702,6 +703,10 @@ public class StripLayoutHelper
             mTabHoverCardView.destroy();
             mTabHoverCardView = null;
         }
+        if (shouldEnableGroupSharing(mTabGroupModelFilter.getTabModel().getProfile())) {
+            mDataSharingService.removeObserver(mDataSharingObserver);
+            mDataSharingService = null;
+        }
         if (mTabGroupModelFilter != null) {
             mTabGroupModelFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);
             mTabGroupModelFilter = null;
@@ -709,10 +714,6 @@ public class StripLayoutHelper
         if (mTabGroupContextMenuCoordinator != null) {
             mTabGroupContextMenuCoordinator.destroy();
             mTabGroupContextMenuCoordinator = null;
-        }
-        if (mDataSharingService != null) {
-            mDataSharingService.removeObserver(mDataSharingObserver);
-            mDataSharingService = null;
         }
         if (mTabGroupSyncService != null) {
             mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
@@ -1083,6 +1084,7 @@ public class StripLayoutHelper
         // TODO(crbug.com/380511640) Use SharedGroupObserver instead of DataSharingObserver.
         if (shouldEnableGroupSharing(profile)) {
             mDataSharingService = DataSharingServiceFactory.getForProfile(profile);
+            mCollaborationService = CollaborationServiceFactory.getForProfile(profile);
             mTabGroupSyncObserver =
                     new TabGroupSyncService.Observer() {
                         @Override
@@ -2083,6 +2085,7 @@ public class StripLayoutHelper
         groupTitle.updateSharedTabGroup(
                 collaborationId,
                 mDataSharingService,
+                mCollaborationService,
                 (avatarRes) -> {
                     mLayerTitleCache.registerSharedGroupAvatar(groupTitle.getRootId(), avatarRes);
                 },

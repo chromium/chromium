@@ -20,9 +20,9 @@ import androidx.core.util.Consumer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -144,11 +145,12 @@ public class TabGroupListCoordinator {
             tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         }
 
-        @Nullable
-        DataSharingService dataSharingService =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
-                        ? DataSharingServiceFactory.getForProfile(profile)
-                        : null;
+        @NonNull
+        CollaborationService collaborationService =
+                CollaborationServiceFactory.getForProfile(profile);
+
+        @NonNull
+        DataSharingService dataSharingService = DataSharingServiceFactory.getForProfile(profile);
 
         @NonNull
         MessagingBackendService messagingBackendService =
@@ -169,6 +171,7 @@ public class TabGroupListCoordinator {
                         faviconResolver,
                         tabGroupSyncService,
                         dataSharingService,
+                        collaborationService,
                         messagingBackendService,
                         identityManager,
                         paneManager,

@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_handler.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -15,42 +13,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-constexpr char kChromeSignoutPromptHistogramBaseName[] =
-    "Signin.ChromeSignoutConfirmationPrompt.";
-constexpr char kChromeSignoutPromptHistogramUnsyncedReauthVariant[] =
-    "UnsyncedReauth";
-constexpr char kChromeSignoutPromptHistogramUnsyncedVariant[] = "Unsynced";
-constexpr char kChromeSignoutPromptHistogramNoUnsyncedVariant[] = "NoUnsynced";
-constexpr char kChromeSignoutPromptHistogramSupervisedProfileVariant[] =
-    "SupervisedProfile";
-
-void RecordChromeSignoutConfirmationPromptMetrics(
-    ChromeSignoutConfirmationPromptVariant variant,
-    ChromeSignoutConfirmationChoice choice) {
-  const char* histogram_variant_name =
-      kChromeSignoutPromptHistogramNoUnsyncedVariant;
-  switch (variant) {
-    case ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData:
-      break;
-    case ChromeSignoutConfirmationPromptVariant::kUnsyncedData:
-      histogram_variant_name = kChromeSignoutPromptHistogramUnsyncedVariant;
-      break;
-    case ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton:
-      histogram_variant_name =
-          kChromeSignoutPromptHistogramUnsyncedReauthVariant;
-      break;
-    case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
-      histogram_variant_name =
-          kChromeSignoutPromptHistogramSupervisedProfileVariant;
-      break;
-  }
-
-  base::UmaHistogramEnumeration(
-      base::StrCat(
-          {kChromeSignoutPromptHistogramBaseName, histogram_variant_name}),
-      choice);
-}
 
 int ComputeDialogTitleId(ChromeSignoutConfirmationPromptVariant variant) {
   switch (variant) {

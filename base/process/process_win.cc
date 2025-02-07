@@ -12,6 +12,7 @@
 #include "base/process/kill.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 
 #if BUILDFLAG(CLANG_PROFILING)
@@ -254,21 +255,9 @@ Process::Priority Process::GetPriority() const {
     return Priority::kBestEffort;
   }
 
-  PROCESS_POWER_THROTTLING_STATE power_throttling = {
-      .Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION,
-      .ControlMask = 0ul,
-      .StateMask = 0ul,
-  };
-  const bool ret =
-      ::GetProcessInformation(Handle(), ProcessPowerThrottling,
-                              &power_throttling, sizeof(power_throttling));
-
-  // Return Priority::kUserVisible if EcoQoS read & write supported and level
-  // set.
-  if (ret != 0 &&
-      power_throttling.ControlMask ==
-          PROCESS_POWER_THROTTLING_EXECUTION_SPEED &&
-      power_throttling.StateMask == PROCESS_POWER_THROTTLING_EXECUTION_SPEED) {
+  // Return Priority::kUserVisible if EcoQos is enabled.
+  if (win::GetProcessEcoQoSState(Handle()) ==
+      win::ProcessPowerState::kEnabled) {
     return Priority::kUserVisible;
   }
 
@@ -282,41 +271,19 @@ bool Process::SetPriority(Priority priority) {
   // broken in Windows 11 22H2. So, it is no longer supported. See
   // https://crbug.com/1396155 for details.
   DCHECK(!is_current());
-  const DWORD priority_class = priority == Priority::kBestEffort
-                                   ? IDLE_PRIORITY_CLASS
-                                   : NORMAL_PRIORITY_CLASS;
 
-  auto* os_info = base::win::OSInfo::GetInstance();
-  if (os_info->version() >= win::Version::WIN11) {
-    PROCESS_POWER_THROTTLING_STATE power_throttling;
-    RtlZeroMemory(&power_throttling, sizeof(power_throttling));
-    power_throttling.Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION;
+  // Clear EcoQoS for kUserBlocking; otherwise enable it. Process power
+  // throttling is a Windows 11 feature, but before 22H2 there was no way to
+  // query the current state using GetProcessInformation. This is needed in
+  // GetPriority to determine the current priority. Calls made to
+  // SetProcessEcoQoSState before 22H2 are a no-op.
+  win::SetProcessEcoQoSState(Handle(), priority == Priority::kUserBlocking
+                                           ? win::ProcessPowerState::kUnset
+                                           : win::ProcessPowerState::kEnabled);
 
-    // EcoQoS is a Windows 11 only feature, but before 22H2, there is no way to
-    // query its current QoS state, GetProcessInformation API to read
-    // PROCESS_POWER_THROTTLING_STATE would fail. For kUserVisible, we
-    // intentionally exclude clients before 22H2 so that GetPriority() is
-    // consistent with SetPriority().
-    if (priority == Priority::kBestEffort ||
-        (priority == Priority::kUserVisible &&
-         os_info->version() >= win::Version::WIN11_22H2)) {
-      // Sets Eco QoS level.
-      power_throttling.ControlMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
-      power_throttling.StateMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED;
-    } else {
-      // Uses system default.
-      power_throttling.ControlMask = 0;
-      power_throttling.StateMask = 0;
-    }
-    bool ret =
-        ::SetProcessInformation(Handle(), ProcessPowerThrottling,
-                                &power_throttling, sizeof(power_throttling));
-    if (ret == 0) {
-      DPLOG(ERROR) << "Setting process QoS policy fails";
-    }
-  }
-
-  return (::SetPriorityClass(Handle(), priority_class) != 0);
+  return ::SetPriorityClass(Handle(), priority == Priority::kBestEffort
+                                          ? IDLE_PRIORITY_CLASS
+                                          : NORMAL_PRIORITY_CLASS) != 0;
 }
 
 int Process::GetOSPriority() const {

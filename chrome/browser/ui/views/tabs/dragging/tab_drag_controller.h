@@ -121,22 +121,7 @@ class TabDragController : public views::WidgetObserver,
   // about what can and cannot happen in various cases - code defensively.
   //
   // TODO(crbug.com/41482188): Return this from *all* methods which may end the
-  // drag. In particular this will require reconciliation with
-  // `DragBrowserResultType` returned by `DragBrowserToNewTabStrip`. Currently
-  // the following public methods may end the drag and destroy `this` but do not
-  // return a Liveness:
-  // - TabWasAdded
-  // - OnTabWillBeRemoved
-  // - Drag
-  // - EndDrag (this always end the drag)
-  //
-  // The static methods OnSystemDnDUpdated and OnSystemDnDExited may also end
-  // the drag.
-  //
-  // There are also many private methods that may end the drag but don't return
-  // a Liveness, and there is at least one case where the wrong Liveness might
-  // be returned due to the interaction with DragBrowserToNewTabStrip mentioned
-  // above.
+  // drag (but maybe skip the public notification methods, e.g. TabWasAdded).
   enum class Liveness {
     ALIVE,
     DELETED,
@@ -227,7 +212,7 @@ class TabDragController : public views::WidgetObserver,
   bool CanRestoreFullscreenWindowDuringDrag() const;
 
   // Invoked to drag to the new location, in screen coordinates.
-  void Drag(const gfx::Point& point_in_screen);
+  [[nodiscard]] Liveness Drag(const gfx::Point& point_in_screen);
 
   // Complete the current drag session.
   void EndDrag(EndDragReason reason);
@@ -312,17 +297,6 @@ class TabDragController : public views::WidgetObserver,
   // Specifies what should happen when a drag motion exits the tab strip region
   // in an attempt to detach a tab.
   enum DetachBehavior { DETACHABLE, NOT_DETACHABLE };
-
-  // Indicates what should happen after invoking DragBrowserToNewTabStrip().
-  enum DragBrowserResultType {
-    // The caller should return immediately. This return value is used if a
-    // nested run loop was created or we're in a nested run loop and
-    // need to exit it.
-    DRAG_BROWSER_RESULT_STOP,
-
-    // The caller should continue.
-    DRAG_BROWSER_RESULT_CONTINUE,
-  };
 
   struct GroupDragData {
     // The group that is being dragged.
@@ -413,7 +387,7 @@ class TabDragController : public views::WidgetObserver,
 
   // Saves focus in the window that the drag initiated from. Focus will be
   // restored appropriately if the drag ends within this same window.
-  void SaveFocus();
+  [[nodiscard]] Liveness SaveFocus();
 
   // Restore focus to the View that had focus before the drag was started, if
   // the drag ends within the same Window as it began.
@@ -427,10 +401,9 @@ class TabDragController : public views::WidgetObserver,
   // drag to (which may be the currently attached one).
   [[nodiscard]] Liveness ContinueDragging(const gfx::Point& point_in_screen);
 
-  // Transitions dragging from |attached_context_| to |target_context|.
-  // |target_context| is NULL if the mouse is not over a valid tab strip.  See
-  // DragBrowserResultType for details of the return type.
-  DragBrowserResultType DragBrowserToNewTabStrip(
+  // Transitions dragging from `attached_context_` to `target_context`.
+  // `target_context` is nullptr if the mouse is not over a valid tab strip.
+  [[nodiscard]] Liveness DragBrowserToNewTabStrip(
       TabDragContext* target_context,
       const gfx::Point& point_in_screen);
 
@@ -452,17 +425,20 @@ class TabDragController : public views::WidgetObserver,
   // not supported and no drag session is currently running. `context` is used
   // to get the widget that will initiate the drag session, and can be NULL if
   // `system_drag_and_drop_session_running_` is true.
-  Liveness StartSystemDnDSessionIfNecessary(TabDragContext* context,
-                                            const gfx::Point& point_in_screen);
+  [[nodiscard]] Liveness StartSystemDnDSessionIfNecessary(
+      TabDragContext* context,
+      gfx::Point point_in_screen);
 
   // Stored as a callback in `drag_started_callback_`. See the comment in
   // StartSystemDnDSessionIfNecessary() for more details.
   void HideAttachedContext();
 
-  // Returns the compatible TabDragContext to drag to at the
-  // specified point (screen coordinates), or nullptr if there is none.
-  Liveness GetTargetTabStripForPoint(const gfx::Point& point_in_screen,
-                                     TabDragContext** tab_strip);
+  // Returns the compatible TabDragContext to drag to at the specified point
+  // (screen coordinates), or nullptr if there is none. May end the drag on
+  // some platforms as a result of reentrancy during system calls, hence this
+  // also returns a Liveness.
+  [[nodiscard]] std::tuple<Liveness, TabDragContext*> GetTargetTabStripForPoint(
+      gfx::Point point_in_screen);
 
   // Returns true if |context| contains the specified point in screen
   // coordinates.
@@ -497,12 +473,14 @@ class TabDragController : public views::WidgetObserver,
 
   // Detaches the tabs being dragged, creates a new Browser to contain them and
   // runs a nested move loop.
-  void DetachIntoNewBrowserAndRunMoveLoop(const gfx::Point& point_in_screen);
+  [[nodiscard]] Liveness DetachIntoNewBrowserAndRunMoveLoop(
+      gfx::Point point_in_screen);
 
   // Runs a nested run loop that handles moving the current Browser.
   // `drag_offset` is the desired offset between the cursor and the window
   // origin. `point_in_screen` is the cursor location in screen space.
-  void RunMoveLoop(gfx::Point point_in_screen, gfx::Vector2d drag_offset);
+  [[nodiscard]] Liveness RunMoveLoop(gfx::Point point_in_screen,
+                                     gfx::Vector2d drag_offset);
 
   // Retrieves the bounds of the dragged tabs relative to the attached
   // TabDragContext. |tab_strip_point| is in the attached
@@ -552,6 +530,8 @@ class TabDragController : public views::WidgetObserver,
   void HideFrame();
 
   void BringWindowUnderPointToFront(const gfx::Point& point_in_screen);
+
+  [[nodiscard]] Liveness SetCapture(TabDragContext* context);
 
   // Convenience for getting the TabDragData corresponding to the source view
   // that the user started dragging.

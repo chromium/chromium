@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -111,9 +110,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
-            boolean isDataSharingAndroidEnabled =
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
-
             mActivity = activity;
             mComponentName =
                     animationSourceViewProvider == null
@@ -124,6 +120,18 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
             mTabContentManager = tabContentManager;
             mTabSwitcherResetHandler = resetHandler;
+
+            Profile originalProfile =
+                    mCurrentTabGroupModelFilterSupplier
+                            .get()
+                            .getTabModel()
+                            .getProfile()
+                            .getOriginalProfile();
+
+            CollaborationService collaborationService =
+                    CollaborationServiceFactory.getForProfile(originalProfile);
+            @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
+            boolean isDataSharingAndroidEnabled = serviceStatus.isAllowedToJoin();
 
             mModel =
                     new PropertyModel.Builder(TabGridDialogProperties.ALL_KEYS)
@@ -155,12 +163,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             }
             mBottomSheetController = bottomSheetController;
 
-            Profile originalProfile =
-                    mCurrentTabGroupModelFilterSupplier
-                            .get()
-                            .getTabModel()
-                            .getProfile()
-                            .getOriginalProfile();
             if (isDataSharingAndroidEnabled) {
                 DataSharingService dataSharingService =
                         DataSharingServiceFactory.getForProfile(originalProfile);
@@ -169,7 +171,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                 activity,
                                 SharedImageTilesType.DEFAULT,
                                 new SharedImageTilesColor(SharedImageTilesColor.Style.DYNAMIC),
-                                dataSharingService);
+                                dataSharingService,
+                                collaborationService);
             }
 
             Runnable showColorPickerPopupRunnable =
@@ -273,10 +276,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mMediator.initWithNative(this::getTabListEditorController);
             mTabListCoordinator.initWithNative(originalProfile);
 
-            CollaborationService collaborationService =
-                    CollaborationServiceFactory.getForProfile(originalProfile);
-            @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
-            if (serviceStatus.isAllowedToJoin()) {
+            if (isDataSharingAndroidEnabled) {
                 mTabLabeller =
                         new TabLabeller(
                                 originalProfile,

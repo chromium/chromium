@@ -42,8 +42,8 @@ class SESSION_EXPORT SessionManager
   // for the secondary+ users. For the latter case, `has_active_session`
   // is set true.
   void CreateSession(const AccountId& user_account_id,
-                     const std::string& user_id_hash,
-                     user_manager::UserType user_type,
+                     const std::string& username_hash,
+                     bool new_user,
                      bool has_active_session);
 
   // Similar to above, creates a session for the given user and hash,
@@ -54,7 +54,8 @@ class SESSION_EXPORT SessionManager
   // the user type should be derived from the one. Though, there are edge
   // cases. Please find UserManager::CalculateUserType() for details.
   void CreateSessionForRestart(const AccountId& user_account_id,
-                               const std::string& user_id_hash);
+                               const std::string& user_id_hash,
+                               bool new_user);
 
   // Returns true if we're logged in and browser has been started i.e.
   // browser_creator.LaunchBrowser(...) was called after sign in
@@ -124,9 +125,9 @@ class SESSION_EXPORT SessionManager
 
  private:
   void CreateSessionInternal(const AccountId& user_account_id,
-                             const std::string& user_id_hash,
-                             bool browser_restart,
-                             bool is_child);
+                             const std::string& username_hash,
+                             bool new_user,
+                             bool browser_restart);
 
   // Pointer to the existing SessionManager instance (if any).
   // Set in ctor, reset in dtor. Not owned since specific implementation of

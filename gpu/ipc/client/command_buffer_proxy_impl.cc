@@ -70,7 +70,8 @@ ContextResult CommandBufferProxyImpl::Initialize(
     CommandBufferProxyImpl* share_group,
     gpu::SchedulingPriority stream_priority,
     const gpu::ContextCreationAttribs& attribs,
-    const GURL& active_url) {
+    const GURL& active_url,
+    const std::string_view label) {
   DCHECK(!share_group || (stream_id_ == share_group->stream_id_));
   TRACE_EVENT0("gpu", "GpuChannelHost::CreateViewCommandBuffer");
 
@@ -85,6 +86,7 @@ ContextResult CommandBufferProxyImpl::Initialize(
   params->stream_priority = stream_priority;
   params->attribs = attribs;
   params->active_url = active_url;
+  params->label = label;
 
   TRACE_EVENT0("gpu", "CommandBufferProxyImpl::Initialize");
   std::tie(shared_state_shm_, shared_state_mapping_) =

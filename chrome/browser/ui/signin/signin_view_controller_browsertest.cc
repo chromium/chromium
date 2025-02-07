@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome_signout_confirmation_prompt.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -39,6 +40,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -109,19 +111,23 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
         syncer::DataTypeSet{syncer::DataType::PASSWORDS});
   }
 
-  views::DialogDelegate* TriggerSignoutAndWaitForConfirmationPrompt() {
-    views::NamedWidgetShownWaiter widget_waiter(
-        views::test::AnyWidgetTestPasskey{},
-        "ChromeSignoutConfirmationChoicePrompt");
-    browser()->signin_view_controller()->SignoutOrReauthWithPrompt(
+  SignoutConfirmationUI* TriggerSignoutAndWaitForConfirmationPrompt() {
+    auto url = GURL(chrome::kChromeUISignoutConfirmationURL);
+    content::TestNavigationObserver observer(url);
+    observer.StartWatchingNewWebContents();
+
+    auto* signin_view_controller = browser()->signin_view_controller();
+    signin_view_controller->SignoutOrReauthWithPrompt(
         kTestAccessPoint,
         signin_metrics::ProfileSignout::kUserClickedSignoutProfileMenu,
         signin_metrics::SourceForRefreshTokenOperation::
             kUserMenu_SignOutAllAccounts);
 
-    // Confirmation prompt is shown.
-    views::Widget* confirmation_prompt = widget_waiter.WaitIfNeededAndGet();
-    return confirmation_prompt->widget_delegate()->AsDialogDelegate();
+    observer.Wait();
+
+    CHECK(signin_view_controller->ShowsModalDialog());
+    return SignoutConfirmationUI::GetForTesting(
+        signin_view_controller->GetModalDialogWebContentsForTesting());
   }
 
   bool IsSigninTab(
@@ -150,7 +156,7 @@ class SigninViewControllerBrowserTestBase : public SigninBrowserTestBase {
  private:
   void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) override {
-    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
+    SigninBrowserTestBaseT::OnWillCreateBrowserContextServices(context);
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestSyncService));
   }
@@ -244,13 +250,13 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   AddUnsyncedData();
 
   // Trigger the Chrome signout action.
-  views::DialogDelegate* dialog_delegate =
+  SignoutConfirmationUI* signout_confirmation_ui =
       TriggerSignoutAndWaitForConfirmationPrompt();
-  ASSERT_TRUE(dialog_delegate);
+  ASSERT_TRUE(signout_confirmation_ui);
 
   // Click "Verify it's you".
   base::HistogramTester histogram_tester;
-  dialog_delegate->AcceptDialog();
+  signout_confirmation_ui->AcceptDialogForTesting();
   VerifySignoutPromptHistogram(
       histogram_tester,
       ChromeSignoutConfirmationPromptVariant::kUnsyncedDataWithReauthButton,
@@ -274,13 +280,13 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   AddUnsyncedData();
 
   // Trigger the Chrome signout action.
-  views::DialogDelegate* dialog_delegate =
+  SignoutConfirmationUI* signout_confirmation_ui =
       TriggerSignoutAndWaitForConfirmationPrompt();
-  ASSERT_TRUE(dialog_delegate);
+  ASSERT_TRUE(signout_confirmation_ui);
 
   // Click "Cancel".
   base::HistogramTester histogram_tester;
-  dialog_delegate->CancelDialog();
+  signout_confirmation_ui->CancelDialogForTesting();
   VerifySignoutPromptHistogram(
       histogram_tester, ChromeSignoutConfirmationPromptVariant::kUnsyncedData,
       ChromeSignoutConfirmationChoice::kCancelSignout);
@@ -308,13 +314,13 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
   AddUnsyncedData();
 
   // Trigger the Chrome signout action.
-  views::DialogDelegate* dialog_delegate =
+  SignoutConfirmationUI* signout_confirmation_ui =
       TriggerSignoutAndWaitForConfirmationPrompt();
-  ASSERT_TRUE(dialog_delegate);
+  ASSERT_TRUE(signout_confirmation_ui);
 
   // Click "Sign Out Anyway".
   base::HistogramTester histogram_tester;
-  dialog_delegate->AcceptDialog();
+  signout_confirmation_ui->AcceptDialogForTesting();
   VerifySignoutPromptHistogram(
       histogram_tester, ChromeSignoutConfirmationPromptVariant::kUnsyncedData,
       ChromeSignoutConfirmationChoice::kSignout);
@@ -338,13 +344,13 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   // Trigger the Chrome signout action.
-  views::DialogDelegate* dialog_delegate =
+  SignoutConfirmationUI* signout_confirmation_ui =
       TriggerSignoutAndWaitForConfirmationPrompt();
-  ASSERT_TRUE(dialog_delegate);
+  ASSERT_TRUE(signout_confirmation_ui);
 
   // Click "Sign Out Anyway".
   base::HistogramTester histogram_tester;
-  dialog_delegate->AcceptDialog();
+  signout_confirmation_ui->AcceptDialogForTesting();
   VerifySignoutPromptHistogram(
       histogram_tester, ChromeSignoutConfirmationPromptVariant::kNoUnsyncedData,
       ChromeSignoutConfirmationChoice::kSignout);
@@ -401,13 +407,13 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   // Trigger the Chrome signout action.
-  views::DialogDelegate* dialog_delegate =
+  SignoutConfirmationUI* signout_confirmation_ui =
       TriggerSignoutAndWaitForConfirmationPrompt();
-  ASSERT_TRUE(dialog_delegate);
+  ASSERT_TRUE(signout_confirmation_ui);
 
   // Click "Sign Out Anyway".
   base::HistogramTester histogram_tester;
-  dialog_delegate->AcceptDialog();
+  signout_confirmation_ui->AcceptDialogForTesting();
   VerifySignoutPromptHistogram(
       histogram_tester,
       ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls,
@@ -642,10 +648,10 @@ IN_PROC_BROWSER_TEST_P(SigninViewControllerBrowserCookieParamTest, SignOut) {
       GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   // Trigger the Chrome signout action, and confirm the prompt.
-  views::DialogDelegate* dialog_delegate =
+  SignoutConfirmationUI* signout_confirmation_ui =
       TriggerSignoutAndWaitForConfirmationPrompt();
-  ASSERT_TRUE(dialog_delegate);
-  dialog_delegate->AcceptDialog();
+  ASSERT_TRUE(signout_confirmation_ui);
+  signout_confirmation_ui->AcceptDialogForTesting();
 
   // User was signed out.
   EXPECT_FALSE(

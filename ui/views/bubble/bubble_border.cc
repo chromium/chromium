@@ -15,6 +15,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkClipOp.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -22,6 +23,7 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
@@ -260,8 +262,8 @@ void DrawBorderAndShadowImpl(
 
 }  // namespace
 
-BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow, ui::ColorId color_id)
-    : arrow_(arrow), shadow_(shadow), color_id_(color_id) {
+BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow)
+    : arrow_(arrow), shadow_(shadow) {
   DCHECK_LT(shadow_, SHADOW_COUNT);
 }
 
@@ -284,9 +286,8 @@ void BubbleBorder::SetCornerRadius(int corner_radius) {
   corner_radius_ = corner_radius;
 }
 
-void BubbleBorder::SetColor(SkColor color) {
-  requested_color_ = color;
-  UpdateColor(nullptr);
+void BubbleBorder::SetColor(ui::ColorVariant color) {
+  color_ = color;
 }
 
 gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
@@ -502,7 +503,8 @@ gfx::Size BubbleBorder::GetMinimumSize() const {
 }
 
 void BubbleBorder::OnViewThemeChanged(View* view) {
-  UpdateColor(view);
+  resolved_color_ = color_.ConvertToSkColor(view->GetColorProvider());
+  view->SchedulePaint();
 }
 
 gfx::Size BubbleBorder::GetSizeForContentsSize(
@@ -687,16 +689,6 @@ SkRRect BubbleBorder::GetClientRect(const View& view) const {
 bool BubbleBorder::ShouldDrawStroke() const {
   return ShouldDrawStrokeForArgs(draw_border_stroke_, md_shadow_elevation_,
                                  shadow_);
-}
-
-void BubbleBorder::UpdateColor(View* view) {
-  const SkColor computed_color =
-      view ? view->GetColorProvider()->GetColor(color_id_)
-           : gfx::kPlaceholderColor;
-  color_ = requested_color_.value_or(computed_color);
-  if (view) {
-    view->SchedulePaint();
-  }
 }
 
 void BubbleBorder::PaintNoShadow(const View& view, gfx::Canvas* canvas) {

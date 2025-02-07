@@ -824,6 +824,10 @@ bool BubbleFrameView::GetDisplayVisibleArrow() const {
 
 void BubbleFrameView::SetBackgroundColor(SkColor color) {
   bubble_border_->SetColor(color);
+
+  // Ensures that border updates the its color. See `BubbleBorder::color()` for
+  // more details.
+  bubble_border_->OnViewThemeChanged(this);
   UpdateClientViewBackground();
   SchedulePaint();
 }

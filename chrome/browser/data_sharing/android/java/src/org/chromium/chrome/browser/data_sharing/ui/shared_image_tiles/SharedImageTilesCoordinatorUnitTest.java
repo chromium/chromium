@@ -33,6 +33,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
@@ -53,6 +54,7 @@ public class SharedImageTilesCoordinatorUnitTest {
     private static final String EMAIL = "test@test.com";
 
     @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private Bitmap mAvatarBitmap;
 
@@ -71,7 +73,8 @@ public class SharedImageTilesCoordinatorUnitTest {
 
     private void initialize(@SharedImageTilesType int type, SharedImageTilesColor color) {
         mSharedImageTilesCoordinator =
-                new SharedImageTilesCoordinator(mActivity, type, color, mDataSharingService);
+                new SharedImageTilesCoordinator(
+                        mActivity, type, color, mDataSharingService, mCollaborationService);
         mView = mSharedImageTilesCoordinator.getView();
         mCountTileView = mView.findViewById(R.id.tiles_count);
         doReturn(mDataSharingUiDelegate).when(mDataSharingService).getUiDelegate();

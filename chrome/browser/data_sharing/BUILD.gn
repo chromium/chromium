@@ -245,6 +245,7 @@ if (is_android) {
       "//base:callback_java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/styles/android:java",
+      "//components/collaboration/public:core_java",
       "//components/data_sharing/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_no_recycler_view_java",

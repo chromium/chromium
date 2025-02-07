@@ -65,6 +65,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "cancel_circle_outline.icon",
     "capture_gif.icon",
     "capture_mode.icon",
+    "capture_mode_action_error.icon",
     "capture_mode_camera.icon",
     "capture_mode_camera_preview_collapse.icon",
     "capture_mode_camera_preview_expand.icon",

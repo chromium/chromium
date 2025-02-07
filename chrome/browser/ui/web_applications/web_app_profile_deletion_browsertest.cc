@@ -140,7 +140,7 @@ class WebAppProfileDeletionBrowserTest : public WebAppBrowserTestBase {
   Profile& StartUserSession(const AccountId& account_id) {
     auto* session_manager = session_manager::SessionManager::Get();
     session_manager->CreateSession(account_id, account_id.GetUserEmail(),
-                                   user_manager::UserType::kRegular,
+                                   /*new_user=*/false,
                                    /*has_active_session=*/false);
 
     ProfileManager* profile_manager = g_browser_process->profile_manager();

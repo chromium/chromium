@@ -78,7 +78,6 @@ class BluetoothPowerControllerImplTest : public testing::Test {
           AccountId::FromUserEmailGaiaId(display_email, gaia_id),
           user_manager::UserType::kRegular);
     }
-    fake_user_manager_->SetIsCurrentUserNew(is_new_profile);
 
     // Create a session in SessionManager. This will also login the user in
     // UserManager.
@@ -87,7 +86,8 @@ class BluetoothPowerControllerImplTest : public testing::Test {
         // TODO(crbug.com/278643115): Looks incorrect.
         // User's username_hash should be set inside CreateSession via
         // UserManager::UserLoggedIn().
-        user->username_hash(), user->GetType(),
+        user->username_hash(),
+        /*new_user=*/is_new_profile,
         /*has_active_session=*/false);
     session_manager_->SessionStarted();
 

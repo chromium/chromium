@@ -48,8 +48,6 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
   void Flush() override;
-  scoped_refptr<gfx::NativePixmap> GetNativePixmap(
-      const Mailbox& mailbox) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,

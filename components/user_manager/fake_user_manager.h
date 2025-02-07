@@ -35,6 +35,9 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
                     const std::string& username_hash,
                     bool browser_restart,
                     bool is_child) override;
+  bool EnsureUser(const AccountId& account_id,
+                  UserType user_type,
+                  bool is_ephemeral) override;
   void SwitchActiveUser(const AccountId& account_id) override;
 
   // Just make it public for tests.

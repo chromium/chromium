@@ -19,21 +19,6 @@
 
 namespace ash {
 
-namespace {
-
-// Lock shadow params
-constexpr ResizeShadow::InitParams kLockParams{
-    .thickness = 6,
-    .shadow_corner_radius = 6,
-    .window_corner_radius = 2,
-    .opacity = 0.3f,
-    .color = gfx::kGoogleGrey900,
-    .hit_test_enabled = false,
-    .hide_duration_ms = 0,
-};
-
-}  // namespace
-
 ResizeShadowController::ResizeShadowController() = default;
 
 ResizeShadowController::~ResizeShadowController() {
@@ -179,7 +164,14 @@ void ResizeShadowController::RecreateShadowIfNeeded(aura::Window* window) {
 
   ResizeShadow::InitParams params;
   if (type == ResizeShadowType::kLock) {
-    params = kLockParams;
+    params.thickness = 6;
+    params.shadow_corner_radius = 6;
+    params.window_corner_radius = 2;
+    params.opacity = 0.3f;
+    params.color = gfx::kGoogleGrey900;
+    params.hit_test_enabled = false;
+    params.hide_duration_ms = 0;
+    params.is_for_rounded_window = false;
   }
 
   // Configure window and shadow corner radius when `window` has rounded

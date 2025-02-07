@@ -546,11 +546,6 @@ void GpuChannelSharedImageInterface::Flush() {
   // No need to flush in this implementation.
 }
 
-scoped_refptr<gfx::NativePixmap>
-GpuChannelSharedImageInterface::GetNativePixmap(const gpu::Mailbox& mailbox) {
-  NOTREACHED();
-}
-
 void GpuChannelSharedImageInterface::ScheduleGpuTask(
     base::OnceClosure task,
     std::vector<SyncToken> sync_token_fences,

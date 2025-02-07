@@ -154,6 +154,9 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
                     const std::string& user_id_hash,
                     bool browser_restart,
                     bool is_child) override;
+  bool EnsureUser(const AccountId& account_id,
+                  UserType user_type,
+                  bool is_ephemeral) override;
   bool OnUserProfileCreated(const AccountId& account_id,
                             PrefService* prefs) override;
   void OnUserProfileWillBeDestroyed(const AccountId& account_id) override;
@@ -390,21 +393,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   // Loads |users_| from Local State if the list has not been loaded yet.
   // Subsequent calls have no effect. Must be called on the UI thread.
   void EnsureUsersLoaded();
-
-  // If there's the user of `account_id` already (i.e. persisted), the user
-  // will be returned with `created` = false. If the user is kRegular or kChild,
-  // and given `user_type` is either one, the type will be updated properly.
-  // `is_ephemeral` param will be ignored in this case.
-  // If there's no such user, a new user of the given `user_type` will be
-  // created and returned with `created` = true. On creation, if the user
-  // type is kRegular or kChild, is_ephemeral is respected.
-  struct EnsuredUser {
-    raw_ptr<User> user;
-    bool created;
-  };
-  EnsuredUser EnsureUser(const AccountId& account_id,
-                         UserType user_type,
-                         bool is_ephemeral);
 
   // Returns a list of users who have logged into this device previously.
   // Same as GetUsers but used if you need to modify User from that list.

@@ -347,13 +347,9 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
       AccountId::FromUserEmailGaiaId("user5@test.com", GaiaId("1234567890-5")),
       user_manager::UserType::kChild)));
 
-  // An ephemeral user is a logged in user but unknown to UserManager when
-  // ephemeral policy is set.
-  fake_user_manager->SetEphemeralModeConfig(
-      user_manager::UserManager::EphemeralModeConfig(
-          /* included_by_default= */ true,
-          /* include_list= */ std::vector<AccountId>{},
-          /* exclude_list= */ std::vector<AccountId>{}));
+  // Set up public account user.
+  fake_user_manager->AddPublicAccountUser(
+      AccountId::FromUserEmailGaiaId("test@test.com", GaiaId("9876543210")));
   fake_user_manager->UserLoggedIn(
       AccountId::FromUserEmailGaiaId("test@test.com", GaiaId("9876543210")),
       "test@test.com-hash", false /* browser_restart */, false /* is_child */);
@@ -361,6 +357,8 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
   ASSERT_TRUE(ephemeral_user);
   ASSERT_TRUE(fake_user_manager->IsUserCryptohomeDataEphemeral(
       ephemeral_user->GetAccountId()));
+
+  EXPECT_TRUE(IsArcAllowedForUser(ephemeral_user));
 }
 
 TEST_F(ArcUtilTest, ArcStartModeDefault) {

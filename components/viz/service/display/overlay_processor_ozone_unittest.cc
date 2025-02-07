@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/test/test_context_provider.h"
-#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
@@ -87,13 +87,10 @@ class FakeNativePixmap : public gfx::NativePixmap {
   gfx::BufferFormat format_;
 };
 
-class MockSharedImageInterface : public gpu::TestSharedImageInterface {
+class MockPixmapProvider : public OverlayProcessorOzone::PixmapProvider {
  public:
   MOCK_METHOD1(GetNativePixmap,
                scoped_refptr<gfx::NativePixmap>(const gpu::Mailbox& mailbox));
-
- protected:
-  ~MockSharedImageInterface() override = default;
 };
 
 }  // namespace
@@ -118,21 +115,21 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
 
-  // Initialize a MockSharedImageInterface that returns a NativePixmap with
+  // Initialize a MockPixmapProvider that returns a NativePixmap with
   // matching params to the primary plane.
-  scoped_refptr<MockSharedImageInterface> sii =
-      base::MakeRefCounted<MockSharedImageInterface>();
+  auto pixmap_provider = std::make_unique<MockPixmapProvider>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
                                              gfx::BufferFormat::BGRA_8888);
   scoped_refptr<gfx::NativePixmap> candidate_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
                                              gfx::BufferFormat::BGRA_8888);
-  EXPECT_CALL(*sii, GetNativePixmap(_))
+  EXPECT_CALL(*pixmap_provider, GetNativePixmap(_))
       .WillOnce(Return(primary_plane_pixmap))
       .WillOnce(Return(candidate_pixmap));
   OverlayProcessorOzone processor(
-      std::make_unique<FakeOverlayCandidatesOzone>(), {}, sii.get());
+      std::make_unique<FakeOverlayCandidatesOzone>(), {},
+      std::move(pixmap_provider));
 
   processor.CheckOverlaySupport(&primary_plane, &candidates);
 
@@ -158,15 +155,16 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
 
-  // Initialize a MockSharedImageInterface that returns a NativePixmap with
+  // Initialize a MockPixmapProvider that returns a NativePixmap with
   // a different buffer format than that of the primary plane.
-  scoped_refptr<MockSharedImageInterface> sii =
-      base::MakeRefCounted<MockSharedImageInterface>();
+  auto pixmap_provider = std::make_unique<MockPixmapProvider>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size, gfx::BufferFormat::R_8);
-  EXPECT_CALL(*sii, GetNativePixmap(_)).WillOnce(Return(primary_plane_pixmap));
+  EXPECT_CALL(*pixmap_provider, GetNativePixmap(_))
+      .WillOnce(Return(primary_plane_pixmap));
   OverlayProcessorOzone processor(
-      std::make_unique<FakeOverlayCandidatesOzone>(), {}, sii.get());
+      std::make_unique<FakeOverlayCandidatesOzone>(), {},
+      std::move(pixmap_provider));
 
   processor.CheckOverlaySupport(&primary_plane, &candidates);
 
@@ -192,22 +190,22 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
 
-  // Initialize a MockSharedImageInterface that returns a NativePixmap with
+  // Initialize a MockPixmapProvider that returns a NativePixmap with
   // matching params to the primary plane.
-  scoped_refptr<MockSharedImageInterface> sii =
-      base::MakeRefCounted<::testing::NiceMock<MockSharedImageInterface>>();
+  auto pixmap_provider = std::make_unique<MockPixmapProvider>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
                                              gfx::BufferFormat::BGRA_8888);
   scoped_refptr<gfx::NativePixmap> candidate_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
                                              gfx::BufferFormat::BGRA_8888);
-  ON_CALL(*sii, GetNativePixmap(primary_plane.mailbox))
+  ON_CALL(*pixmap_provider, GetNativePixmap(primary_plane.mailbox))
       .WillByDefault(Return(primary_plane_pixmap));
-  ON_CALL(*sii, GetNativePixmap(candidate.mailbox))
+  ON_CALL(*pixmap_provider, GetNativePixmap(candidate.mailbox))
       .WillByDefault(Return(candidate_pixmap));
   OverlayProcessorOzone processor(
-      std::make_unique<FakeOverlayCandidatesOzone>(), {}, sii.get());
+      std::make_unique<FakeOverlayCandidatesOzone>(), {},
+      std::move(pixmap_provider));
 
   // In Chrome OS, we don't allow the promotion of the candidate if the
   // ContentColorUsage is different from the primary plane (e.g., SDR vs. HDR).

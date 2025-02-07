@@ -273,56 +273,32 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
     last_session_active_account_id_initialized_ = true;
   }
 
-  if (!logged_in_users_.empty()) {
-    // Handle multi sign-in case. For multi-sign in, there already should be
-    // active_user_ set, and the user to be logged in should be found
-    // in the persistent user list.
-    User* user = FindUserInListAndModify(account_id);
-    CHECK(active_user_);
-    CHECK(user);
+  bool is_primary_login = logged_in_users_.empty();
+  // For primary login case, i.e., there was no previous login, so there should
+  // be no active user. Otherwise, there was some previous login, so there
+  // should be an active user.
+  CHECK_EQ(!active_user_, is_primary_login);
 
-    OnUserLoggedIn(*user, username_hash);
-
-    // Reset the new user flag if the user already exists.
-    SetIsCurrentUserNew(false);
-    SendMultiUserSignInMetrics();
-
-    NotifyUserAddedToSession(user);
-
-    return;
-  }
-
-  // There are no logged in users. `active_user_` should not be set.
-  CHECK(!active_user_);
-
-  // Ensure User is there.
-  const UserType user_type =
-      CalculateUserType(account_id, FindUserInListAndModify(account_id),
-                        browser_restart, is_child);
-  // Check whether the user should be ephemeral based on account_id.
-  // If this is for browser restarting, and new user needs to be created,
-  // that means, in precious chrome process, the user was ephemeral
-  // so disappeared (i.e. not in the persisted user list).
-  bool is_ephemeral = IsEphemeralAccountId(account_id) || browser_restart;
-  auto [user, created] = EnsureUser(account_id, user_type, is_ephemeral);
-
-  SetIsCurrentUserNew((created && (user->GetType() == UserType::kRegular ||
-                                   user->GetType() == UserType::kChild)) ||
-                      user->GetType() == UserType::kPublicAccount);
+  User* user = FindUserAndModify(account_id);
+  CHECK(user);
   OnUserLoggedIn(*user, username_hash);
-  OnPrimaryUserLoggedIn(*user);
-  OnActiveUserSwitched(*user);
 
-  local_state_->CommitPendingWrite();
-  NotifyOnLogin();
+  if (is_primary_login) {
+    OnPrimaryUserLoggedIn(*user);
+    OnActiveUserSwitched(*user);
+
+    local_state_->CommitPendingWrite();
+    NotifyOnLogin();
+  } else {
+    SendMultiUserSignInMetrics();
+    NotifyUserAddedToSession(user);
+  }
 }
 
-UserManagerImpl::EnsuredUser UserManagerImpl::EnsureUser(
-    const AccountId& account_id,
-    UserType user_type,
-    bool is_ephemeral) {
+bool UserManagerImpl::EnsureUser(const AccountId& account_id,
+                                 UserType user_type,
+                                 bool is_ephemeral) {
   User* user = FindUserInListAndModify(account_id);
-  bool created = user == nullptr;
   switch (user_type) {
     case UserType::kRegular:
     case UserType::kChild:
@@ -346,16 +322,17 @@ UserManagerImpl::EnsuredUser UserManagerImpl::EnsureUser(
       } else {
         user = AddGaiaUser(account_id, user_type);
       }
-      break;
+      return true;
 
     case UserType::kGuest:
       CHECK(!user);
       user = AddGuestUser();
-      break;
+      return true;
 
     case UserType::kPublicAccount:
       if (!user) {
         user = AddPublicAccountUser(account_id);
+        return true;
       }
       break;
 
@@ -369,7 +346,7 @@ UserManagerImpl::EnsuredUser UserManagerImpl::EnsureUser(
       NOTREACHED() << "Unhandled usert type " << user_type;
   }
   CHECK(user);
-  return {user, created};
+  return false;
 }
 
 void UserManagerImpl::OnUserLoggedIn(User& user,

@@ -418,7 +418,7 @@ void GlicWindowController::Show(Browser* browser, InvocationSource source) {
   // unset.
   CHECK(!attached_browser_);
   state_ = State::kOpenAnimation;
-  glic_service_->metrics()->OnGlicWindowOpen();
+  glic_service_->metrics()->OnGlicWindowOpen(/*attached=*/browser, source);
 
   show_start_time_ = base::TimeTicks::Now();
 

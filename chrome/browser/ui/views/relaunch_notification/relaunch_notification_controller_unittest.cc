@@ -931,7 +931,8 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
     // SessionManager is created by
     // |AshTestHelper::bluetooth_config_test_helper()|.
     session_manager::SessionManager::Get()->CreateSession(
-        user->GetAccountId(), test_user_email, user->GetType(),
+        user->GetAccountId(), test_user_email,
+        /*new_user=*/false,
         /*has_active_session=*/false);
     session_manager::SessionManager::Get()->SetSessionState(
         session_manager::SessionState::ACTIVE);

@@ -121,11 +121,11 @@ std::optional<ui::CursorData> CursorLoader::GetCursorData(
   }
 
   if (use_platform_cursors_) {
-    // TODO(crbug.com/40175364): consider either passing `scale_` to
-    // `CursorFactory::GetCursorData`, or relying on having called
-    // `CursorFactory::SetDeviceScaleFactor`, instead of appending it here.
     auto cursor_data = factory_->GetCursorData(type);
     if (cursor_data) {
+      // TODO(crbug.com/40175364): consider either passing `scale_` to
+      // `CursorFactory::GetCursorData`, or relying on having called
+      // `CursorFactory::SetDeviceScaleFactor`, instead of setting it here.
       cursor_data->scale_factor = scale_;
       ApplyColorAndLargeSize(cursor_data.value());
       return cursor_data;

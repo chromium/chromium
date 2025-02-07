@@ -131,7 +131,7 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
         mWindowColorHelper.setStatusBarColor(windowStatusBarColor);
         mWindowColorHelper.setStatusBarContrastEnforced(!mIsActivityEdgeToEdge);
 
-        updateStatusBarIconColor(mWindow.getDecorView(), mNavBarColor);
+        updateStatusBarIconColor(mWindow.getDecorView(), mStatusBarColor);
     }
 
     WindowSystemBarColorHelper getWindowHelperForTesting() {

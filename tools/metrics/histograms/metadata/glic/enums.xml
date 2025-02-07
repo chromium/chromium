@@ -26,6 +26,21 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(GlicInvocationSource) -->
+
+<enum name="GlicInvocationSource">
+  <int value="0" label="Button in the OS"/>
+  <int value="1" label="Menu from button in the OS"/>
+  <int value="2" label="OS-level hotkey"/>
+  <int value="3" label="Button in top-chrome"/>
+  <int value="4" label="First run experience"/>
+  <int value="5" label="From the profile picker"/>
+  <int value="6" label="From page actions"/>
+  <int value="7" label="From 3-dot menu"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_enums.h:InvocationSource) -->
+
 <!-- LINT.IfChange(GlicResponseError) -->
 
 <enum name="GlicMetricsError">

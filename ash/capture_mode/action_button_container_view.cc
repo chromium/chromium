@@ -14,6 +14,7 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
@@ -42,7 +43,6 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -104,15 +104,16 @@ ActionButtonContainerView::ErrorView::ErrorView()
       this, kErrorViewCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderNoShadow);
 
-  AddChildView(views::Builder<views::ImageView>()
-                   .SetPreferredSize(gfx::Size(kErrorViewLeadingIconSize,
-                                               kErrorViewLeadingIconSize))
-                   .SetImage(ui::ImageModel::FromVectorIcon(
-                       views::kInfoIcon, cros_tokens::kCrosSysSecondary))
-                   .SetProperty(views::kMarginsKey,
-                                gfx::Insets::TLBR(
-                                    0, 0, 0, kErrorViewLeadingIconRightPadding))
-                   .Build());
+  AddChildView(
+      views::Builder<views::ImageView>()
+          .SetPreferredSize(
+              gfx::Size(kErrorViewLeadingIconSize, kErrorViewLeadingIconSize))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kCaptureModeActionErrorIcon, cros_tokens::kCrosSysSecondary))
+          .SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(0, 0, 0, kErrorViewLeadingIconRightPadding))
+          .Build());
 
   AddChildView(
       views::Builder<views::Label>()

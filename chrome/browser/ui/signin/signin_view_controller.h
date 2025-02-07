@@ -121,9 +121,7 @@ class SigninViewController {
   void MaybeShowChromeSigninDialogForExtensions(
       const std::u16string& extension_name_for_display,
       base::OnceClosure on_complete);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Shows the modal profile customization dialog as a browser-modal dialog on
   // top of the |browser_|'s window.
   void ShowModalProfileCustomizationDialog(
@@ -201,10 +199,14 @@ class SigninViewController {
                            CreateLocalProfile);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            CancelLocalProfileCreation);
-  friend class ChromeSignoutConfirmationWebUIPromptPixelTest;
+  FRIEND_TEST_ALL_PREFIXES(SyncSettingsInteractiveTest,
+                           PressingSignOutButtonsSignsOutUser);
+  friend class ChromeSignoutConfirmationPromptPixelTest;
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
   friend class SigninInterceptFirstRunExperienceDialogBrowserTest;
   friend class SyncConfirmationUIDialogPixelTest;
+  friend class SigninViewControllerBrowserTestBase;
+  friend class ProfileMenuViewSignoutTest;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Shows the DICE-specific sign-in flow: opens a Gaia sign-in webpage in a new
@@ -232,10 +234,12 @@ class SigninViewController {
       const AccountInfo& account_info_for_promos,
       content::WebContents* contents);
 
-  // Shows the WebUI version of the signout confirmation prompt for testing with
-  // the given `prompt_variant`. Should only be used for pixel tests.
-  void ShowSignoutConfirmationPromptForTesting(
-      ChromeSignoutConfirmationPromptVariant prompt_variant);
+  // Shows the WebUI version of the signout confirmation prompt with the given
+  // `prompt_variant` and calls `callback` when the user accepts or closes the
+  // prompt.
+  void ShowSignoutConfirmationPrompt(
+      ChromeSignoutConfirmationPromptVariant prompt_variant,
+      base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns the web contents of the modal dialog.

@@ -4696,6 +4696,9 @@ if (!is_android) {
         "../browser/ui/views/user_education/help_bubble_factory_views_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
       ]
+      if (enable_dice_support) {
+        deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation" ]
+      }
       if (is_win) {
         sources += [
           "../browser/ui/views/frame/browser_frame_view_browsertest_win.cc",
@@ -10698,8 +10701,13 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/default_link_capturing_interactive_uitest.cc",
         "../browser/ui/views/media_preview/permission_prompt_preview_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_navigation_capturing_iph_interactive_uitest.cc",
-        "../browser/ui/webui/settings/sync_settings_interactive_uitest.cc",
       ]
+
+      if (enable_dice_support) {
+        sources += [
+          "../browser/ui/webui/settings/sync_settings_interactive_uitest.cc",
+        ]
+      }
     }
 
     if (enable_dice_support) {
@@ -10988,6 +10996,13 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_linux) {
       deps += [ "//ui/linux:test_support" ]
+    }
+
+    if (enable_dice_support && (is_mac || is_linux || is_win)) {
+      deps += [
+        "//chrome/browser/ui/signin:signin",
+        "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation",
+      ]
     }
 
     if (is_linux || is_chromeos || is_win) {

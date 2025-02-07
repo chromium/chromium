@@ -123,7 +123,8 @@ class SystemPropertiesProviderImplTest : public testing::Test {
         // TODO(crbug.com/278643115): Looks incorrect.
         // User's username_hash should be set inside CreateSession via
         // UserManager::UserLoggedIn().
-        user->username_hash(), user->GetType(),
+        user->username_hash(),
+        /*new_user=*/false,
         /*has_active_session=*/false);
     session_manager_->SessionStarted();
 

@@ -1,0 +1,85 @@
+Explicit Item 1
+Explicit Item 2
+Explicit Item 3
+Implicit Item 1
+Implicit Item 2
+Implicit Item 3
+Explicit Option 1
+Explicit Option 2
+ 
+Implicit Option 1
+Implicit Option 2
+ 
+Explicit dropdown 1
+Explicit dropdown 2
+ 
+Implicit dropdown 1
+Implicit dropdown 2
+    
+
+This tests that the role attribute is not missed.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+AXRole: AXGenericContainer
+    AXRole: AXRadioGroup
+        AXRole: AXRadioButton "Explicit Item 1"
+            AXRole: AXNone "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
+            AXRole: AXStaticText "Explicit Item 1"
+                AXRole: AXInlineTextBox "Explicit Item 1"
+        AXRole: AXRadioButton "Explicit Item 2"
+            AXRole: AXNone "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
+            AXRole: AXStaticText "Explicit Item 2"
+                AXRole: AXInlineTextBox "Explicit Item 2"
+        AXRole: AXRadioButton "Explicit Item 3"
+            AXRole: AXNone "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
+            AXRole: AXStaticText "Explicit Item 3"
+                AXRole: AXInlineTextBox "Explicit Item 3"
+    AXRole: AXList
+        AXRole: AXListItem
+            AXRole: AXListMarker "1. "
+                AXRole: AXStaticText "1. "
+            AXRole: AXStaticText "Implicit Item 1"
+                AXRole: AXInlineTextBox "Implicit Item 1"
+        AXRole: AXListItem
+            AXRole: AXListMarker "2. "
+                AXRole: AXStaticText "2. "
+            AXRole: AXStaticText "Implicit Item 2"
+                AXRole: AXInlineTextBox "Implicit Item 2"
+        AXRole: AXListItem
+            AXRole: AXListMarker "3. "
+                AXRole: AXStaticText "3. "
+            AXRole: AXStaticText "Implicit Item 3"
+                AXRole: AXInlineTextBox "Implicit Item 3"
+    AXRole: AXGroup
+        AXRole: AXGroup
+            AXRole: AXGenericContainer
+                AXRole: AXTextField "Explicit Option 1"
+                AXRole: AXTextField "Explicit Option 2"
+        AXRole: AXListBox
+            AXRole: AXGenericContainer
+                AXRole: AXListBoxOption "Implicit Option 1"
+                AXRole: AXListBoxOption "Implicit Option 2"
+        AXRole: AXGroup
+            AXRole: AXGenericContainer
+                AXRole: AXTextField "Explicit dropdown 1"
+                AXRole: AXTextField "Explicit dropdown 2"
+        AXRole: AXComboBoxSelect
+            AXRole: AXMenuListPopup
+                AXRole: AXMenuListOption "Implicit dropdown 1"
+                AXRole: AXMenuListOption "Implicit dropdown 2"
+        AXRole: AXStatus
+        AXRole: AXProgressIndicator
+        AXRole: AXStatus
+        AXRole: AXSlider
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -35,7 +35,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
   OverlayProcessorDelegated(
       std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates,
       std::vector<OverlayStrategy> available_strategies,
-      gpu::SharedImageInterface* shared_image_interface);
+      std::unique_ptr<PixmapProvider> pixmap_provider);
   OverlayProcessorDelegated(const OverlayProcessorDelegated&) = delete;
   OverlayProcessorDelegated& operator=(const OverlayProcessorDelegated&) =
       delete;

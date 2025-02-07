@@ -7,6 +7,9 @@
 
 namespace glic {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(InvocationSource)
 enum class InvocationSource {
   kOsButton = 0,         // Button in the OS
   kOsButtonMenu = 1,     // Menu from button in the OS
@@ -16,7 +19,9 @@ enum class InvocationSource {
   kProfilePicker = 5,    // From the profile picker
   kNudge = 6,            // From page actions
   kChroMenu = 7,         // From 3-dot menu.
+  kMaxValue = kChroMenu,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource)
 
 }  // namespace glic
 

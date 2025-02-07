@@ -226,16 +226,20 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             }
 
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator = null;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+            Profile profile = mTabModelSelector.getModel(/* incognito= */ false).getProfile();
+            CollaborationService collaborationService =
+                    CollaborationServiceFactory.getForProfile(profile);
+            @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
+            if (serviceStatus.isAllowedToJoin()) {
                 DataSharingService dataSharingService =
-                        DataSharingServiceFactory.getForProfile(
-                                mTabModelSelector.getModel(/* incognito= */ false).getProfile());
+                        DataSharingServiceFactory.getForProfile(profile);
                 sharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
                                 activity,
                                 SharedImageTilesType.DEFAULT,
                                 new SharedImageTilesColor(SharedImageTilesColor.Style.DYNAMIC),
-                                dataSharingService);
+                                dataSharingService,
+                                collaborationService);
                 FrameLayout container =
                         mToolbarView.findViewById(R.id.toolbar_image_tiles_container);
                 TabUiUtils.attachSharedImageTilesCoordinatorToFrameLayout(
@@ -259,10 +263,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mThemeColorProvider,
                             mBackgroundColorSupplier);
 
-            Profile profile = mTabModelSelector.getModel(false).getProfile();
-            CollaborationService collaborationService =
-                    CollaborationServiceFactory.getForProfile(profile);
-            @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
             if (serviceStatus.isAllowedToJoin()) {
                 mTabBubbler =
                         new TabBubbler(

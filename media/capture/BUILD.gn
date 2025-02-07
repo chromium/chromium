@@ -411,8 +411,6 @@ source_set("test_support") {
     "video/mock_device.h",
     "video/mock_device_factory.cc",
     "video/mock_device_factory.h",
-    "video/mock_gpu_memory_buffer_manager.cc",
-    "video/mock_gpu_memory_buffer_manager.h",
     "video/mock_video_capture_device_client.cc",
     "video/mock_video_capture_device_client.h",
     "video/mock_video_frame_receiver.cc",

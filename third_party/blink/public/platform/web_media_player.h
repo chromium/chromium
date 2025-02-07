@@ -309,6 +309,10 @@ class WebMediaPlayer {
         kWebContentDecryptionModuleExceptionNotSupportedError, 0, "ERROR");
   }
 
+  // Sets a flag indicating whether to render muted audio to the active sink or
+  // switch to a null sink.
+  virtual void SetRenderMutedAudio(bool render_muted_audio) {}
+
   // Sets the poster image URL.
   virtual void SetPoster(const WebURL& poster) {}
 

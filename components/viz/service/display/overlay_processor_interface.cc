@@ -34,6 +34,25 @@
 
 namespace viz {
 namespace {
+
+#if BUILDFLAG(IS_OZONE)
+class SharedImageManagerPixmapProvider
+    : public OverlayProcessorOzone::PixmapProvider {
+ public:
+  explicit SharedImageManagerPixmapProvider(gpu::SharedImageManager* manager)
+      : manager_(manager) {
+    CHECK(manager_);
+  }
+
+  scoped_refptr<gfx::NativePixmap> GetNativePixmap(
+      const gpu::Mailbox& mailbox) override {
+    return manager_->GetNativePixmap(mailbox);
+  }
+
+  const raw_ptr<gpu::SharedImageManager> manager_;
+};
+#endif
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class UnderlayDamage {
@@ -93,7 +112,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     gpu::SurfaceHandle surface_handle,
     const OutputSurface::Capabilities& capabilities,
     DisplayCompositorMemoryAndTaskController* display_controller,
-    gpu::SharedImageInterface* shared_image_interface,
+    gpu::SharedImageManager* shared_image_manager,
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings) {
   // If we are offscreen, we don't have overlay support.
@@ -128,21 +147,22 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     return std::make_unique<OverlayProcessorStub>();
 #endif  // #if !BUILDFLAG(IS_CASTOS)
 
-  gpu::SharedImageInterface* sii = nullptr;
+  std::unique_ptr<OverlayProcessorOzone::PixmapProvider> pixmap_provider;
   auto* overlay_manager = ui::OzonePlatform::GetInstance()->GetOverlayManager();
   std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates;
   if (overlay_manager) {
     overlay_candidates =
         overlay_manager->CreateOverlayCandidates(surface_handle);
     if (overlay_manager->allow_sync_and_real_buffer_page_flip_testing()) {
-      sii = shared_image_interface;
-      CHECK(shared_image_interface);
+      pixmap_provider = std::make_unique<SharedImageManagerPixmapProvider>(
+          shared_image_manager);
     }
   }
 
   return std::make_unique<OverlayProcessorOzone>(
       std::move(overlay_candidates),
-      std::move(renderer_settings.overlay_strategies), sii);
+      std::move(renderer_settings.overlay_strategies),
+      std::move(pixmap_provider));
 
 #elif BUILDFLAG(IS_ANDROID)
   DCHECK(display_controller);

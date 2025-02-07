@@ -152,13 +152,6 @@ bool IsSnapped(const TabDragContext* context) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/41482188): This should take a weak ref and return a Liveness,
-// because setting capture may cause the drag to end and the drag controller to
-// be destroyed.
-void SetCapture(TabDragContext* context) {
-  context->GetWidget()->SetCapture(context);
-}
-
 gfx::Rect GetTabstripScreenBounds(const TabDragContext* context) {
   const views::View* view = context;
   gfx::Point view_topleft;
@@ -543,8 +536,7 @@ TabDragController::Liveness TabDragController::Init(
     // Chrome. This may result in the drag ending, destroying `this`. This
     // behavior has been observed on Windows in https://crbug.com/964322 and
     // ChromeOS in https://crbug.com/1431369.
-    SetCapture(ref->source_context_);
-    if (!ref) {
+    if (SetCapture(ref->source_context_) == Liveness::DELETED) {
       return Liveness::DELETED;
     }
   }
@@ -578,7 +570,8 @@ void TabDragController::OnSystemDnDUpdated(const ui::DropTargetEvent& event) {
   // The latter may have been transformed to be relative to a child window, e.g.
   // Aura's clipping window. But we need the location relative to the browser
   // window, i.e. the root location.
-  g_tab_drag_controller->Drag(event.root_location());
+  // ignore the Liveness; it's fine if `g_tab_drag_controller` dies here.
+  std::ignore = g_tab_drag_controller->Drag(event.root_location());
 }
 
 // static
@@ -586,7 +579,8 @@ void TabDragController::OnSystemDnDExited() {
   CHECK(IsSystemDnDSessionRunning());
   VLOG(1) << __func__;
   // Call Drag() with a location that is definitely out of the tab strip.
-  g_tab_drag_controller->Drag(
+  // ignore the Liveness; it's fine if `g_tab_drag_controller` dies here.
+  std::ignore = g_tab_drag_controller->Drag(
       {g_tab_drag_controller->last_point_in_screen_.x(),
        g_tab_drag_controller->GetOutOfBoundsYCoordinate()});
 }
@@ -649,7 +643,8 @@ bool TabDragController::CanRestoreFullscreenWindowDuringDrag() const {
 #endif
 }
 
-void TabDragController::Drag(const gfx::Point& point_in_screen) {
+TabDragController::Liveness TabDragController::Drag(
+    const gfx::Point& point_in_screen) {
   TRACE_EVENT1("views", "TabDragController::Drag", "point_in_screen",
                point_in_screen.ToString());
 
@@ -661,29 +656,28 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
   if (current_state_ == DragState::kWaitingToExitRunLoop ||
       current_state_ == DragState::kWaitingToDragTabs ||
       current_state_ == DragState::kStopped) {
-    return;
+    return Liveness::ALIVE;
   }
 
   bring_to_front_timer_.Stop();
 
   if (current_state_ == DragState::kNotStarted) {
     if (!CanStartDrag(point_in_screen)) {
-      return;  // User hasn't dragged far enough yet.
+      return Liveness::ALIVE;  // User hasn't dragged far enough yet.
     }
 
     // If any of the tabs have disappeared (e.g. closed or discarded), cancel
     // the drag session. See crbug.com/1445776.
     if (GetViewsMatchingDraggedContents(source_context_).empty()) {
       EndDrag(END_DRAG_CANCEL);
-      return;
+      return Liveness::DELETED;
     }
 
     // On windows SaveFocus() may trigger a capture lost, which destroys us.
     {
-      base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
-      SaveFocus();
-      if (!ref) {
-        return;
+      const Liveness alive = SaveFocus();
+      if (alive == Liveness::DELETED) {
+        return Liveness::DELETED;
       }
     }
 
@@ -692,8 +686,8 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
 
     if (num_dragging_tabs() == source_context_->GetTabStripModel()->count()) {
       if (ShouldDragWindowUsingSystemDnD()) {
-        StartSystemDnDSessionIfNecessary(attached_context_, point_in_screen);
-        return;
+        return StartSystemDnDSessionIfNecessary(attached_context_,
+                                                point_in_screen);
       }
 
       did_restore_window_ =
@@ -708,14 +702,11 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
       const gfx::Vector2d drag_offset =
           start_point_in_screen_ -
           attached_context_->GetWidget()->GetWindowBoundsInScreen().origin();
-      RunMoveLoop(point_in_screen, drag_offset);
-      return;
+      return RunMoveLoop(point_in_screen, drag_offset);
     }
   }
 
-  if (ContinueDragging(point_in_screen) == Liveness::DELETED) {
-    return;
-  }
+  return ContinueDragging(point_in_screen);
 }
 
 void TabDragController::EndDrag(EndDragReason reason) {
@@ -807,7 +798,10 @@ void TabDragController::OnWidgetBoundsChanged(views::Widget* widget,
     return;
   }
 #endif
-  Drag(GetCursorScreenPoint());
+  // ignore the Liveness; it's fine if Drag destroys `this`.
+  std::ignore = Drag(GetCursorScreenPoint());
+
+  // !! N.B. `this` may be deleted here !!
 }
 
 void TabDragController::OnWidgetDestroyed(views::Widget* widget) {
@@ -845,12 +839,16 @@ void TabDragController::OnActiveStripWebContentsReplaced(
 ///////////////////////////////////////////////////////////////////////////////
 // TabDragController, private:
 
-void TabDragController::SaveFocus() {
+TabDragController::Liveness TabDragController::SaveFocus() {
+  base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   DCHECK(source_context_);
+
   old_focused_view_tracker_->SetView(
       source_context_->GetWidget()->GetFocusManager()->GetFocusedView());
   source_context_->GetWidget()->GetFocusManager()->ClearFocus();
+
   // WARNING: we may have been deleted.
+  return ref ? Liveness::ALIVE : Liveness::DELETED;
 }
 
 void TabDragController::RestoreFocus() {
@@ -887,29 +885,24 @@ TabDragController::Liveness TabDragController::ContinueDragging(
   if (presentation_time_recorder_) {
     presentation_time_recorder_->RequestNext();
   }
+  last_point_in_screen_ = point_in_screen;
 
   DCHECK(attached_context_);
 
   TabDragContext* target_context = source_context_;
-  if (detach_behavior_ == DETACHABLE &&
-      GetTargetTabStripForPoint(point_in_screen, &target_context) ==
-          Liveness::DELETED) {
-    return Liveness::DELETED;
+  if (detach_behavior_ == DETACHABLE) {
+    auto [alive, context] = GetTargetTabStripForPoint(point_in_screen);
+    if (alive == Liveness::DELETED) {
+      return Liveness::DELETED;
+    }
+    target_context = context;
   }
 
-  const bool tab_strip_changed = (target_context != attached_context_);
-  last_point_in_screen_ = point_in_screen;
-
-  if (tab_strip_changed) {
+  if (target_context != attached_context_) {
     is_dragging_new_browser_ = false;
     did_restore_window_ = false;
 
-    if (DragBrowserToNewTabStrip(target_context, point_in_screen) ==
-        DRAG_BROWSER_RESULT_STOP) {
-      // TODO(crbug.com/41482188): This may not always be correct.
-      // `DragBrowserToNewTabStrip` can delete `this` in some cases.
-      return Liveness::ALIVE;
-    }
+    return DragBrowserToNewTabStrip(target_context, point_in_screen);
   }
 
   if (current_state_ == DragState::kDraggingWindow) {
@@ -921,24 +914,18 @@ TabDragController::Liveness TabDragController::ContinueDragging(
 
   if (current_state_ == DragState::kDraggingTabs) {
     MoveAttached(point_in_screen, false);
-    if (tab_strip_changed) {
-      // Move the corresponding window to the front. We do this after the
-      // move as on windows activate triggers a synchronous paint.
-      attached_context_->GetWidget()->Activate();
-    }
   }
   return Liveness::ALIVE;
 }
 
-TabDragController::DragBrowserResultType
-TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
-                                            const gfx::Point& point_in_screen) {
+TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
+    TabDragContext* target_context,
+    const gfx::Point& point_in_screen) {
   TRACE_EVENT1("views", "TabDragController::DragBrowserToNewTabStrip",
                "point_in_screen", point_in_screen.ToString());
 
   if (!target_context) {
-    DetachIntoNewBrowserAndRunMoveLoop(point_in_screen);
-    return DRAG_BROWSER_RESULT_STOP;
+    return DetachIntoNewBrowserAndRunMoveLoop(point_in_screen);
   }
 
 #if defined(USE_AURA)
@@ -964,7 +951,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     if (can_release_capture_) {
       browser_widget->ReleaseCapture();
     } else {
-      SetCapture(target_context);
+      CHECK_EQ(SetCapture(target_context), Liveness::ALIVE);
     }
 
 #if !BUILDFLAG(IS_LINUX)
@@ -1003,7 +990,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
       attached_context_->GetWidget()->Activate();
     }
 
-    return DRAG_BROWSER_RESULT_STOP;
+    return Liveness::ALIVE;
   }
 
   if (current_state_ == DragState::kDraggingUsingSystemDnD) {
@@ -1021,7 +1008,8 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
   // behaviour.
   DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE, target_context);
   MoveAttached(point_in_screen, true);
-  return DRAG_BROWSER_RESULT_CONTINUE;
+  attached_context_->GetWidget()->Activate();
+  return Liveness::ALIVE;
 }
 
 bool TabDragController::ShouldDragWindowUsingSystemDnD() {
@@ -1083,7 +1071,7 @@ void TabDragController::OnTabThumbnailAvailable(float window_scale,
 
 TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
     TabDragContext* context,
-    const gfx::Point& point_in_screen) {
+    gfx::Point point_in_screen) {
   CHECK(IsWindowDragUsingSystemDragDropAllowed());
   CHECK(ui::ResourceBundle::HasSharedInstance());
   current_state_ = DragState::kDraggingUsingSystemDnD;
@@ -1329,10 +1317,8 @@ void TabDragController::DetachAndAttachToNewContext(
   AttachToNewContext(target_context, std::move(me));
 }
 
-TabDragController::Liveness TabDragController::GetTargetTabStripForPoint(
-    const gfx::Point& point_in_screen,
-    TabDragContext** context) {
-  *context = nullptr;
+std::tuple<TabDragController::Liveness, TabDragContext*>
+TabDragController::GetTargetTabStripForPoint(gfx::Point point_in_screen) {
   TRACE_EVENT1("views", "TabDragController::GetTargetTabStripForPoint",
                "point_in_screen", point_in_screen.ToString());
 
@@ -1341,7 +1327,7 @@ TabDragController::Liveness TabDragController::GetTargetTabStripForPoint(
       point_in_screen, current_state_ == DragState::kDraggingWindow,
       &local_window);
   if (state == Liveness::DELETED) {
-    return Liveness::DELETED;
+    return std::tuple(Liveness::DELETED, nullptr);
   }
 
   if (local_window && CanAttachTo(local_window)) {
@@ -1351,15 +1337,14 @@ TabDragController::Liveness TabDragController::GetTargetTabStripForPoint(
             ->GetDragContext();
     if (destination_tab_strip &&
         DoesTabStripContain(destination_tab_strip, point_in_screen)) {
-      *context = destination_tab_strip;
-      return Liveness::ALIVE;
+      return std::tuple(Liveness::ALIVE, destination_tab_strip);
     }
   }
 
-  *context = current_state_ == DragState::kDraggingWindow
-                 ? attached_context_.get()
-                 : nullptr;
-  return Liveness::ALIVE;
+  return std::tuple(Liveness::ALIVE,
+                    current_state_ == DragState::kDraggingWindow
+                        ? attached_context_.get()
+                        : nullptr);
 }
 
 bool TabDragController::DoesTabStripContain(
@@ -1496,7 +1481,7 @@ void TabDragController::AttachImpl() {
 
   // Make sure the window has capture. This is important so that if activation
   // changes the drag isn't prematurely canceled.
-  SetCapture(attached_context_);
+  CHECK_EQ(SetCapture(attached_context_), Liveness::ALIVE);
 
   attached_context_tabs_closed_tracker_ =
       std::make_unique<DraggedTabsClosedTracker>(
@@ -1567,16 +1552,17 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
   return me;
 }
 
-void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
-    const gfx::Point& point_in_screen) {
+TabDragController::Liveness
+TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
+    gfx::Point point_in_screen) {
   if (attached_context_->GetTabStripModel()->count() == num_dragging_tabs()) {
     // All the tabs in a browser are being dragged but all the tabs weren't
     // initially being dragged. For this to happen the user would have to
     // start dragging a set of tabs, the other tabs close, then detach.
 
     if (ShouldDragWindowUsingSystemDnD()) {
-      StartSystemDnDSessionIfNecessary(attached_context_, point_in_screen);
-      return;
+      return StartSystemDnDSessionIfNecessary(attached_context_,
+                                              point_in_screen);
     }
 
     const bool restore_window =
@@ -1593,8 +1579,7 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
     const gfx::Vector2d drag_offset =
         point_in_screen -
         attached_context_->GetWidget()->GetWindowBoundsInScreen().origin();
-    RunMoveLoop(point_in_screen, drag_offset);
-    return;
+    return RunMoveLoop(point_in_screen, drag_offset);
   }
 
   const int previous_tab_area_width = attached_context_->GetTabDragAreaWidth();
@@ -1651,8 +1636,7 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
     //
     // We need to pass `source_context_` here, because the new context we're
     // attached to is hidden and thus can't start the drag session.
-    StartSystemDnDSessionIfNecessary(source_context_, point_in_screen);
-    return;
+    return StartSystemDnDSessionIfNecessary(source_context_, point_in_screen);
   }
 
   AdjustTabBoundsForDrag(previous_tab_area_width, first_tab_leading_x,
@@ -1673,14 +1657,15 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
     base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
     browser->window()->Activate();
     if (!ref) {
-      return;
+      return Liveness::DELETED;
     }
   }
-  RunMoveLoop(point_in_screen, drag_offset);
+  return RunMoveLoop(point_in_screen, drag_offset);
 }
 
-void TabDragController::RunMoveLoop(gfx::Point point_in_screen,
-                                    gfx::Vector2d drag_offset) {
+TabDragController::Liveness TabDragController::RunMoveLoop(
+    gfx::Point point_in_screen,
+    gfx::Vector2d drag_offset) {
   CHECK(!ShouldDragWindowUsingSystemDnD());
 
   move_loop_widget_ = GetAttachedBrowserWidget();
@@ -1733,7 +1718,7 @@ void TabDragController::RunMoveLoop(gfx::Point point_in_screen,
   }
 
   if (!ref) {
-    return;
+    return Liveness::DELETED;
   }
 
   in_move_loop_ = false;
@@ -1752,14 +1737,17 @@ void TabDragController::RunMoveLoop(gfx::Point point_in_screen,
     attached_context_->GetWidget()->Activate();
     // Activate may trigger a focus loss, destroying us.
     if (!ref) {
-      return;
+      return Liveness::DELETED;
     }
     tab_strip_to_attach_to_after_exit_ = nullptr;
   } else if (current_state_ == DragState::kDraggingWindow) {
     EndDrag(result == views::Widget::MoveLoopResult::kCanceled
                 ? END_DRAG_CANCEL
                 : END_DRAG_COMPLETE);
+    return Liveness::DELETED;
   }
+
+  return Liveness::ALIVE;
 }
 
 gfx::Rect TabDragController::GetDraggedViewTabStripBounds(
@@ -2255,6 +2243,13 @@ void TabDragController::BringWindowUnderPointToFront(
   if (current_state_ == DragState::kDraggingWindow) {
     attached_context_->GetWidget()->StackAtTop();
   }
+}
+
+TabDragController::Liveness TabDragController::SetCapture(
+    TabDragContext* context) {
+  auto ref = weak_factory_.GetWeakPtr();
+  context->GetWidget()->SetCapture(context);
+  return ref ? Liveness::ALIVE : Liveness::DELETED;
 }
 
 bool TabDragController::IsDraggingTab(content::WebContents* contents) const {

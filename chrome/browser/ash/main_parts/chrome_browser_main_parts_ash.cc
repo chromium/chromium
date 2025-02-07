@@ -1092,13 +1092,27 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       return;
     }
 
-    // In case of multi-profiles --login-profile will contain user_id_hash.
-    std::string user_id_hash =
+    auto& session_manager = CHECK_DEREF(session_manager::SessionManager::Get());
+    CHECK(session_manager.sessions().empty());
+
+    bool created = false;
+    if (!user_manager->FindUser(account_id)) {
+      // TODO(crbug.com/278643115): Because we know here's browser_restart,
+      // the user_type calculation can be much simplified.
+      user_manager::UserType user_type = user_manager->CalculateUserType(
+          account_id, /*user=*/nullptr, /*browser_restart=*/true,
+          /*is_child=*/false);
+      // If there's no User found, that means, in the previous Chrome process,
+      // the user was ephemeral (including Guest).
+      created = user_manager->EnsureUser(account_id, user_type,
+                                         /*is_ephemeral=*/true);
+    }
+
+    // In case of multi-profiles --login-profile will contain username_hash.
+    std::string username_hash =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kLoginProfile);
-
-    session_manager::SessionManager::Get()->CreateSessionForRestart(
-        account_id, user_id_hash);
+    session_manager.CreateSessionForRestart(account_id, username_hash, created);
 
     // If restarting demo session, mark demo session as started before primary
     // profile starts initialization so browser context keyed services created
@@ -1107,7 +1121,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
     DemoSession::StartIfInDemoMode();
 
     VLOG(1) << "Relaunching browser for user: " << account_id.Serialize()
-            << " with hash: " << user_id_hash;
+            << " with hash: " << username_hash;
   }
 }
 

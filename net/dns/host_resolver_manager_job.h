@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_DNS_HOST_RESOLVER_MANAGER_JOB_H_
 #define NET_DNS_HOST_RESOLVER_MANAGER_JOB_H_
 
+#include <array>
 #include <deque>
 #include <memory>
 #include <optional>
@@ -191,7 +187,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
    private:
     RequestPriority highest_priority_;
     size_t total_count_ = 0;
-    size_t counts_[NUM_PRIORITIES] = {};
+    std::array<size_t, NUM_PRIORITIES> counts_ = {};
   };
 
   base::Value::Dict NetLogJobCreationParams(const NetLogSource& source);

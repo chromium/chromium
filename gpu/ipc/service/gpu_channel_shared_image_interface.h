@@ -103,8 +103,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
   void VerifySyncToken(SyncToken& sync_token) override;
   void WaitSyncToken(const SyncToken& sync_token) override;
   void Flush() override;
-  scoped_refptr<gfx::NativePixmap> GetNativePixmap(
-      const gpu::Mailbox& mailbox) override;
 
   const SharedImageCapabilities& GetCapabilities() override;
 
