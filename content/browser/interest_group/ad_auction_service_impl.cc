@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 
 #include <algorithm>
@@ -22,6 +17,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -1312,7 +1308,8 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(
 
   // Write the request starting at `start_offset`
   CHECK_EQ(data.size() + start_offset, buf.size());
-  std::memcpy(&buf.data()[start_offset], data.data(), data.size());
+  base::span(buf).subspan(start_offset).copy_from_nonoverlapping(
+      base::as_byte_span(data));
   state.requests.emplace_back(blink::mojom::AdAuctionPerSellerRequest::New(
       seller,
       blink::mojom::AdAuctionRequestOrError::NewRequest(std::move(buf))));
