@@ -5,56 +5,68 @@
 #include "remoting/host/it2me/it2me_host.h"
 
 #include <array>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/policy_constants.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/corp_session_authz_service_client_factory.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/logging.h"
-#include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/session_policies.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromoting_host.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/corp_host_status_logger.h"
+#include "remoting/host/create_desktop_interaction_strategy_factory.h"
 #include "remoting/host/ftl_signaling_connector.h"
 #include "remoting/host/host_event_logger.h"
 #include "remoting/host/host_event_reporter.h"
 #include "remoting/host/host_secret.h"
 #include "remoting/host/host_status_logger.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
+#include "remoting/host/it2me/it2me_confirmation_dialog_proxy.h"
 #include "remoting/host/it2me/it2me_helpers.h"
+#include "remoting/host/it2me/reconnect_params.h"
 #include "remoting/host/it2me_desktop_environment.h"
 #include "remoting/host/passthrough_register_support_host_request.h"
 #include "remoting/host/session_policies_from_dict.h"
 #include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
+#include "remoting/protocol/errors.h"
 #include "remoting/protocol/ice_config_fetcher_default.h"
 #include "remoting/protocol/it2me_host_authenticator_factory.h"
 #include "remoting/protocol/jingle_session_manager.h"
+#include "remoting/protocol/session_config.h"
+#include "remoting/protocol/session_manager.h"
+#include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/validating_authenticator.h"
-#include "remoting/signaling/log_to_server.h"
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/signaling_id_util.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
@@ -232,9 +244,12 @@ void It2MeHost::Connect(
 
   desktop_environment_factory_ =
       std::make_unique<It2MeDesktopEnvironmentFactory>(
-          host_context_->network_task_runner(),
-          host_context_->video_capture_task_runner(),
-          host_context_->input_task_runner(), host_context_->ui_task_runner());
+          host_context_->network_task_runner(), host_context_->ui_task_runner(),
+          CreateDesktopInteractionStrategyFactory(
+              host_context_->network_task_runner(),
+              host_context_->ui_task_runner(),
+              host_context_->video_capture_task_runner(),
+              host_context_->input_task_runner()));
 
   // Switch to the network thread to start the actual connection.
   host_context_->network_task_runner()->PostTask(

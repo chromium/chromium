@@ -4,29 +4,31 @@
 
 #include "remoting/host/desktop_session_agent.h"
 
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
-#include "base/files/file_util.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/platform_shared_memory_region.h"
-#include "base/memory/ptr_util.h"
-#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/constants.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/crash_process.h"
@@ -35,19 +37,22 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/host/mouse_shape_pump.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
-#include "remoting/host/video_memory_utils.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
+#include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-#include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/input_event_tracker.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
+#include "ui/events/types/event_type.h"
 
 namespace remoting {
 
@@ -107,7 +112,7 @@ bool DesktopSessionAgent::OnMessageReceived(const IPC::Message& message) {
   NOTREACHED() << "Received unexpected IPC type: " << message.type();
 }
 
-void DesktopSessionAgent::OnChannelConnected(int32_t peer_pid) {
+void DesktopSessionAgent::OnChannelConnected(std::int32_t peer_pid) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   VLOG(1) << "IPC: desktop <- network (" << peer_pid << ")";
@@ -166,7 +171,7 @@ void DesktopSessionAgent::DisconnectSession(protocol::ErrorCode error) {
   }
 }
 
-void DesktopSessionAgent::OnLocalKeyPressed(uint32_t usb_keycode) {
+void DesktopSessionAgent::OnLocalKeyPressed(std::uint32_t usb_keycode) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   remote_input_filter_->LocalKeyPressed(usb_keycode);
@@ -233,80 +238,11 @@ void DesktopSessionAgent::Start(
       &desktop_session_state_handler_);
 
   // Create a desktop environment for the new session.
-  desktop_environment_ = delegate_->desktop_environment_factory().Create(
-      weak_factory_.GetWeakPtr(), /* client_session_events= */ nullptr,
-      options);
-
-  // Create the session controller and set the initial screen resolution.
-  screen_controls_ = desktop_environment_->CreateScreenControls();
-  SetScreenResolution(resolution);
-
-  // Create the input injector.
-  input_injector_ = desktop_environment_->CreateInputInjector();
-
-  action_executor_ = desktop_environment_->CreateActionExecutor();
-
-  // Hook up the input filter.
-  input_tracker_ =
-      std::make_unique<protocol::InputEventTracker>(input_injector_.get());
-  remote_input_filter_ =
-      std::make_unique<RemoteInputFilter>(input_tracker_.get());
-
-#if BUILDFLAG(IS_WIN)
-  // LocalInputMonitorWin filters out an echo of the injected input before it
-  // reaches |remote_input_filter_|.
-  remote_input_filter_->SetExpectLocalEcho(false);
-#endif  // BUILDFLAG(IS_WIN)
-
-  // Start the input injector.
-  std::unique_ptr<protocol::ClipboardStub> clipboard_stub(
-      new DesktopSessionClipboardStub(this));
-  input_injector_->Start(std::move(clipboard_stub));
-
-  // Start the audio capturer.
-  if (delegate_->desktop_environment_factory().SupportsAudioCapture()) {
-    audio_capturer_ = desktop_environment_->CreateAudioCapturer();
-    audio_capture_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DesktopSessionAgent::StartAudioCapturer, this));
-  }
-
-  // Start the mouse cursor monitor.
-  mouse_shape_pump_ = std::make_unique<MouseShapePump>(
-      desktop_environment_->CreateMouseCursorMonitor(),
-      /*CursorShapeStub*/ nullptr);
-  mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
-
-  // Unretained is sound because callback will never be invoked after
-  // |keyboard_layout_monitor_| is destroyed.
-  keyboard_layout_monitor_ = desktop_environment_->CreateKeyboardLayoutMonitor(
-      base::BindRepeating(&DesktopSessionAgent::OnKeyboardLayoutChange,
-                          base::Unretained(this)));
-  keyboard_layout_monitor_->Start();
-
-  // Begin observing the desktop display(s) for changes. Note that some
-  // desktop environments may not provide a display info monitor.
-  auto* display_info_monitor = desktop_environment_->GetDisplayInfoMonitor();
-  if (display_info_monitor) {
-    display_info_monitor->Start();
-  }
-
-  // Set up the message handler for file transfers.
-  session_file_operations_handler_.emplace(
-      desktop_environment_->CreateFileOperations());
-
-  url_forwarder_configurator_ =
-      desktop_environment_->CreateUrlForwarderConfigurator();
-
-  // Check and report the initial URL forwarder setup state.
-  url_forwarder_configurator_->IsUrlForwarderSetUp(base::BindOnce(
-      &DesktopSessionAgent::OnCheckUrlForwarderSetUpResult, this));
-
-  webauthn_state_change_notifier_ =
-      desktop_environment_->CreateRemoteWebAuthnStateChangeNotifier();
-
-  std::move(callback).Run(
-      desktop_session_control_.BindNewEndpointAndPassRemote());
+  delegate_->desktop_environment_factory().Create(
+      weak_factory_.GetWeakPtr(), /* client_session_events= */ nullptr, options,
+      base::BindOnce(&DesktopSessionAgent::OnDesktopEnvironmentCreated,
+                     weak_factory_.GetWeakPtr(), resolution,
+                     std::move(callback)));
 }
 
 void DesktopSessionAgent::OnMouseCursor(webrtc::MouseCursor* cursor) {
@@ -418,7 +354,7 @@ void DesktopSessionAgent::Stop() {
 }
 
 void DesktopSessionAgent::CreateVideoCapturer(
-    int64_t desktop_display_id,
+    std::int64_t desktop_display_id,
     CreateVideoCapturerCallback callback) {
   std::move(callback).Run(video_capturers_.CreateVideoCapturer(
       desktop_display_id, desktop_environment_.get(), caller_task_runner_));
@@ -561,6 +497,87 @@ void DesktopSessionAgent::BeginFileWrite(const base::FilePath& file_path,
 
   session_file_operations_handler_->BeginFileWrite(file_path,
                                                    std::move(callback));
+}
+
+void DesktopSessionAgent::OnDesktopEnvironmentCreated(
+    const ScreenResolution& resolution,
+    StartCallback callback,
+    std::unique_ptr<DesktopEnvironment> desktop_environment) {
+  // TODO(rkjnsn): Handle null desktop_environment once multiprocess is
+  // is supported on platforms where remote desktop session creation can fail.
+
+  desktop_environment_ = std::move(desktop_environment);
+
+  // Create the session controller and set the initial screen resolution.
+  screen_controls_ = desktop_environment_->CreateScreenControls();
+  SetScreenResolution(resolution);
+
+  // Create the input injector.
+  input_injector_ = desktop_environment_->CreateInputInjector();
+
+  action_executor_ = desktop_environment_->CreateActionExecutor();
+
+  // Hook up the input filter.
+  input_tracker_ =
+      std::make_unique<protocol::InputEventTracker>(input_injector_.get());
+  remote_input_filter_ =
+      std::make_unique<RemoteInputFilter>(input_tracker_.get());
+
+#if BUILDFLAG(IS_WIN)
+  // LocalInputMonitorWin filters out an echo of the injected input before it
+  // reaches |remote_input_filter_|.
+  remote_input_filter_->SetExpectLocalEcho(false);
+#endif  // BUILDFLAG(IS_WIN)
+
+  // Start the input injector.
+  std::unique_ptr<protocol::ClipboardStub> clipboard_stub(
+      new DesktopSessionClipboardStub(this));
+  input_injector_->Start(std::move(clipboard_stub));
+
+  // Start the audio capturer.
+  if (delegate_->desktop_environment_factory().SupportsAudioCapture()) {
+    audio_capturer_ = desktop_environment_->CreateAudioCapturer();
+    audio_capture_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DesktopSessionAgent::StartAudioCapturer, this));
+  }
+
+  // Start the mouse cursor monitor.
+  mouse_shape_pump_ = std::make_unique<MouseShapePump>(
+      desktop_environment_->CreateMouseCursorMonitor(),
+      /*CursorShapeStub*/ nullptr);
+  mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
+
+  // Unretained is sound because callback will never be invoked after
+  // |keyboard_layout_monitor_| is destroyed.
+  keyboard_layout_monitor_ = desktop_environment_->CreateKeyboardLayoutMonitor(
+      base::BindRepeating(&DesktopSessionAgent::OnKeyboardLayoutChange,
+                          base::Unretained(this)));
+  keyboard_layout_monitor_->Start();
+
+  // Begin observing the desktop display(s) for changes. Note that some
+  // desktop environments may not provide a display info monitor.
+  auto* display_info_monitor = desktop_environment_->GetDisplayInfoMonitor();
+  if (display_info_monitor) {
+    display_info_monitor->Start();
+  }
+
+  // Set up the message handler for file transfers.
+  session_file_operations_handler_.emplace(
+      desktop_environment_->CreateFileOperations());
+
+  url_forwarder_configurator_ =
+      desktop_environment_->CreateUrlForwarderConfigurator();
+
+  // Check and report the initial URL forwarder setup state.
+  url_forwarder_configurator_->IsUrlForwarderSetUp(base::BindOnce(
+      &DesktopSessionAgent::OnCheckUrlForwarderSetUpResult, this));
+
+  webauthn_state_change_notifier_ =
+      desktop_environment_->CreateRemoteWebAuthnStateChangeNotifier();
+
+  std::move(callback).Run(
+      desktop_session_control_.BindNewEndpointAndPassRemote());
 }
 
 void DesktopSessionAgent::OnCheckUrlForwarderSetUpResult(bool is_set_up) {

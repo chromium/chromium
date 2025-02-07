@@ -50,7 +50,7 @@ class LegacyInteractionStrategy : public DesktopInteractionStrategy {
       override;
   std::unique_ptr<LocalInputMonitor> CreateLocalInputMonitor() override;
 
- private:
+ protected:
   LegacyInteractionStrategy(
       const DesktopEnvironmentOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
@@ -58,6 +58,7 @@ class LegacyInteractionStrategy : public DesktopInteractionStrategy {
       scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner);
 
+ private:
   DesktopEnvironmentOptions options_;
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;

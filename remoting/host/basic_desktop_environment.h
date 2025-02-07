@@ -9,18 +9,19 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/desktop_environment.h"
+#include "remoting/host/desktop_interaction_strategy.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 }
-
-namespace webrtc {
-
-class DesktopCaptureOptions;
-
-}  // namespace webrtc
 
 namespace remoting {
 
@@ -55,7 +56,7 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
       override;
   std::string GetCapabilities() const override;
   void SetCapabilities(const std::string& capabilities) override;
-  uint32_t GetDesktopSessionId() const override;
+  std::uint32_t GetDesktopSessionId() const override;
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() override;
 
@@ -64,23 +65,13 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
 
   BasicDesktopEnvironment(
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+      std::unique_ptr<DesktopInteractionStrategy> interaction_strategy,
       base::WeakPtr<ClientSessionControl> client_session_control,
       const DesktopEnvironmentOptions& options);
 
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner() const {
     return caller_task_runner_;
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner()
-      const {
-    return video_capture_task_runner_;
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> input_task_runner() const {
-    return input_task_runner_;
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner() const {
@@ -99,19 +90,19 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
     return options_;
   }
 
+  DesktopInteractionStrategy& interaction_strategy() {
+    return *interaction_strategy_;
+  }
+
  private:
   // Task runner on which methods of DesktopEnvironment interface should be
   // called.
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
 
-  // Used to run video capturer.
-  scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner_;
-
-  // Used to run input-related tasks.
-  scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
-
   // Used to run UI code.
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+
+  std::unique_ptr<DesktopInteractionStrategy> interaction_strategy_;
 
   // Used to send messages directly to the client session.
   base::WeakPtr<ClientSessionControl> client_session_control_;
@@ -126,9 +117,9 @@ class BasicDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
  public:
   BasicDesktopEnvironmentFactory(
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+      std::unique_ptr<DesktopInteractionStrategyFactory>
+          interaction_strategy_factory);
 
   BasicDesktopEnvironmentFactory(const BasicDesktopEnvironmentFactory&) =
       delete;
@@ -145,32 +136,24 @@ class BasicDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
     return caller_task_runner_;
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner()
-      const {
-    return video_capture_task_runner_;
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> input_task_runner() const {
-    return input_task_runner_;
-  }
-
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner() const {
     return ui_task_runner_;
   }
+
+  void CreateInteractionStrategy(
+      const DesktopEnvironmentOptions& options,
+      DesktopInteractionStrategyFactory::CreateCallback callback);
 
  private:
   // Task runner on which methods of DesktopEnvironmentFactory interface should
   // be called.
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
 
-  // Used to run video capture tasks.
-  scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner_;
-
-  // Used to run input-related tasks.
-  scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
-
   // Used to run UI code.
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+
+  std::unique_ptr<DesktopInteractionStrategyFactory>
+      interaction_strategy_factory_;
 };
 
 }  // namespace remoting

@@ -81,22 +81,26 @@ class DesktopEnvironment {
 
   // Returns an id which identifies the current desktop session on Windows.
   // Other platforms will always return the default value (UINT32_MAX).
-  virtual uint32_t GetDesktopSessionId() const = 0;
+  virtual std::uint32_t GetDesktopSessionId() const = 0;
 };
 
 // Used to create |DesktopEnvironment| instances.
 class DesktopEnvironmentFactory {
  public:
+  using CreateCallback =
+      base::OnceCallback<void(std::unique_ptr<DesktopEnvironment>)>;
+
   virtual ~DesktopEnvironmentFactory() = default;
 
-  // Creates an instance of |DesktopEnvironment|. Returns a nullptr pointer if
-  // the desktop environment could not be created for any reason (if the curtain
-  // failed to active for instance). |client_session_control| must outlive
-  // the created desktop environment.
-  virtual std::unique_ptr<DesktopEnvironment> Create(
+  // Creates an instance of |DesktopEnvironment|. Callback is invoked with a
+  // nullptr pointer if the desktop environment could not be created for any
+  // reason (if the curtain failed to activate for instance).
+  // |client_session_control| must outlive the created desktop environment.
+  virtual void Create(
       base::WeakPtr<ClientSessionControl> client_session_control,
       base::WeakPtr<ClientSessionEvents> client_session_events,
-      const DesktopEnvironmentOptions& options) = 0;
+      const DesktopEnvironmentOptions& options,
+      CreateCallback callback) = 0;
 
   // Returns |true| if created |DesktopEnvironment| instances support audio
   // capture.

@@ -9,23 +9,24 @@
 
 #include "remoting/host/client_session.h"
 
-#include <stdint.h>
-
 #include <array>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -33,25 +34,31 @@
 #include "remoting/base/errors.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/session_policies.h"
-#include "remoting/codec/video_encoder_verbatim.h"
-#include "remoting/host/desktop_environment.h"
+#include "remoting/host/base/desktop_environment_options.h"
+#include "remoting/host/desktop_display_info.h"
 #include "remoting/host/fake_desktop_environment.h"
 #include "remoting/host/fake_host_extension.h"
-#include "remoting/host/fake_mouse_cursor_monitor.h"
 #include "remoting/host/host_extension.h"
 #include "remoting/host/host_extension_session.h"
 #include "remoting/host/host_mock_objects.h"
+#include "remoting/proto/control.pb.h"
+#include "remoting/proto/event.pb.h"
 #include "remoting/protocol/capability_names.h"
 #include "remoting/protocol/fake_connection_to_client.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
 #include "remoting/protocol/fake_message_pipe.h"
 #include "remoting/protocol/fake_session.h"
+#include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/protocol_mock_objects.h"
+#include "remoting/protocol/session_config.h"
 #include "remoting/protocol/test_event_matchers.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/libjingle_xmpp/xmllite/qname.h"
+#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
-#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 
 namespace remoting {
 
@@ -118,7 +125,7 @@ protocol::MouseEvent MakeMouseMoveEvent(int x, int y) {
   return result;
 }
 
-protocol::KeyEvent MakeKeyEvent(bool pressed, uint32_t keycode) {
+protocol::KeyEvent MakeKeyEvent(bool pressed, std::uint32_t keycode) {
   protocol::KeyEvent result;
   result.set_pressed(pressed);
   result.set_usb_keycode(keycode);
@@ -147,12 +154,12 @@ class ClientSessionTest : public testing::Test {
       protocol::FakeDesktopCapturer::kWidth;  // 800
   static const int kDisplay1Height =
       protocol::FakeDesktopCapturer::kHeight;  // 600
-  static const int64_t kDisplay1Id =
+  static const std::int64_t kDisplay1Id =
       kUse64BitDisplayId ? 1111111111111111 : 11111111;
   static const int kDisplay2Width = 1024;
   static const int kDisplay2Height = 768;
   static const int kDisplay2YOffset = 35;
-  static const int64_t kDisplay2Id =
+  static const std::int64_t kDisplay2Id =
       kUse64BitDisplayId ? 2222222222222222 : 22222222;
 
   // Creates the client session from a FakeSession instance.
@@ -180,7 +187,7 @@ class ClientSessionTest : public testing::Test {
                           int height,
                           int dpi_x,
                           int dpi_y,
-                          int64_t display_id);
+                          std::int64_t display_id);
 
   // Fakes desktop display size notification from Webrtc.
   void NotifyDesktopDisplaySize(
@@ -305,19 +312,22 @@ void ClientSessionTest::ConnectClientSession(
   EXPECT_CALL(session_event_handler_, OnSessionPoliciesReceived(_))
       .WillOnce(Return(std::nullopt));
   EXPECT_CALL(session_event_handler_, OnSessionAuthenticated(_));
-  EXPECT_CALL(session_event_handler_, OnSessionChannelsConnected(_));
+
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(session_event_handler_, OnSessionChannelsConnected(_))
+      .WillOnce([&future] { future.SetValue(); });
 
   // Stubs should be set only after connection is authenticated.
   EXPECT_FALSE(connection_->clipboard_stub());
   EXPECT_FALSE(connection_->input_stub());
 
   client_session_->OnConnectionAuthenticated(session_policies);
+  client_session_->CreateMediaStreams();
+  client_session_->OnConnectionChannelsConnected();
+  future.Get();
 
   EXPECT_TRUE(connection_->clipboard_stub());
   EXPECT_TRUE(connection_->input_stub());
-
-  client_session_->CreateMediaStreams();
-  client_session_->OnConnectionChannelsConnected();
 }
 
 void ClientSessionTest::SendOnVideoSizeChanged(int width,
@@ -389,7 +399,7 @@ void ClientSessionTest::AddDisplayToLayout(protocol::VideoLayout* displays,
                                            int height,
                                            int dpi_x,
                                            int dpi_y,
-                                           int64_t display_id) {
+                                           std::int64_t display_id) {
   protocol::VideoTrackLayout* video_track = displays->add_video_track();
   video_track->set_position_x(x);
   video_track->set_position_y(y);
