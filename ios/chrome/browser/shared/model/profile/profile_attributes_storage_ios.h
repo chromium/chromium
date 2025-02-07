@@ -14,12 +14,14 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
 class PrefRegistrySimple;
 class PrefService;
 class ProfileAttributesIOS;
+class ProfileAttributesStorageObserverIOS;
 
 // This class saves various information about profiles to local preferences.
 class ProfileAttributesStorageIOS {
@@ -35,6 +37,10 @@ class ProfileAttributesStorageIOS {
       delete;
 
   ~ProfileAttributesStorageIOS();
+
+  // Register/unregister `observer`.
+  void AddObserver(ProfileAttributesStorageObserverIOS* observer);
+  void RemoveObserver(ProfileAttributesStorageObserverIOS* observer);
 
   // Register profile with `name`. No profile with that name must be registered
   // yet.
@@ -102,6 +108,9 @@ class ProfileAttributesStorageIOS {
   raw_ptr<PrefService> prefs_;
   // All known profile names, sorted alphabetically.
   std::vector<std::string> sorted_keys_;
+
+  base::ObserverList<ProfileAttributesStorageObserverIOS, /*check_empty=*/true>
+      observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_ATTRIBUTES_STORAGE_IOS_H_

@@ -18,6 +18,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #include "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_observer_ios.h"
 
 ProfileAttributesStorageIOS::ProfileAttributesStorageIOS(PrefService* prefs)
     : prefs_(prefs) {
@@ -38,6 +39,16 @@ ProfileAttributesStorageIOS::ProfileAttributesStorageIOS(PrefService* prefs)
 }
 
 ProfileAttributesStorageIOS::~ProfileAttributesStorageIOS() = default;
+
+void ProfileAttributesStorageIOS::AddObserver(
+    ProfileAttributesStorageObserverIOS* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ProfileAttributesStorageIOS::RemoveObserver(
+    ProfileAttributesStorageObserverIOS* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void ProfileAttributesStorageIOS::AddProfile(std::string_view name) {
   // Inserts the profile name in sorted position.
@@ -132,8 +143,14 @@ void ProfileAttributesStorageIOS::UpdateAttributesForProfileWithName(
           .GetStorage();
 
   if (values != updated_values) {
-    ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
-    update->Set(name, std::move(updated_values));
+    // Note: The block is there to ensure the pref update gets committed before
+    // observers are notified, so they see the new value.
+    {
+      ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
+      update->Set(name, std::move(updated_values));
+    }
+    observers_.Notify(
+        &ProfileAttributesStorageObserverIOS::OnProfileAttributesUpdated, name);
   }
 }
 
