@@ -108,8 +108,7 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   explicit SelectDescendantsObserver(HTMLSelectElement& select)
       : select_(select), observer_(MutationObserver::Create(this)) {
     CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-    DCHECK(select_->IsAppearanceBaseButton(
-        HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle));
+    DCHECK(select_->IsAppearanceBaseButton());
 
     MutationObserverInit* init = MutationObserverInit::Create();
     init->setChildList(true);
@@ -1182,15 +1181,12 @@ HTMLOptionElement* HTMLSelectElement::SelectedOption() const {
 
 bool HTMLSelectElement::IsInDialogMode() const {
   return RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
-         IsAppearanceBaseButton(
-             HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle) &&
-         content_model_violations_count_ > 0U;
+         IsAppearanceBaseButton() && content_model_violations_count_ > 0U;
 }
 
 void HTMLSelectElement::IncreaseContentModelViolationCount() {
   CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-  DCHECK(IsAppearanceBaseButton(
-      HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle));
+  DCHECK(IsAppearanceBaseButton());
   bool dialog_mode_changed = !content_model_violations_count_;
   ++content_model_violations_count_;
   if (dialog_mode_changed) {
@@ -1202,8 +1198,7 @@ void HTMLSelectElement::IncreaseContentModelViolationCount() {
 
 void HTMLSelectElement::DecreaseContentModelViolationCount() {
   CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-  DCHECK(IsAppearanceBaseButton(
-      HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle));
+  DCHECK(IsAppearanceBaseButton());
   bool dialog_mode_changed = content_model_violations_count_ == 1;
   if (content_model_violations_count_ > 0U) {
     --content_model_violations_count_;
@@ -1613,8 +1608,7 @@ void HTMLSelectElement::UpdateMutationObserver() {
   if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     return;
   }
-  if (UsesMenuList() && isConnected() &&
-      IsAppearanceBaseButton(StyleUpdateBehavior::kDontUpdateStyle)) {
+  if (UsesMenuList() && isConnected() && IsAppearanceBaseButton()) {
     if (!descendants_observer_) {
       descendants_observer_ =
           MakeGarbageCollected<SelectDescendantsObserver>(*this);
@@ -2180,9 +2174,8 @@ bool HTMLSelectElement::IsPopoverForAppearanceBase(const Element* element) {
   return false;
 }
 
-bool HTMLSelectElement::IsAppearanceBaseButton(
-    StyleUpdateBehavior update_behavior) const {
-  return select_type_->IsAppearanceBaseButton(update_behavior);
+bool HTMLSelectElement::IsAppearanceBaseButton() const {
+  return select_type_->IsAppearanceBaseButton();
 }
 
 bool HTMLSelectElement::IsAppearanceBasePicker() const {

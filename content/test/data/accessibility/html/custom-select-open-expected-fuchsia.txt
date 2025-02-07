@@ -2,17 +2,18 @@ UNKNOWN focusable
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++UNKNOWN focusable label='Currency for purchase' actions='{DEFAULT}' value='USD'
-++++++++BUTTON hidden
-++++++++++UNKNOWN hidden
-++++++++++++IMAGE hidden
+++++++++UNKNOWN hidden
+++++++++++BUTTON hidden
 ++++++++++++UNKNOWN hidden
+++++++++++++++IMAGE hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden
 ++++++++++++++UNKNOWN hidden
 ++++++++++++++++STATIC_TEXT hidden
-++++++++++++++UNKNOWN hidden
-++++++++++++++++STATIC_TEXT hidden
 ++++++++++++UNKNOWN hidden
-++++++++++++++STATIC_TEXT hidden
-++++++++++UNKNOWN hidden
 ++++++++UNKNOWN
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN focusable label='EUR Euro' actions='{DEFAULT}'

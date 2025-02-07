@@ -275,10 +275,7 @@ class CORE_EXPORT HTMLSelectElement final
   // in-page rendering of the button, and IsAppearanceBasePicker should be used
   // for code which is concerned with the popup/popover and the other elements
   // which are rendered in it.
-  // |no_update| prevents these methods from running an UpdateStyleAndLayoutTree
-  // which is needed in some cases to prevent nested style/layout recalc.
-  enum class StyleUpdateBehavior { kUpdateStyle, kDontUpdateStyle };
-  bool IsAppearanceBaseButton(StyleUpdateBehavior) const;
+  bool IsAppearanceBaseButton() const;
   bool IsAppearanceBasePicker() const;
 
   void SelectedContentElementInserted(
