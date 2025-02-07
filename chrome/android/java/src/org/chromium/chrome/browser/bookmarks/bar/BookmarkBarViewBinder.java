@@ -27,6 +27,12 @@ class BookmarkBarViewBinder {
             @NonNull PropertyModel model, @NonNull BookmarkBar view, @NonNull PropertyKey key) {
         if (key == BookmarkBarProperties.HEIGHT_CHANGE_CALLBACK) {
             view.setHeightChangeCallback(model.get(BookmarkBarProperties.HEIGHT_CHANGE_CALLBACK));
+        } else if (key == BookmarkBarProperties.OVERFLOW_BUTTON_CLICK_CALLBACK) {
+            view.setOverflowButtonClickCallback(
+                    model.get(BookmarkBarProperties.OVERFLOW_BUTTON_CLICK_CALLBACK));
+        } else if (key == BookmarkBarProperties.OVERFLOW_BUTTON_VISIBILITY) {
+            view.setOverflowButtonVisibility(
+                    model.get(BookmarkBarProperties.OVERFLOW_BUTTON_VISIBILITY));
         } else if (key == BookmarkBarProperties.TOP_MARGIN) {
             final var lp = (MarginLayoutParams) view.getLayoutParams();
             lp.topMargin = model.get(BookmarkBarProperties.TOP_MARGIN);

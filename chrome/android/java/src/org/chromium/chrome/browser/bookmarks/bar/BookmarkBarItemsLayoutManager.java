@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -32,6 +34,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
 
     private final int mItemMaxWidth;
     private final int mItemSpacing;
+    private final ObservableSupplierImpl<Boolean> mItemsOverflowSupplier;
 
     /**
      * Constructor.
@@ -42,11 +45,19 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
         final Resources resources = context.getResources();
         mItemMaxWidth = resources.getDimensionPixelSize(R.dimen.bookmark_bar_item_max_width);
         mItemSpacing = resources.getDimensionPixelSize(R.dimen.bookmark_bar_item_spacing);
+        mItemsOverflowSupplier = new ObservableSupplierImpl<>(false);
     }
 
     @Override
     public RecyclerView.LayoutParams generateDefaultLayoutParams() {
         return new RecyclerView.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+    }
+
+    /**
+     * @return the supplier for the current state of items overflow.
+     */
+    public @NonNull ObservableSupplier<Boolean> getItemsOverflowSupplier() {
+        return mItemsOverflowSupplier;
     }
 
     @Override
@@ -55,7 +66,8 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
     }
 
     @Override
-    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+    public void onLayoutChildren(
+            @NonNull RecyclerView.Recycler recycler, @NonNull RecyclerView.State state) {
         detachAndScrapAttachedViews(recycler);
 
         final var visibleBounds = new Rect(0, 0, getWidth(), getHeight());
@@ -85,6 +97,15 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
         for (int i = scrapList.size() - 1; i >= 0; i--) {
             recycler.recycleView(scrapList.get(i).itemView);
         }
+    }
+
+    @Override
+    public void onLayoutCompleted(@NonNull RecyclerView.State state) {
+        super.onLayoutCompleted(state);
+
+        // NOTE: Items overflow when there are more items in the adapter than are rendered.
+        final boolean itemsOverflow = getChildCount() != state.getItemCount();
+        mItemsOverflowSupplier.set(itemsOverflow);
     }
 
     private int getStartOffset() {

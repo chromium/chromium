@@ -63,7 +63,8 @@ public class BookmarkBarCoordinator {
                 BookmarkBarButtonViewBinder::bind);
         final RecyclerView itemsContainer = mView.findViewById(R.id.bookmark_bar_items_container);
         itemsContainer.setAdapter(mItemsAdapter);
-        itemsContainer.setLayoutManager(new BookmarkBarItemsLayoutManager(activity));
+        final var itemsLayoutManager = new BookmarkBarItemsLayoutManager(activity);
+        itemsContainer.setLayoutManager(itemsLayoutManager);
 
         // NOTE: Scrolling isn't supported and items rarely change so item view caching is disabled.
         itemsContainer.getRecycledViewPool().setMaxRecycledViews(BookmarkBarUtils.ViewType.ITEM, 0);
@@ -78,6 +79,7 @@ public class BookmarkBarCoordinator {
                         browserControlsManager,
                         heightChangeCallback,
                         itemsModel,
+                        itemsLayoutManager.getItemsOverflowSupplier(),
                         model,
                         profileSupplier);
         PropertyModelChangeProcessor.create(model, mView, BookmarkBarViewBinder::bind);

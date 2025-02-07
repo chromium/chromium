@@ -35,6 +35,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 /** Mediator for the bookmark bar which provides users with bookmark access from top chrome. */
@@ -47,6 +48,8 @@ class BookmarkBarMediator
     private final Callback<Integer> mHeightChangeCallback;
     private final ObservableSupplierImpl<Integer> mHeightSupplier;
     private final ModelList mItemsModel;
+    private final ObservableSupplier<Boolean> mItemsOverflowSupplier;
+    private final Callback<Boolean> mItemsOverflowSupplierObserver;
     private final PropertyModel mModel;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver;
@@ -62,6 +65,7 @@ class BookmarkBarMediator
      * @param browserControlsManager the manager for browser control positioning/visibility.
      * @param heightChangeCallback a callback to notify of bookmark bar height change events.
      * @param itemsModel the model for the items which are rendered within the bookmark bar.
+     * @param itemsOverflowSupplier the supplier for the current state of items overflow.
      * @param model the model used to read/write bookmark bar properties.
      * @param profileSupplier the supplier for the currently active profile.
      */
@@ -71,6 +75,7 @@ class BookmarkBarMediator
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull Callback<Integer> heightChangeCallback,
             @NonNull ModelList itemsModel,
+            @NonNull ObservableSupplier<Boolean> itemsOverflowSupplier,
             @NonNull PropertyModel model,
             @NonNull ObservableSupplier<Profile> profileSupplier) {
         mActivity = activity;
@@ -100,8 +105,15 @@ class BookmarkBarMediator
 
         mItemsModel = itemsModel;
 
+        mItemsOverflowSupplier = itemsOverflowSupplier;
+        mItemsOverflowSupplierObserver = this::onItemsOverflowChange;
+        mItemsOverflowSupplier.addObserver(mItemsOverflowSupplierObserver);
+
         mModel = model;
         mModel.set(BookmarkBarProperties.HEIGHT_CHANGE_CALLBACK, mHeightSupplier::set);
+        mModel.set(
+                BookmarkBarProperties.OVERFLOW_BUTTON_CLICK_CALLBACK, this::onOverflowButtonClick);
+        mModel.set(BookmarkBarProperties.OVERFLOW_BUTTON_VISIBILITY, View.INVISIBLE);
 
         mProfileSupplier = profileSupplier;
         mProfileSupplierObserver = this::onProfileChange;
@@ -116,6 +128,7 @@ class BookmarkBarMediator
         mAllBookmarksButtonModel.set(BookmarkBarButtonProperties.CLICK_CALLBACK, null);
         mBrowserControlsManager.removeObserver(this);
         mHeightSupplier.removeObserver(mHeightChangeCallback);
+        mItemsOverflowSupplier.removeObserver(mItemsOverflowSupplierObserver);
 
         if (mImageFetcher != null) {
             mImageFetcher.destroy();
@@ -244,6 +257,25 @@ class BookmarkBarMediator
                         mActivity.getComponentName(),
                         /* bookmarkOpenedCallback= */ null)
                 .openBookmarkInCurrentTab(item.getId(), profile.isOffTheRecord());
+    }
+
+    private void onItemsOverflowChange(boolean itemsOverflow) {
+        mModel.set(
+                BookmarkBarProperties.OVERFLOW_BUTTON_VISIBILITY,
+                itemsOverflow ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    private void onOverflowButtonClick() {
+        // Open the manager iff the active profile and model are unchanged to prevent accidentally
+        // opening the manager for the wrong profile/model.
+        runIfStillRelevantAfterFinishLoadingBookmarkModel(
+                (profileAfterLoading, modelAfterLoading) -> {
+                    BookmarkUtils.showBookmarkManager(
+                            mActivity,
+                            Optional.ofNullable(modelAfterLoading.getAccountDesktopFolderId())
+                                    .orElseGet(modelAfterLoading::getDesktopFolderId),
+                            profileAfterLoading.isOffTheRecord());
+                });
     }
 
     private void onProfileChange(@Nullable Profile profile) {
