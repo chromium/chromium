@@ -103,6 +103,8 @@ static constexpr double kRejectionLogNormalSigma = 1.4;
 static constexpr char kDefaultFieldName[] = "name";
 static constexpr char kDefaultFieldEmail[] = "email";
 static constexpr char kDefaultFieldPicture[] = "picture";
+static constexpr char kFieldPhoneNumber[] = "phone";
+static constexpr char kFieldUsername[] = "username";
 
 static constexpr char kVcSdJwt[] = "vc+sd-jwt";
 
@@ -125,6 +127,12 @@ std::vector<std::string> DisclosureFieldsToStringList(
         break;
       case IdentityRequestDialogDisclosureField::kPicture:
         list.push_back(kDefaultFieldPicture);
+        break;
+      case IdentityRequestDialogDisclosureField::kPhoneNumber:
+        list.push_back(kFieldPhoneNumber);
+        break;
+      case IdentityRequestDialogDisclosureField::kUsername:
+        list.push_back(kFieldUsername);
         break;
     }
   }
@@ -1465,6 +1473,12 @@ FederatedAuthRequestImpl::GetDisclosureFields(
       list.push_back(IdentityRequestDialogDisclosureField::kEmail);
     } else if (field == kDefaultFieldPicture) {
       list.push_back(IdentityRequestDialogDisclosureField::kPicture);
+    } else if (IsFedCmAlternativeIdentifiersEnabled()) {
+      if (field == kFieldPhoneNumber) {
+        list.push_back(IdentityRequestDialogDisclosureField::kPhoneNumber);
+      } else if (field == kFieldUsername) {
+        list.push_back(IdentityRequestDialogDisclosureField::kUsername);
+      }
     }
   }
   return list;

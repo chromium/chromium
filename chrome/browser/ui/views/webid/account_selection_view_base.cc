@@ -118,6 +118,14 @@ std::u16string GetPermissionFieldsString(
         strings.push_back(l10n_util::GetStringUTF16(
             IDS_ACCOUNT_SELECTION_DATA_SHARING_PICTURE));
         break;
+      case content::IdentityRequestDialogDisclosureField::kPhoneNumber:
+        strings.push_back(l10n_util::GetStringUTF16(
+            IDS_ACCOUNT_SELECTION_DATA_SHARING_PHONE));
+        break;
+      case content::IdentityRequestDialogDisclosureField::kUsername:
+        strings.push_back(l10n_util::GetStringUTF16(
+            IDS_ACCOUNT_SELECTION_DATA_SHARING_USERNAME));
+        break;
     }
   }
   return ListToString(strings);

@@ -6344,7 +6344,7 @@ TEST_F(FederatedAuthRequestImplTest, GetDisclosureFieldsEmpty) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAuthz);
   // An unknown field is being requested.
-  EXPECT_THAT(GetDisclosureFields({"phone"}), ElementsAre());
+  EXPECT_THAT(GetDisclosureFields({"address"}), ElementsAre());
   // Nothing is requested.
   EXPECT_THAT(GetDisclosureFields({}), ElementsAre());
 }
@@ -6359,13 +6359,32 @@ TEST_F(FederatedAuthRequestImplTest, GetDisclosureFields) {
   // When the default fields are explicitly passed, we should mediate them.
   EXPECT_THAT(GetDisclosureFields({"name", "email", "picture"}),
               ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
-  // When a superset of the default fields is passed, we should mediate the
-  // default fields.
+  // When a superset of the supported fields is passed, we should mediate the
+  // supported fields.
   EXPECT_THAT(
       GetDisclosureFields({"name", "email", "picture", "locale", "phone"}),
       ElementsAre(Field::kName, Field::kEmail, Field::kPicture));
 }
 
+TEST_F(FederatedAuthRequestImplTest,
+       GetDisclosureFieldsWithAlternativeIdentifiers) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAlternativeIdentifiers);
+  // When a superset of the supported fields is passed, we should mediate the
+  // supported fields.
+  EXPECT_THAT(
+      GetDisclosureFields({"name", "email", "picture", "locale", "phone"}),
+      ElementsAre(Field::kName, Field::kEmail, Field::kPicture,
+                  Field::kPhoneNumber));
+}
+
+TEST_F(FederatedAuthRequestImplTest,
+       GetDisclosureFieldsWithAlternativeIdentifiersDisabled) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCmAlternativeIdentifiers);
+  // We should only support the new identifiers if the flag is enabled
+  EXPECT_THAT(GetDisclosureFields({"username", "phone"}), ElementsAre());
+}
 TEST_F(FederatedAuthRequestImplTest, GetDisclosureFieldsSubsetOfDefault) {
   base::test::ScopedFeatureList list;
   list.InitWithFeatures({features::kFedCmAuthz, features::kFedCmFlexibleFields},
