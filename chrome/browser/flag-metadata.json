@@ -9282,6 +9282,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "webnn-coreml",
+    "owners": [ "reillyg@chromium.org", "phillis@chromium.org" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "webnn-directml",
     "owners": [ "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],
     "expiry_milestone": 146

@@ -1417,6 +1417,9 @@ extern const char kWebMachineLearningNeuralNetworkDescription[];
 extern const char kExperimentalWebMachineLearningNeuralNetworkName[];
 extern const char kExperimentalWebMachineLearningNeuralNetworkDescription[];
 
+extern const char kWebNNCoreMLName[];
+extern const char kWebNNCoreMLDescription[];
+
 extern const char kWebNNDirectMLName[];
 extern const char kWebNNDirectMLDescription[];
 

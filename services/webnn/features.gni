@@ -5,11 +5,8 @@
 import("//build/config/features.gni")
 
 declare_args() {
-  # Enable the Core ML backend by default on macOS. This flag allows it to be
-  # disabled for testing.
-  webnn_use_coreml = is_mac
-
-  webnn_use_tflite = is_android || is_chromeos || is_linux || is_win
+  # TFLite is used as a fallback option on macOS and Windows.
+  webnn_use_tflite = is_android || is_chromeos || is_linux || is_mac || is_win
 
   # Enable logging of TFLite profiling information on MLGraph destruction.
   webnn_enable_tflite_profiler = false
