@@ -79,7 +79,7 @@ import java.util.function.Predicate;
 /** Responsible for BookmarkManager business logic. */
 // TODO(crbug.com/40256938): Remove BookmarkDelegate if possible.
 class BookmarkManagerMediator
-        implements BookmarkDelegate, TestingDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
+        implements BookmarkDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
     private static final int PROMO_MAX_INDEX = 1;
     private static final int SEARCH_BOX_MAX_INDEX = 0;
 
@@ -665,23 +665,6 @@ class BookmarkManagerMediator
         return mDraggabilityProvider;
     }
 
-    // TestingDelegate implementation.
-
-    @Override
-    public BookmarkId getIdByPositionForTesting(int position) {
-        return getIdByPosition(position);
-    }
-
-    @Override
-    public void searchForTesting(@Nullable String query) {
-        search(query);
-    }
-
-    @Override
-    public void simulateSignInForTesting() {
-        mBookmarkUiObserver.onFolderStateSet(getCurrentFolderId());
-    }
-
     // BookmarkDelegate implementation.
 
     @Override
@@ -1225,7 +1208,7 @@ class BookmarkManagerMediator
         }
     }
 
-    private int getBookmarkItemStartIndex() {
+    int getBookmarkItemStartIndex() {
         return firstIndexWithPredicate(
                 0,
                 mModelList.size(),
@@ -1235,7 +1218,7 @@ class BookmarkManagerMediator
                 });
     }
 
-    private int getBookmarkItemEndIndex() {
+    int getBookmarkItemEndIndex() {
         return firstIndexWithPredicate(
                 mModelList.size() - 1,
                 -1,
@@ -1744,5 +1727,13 @@ class BookmarkManagerMediator
 
     DragStateDelegate getDragStateDelegateForTesting() {
         return mDragStateDelegate;
+    }
+
+    BookmarkId getIdByPositionForTesting(int position) {
+        return getIdByPosition(getBookmarkItemStartIndex() + position);
+    }
+
+    void simulateSignInForTesting() {
+        mBookmarkUiObserver.onFolderStateSet(getCurrentFolderId());
     }
 }
