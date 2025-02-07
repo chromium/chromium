@@ -930,6 +930,10 @@ public class TabGridDialogView extends FrameLayout {
      * @param scrimClickRunnable The {@link Runnable} that runs when scrim view is clicked.
      */
     void setScrimClickRunnable(Runnable scrimClickRunnable) {
+        boolean isVisible = getVisibility() == View.VISIBLE;
+        if (mScrimPropertyModel != null && isVisible) {
+            mScrimManager.hideScrim(mScrimPropertyModel, /* animate= */ true);
+        }
         mScrimPropertyModel =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.ANCHOR_VIEW, mDialogContainerView)
@@ -937,6 +941,9 @@ public class TabGridDialogView extends FrameLayout {
                         .with(ScrimProperties.CLICK_DELEGATE, scrimClickRunnable)
                         .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, true)
                         .build();
+        if (mScrimPropertyModel != null && isVisible) {
+            mScrimManager.showScrim(mScrimPropertyModel);
+        }
     }
 
     void setupScrimManager(ScrimManager scrimManager) {
