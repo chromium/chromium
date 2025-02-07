@@ -108,6 +108,10 @@ MessageBox::Core::Core(const std::u16string& title_label,
         }
       },
       this));
+
+  // This should be set as the `message_box_view_` is assumed to be owned by the
+  // widget created.
+  SetOwnedByWidget(true);
 }
 
 void MessageBox::Core::Show(gfx::NativeView parent) {
