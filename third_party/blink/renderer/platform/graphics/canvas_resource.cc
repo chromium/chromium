@@ -637,8 +637,6 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
     SkSurface* sk_surface) {
   DCHECK(!is_cross_thread());
 
-  const sk_sp<SkImage>& image = sk_surface->makeImageSnapshot();
-
   std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping =
       GetClientSharedImage()->Map();
   if (!mapping) {
@@ -646,8 +644,8 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
     return;
   }
 
-  image->readPixels(/*context=*/nullptr,
-                    mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()), 0, 0);
+  sk_surface->readPixels(mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()),
+                         0, 0);
 
   // Unmap the underlying buffer.
   mapping.reset();
