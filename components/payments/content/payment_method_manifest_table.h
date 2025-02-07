@@ -6,6 +6,7 @@
 #define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_METHOD_MANIFEST_TABLE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
