@@ -647,12 +647,11 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
   sk_surface->readPixels(mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()),
                          0, 0);
 
-  // Unmap the underlying buffer.
+  // Unmap the SI, inform the service that the SharedImage's backing memory was
+  // written to on the CPU and update this resource's sync token to ensure
+  // proper sequencing of future accesses to the SI with respect to this call on
+  // the service side.
   mapping.reset();
-
-  // Inform the service that the SharedImage's backing memory was written to on
-  // the CPU and update this resource's sync token to ensure proper sequencing
-  // of future accesses to the SI with respect to this call on the service side.
   owning_thread_data().sync_token =
       GetClientSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken());
 }
