@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_SESSION_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_SESSION_UTIL_H_
 
+#include <string>
+
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 
 namespace ash::boca {
@@ -13,6 +15,8 @@ namespace ash::boca {
 
 google::protobuf::RepeatedPtrField<::boca::UserIdentity> GetStudentGroupsSafe(
     ::boca::Session* session);
+
+std::string GetStudentGroupIdSafe(::boca::Session* session);
 
 ::boca::Roster GetRosterSafe(::boca::Session* session);
 

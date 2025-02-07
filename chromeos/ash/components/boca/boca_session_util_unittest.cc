@@ -6,10 +6,13 @@
 
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::boca {
 namespace {
+
+using testing::IsEmpty;
 
 class BocaSessionUtilTest : public testing::Test {
  protected:
@@ -48,6 +51,19 @@ TEST_F(BocaSessionUtilTest, TestGetStudentGroupsWithNullInputShouldNotCrash) {
   auto* student = student_groups->mutable_students()->Add();
   student->set_email("test");
   ASSERT_EQ(1, GetStudentGroupsSafe(&session).size());
+}
+
+TEST_F(BocaSessionUtilTest, TestGetStudentGroupIdWithNullInputShouldNotCrash) {
+  ASSERT_THAT(GetStudentGroupsSafe(nullptr), IsEmpty());
+
+  ::boca::Session session;
+  ASSERT_THAT(GetStudentGroupIdSafe(&session), IsEmpty());
+
+  ::boca::StudentGroup* const student_groups =
+      session.mutable_roster()->mutable_student_groups()->Add();
+  student_groups->set_title("main");
+  student_groups->set_student_group_id("group_id");
+  EXPECT_EQ("group_id", GetStudentGroupIdSafe(&session));
 }
 
 TEST_F(BocaSessionUtilTest, TestGetRosterWithNullInputShouldNotCrash) {
