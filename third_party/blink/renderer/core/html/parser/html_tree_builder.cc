@@ -921,18 +921,35 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       }
       break;
     case HTMLTag::kSelect:
-      if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled() &&
-          tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
-        tree_.OpenElements()->TopNode()->AddConsoleMessage(
-            mojom::blink::ConsoleMessageSource::kJavaScript,
-            mojom::blink::ConsoleMessageLevel::kWarning,
-            "A <select> tag was parsed within another <select> tag and was converted into </select>. Please add the missing </select> end tag.");
-        // Don't allow nested <select>s. This is the exact same logic as
-        // <button>s.
-        ParseError(token);
-        ProcessFakeEndTag(HTMLTag::kSelect);
-        break;
+      if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+        if (IsParsingFragment() &&
+            fragment_context_.ContextElement()->HasTagName(
+                html_names::kSelectTag)) {
+          fragment_context_.ContextElement()->AddConsoleMessage(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "A <select> tag was parsed within another <select> tag and was "
+              "ignored. Please do not nest <select> tags.");
+          // Don't allow nested <select>s.
+          ParseError(token);
+          break;
+        }
+
+        if (tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
+          tree_.OpenElements()->TopNode()->AddConsoleMessage(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "A <select> tag was parsed within another <select> tag and was "
+              "converted into </select>. Please add the missing </select> end "
+              "tag.");
+          // Don't allow nested <select>s. This is the exact same logic as
+          // <button>s.
+          ParseError(token);
+          ProcessFakeEndTag(HTMLTag::kSelect);
+          break;
+        }
       }
+
       tree_.ReconstructTheActiveFormattingElements();
       tree_.InsertHTMLElement(token);
       frameset_ok_ = false;
