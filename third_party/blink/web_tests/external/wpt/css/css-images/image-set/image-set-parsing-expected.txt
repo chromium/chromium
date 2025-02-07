@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] e.style['background-image'] = "image-set(linear-gradient(red) 1x)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['background-image'] = "-webkit-image-set(linear-gradient(red) 1x)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-Harness: the test ran to completion.
-

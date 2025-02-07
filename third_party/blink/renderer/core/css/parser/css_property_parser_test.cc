@@ -881,7 +881,8 @@ TEST(CSSPropertyParserTest, ImageSetNegativeResolution) {
 }
 
 TEST(CSSPropertyParserTest, ImageSetOnlyOneGradientColor) {
-  TestImageSetParsingFailure("image-set(linear-gradient(red) 1x)");
+  TestImageSetParsing("image-set(linear-gradient(red) 1x)",
+                      "image-set(linear-gradient(red) 1x)");
 }
 
 TEST(CSSPropertyParserTest, ImageSetAddCalcMissingUnit1) {

@@ -282,7 +282,7 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
   pos.reserve(stops_.size());
 
   FillSkiaStops(colors, pos);
-  DCHECK_GE(colors.size(), 2ul);
+  DCHECK_GE(colors.size(), 1ul);
   DCHECK_EQ(pos.size(), colors.size());
 
   SkTileMode tile = SkTileMode::kClamp;
