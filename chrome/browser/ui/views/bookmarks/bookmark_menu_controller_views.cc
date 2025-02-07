@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
@@ -64,7 +65,7 @@ void BookmarkMenuController::RunMenuAt(BookmarkBarView* bookmark_bar) {
   views::View::ConvertPointToScreen(menu_button, &screen_loc);
   gfx::Rect bounds(screen_loc.x(), screen_loc.y(), menu_button->width(),
                    menu_button->height());
-  menu_delegate_->GetBookmarkModel()->AddObserver(this);
+  menu_delegate_->GetBookmarkMergedSurfaceService()->AddObserver(this);
   // We only delete ourself after the menu completes, so we can safely ignore
   // the return value.
   menu_runner_->RunMenuAt(menu_delegate_->parent(),
@@ -202,7 +203,7 @@ void BookmarkMenuController::WillShowMenu(MenuItemView* menu) {
   menu_delegate_->WillShowMenu(menu);
 }
 
-void BookmarkMenuController::BookmarkModelChanged() {
+void BookmarkMenuController::BookmarkMergedSurfaceServiceChanged() {
   if (!menu_delegate_->is_mutating_model()) {
     menu()->Cancel();
   }
@@ -214,10 +215,30 @@ void BookmarkMenuController::BookmarkStartIndexChanged(
   menu_delegate_->SetMenuStartIndex(folder, new_start_index);
 }
 
+void BookmarkMenuController::BookmarkMergedSurfaceServiceLoaded() {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
+void BookmarkMenuController::BookmarkMergedSurfaceServiceBeingDeleted() {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
+void BookmarkMenuController::BookmarkNodeAdded(
+    const BookmarkParentFolder& parent,
+    size_t index) {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
+void BookmarkMenuController::BookmarkNodesRemoved(
+    const BookmarkParentFolder& parent,
+    const base::flat_set<const bookmarks::BookmarkNode*>& nodes) {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
 void BookmarkMenuController::BookmarkNodeMoved(
-    const bookmarks::BookmarkNode* old_parent,
+    const BookmarkParentFolder& old_parent,
     size_t old_index,
-    const bookmarks::BookmarkNode* new_parent,
+    const BookmarkParentFolder& new_parent,
     size_t new_index) {
   // The delegate is also an observer and will handle updating the menu.
   // Overriding the BookmarkNodeMoved method prevents the base class from
@@ -229,6 +250,20 @@ void BookmarkMenuController::BookmarkNodeMoved(
   menu()->Cancel();
 }
 
+void BookmarkMenuController::BookmarkNodeChanged(
+    const bookmarks::BookmarkNode* node) {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
+void BookmarkMenuController::BookmarkParentFolderChildrenReordered(
+    const BookmarkParentFolder& folder) {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
+void BookmarkMenuController::BookmarkAllUserNodesRemoved() {
+  BookmarkMergedSurfaceServiceChanged();
+}
+
 bool BookmarkMenuController::ShouldTryPositioningBesideAnchor() const {
   // The bookmark menu appears from the bookmark bar, which has a set of buttons
   // positioned next to each other; if the bookmark menu appears beside its
@@ -238,7 +273,7 @@ bool BookmarkMenuController::ShouldTryPositioningBesideAnchor() const {
 }
 
 BookmarkMenuController::~BookmarkMenuController() {
-  menu_delegate_->GetBookmarkModel()->RemoveObserver(this);
+  menu_delegate_->GetBookmarkMergedSurfaceService()->RemoveObserver(this);
   if (observer_) {
     observer_->BookmarkMenuControllerDeleted(this);
   }
