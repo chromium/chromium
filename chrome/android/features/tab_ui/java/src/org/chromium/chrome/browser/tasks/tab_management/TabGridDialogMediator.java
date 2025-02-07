@@ -276,9 +276,8 @@ public class TabGridDialogMediator
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
         mCollaborationService = CollaborationServiceFactory.getForProfile(mOriginalProfile);
-        // TODO(crbug.com/377366460): This checks only the flag and might break for join only cases.
-        // Figure out what to do here.
-        if (mTabGroupSyncService != null && ChromeFeatureList.isEnabled(DATA_SHARING)) {
+        if (mTabGroupSyncService != null
+                && mCollaborationService.getServiceStatus().isAllowedToJoin()) {
             mDataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
             mTransitiveSharedGroupObserver =
                     new TransitiveSharedGroupObserver(
@@ -1030,7 +1029,7 @@ public class TabGridDialogMediator
     }
 
     private void handleShareClick() {
-        assert ChromeFeatureList.isEnabled(DATA_SHARING);
+        assert mCollaborationService.getServiceStatus().isAllowedToJoin();
 
         saveCurrentGroupModifiedTitle();
         String tabGroupDisplayName = mModel.get(TabGridDialogProperties.HEADER_TITLE);
@@ -1044,8 +1043,7 @@ public class TabGridDialogMediator
         if (mTransitiveSharedGroupObserver == null) return;
 
         boolean isIncognitoBranded = mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded();
-        if (!ChromeFeatureList.isEnabled(DATA_SHARING)
-                || isIncognitoBranded
+        if (isIncognitoBranded
                 || !mCollaborationService.getServiceStatus().isAllowedToJoin()
                 || mCurrentTabId == Tab.INVALID_TAB_ID) {
             mTransitiveSharedGroupObserver.setTabGroupId(/* tabGroupId= */ null);
@@ -1073,7 +1071,7 @@ public class TabGridDialogMediator
     }
 
     private boolean shouldShowSendFeedback() {
-        return ChromeFeatureList.isEnabled(DATA_SHARING)
+        return mCollaborationService.getServiceStatus().isAllowedToJoin()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         DATA_SHARING, SHOW_SEND_FEEDBACK_PARAM, false);
     }

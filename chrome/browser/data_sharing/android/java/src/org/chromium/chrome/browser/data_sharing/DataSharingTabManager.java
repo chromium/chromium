@@ -332,6 +332,9 @@ public class DataSharingTabManager {
     private void initiateJoinFlowWithProfile(Activity activity, GURL dataSharingUrl) {
         DataSharingMetrics.recordJoinActionFlowState(
                 DataSharingMetrics.JoinActionStateAndroid.PROFILE_AVAILABLE);
+        if (!mCollaborationService.getServiceStatus().isAllowedToJoin()) {
+            showInvitationFailureDialog();
+        }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.COLLABORATION_FLOW_ANDROID)
                 && mCollaborationControllerDelegateFactory != null) {
