@@ -22497,7 +22497,7 @@ Called by update_net_error_codes.py.-->
   <int value="82" label="kWindowClosed"/>
   <int value="83" label="kSlowNetwork"/>
   <int value="84" label="kOtherPrerenderedPageActivated"/>
-  <int value="85" label="kV8OptimizerDisabled"/>
+  <int value="85" label="kV8OptimizerDisabled (obsoleted)"/>
   <int value="86" label="kPrerenderFailedDuringPrefetch"/>
 </enum>
 

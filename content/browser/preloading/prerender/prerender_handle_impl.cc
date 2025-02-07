@@ -135,7 +135,6 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
       return false;
 
-    case PrerenderFinalStatus::kV8OptimizerDisabled:
     case PrerenderFinalStatus::kPrerenderFailedDuringPrefetch:
       return true;
   }
