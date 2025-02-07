@@ -6,7 +6,6 @@
 #define BASE_FUNCTIONAL_FUNCTION_REF_H_
 
 #include <concepts>
-#include <string_view>
 #include <type_traits>
 #include <utility>
 
