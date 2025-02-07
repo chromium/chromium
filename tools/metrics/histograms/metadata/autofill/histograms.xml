@@ -5206,6 +5206,35 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.RendererLabeledAmountExtractionLatency{RendererAmountExtractionLatencyResult}"
+    units="ms" expires_after="2026-01-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded after attempting to extract a labeled amount from a web page within
+    the renderer process. This metric tracks the duration from the start of the
+    `ExtractLabeledTextNodeValue` method to the end of the amount extraction
+    operation inside the renderer process. It specifically measures the latency
+    of the amount extraction process performed by the renderer, differentiating
+    if the amount was successfully extracted or not.
+
+    The histogram `Autofill.RendererLabeledAmountExtractionLatency.Failure`
+    records the latency when amount extraction fails and
+    `Autofill.RendererLabeledAmountExtractionLatency.Success` records the
+    latency when amount extraction succeeded. This metric aims to provide
+    insight into the latency of the renderer-side amount extraction.
+  </summary>
+  <token key="RendererAmountExtractionLatencyResult">
+    <variant name=".Failure"
+        summary="Labeled amount extraction latency when amount extraction
+                 failed on renderer-side"/>
+    <variant name=".Success"
+        summary="Labeled amount extraction latency when amount extraction
+                 succeeded on renderer-side"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.ResetAutofillPrefToChrome" enum="Boolean"
     expires_after="2025-07-27">
   <owner>friedrichh@chromium.org</owner>

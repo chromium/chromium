@@ -147,6 +147,14 @@ void LogElementTypeAndFocusabilityMetric(const WebNode& node) {
   }
 }
 
+void LogRendererExtractLabeledTextNodeValueLatency(base::TimeDelta latency,
+                                                   bool is_successful) {
+  base::UmaHistogramTimes(
+      base::StrCat({"Autofill.RendererLabeledAmountExtractionLatency.",
+                    is_successful ? "Success" : "Failure"}),
+      latency);
+}
+
 void LogSubmittedFormMetric(mojom::SubmissionSource source,
                             SubmittedFormType type) {
   // Used for metrics. Do not renumber.
@@ -1579,10 +1587,17 @@ void AutofillAgent::ExtractLabeledTextNodeValue(
     std::move(callback).Run(std::string());
     return;
   }
-
+  base::TimeTicks search_start_time = base::TimeTicks::Now();
   std::string result = form_util::ExtractFinalCheckoutAmountFromDom(
       document, base::UTF16ToUTF8(value_regex), base::UTF16ToUTF8(label_regex),
       number_of_ancestor_levels_to_search);
+
+  base::TimeTicks search_end_time = base::TimeTicks::Now();
+  base::TimeDelta renderer_search_latency = search_end_time - search_start_time;
+
+  LogRendererExtractLabeledTextNodeValueLatency(renderer_search_latency,
+                                                !result.empty());
+
   std::move(callback).Run(result);
 }
 
