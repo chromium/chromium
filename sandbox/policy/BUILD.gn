@@ -159,7 +159,10 @@ component("policy") {
       "win/sandbox_win.cc",
       "win/sandbox_win.h",
     ]
-    deps += [ "//sandbox/win:sandbox" ]
+    deps += [
+      ":win_hook_util",
+      "//sandbox/win:sandbox",
+    ]
   }
   if (is_fuchsia) {
     sources += [
@@ -244,6 +247,22 @@ source_set("tests") {
       "//base/test/data/pe_image/pe_image_test_32.dll",
       "//base/test/data/pe_image/pe_image_test_64.dll",
       "//base/test/data/pe_image/pe_image_test_arm64.dll",
+    ]
+  }
+}
+
+source_set("integration_tests") {
+  testonly = true
+  if (is_win) {
+    sources = [ "win/sandbox_warmup_unittest.cc" ]
+    deps = [
+      ":policy",
+      ":sandbox_test_utils",
+      "//base",
+      "//base/test:test_support",
+      "//sandbox/win:sandbox",
+      "//sandbox/win:test_support",
+      "//testing/gtest",
     ]
   }
 }
