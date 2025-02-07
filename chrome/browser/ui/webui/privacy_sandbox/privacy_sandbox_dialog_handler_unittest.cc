@@ -218,6 +218,9 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, PrivacyPolicyPageShown) {
 }
 
 TEST_F(PrivacySandboxConsentDialogHandlerTest, PrivacyPolicyPageNotShown) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndDisableFeature(
+      privacy_sandbox::kPrivacySandboxPrivacyPolicy);
   base::Value::List args;
   args.Append(kCallbackId);
   web_ui()->ProcessWebUIMessage(GURL(), "shouldShowPrivacySandboxPrivacyPolicy",
