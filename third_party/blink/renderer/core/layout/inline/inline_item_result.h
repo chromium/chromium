@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/inline/hyphen_result.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_ptr.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/positioned_float.h"
@@ -69,7 +70,7 @@ struct CORE_EXPORT InlineItemResult {
 
  public:
   InlineItemResult() = default;
-  InlineItemResult(const InlineItem*,
+  InlineItemResult(const InlineItemPtr&,
                    unsigned index,
                    const TextOffsetRange& text_offset,
                    bool break_anywhere_if_overflow,
@@ -101,8 +102,9 @@ struct CORE_EXPORT InlineItemResult {
                   const String& indent = "") const;
 
   // The InlineItem and its index.
-  GC_PLUGIN_IGNORE("GC API violation: https://crbug.com/389707047")
-  const InlineItem* item = nullptr;
+  // Note that use `item_index` with caution, which may not always be the actual
+  // item index in the items list. See `LineBreaker::AddItem`.
+  InlineItemPtr item;
   unsigned item_index = 0;
 
   // The range of text content for this item.
