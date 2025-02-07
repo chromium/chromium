@@ -488,11 +488,24 @@ std::unique_ptr<views::View> TaskManagerView::CreateHeaderSeparatorUnderlay(
 
 void TaskManagerView::PerformFilter(DisplayCategory category,
                                     const std::u16string& search_term) {
+  // When `select_on_remove_` is enabled, the selection will automatically jump
+  // to some next/previous row if available. However, this setting needs to be
+  // temporarily disabled during model updates to achieve the desired selection
+  // changes. Specifically:
+  // 1. When a tab is changed, some number of rows will get added and removed.
+  // The intended behavior is to clear the selection between this tab switch.
+  // 2. When the search term changes, if the selection should always be kept if
+  // it's in the current list. If it's not (i.e. "Tab: unusual" is selected, and
+  // the search term changes from "un" -> "unh"), then it should be removed, but
+  // no other selection should be applied (a.k.a the selection should clear).
+
+  tab_table_->SetSelectOnRemove(false);
   if (table_model_->UpdateModel(category, search_term)) {
     // Model row count may differ, leading to off-screen row rendering.
     // Recompute scroll position.
     tab_table_->InvalidateLayout();
   }
+  tab_table_->SetSelectOnRemove(true);
 }
 
 std::unique_ptr<views::TabbedPaneTabStrip> TaskManagerView::CreateTabbedPane(
