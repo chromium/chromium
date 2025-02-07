@@ -18,34 +18,6 @@ class AutofillAiManagerTestApi {
   explicit AutofillAiManagerTestApi(AutofillAiManager* manager)
       : manager_(CHECK_DEREF(manager)) {}
 
-  void SetCache(
-      std::optional<AutofillAiModelExecutor::PredictionsByGlobalId> cache) {
-    manager_->cache_ = cache;
-  }
-
-  std::optional<AutofillAiModelExecutor::PredictionsByGlobalId> GetCache() {
-    return manager_->cache_;
-  }
-
-  void SetLastQueriedFormGlobalId(
-      std::optional<autofill::FormGlobalId> last_queried_form_global_id) {
-    manager_->last_queried_form_global_id_ = last_queried_form_global_id;
-  }
-
-  void SetAutofillSuggestions(
-      std::vector<autofill::Suggestion> autofill_suggestions) {
-    manager_->autofill_suggestions_ = autofill_suggestions;
-  }
-
-  const base::OneShotTimer& loading_suggestion_timer() {
-    return manager_->loading_suggestion_timer_;
-  }
-
-  void SetPredictionRetrievalState(
-      AutofillAiManager::PredictionRetrievalState prediction_retrieval_state) {
-    manager_->prediction_retrieval_state_ = prediction_retrieval_state;
-  }
-
   AutofillAiLogger& logger() { return manager_->logger_; }
 
  private:

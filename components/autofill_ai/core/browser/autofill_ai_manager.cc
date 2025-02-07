@@ -262,11 +262,6 @@ AutofillAiManager::GetFieldValueSensitivityMap(
 
 AutofillAiManager::~AutofillAiManager() = default;
 
-bool AutofillAiManager::HasAutofillAiDataForField(
-    const autofill::FormFieldData& field) {
-  return cache_ && cache_->contains(field.global_id());
-}
-
 bool AutofillAiManager::IsEligibleForAutofillAi(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field) const {
@@ -290,70 +285,7 @@ void AutofillAiManager::OnReceivedAXTree(
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
   client_->GetModelExecutor()->GetPredictions(
       form, /*field_eligibility_map*/ {}, GetFieldValueSensitivityMap(form),
-      std::move(ax_tree_update),
-      base::BindOnce(&AutofillAiManager::OnReceivedPredictions,
-                     weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
-}
-
-void AutofillAiManager::OnReceivedPredictions(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field,
-    AutofillAiModelExecutor::PredictionsOrError predictions_or_error,
-    std::optional<std::string> model_execution_id) {
-  LOG_AF(GetCurrentLogManager())
-      << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
-      << "Received predictions:" <<
-      [&] {
-        LogBuffer buffer;
-        if (!predictions_or_error.has_value()) {
-          buffer << "Error";
-          return buffer;
-        }
-        buffer << autofill::Tag{"table"};
-        for (const auto& [field_id, prediction] :
-             predictions_or_error.value()) {
-          buffer << autofill::Tr{} << field_id << prediction.value;
-        }
-        buffer << autofill::CTag{"table"};
-        return buffer;
-      }();
-
-  if (predictions_or_error.has_value()) {
-    prediction_retrieval_state_ = PredictionRetrievalState::kDoneSuccess;
-    cache_ = std::move(predictions_or_error.value());
-  } else {
-    prediction_retrieval_state_ = PredictionRetrievalState::kDoneError;
-  }
-
-  // Depending on whether predictions where retrieved or not, we need to show
-  // the corresponding suggestions. This is delayed a little bit so that we
-  // don't see a flickering UI.
-  loading_suggestion_timer_.Start(
-      FROM_HERE, kMinTimeToShowLoading,
-      base::BindRepeating(
-          &AutofillAiManager::UpdateSuggestionsAfterReceivedPredictions,
-          weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
-}
-
-void AutofillAiManager::UpdateSuggestionsAfterReceivedPredictions(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field) {
-  switch (prediction_retrieval_state_) {
-    case PredictionRetrievalState::kDoneSuccess:
-      if (HasAutofillAiDataForField(trigger_field)) {
-        UpdateSuggestions(CreateFillingSuggestions(
-            *client_, *cache_, form, trigger_field, autofill_suggestions_));
-      } else {
-        OnFailedToGenerateSuggestions();
-      }
-      break;
-    case PredictionRetrievalState::kDoneError:
-      OnFailedToGenerateSuggestions();
-      break;
-    case PredictionRetrievalState::kReady:
-    case PredictionRetrievalState::kIsLoadingPredictions:
-      NOTREACHED();
-  }
+      std::move(ax_tree_update), base::DoNothing());
 }
 
 // TODO(crbug.com/362468426): Rename this method to
@@ -405,24 +337,6 @@ void AutofillAiManager::OnDidFillSuggestion(autofill::FormGlobalId form_id) {
 void AutofillAiManager::OnEditedAutofilledField(
     autofill::FormGlobalId form_id) {
   logger_.OnDidCorrectFillingSuggestion(form_id);
-}
-
-void AutofillAiManager::Reset() {
-  cache_ = std::nullopt;
-  last_queried_form_global_id_ = std::nullopt;
-  update_suggestions_callback_ = base::NullCallback();
-  loading_suggestion_timer_.Stop();
-  prediction_retrieval_state_ = PredictionRetrievalState::kReady;
-}
-
-void AutofillAiManager::UpdateSuggestions(
-    const std::vector<autofill::Suggestion>& suggestions) {
-  loading_suggestion_timer_.Stop();
-  if (update_suggestions_callback_.is_null()) {
-    return;
-  }
-  update_suggestions_callback_.Run(
-      suggestions, autofill::AutofillSuggestionTriggerSource::kAutofillAi);
 }
 
 void AutofillAiManager::MaybeImportForm(
@@ -576,28 +490,6 @@ bool AutofillAiManager::ShouldDisplayIph(
 
 void AutofillAiManager::GoToSettings() const {
   client_->OpenAutofillAiSettings();
-}
-
-void AutofillAiManager::OnFailedToGenerateSuggestions() {
-  if (!autofill_suggestions_.empty()) {
-    // Fallback to regular autofill suggestions if any instead of showing an
-    // error directly.
-    UpdateSuggestions(autofill_suggestions_);
-    return;
-  }
-  // TODO(crbug.com/370693653): Also add logic to fallback to autocomplete
-  // suggestions if possible.
-  switch (prediction_retrieval_state_) {
-    case PredictionRetrievalState::kReady:
-    case PredictionRetrievalState::kIsLoadingPredictions:
-      NOTREACHED();
-    case PredictionRetrievalState::kDoneSuccess:
-      UpdateSuggestions(CreateNoInfoSuggestions());
-      break;
-    case PredictionRetrievalState::kDoneError:
-      UpdateSuggestions(CreateErrorSuggestions());
-      break;
-  }
 }
 
 autofill::LogManager* AutofillAiManager::GetCurrentLogManager() {
