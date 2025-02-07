@@ -131,7 +131,11 @@ TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
     : LifecycleUnitBase(source, web_contents->GetVisibility()),
       content::WebContentsObserver(web_contents),
       observers_(observers),
-      tab_strip_model_(tab_strip_model) {
+      tab_strip_model_(tab_strip_model),
+      wall_time_when_hidden_(web_contents->GetVisibility() ==
+                                     content::Visibility::VISIBLE
+                                 ? base::TimeTicks::Max()
+                                 : NowTicks()) {
   DCHECK(observers_);
   DCHECK(web_contents);
   DCHECK(tab_strip_model_);
@@ -336,7 +340,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
       return false;
     // Protect non-visible tabs from urgent discarding for a period of time.
     if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
-      base::TimeDelta time_in_bg = NowTicks() - GetWallTimeWhenHidden();
+      base::TimeDelta time_in_bg = NowTicks() - wall_time_when_hidden_;
       // TODO(sebmarchand): Check if this should be lowered when the enterprise
       // memory limit feature is set.
       if (time_in_bg < kBackgroundUrgentProtectionTime)
@@ -677,6 +681,11 @@ void TabLifecycleUnitSource::TabLifecycleUnit::DidStartLoading() {
 
 void TabLifecycleUnitSource::TabLifecycleUnit::OnVisibilityChanged(
     content::Visibility visibility) {
+  if (visibility == content::Visibility::VISIBLE) {
+    wall_time_when_hidden_ = base::TimeTicks::Max();
+  } else if (wall_time_when_hidden_.is_max()) {
+    wall_time_when_hidden_ = NowTicks();
+  }
   OnLifecycleUnitVisibilityChanged(visibility);
 }
 

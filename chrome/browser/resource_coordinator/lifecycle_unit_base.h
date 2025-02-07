@@ -35,7 +35,6 @@ class LifecycleUnitBase : public LifecycleUnit {
   // LifecycleUnit:
   LifecycleUnitSource* GetSource() const override;
   int32_t GetID() const override;
-  base::TimeTicks GetWallTimeWhenHidden() const override;
   LifecycleUnitState GetState() const override;
   base::TimeTicks GetStateChangeTime() const override;
   size_t GetDiscardCount() const override;
@@ -85,10 +84,6 @@ class LifecycleUnitBase : public LifecycleUnit {
 
   // Time at which the state changed.
   base::TimeTicks state_change_time_ = NowTicks();
-
-  // The wall time when this LifecycleUnit was last hidden, or TimeDelta::Max()
-  // if this LifecycleUnit is currently visible.
-  base::TimeTicks wall_time_when_hidden_;
 
   // The number of times that this lifecycle unit has been discarded.
   int discard_count_ = 0;

@@ -13,10 +13,7 @@ namespace resource_coordinator {
 
 LifecycleUnitBase::LifecycleUnitBase(LifecycleUnitSourceBase* source,
                                      content::Visibility visibility)
-    : source_(source),
-      wall_time_when_hidden_(visibility == content::Visibility::VISIBLE
-                                 ? base::TimeTicks::Max()
-                                 : NowTicks()) {
+    : source_(source) {
   if (source_)
     source_->NotifyLifecycleUnitBeingCreated(this);
 }
@@ -40,10 +37,6 @@ LifecycleUnitState LifecycleUnitBase::GetState() const {
 
 base::TimeTicks LifecycleUnitBase::GetStateChangeTime() const {
   return state_change_time_;
-}
-
-base::TimeTicks LifecycleUnitBase::GetWallTimeWhenHidden() const {
-  return wall_time_when_hidden_;
 }
 
 size_t LifecycleUnitBase::GetDiscardCount() const {
@@ -85,14 +78,9 @@ void LifecycleUnitBase::OnLifecycleUnitStateChanged(
 
 void LifecycleUnitBase::OnLifecycleUnitVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::VISIBLE) {
-    wall_time_when_hidden_ = base::TimeTicks::Max();
-  } else if (wall_time_when_hidden_.is_max()) {
-    wall_time_when_hidden_ = NowTicks();
-  }
-
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnLifecycleUnitVisibilityChanged(this, visibility);
+  }
 }
 
 void LifecycleUnitBase::OnLifecycleUnitDestroyed() {

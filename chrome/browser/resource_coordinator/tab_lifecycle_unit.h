@@ -107,6 +107,10 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // LifecycleUnit and TabLifecycleUnitExternal:
   base::Time GetLastFocusedTime() const override;
 
+  base::TimeTicks GetWallTimeWhenHiddenForTesting() const {
+    return wall_time_when_hidden_;
+  }
+
  protected:
   friend class TabManagerTest;
 
@@ -194,6 +198,10 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // TimeTicks() if the tab was never "recently audible", last time at which the
   // tab was "recently audible" otherwise.
   base::TimeTicks recently_audible_time_;
+
+  // The wall time when this LifecycleUnit was last hidden, or TimeDelta::Max()
+  // if this LifecycleUnit is currently visible.
+  base::TimeTicks wall_time_when_hidden_;
 };
 
 }  // namespace resource_coordinator

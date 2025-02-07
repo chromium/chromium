@@ -41,6 +41,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/navigation_simulator.h"
@@ -499,7 +500,26 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardPDF) {
                                   DecisionFailureReason::LIVE_STATE_IS_PDF);
 }
 
+// Verify the initial GetWallTimeWhenHidden() of a visible LifecycleUnit.
+TEST_F(TabLifecycleUnitTest, InitialLastActiveTimeForVisibleLifecycleUnit) {
+  web_contents_->WasShown();
+  TabLifecycleUnit lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
+                                  web_contents_, tab_strip_model_.get());
+  EXPECT_EQ(base::TimeTicks::Max(),
+            lifecycle_unit.GetWallTimeWhenHiddenForTesting());
+}
+
+// Verify the initial GetWallTimeWhenHidden() of a hidden LifecycleUnit.
+TEST_F(TabLifecycleUnitTest, InitialLastActiveTimeForHiddenLifecycleUnit) {
+  web_contents_->WasHidden();
+  TabLifecycleUnit lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
+                                  web_contents_, tab_strip_model_.get());
+  EXPECT_EQ(NowTicks(), lifecycle_unit.GetWallTimeWhenHiddenForTesting());
+}
+
 TEST_F(TabLifecycleUnitTest, NotifiedOfWebContentsVisibilityChanges) {
+  using ::testing::InvokeWithoutArgs;
+
   TabLifecycleUnit tab_lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
                                       web_contents_, tab_strip_model_.get());
 
@@ -507,23 +527,54 @@ TEST_F(TabLifecycleUnitTest, NotifiedOfWebContentsVisibilityChanges) {
   tab_lifecycle_unit.AddObserver(&observer);
 
   EXPECT_CALL(observer, OnLifecycleUnitVisibilityChanged(
-                            &tab_lifecycle_unit, content::Visibility::VISIBLE));
+                            &tab_lifecycle_unit, content::Visibility::VISIBLE))
+      .WillOnce(InvokeWithoutArgs([&] {
+        EXPECT_EQ(base::TimeTicks::Max(),
+                  tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
+      }));
   web_contents_->WasShown();
   ::testing::Mock::VerifyAndClear(&observer);
 
+  test_tick_clock_.Advance(base::Minutes(1));
+  base::TimeTicks wall_time_when_hidden = NowTicks();
   EXPECT_CALL(observer, OnLifecycleUnitVisibilityChanged(
-                            &tab_lifecycle_unit, content::Visibility::HIDDEN));
+                            &tab_lifecycle_unit, content::Visibility::HIDDEN))
+      .WillOnce(InvokeWithoutArgs([&] {
+        EXPECT_EQ(wall_time_when_hidden,
+                  tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
+      }));
   web_contents_->WasHidden();
   ::testing::Mock::VerifyAndClear(&observer);
 
+  test_tick_clock_.Advance(base::Minutes(1));
+  // `wall_time_when_hidden` not updated because it was already HIDDEN.
   EXPECT_CALL(observer, OnLifecycleUnitVisibilityChanged(
-                            &tab_lifecycle_unit, content::Visibility::VISIBLE));
+                            &tab_lifecycle_unit, content::Visibility::OCCLUDED))
+      .WillOnce(InvokeWithoutArgs([&] {
+        EXPECT_EQ(wall_time_when_hidden,
+                  tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
+      }));
+  web_contents_->WasOccluded();
+  ::testing::Mock::VerifyAndClear(&observer);
+
+  test_tick_clock_.Advance(base::Minutes(1));
+  EXPECT_CALL(observer, OnLifecycleUnitVisibilityChanged(
+                            &tab_lifecycle_unit, content::Visibility::VISIBLE))
+      .WillOnce(InvokeWithoutArgs([&] {
+        EXPECT_EQ(base::TimeTicks::Max(),
+                  tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
+      }));
   web_contents_->WasShown();
   ::testing::Mock::VerifyAndClear(&observer);
 
-  EXPECT_CALL(observer,
-              OnLifecycleUnitVisibilityChanged(&tab_lifecycle_unit,
-                                               content::Visibility::OCCLUDED));
+  test_tick_clock_.Advance(base::Minutes(1));
+  wall_time_when_hidden = NowTicks();
+  EXPECT_CALL(observer, OnLifecycleUnitVisibilityChanged(
+                            &tab_lifecycle_unit, content::Visibility::OCCLUDED))
+      .WillOnce(InvokeWithoutArgs([&] {
+        EXPECT_EQ(wall_time_when_hidden,
+                  tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
+      }));
   web_contents_->WasOccluded();
   ::testing::Mock::VerifyAndClear(&observer);
 

@@ -121,62 +121,6 @@ TEST_F(LifecycleUnitBaseTest, DestroyNotifiesObservers) {
   testing::Mock::VerifyAndClear(&observer_);
 }
 
-// Verify the initial GetWallTimeWhenHidden() of a visible LifecycleUnit.
-TEST_F(LifecycleUnitBaseTest, InitialLastActiveTimeForVisibleLifecycleUnit) {
-  TestLifecycleUnit lifecycle_unit(content::Visibility::VISIBLE);
-  EXPECT_EQ(base::TimeTicks::Max(), lifecycle_unit.GetWallTimeWhenHidden());
-}
-
-// Verify the initial GetWallTimeWhenHidden() of a hidden LifecycleUnit.
-TEST_F(LifecycleUnitBaseTest, InitialLastActiveTimeForHiddenLifecycleUnit) {
-  TestLifecycleUnit lifecycle_unit(content::Visibility::HIDDEN);
-  EXPECT_EQ(NowTicks(), lifecycle_unit.GetWallTimeWhenHidden());
-}
-
-// Verify that observers are notified when the visibility of the LifecyleUnit
-// changes. Verify that GetWallTimeWhenHidden() is updated properly.
-TEST_F(LifecycleUnitBaseTest, VisibilityChangeNotifiesObserversAndUpdatesTime) {
-  TestLifecycleUnit lifecycle_unit(content::Visibility::VISIBLE);
-  lifecycle_unit.AddObserver(&observer_);
-
-  // Observer is notified when the visibility changes.
-  test_tick_clock_.Advance(base::Minutes(1));
-  base::TimeTicks wall_time_when_hidden = NowTicks();
-  EXPECT_CALL(observer_, OnLifecycleUnitVisibilityChanged(
-                             &lifecycle_unit, content::Visibility::HIDDEN))
-      .WillOnce(testing::Invoke(
-          [&](LifecycleUnit* lifecycle_unit, content::Visibility visibility) {
-            EXPECT_EQ(wall_time_when_hidden,
-                      lifecycle_unit->GetWallTimeWhenHidden());
-          }));
-  lifecycle_unit.OnLifecycleUnitVisibilityChanged(content::Visibility::HIDDEN);
-  testing::Mock::VerifyAndClear(&observer_);
-
-  test_tick_clock_.Advance(base::Minutes(1));
-  EXPECT_CALL(observer_, OnLifecycleUnitVisibilityChanged(
-                             &lifecycle_unit, content::Visibility::OCCLUDED))
-      .WillOnce(testing::Invoke(
-          [&](LifecycleUnit* lifecycle_unit, content::Visibility visibility) {
-            EXPECT_EQ(wall_time_when_hidden,
-                      lifecycle_unit->GetWallTimeWhenHidden());
-          }));
-  lifecycle_unit.OnLifecycleUnitVisibilityChanged(
-      content::Visibility::OCCLUDED);
-  testing::Mock::VerifyAndClear(&observer_);
-
-  test_tick_clock_.Advance(base::Minutes(1));
-  EXPECT_CALL(observer_, OnLifecycleUnitVisibilityChanged(
-                             &lifecycle_unit, content::Visibility::VISIBLE))
-      .WillOnce(testing::Invoke(
-          [&](LifecycleUnit* lifecycle_unit, content::Visibility visibility) {
-            EXPECT_TRUE(lifecycle_unit->GetWallTimeWhenHidden().is_max());
-          }));
-  lifecycle_unit.OnLifecycleUnitVisibilityChanged(content::Visibility::VISIBLE);
-  testing::Mock::VerifyAndClear(&observer_);
-
-  lifecycle_unit.RemoveObserver(&observer_);
-}
-
 namespace {
 
 class MockLifecycleUnitSource : public LifecycleUnitSourceBase {
