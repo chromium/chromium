@@ -111,8 +111,8 @@ void AddTraceOnDatabaseTaskRunner(
     return;
   }
   base::Time since = base::Time::Now() - kMinTimeUntilNextUpload;
-  auto upload_count =
-      database->UploadCountSince(base_report.scenario_name, since);
+  auto upload_count = database->UploadCountSince(
+      base_report.scenario_name, base_report.upload_rule_name, since);
   if (base_report.skip_reason == SkipUploadReason::kNoSkip && !force_upload &&
       upload_count && *upload_count > 0) {
     base_report.skip_reason = SkipUploadReason::kScenarioQuotaExceeded;

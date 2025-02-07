@@ -539,7 +539,8 @@ TraceReportDatabase::GetNextReportPendingUpload() {
 }
 
 std::optional<size_t> TraceReportDatabase::UploadCountSince(
-    std::string scenario_name,
+    const std::string& scenario_name,
+    const std::string& upload_rule_name,
     base::Time since) {
   if (!is_initialized()) {
     return std::nullopt;
@@ -547,12 +548,13 @@ std::optional<size_t> TraceReportDatabase::UploadCountSince(
 
   sql::Statement statement(database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
       SELECT COUNT(uuid) FROM local_traces
-      WHERE scenario_name = ? AND creation_time > ?
+      WHERE scenario_name = ? AND upload_rule_name = ? AND creation_time > ?
       AND skip_reason=?
     )sql"));
   statement.BindString(0, scenario_name);
-  statement.BindTime(1, since);
-  statement.BindInt(2, static_cast<int>(SkipUploadReason::kNoSkip));
+  statement.BindString(1, upload_rule_name);
+  statement.BindTime(2, since);
+  statement.BindInt(3, static_cast<int>(SkipUploadReason::kNoSkip));
   CHECK(statement.is_valid());
 
   while (statement.Step()) {
