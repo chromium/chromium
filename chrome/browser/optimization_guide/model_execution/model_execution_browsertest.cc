@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
@@ -1007,18 +1008,20 @@ class ModelExecutionEnterprisePolicyBrowserTest
         features::kModelQualityLogging,
         features::internal::kTabOrganizationSettingsVisibility,
         features::internal::kWallpaperSearchSettingsVisibility};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::internal::kComposeGraduated,
+        features::internal::kComposeSettingsVisibility,
+        features::internal::kTabOrganizationGraduated,
+        features::internal::kWallpaperSearchGraduated};
 
     if (ShowEnterpriseDisabledFeatures()) {
       enabled_features.push_back(features::kAiSettingsPageEnterpriseDisabledUi);
+    } else {
+      disabled_features.push_back(
+          features::kAiSettingsPageEnterpriseDisabledUi);
     }
 
-    scoped_feature_list_.InitWithFeatures(
-        enabled_features,
-        /*disabled_features=*/
-        {features::internal::kComposeGraduated,
-         features::internal::kComposeSettingsVisibility,
-         features::internal::kTabOrganizationGraduated,
-         features::internal::kWallpaperSearchGraduated});
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool ShowEnterpriseDisabledFeatures() { return GetParam(); }
