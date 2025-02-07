@@ -1456,6 +1456,12 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
               base::HashMetricName("AggregatableStatus"),
               static_cast<int64_t>(
                   AttributionTrigger::AggregatableResult::kNotRegistered))));
+  EXPECT_THAT(
+      metrics::dwa::DwaRecorder::Get()
+          ->GetEntriesForTesting()
+          .at(0)
+          ->studies_of_interest,
+      ElementsAre(testing::Pair("UMA-Uniformity-Trial-1-Percent", true)));
 }
 
 TEST_F(AttributionManagerImplTest,
