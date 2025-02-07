@@ -2324,7 +2324,7 @@
     <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5169827969064885044">तपाईं आफ्नो सङ्गठनको खातामाथिको पहुँच गुमाउन सक्नुहुन्छ वा तपाईंको पहिचान चोरी हुन सक्छ। Chrome तपाईंलाई आफ्नो पासवर्ड अहिले नै परिवर्तन गर्न सिफारिस गर्छ।</translation>
 <translation id="5171045022955879922">युआरएल खोल्नुहोस् वा टाइप गर्नुहोस्</translation>
-<translation id="5172758083709347301">यन्त्र</translation>
+<translation id="5172758083709347301">मेसिन</translation>
 <translation id="5177076414499237632">यो पेजका स्रोत र विषयका बारेमा जान्नुहोस्</translation>
 <translation id="5179490652562926740">भुक्तानीको प्रमाणीकरणसम्बन्धी सेटिङ सेभ गरिएको छ</translation>
 <translation id="5180662470511508940">किबोर्ड लक गर्ने अनुमति दिन अस्वीकार गरिएको छ</translation>
@@ -3301,7 +3301,7 @@
 <translation id="6963693576491380224">सरकारी तथा सार्वजनिक क्षेत्रका जागिरहरू</translation>
 <translation id="6964255747740675745">नेटवर्कको कन्फिगुरेसन पार्स गर्न सकिएन (अमान्य JSON)।</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
-<translation id="6965978654500191972">यन्त्र</translation>
+<translation id="6965978654500191972">डिभाइस</translation>
 <translation id="696703987787944103">बोधात्मक</translation>
 <translation id="6967851206780867018">सामग्रीका कारण एउटा फाइल ब्लक गरिएको छ</translation>
 <translation id="6970885655016700774">फेब्रिक (अर्काइभल)</translation>
