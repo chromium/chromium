@@ -5,6 +5,7 @@
 #include "components/account_manager_core/account.h"
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace account_manager {
@@ -47,15 +48,12 @@ bool Account::operator!=(const Account& other) const {
 
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 std::ostream& operator<<(std::ostream& os, const AccountType& account_type) {
-  switch (account_type) {
-    case account_manager::AccountType::kGaia:
-      os << "Gaia";
-      break;
-    case account_manager::AccountType::kActiveDirectory:
-      os << "ActiveDirectory";
-      break;
-  }
+  // Currently, we only support `kGaia` account type. Should a new type be added
+  // in the future, consider removing the `CHECK_EQ()` below and handling the
+  // new type accordingly.
+  CHECK_EQ(account_type, account_manager::AccountType::kGaia);
 
+  os << "Gaia";
   return os;
 }
 
