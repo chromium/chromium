@@ -17,6 +17,8 @@
 #import "components/collaboration/public/features.h"
 #import "components/data_sharing/public/features.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
+#import "ios/chrome/browser/collaboration/model/messaging/instant_messaging_service.h"
+#import "ios/chrome/browser/collaboration/model/messaging/instant_messaging_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -43,6 +45,8 @@ MessagingBackendServiceFactory::MessagingBackendServiceFactory()
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(
+      collaboration::messaging::InstantMessagingServiceFactory::GetInstance());
 }
 
 MessagingBackendServiceFactory::~MessagingBackendServiceFactory() = default;
@@ -85,11 +89,19 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
   // iOS does not need any specialized configuration.
   MessagingBackendConfiguration configuration;
 
-  return std::make_unique<MessagingBackendServiceImpl>(
-      configuration, std::move(tab_group_change_notifier),
-      std::move(data_sharing_change_notifier),
-      std::move(messaging_backend_store), tab_group_sync_service,
-      data_sharing_service, identity_manager);
+  auto messaging_backend_service =
+      std::make_unique<MessagingBackendServiceImpl>(
+          configuration, std::move(tab_group_change_notifier),
+          std::move(data_sharing_change_notifier),
+          std::move(messaging_backend_store), tab_group_sync_service,
+          data_sharing_service, identity_manager);
+
+  auto* instant_messaging_service =
+      InstantMessagingServiceFactory::GetForProfile(profile);
+  messaging_backend_service->SetInstantMessageDelegate(
+      instant_messaging_service);
+
+  return messaging_backend_service;
 }
 
 }  // namespace collaboration::messaging
