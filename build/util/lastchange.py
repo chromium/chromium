@@ -226,6 +226,9 @@ def GetVersion(source_dir, commit_filter, merge_base_ref):
   """
   Returns the version information for the given source directory.
   """
+  if 'BASE_COMMIT_SUBMISSION_MS' in os.environ:
+    return GetVersionInfoFromEnv()
+
   if gclient_utils.IsEnvCog():
     return _EMPTY_VERSION_INFO
 
@@ -266,6 +269,17 @@ def GetVersion(source_dir, commit_filter, merge_base_ref):
     version_info = _EMPTY_VERSION_INFO
 
   return version_info
+
+
+def GetVersionInfoFromEnv():
+  """
+  Returns the version information from the environment.
+  """
+  hash = os.environ.get('BASE_COMMIT_HASH', _EMPTY_VERSION_INFO.revision)
+  timestamp = int(
+      os.environ.get('BASE_COMMIT_SUBMISSION_MS',
+                     _EMPTY_VERSION_INFO.timestamp)) / 1000
+  return VersionInfo(hash, hash, int(timestamp))
 
 
 def main(argv=None):
