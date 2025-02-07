@@ -21,6 +21,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/views_export.h"
 
 #if defined(USE_AURA)
@@ -38,7 +39,6 @@ namespace views {
 class AXAuraObjCache;
 class AXVirtualViewWrapper;
 class View;
-class ViewAccessibility;
 class ViewAXPlatformNodeDelegate;
 
 namespace test {
@@ -53,7 +53,8 @@ class AXVirtualViewTest;
 // information about these lightweight Ui objects to accessibility. An
 // AXVirtualView is owned by its parent, which could either be a
 // ViewAccessibility or an AXVirtualView.
-class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
+class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
+                                   public ui::AXPlatformNodeDelegate {
  public:
   using AXVirtualViews = std::vector<std::unique_ptr<AXVirtualView>>;
 
@@ -119,18 +120,12 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   //
 
   const char* GetViewClassName() const;
-  gfx::NativeViewAccessible GetNativeObject() const;
+  gfx::NativeViewAccessible GetNativeObject() const override;
   void NotifyAccessibilityEventDeprecated(ax::mojom::Event event_type);
   // Allows clients to modify the AXNodeData for this virtual view. This should
   // be used for attributes that are relatively stable and do not change
   // dynamically.
   ui::AXNodeData& GetCustomData();
-  // Allows clients to modify the AXNodeData for this virtual view dynamically
-  // via a callback. This should be used for attributes that change often and
-  // would be queried every time a client accesses this view's AXNodeData.
-  void SetPopulateDataCallback(
-      base::RepeatingCallback<void(ui::AXNodeData*)> callback);
-  void UnsetPopulateDataCallback();
 
   // ui::AXPlatformNodeDelegate. Note that
   // - Some of these functions have Mac-specific implementations in

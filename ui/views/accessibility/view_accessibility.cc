@@ -22,6 +22,7 @@
 #include "ui/display/screen.h"
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/widget_ax_tree_id_map.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -128,7 +129,6 @@ std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
   virtual_children_.erase(virtual_children_.begin() +
                           static_cast<ptrdiff_t>(cur_index.value()));
   child->set_parent_view(nullptr);
-  child->UnsetPopulateDataCallback();
   if (focused_virtual_child_ && child->Contains(focused_virtual_child_)) {
     OverrideFocus(nullptr);
   }
@@ -165,6 +165,7 @@ std::optional<size_t> ViewAccessibility::GetIndexOf(
 }
 
 void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
+  CHECK(view_);
   if (is_widget_closed_) {
     // Views may misbehave if their widget is closed; set "null-like" attributes
     // rather than possibly crashing.
@@ -196,6 +197,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
 void ViewAccessibility::NotifyEvent(ax::mojom::Event event_type,
                                     bool send_native_event) {
+  CHECK(view_);
   // If `ready_to_notify_events_` is false, it means we are initializing
   // property values. In this specific case, we do not want to notify platform
   // assistive technologies that a property has changed.
@@ -416,7 +418,9 @@ void ViewAccessibility::SetName(std::u16string name,
   RETURN_IF_UNAVAILABLE();
 
   // Allow subclasses to adjust the name.
-  view_->AdjustAccessibleName(name, name_from);
+  if (view_) {
+    view_->AdjustAccessibleName(name, name_from);
+  }
 
   // Ensure we have a current `name_from` value. For instance, the name might
   // still be an empty string, but a view is now indicating that this is by
@@ -435,24 +439,26 @@ void ViewAccessibility::SetName(std::u16string name,
     data_.SetNameChecked(name);
   }
 
-  // If previously the accessible name was the same as the tooltip text, we
-  // weren't using the tooltip text as the description, however now that the
-  // name has changed, we should check if the tooltip text should be used as the
-  // description.
-  if (!old_name.empty() && old_name == view_->GetTooltipText()) {
-    OnTooltipTextChanged();
-  }
+  if (view_) {
+    // If previously the accessible name was the same as the tooltip text, we
+    // weren't using the tooltip text as the description, however now that the
+    // name has changed, we should check if the tooltip text should be used as
+    // the description.
+    if (!old_name.empty() && old_name == view_->GetTooltipText()) {
+      OnTooltipTextChanged();
+    }
 
-  // If a View sets the tooltip text before setting the accessible name, which
-  // is a common pattern, and then the View sets the accessible name to the same
-  // string, we need to make sure that we clear the description. Otherwise we'll
-  // end up with the same accessible name and description.
-  if (GetCachedName() == view_->GetTooltipText() &&
-      GetCachedDescription() == view_->GetTooltipText()) {
-    RemoveDescription();
-  }
+    // If a View sets the tooltip text before setting the accessible name, which
+    // is a common pattern, and then the View sets the accessible name to the
+    // same string, we need to make sure that we clear the description.
+    // Otherwise we'll end up with the same accessible name and description.
+    if (GetCachedName() == view_->GetTooltipText() &&
+        GetCachedDescription() == view_->GetTooltipText()) {
+      RemoveDescription();
+    }
 
-  view_->OnAccessibleNameChanged(name);
+    view_->OnAccessibleNameChanged(name);
+  }
 
   OnStringAttributeChanged(ax::mojom::StringAttribute::kName,
                            base::UTF16ToUTF8(name));
@@ -753,6 +759,53 @@ void ViewAccessibility::ClearAriaTableColumnCount() {
                         std::nullopt);
 }
 
+void ViewAccessibility::SetTableRowIndex(int cell_index) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableRowIndex, cell_index);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableRowIndex, cell_index);
+}
+
+int ViewAccessibility::GetTableRowIndex() const {
+  return data_.GetIntAttribute(ax::mojom::IntAttribute::kTableRowIndex);
+}
+
+void ViewAccessibility::SetTableCellColumnIndex(int cell_index) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex,
+                        cell_index);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableCellColumnIndex,
+                        cell_index);
+}
+
+void ViewAccessibility::SetTableCellRowIndex(int row_index) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex, row_index);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableCellRowIndex, row_index);
+}
+
+void ViewAccessibility::SetTableCellRowSpan(int row_span) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan, row_span);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableCellRowSpan, row_span);
+}
+
+void ViewAccessibility::SetTableCellColumnSpan(int column_span) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan,
+                        column_span);
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kTableCellColumnSpan,
+                        column_span);
+}
+
+void ViewAccessibility::SetSortDirection(
+    ax::mojom::SortDirection sort_direction) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kSortDirection,
+                        static_cast<int>(sort_direction));
+
+  OnIntAttributeChanged(ax::mojom::IntAttribute::kSortDirection,
+                        static_cast<int>(sort_direction));
+}
+
 void ViewAccessibility::ClearDescriptionAndDescriptionFrom() {
   data_.SetDescriptionExplicitlyEmpty();
 
@@ -797,6 +850,7 @@ void ViewAccessibility::SetDescription(
 }
 
 void ViewAccessibility::SetDescription(View& describing_view) {
+  CHECK(view_);
   DCHECK_NE(view_, &describing_view);
 
   std::u16string name = describing_view.GetViewAccessibility().GetCachedName();
@@ -822,6 +876,10 @@ std::u16string ViewAccessibility::GetCachedDescription() const {
 
 void ViewAccessibility::OnTooltipTextChanged(
     std::optional<std::u16string> old_tooltip_text) {
+  if (!view_) {
+    return;
+  }
+
   if (data_.HasStringAttribute(ax::mojom::StringAttribute::kDescription) &&
       view_->GetTooltipText() == GetCachedDescription()) {
     return;
@@ -1074,6 +1132,7 @@ void ViewAccessibility::SetHasFocusableAncestor(bool ancestor_focusable) {
 
 void ViewAccessibility::SetHasFocusableAncestorRecursive(
     bool ancestor_focusable) {
+  CHECK(view_);
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().SetHasFocusableAncestor(ancestor_focusable);
     // If the child has been explicitly set to focusable, we skip its subtree
@@ -1089,6 +1148,7 @@ void ViewAccessibility::SetHasFocusableAncestorRecursive(
 }
 
 void ViewAccessibility::UpdateFocusableState() {
+  CHECK(view_);
   bool is_focusable = view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
                       GetIsEnabled() &&
                       !data_.HasState(ax::mojom::State::kInvisible) &&
@@ -1105,6 +1165,7 @@ void ViewAccessibility::UpdateFocusableState() {
 void ViewAccessibility::UpdateInvisibleByInheritanceRecursive(
     const View* initial_view,
     bool invisible_by_inheritance) {
+  CHECK(view_);
   internal::ScopedChildrenLock lock(view_);
   if (view_.get() != initial_view) {
     is_invisible_by_inheritance_ = invisible_by_inheritance;
@@ -1171,6 +1232,7 @@ void ViewAccessibility::OnViewHasNewAncestor(const View* new_ancestor) {
 }
 
 void ViewAccessibility::SetRootViewURL(const std::string& url) {
+  CHECK(view_);
   CHECK(!view_->parent())
       << "This method should only be called on the RootView.";
   data_.AddStringAttribute(ax::mojom::StringAttribute::kUrl, url);
@@ -1178,6 +1240,7 @@ void ViewAccessibility::SetRootViewURL(const std::string& url) {
 }
 
 void ViewAccessibility::SetRootViewIsReadyToNotifyEvents() {
+  CHECK(view_);
   CHECK(!view_->parent())
       << "This method should only be called on the RootView.";
   ready_to_notify_events_ = true;
@@ -1192,6 +1255,7 @@ void ViewAccessibility::UpdateInvisibleState() {
 }
 
 void ViewAccessibility::SetChildTreeID(ui::AXTreeID tree_id) {
+  CHECK(view_);
   if (tree_id != ui::AXTreeIDUnknown()) {
     data_.AddChildTreeId(tree_id);
 
@@ -1240,6 +1304,7 @@ gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
 }
 
 void ViewAccessibility::AnnounceAlert(const std::u16string& text) {
+  CHECK(view_);
   if (auto* const widget = view_->GetWidget()) {
     if (auto* const root_view =
             static_cast<internal::RootView*>(widget->GetRootView())) {
@@ -1250,6 +1315,7 @@ void ViewAccessibility::AnnounceAlert(const std::u16string& text) {
 }
 
 void ViewAccessibility::AnnouncePolitely(const std::u16string& text) {
+  CHECK(view_);
   if (auto* const widget = view_->GetWidget()) {
     if (auto* const root_view =
             static_cast<internal::RootView*>(widget->GetRootView())) {
@@ -1273,6 +1339,7 @@ ViewAccessibility::GetAtomicViewAXTreeManagerForTesting() const {
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetFocusedDescendant() {
+  CHECK(view_);
   if (focused_virtual_child_) {
     return focused_virtual_child_->GetNativeObject();
   }
@@ -1296,7 +1363,9 @@ void ViewAccessibility::set_accessibility_events_callback(
 }
 
 void ViewAccessibility::CompleteCacheInitializationRecursive() {
-  internal::ScopedChildrenLock lock(view_);
+  if (view_) {
+    internal::ScopedChildrenLock lock(view_);
+  }
   if (initialization_state_ == State::kInitialized) {
     return;
   }
@@ -1304,7 +1373,9 @@ void ViewAccessibility::CompleteCacheInitializationRecursive() {
   initialization_state_ = State::kInitializing;
 
   ui::AXNodeData data;
-  view_->OnAccessibilityInitializing(&data);
+  if (view_) {
+    view_->OnAccessibilityInitializing(&data);
+  }
 
 #if DCHECK_IS_ON()
   views::ViewAccessibilityUtils::ValidateAttributesNotSet(data, data_);
@@ -1315,8 +1386,10 @@ void ViewAccessibility::CompleteCacheInitializationRecursive() {
 
   initialization_state_ = State::kInitialized;
 
-  for (auto& child : view_->children()) {
-    child->GetViewAccessibility().CompleteCacheInitializationRecursive();
+  if (view_) {
+    for (auto& child : view_->children()) {
+      child->GetViewAccessibility().CompleteCacheInitializationRecursive();
+    }
   }
 }
 
@@ -1368,6 +1441,7 @@ bool ViewAccessibility::IsAccessibilityEnabled() const {
 }
 
 void ViewAccessibility::PruneSubtree() {
+  CHECK(view_);
   internal::ScopedChildrenLock lock(view_);
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().pruned_ = true;
@@ -1381,6 +1455,7 @@ void ViewAccessibility::PruneSubtree() {
 }
 
 void ViewAccessibility::UnpruneSubtree() {
+  CHECK(view_);
   internal::ScopedChildrenLock lock(view_);
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().pruned_ = false;
@@ -1417,6 +1492,7 @@ void ViewAccessibility::UpdateIgnoredState() {
 }
 
 void ViewAccessibility::UpdateReadyToNotifyEvents() {
+  CHECK(view_);
   View* parent = view_->parent();
   if (parent && parent->GetViewAccessibility().ready_to_notify_events_) {
     SetReadyToNotifyEvents();

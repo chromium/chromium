@@ -20,7 +20,6 @@
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/ax_attribute_changed_callbacks.h"
-#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget_observer.h"
@@ -34,9 +33,10 @@ class AXPlatformNodeDelegate;
 namespace views {
 
 class AtomicViewAXTreeManager;
+class AXVirtualView;
+class ScopedAccessibilityEventBlocker;
 class View;
 class Widget;
-class ScopedAccessibilityEventBlocker;
 
 using RoleCallbackList = base::RepeatingCallbackList<void(ax::mojom::Role)>;
 using IntAttributeCallbackList =
@@ -68,7 +68,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   using AccessibilityEventsCallback =
       base::RepeatingCallback<void(const ui::AXPlatformNodeDelegate*,
                                    const ax::mojom::Event)>;
-  using AXVirtualViews = AXVirtualView::AXVirtualViews;
+  using AXVirtualViews = std::vector<std::unique_ptr<AXVirtualView>>;
 
   enum class State { kUninitialized, kInitializing, kInitialized };
 
@@ -349,6 +349,16 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void ClearAriaTableRowCount();
   void ClearAriaTableColumnCount();
 
+  void SetTableRowIndex(int row_index);
+  int GetTableRowIndex() const;
+  void SetTableCellRowIndex(int cell_index);
+  void SetTableCellColumnIndex(int cell_index);
+
+  void SetTableCellRowSpan(int row_span);
+  void SetTableCellColumnSpan(int column_span);
+
+  void SetSortDirection(ax::mojom::SortDirection sort_direction);
+
   void ClearDescriptionAndDescriptionFrom();
   void RemoveDescription();
 
@@ -570,6 +580,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   bool IsAccessibilityEnabled() const;
 
+  bool IsReadyToNotifyEvents() const { return ready_to_notify_events_; }
+
   bool is_initialized() const {
     return initialization_state_ == State::kInitialized;
   }
@@ -638,6 +650,10 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   explicit ViewAccessibility(View* view);
 
   virtual void FireNativeEvent(ax::mojom::Event event_type);
+
+  bool should_be_invisible() const { return should_be_invisible_; }
+
+  const ui::AXNodeData& data() const { return data_; }
 
   // Used for testing. Called every time an accessibility event is fired.
   AccessibilityEventsCallback accessibility_events_callback_;
