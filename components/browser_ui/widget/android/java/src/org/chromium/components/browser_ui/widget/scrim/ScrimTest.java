@@ -155,7 +155,7 @@ public class ScrimTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mScrimManager.hideScrim(model, /* animate= */ false));
         mVisibilityChangeCallbackHelper.waitForCallback(callCount, 1);
-        assertScrimVisibility(false);
+        assertScrimVisibility(false, model);
     }
 
     @Test
@@ -184,7 +184,7 @@ public class ScrimTest {
                             MathUtils.EPSILON);
                 });
         mVisibilityChangeCallbackHelper.waitForCallback(callCount, 1);
-        assertScrimVisibility(false);
+        assertScrimVisibility(false, model);
     }
 
     @Test
@@ -320,7 +320,7 @@ public class ScrimTest {
 
         assertFalse(
                 "Animations should not be running.",
-                mScrimManager.areAnimationsRunningForTesting());
+                mScrimManager.areAnimationsRunningForTesting(model));
     }
 
     @Test
@@ -550,20 +550,20 @@ public class ScrimTest {
                     if (animate) {
                         assertTrue(
                                 "Animations should be running.",
-                                mScrimManager.areAnimationsRunningForTesting());
+                                mScrimManager.areAnimationsRunningForTesting(model));
                     }
 
                     mScrimManager.forceAnimationToFinish(model);
-                    assertFalse(mScrimManager.areAnimationsRunningForTesting());
+                    assertFalse(mScrimManager.areAnimationsRunningForTesting(model));
                     assertEquals(
                             "Scrim should be completely visible.",
                             1.0f,
-                            mScrimManager.getViewForTesting().getAlpha(),
+                            mScrimManager.getViewForTesting(model).getAlpha(),
                             MathUtils.EPSILON);
                 });
 
         mVisibilityChangeCallbackHelper.waitForCallback(callCount, 1);
-        assertScrimVisibility(true);
+        assertScrimVisibility(true, model);
     }
 
     /** Assert that the scrim background is a specific color. */
@@ -588,19 +588,20 @@ public class ScrimTest {
      * Assert that the scrim is the desired visibility.
      *
      * @param visible Whether the scrim should be visible.
+     * @param model The model used to show the scrim.
      */
-    private void assertScrimVisibility(final boolean visible) {
+    private void assertScrimVisibility(boolean visible, PropertyModel model) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (visible) {
                         assertEquals(
                                 "The scrim should be visible.",
                                 View.VISIBLE,
-                                mScrimManager.getViewForTesting().getVisibility());
+                                mScrimManager.getViewForTesting(model).getVisibility());
                     } else {
                         assertNull(
                                 "The scrim should be null after being hidden.",
-                                mScrimManager.getViewForTesting());
+                                mScrimManager.getViewForTesting(model));
                     }
                 });
     }

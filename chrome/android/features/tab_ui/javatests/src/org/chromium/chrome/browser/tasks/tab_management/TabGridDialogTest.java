@@ -38,6 +38,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -83,6 +84,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -2379,20 +2381,21 @@ public class TabGridDialogTest {
                         });
     }
 
-    private void clickScrimToExitDialog(ChromeTabbedActivity cta) throws ExecutionException {
+    private void clickScrimToExitDialog(ChromeTabbedActivity cta) {
         CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    View scrimView;
+                    @Nullable View scrimView;
                     if (isTablet(cta)) {
                         TabGridDialogView dialogView = cta.findViewById(R.id.dialog_parent_view);
-                        scrimView = dialogView.getScrimManagerForTesting().getViewForTesting();
+                        scrimView = dialogView.getScrimViewForTesting();
                     } else {
                         scrimView =
                                 cta.getRootUiCoordinatorForTesting()
                                         .getScrimManager()
                                         .getViewForTesting();
                     }
+                    assertNotNull(scrimView);
                     scrimView.performClick();
                 });
     }
