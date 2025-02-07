@@ -9,7 +9,7 @@ import {BrowserProxyImpl} from 'chrome-untrusted://data-sharing/browser_proxy.js
 import type {PageRemote} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
 import {PageCallbackRouter} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
 import {DataSharingApp} from 'chrome-untrusted://data-sharing/data_sharing_app.js';
-import {Code, LoggingIntent} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
+import {Code, LoggingIntent, Progress} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
 import {DataSharingSdkImpl} from 'chrome-untrusted://data-sharing/dummy_data_sharing_sdk.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -125,7 +125,8 @@ suite('Start flows', () => {
     dataSharingApp = document.createElement('data-sharing-app');
     testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
     document.body.appendChild(dataSharingApp);
-    dataSharingApp.onEvent({intentType: LoggingIntent.ABANDON_JOIN});
+    dataSharingApp.onEvent(
+        {intentType: LoggingIntent.ABANDON_JOIN, progress: Progress.SUCCEEDED});
     await microtasksFinished();
     assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
