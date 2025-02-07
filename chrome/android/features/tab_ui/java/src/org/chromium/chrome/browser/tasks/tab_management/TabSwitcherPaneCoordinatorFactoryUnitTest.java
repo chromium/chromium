@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -84,7 +83,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     private static final int TAB1_ID = 456;
-    private static final int TAB2_ID = 789;
     private static final String TAB1_TITLE = "Hello world";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -99,7 +97,9 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
             new ObservableSupplierImpl<>(true);
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
             new ObservableSupplierImpl<>(false);
-    private final ObservableSupplierImpl<PaneHubController> mPaneHubControllerSupplier =
+    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
 
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -128,15 +128,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor private ArgumentCaptor<LifecycleObserver> mLifecycleObserverCaptor;
 
-    private Tab mTab1;
-
-    private Activity mActivity;
     private FrameLayout mParentView;
     private TabSwitcherPaneCoordinatorFactory mFactory;
-    private ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -152,7 +145,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                                 SigninStatus.NOT_SIGNED_IN,
                                 SyncStatus.NOT_SYNCING,
                                 CollaborationStatus.DISABLED));
-        mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
+        Tab tab = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
@@ -169,15 +162,14 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                 .thenReturn(mTabGroupModelFilterSupplier);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.getTabAt(0)).thenReturn(mTab1);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabAt(0)).thenReturn(tab);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(tab);
         when(mTabModel.getProfile()).thenReturn(mProfile);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
     }
 
     private void onActivityReady(Activity activity) {
-        mActivity = activity;
         mParentView = new FrameLayout(activity);
         mFactory =
                 new TabSwitcherPaneCoordinatorFactory(
