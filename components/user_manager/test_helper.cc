@@ -4,6 +4,8 @@
 
 #include "components/user_manager/test_helper.h"
 
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -25,6 +27,13 @@ void TestHelper::RegisterPersistedUser(PrefService& local_state,
     KnownUser known_user(&local_state);
     known_user.UpdateId(account_id);
   }
+}
+
+// static
+std::string TestHelper::GetFakeUsernameHash(const AccountId& account_id) {
+  CHECK(account_id.is_valid());
+  return ash::UserDataAuthClient::GetStubSanitizedUsername(
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id));
 }
 
 TestHelper::TestHelper(UserManager& user_manager)

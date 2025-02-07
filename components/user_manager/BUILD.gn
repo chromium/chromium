@@ -102,6 +102,10 @@ if (is_chromeos) {
     ]
 
     deps = [
+      "//chromeos/ash/components/cryptohome",
+      "//chromeos/ash/components/dbus/cryptohome",
+      "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+      "//chromeos/ash/components/dbus/userdataauth",
       "//chromeos/ash/components/settings",
       "//components/policy/core/common",
       "//components/prefs",
