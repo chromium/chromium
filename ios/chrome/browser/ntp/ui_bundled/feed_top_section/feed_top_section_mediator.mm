@@ -296,15 +296,8 @@ using base::UserMetricsAction;
                                           prefService:self.prefService]) {
     isAccountEligibleForSignInPromo = ![self isUserSignedIn];
   }
-  // Don't show the promo for incognito or start surface or if account is not
-  // eligible.
-  BOOL isStartSurfaceOrIncognito = self.isIncognito ||
-                                   [self.NTPDelegate isStartSurface] ||
-                                   !self.isSignInPromoEnabled;
-  if (!isStartSurfaceOrIncognito && isAccountEligibleForSignInPromo) {
-    return true;
-  }
-  return false;
+  return !self.isIncognito && ![self.NTPDelegate isStartSurface] &&
+         self.isSignInPromoEnabled && isAccountEligibleForSignInPromo;
 }
 
 - (void)updateShouldShowPromo {
