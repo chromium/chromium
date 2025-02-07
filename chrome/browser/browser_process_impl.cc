@@ -264,6 +264,7 @@
 #include "components/os_crypt/async/browser/fallback_linux_key_provider.h"
 #include "components/os_crypt/async/browser/freedesktop_secret_key_provider.h"
 #include "components/os_crypt/async/browser/secret_portal_key_provider.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -1406,28 +1407,32 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(features::kDbusSecretPortal)) {
-    providers.emplace_back(
-        /*precedence=*/10u,
-        std::make_unique<os_crypt_async::SecretPortalKeyProvider>(
-            local_state(),
-            base::FeatureList::IsEnabled(
-                features::kSecretPortalKeyProviderUseForEncryption)));
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kUseFreedesktopSecretKeyProvider)) {
-    // Use a higher priority than the SecretPortalKeyProvider.
-    providers.emplace_back(
-        /*precedence=*/15u,
-        std::make_unique<os_crypt_async::FreedesktopSecretKeyProvider>(
-            base::FeatureList::IsEnabled(
-                features::kUseFreedesktopSecretKeyProviderForEncryption),
-            l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), nullptr));
-    providers.emplace_back(
-        /*precedence=*/5u,
-        std::make_unique<os_crypt_async::FallbackLinuxKeyProvider>(
-            base::FeatureList::IsEnabled(
-                features::kUseFreedesktopSecretKeyProviderForEncryption)));
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (cmd_line->GetSwitchValueASCII(password_manager::kPasswordStore) !=
+      "basic") {
+    if (base::FeatureList::IsEnabled(features::kDbusSecretPortal)) {
+      providers.emplace_back(
+          /*precedence=*/10u,
+          std::make_unique<os_crypt_async::SecretPortalKeyProvider>(
+              local_state(),
+              base::FeatureList::IsEnabled(
+                  features::kSecretPortalKeyProviderUseForEncryption)));
+    }
+    if (base::FeatureList::IsEnabled(
+            features::kUseFreedesktopSecretKeyProvider)) {
+      // Use a higher priority than the SecretPortalKeyProvider.
+      providers.emplace_back(
+          /*precedence=*/15u,
+          std::make_unique<os_crypt_async::FreedesktopSecretKeyProvider>(
+              base::FeatureList::IsEnabled(
+                  features::kUseFreedesktopSecretKeyProviderForEncryption),
+              l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), nullptr));
+      providers.emplace_back(
+          /*precedence=*/5u,
+          std::make_unique<os_crypt_async::FallbackLinuxKeyProvider>(
+              base::FeatureList::IsEnabled(
+                  features::kUseFreedesktopSecretKeyProviderForEncryption)));
+    }
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
