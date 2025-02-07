@@ -13101,7 +13101,7 @@ TEST_P(LayerTreeHostImplTest, OnMemoryPressure) {
       host_impl_->resource_pool()->GetTotalMemoryUsageForTesting();
   EXPECT_EQ(current_memory_usage, 0u);
 
-  resource.set_gpu_backing(std::make_unique<ResourcePool::GpuBacking>());
+  resource.set_gpu_backing(std::make_unique<ResourcePool::Backing>());
 
   host_impl_->resource_pool()->ReleaseResource(std::move(resource));
 

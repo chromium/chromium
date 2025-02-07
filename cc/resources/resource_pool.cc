@@ -59,12 +59,6 @@ ResourcePool::Backing::~Backing() {
   }
 }
 
-ResourcePool::GpuBacking::GpuBacking() = default;
-ResourcePool::GpuBacking::~GpuBacking() = default;
-
-ResourcePool::SoftwareBacking::SoftwareBacking() = default;
-ResourcePool::SoftwareBacking::~SoftwareBacking() = default;
-
 namespace {
 
 // Process-unique number for each resource pool.
@@ -346,7 +340,7 @@ bool ResourcePool::PrepareForExport(
   DCHECK(!resource->gpu_backing() || !resource->software_backing());
   viz::TransferableResource transferable;
   if (resource->gpu_backing()) {
-    GpuBacking* gpu_backing = resource->gpu_backing();
+    Backing* gpu_backing = resource->gpu_backing();
     if (!gpu_backing->shared_image) {
       // This can happen if we failed to allocate a GpuMemoryBuffer. Avoid
       // sending an invalid resource to the parent in that case, and avoid
@@ -364,7 +358,7 @@ bool ResourcePool::PrepareForExport(
       transferable.synchronization_type =
           viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   } else {
-    SoftwareBacking* software_backing = resource->software_backing();
+    Backing* software_backing = resource->software_backing();
     DCHECK(software_backing->shared_image);
     transferable = viz::TransferableResource::MakeSoftwareSharedImage(
         software_backing->shared_image, software_backing->mailbox_sync_token,

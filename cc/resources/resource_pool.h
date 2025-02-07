@@ -86,20 +86,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
   };
 
-  // A class to hold ownership of gpu backed PoolResources.
-  class CC_EXPORT GpuBacking : public Backing {
-   public:
-    GpuBacking();
-    ~GpuBacking() override;
-  };
-
-  // A class to hold ownership of software backed PoolResources.
-  class CC_EXPORT SoftwareBacking : public Backing {
-   public:
-    SoftwareBacking();
-    ~SoftwareBacking() override;
-  };
-
   // Scoped move-only object returned when getting a resource from the pool.
   // Ownership must be given back to the pool to release the resource.
   class InUsePoolResource {
@@ -140,21 +126,21 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     }
 
     // Only valid when the ResourcePool is vending texture-backed resources.
-    GpuBacking* gpu_backing() const {
+    Backing* gpu_backing() const {
       DCHECK(is_gpu_);
       return resource_->gpu_backing();
     }
-    void set_gpu_backing(std::unique_ptr<GpuBacking> gpu) const {
+    void set_gpu_backing(std::unique_ptr<Backing> gpu) const {
       DCHECK(is_gpu_);
       return resource_->set_gpu_backing(std::move(gpu));
     }
 
     // Only valid when the ResourcePool is vending software-backed resources.
-    SoftwareBacking* software_backing() const {
+    Backing* software_backing() const {
       DCHECK(!is_gpu_);
       return resource_->software_backing();
     }
-    void set_software_backing(std::unique_ptr<SoftwareBacking> software) const {
+    void set_software_backing(std::unique_ptr<Backing> software) const {
       DCHECK(!is_gpu_);
       resource_->set_software_backing(std::move(software));
     }
@@ -222,7 +208,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   // to it by code which is aware of the expected backing type - currently by
   // RasterBufferProvider::AcquireBufferForRaster().
   // Returns false if the backing does not contain valid data, in particular
-  // a zero mailbox for GpuBacking, in which case the resource is not exported,
+  // a zero mailbox for Backing, in which case the resource is not exported,
   // and true otherwise.
   bool PrepareForExport(
       const InUsePoolResource& resource,
@@ -293,8 +279,8 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     const viz::ResourceId& resource_id() const { return resource_id_; }
     void set_resource_id(viz::ResourceId id) { resource_id_ = id; }
 
-    GpuBacking* gpu_backing() const { return gpu_backing_.get(); }
-    void set_gpu_backing(std::unique_ptr<GpuBacking> gpu) {
+    Backing* gpu_backing() const { return gpu_backing_.get(); }
+    void set_gpu_backing(std::unique_ptr<Backing> gpu) {
       DCHECK(gpu);
       DCHECK(!gpu_backing_);
       DCHECK(!software_backing_);
@@ -302,10 +288,8 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       resource_pool_->OnBackingAllocated(this);
     }
 
-    SoftwareBacking* software_backing() const {
-      return software_backing_.get();
-    }
-    void set_software_backing(std::unique_ptr<SoftwareBacking> software) {
+    Backing* software_backing() const { return software_backing_.get(); }
+    void set_software_backing(std::unique_ptr<Backing> software) {
       DCHECK(software);
       DCHECK(!gpu_backing_);
       DCHECK(!software_backing_);
@@ -395,12 +379,12 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     // The backing for gpu resources. Initially null for resources given
     // out by ResourcePool, to be filled in by the client. Is destroyed on the
     // compositor thread.
-    std::unique_ptr<GpuBacking> gpu_backing_;
+    std::unique_ptr<Backing> gpu_backing_;
 
     // The backing for software resources. Initially null for resources given
     // out by ResourcePool, to be filled in by the client. Is destroyed on the
     // compositor thread.
-    std::unique_ptr<SoftwareBacking> software_backing_;
+    std::unique_ptr<Backing> software_backing_;
 
     // Used for debugging and tracing.
     std::string debug_name_;

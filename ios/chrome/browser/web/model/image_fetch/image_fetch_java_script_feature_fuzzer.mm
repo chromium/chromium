@@ -12,12 +12,6 @@
 #import "ios/web/public/js_messaging/script_message.h"
 #import "testing/libfuzzer/proto/lpm_interface.h"
 
-namespace {
-
-protobuf_mutator::protobuf::LogSilencer log_silencer;
-
-}  // namespace
-
 DEFINE_PROTO_FUZZER(const web::ScriptMessageProto& proto_js_message) {
   static web::FuzzerEnvWithJavaScriptFeature env(
       ImageFetchJavaScriptFeature::GetInstance());

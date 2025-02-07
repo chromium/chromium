@@ -49,7 +49,7 @@ const int kMaxBytesPerCopyOperation = 1024 * 1024 * 4;
 OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     OneCopyRasterBufferProvider* client,
     const ResourcePool::InUsePoolResource& in_use_resource,
-    ResourcePool::GpuBacking* backing,
+    ResourcePool::Backing* backing,
     uint64_t previous_content_id)
     : client_(client),
       backing_(backing),
@@ -147,11 +147,11 @@ OneCopyRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   if (!resource.gpu_backing()) {
-    auto backing = std::make_unique<ResourcePool::GpuBacking>();
+    auto backing = std::make_unique<ResourcePool::Backing>();
     backing->overlay_candidate = tile_overlay_candidate_;
     resource.set_gpu_backing(std::move(backing));
   }
-  ResourcePool::GpuBacking* backing = resource.gpu_backing();
+  ResourcePool::Backing* backing = resource.gpu_backing();
   // TODO(danakj): If resource_content_id != 0, we only need to copy/upload
   // the dirty rect.
   return std::make_unique<RasterBufferImpl>(this, resource, backing,

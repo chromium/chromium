@@ -1,32 +1,9 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 // Author: kenton@google.com (Kenton Varda)
 //  Based on original Protocol Buffers design by
@@ -38,10 +15,15 @@
 #include <cstdint>
 #include <string>
 
-#include <google/protobuf/io/printer.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/compiler/java/context.h>
-#include <google/protobuf/descriptor.pb.h>
+#include "absl/strings/string_view.h"
+#include "google/protobuf/compiler/java/names.h"
+#include "google/protobuf/compiler/java/options.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/descriptor.pb.h"
+#include "google/protobuf/io/printer.h"
+
+// Must be last.
+#include "google/protobuf/port_def.inc"
 
 namespace google {
 namespace protobuf {
@@ -53,7 +35,7 @@ namespace java {
 extern const char kThickSeparator[];
 extern const char kThinSeparator[];
 
-bool IsForbiddenKotlin(const std::string& field_name);
+bool IsForbiddenKotlin(absl::string_view field_name);
 
 // If annotation_file is non-empty, prints a javax.annotation.Generated
 // annotation to the given Printer. annotation_file will be referenced in the
@@ -64,38 +46,25 @@ bool IsForbiddenKotlin(const std::string& field_name);
 // annotation_file should be generated from the filename of the source file
 // being annotated (which in turn must be a Java identifier plus ".java").
 void PrintGeneratedAnnotation(io::Printer* printer, char delimiter = '$',
-                              const std::string& annotation_file = "");
+                              absl::string_view annotation_file = "",
+                              Options options = {});
 
 // If a GeneratedMessageLite contains non-lite enums, then its verifier
 // must be instantiated inline, rather than retrieved from the enum class.
-void PrintEnumVerifierLogic(io::Printer* printer,
-                            const FieldDescriptor* descriptor,
-                            const std::map<std::string, std::string>& variables,
-                            const char* var_name,
-                            const char* terminating_string, bool enforce_lite);
+void PrintEnumVerifierLogic(
+    io::Printer* printer, const FieldDescriptor* descriptor,
+    const absl::flat_hash_map<absl::string_view, std::string>& variables,
+    absl::string_view var_name, absl::string_view terminating_string,
+    bool enforce_lite);
+
+// Prints the Protobuf Java Version validator checking that the runtime and
+// gencode versions are compatible.
+void PrintGencodeVersionValidator(io::Printer* printer, bool oss_runtime,
+                                  absl::string_view java_class_name);
 
 // Converts a name to camel-case. If cap_first_letter is true, capitalize the
 // first letter.
-std::string ToCamelCase(const std::string& input, bool lower_first);
-
-char ToUpperCh(char ch);
-char ToLowerCh(char ch);
-
-// Converts a name to camel-case. If cap_first_letter is true, capitalize the
-// first letter.
-std::string UnderscoresToCamelCase(const std::string& name,
-                                   bool cap_first_letter);
-// Converts the field's name to camel-case, e.g. "foo_bar_baz" becomes
-// "fooBarBaz" or "FooBarBaz", respectively.
-std::string UnderscoresToCamelCase(const FieldDescriptor* field);
-std::string UnderscoresToCapitalizedCamelCase(const FieldDescriptor* field);
-
-// Similar, but for method names.  (Typically, this merely has the effect
-// of lower-casing the first letter of the name.)
-std::string UnderscoresToCamelCase(const MethodDescriptor* method);
-
-// Same as UnderscoresToCamelCase, but checks for reserved keywords
-std::string UnderscoresToCamelCaseCheckReserved(const FieldDescriptor* field);
+std::string ToCamelCase(absl::string_view input, bool lower_first);
 
 // Similar to UnderscoresToCamelCase, but guarantees that the result is a
 // complete Java identifier by adding a _ if needed.
@@ -109,14 +78,17 @@ std::string UniqueFileScopeIdentifier(const Descriptor* descriptor);
 // Gets the unqualified class name for the file.  For each .proto file, there
 // will be one Java class containing all the immutable messages and another
 // Java class containing all the mutable messages.
-// TODO(xiaofeng): remove the default value after updating client code.
-std::string FileClassName(const FileDescriptor* file, bool immutable = true);
+std::string FileClassName(const FileDescriptor* file, bool immutable);
 
 // Returns the file's Java package name.
-std::string FileJavaPackage(const FileDescriptor* file, bool immutable);
+std::string FileJavaPackage(const FileDescriptor* file, bool immutable,
+                            Options options = {});
 
 // Returns output directory for the given package name.
 std::string JavaPackageToDir(std::string package_name);
+
+// Returns the name with Kotlin keywords enclosed in backticks
+std::string EscapeKotlinKeywords(std::string name);
 
 // Comma-separate list of option-specified interfaces implemented by the
 // Message, to follow the "implements" declaration of the Message definition.
@@ -136,7 +108,7 @@ std::string ExtraMessageOrBuilderInterfaces(const Descriptor* descriptor);
 // Get the unqualified Java class name for mutable messages. i.e. without
 // package or outer classnames.
 inline std::string ShortMutableJavaClassName(const Descriptor* descriptor) {
-  return descriptor->name();
+  return std::string(descriptor->name());
 }
 
 // Whether the given descriptor is for one of the core descriptor protos. We
@@ -179,7 +151,7 @@ inline bool MultipleJavaFiles(const FileDescriptor* descriptor,
 // `immutable` should be set to true if we're generating for the immutable API.
 template <typename Descriptor>
 bool IsOwnFile(const Descriptor* descriptor, bool immutable) {
-  return descriptor->containing_type() == NULL &&
+  return descriptor->containing_type() == nullptr &&
          MultipleJavaFiles(descriptor->file(), immutable);
 }
 
@@ -194,20 +166,8 @@ inline bool IsOwnFile(const ServiceDescriptor* descriptor, bool immutable) {
 // (e.g.) be "OrBuilder" for some generated interfaces.
 template <typename Descriptor>
 std::string AnnotationFileName(const Descriptor* descriptor,
-                               const std::string& suffix) {
-  return descriptor->name() + suffix + ".java.pb.meta";
-}
-
-template <typename Descriptor>
-void MaybePrintGeneratedAnnotation(Context* context, io::Printer* printer,
-                                   Descriptor* descriptor, bool immutable,
-                                   const std::string& suffix = "") {
-  if (IsOwnFile(descriptor, immutable)) {
-    PrintGeneratedAnnotation(printer, '$',
-                             context->options().annotate_code
-                                 ? AnnotationFileName(descriptor, suffix)
-                                 : "");
-  }
+                               absl::string_view suffix) {
+  return absl::StrCat(descriptor->name(), suffix, ".java.pb.meta");
 }
 
 // Get the unqualified name that should be used for a field's field
@@ -233,28 +193,30 @@ enum JavaType {
 
 JavaType GetJavaType(const FieldDescriptor* field);
 
-const char* PrimitiveTypeName(JavaType type);
+absl::string_view PrimitiveTypeName(JavaType type);
 
 // Get the fully-qualified class name for a boxed primitive type, e.g.
 // "java.lang.Integer" for JAVATYPE_INT.  Returns NULL for enum and message
 // types.
-const char* BoxedPrimitiveTypeName(JavaType type);
+absl::string_view BoxedPrimitiveTypeName(JavaType type);
 
 // Kotlin source does not distinguish between primitives and non-primitives,
 // but does use Kotlin-specific qualified types for them.
-const char* KotlinTypeName(JavaType type);
+absl::string_view KotlinTypeName(JavaType type);
 
 // Get the name of the java enum constant representing this type. E.g.,
 // "INT32" for FieldDescriptor::TYPE_INT32. The enum constant's full
 // name is "com.google.protobuf.WireFormat.FieldType.INT32".
-const char* FieldTypeName(const FieldDescriptor::Type field_type);
+absl::string_view FieldTypeName(const FieldDescriptor::Type field_type);
 
 class ClassNameResolver;
 std::string DefaultValue(const FieldDescriptor* field, bool immutable,
-                         ClassNameResolver* name_resolver);
+                         ClassNameResolver* name_resolver,
+                         Options options = {});
 inline std::string ImmutableDefaultValue(const FieldDescriptor* field,
-                                         ClassNameResolver* name_resolver) {
-  return DefaultValue(field, true, name_resolver);
+                                         ClassNameResolver* name_resolver,
+                                         Options options = {}) {
+  return DefaultValue(field, true, name_resolver, options);
 }
 bool IsDefaultValueJavaDefault(const FieldDescriptor* field);
 bool IsByteStringWithCustomDefaultValue(const FieldDescriptor* field);
@@ -333,7 +295,8 @@ bool IsReferenceType(JavaType type);
 
 // Returns the capitalized name for calling relative functions in
 // CodedInputStream
-const char* GetCapitalizedType(const FieldDescriptor* field, bool immutable);
+absl::string_view GetCapitalizedType(const FieldDescriptor* field,
+                                     bool immutable, Options options);
 
 // For encodings with fixed sizes, returns that size in bytes.  Otherwise
 // returns -1.
@@ -350,7 +313,7 @@ struct FieldOrderingByNumber {
 struct ExtensionRangeOrdering {
   bool operator()(const Descriptor::ExtensionRange* a,
                   const Descriptor::ExtensionRange* b) const {
-    return a->start < b->start;
+    return a->start_number() < b->start_number();
   }
 };
 
@@ -372,45 +335,10 @@ inline bool HasPackedFields(const Descriptor* descriptor) {
 // them has a required field. Return true if a required field is found.
 bool HasRequiredFields(const Descriptor* descriptor);
 
-inline bool IsProto2(const FileDescriptor* descriptor) {
-  return descriptor->syntax() == FileDescriptor::SYNTAX_PROTO2;
-}
-
-inline bool IsRealOneof(const FieldDescriptor* descriptor) {
-  return descriptor->containing_oneof() &&
-         !descriptor->containing_oneof()->is_synthetic();
-}
-
-inline bool HasHazzer(const FieldDescriptor* descriptor) {
-  return !descriptor->is_repeated() &&
-         (descriptor->message_type() || descriptor->has_optional_keyword() ||
-          IsProto2(descriptor->file()) || IsRealOneof(descriptor));
-}
+bool IsRealOneof(const FieldDescriptor* descriptor);
 
 inline bool HasHasbit(const FieldDescriptor* descriptor) {
-  // Note that currently message fields inside oneofs have hasbits. This is
-  // surprising, as the oneof case should avoid any need for a hasbit. But if
-  // you change this method to remove hasbits for oneofs, a few tests fail.
-  // TODO(b/124347790): remove hasbits for oneofs
-  return !descriptor->is_repeated() &&
-         (descriptor->has_optional_keyword() || IsProto2(descriptor->file()));
-}
-
-// Whether generate classes expose public PARSER instances.
-inline bool ExposePublicParser(const FileDescriptor* descriptor) {
-  // TODO(liujisi): Mark the PARSER private in 3.1.x releases.
-  return descriptor->syntax() == FileDescriptor::SYNTAX_PROTO2;
-}
-
-// Whether unknown enum values are kept (i.e., not stored in UnknownFieldSet
-// but in the message and can be queried using additional getters that return
-// ints.
-inline bool SupportUnknownEnumValue(const FileDescriptor* descriptor) {
-  return descriptor->syntax() == FileDescriptor::SYNTAX_PROTO3;
-}
-
-inline bool SupportUnknownEnumValue(const FieldDescriptor* field) {
-  return field->file()->syntax() == FileDescriptor::SYNTAX_PROTO3;
+  return internal::cpp::HasHasbit(descriptor);
 }
 
 // Check whether a message has repeated fields.
@@ -432,15 +360,6 @@ inline bool IsWrappersProtoFile(const FileDescriptor* descriptor) {
   return descriptor->name() == "google/protobuf/wrappers.proto";
 }
 
-inline bool CheckUtf8(const FieldDescriptor* descriptor) {
-  return descriptor->file()->syntax() == FileDescriptor::SYNTAX_PROTO3 ||
-         descriptor->file()->options().java_string_check_utf8();
-}
-
-inline std::string GeneratedCodeVersionSuffix() {
-  return "V3";
-}
-
 void WriteUInt32ToUtf16CharSequence(uint32_t number,
                                     std::vector<uint16_t>* output);
 
@@ -452,23 +371,37 @@ inline void WriteIntToUtf16CharSequence(int value,
 // Escape a UTF-16 character so it can be embedded in a Java string literal.
 void EscapeUtf16ToString(uint16_t code, std::string* output);
 
-// Only the lowest two bytes of the return value are used. The lowest byte
-// is the integer value of a j/c/g/protobuf/FieldType enum. For the other
-// byte:
-//    bit 0: whether the field is required.
-//    bit 1: whether the field requires UTF-8 validation.
-//    bit 2: whether the field needs isInitialized check.
-//    bit 3: whether the field is a map field with proto2 enum value.
-//    bits 4-7: unused
-int GetExperimentalJavaFieldType(const FieldDescriptor* field);
-
 // To get the total number of entries need to be built for experimental runtime
 // and the first field number that are not in the table part
 std::pair<int, int> GetTableDrivenNumberOfEntriesAndLookUpStartFieldNumber(
     const FieldDescriptor** fields, int count);
+
+const FieldDescriptor* MapKeyField(const FieldDescriptor* descriptor);
+
+const FieldDescriptor* MapValueField(const FieldDescriptor* descriptor);
+
+inline std::string JvmSynthetic(bool jvm_dsl) {
+  return jvm_dsl ? "@kotlin.jvm.JvmSynthetic\n" : "";
+}
+
+struct JvmNameContext {
+  const Options& options;
+  io::Printer* printer;
+  bool lite = true;
+};
+
+inline void JvmName(absl::string_view name, const JvmNameContext& context) {
+  if (context.lite && !context.options.jvm_dsl) return;
+  context.printer->Emit("@kotlin.jvm.JvmName(\"");
+  // Note: `name` will likely have vars in it that we do want to interpolate.
+  context.printer->Emit(name);
+  context.printer->Emit("\")\n");
+}
+
 }  // namespace java
 }  // namespace compiler
 }  // namespace protobuf
 }  // namespace google
 
+#include "google/protobuf/port_undef.inc"
 #endif  // GOOGLE_PROTOBUF_COMPILER_JAVA_HELPERS_H__

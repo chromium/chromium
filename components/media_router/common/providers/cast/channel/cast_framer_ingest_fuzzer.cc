@@ -18,9 +18,6 @@
 #include "net/base/io_buffer.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
-// Silence logging from the protobuf library.
-google::protobuf::LogSilencer log_silencer;
-
 namespace cast_channel {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

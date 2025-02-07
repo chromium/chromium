@@ -2345,6 +2345,21 @@
       name: "HTMLAnchorAttribute",
       status: "experimental",
     },
+    // Additional default command/commandfor actions that aren't part of v1 of
+    // commands. When this flag is disabled only v1 actions (popover and dialog
+    // defaults) will work.
+    {
+      name: "HTMLCommandActionsV2",
+      depends_on: ["HTMLCommandAttributes"],
+      status: "test",
+    },
+    // Adds support for the `command` and `commandfor` attributes, as specified
+    // in the open-ui "Invokers" explainer.
+    // https://open-ui.org/components/invokers.explainer/
+    {
+      name: "HTMLCommandAttributes",
+      status: "experimental",
+    },
     {
       // TODO(crbug.com/376516550): Enables dialog light dismiss functionality.
       // This feature shipped in M134, so this flag can be removed in M136.
@@ -2377,19 +2392,6 @@
     // https://open-ui.org/components/interest-invokers.explainer/
     {
       name: "HTMLInterestTargetAttribute",
-      status: "experimental",
-    },
-    // Additional default invoke actions that aren't part of v1 of invokers.
-    // When this flag is disabled only v1 actions (popover and dialog defaults) will work.
-    {
-      name: "HTMLInvokeActionsV2",
-      status: "test",
-    },
-    // Adds support for the experimental `invoketarget` and `invokeaction`
-    // attributes, as specified in the open-ui "Invokers" explainer.
-    // https://open-ui.org/components/invokers.explainer/
-    {
-      name: "HTMLInvokeTargetAttribute",
       status: "experimental",
     },
     {

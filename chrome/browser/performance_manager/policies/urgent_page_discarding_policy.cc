@@ -15,13 +15,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/metrics/histogram_macros.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/memory/pressure/system_memory_pressure_evaluator.h"
 #endif
 
@@ -34,11 +27,7 @@ bool g_disabled_for_testing = false;
 #if BUILDFLAG(IS_CHROMEOS)
 std::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
   std::optional<memory_pressure::ReclaimTarget> reclaim_target = std::nullopt;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* evaluator = LacrosMemoryPressureEvaluator::Get();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
   auto* evaluator = ash::memory::SystemMemoryPressureEvaluator::Get();
-#endif
   if (evaluator) {
     reclaim_target = evaluator->GetCachedReclaimTarget();
   }

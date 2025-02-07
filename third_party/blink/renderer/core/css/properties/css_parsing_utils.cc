@@ -2713,8 +2713,8 @@ static bool ConsumeGradientColorStops(CSSParserTokenStream& stream,
     return false;
   }
 
-  // Must have 2 or more stops to be valid.
-  return gradient->StopCount() >= 2;
+  // Must have 1 or more stops to be valid.
+  return gradient->StopCount() >= 1;
 }
 
 static CSSValue* ConsumeDeprecatedRadialGradient(

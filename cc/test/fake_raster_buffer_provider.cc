@@ -23,7 +23,7 @@ FakeRasterBufferProviderImpl::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  auto backing = std::make_unique<ResourcePool::GpuBacking>();
+  auto backing = std::make_unique<ResourcePool::Backing>();
   backing->shared_image = gpu::ClientSharedImage::CreateForTesting();
   resource.set_gpu_backing(std::move(backing));
   return nullptr;

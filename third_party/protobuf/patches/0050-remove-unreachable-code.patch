@@ -1,0 +1,20 @@
+diff --git a/src/google/protobuf/generated_message_tctable_lite.cc b/src/google/protobuf/generated_message_tctable_lite.cc
+index 6ed1157ce2cea..58612936a9477 100644
+--- a/src/google/protobuf/generated_message_tctable_lite.cc
++++ b/src/google/protobuf/generated_message_tctable_lite.cc
+@@ -56,15 +56,9 @@ using FieldEntry = TcParseTableBase::FieldEntry;
+ #ifndef NDEBUG
+ void AlignFail(std::integral_constant<size_t, 4>, std::uintptr_t address) {
+   ABSL_LOG(FATAL) << "Unaligned (4) access at " << address;
+-
+-  // Explicit abort to let compilers know this function does not return
+-  abort();
+ }
+ void AlignFail(std::integral_constant<size_t, 8>, std::uintptr_t address) {
+   ABSL_LOG(FATAL) << "Unaligned (8) access at " << address;
+-
+-  // Explicit abort to let compilers know this function does not return
+-  abort();
+ }
+ #endif
+ 

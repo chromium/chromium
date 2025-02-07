@@ -76,7 +76,7 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "HTMLPopoverHint");
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "HTMLInvokeTargetAttribute");
+        switches::kEnableBlinkFeatures, "HTMLCommandAttributes");
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "HTMLInterestTargetAttribute");
     RunTypedTest<kHtml>(file_path);

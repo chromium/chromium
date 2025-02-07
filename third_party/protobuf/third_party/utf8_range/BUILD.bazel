@@ -1,35 +1,75 @@
+# Copyright 2022 Google LLC
+#
+# Use of this source code is governed by an MIT-style
+# license that can be found in the LICENSE file or at
+# https://opensource.org/licenses/MIT.
 
-# Pulled from: https://github.com/cyb70289/utf8
+load("@rules_license//rules:license.bzl", "license")
 
-exports_files(["LICENSE"])
+DEFAULT_VISIBILITY = [
+    "//src/google/protobuf:__subpackages__",
+    "//third_party/utf8_range:__subpackages__",
+    "//util/utf8/internal:__subpackages__",
+]
 
+package(
+    default_applicable_licenses = ["//third_party/utf8_range:license"],
+    default_visibility = ["//visibility:public"],
+)
+
+license(
+    name = "license",
+    package_name = "utf8_range",
+)
+
+licenses(["notice"])
+
+exports_files([
+    "LICENSE",
+    "rules_fuzzing.patch",
+])
+
+# TODO Remove this once callers have been Bazelified.
 filegroup(
     name = "utf8_range_srcs",
     srcs = [
-        "naive.c",
-        "range2-neon.c",
-        "range2-sse.c",
+        "utf8_range.c",
         "utf8_range.h",
     ],
-    visibility = [
-        "@com_google_protobuf//:__subpackages__",
-        "@upb//:__subpackages__",
-    ],
+    visibility = ["//:__subpackages__"],
 )
 
 cc_library(
     name = "utf8_range",
-    hdrs = ["utf8_range.h"],
     srcs = [
-        "naive.c",
-        "range2-neon.c",
-        "range2-sse.c",
+        "utf8_range.c",
     ],
-    visibility = ["//:__pkg__"],
+    hdrs = ["utf8_range.h"],
+    strip_include_prefix = "/third_party/utf8_range",
 )
 
-filegroup(
-    name = "cmake_files",
-    srcs = glob(["*"]),
-    visibility = ["//cmake:__pkg__"],
+cc_library(
+    name = "utf8_validity",
+    srcs = ["utf8_validity.cc"],
+    hdrs = ["utf8_validity.h"],
+    strip_include_prefix = "/third_party/utf8_range",
+    deps = [
+        ":utf8_range",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_test(
+    name = "utf8_validity_test",
+    srcs = [
+        "utf8_range.c",
+        "utf8_validity_test.cc",
+    ],
+    deps = [
+        ":utf8_range",
+        ":utf8_validity",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
 )

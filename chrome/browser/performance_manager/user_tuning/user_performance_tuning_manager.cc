@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
@@ -31,7 +32,7 @@
 #include "content/public/browser/frame_rate_throttling.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #endif

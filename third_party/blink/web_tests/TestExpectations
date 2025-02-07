@@ -1421,17 +1421,9 @@ crbug.com/358159989 external/wpt/css/css-images/normalization-conic-degenerate.h
 crbug.com/358159989 external/wpt/css/css-images/normalization-conic.html [ Failure ]
 crbug.com/358159989 external/wpt/css/css-images/out-of-range-color-stop-conic.html [ Failure ]
 crbug.com/358159989 external/wpt/css/css-images/tiled-conic-gradients.html [ Failure ]
-crbug.com/344620213 external/wpt/css/css-images/gradient/gradient-single-stop-001.html [ Failure ]
-crbug.com/344620213 external/wpt/css/css-images/gradient/gradient-single-stop-002.html [ Failure ]
-crbug.com/344620213 external/wpt/css/css-images/gradient/gradient-single-stop-003.html [ Failure ]
-crbug.com/344620213 external/wpt/css/css-images/gradient/gradient-single-stop-004.html [ Failure ]
-crbug.com/344620213 external/wpt/css/css-images/gradient/gradient-single-stop-005.html [ Failure ]
-crbug.com/344620213 external/wpt/css/css-images/gradient/gradient-single-stop-006.html [ Failure ]
-crbug.com/344620213 external/wpt/css/css-images/gradient/gradient-single-stop-007.html [ Failure ]
-crbug.com/344620213 external/wpt/css/css-images/gradient/gradient-single-stop-008.html [ Failure ]
-crbug.com/344620213 external/wpt/css/css-images/gradient/gradient-single-stop-longer-hue-hsl-002.html [ Failure ]
-crbug.com/344620213 external/wpt/css/css-images/gradient/gradient-single-stop-longer-hue-hsl.html [ Failure ]
-crbug.com/344620213 external/wpt/css/css-images/gradient/gradient-single-stop-longer-hue-oklch.html [ Failure ]
+crbug.com/387475844 external/wpt/css/css-images/gradient/gradient-single-stop-longer-hue-hsl-002.html [ Failure ]
+crbug.com/387475844 external/wpt/css/css-images/gradient/gradient-single-stop-longer-hue-hsl.html [ Failure ]
+crbug.com/387475844 external/wpt/css/css-images/gradient/gradient-single-stop-longer-hue-oklch.html [ Failure ]
 crbug.com/387475844 external/wpt/css/css-images/gradient/gradient-longer-hue-hsl-002.html [ Failure ]
 crbug.com/387475844 external/wpt/css/css-images/gradient/gradient-longer-hue-hsl-003.html [ Failure ]
 crbug.com/387475844 external/wpt/css/css-images/gradient/gradient-longer-hue-hsl-006.html [ Failure ]
@@ -9137,6 +9129,8 @@ crbug.com/390565845 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wp
 
 # Gardener 2025-02-04
 crbug.com/389946963 [ Mac13 ] external/wpt/mediacapture-fromelement/capture.html [ Failure Pass ]
+
+crbug.com/394287937 http/tests/devtools/storage-panel-dom-storage-update.js [ Failure Pass ]
 
 # Gardener 2025-02-06
 crbug.com/385054996 external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Pass Crash Timeout ]

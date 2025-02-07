@@ -136,7 +136,7 @@ void HTMLButtonElement::ParseAttribute(
 }
 
 Element* HTMLButtonElement::commandForElement() {
-  if (!RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled()) {
+  if (!RuntimeEnabledFeatures::HTMLCommandAttributesEnabled()) {
     return nullptr;
   }
 
@@ -149,7 +149,7 @@ Element* HTMLButtonElement::commandForElement() {
 }
 
 AtomicString HTMLButtonElement::command() const {
-  CHECK(RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled());
+  CHECK(RuntimeEnabledFeatures::HTMLCommandAttributesEnabled());
   const AtomicString& attribute_value =
       FastGetAttribute(html_names::kCommandAttr);
   if (attribute_value && !attribute_value.empty()) {
@@ -192,7 +192,7 @@ CommandEventType HTMLButtonElement::GetCommandEventType() const {
 
   // V2 commands go below this point
 
-  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {
     return CommandEventType::kNone;
   }
 

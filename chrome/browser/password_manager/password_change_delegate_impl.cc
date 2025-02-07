@@ -53,6 +53,16 @@ PasswordFormCache& GetFormCache(content::WebContents* web_contents) {
   return *cache;
 }
 
+void LogPasswordFormDetectedMetric(bool form_detected,
+                                   base::TimeDelta time_delta) {
+  base::UmaHistogramBoolean("PasswordManager.ChangePasswordFormDetected",
+                            form_detected);
+  if (form_detected) {
+    base::UmaHistogramMediumTimes(
+        "PasswordManager.ChangePasswordFormDetectionTime", time_delta);
+  }
+}
+
 // Helper object which waits for change password parsing, invokes callback on
 // completion. If form isn't found withing
 // `PasswordChangeDelegateImpl::kChangePasswordFormWaitingTimeout` callback is
@@ -249,6 +259,8 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormParsed(
     password_manager::PasswordFormManager* form_manager) {
   form_waiter_.reset();
 
+  LogPasswordFormDetectedMetric(/*form_detected=*/form_manager,
+                                base::Time::Now() - flow_start_time_);
   if (!form_manager) {
     UpdateState(State::kChangePasswordFormNotFound);
     return;

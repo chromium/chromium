@@ -16,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "components/performance_manager/graph/page_node_impl.h"

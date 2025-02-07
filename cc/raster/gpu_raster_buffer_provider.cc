@@ -46,7 +46,7 @@ namespace cc {
 GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     GpuRasterBufferProvider* client,
     const ResourcePool::InUsePoolResource& in_use_resource,
-    ResourcePool::GpuBacking* backing,
+    ResourcePool::Backing* backing,
     bool resource_has_previous_content,
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
@@ -149,13 +149,13 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   if (!resource.gpu_backing()) {
-    auto backing = std::make_unique<ResourcePool::GpuBacking>();
+    auto backing = std::make_unique<ResourcePool::Backing>();
     backing->overlay_candidate = tile_overlay_candidate_;
     backing->is_using_raw_draw =
         !backing->overlay_candidate && is_using_raw_draw_;
     resource.set_gpu_backing(std::move(backing));
   }
-  ResourcePool::GpuBacking* backing = resource.gpu_backing();
+  ResourcePool::Backing* backing = resource.gpu_backing();
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
   return std::make_unique<RasterBufferImpl>(

@@ -413,8 +413,9 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
 }
 
 // An interactive UI test that locks the screen during the Welcome Tour.
+// Disabled due to frequent timeouts; see https://crbug.com/394975522.
 IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest,
-                       LockScreenDuringWelcomeTour) {
+                       DISABLED_LockScreenDuringWelcomeTour) {
   RunTestSequence(
       // Wait for the Welcome Tour dialog to show.
       InAnyContext(WaitForDialogVisibility(true)),

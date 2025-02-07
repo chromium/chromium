@@ -68,7 +68,7 @@ RecentlyUsedFoldersComboModel::RecentlyUsedFoldersComboModel(
     }
 
     for (const BookmarkNode* mru_node : mru_bookmarks.account_nodes) {
-      items_.emplace_back(mru_node, mru_node == model->other_node()
+      items_.emplace_back(mru_node, mru_node == model->account_other_node()
                                         ? Item::TYPE_ALL_BOOKMARKS_NODE
                                         : Item::TYPE_NODE);
     }
