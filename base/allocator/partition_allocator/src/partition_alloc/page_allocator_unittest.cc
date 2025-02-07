@@ -634,7 +634,16 @@ TEST(PartitionAllocPageAllocatorTest, MappedPagesAccounting) {
   }
 }
 
-TEST(PartitionAllocPageAllocatorTest, AllocInaccessibleWillJitLater) {
+#if PA_BUILDFLAG(IS_IOS) && !TARGET_IPHONE_SIMULATOR
+// MAP_JIT is not supported without the com.apple.developer.cs.allow-jit
+// entitlement which unittests do not have. The entitlement is not checked in
+// the simulator so allow the test to run there.
+#define MAYBE_AllocInaccessibleWillJitLater \
+  DISABLED_AllocInaccessibleWillJitLater
+#else
+#define MAYBE_AllocInaccessibleWillJitLater AllocInaccessibleWillJitLater
+#endif  // PA_BUILDFLAG(IS_IOS) && !TARGET_IPHONE_SIMULATOR
+TEST(PartitionAllocPageAllocatorTest, MAYBE_AllocInaccessibleWillJitLater) {
   // Verify that kInaccessibleWillJitLater allows read/write, and read/execute
   // permissions to be set.
   uintptr_t buffer =

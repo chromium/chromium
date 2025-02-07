@@ -200,14 +200,7 @@ bool UseMapJit() {
 }
 #elif PA_BUILDFLAG(IS_IOS)
 bool UseMapJit() {
-// Always enable MAP_JIT in simulator as it is supported unconditionally.
-#if TARGET_IPHONE_SIMULATOR
   return true;
-#else
-  // TODO(crbug.com/40255826): Fill this out when the API it is
-  // available.
-  return false;
-#endif  // TARGET_IPHONE_SIMULATOR
 }
 #endif  // PA_BUILDFLAG(IS_IOS)
 
