@@ -353,6 +353,7 @@ class EventRouter : public KeyedService,
   }
 
  private:
+  friend class BookmarksApiEventsTest;
   friend class EventRouterFilterTest;
   friend class EventRouterTest;
   friend class ash::file_system_provider::
