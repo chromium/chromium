@@ -342,7 +342,7 @@ void ScannerController::OnActiveUserSessionChanged(
   command_delegate_ = nullptr;
 }
 
-bool ScannerController::CanShowConsentScreenEntryPoints() {
+bool ScannerController::CanShowUi() {
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();
 
