@@ -71,13 +71,6 @@
           role-description="$i18n{subpageArrowRoleDescription}"
           on-click="onTabOrganizationRowClick_">
       </cr-link-row>
-      <cr-link-row id="wallpaperSearchRowV2" class="hr"
-          hidden="[[!showWallpaperSearchControl_]]"
-          start-icon="settings20:photo-filter-auto"
-          label="$i18n{wallpaperSearchSettingLabel}"
-          sub-label="$i18n{wallpaperSearchSettingSublabelV2}"
-          on-click="onWallpaperSearchRowClick_" external>
-      </cr-link-row>
     </div>
 
     <template is="dom-if" if="[[showHistorySearchControl_]]">

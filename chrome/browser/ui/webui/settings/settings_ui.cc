@@ -578,11 +578,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
              : TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
         {"showComposeControl",
          use_is_setting_visible ? compose_visible : compose_enabled},
-        {"showWallpaperSearchControl",
-         use_is_setting_visible
-             ? customize_chrome::IsWallpaperSearchSettingVisibleForProfile(
-                   profile)
-             : customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
         {"showHistorySearchControl",
          history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
         {"showCompareControl",
@@ -617,8 +612,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
             {UserVisibleFeatureKey::kCompose, "showComposeControl"},
             {UserVisibleFeatureKey::kTabOrganization,
              "showTabOrganizationControl"},
-            {UserVisibleFeatureKey::kWallpaperSearch,
-             "showWallpaperSearchControl"},
             {UserVisibleFeatureKey::kHistorySearch, "showHistorySearchControl"},
         };
     bool is_any_ai_feature_enabled = false;

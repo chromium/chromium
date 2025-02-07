@@ -34894,6 +34894,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.ThemesEntryPointClick">
+  <obsolete>Deprecated 02/2025. Themes settings row was removed.</obsolete>
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>

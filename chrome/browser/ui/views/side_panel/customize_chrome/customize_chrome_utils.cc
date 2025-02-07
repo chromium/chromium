@@ -12,9 +12,8 @@
 #include "components/search/ntp_features.h"
 
 namespace customize_chrome {
-namespace {
-bool CheckWallpaperSearchFeature(Profile* profile,
-                                 bool is_feature_visibility_check) {
+
+bool IsWallpaperSearchEnabledForProfile(Profile* profile) {
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   return IsEnUSLocaleOnlyFeatureEnabled(
@@ -22,25 +21,9 @@ bool CheckWallpaperSearchFeature(Profile* profile,
          base::FeatureList::IsEnabled(
              optimization_guide::features::kOptimizationGuideModelExecution) &&
          (optimization_guide_keyed_service &&
-          (is_feature_visibility_check
-               ? optimization_guide_keyed_service->IsSettingVisible(
-                     optimization_guide::UserVisibleFeatureKey::
-                         kWallpaperSearch)
-               : optimization_guide_keyed_service
-                     ->ShouldFeatureBeCurrentlyEnabledForUser(
-                         optimization_guide::UserVisibleFeatureKey::
-                             kWallpaperSearch)));
-}
-}  // namespace
-
-bool IsWallpaperSearchEnabledForProfile(Profile* profile) {
-  return CheckWallpaperSearchFeature(profile,
-                                     /*is_feature_visibility_check=*/false);
-}
-
-bool IsWallpaperSearchSettingVisibleForProfile(Profile* profile) {
-  return CheckWallpaperSearchFeature(profile,
-                                     /*is_feature_visibility_check=*/true);
+          optimization_guide_keyed_service
+              ->ShouldFeatureBeCurrentlyEnabledForUser(
+                  optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 }
 
 }  // namespace customize_chrome

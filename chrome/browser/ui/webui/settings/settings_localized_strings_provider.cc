@@ -481,11 +481,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"tabOrganizationSettingConsiderData",
        IDS_SETTINGS_TAB_ORGANIZER_CONSIDER_DATA},
 
-      // Themes strings.
-      {"wallpaperSearchSettingLabel",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL},
-      {"wallpaperSearchSettingSublabelV2", IDS_SETTINGS_AI_THEMES_SUB_LABEL},
-
       // Password Change strings.
       {"passwordChangeSettingLabel", IDS_SETTINGS_PASSWORD_CHANGE_LABEL},
       {"passwordChangeSettingSubLabel", IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL},
@@ -525,10 +520,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
                          chrome::kTabOrganizationLearnMorePageURL);
   html_source->AddString("tabOrganizationLearnMoreManagedUrl",
                          chrome::kTabOrganizationLearnMorePageManagedURL);
-  html_source->AddString("wallpaperSearchLearnMoreUrl",
-                         chrome::kWallpaperSearchLearnMorePageURL);
-  html_source->AddString("wallpaperSearchLearnMoreManagedUrl",
-                         chrome::kWallpaperSearchLearnMorePageManagedURL);
   html_source->AddString("passwordChangeSettingsUrl",
                          chrome::kChromeUiPasswordChangeUrl);
 }
