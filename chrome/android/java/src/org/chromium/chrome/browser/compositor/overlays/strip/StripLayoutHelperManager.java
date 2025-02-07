@@ -806,7 +806,7 @@ public class StripLayoutHelperManager
     public boolean isSceneOverlayTreeShowing() {
         // TODO(mdjones): This matches existing behavior but can be improved to return false if
         // the browser controls offset is equal to the browser controls height.
-        return (getStripVisibilityState() & StripVisibilityState.OBSCURED) == 0;
+        return getStripVisibilityState() == StripVisibilityState.VISIBLE;
     }
 
     @Override
