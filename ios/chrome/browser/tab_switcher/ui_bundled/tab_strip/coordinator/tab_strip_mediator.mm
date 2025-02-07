@@ -406,6 +406,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     return;
   }
   base::RecordAction(base::UserMetricsAction("MobileTabStripUngroupTabs"));
+
+  const WebStateList::ScopedBatchOperation batch =
+      self.webStateList->StartBatchOperation();
   self.webStateList->DeleteGroup(tabGroupItem.tabGroup);
 }
 
