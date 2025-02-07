@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.31"
 name = "unicode-ident"
-version = "1.0.15"
+version = "1.0.16"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 autolib = false
@@ -66,8 +66,7 @@ default-features = false
 version = "0.4"
 
 [dev-dependencies.rand]
-version = "0.8"
-features = ["small_rng"]
+version = "0.9"
 
 [dev-dependencies.roaring]
 version = "0.10"

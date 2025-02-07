@@ -736,8 +736,8 @@ third_party/rust/chromium_crates_io/vendor/syn-2.0.98/src 2 1
 third_party/rust/chromium_crates_io/vendor/synstructure-0.13.1 1 1
 third_party/rust/chromium_crates_io/vendor/termcolor-1.4.1/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/unicode-bidi-0.3.18/.github/workflows 1 1
-third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.15 1 1
-third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.15/.github/workflows 2 1
+third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.16 1 1
+third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.16/.github/workflows 2 1
 third_party/rust/chromium_crates_io/vendor/utf16_iter-1.0.5 1 1
 third_party/rust/chromium_crates_io/vendor/utf8_iter-1.0.4 1 1
 third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/.github/workflows 4 1

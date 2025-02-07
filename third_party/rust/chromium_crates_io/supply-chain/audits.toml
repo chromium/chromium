@@ -3355,6 +3355,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.14 -> 1.0.15"
 notes = "No changes relevant to any of these criteria."
 
+[[audits.unicode-ident]]
+who = "Liza Burakova <liza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.15 -> 1.0.16"
+
 [[audits.unicode-linebreak]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
