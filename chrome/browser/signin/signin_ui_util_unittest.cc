@@ -215,6 +215,30 @@ class SigninUiUtilTest : public BrowserWithTestWindowTest {
     }
   }
 
+  void TestEnableSyncPromoWithExistingWebOnlyAccount() {
+    CoreAccountId account_id =
+        GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
+            GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+            signin_metrics::AccessPoint::kUnknown,
+            signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+
+    // Verify that the primary account is not set before.
+    ASSERT_FALSE(
+        GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+    ExpectTurnSyncOn(
+        access_point_, signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+        account_id, TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+        /*is_sync_promo=*/true);
+    EnableSync(
+        GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
+        /*is_default_promo_account=*/true);
+
+    // Verify that the primary account has been set.
+    EXPECT_TRUE(
+        GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  }
+
   signin_metrics::AccessPoint access_point_ =
       signin_metrics::AccessPoint::kBookmarkBubble;
 
@@ -797,28 +821,20 @@ TEST_F(SigninUiUtilTest, EnableSyncWithExistingWebOnlyAccount) {
   }
 }
 
+TEST_F(SigninUiUtilTest,
+       EnableSyncPromoWithExistingWebOnlyAccountAvatarBubble) {
+  access_point_ = signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
+
+  TestEnableSyncPromoWithExistingWebOnlyAccount();
+}
+
 // Checks that sync is treated as a promo for kSettings.
-TEST_F(SigninUiUtilTest, EnableSyncPromoWithExistingWebOnlyAccount) {
+TEST_F(SigninUiUtilTest, EnableSyncPromoWithExistingWebOnlyAccountSettings) {
   base::test::ScopedFeatureList feature_list{
       switches::kImprovedSettingsUIOnDesktop};
   access_point_ = signin_metrics::AccessPoint::kSettings;
 
-  CoreAccountId account_id =
-      GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-          kMainGaiaID, kMainEmail, "refresh_token", false,
-          signin_metrics::AccessPoint::kUnknown,
-          signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-
-  ExpectTurnSyncOn(signin_metrics::AccessPoint::kSettings,
-                   signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-                   account_id,
-                   // The account should be kept when cancelling.
-                   TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                   // The button should be "No, thanks", and not "Cancel".
-                   /*is_sync_promo=*/true);
-  EnableSync(
-      GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
-      /*is_default_promo_account=*/true);
+  TestEnableSyncPromoWithExistingWebOnlyAccount();
 }
 
 TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {

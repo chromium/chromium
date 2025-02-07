@@ -101,7 +101,14 @@ bool TurnSyncOnHelperDelegateImpl::IsProfileCreationRequiredByPolicy() const {
 }
 
 void TurnSyncOnHelperDelegateImpl::ShowLoginError(const SigninUIError& error) {
-  DCHECK(!error.IsOk());
+  CHECK(!error.IsOk());
+  if (is_sync_promo_ &&
+      error.type() ==
+          SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
+    // Do not show Sync-related errors if it's a Sync promo.
+    return;
+  }
+
   TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(error, browser_);
 }
 
@@ -140,6 +147,12 @@ void TurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
   browser_ = EnsureBrowser(browser_, profile_);
   browser_->signin_view_controller()->ShowModalSyncConfirmationDialog(
       /*is_signin_intercept=*/false, is_sync_promo_);
+}
+
+bool TurnSyncOnHelperDelegateImpl::
+    ShouldAbortBeforeShowSyncDisabledConfirmation() {
+  // Do not show the sync disabled confirmation if it's a Sync promo.
+  return is_sync_promo_;
 }
 
 void TurnSyncOnHelperDelegateImpl::ShowSyncDisabledConfirmation(
