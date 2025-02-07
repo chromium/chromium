@@ -246,6 +246,8 @@ blink_core_sources_layout = [
   "inline/inline_cursor.h",
   "inline/inline_item.cc",
   "inline/inline_item.h",
+  "inline/inline_item_ptr.cc",
+  "inline/inline_item_ptr.h",
   "inline/inline_item_result.cc",
   "inline/inline_item_result.h",
   "inline/inline_item_result_ruby_column.h",

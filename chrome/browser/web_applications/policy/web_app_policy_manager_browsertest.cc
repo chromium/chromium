@@ -271,8 +271,6 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
 
 // Scenario: A policy installed web app is replacing an existing app causing it
 // to be uninstalled after the policy app is installed.
-// This test does not yet work in Lacros because
-// AppServiceProxyLacros::UninstallSilently() has not yet been implemented.
 IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
   // Install old app to replace.
   auto install_info = WebAppInstallInfo::CreateWithStartUrlForTesting(

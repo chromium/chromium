@@ -38,10 +38,12 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "components/os_crypt/async/browser/secret_portal_key_provider.h"
 #include "components/os_crypt/async/browser/test_secret_portal.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 
 namespace {
@@ -213,6 +215,12 @@ class CookieEncryptionProviderBrowserTest
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+    command_line_ = std::make_unique<base::test::ScopedCommandLine>();
+    command_line_->GetProcessCommandLine()->AppendSwitchASCII(
+        password_manager::kPasswordStore, "");
+#endif
+
     InProcessBrowserTest::SetUp();
   }
 
@@ -281,6 +289,10 @@ class CookieEncryptionProviderBrowserTest
         break;
     }
 
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+    command_line_.reset();
+#endif
+
     InProcessBrowserTest::TearDown();
   }
 
@@ -297,6 +309,7 @@ class CookieEncryptionProviderBrowserTest
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
   std::unique_ptr<os_crypt_async::TestSecretPortal> test_secret_portal_;
+  std::unique_ptr<base::test::ScopedCommandLine> command_line_;
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 };
 

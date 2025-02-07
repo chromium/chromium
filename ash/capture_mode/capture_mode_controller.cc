@@ -2085,7 +2085,7 @@ void CaptureModeController::MaybeShowScannerDisclaimerOnSunfishStartup(
       // Below conditions imply scanner is disabled in some way.
       // Hence we should skip showing the disclaimer.
       !Shell::Get()->scanner_controller() ||
-      !Shell::Get()->scanner_controller()->CanShowConsentScreenEntryPoints()) {
+      !Shell::Get()->scanner_controller()->CanShowUi()) {
     if (!features::IsSunfishFeatureEnabled() && IsActive()) {
       // Should stop because if both scanner and sunfish are disabled, then
       // there is nothing you can do in the session.

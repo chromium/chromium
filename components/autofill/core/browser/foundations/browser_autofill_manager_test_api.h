@@ -64,13 +64,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     return *manager_->amount_extraction_manager_;
   }
 
-  void OnCreditCardFetched(const FormData& form,
-                           const FieldGlobalId& field_id,
-                           AutofillTriggerSource trigger_source,
-                           const CreditCard& credit_card) {
-    manager_->OnCreditCardFetched(form, field_id, trigger_source, credit_card);
-  }
-
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) {
     manager_->OnFormProcessed(form, form_structure);
@@ -85,16 +78,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
       std::optional<bool> consider_form_as_secure_for_testing) {
     manager_->consider_form_as_secure_for_testing_ =
         consider_form_as_secure_for_testing;
-  }
-
-  void FillCreditCardFormWithoutAuthentication(
-      const FormData& form,
-      FieldGlobalId field_id,
-      const CreditCard& credit_card,
-      AutofillTriggerSource trigger_source) {
-    manager_->FillOrPreviewCreditCardFormImpl(
-        /*require_card_fetching=*/false, mojom::ActionPersistence::kFill, form,
-        field_id, credit_card, trigger_source);
   }
 
   FormFiller& form_filler() { return *manager_->form_filler_; }

@@ -57,6 +57,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/test/button_test_api.h"

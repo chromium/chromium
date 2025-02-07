@@ -81,18 +81,11 @@ class FileDescriptorProto extends \Google\Protobuf\Internal\Message
     protected $source_code_info = null;
     /**
      * The syntax of the proto file.
-     * The supported values are "proto2", "proto3", and "editions".
-     * If `edition` is present, this value must be "editions".
+     * The supported values are "proto2" and "proto3".
      *
      * Generated from protobuf field <code>optional string syntax = 12;</code>
      */
     protected $syntax = null;
-    /**
-     * The edition of the proto file, which is an opaque string.
-     *
-     * Generated from protobuf field <code>optional string edition = 13;</code>
-     */
-    protected $edition = null;
 
     /**
      * Constructor.
@@ -124,10 +117,7 @@ class FileDescriptorProto extends \Google\Protobuf\Internal\Message
      *           development tools.
      *     @type string $syntax
      *           The syntax of the proto file.
-     *           The supported values are "proto2", "proto3", and "editions".
-     *           If `edition` is present, this value must be "editions".
-     *     @type string $edition
-     *           The edition of the proto file, which is an opaque string.
+     *           The supported values are "proto2" and "proto3".
      * }
      */
     public function __construct($data = NULL) {
@@ -455,8 +445,7 @@ class FileDescriptorProto extends \Google\Protobuf\Internal\Message
 
     /**
      * The syntax of the proto file.
-     * The supported values are "proto2", "proto3", and "editions".
-     * If `edition` is present, this value must be "editions".
+     * The supported values are "proto2" and "proto3".
      *
      * Generated from protobuf field <code>optional string syntax = 12;</code>
      * @return string
@@ -478,8 +467,7 @@ class FileDescriptorProto extends \Google\Protobuf\Internal\Message
 
     /**
      * The syntax of the proto file.
-     * The supported values are "proto2", "proto3", and "editions".
-     * If `edition` is present, this value must be "editions".
+     * The supported values are "proto2" and "proto3".
      *
      * Generated from protobuf field <code>optional string syntax = 12;</code>
      * @param string $var
@@ -489,42 +477,6 @@ class FileDescriptorProto extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->syntax = $var;
-
-        return $this;
-    }
-
-    /**
-     * The edition of the proto file, which is an opaque string.
-     *
-     * Generated from protobuf field <code>optional string edition = 13;</code>
-     * @return string
-     */
-    public function getEdition()
-    {
-        return isset($this->edition) ? $this->edition : '';
-    }
-
-    public function hasEdition()
-    {
-        return isset($this->edition);
-    }
-
-    public function clearEdition()
-    {
-        unset($this->edition);
-    }
-
-    /**
-     * The edition of the proto file, which is an opaque string.
-     *
-     * Generated from protobuf field <code>optional string edition = 13;</code>
-     * @param string $var
-     * @return $this
-     */
-    public function setEdition($var)
-    {
-        GPBUtil::checkString($var, True);
-        $this->edition = $var;
 
         return $this;
     }

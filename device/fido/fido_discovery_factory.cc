@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/cable/fido_cable_discovery.h"

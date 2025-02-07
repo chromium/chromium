@@ -2117,12 +2117,8 @@ void Converter::WriteFields(const Message& msg,
           break;
         }
         case FieldDescriptor::CPPTYPE_MESSAGE: {
-// TODO(crbug.com/393557657): update this.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
           Visit(reflection->GetRepeatedPtrField<google::protobuf::Message>(
               msg, field_descriptor));
-#pragma clang diagnostic pop
           break;
         }
         default: {

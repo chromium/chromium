@@ -604,7 +604,10 @@ template("proto_library") {
       configs += [ "//build/config/sanitizers:not_fuzzed" ]
     }
 
-    public_configs = [ "$_this_dir:using_proto" ]
+    public_configs = [
+      "$_this_dir:using_proto",
+      "$_this_dir:allow_deprecated_proto_fields",
+    ]
     public_deps = []
 
     if (generate_cc || generate_with_plugin) {

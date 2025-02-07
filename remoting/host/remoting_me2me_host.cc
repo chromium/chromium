@@ -4,22 +4,22 @@
 //
 // This file implements a standalone host process for Me2Me.
 
-#include <stddef.h>
-
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,10 +31,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/policy_constants.h"
@@ -44,19 +44,11 @@
 #include "ipc/ipc_listener.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/platform/platform_channel.h"
-#include "mojo/public/cpp/system/invitation.h"
-#include "mojo/public/cpp/system/message_pipe.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/url_util.h"
-#include "net/socket/client_socket_factory.h"
 #include "remoting/base/authentication_method.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/cloud_session_authz_service_client_factory.h"
-#include "remoting/base/constants.h"
 #include "remoting/base/corp_session_authz_service_client_factory.h"
 #include "remoting/base/cpu_utils.h"
 #include "remoting/base/errors.h"
@@ -67,38 +59,34 @@
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
 #include "remoting/base/rsa_key_pair.h"
-#include "remoting/base/service_urls.h"
 #include "remoting/base/session_policies.h"
-#include "remoting/base/util.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/base/username.h"
+#include "remoting/host/basic_desktop_environment.h"
 #include "remoting/host/branding.h"
 #include "remoting/host/chromoting_host.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/cloud_heartbeat_service_client.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/config_watcher.h"
-#include "remoting/host/corp_heartbeat_service_client.h"
 #include "remoting/host/corp_host_status_logger.h"
 #include "remoting/host/crash_process.h"
+#include "remoting/host/create_desktop_interaction_strategy_factory.h"
 #include "remoting/host/desktop_environment.h"
-#include "remoting/host/desktop_session_connector.h"
 #include "remoting/host/ftl_echo_message_listener.h"
 #include "remoting/host/ftl_host_change_notification_listener.h"
 #include "remoting/host/ftl_signaling_connector.h"
 #include "remoting/host/heartbeat_sender.h"
+#include "remoting/host/heartbeat_service_client.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/host_event_logger.h"
 #include "remoting/host/host_power_save_blocker.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/ipc_desktop_environment.h"
-#include "remoting/host/ipc_host_event_logger.h"
 #include "remoting/host/me2me_desktop_environment.h"
 #include "remoting/host/me2me_heartbeat_service_client.h"
-#include "remoting/host/mojom/agent_process_broker.mojom.h"
-#include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate.h"
@@ -109,23 +97,23 @@
 #include "remoting/host/session_policies_from_dict.h"
 #include "remoting/host/shutdown_watchdog.h"
 #include "remoting/host/test_echo_extension.h"
-#include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/zombie_host_detector.h"
 #include "remoting/protocol/authenticator.h"
-#include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/ice_config_fetcher_cloud.h"
-#include "remoting/protocol/ice_config_fetcher_corp.h"
 #include "remoting/protocol/ice_config_fetcher_default.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 #include "remoting/protocol/pairing_registry.h"
+#include "remoting/protocol/session_config.h"
+#include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/ftl_host_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
+#include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_id_util.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/rtc_base/event_tracer.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -133,7 +121,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "base/file_descriptor_posix.h"
 #include "remoting/host/pam_authorization_factory_posix.h"
 #include "remoting/host/posix/signal_handler.h"
 #endif  // BUILDFLAG(IS_POSIX)
@@ -148,10 +135,9 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if defined(REMOTING_USE_X11)
 #include <gtk/gtk.h>
-#endif  // defined(REMOTING_USE_X11)
 
-#if defined(REMOTING_USE_X11)
 #include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xlib_support.h"
 #endif  // defined(REMOTING_USE_X11)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -162,10 +148,6 @@
 #include "remoting/host/linux/certificate_watcher.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_LINUX)
-#include "remoting/host/host_utmp_logger.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include <commctrl.h>
 
@@ -173,13 +155,19 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "remoting/host/pairing_registry_delegate_win.h"
-#include "remoting/host/win/session_desktop_environment.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
+#include "remoting/host/host_utmp_logger.h"
 #include "remoting/host/linux/wayland_manager.h"
 #include "remoting/host/linux/wayland_utils.h"
 #endif  // BUILDFLAG(IS_LINUX)
+
+#if defined(REMOTING_MULTI_PROCESS)
+#include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/system/invitation.h"
+#include "remoting/host/ipc_host_event_logger.h"
+#endif  // defined(REMOTING_MULTI_PROCESS)
 
 using remoting::protocol::PairingRegistry;
 
@@ -1089,11 +1077,13 @@ void HostProcess::StartOnUiThread() {
           context_->network_task_runner(), std::move(remote));
   desktop_session_connector_ = desktop_environment_factory;
 #else   // !defined(REMOTING_MULTI_PROCESS)
-  BasicDesktopEnvironmentFactory* desktop_environment_factory =
-      new Me2MeDesktopEnvironmentFactory(context_->network_task_runner(),
-                                         context_->video_capture_task_runner(),
-                                         context_->input_task_runner(),
-                                         context_->ui_task_runner());
+  Me2MeDesktopEnvironmentFactory* desktop_environment_factory =
+      new Me2MeDesktopEnvironmentFactory(
+          context_->network_task_runner(), context_->ui_task_runner(),
+          CreateDesktopInteractionStrategyFactory(
+              context_->network_task_runner(), context_->ui_task_runner(),
+              context_->video_capture_task_runner(),
+              context_->input_task_runner()));
 #endif  // !defined(REMOTING_MULTI_PROCESS)
 
   desktop_environment_factory_.reset(desktop_environment_factory);

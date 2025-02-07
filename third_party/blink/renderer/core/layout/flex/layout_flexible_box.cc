@@ -5,12 +5,11 @@
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
-#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
@@ -88,25 +87,19 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
                                        const ComputedStyle& style) const {
   const auto* select = DynamicTo<HTMLSelectElement>(GetNode());
   if (select && select->UsesMenuList()) [[unlikely]] {
-    if (select->IsAppearanceBaseButton(
-            HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle)) {
+    if (select->IsAppearanceBaseButton()) {
       CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-
-      // we want to include elements which are descendants of the SlottedButton,
-      // and include ::before/::after/::picker-icon on select.
-      // we want to exclude nodes which are being slotted into the select's
-      // <slot id=select-options>.
-      Node* child = object->GetNode();
-      if (child && !child->IsPseudoElement()) {
-        if (auto* slot = child->AssignedSlot()) {
-          if (slot->GetIdAttribute() == shadow_element_names::kSelectOptions) {
-            return false;
-          }
-        }
+      if (IsA<HTMLOptionElement>(object->GetNode()) ||
+          IsA<HTMLOptGroupElement>(object->GetNode()) ||
+          IsA<HTMLHRElement>(object->GetNode())) {
+        // TODO(crbug.com/1511354): Remove this when <option>s are slotted into
+        // the UA <datalist>, which will be hidden by default as a popover.
+        return false;
       }
       // For appearance:base-select <select>, we want to render all children.
       // However, the InnerElement is only used for rendering in
       // appearance:auto, so don't include that one.
+      Node* child = object->GetNode();
       if (child == &select->InnerElement() && select->SlottedButton()) {
         // If the author doesn't provide a button, then we still want to display
         // the InnerElement.

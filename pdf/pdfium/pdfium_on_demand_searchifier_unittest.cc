@@ -36,7 +36,7 @@ constexpr base::TimeDelta kOcrDelay = base::Milliseconds(100);
 
 class SearchifierTestClient : public TestClient {
  public:
-  explicit SearchifierTestClient() = default;
+  SearchifierTestClient() = default;
   SearchifierTestClient(const SearchifierTestClient&) = delete;
   SearchifierTestClient& operator=(const SearchifierTestClient&) = delete;
   ~SearchifierTestClient() override = default;
@@ -380,9 +380,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   // Fetch `page3_info` again.
   page3_info = page3.GetTextRunInfo(0);
   ASSERT_TRUE(page3_info.has_value());
-  // TODO(crbug.com/376304020): Figure out how to properly track Searchified
-  // text, so this returns true.
-  EXPECT_FALSE(page3_info.value().is_searchified);
+  EXPECT_TRUE(page3_info.value().is_searchified);
 }
 
 TEST_P(PDFiumOnDemandSearchifierTest, OcrCancellation) {

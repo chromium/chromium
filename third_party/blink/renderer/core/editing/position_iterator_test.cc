@@ -931,19 +931,9 @@ TEST_F(PositionIteratorTest, IncrementFromSelectElementOffset1) {
   EXPECT_THAT(
       ScanForward(PositionInFlatTree(select_element, 1)),
       ElementsAre("---- SELECT@1 SELECT@offsetInAnchor[1] SELECT@beforeAnchor",
-                  "-S-- SLOT id=\"select-options\" SLOT "
-                  "id=\"select-options\"@offsetInAnchor[0]",
-                  "-S-- OPTION OPTION@offsetInAnchor[0]",
-                  "-S-E SPAN ::-internal-option-label-container SPAN "
-                  "::-internal-option-label-container@beforeAnchor SPAN "
-                  "::-internal-option-label-container@offsetInAnchor[0]",
-                  "---- OPTION OPTION@offsetInAnchor[1]",
-                  "-S-E SLOT ::-internal-option-slot SLOT "
-                  "::-internal-option-slot@beforeAnchor SLOT "
-                  "::-internal-option-slot@offsetInAnchor[0]",
-                  "---E OPTION OPTION@afterChildren",
-                  "---E SLOT id=\"select-options\" SLOT "
-                  "id=\"select-options\"@afterChildren"));
+                  "-S-E SLOT id=\"select-options\" SLOT "
+                  "id=\"select-options\"@beforeAnchor SLOT "
+                  "id=\"select-options\"@offsetInAnchor[0]"));
 }
 
 TEST_F(PositionIteratorTest, IncrementWithCollapsedSpace) {

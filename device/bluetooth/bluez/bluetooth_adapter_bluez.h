@@ -20,7 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -204,13 +204,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       override;
 
   std::vector<BluetoothRole> GetSupportedRoles() override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Set the adapter name to one chosen from the system information. Only Ash
-  // needs to do this.
+  // Set the adapter name to one chosen from the system information.
   void SetStandardChromeOSAdapterName() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // These functions are specifically for use with ARC. They have no need to
   // exist for other platforms, hence we're putting them directly in the BlueZ

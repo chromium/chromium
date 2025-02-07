@@ -134,8 +134,6 @@ class CrosapiAsh : public mojom::Crosapi {
   // crosapi::mojom::Crosapi:
   void BindAccountManager(
       mojo::PendingReceiver<mojom::AccountManager> receiver) override;
-  void BindAppServiceProxy(
-      mojo::PendingReceiver<mojom::AppServiceProxy> receiver) override;
   void BindArc(mojo::PendingReceiver<mojom::Arc> receiver) override;
   void BindAudioService(
       mojo::PendingReceiver<mojom::AudioService> receiver) override;

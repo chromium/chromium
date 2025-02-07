@@ -24,6 +24,7 @@
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace apps {
 

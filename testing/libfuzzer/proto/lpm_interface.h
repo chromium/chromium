@@ -10,4 +10,7 @@
 
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"  // IWYU pragma: export
 
+// Silence logging from the protobuf library.
+protobuf_mutator::protobuf::LogSilencer log_silencer;
+
 #endif  // TESTING_LIBFUZZER_PROTO_LPM_INTERFACE_H_

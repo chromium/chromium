@@ -49,7 +49,6 @@
 #include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "base/containers/contains.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/skbitmap_operations.h"
 #endif
@@ -549,7 +548,9 @@ std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
 
   AccessibilityTextRunInfo info;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  info.is_searchified = IsCharacterAddedBySearchify(start_char_index);
+  // This assumes all text on the page are either from the PDF itself, or from
+  // Searchify.
+  info.is_searchified = has_searchify_added_text_.value_or(false);
 #endif
 
   int actual_start_char_index = GetFirstNonUnicodeWhiteSpaceCharIndex(
@@ -924,17 +925,16 @@ SkBitmap PDFiumPage::GetImageForOcr(int page_object_index) {
   return SkBitmapOperations::Rotate(bitmap, rotation);
 }
 
-void PDFiumPage::OnSearchifyGotOcrResult(
-    base::span<FPDF_PAGEOBJECT> text_objects) {
-  got_searchify_results_ = true;
-  for (FPDF_PAGEOBJECT text_object : text_objects) {
-    bool inserted = searchify_added_text_.insert(text_object).second;
-    CHECK(inserted);
+void PDFiumPage::OnSearchifyGotOcrResult(bool added_text) {
+  CHECK(!has_searchify_added_text_.has_value());
+  has_searchify_added_text_ = added_text;
+  if (added_text) {
+    engine_->OnHasSearchifyText();
   }
 }
 
 bool PDFiumPage::IsPageSearchified() const {
-  return got_searchify_results_;
+  return has_searchify_added_text_.has_value();
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -1882,13 +1882,6 @@ Thumbnail PDFiumPage::CreateThumbnail(float device_pixel_ratio) {
                       base::saturated_cast<int>(FPDF_GetPageHeightF(page)));
   return Thumbnail(page_size, device_pixel_ratio);
 }
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-bool PDFiumPage::IsCharacterAddedBySearchify(int char_index) {
-  FPDF_PAGEOBJECT object = FPDFText_GetTextObject(GetTextPage(), char_index);
-  return base::Contains(searchify_added_text_, object);
-}
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void PDFiumPage::MarkAvailable() {
   available_ = true;

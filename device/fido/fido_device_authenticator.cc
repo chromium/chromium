@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/cbor/values.h"
 #include "device/fido/appid_exclude_probe_task.h"
 #include "device/fido/authenticator_get_assertion_response.h"

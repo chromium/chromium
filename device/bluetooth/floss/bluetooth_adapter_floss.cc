@@ -29,13 +29,10 @@
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/devicetype.h"
 #include "device/bluetooth/chromeos/bluetooth_connection_logger.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/devicetype.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace floss {
 
@@ -724,15 +721,13 @@ void BluetoothAdapterFloss::AdapterEnabledChanged(int adapter, bool enabled) {
 void BluetoothAdapterFloss::OnAdapterClientsReady(bool is_newly_present) {
   AddAdapterObservers();
   PopulateInitialDevices();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // No need to do this in Lacros because Ash would be around, and would have
-  // done this already.
+#if BUILDFLAG(IS_CHROMEOS)
   SetStandardChromeOSAdapterName();
   if (base::FeatureList::IsEnabled(
           chromeos::bluetooth::features::kBluetoothFlossTelephony)) {
     ConfigureBluetoothTelephony(true);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (is_newly_present) {
     PresentChanged(true);
@@ -1570,9 +1565,7 @@ BluetoothAdapterFloss::GetSupportedRoles() {
 
   return roles;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void BluetoothAdapterFloss::SetStandardChromeOSAdapterName() {
   if (!IsPresent()) {
     BLUETOOTH_LOG(ERROR)
@@ -1589,7 +1582,7 @@ void BluetoothAdapterFloss::ConfigureBluetoothTelephony(bool enabled) {
   FlossDBusManager::Get()->GetBluetoothTelephonyClient()->SetPhoneOpsEnabled(
       base::DoNothing(), enabled);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
                                               uint8_t scanner_id,

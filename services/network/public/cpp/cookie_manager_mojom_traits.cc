@@ -673,7 +673,7 @@ network::mojom::AncestorChainBit EnumTraits<
 
 namespace {
 
-void extractCrashValueFromPartitionKey(
+void ExtractCrashValueFromPartitionKey(
     network::mojom::CookiePartitionKeyDataView partition_key,
     std::string& crash_value) {
   mojo_base::mojom::UnguessableTokenDataView nonce_data_view;
@@ -710,7 +710,7 @@ void extractCrashValueFromPartitionKey(
   if (host_data_view.is_null()) {
     crash_value.append("no_host");
   } else {
-    crash_value.append(host_data_view.storage(), host_data_view.size());
+    crash_value.append(host_data_view.value());
   }
 
   mojo::StringDataView scheme_data_view;
@@ -719,7 +719,7 @@ void extractCrashValueFromPartitionKey(
   if (scheme_data_view.is_null()) {
     crash_value.append("no_scheme");
   } else {
-    crash_value.append(scheme_data_view.storage(), scheme_data_view.size());
+    crash_value.append(scheme_data_view.value());
   }
 
   mojo_base::mojom::UnguessableTokenDataView nonce_if_opaque_data_view;
@@ -754,7 +754,7 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
     // TODO(crbug.com/393088777): Remove all debugging helpers once the crashes
     // have been diagnosed.
     std::string crash_value;
-    extractCrashValueFromPartitionKey(partition_key, crash_value);
+    ExtractCrashValueFromPartitionKey(partition_key, crash_value);
     SCOPED_CRASH_KEY_STRING1024("CookieFilterDeserialization", "site",
                                 crash_value);
     base::debug::Alias(&partition_key);
@@ -767,7 +767,7 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
     // TODO(crbug.com/393088777): Remove all debugging helpers once the crashes
     // have been diagnosed.
     std::string crash_value;
-    extractCrashValueFromPartitionKey(partition_key, crash_value);
+    ExtractCrashValueFromPartitionKey(partition_key, crash_value);
     SCOPED_CRASH_KEY_STRING1024("CookieFilterDeserialization", "nonce",
                                 crash_value);
     base::debug::Alias(&partition_key);

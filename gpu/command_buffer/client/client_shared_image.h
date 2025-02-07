@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_CLIENT_SHARED_IMAGE_H_
 #define GPU_COMMAND_BUFFER_CLIENT_CLIENT_SHARED_IMAGE_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
@@ -363,6 +365,14 @@ class GPU_EXPORT ClientSharedImage
 struct GPU_EXPORT ExportedSharedImage {
  public:
   ExportedSharedImage();
+  ~ExportedSharedImage();
+
+  ExportedSharedImage(const ExportedSharedImage& other) = delete;
+  ExportedSharedImage& operator=(const ExportedSharedImage& other) = delete;
+  ExportedSharedImage(ExportedSharedImage&& other);
+  ExportedSharedImage& operator=(ExportedSharedImage&& other);
+
+  ExportedSharedImage Clone() const;
 
  private:
   friend class ClientSharedImage;

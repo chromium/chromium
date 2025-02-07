@@ -324,7 +324,6 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
-#include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/file_manager/cloud_upload_prefs_watcher.h"
 #include "chrome/browser/ash/file_manager/cloud_upload_prompt_prefs_handler.h"
@@ -663,7 +662,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   apps::DeviceInfoManagerFactory::GetInstance();
-  apps::SubscriberCrosapiFactory::GetInstance();
 #endif
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   AppSessionServiceFactory::GetInstance();

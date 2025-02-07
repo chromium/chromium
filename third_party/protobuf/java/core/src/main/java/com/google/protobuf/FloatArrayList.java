@@ -1,14 +1,36 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
+// https://developers.google.com/protocol-buffers/
 //
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file or at
-// https://developers.google.com/open-source/licenses/bsd
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//     * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package com.google.protobuf;
 
 import static com.google.protobuf.Internal.checkNotNull;
-import static java.lang.Math.max;
 
 import com.google.protobuf.Internal.FloatList;
 import java.util.Arrays;
@@ -23,9 +45,10 @@ import java.util.RandomAccess;
 final class FloatArrayList extends AbstractProtobufList<Float>
     implements FloatList, RandomAccess, PrimitiveNonBoxingCollection {
 
-  private static final float[] EMPTY_ARRAY = new float[0];
-
-  private static final FloatArrayList EMPTY_LIST = new FloatArrayList(EMPTY_ARRAY, 0, false);
+  private static final FloatArrayList EMPTY_LIST = new FloatArrayList(new float[0], 0);
+  static {
+    EMPTY_LIST.makeImmutable();
+  }
 
   public static FloatArrayList emptyList() {
     return EMPTY_LIST;
@@ -42,15 +65,14 @@ final class FloatArrayList extends AbstractProtobufList<Float>
 
   /** Constructs a new mutable {@code FloatArrayList} with default capacity. */
   FloatArrayList() {
-    this(EMPTY_ARRAY, 0, true);
+    this(new float[DEFAULT_CAPACITY], 0);
   }
 
   /**
    * Constructs a new mutable {@code FloatArrayList} containing the same elements as {@code other}.
    */
-  private FloatArrayList(float[] other, int size, boolean isMutable) {
-    super(isMutable);
-    this.array = other;
+  private FloatArrayList(float[] other, int size) {
+    array = other;
     this.size = size;
   }
 
@@ -103,8 +125,7 @@ final class FloatArrayList extends AbstractProtobufList<Float>
     if (capacity < size) {
       throw new IllegalArgumentException();
     }
-    float[] newArray = capacity == 0 ? EMPTY_ARRAY : Arrays.copyOf(array, capacity);
-    return new FloatArrayList(newArray, size, true);
+    return new FloatArrayList(Arrays.copyOf(array, capacity), size);
   }
 
   @Override
@@ -173,7 +194,8 @@ final class FloatArrayList extends AbstractProtobufList<Float>
   public void addFloat(float element) {
     ensureIsMutable();
     if (size == array.length) {
-      int length = growSize(array.length);
+      // Resize to 1.5x the size
+      int length = ((size * 3) / 2) + 1;
       float[] newArray = new float[length];
 
       System.arraycopy(array, 0, newArray, 0, size);
@@ -194,7 +216,8 @@ final class FloatArrayList extends AbstractProtobufList<Float>
       // Shift everything over to make room
       System.arraycopy(array, index, array, index + 1, size - index);
     } else {
-      int length = growSize(array.length);
+      // Resize to 1.5x the size
+      int length = ((size * 3) / 2) + 1;
       float[] newArray = new float[length];
 
       // Copy the first part directly
@@ -254,30 +277,6 @@ final class FloatArrayList extends AbstractProtobufList<Float>
     size--;
     modCount++;
     return value;
-  }
-
-  /** Ensures the backing array can fit at least minCapacity elements. */
-  void ensureCapacity(int minCapacity) {
-    if (minCapacity <= array.length) {
-      return;
-    }
-    if (array.length == 0) {
-      array = new float[max(minCapacity, DEFAULT_CAPACITY)];
-      return;
-    }
-    // To avoid quadratic copying when calling .addAllFoo(List) in a loop, we must not size to
-    // exactly the requested capacity, but must exponentially grow instead. This is similar
-    // behaviour to ArrayList.
-    int n = array.length;
-    while (n < minCapacity) {
-      n = growSize(n);
-    }
-    array = Arrays.copyOf(array, n);
-  }
-
-  private static int growSize(int previousSize) {
-    // Resize to 1.5x the size, rounding up to DEFAULT_CAPACITY.
-    return max(((previousSize * 3) / 2) + 1, DEFAULT_CAPACITY);
   }
 
   /**

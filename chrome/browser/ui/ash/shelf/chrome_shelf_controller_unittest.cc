@@ -212,6 +212,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/views/widget/widget.h"

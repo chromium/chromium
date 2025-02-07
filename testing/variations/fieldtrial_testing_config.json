@@ -3700,8 +3700,7 @@
                         "holdback": "false"
                     },
                     "enable_features": [
-                        "CCTNavigationalPrefetch",
-                        "PrefetchBrowserInitiatedTriggers"
+                        "CCTNavigationalPrefetch"
                     ]
                 },
                 {
@@ -3710,8 +3709,7 @@
                         "holdback": "true"
                     },
                     "enable_features": [
-                        "CCTNavigationalPrefetch",
-                        "PrefetchBrowserInitiatedTriggers"
+                        "CCTNavigationalPrefetch"
                     ]
                 }
             ]

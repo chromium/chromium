@@ -20,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_info.h"  //nogncheck
 #include "gpu/config/vulkan_info.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -32,7 +31,7 @@
 #include "build/android_buildflags.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"  //nogncheck
 #endif
@@ -728,7 +727,7 @@ void PopulateVkDrmFormatsAndModifiers(
     VulkanDeviceQueue* device_queue,
     base::flat_map<uint32_t, std::vector<uint64_t>>&
         drm_formats_and_modifiers) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); i++) {
     gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(i);
     VkFormat vk_format = gfx::ToVkFormat(buffer_format);

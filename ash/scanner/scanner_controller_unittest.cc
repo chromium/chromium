@@ -204,8 +204,7 @@ TEST_F(ScannerControllerTest, CanShowFeatureSettingsToggleIfNoChecksFail) {
   EXPECT_TRUE(scanner_controller->CanShowFeatureSettingsToggle());
 }
 
-TEST_F(ScannerControllerTest,
-       CanShowConsentScreenEntryPointsIfConsentNotAcceptedOnly) {
+TEST_F(ScannerControllerTest, CanShowUiIfConsentNotAcceptedOnly) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
@@ -213,7 +212,7 @@ TEST_F(ScannerControllerTest,
       .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
           specialized_features::FeatureAccessFailure::kConsentNotAccepted}));
 
-  EXPECT_TRUE(scanner_controller->CanShowConsentScreenEntryPoints());
+  EXPECT_TRUE(scanner_controller->CanShowUi());
 }
 
 TEST_F(ScannerControllerTest,

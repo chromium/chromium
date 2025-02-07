@@ -13,17 +13,22 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/session_policies.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/chromoting_host_context.h"
+#include "remoting/host/create_desktop_interaction_strategy_factory.h"
 #include "remoting/host/host_extension.h"
+#include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/session_config.h"
+#include "remoting/test/fake_connection_event_logger.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace remoting {
 namespace test {
@@ -48,9 +53,12 @@ It2MeStandaloneHost::It2MeStandaloneHost()
           run_loop_.QuitClosure()))),
       main_task_runner_(context_->file_task_runner()),
       factory_(main_task_runner_,
-               context_->video_capture_task_runner(),
-               context_->input_task_runner(),
-               context_->ui_task_runner()),
+               context_->ui_task_runner(),
+               CreateDesktopInteractionStrategyFactory(
+                   main_task_runner_,
+                   context_->ui_task_runner(),
+                   context_->video_capture_task_runner(),
+                   context_->input_task_runner())),
       connection_(base::WrapUnique(new testing::NiceMock<MockSession>())),
       session_jid_(kSessionJid),
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

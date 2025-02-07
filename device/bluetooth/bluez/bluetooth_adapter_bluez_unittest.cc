@@ -60,7 +60,7 @@ class BluetoothAdapterBlueZTest : public testing::Test {
   scoped_refptr<BluetoothAdapterBlueZ> adapter_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(BluetoothAdapterBlueZTest, UpdateName) {
   std::string default_name = adapter_->GetName();
   std::string test_name = "Test Name";
@@ -75,7 +75,7 @@ TEST_F(BluetoothAdapterBlueZTest, UpdateName) {
   adapter_->SetStandardChromeOSAdapterName();
   EXPECT_EQ(default_name, adapter_->GetName());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(BluetoothAdapterBlueZTest, SetDiscoverable) {
   EXPECT_FALSE(adapter_->IsDiscoverable());

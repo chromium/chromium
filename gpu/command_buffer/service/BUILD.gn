@@ -372,7 +372,6 @@ target(link_target_type, "gles2_sources") {
     ":service",
     "//base",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//components/crash/core/common",
     "//components/viz/common:shared_image_format",
     "//gpu/command_buffer/client",

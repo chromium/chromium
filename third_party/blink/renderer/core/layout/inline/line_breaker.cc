@@ -562,7 +562,7 @@ inline InlineItemResult* LineBreaker::AddItem(const InlineItem& item,
   }
   InlineItemResults* item_results = line_info->MutableResults();
   return &item_results->emplace_back(
-      &item, current_.item_index,
+      InlineItemPtr{item, ItemsData()}, current_.item_index,
       TextOffsetRange(current_.text_offset, end_offset),
       break_anywhere_if_overflow_, ShouldCreateLineBox(*item_results),
       HasUnpositionedFloats(*item_results));
@@ -2426,7 +2426,7 @@ void LineBreaker::HandleTrailingSpaces(const InlineItem& item,
   }
   DCHECK_EQ(current_.text_offset, item.EndOffset());
   const InlineItemResults& item_results = line_info->Results();
-  if (item_results.empty() || item_results.back().item != &item) {
+  if (item_results.empty() || item_results.back().item.Get() != &item) {
     // If at the end of `item` but the item hasn't been added to `line_info`,
     // add an empty text item. See `HandleEmptyText`.
     AddEmptyItem(item, line_info);
@@ -2733,11 +2733,11 @@ void LineBreaker::SplitTrailingBidiPreservedSpace(LineInfo* line_info) {
         item_result.inline_size = item_result.shape_result->SnappedWidth();
         DCHECK_LE(item_result.inline_size, prev_inline_size);
 
-        InlineItemResult spaces_result(&item, item_result.item_index,
-                                       TextOffsetRange(i, end),
-                                       item_result.break_anywhere_if_overflow,
-                                       item_result.should_create_line_box,
-                                       item_result.has_unpositioned_floats);
+        InlineItemResult spaces_result(
+            {item, ItemsData()}, item_result.item_index,
+            TextOffsetRange(i, end), item_result.break_anywhere_if_overflow,
+            item_result.should_create_line_box,
+            item_result.has_unpositioned_floats);
         spaces_result.has_only_bidi_trailing_spaces = true;
         spaces_result.shape_result =
             ShapeResultView::Create(source_shape_result, i, end);
@@ -4385,7 +4385,7 @@ const ComputedStyle& LineBreaker::ComputeCurrentStyle(
   const InlineItemResults& item_results = line_info->Results();
 
   // Use the current item if it can compute the current style.
-  const InlineItem* item = item_results[item_result_index].item;
+  const InlineItem* item = item_results[item_result_index].item.Get();
   DCHECK(item);
   if (item->Type() == InlineItem::kText ||
       item->Type() == InlineItem::kCloseTag) {
@@ -4395,7 +4395,7 @@ const ComputedStyle& LineBreaker::ComputeCurrentStyle(
 
   // Otherwise look back an item that can compute the current style.
   while (item_result_index) {
-    item = item_results[--item_result_index].item;
+    item = item_results[--item_result_index].item.Get();
     if (item->Type() == InlineItem::kText ||
         item->Type() == InlineItem::kOpenTag) {
       DCHECK(item->Style());

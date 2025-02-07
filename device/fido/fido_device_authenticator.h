@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/device_operation.h"
 #include "device/fido/fido_authenticator.h"

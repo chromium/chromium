@@ -29,8 +29,7 @@ WTF::StringUTF8Adaptor StringTraits<WTF::String>::GetUTF8(
 // static
 bool StringTraits<WTF::String>::Read(StringDataView input,
                                      WTF::String* output) {
-  WTF::String result =
-      WTF::String::FromUTF8(std::string_view(input.storage(), input.size()));
+  WTF::String result = WTF::String::FromUTF8(input.value());
   output->swap(result);
   return true;
 }

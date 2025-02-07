@@ -1,4 +1,4 @@
-// See README.md for information and build instructions.
+// See README.txt for information and build instructions.
 
 #include <ctime>
 #include <fstream>

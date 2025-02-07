@@ -1,22 +1,47 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2015 Google Inc.  All rights reserved.
+// https://developers.google.com/protocol-buffers/
 //
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file or at
-// https://developers.google.com/open-source/licenses/bsd
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//     * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
 #import "GPBArray.h"
 #import "GPBArray_PackagePrivate.h"
+
 #import "GPBTestUtilities.h"
 
 // To let the testing macros work, add some extra methods to simplify things.
 @interface GPBEnumArray (TestingTweak)
 + (instancetype)arrayWithValue:(int32_t)value;
 + (instancetype)arrayWithCapacity:(NSUInteger)count;
-- (instancetype)initWithValues:(const int32_t[])values count:(NSUInteger)count;
+- (instancetype)initWithValues:(const int32_t [])values
+                         count:(NSUInteger)count;
 @end
 
 static BOOL TestingEnum_IsValidValue(int32_t value) {
@@ -52,15 +77,15 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   return [[[self alloc] initWithValidationFunction:TestingEnum_IsValidValue
                                           capacity:count] autorelease];
 }
-- (instancetype)initWithValues:(const int32_t[])values count:(NSUInteger)count {
-  return [self initWithValidationFunction:TestingEnum_IsValidValue rawValues:values count:count];
+- (instancetype)initWithValues:(const int32_t [])values
+                         count:(NSUInteger)count {
+  return [self initWithValidationFunction:TestingEnum_IsValidValue
+                                rawValues:values
+                                    count:count];
 }
 @end
 
 #pragma mark - PDDM Macros
-
-// Disable clang-format for the macros.
-// clang-format off
 
 //%PDDM-DEFINE ARRAY_TESTS(NAME, TYPE, VAL1, VAL2, VAL3, VAL4)
 //%ARRAY_TESTS2(NAME, TYPE, VAL1, VAL2, VAL3, VAL4, )
@@ -77,11 +102,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 //%  XCTAssertNotNil(array);
 //%  XCTAssertEqual(array.count, 0U);
 //%  XCTAssertThrowsSpecificNamed([array valueAtIndex:0], NSException, NSRangeException);
-//%  [array enumerateValuesWithBlock:^(__unused TYPE value, __unused NSUInteger idx, __unused BOOL *stop) {
+//%  [array enumerateValuesWithBlock:^(TYPE value, NSUInteger idx, BOOL *stop) {
+//%    #pragma unused(value, idx, stop)
 //%    XCTFail(@"Shouldn't get here!");
 //%  }];
 //%  [array enumerateValuesWithOptions:NSEnumerationReverse
-//%                         usingBlock:^(__unused TYPE value, __unused NSUInteger idx, __unused BOOL *stop) {
+//%                         usingBlock:^(TYPE value, NSUInteger idx, BOOL *stop) {
+//%    #pragma unused(value, idx, stop)
 //%    XCTFail(@"Shouldn't get here!");
 //%  }];
 //%  [array release];
@@ -406,6 +433,7 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 //%
 //%PDDM-EXPAND ARRAY_TESTS(Int32, int32_t, 1, 2, 3, 4)
 // This block of code is generated, do not edit it directly.
+// clang-format off
 
 #pragma mark - Int32
 
@@ -419,11 +447,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   XCTAssertNotNil(array);
   XCTAssertEqual(array.count, 0U);
   XCTAssertThrowsSpecificNamed([array valueAtIndex:0], NSException, NSRangeException);
-  [array enumerateValuesWithBlock:^(__unused int32_t value, __unused NSUInteger idx, __unused BOOL *stop) {
+  [array enumerateValuesWithBlock:^(int32_t value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array enumerateValuesWithOptions:NSEnumerationReverse
-                         usingBlock:^(__unused int32_t value, __unused NSUInteger idx, __unused BOOL *stop) {
+                         usingBlock:^(int32_t value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array release];
@@ -746,8 +776,10 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 
 @end
 
+// clang-format on
 //%PDDM-EXPAND ARRAY_TESTS(UInt32, uint32_t, 11U, 12U, 13U, 14U)
 // This block of code is generated, do not edit it directly.
+// clang-format off
 
 #pragma mark - UInt32
 
@@ -761,11 +793,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   XCTAssertNotNil(array);
   XCTAssertEqual(array.count, 0U);
   XCTAssertThrowsSpecificNamed([array valueAtIndex:0], NSException, NSRangeException);
-  [array enumerateValuesWithBlock:^(__unused uint32_t value, __unused NSUInteger idx, __unused BOOL *stop) {
+  [array enumerateValuesWithBlock:^(uint32_t value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array enumerateValuesWithOptions:NSEnumerationReverse
-                         usingBlock:^(__unused uint32_t value, __unused NSUInteger idx, __unused BOOL *stop) {
+                         usingBlock:^(uint32_t value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array release];
@@ -1088,8 +1122,10 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 
 @end
 
+// clang-format on
 //%PDDM-EXPAND ARRAY_TESTS(Int64, int64_t, 31LL, 32LL, 33LL, 34LL)
 // This block of code is generated, do not edit it directly.
+// clang-format off
 
 #pragma mark - Int64
 
@@ -1103,11 +1139,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   XCTAssertNotNil(array);
   XCTAssertEqual(array.count, 0U);
   XCTAssertThrowsSpecificNamed([array valueAtIndex:0], NSException, NSRangeException);
-  [array enumerateValuesWithBlock:^(__unused int64_t value, __unused NSUInteger idx, __unused BOOL *stop) {
+  [array enumerateValuesWithBlock:^(int64_t value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array enumerateValuesWithOptions:NSEnumerationReverse
-                         usingBlock:^(__unused int64_t value, __unused NSUInteger idx, __unused BOOL *stop) {
+                         usingBlock:^(int64_t value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array release];
@@ -1430,8 +1468,10 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 
 @end
 
+// clang-format on
 //%PDDM-EXPAND ARRAY_TESTS(UInt64, uint64_t, 41ULL, 42ULL, 43ULL, 44ULL)
 // This block of code is generated, do not edit it directly.
+// clang-format off
 
 #pragma mark - UInt64
 
@@ -1445,11 +1485,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   XCTAssertNotNil(array);
   XCTAssertEqual(array.count, 0U);
   XCTAssertThrowsSpecificNamed([array valueAtIndex:0], NSException, NSRangeException);
-  [array enumerateValuesWithBlock:^(__unused uint64_t value, __unused NSUInteger idx, __unused BOOL *stop) {
+  [array enumerateValuesWithBlock:^(uint64_t value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array enumerateValuesWithOptions:NSEnumerationReverse
-                         usingBlock:^(__unused uint64_t value, __unused NSUInteger idx, __unused BOOL *stop) {
+                         usingBlock:^(uint64_t value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array release];
@@ -1772,8 +1814,10 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 
 @end
 
+// clang-format on
 //%PDDM-EXPAND ARRAY_TESTS(Float, float, 51.f, 52.f, 53.f, 54.f)
 // This block of code is generated, do not edit it directly.
+// clang-format off
 
 #pragma mark - Float
 
@@ -1787,11 +1831,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   XCTAssertNotNil(array);
   XCTAssertEqual(array.count, 0U);
   XCTAssertThrowsSpecificNamed([array valueAtIndex:0], NSException, NSRangeException);
-  [array enumerateValuesWithBlock:^(__unused float value, __unused NSUInteger idx, __unused BOOL *stop) {
+  [array enumerateValuesWithBlock:^(float value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array enumerateValuesWithOptions:NSEnumerationReverse
-                         usingBlock:^(__unused float value, __unused NSUInteger idx, __unused BOOL *stop) {
+                         usingBlock:^(float value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array release];
@@ -2114,8 +2160,10 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 
 @end
 
+// clang-format on
 //%PDDM-EXPAND ARRAY_TESTS(Double, double, 61., 62., 63., 64.)
 // This block of code is generated, do not edit it directly.
+// clang-format off
 
 #pragma mark - Double
 
@@ -2129,11 +2177,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   XCTAssertNotNil(array);
   XCTAssertEqual(array.count, 0U);
   XCTAssertThrowsSpecificNamed([array valueAtIndex:0], NSException, NSRangeException);
-  [array enumerateValuesWithBlock:^(__unused double value, __unused NSUInteger idx, __unused BOOL *stop) {
+  [array enumerateValuesWithBlock:^(double value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array enumerateValuesWithOptions:NSEnumerationReverse
-                         usingBlock:^(__unused double value, __unused NSUInteger idx, __unused BOOL *stop) {
+                         usingBlock:^(double value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array release];
@@ -2456,8 +2506,10 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 
 @end
 
+// clang-format on
 //%PDDM-EXPAND ARRAY_TESTS(Bool, BOOL, TRUE, TRUE, FALSE, FALSE)
 // This block of code is generated, do not edit it directly.
+// clang-format off
 
 #pragma mark - Bool
 
@@ -2471,11 +2523,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   XCTAssertNotNil(array);
   XCTAssertEqual(array.count, 0U);
   XCTAssertThrowsSpecificNamed([array valueAtIndex:0], NSException, NSRangeException);
-  [array enumerateValuesWithBlock:^(__unused BOOL value, __unused NSUInteger idx, __unused BOOL *stop) {
+  [array enumerateValuesWithBlock:^(BOOL value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array enumerateValuesWithOptions:NSEnumerationReverse
-                         usingBlock:^(__unused BOOL value, __unused NSUInteger idx, __unused BOOL *stop) {
+                         usingBlock:^(BOOL value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array release];
@@ -2798,8 +2852,10 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 
 @end
 
+// clang-format on
 //%PDDM-EXPAND ARRAY_TESTS2(Enum, int32_t, 71, 72, 73, 74, Raw)
 // This block of code is generated, do not edit it directly.
+// clang-format off
 
 #pragma mark - Enum
 
@@ -2813,11 +2869,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   XCTAssertNotNil(array);
   XCTAssertEqual(array.count, 0U);
   XCTAssertThrowsSpecificNamed([array valueAtIndex:0], NSException, NSRangeException);
-  [array enumerateValuesWithBlock:^(__unused int32_t value, __unused NSUInteger idx, __unused BOOL *stop) {
+  [array enumerateValuesWithBlock:^(int32_t value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array enumerateValuesWithOptions:NSEnumerationReverse
-                         usingBlock:^(__unused int32_t value, __unused NSUInteger idx, __unused BOOL *stop) {
+                         usingBlock:^(int32_t value, NSUInteger idx, BOOL *stop) {
+    #pragma unused(value, idx, stop)
     XCTFail(@"Shouldn't get here!");
   }];
   [array release];
@@ -3140,9 +3198,8 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 
 @end
 
-//%PDDM-EXPAND-END (8 expansions)
-
 // clang-format on
+//%PDDM-EXPAND-END (8 expansions)
 
 #pragma mark - Non macro-based Enum tests
 
@@ -3154,13 +3211,15 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 @implementation GPBEnumArrayCustomTests
 
 - (void)testRawBasics {
-  static const int32_t kValues[] = {71, 272, 73, 374};
-  static const int32_t kValuesFiltered[] = {71, kGPBUnrecognizedEnumeratorValue, 73,
-                                            kGPBUnrecognizedEnumeratorValue};
+  static const int32_t kValues[] = { 71, 272, 73, 374 };
+  static const int32_t kValuesFiltered[] = {
+      71, kGPBUnrecognizedEnumeratorValue, 73, kGPBUnrecognizedEnumeratorValue
+  };
   XCTAssertEqual(GPBARRAYSIZE(kValues), GPBARRAYSIZE(kValuesFiltered));
-  GPBEnumArray *array = [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
-                                                               rawValues:kValues
-                                                                   count:GPBARRAYSIZE(kValues)];
+  GPBEnumArray *array =
+      [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
+                                             rawValues:kValues
+                                                 count:GPBARRAYSIZE(kValues)];
   XCTAssertNotNil(array);
   XCTAssertEqual(array.count, 4U);
   GPBEnumValidationFunc func = TestingEnum_IsValidValue;
@@ -3189,19 +3248,19 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   idx2 = 0;
   [array enumerateRawValuesWithOptions:NSEnumerationReverse
                             usingBlock:^(int32_t value, NSUInteger idx, BOOL *stop) {
-                              XCTAssertEqual(idx, (3 - idx2));
-                              XCTAssertEqual(value, kValues[idx]);
-                              XCTAssertNotEqual(stop, NULL);
-                              ++idx2;
-                            }];
+    XCTAssertEqual(idx, (3 - idx2));
+    XCTAssertEqual(value, kValues[idx]);
+    XCTAssertNotEqual(stop, NULL);
+    ++idx2;
+  }];
   idx2 = 0;
   [array enumerateValuesWithOptions:NSEnumerationReverse
                          usingBlock:^(int32_t value, NSUInteger idx, BOOL *stop) {
-                           XCTAssertEqual(idx, (3 - idx2));
-                           XCTAssertEqual(value, kValuesFiltered[idx]);
-                           XCTAssertNotEqual(stop, NULL);
-                           ++idx2;
-                         }];
+    XCTAssertEqual(idx, (3 - idx2));
+    XCTAssertEqual(value, kValuesFiltered[idx]);
+    XCTAssertNotEqual(stop, NULL);
+    ++idx2;
+  }];
   // Stopping the enumeration.
   idx2 = 0;
   [array enumerateRawValuesWithBlock:^(int32_t value, NSUInteger idx, BOOL *stop) {
@@ -3216,35 +3275,38 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   idx2 = 0;
   [array enumerateRawValuesWithOptions:NSEnumerationReverse
                             usingBlock:^(int32_t value, NSUInteger idx, BOOL *stop) {
-                              XCTAssertEqual(idx, (3 - idx2));
-                              XCTAssertEqual(value, kValues[idx]);
-                              XCTAssertNotEqual(stop, NULL);
-                              if (idx2 == 1) *stop = YES;
-                              XCTAssertNotEqual(idx, 1U);
-                              XCTAssertNotEqual(idx, 0U);
-                              ++idx2;
-                            }];
+    XCTAssertEqual(idx, (3 - idx2));
+    XCTAssertEqual(value, kValues[idx]);
+    XCTAssertNotEqual(stop, NULL);
+    if (idx2 == 1) *stop = YES;
+    XCTAssertNotEqual(idx, 1U);
+    XCTAssertNotEqual(idx, 0U);
+    ++idx2;
+  }];
   [array release];
 }
 
 - (void)testEquality {
-  const int32_t kValues1[] = {71, 72, 173};      // With unknown value
-  const int32_t kValues2[] = {71, 74, 173};      // With unknown value
-  const int32_t kValues3[] = {71, 72, 173, 74};  // With unknown value
-  GPBEnumArray *array1 = [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
-                                                                rawValues:kValues1
-                                                                    count:GPBARRAYSIZE(kValues1)];
+  const int32_t kValues1[] = { 71, 72, 173 };  // With unknown value
+  const int32_t kValues2[] = { 71, 74, 173 };  // With unknown value
+  const int32_t kValues3[] = { 71, 72, 173, 74 };  // With unknown value
+  GPBEnumArray *array1 =
+      [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
+                                             rawValues:kValues1
+                                                 count:GPBARRAYSIZE(kValues1)];
   XCTAssertNotNil(array1);
   GPBEnumArray *array1prime =
       [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue2
                                              rawValues:kValues1
                                                  count:GPBARRAYSIZE(kValues1)];
   XCTAssertNotNil(array1prime);
-  GPBEnumArray *array2 = [[GPBEnumArray alloc] initWithValues:kValues2
-                                                        count:GPBARRAYSIZE(kValues2)];
+  GPBEnumArray *array2 =
+      [[GPBEnumArray alloc] initWithValues:kValues2
+                                     count:GPBARRAYSIZE(kValues2)];
   XCTAssertNotNil(array2);
-  GPBEnumArray *array3 = [[GPBEnumArray alloc] initWithValues:kValues3
-                                                        count:GPBARRAYSIZE(kValues3)];
+  GPBEnumArray *array3 =
+      [[GPBEnumArray alloc] initWithValues:kValues3
+                                     count:GPBARRAYSIZE(kValues3)];
   XCTAssertNotNil(array3);
 
   // 1/1Prime should be different objects, but equal.
@@ -3267,11 +3329,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 }
 
 - (void)testCopy {
-  const int32_t kValues[] = {71, 72};
-  GPBEnumArray *array = [[GPBEnumArray alloc] initWithValues:kValues count:GPBARRAYSIZE(kValues)];
+  const int32_t kValues[] = { 71, 72 };
+  GPBEnumArray *array =
+      [[GPBEnumArray alloc] initWithValues:kValues
+                                     count:GPBARRAYSIZE(kValues)];
   XCTAssertNotNil(array);
 
-  [array addRawValue:1000];  // Unknown
+  [array addRawValue:1000]; // Unknown
   XCTAssertEqual(array.count, 3U);
   XCTAssertEqual([array rawValueAtIndex:0], 71);
   XCTAssertEqual([array rawValueAtIndex:1], 72);
@@ -3296,10 +3360,11 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 }
 
 - (void)testArrayFromArray {
-  const int32_t kValues[] = {71, 172, 173, 74};  // Unknowns
-  GPBEnumArray *array = [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
-                                                               rawValues:kValues
-                                                                   count:GPBARRAYSIZE(kValues)];
+  const int32_t kValues[] = { 71, 172, 173, 74 };  // Unknowns
+  GPBEnumArray *array =
+      [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
+                                             rawValues:kValues
+                                                 count:GPBARRAYSIZE(kValues)];
   XCTAssertNotNil(array);
 
   GPBEnumArray *array2 = [GPBEnumArray arrayWithValueArray:array];
@@ -3313,34 +3378,38 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 }
 
 - (void)testUnknownAdds {
-  GPBEnumArray *array = [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue];
+  GPBEnumArray *array =
+      [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue];
   XCTAssertNotNil(array);
 
-  XCTAssertThrowsSpecificNamed([array addValue:172], NSException, NSInvalidArgumentException);
+  XCTAssertThrowsSpecificNamed([array addValue:172],
+                               NSException, NSInvalidArgumentException);
   XCTAssertEqual(array.count, 0U);
 
-  const int32_t kValues1[] = {172, 173};  // Unknown
-  XCTAssertThrowsSpecificNamed([array addValues:kValues1 count:GPBARRAYSIZE(kValues1)], NSException,
-                               NSInvalidArgumentException);
+  const int32_t kValues1[] = { 172, 173 };  // Unknown
+  XCTAssertThrowsSpecificNamed([array addValues:kValues1 count:GPBARRAYSIZE(kValues1)],
+                               NSException, NSInvalidArgumentException);
   XCTAssertEqual(array.count, 0U);
   [array release];
 }
 
 - (void)testRawAdds {
-  GPBEnumArray *array = [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue];
+  GPBEnumArray *array =
+      [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue];
   XCTAssertNotNil(array);
 
   XCTAssertEqual(array.count, 0U);
   [array addRawValue:71];  // Valid
   XCTAssertEqual(array.count, 1U);
 
-  const int32_t kValues1[] = {172, 173};  // Unknown
+  const int32_t kValues1[] = { 172, 173 };  // Unknown
   [array addRawValues:kValues1 count:GPBARRAYSIZE(kValues1)];
   XCTAssertEqual(array.count, 3U);
 
-  const int32_t kValues2[] = {74, 71};
-  GPBEnumArray *array2 = [[GPBEnumArray alloc] initWithValues:kValues2
-                                                        count:GPBARRAYSIZE(kValues2)];
+  const int32_t kValues2[] = { 74, 71 };
+  GPBEnumArray *array2 =
+      [[GPBEnumArray alloc] initWithValues:kValues2
+                                     count:GPBARRAYSIZE(kValues2)];
   XCTAssertNotNil(array2);
   [array addRawValuesFromArray:array2];
   XCTAssertEqual(array.count, 5U);
@@ -3356,35 +3425,37 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 }
 
 - (void)testUnknownInserts {
-  const int32_t kValues[] = {71, 72, 73};
-  GPBEnumArray *array = [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
-                                                               rawValues:kValues
-                                                                   count:GPBARRAYSIZE(kValues)];
+  const int32_t kValues[] = { 71, 72, 73 };
+  GPBEnumArray *array =
+      [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
+                                             rawValues:kValues
+                                                 count:GPBARRAYSIZE(kValues)];
   XCTAssertNotNil(array);
   XCTAssertEqual(array.count, 3U);
 
   // First
-  XCTAssertThrowsSpecificNamed([array insertValue:174 atIndex:0], NSException,
-                               NSInvalidArgumentException);
+  XCTAssertThrowsSpecificNamed([array insertValue:174 atIndex:0],
+                               NSException, NSInvalidArgumentException);
   XCTAssertEqual(array.count, 3U);
 
   // Middle
-  XCTAssertThrowsSpecificNamed([array insertValue:274 atIndex:1], NSException,
-                               NSInvalidArgumentException);
+  XCTAssertThrowsSpecificNamed([array insertValue:274 atIndex:1],
+                               NSException, NSInvalidArgumentException);
   XCTAssertEqual(array.count, 3U);
 
   // End
-  XCTAssertThrowsSpecificNamed([array insertValue:374 atIndex:3], NSException,
-                               NSInvalidArgumentException);
+  XCTAssertThrowsSpecificNamed([array insertValue:374 atIndex:3],
+                               NSException, NSInvalidArgumentException);
   XCTAssertEqual(array.count, 3U);
   [array release];
 }
 
 - (void)testRawInsert {
-  const int32_t kValues[] = {71, 72, 73};
-  GPBEnumArray *array = [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
-                                                               rawValues:kValues
-                                                                   count:GPBARRAYSIZE(kValues)];
+  const int32_t kValues[] = { 71, 72, 73 };
+  GPBEnumArray *array =
+      [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
+                                             rawValues:kValues
+                                                 count:GPBARRAYSIZE(kValues)];
   XCTAssertNotNil(array);
   XCTAssertEqual(array.count, 3U);
 
@@ -3401,7 +3472,8 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   XCTAssertEqual(array.count, 6U);
 
   // Too far.
-  XCTAssertThrowsSpecificNamed([array insertRawValue:74 atIndex:7], NSException, NSRangeException);
+  XCTAssertThrowsSpecificNamed([array insertRawValue:74 atIndex:7],
+                               NSException, NSRangeException);
 
   XCTAssertEqual([array rawValueAtIndex:0], 174);
   XCTAssertEqual([array valueAtIndex:0], kGPBUnrecognizedEnumeratorValue);
@@ -3416,16 +3488,17 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
 }
 
 - (void)testUnknownInplaceMutation {
-  const int32_t kValues[] = {71, 72, 73, 74};
-  GPBEnumArray *array = [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
-                                                               rawValues:kValues
-                                                                   count:GPBARRAYSIZE(kValues)];
+  const int32_t kValues[] = { 71, 72, 73, 74 };
+  GPBEnumArray *array =
+      [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
+                                             rawValues:kValues
+                                                 count:GPBARRAYSIZE(kValues)];
   XCTAssertNotNil(array);
 
-  XCTAssertThrowsSpecificNamed([array replaceValueAtIndex:1 withValue:172], NSException,
-                               NSInvalidArgumentException);
-  XCTAssertThrowsSpecificNamed([array replaceValueAtIndex:3 withValue:274], NSException,
-                               NSInvalidArgumentException);
+  XCTAssertThrowsSpecificNamed([array replaceValueAtIndex:1 withValue:172],
+                               NSException, NSInvalidArgumentException);
+  XCTAssertThrowsSpecificNamed([array replaceValueAtIndex:3 withValue:274],
+                               NSException, NSInvalidArgumentException);
   XCTAssertEqual(array.count, 4U);
   XCTAssertEqual([array valueAtIndex:0], 71);
   XCTAssertEqual([array valueAtIndex:1], 72);
@@ -3434,11 +3507,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   [array release];
 }
 
+
 - (void)testRawInplaceMutation {
-  const int32_t kValues[] = {71, 72, 73, 74};
-  GPBEnumArray *array = [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
-                                                               rawValues:kValues
-                                                                   count:GPBARRAYSIZE(kValues)];
+  const int32_t kValues[] = { 71, 72, 73, 74 };
+  GPBEnumArray *array =
+      [[GPBEnumArray alloc] initWithValidationFunction:TestingEnum_IsValidValue
+                                             rawValues:kValues
+                                                 count:GPBARRAYSIZE(kValues)];
   XCTAssertNotNil(array);
 
   [array replaceValueAtIndex:1 withRawValue:172];  // Unknown
@@ -3451,14 +3526,16 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
   XCTAssertEqual([array rawValueAtIndex:3], 274);
   XCTAssertEqual([array valueAtIndex:3], kGPBUnrecognizedEnumeratorValue);
 
-  XCTAssertThrowsSpecificNamed([array replaceValueAtIndex:4 withRawValue:74], NSException,
-                               NSRangeException);
+  XCTAssertThrowsSpecificNamed([array replaceValueAtIndex:4 withRawValue:74],
+                               NSException, NSRangeException);
   [array release];
 }
 
 - (void)testRawInternalResizing {
-  const int32_t kValues[] = {71, 172, 173, 74};  // Unknown
-  GPBEnumArray *array = [[GPBEnumArray alloc] initWithValues:kValues count:GPBARRAYSIZE(kValues)];
+  const int32_t kValues[] = { 71, 172, 173, 74 };  // Unknown
+  GPBEnumArray *array =
+      [[GPBEnumArray alloc] initWithValues:kValues
+                                     count:GPBARRAYSIZE(kValues)];
   XCTAssertNotNil(array);
 
   // Add/remove to trigger the intneral buffer to grow/shrink.
@@ -3534,13 +3611,13 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
     GPBAutocreatedArray *array = [[GPBAutocreatedArray alloc] init];
 
     NSArray *cpy = [array copy];
-    XCTAssertTrue(cpy != array);  // Ptr compare
+    XCTAssertTrue(cpy != array); // Ptr compare
     XCTAssertTrue([cpy isKindOfClass:[NSArray class]]);
     XCTAssertFalse([cpy isKindOfClass:[GPBAutocreatedArray class]]);
     XCTAssertEqual(cpy.count, (NSUInteger)0);
 
     NSArray *cpy2 = [array copy];
-    XCTAssertTrue(cpy2 != array);  // Ptr compare
+    XCTAssertTrue(cpy2 != array); // Ptr compare
     // Can't compare cpy and cpy2 because NSArray has a singleton empty
     // array it uses, so the ptrs are the same.
     XCTAssertTrue([cpy2 isKindOfClass:[NSArray class]]);
@@ -3556,14 +3633,14 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
     GPBAutocreatedArray *array = [[GPBAutocreatedArray alloc] init];
 
     NSMutableArray *cpy = [array mutableCopy];
-    XCTAssertTrue(cpy != array);  // Ptr compare
+    XCTAssertTrue(cpy != array); // Ptr compare
     XCTAssertTrue([cpy isKindOfClass:[NSMutableArray class]]);
     XCTAssertFalse([cpy isKindOfClass:[GPBAutocreatedArray class]]);
     XCTAssertEqual(cpy.count, (NSUInteger)0);
 
     NSMutableArray *cpy2 = [array mutableCopy];
-    XCTAssertTrue(cpy2 != array);  // Ptr compare
-    XCTAssertTrue(cpy2 != cpy);    // Ptr compare
+    XCTAssertTrue(cpy2 != array); // Ptr compare
+    XCTAssertTrue(cpy2 != cpy); // Ptr compare
     XCTAssertTrue([cpy2 isKindOfClass:[NSMutableArray class]]);
     XCTAssertFalse([cpy2 isKindOfClass:[GPBAutocreatedArray class]]);
     XCTAssertEqual(cpy2.count, (NSUInteger)0);
@@ -3579,7 +3656,7 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
     [array addObject:@"bar"];
 
     NSArray *cpy = [array copy];
-    XCTAssertTrue(cpy != array);  // Ptr compare
+    XCTAssertTrue(cpy != array); // Ptr compare
     XCTAssertTrue([cpy isKindOfClass:[NSArray class]]);
     XCTAssertFalse([cpy isKindOfClass:[GPBAutocreatedArray class]]);
     XCTAssertEqual(cpy.count, (NSUInteger)2);
@@ -3587,8 +3664,8 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
     XCTAssertEqualObjects(cpy[1], @"bar");
 
     NSArray *cpy2 = [array copy];
-    XCTAssertTrue(cpy2 != array);  // Ptr compare
-    XCTAssertTrue(cpy2 != cpy);    // Ptr compare
+    XCTAssertTrue(cpy2 != array); // Ptr compare
+    XCTAssertTrue(cpy2 != cpy); // Ptr compare
     XCTAssertTrue([cpy2 isKindOfClass:[NSArray class]]);
     XCTAssertFalse([cpy2 isKindOfClass:[GPBAutocreatedArray class]]);
     XCTAssertEqual(cpy2.count, (NSUInteger)2);
@@ -3606,7 +3683,7 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
     [array addObject:@"bar"];
 
     NSMutableArray *cpy = [array mutableCopy];
-    XCTAssertTrue(cpy != array);  // Ptr compare
+    XCTAssertTrue(cpy != array); // Ptr compare
     XCTAssertTrue([cpy isKindOfClass:[NSArray class]]);
     XCTAssertFalse([cpy isKindOfClass:[GPBAutocreatedArray class]]);
     XCTAssertEqual(cpy.count, (NSUInteger)2);
@@ -3614,8 +3691,8 @@ static BOOL TestingEnum_IsValidValue2(int32_t value) {
     XCTAssertEqualObjects(cpy[1], @"bar");
 
     NSMutableArray *cpy2 = [array mutableCopy];
-    XCTAssertTrue(cpy2 != array);  // Ptr compare
-    XCTAssertTrue(cpy2 != cpy);    // Ptr compare
+    XCTAssertTrue(cpy2 != array); // Ptr compare
+    XCTAssertTrue(cpy2 != cpy); // Ptr compare
     XCTAssertTrue([cpy2 isKindOfClass:[NSArray class]]);
     XCTAssertFalse([cpy2 isKindOfClass:[GPBAutocreatedArray class]]);
     XCTAssertEqual(cpy2.count, (NSUInteger)2);

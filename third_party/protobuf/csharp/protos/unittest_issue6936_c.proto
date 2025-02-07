@@ -1,16 +1,9 @@
-// Protocol Buffers - Google's data interchange format
-// Copyright 2008 Google Inc.  All rights reserved.
-//
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file or at
-// https://developers.google.com/open-source/licenses/bsd
-
 syntax = "proto3";
 
-package unittest_issues;
+import "unittest_issue6936_a.proto";
+import "unittest_issue6936_b.proto";
 
-import "csharp/protos/unittest_issue6936_a.proto";
-import "csharp/protos/unittest_issue6936_b.proto";
+package unittest_issues;
 
 option csharp_namespace = "UnitTest.Issues.TestProtos";
 
@@ -18,7 +11,6 @@ option csharp_namespace = "UnitTest.Issues.TestProtos";
 // We don't need to use it, we just have to load it at runtime
 
 message Bar {
-  option (opt) = "bar";
-
-  Foo foo = 1;
+    option (opt) = "bar";
+    Foo foo = 1;
 }

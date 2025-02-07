@@ -1,22 +1,49 @@
 #region Copyright notice and license
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
+// https://developers.google.com/protocol-buffers/
 //
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file or at
-// https://developers.google.com/open-source/licenses/bsd
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//     * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+#if !NET35
 using System.Threading;
 using System.Threading.Tasks;
+#endif
+#if NET35
+using Google.Protobuf.Compatibility;
+#endif
 
 namespace Google.Protobuf
 {
@@ -24,8 +51,6 @@ namespace Google.Protobuf
     /// Immutable array of bytes.
     /// </summary>
     [SecuritySafeCritical]
-    [DebuggerDisplay("Length = {Length}")]
-    [DebuggerTypeProxy(typeof(ByteStringDebugView))]
     public sealed class ByteString : IEnumerable<byte>, IEquatable<ByteString>
     {
         private static readonly ByteString empty = new ByteString(new byte[0]);
@@ -117,9 +142,6 @@ namespace Google.Protobuf
         /// <returns>A base64 representation of this <c>ByteString</c>.</returns>
         public string ToBase64()
         {
-#if NET5_0_OR_GREATER
-            return Convert.ToBase64String(bytes.Span);
-#else
             if (MemoryMarshal.TryGetArray(bytes, out ArraySegment<byte> segment))
             {
                 // Fast path. ByteString was created with an array, so pass the underlying array.
@@ -130,7 +152,6 @@ namespace Google.Protobuf
                 // Slow path. BytesString is not an array. Convert memory and pass result to ToBase64String.
                 return Convert.ToBase64String(bytes.ToArray());
             }
-#endif
         }
 
         /// <summary>
@@ -165,6 +186,7 @@ namespace Google.Protobuf
             return AttachBytes(bytes);
         }
 
+#if !NET35
         /// <summary>
         /// Constructs a <see cref="ByteString"/> from data in the given stream, asynchronously.
         /// </summary>
@@ -173,11 +195,12 @@ namespace Google.Protobuf
         /// <param name="stream">The stream to copy into a ByteString.</param>
         /// <param name="cancellationToken">The cancellation token to use when reading from the stream, if any.</param>
         /// <returns>A ByteString with content read from the given stream.</returns>
-        public static Task<ByteString> FromStreamAsync(Stream stream, CancellationToken cancellationToken = default)
+        public static Task<ByteString> FromStreamAsync(Stream stream, CancellationToken cancellationToken = default(CancellationToken))
         {
             ProtoPreconditions.CheckNotNull(stream, nameof(stream));
             return ByteStringAsync.FromStreamAsyncCore(stream, cancellationToken);
         }
+#endif
 
         /// <summary>
         /// Constructs a <see cref="ByteString" /> from the given array. The contents
@@ -324,7 +347,7 @@ namespace Google.Protobuf
             {
                 return true;
             }
-            if (lhs is null || rhs is null)
+            if (ReferenceEquals(lhs, null) || ReferenceEquals(rhs, null))
             {
                 return false;
             }
@@ -406,19 +429,6 @@ namespace Google.Protobuf
                 var array = bytes.ToArray();
                 outputStream.Write(array, 0, array.Length);
             }
-        }
-
-        private sealed class ByteStringDebugView
-        {
-            private readonly ByteString data;
-
-            public ByteStringDebugView(ByteString data)
-            {
-                this.data = data;
-            }
-
-            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public byte[] Items => data.bytes.ToArray();
         }
     }
 }

@@ -117,9 +117,9 @@
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif  // BUILDFLAG(USE_DAWN)
 
-#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
 #include "gpu/command_buffer/service/drm_modifiers_filter_dawn.h"
-#endif  // BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
 
 // Local versions of the SET_GL_ERROR macros
 #define LOCAL_SET_GL_ERROR(error, function_name, msg) \
@@ -1244,7 +1244,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
     caps.supports_yuv_readback = true;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (shared_context_state_->GrContextIsGL()) {
     PopulateDRMCapabilities(&caps, feature_info());
   }
@@ -1269,7 +1269,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   else {
     NOTREACHED();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return caps;
 }
@@ -3333,7 +3333,6 @@ void RasterDecoderImpl::RestoreStateForAttrib(GLuint attrib_index,
 // Include the auto-generated part of this file. We split this because it means
 // we can easily edit the non-auto generated parts right here in this file
 // instead of having to edit some template or the code generator.
-#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/service/raster_decoder_autogen.h"
 
 }  // namespace raster

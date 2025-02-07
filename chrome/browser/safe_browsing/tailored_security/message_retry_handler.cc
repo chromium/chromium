@@ -17,31 +17,29 @@ MessageRetryHandler::MessageRetryHandler(
     Profile* profile,
     const std::string& retry_state_pref,
     const std::string& next_retry_timestamp_pref,
-    base::TimeDelta retry_delay,
+    base::TimeDelta retry_attempt_startup_delay,
+    base::TimeDelta retry_next_attempt_delay,
+    base::TimeDelta waiting_period_interval,
     RetryCallback retry_callback,
-    HistorySyncStateCallback history_sync_state_callback,
     const std::string& retry_histogram_name,
     const std::string& last_update_timestamp_pref,
     const std::string& retry_state_dependent_pref)
     : profile_(profile),
       retry_state_pref_(retry_state_pref),
       next_retry_timestamp_pref_(next_retry_timestamp_pref),
-      retry_delay_(retry_delay),
+      retry_attempt_startup_delay_(retry_attempt_startup_delay),
+      retry_next_attempt_delay_(retry_next_attempt_delay),
+      waiting_period_interval_(waiting_period_interval),
       retry_callback_(std::move(retry_callback)),
-      history_sync_state_callback_(std::move(history_sync_state_callback)),
       retry_histogram_name_(retry_histogram_name),
       last_update_timestamp_pref_(last_update_timestamp_pref),
       retry_state_dependent_pref_(retry_state_dependent_pref) {}
 
 MessageRetryHandler::~MessageRetryHandler() = default;
 
-void MessageRetryHandler::MaybeStartRetryTimer() {
-  if (std::move(history_sync_state_callback_).Run() &&
-      !SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
-          profile_->GetPrefs())) {
-    retry_timer_.Start(FROM_HERE, kRetryAttemptStartupDelay, this,
-                       &MessageRetryHandler::RetryAction);
-  }
+void MessageRetryHandler::StartRetryTimer() {
+  retry_timer_.Start(FROM_HERE, retry_attempt_startup_delay_, this,
+                     &MessageRetryHandler::RetryAction);
 }
 
 bool MessageRetryHandler::ShouldRetry() {
@@ -52,8 +50,7 @@ bool MessageRetryHandler::ShouldRetry() {
       static_cast<RetryState>(prefs->GetInteger(retry_state_pref_));
 
   if (prefs->GetTime(last_update_timestamp_pref_) == base::Time()) {
-    // Do nothing because we can still rely on the user setting the tailored
-    // security bit on their account settings in the future.
+    // Do nothing because the user has not updated the preference yet.
     return false;
   }
 
@@ -63,7 +60,7 @@ bool MessageRetryHandler::ShouldRetry() {
     if (base::Time::Now() >= prefs->GetTime(next_retry_timestamp_pref_)) {
       // Set the next attempt time.
       prefs->SetTime(next_retry_timestamp_pref_,
-                     base::Time::Now() + retry_delay_);
+                     base::Time::Now() + retry_next_attempt_delay_);
       LogShouldRetryOutcome(ShouldRetryOutcome::kRetryNeededDoRetry);
       return true;
     } else {
@@ -74,13 +71,13 @@ bool MessageRetryHandler::ShouldRetry() {
              !prefs->GetBoolean(retry_state_dependent_pref_)) {
     if (prefs->GetTime(next_retry_timestamp_pref_) == base::Time()) {
       prefs->SetTime(next_retry_timestamp_pref_,
-                     base::Time::Now() + kWaitingPeriodInterval);
+                     base::Time::Now() + waiting_period_interval_);
       LogShouldRetryOutcome(ShouldRetryOutcome::kUnsetInitializeWaitingPeriod);
       return false;
     } else if (base::Time::Now() >=
                prefs->GetTime(next_retry_timestamp_pref_)) {
       prefs->SetTime(next_retry_timestamp_pref_,
-                     base::Time::Now() + retry_delay_);
+                     base::Time::Now() + retry_next_attempt_delay_);
       LogShouldRetryOutcome(ShouldRetryOutcome::kUnsetRetryBecauseDoneWaiting);
       return true;
     } else {

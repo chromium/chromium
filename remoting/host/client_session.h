@@ -13,11 +13,11 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -32,11 +32,11 @@
 #include "remoting/host/client_session_details.h"
 #include "remoting/host/client_session_events.h"
 #include "remoting/host/desktop_and_cursor_composer_notifier.h"
-#include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/host_experiment_session_plugin.h"
 #include "remoting/host/host_extension_session_manager.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
+#include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/proto/action.pb.h"
@@ -46,21 +46,22 @@
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/data_channel_manager.h"
 #include "remoting/protocol/display_size.h"
+#include "remoting/protocol/errors.h"
 #include "remoting/protocol/fractional_input_filter.h"
 #include "remoting/protocol/host_stub.h"
+#include "remoting/protocol/input_event_timestamps.h"
 #include "remoting/protocol/input_event_tracker.h"
 #include "remoting/protocol/input_filter.h"
-#include "remoting/protocol/input_stub.h"
 #include "remoting/protocol/mouse_input_filter.h"
 #include "remoting/protocol/observing_input_filter.h"
 #include "remoting/protocol/pairing_registry.h"
+#include "remoting/protocol/transport.h"
 #include "remoting/protocol/video_stream.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
-#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 
 namespace remoting {
 
@@ -179,7 +180,7 @@ class ClientSession : public protocol::HostStub,
   // ClientSessionControl interface.
   const std::string& client_jid() const override;
   void DisconnectSession(protocol::ErrorCode error) override;
-  void OnLocalKeyPressed(uint32_t usb_keycode) override;
+  void OnLocalKeyPressed(std::uint32_t usb_keycode) override;
   void OnLocalPointerMoved(const webrtc::DesktopVector& position,
                            ui::EventType type) override;
   void SetDisableInputs(bool disable_inputs) override;
@@ -187,11 +188,11 @@ class ClientSession : public protocol::HostStub,
       std::unique_ptr<protocol::VideoLayout> layout) override;
 
   // ClientSessionEvents interface.
-  void OnDesktopAttached(uint32_t session_id) override;
+  void OnDesktopAttached(std::uint32_t session_id) override;
   void OnDesktopDetached() override;
 
   // ClientSessionDetails interface.
-  uint32_t desktop_session_id() const override;
+  std::uint32_t desktop_session_id() const override;
   ClientSessionControl* session_control() override;
 
   // DesktopAndCursorComposerNotifier::EventHandler interface
@@ -241,6 +242,9 @@ class ClientSession : public protocol::HostStub,
   }
 
  private:
+  void OnDesktopEnvironmentCreated(
+      std::unique_ptr<DesktopEnvironment> desktop_environment);
+
   void OnLocalSessionPoliciesChanged(const SessionPolicies& new_policies);
 
   // Creates a proxy for sending clipboard events to the client.
@@ -311,6 +315,9 @@ class ClientSession : public protocol::HostStub,
 
   // The DesktopEnvironment instance for this session.
   std::unique_ptr<DesktopEnvironment> desktop_environment_;
+
+  // Pending actions to run once the desktop environment has been created.
+  std::vector<base::OnceClosure> desktop_environment_ready_callbacks_;
 
   // Tracker used to release pressed keys and buttons when disconnecting.
   protocol::InputEventTracker input_tracker_;

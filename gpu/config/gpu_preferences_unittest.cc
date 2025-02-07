@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/gpu_preferences.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"

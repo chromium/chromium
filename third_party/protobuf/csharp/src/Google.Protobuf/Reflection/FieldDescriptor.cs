@@ -1,10 +1,33 @@
 #region Copyright notice and license
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
+// https://developers.google.com/protocol-buffers/
 //
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file or at
-// https://developers.google.com/open-source/licenses/bsd
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//     * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using Google.Protobuf.Collections;
@@ -21,6 +44,7 @@ namespace Google.Protobuf.Reflection
         private EnumDescriptor enumType;
         private MessageDescriptor extendeeType;
         private MessageDescriptor messageType;
+        private FieldType fieldType;
         private IFieldAccessor accessor;
 
         /// <summary>
@@ -61,10 +85,9 @@ namespace Google.Protobuf.Reflection
             : IsRepeated ? false
             : IsMap ? false
             : FieldType == FieldType.Message ? true
-            : FieldType == FieldType.Group ? true
             // This covers "real oneof members" and "proto3 optional fields"
             : ContainingOneof != null ? true
-            : Features.FieldPresence != FeatureSet.Types.FieldPresence.Implicit;
+            : File.Syntax == Syntax.Proto2;
 
         internal FieldDescriptorProto Proto { get; }
 
@@ -83,18 +106,12 @@ namespace Google.Protobuf.Reflection
 
         internal FieldDescriptor(FieldDescriptorProto proto, FileDescriptor file,
                                  MessageDescriptor parent, int index, string propertyName, Extension extension)
-            : base(file, file.ComputeFullName(parent, proto.Name), index,
-                  GetDirectParentFeatures(proto, file, parent).MergedWith(InferFeatures(file, proto)).MergedWith(proto.Options?.Features))
+            : base(file, file.ComputeFullName(parent, proto.Name), index)
         {
             Proto = proto;
-            if (proto.HasType)
+            if (proto.Type != 0)
             {
-                FieldType = GetFieldTypeFromProtoType(proto.Type);
-                if (FieldType == FieldType.Message &&
-                    Features.MessageEncoding == FeatureSet.Types.MessageEncoding.Delimited)
-                {
-                    FieldType = FieldType.Group;
-                }
+                fieldType = GetFieldTypeFromProtoType(proto.Type);
             }
 
             if (FieldNumber <= 0)
@@ -123,52 +140,6 @@ namespace Google.Protobuf.Reflection
             JsonName =  Proto.JsonName == "" ? JsonFormatter.ToJsonName(Proto.Name) : Proto.JsonName;
         }
 
-        /// <summary>
-        /// Returns the features from the direct parent:
-        /// - The file for top-level extensions
-        /// - The oneof for one-of fields
-        /// - Otherwise the message
-        /// </summary>
-        private static FeatureSetDescriptor GetDirectParentFeatures(FieldDescriptorProto proto, FileDescriptor file, MessageDescriptor parent) =>
-            parent is null ? file.Features
-            // Ignore invalid oneof indexes here; they'll be validated later anyway.
-            : proto.OneofIndex >= 0 && proto.OneofIndex < parent.Proto.OneofDecl.Count ? parent.Oneofs[proto.OneofIndex].Features
-            : parent.Features;
-
-        /// <summary>
-        /// Returns a feature set with inferred features for the given field, or null if no features
-        /// need to be inferred.
-        /// </summary>
-        private static FeatureSet InferFeatures(FileDescriptor file, FieldDescriptorProto proto)
-        {
-            if ((int) file.Edition >= (int) Edition._2023)
-            {
-                return null;
-            }
-            // This is lazily initialized, as most fields won't need it.
-            FeatureSet features = null;
-            if (proto.Label == FieldDescriptorProto.Types.Label.Required)
-            {
-                features ??= new FeatureSet();
-                features.FieldPresence = FeatureSet.Types.FieldPresence.LegacyRequired;
-            }
-            if (proto.Type == FieldDescriptorProto.Types.Type.Group)
-            {
-                features ??= new FeatureSet();
-                features.MessageEncoding = FeatureSet.Types.MessageEncoding.Delimited;
-            }
-            if (file.Edition == Edition.Proto2 && (proto.Options?.Packed ?? false))
-            {
-                features ??= new FeatureSet();
-                features.RepeatedFieldEncoding = FeatureSet.Types.RepeatedFieldEncoding.Packed;
-            }
-            if (file.Edition == Edition.Proto3 && !(proto.Options?.Packed ?? true))
-            {
-                features ??= new FeatureSet();
-                features.RepeatedFieldEncoding = FeatureSet.Types.RepeatedFieldEncoding.Expanded;
-            }
-            return features;
-        }
 
         /// <summary>
         /// The brief name of the descriptor's target.
@@ -205,28 +176,47 @@ namespace Google.Protobuf.Reflection
         /// </summary>
         private static FieldType GetFieldTypeFromProtoType(FieldDescriptorProto.Types.Type type)
         {
-            return type switch
+            switch (type)
             {
-                FieldDescriptorProto.Types.Type.Double => FieldType.Double,
-                FieldDescriptorProto.Types.Type.Float => FieldType.Float,
-                FieldDescriptorProto.Types.Type.Int64 => FieldType.Int64,
-                FieldDescriptorProto.Types.Type.Uint64 => FieldType.UInt64,
-                FieldDescriptorProto.Types.Type.Int32 => FieldType.Int32,
-                FieldDescriptorProto.Types.Type.Fixed64 => FieldType.Fixed64,
-                FieldDescriptorProto.Types.Type.Fixed32 => FieldType.Fixed32,
-                FieldDescriptorProto.Types.Type.Bool => FieldType.Bool,
-                FieldDescriptorProto.Types.Type.String => FieldType.String,
-                FieldDescriptorProto.Types.Type.Group => FieldType.Group,
-                FieldDescriptorProto.Types.Type.Message => FieldType.Message,
-                FieldDescriptorProto.Types.Type.Bytes => FieldType.Bytes,
-                FieldDescriptorProto.Types.Type.Uint32 => FieldType.UInt32,
-                FieldDescriptorProto.Types.Type.Enum => FieldType.Enum,
-                FieldDescriptorProto.Types.Type.Sfixed32 => FieldType.SFixed32,
-                FieldDescriptorProto.Types.Type.Sfixed64 => FieldType.SFixed64,
-                FieldDescriptorProto.Types.Type.Sint32 => FieldType.SInt32,
-                FieldDescriptorProto.Types.Type.Sint64 => FieldType.SInt64,
-                _ => throw new ArgumentException("Invalid type specified"),
-            };
+                case FieldDescriptorProto.Types.Type.Double:
+                    return FieldType.Double;
+                case FieldDescriptorProto.Types.Type.Float:
+                    return FieldType.Float;
+                case FieldDescriptorProto.Types.Type.Int64:
+                    return FieldType.Int64;
+                case FieldDescriptorProto.Types.Type.Uint64:
+                    return FieldType.UInt64;
+                case FieldDescriptorProto.Types.Type.Int32:
+                    return FieldType.Int32;
+                case FieldDescriptorProto.Types.Type.Fixed64:
+                    return FieldType.Fixed64;
+                case FieldDescriptorProto.Types.Type.Fixed32:
+                    return FieldType.Fixed32;
+                case FieldDescriptorProto.Types.Type.Bool:
+                    return FieldType.Bool;
+                case FieldDescriptorProto.Types.Type.String:
+                    return FieldType.String;
+                case FieldDescriptorProto.Types.Type.Group:
+                    return FieldType.Group;
+                case FieldDescriptorProto.Types.Type.Message:
+                    return FieldType.Message;
+                case FieldDescriptorProto.Types.Type.Bytes:
+                    return FieldType.Bytes;
+                case FieldDescriptorProto.Types.Type.Uint32:
+                    return FieldType.UInt32;
+                case FieldDescriptorProto.Types.Type.Enum:
+                    return FieldType.Enum;
+                case FieldDescriptorProto.Types.Type.Sfixed32:
+                    return FieldType.SFixed32;
+                case FieldDescriptorProto.Types.Type.Sfixed64:
+                    return FieldType.SFixed64;
+                case FieldDescriptorProto.Types.Type.Sint32:
+                    return FieldType.SInt32;
+                case FieldDescriptorProto.Types.Type.Sint64:
+                    return FieldType.SInt64;
+                default:
+                    throw new ArgumentException("Invalid type specified");
+            }
         }
 
         /// <summary>
@@ -237,17 +227,31 @@ namespace Google.Protobuf.Reflection
         /// <summary>
         /// Returns <c>true</c> if this field is a required field; <c>false</c> otherwise.
         /// </summary>
-        public bool IsRequired => Features.FieldPresence == FeatureSet.Types.FieldPresence.LegacyRequired;
+        public bool IsRequired => Proto.Label == FieldDescriptorProto.Types.Label.Required;
 
         /// <summary>
         /// Returns <c>true</c> if this field is a map field; <c>false</c> otherwise.
         /// </summary>
-        public bool IsMap => FieldType == FieldType.Message && messageType.IsMapEntry;
+        public bool IsMap => fieldType == FieldType.Message && messageType.Proto.Options != null && messageType.Proto.Options.MapEntry;
 
         /// <summary>
         /// Returns <c>true</c> if this field is a packed, repeated field; <c>false</c> otherwise.
         /// </summary>
-        public bool IsPacked => Features.RepeatedFieldEncoding == FeatureSet.Types.RepeatedFieldEncoding.Packed;
+        public bool IsPacked
+        {
+            get
+            {
+                if (File.Syntax != Syntax.Proto3)
+                {
+                    return Proto.Options?.Packed ?? false;
+                }
+                else
+                {
+                    // Packed by default with proto3
+                    return Proto.Options == null || !Proto.Options.HasPacked || Proto.Options.Packed;
+                }
+            }
+        }
 
         /// <summary>
         /// Returns <c>true</c> if this field extends another message type; <c>false</c> otherwise.
@@ -257,7 +261,7 @@ namespace Google.Protobuf.Reflection
         /// <summary>
         /// Returns the type of the field.
         /// </summary>
-        public FieldType FieldType { get; private set; }
+        public FieldType FieldType => fieldType;
 
         /// <summary>
         /// Returns the field number declared in the proto file.
@@ -287,7 +291,7 @@ namespace Google.Protobuf.Reflection
         {
             get
             {
-                if (FieldType != FieldType.Enum)
+                if (fieldType != FieldType.Enum)
                 {
                     throw new InvalidOperationException("EnumType is only valid for enum fields.");
                 }
@@ -302,7 +306,7 @@ namespace Google.Protobuf.Reflection
         {
             get
             {
-                if (FieldType != FieldType.Message && FieldType != FieldType.Group)
+                if (fieldType != FieldType.Message && fieldType != FieldType.Group)
                 {
                     throw new InvalidOperationException("MessageType is only valid for message or group fields.");
                 }
@@ -337,23 +341,12 @@ namespace Google.Protobuf.Reflection
         /// Custom options can be retrieved as extensions of the returned message.
         /// NOTE: A defensive copy is created each time this property is retrieved.
         /// </summary>
-        public FieldOptions GetOptions()
-        {
-            var clone = Proto.Options?.Clone();
-            if (clone is null)
-            {
-                return null;
-            }
-            // Clients should be using feature accessor methods, not accessing features on the
-            // options proto.
-            clone.Features = null;
-            return clone;
-        }
+        public FieldOptions GetOptions() => Proto.Options?.Clone();
 
         /// <summary>
         /// Gets a single value field option for this descriptor
         /// </summary>
-        [Obsolete("GetOption is obsolete. Use the GetOptions() method.")]
+         [Obsolete("GetOption is obsolete. Use the GetOptions() method.")]
         public T GetOption<T>(Extension<FieldOptions, T> extension)
         {
             var value = Proto.Options.GetExtension(extension);
@@ -379,25 +372,16 @@ namespace Google.Protobuf.Reflection
                 IDescriptor typeDescriptor =
                     File.DescriptorPool.LookupSymbol(Proto.TypeName, this);
 
-                // In most cases, the type will be specified in the descriptor proto. This may be
-                // guaranteed in descriptor.proto in the future (with respect to spring 2024), but
-                // we may still see older descriptors created by old versions of protoc, and there
-                // may be some code creating descriptor protos directly. This code effectively
-                // maintains backward compatibility, but we don't expect it to be a path taken
-                // often at all.
-                if (!Proto.HasType)
+                if (Proto.HasType)
                 {
                     // Choose field type based on symbol.
                     if (typeDescriptor is MessageDescriptor)
                     {
-                        FieldType =
-                            Features.MessageEncoding == FeatureSet.Types.MessageEncoding.Delimited
-                            ? FieldType.Group
-                            : FieldType.Message;
+                        fieldType = FieldType.Message;
                     }
                     else if (typeDescriptor is EnumDescriptor)
                     {
-                        FieldType = FieldType.Enum;
+                        fieldType = FieldType.Enum;
                     }
                     else
                     {
@@ -405,31 +389,26 @@ namespace Google.Protobuf.Reflection
                     }
                 }
 
-                if (FieldType == FieldType.Message || FieldType == FieldType.Group)
+                if (fieldType == FieldType.Message || fieldType == FieldType.Group)
                 {
-                    if (typeDescriptor is not MessageDescriptor m)
+                    if (!(typeDescriptor is MessageDescriptor))
                     {
                         throw new DescriptorValidationException(this, $"\"{Proto.TypeName}\" is not a message type.");
                     }
-                    messageType = m;
-                    if (m.Proto.Options?.MapEntry == true || ContainingType?.Proto.Options?.MapEntry == true)
-                    {
-                        // Maps can't inherit delimited encoding.
-                        FieldType = FieldType.Message;
-                    }
+                    messageType = (MessageDescriptor) typeDescriptor;
 
                     if (Proto.HasDefaultValue)
                     {
                         throw new DescriptorValidationException(this, "Messages can't have default values.");
                     }
                 }
-                else if (FieldType == FieldType.Enum)
+                else if (fieldType == FieldType.Enum)
                 {
-                    if (typeDescriptor is not EnumDescriptor e)
+                    if (!(typeDescriptor is EnumDescriptor))
                     {
                         throw new DescriptorValidationException(this, $"\"{Proto.TypeName}\" is not an enum type.");
                     }
-                    enumType = e;
+                    enumType = (EnumDescriptor) typeDescriptor;
                 }
                 else
                 {
@@ -438,7 +417,7 @@ namespace Google.Protobuf.Reflection
             }
             else
             {
-                if (FieldType == FieldType.Message || FieldType == FieldType.Enum)
+                if (fieldType == FieldType.Message || fieldType == FieldType.Enum)
                 {
                     throw new DescriptorValidationException(this, "Field with message or enum type missing type_name.");
                 }
@@ -486,3 +465,4 @@ namespace Google.Protobuf.Reflection
         }
     }
 }
+ 

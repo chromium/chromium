@@ -435,6 +435,7 @@ mojom("interfaces") {
         {
           mojom = "gpu.mojom.ExportedSharedImage"
           cpp = "::gpu::ExportedSharedImage"
+          move_only = true
         },
       ]
       traits_headers = [ "exported_shared_image_mojom_traits.h" ]
@@ -660,6 +661,7 @@ mojom("interfaces") {
         {
           mojom = "gpu.mojom.ExportedSharedImage"
           cpp = "::gpu::ExportedSharedImage"
+          move_only = true
         },
       ]
       traits_headers = [ "exported_shared_image_mojom_traits.h" ]

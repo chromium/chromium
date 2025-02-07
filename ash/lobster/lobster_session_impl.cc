@@ -63,10 +63,12 @@ std::string BuildFeedbackDescription(std::string_view query,
 LobsterSessionImpl::LobsterSessionImpl(
     std::unique_ptr<LobsterClient> client,
     const LobsterCandidateStore& candidate_store,
-    LobsterEntryPoint entry_point)
+    LobsterEntryPoint entry_point,
+    LobsterMode mode)
     : client_(std::move(client)),
       candidate_store_(candidate_store),
-      entry_point_(entry_point) {
+      entry_point_(entry_point),
+      mode_(mode) {
   switch (entry_point_) {
     case LobsterEntryPoint::kQuickInsert:
       RecordLobsterState(LobsterMetricState::kQuickInsertTriggerFired);
@@ -78,10 +80,12 @@ LobsterSessionImpl::LobsterSessionImpl(
 }
 
 LobsterSessionImpl::LobsterSessionImpl(std::unique_ptr<LobsterClient> client,
-                                       LobsterEntryPoint entry_point)
+                                       LobsterEntryPoint entry_point,
+                                       LobsterMode mode)
     : LobsterSessionImpl(std::move(client),
                          LobsterCandidateStore(),
-                         entry_point) {}
+                         entry_point,
+                         mode) {}
 
 LobsterSessionImpl::~LobsterSessionImpl() = default;
 
@@ -280,9 +284,8 @@ void LobsterSessionImpl::OnRequestCandidates(RequestCandidatesCallback callback,
 }
 
 void LobsterSessionImpl::LoadUIFromCachedContext() {
-  // TODO: b:388964690 - uses the cached mode and anchor bounds.
-  client_->LoadUI(query_before_disclaimer_ui_, /*mode=*/LobsterMode::kDownload,
-                  /*anchor_bounds=*/gfx::Rect());
+  client_->LoadUI(query_before_disclaimer_ui_, /*mode=*/mode_,
+                  /*anchor_bounds=*/anchor_bounds_before_disclaimer_ui_);
 }
 
 void LobsterSessionImpl::LoadUI(std::optional<std::string> query,
@@ -291,10 +294,12 @@ void LobsterSessionImpl::LoadUI(std::optional<std::string> query,
   client_->LoadUI(query, mode, caret_bounds);
 }
 
-void LobsterSessionImpl::ShowDisclaimerUIAndCacheQuery(
-    std::optional<std::string> query) {
+void LobsterSessionImpl::ShowDisclaimerUIAndCacheContext(
+    std::optional<std::string> query,
+    const gfx::Rect& anchor_bounds) {
   client_->ShowDisclaimerUI();
   query_before_disclaimer_ui_ = query;
+  anchor_bounds_before_disclaimer_ui_ = anchor_bounds;
 }
 
 void LobsterSessionImpl::ShowUI() {

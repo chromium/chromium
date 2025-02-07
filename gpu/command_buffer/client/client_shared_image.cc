@@ -195,9 +195,7 @@ uint32_t ComputeTextureTargetForSharedImage(
 
   // The client should configure an SI to use external sampling only if they
   // have provided a native buffer to back that SI.
-  // TODO(crbug.com/332069927): Figure out why this is going off on LaCrOS and
-  // turn this into a CHECK.
-  DUMP_WILL_BE_CHECK(GMBIsNative(client_gmb_type));
+  CHECK(GMBIsNative(client_gmb_type));
 
   // See the note at the top of this function wrt Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
@@ -564,6 +562,12 @@ ClientSharedImage::HelperGpuMemoryBufferManager::GetSharedImageInterface() {
 }
 
 ExportedSharedImage::ExportedSharedImage() = default;
+ExportedSharedImage::~ExportedSharedImage() = default;
+
+ExportedSharedImage::ExportedSharedImage(ExportedSharedImage&& other) = default;
+ExportedSharedImage& ExportedSharedImage::operator=(
+    ExportedSharedImage&& other) = default;
+
 ExportedSharedImage::ExportedSharedImage(const Mailbox& mailbox,
                                          const SharedImageMetadata& metadata,
                                          const SyncToken& sync_token,
@@ -572,6 +576,11 @@ ExportedSharedImage::ExportedSharedImage(const Mailbox& mailbox,
       metadata_(metadata),
       creation_sync_token_(sync_token),
       texture_target_(texture_target) {}
+
+ExportedSharedImage ExportedSharedImage::Clone() const {
+  return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_,
+                             texture_target_);
+}
 
 SharedImageTexture::ScopedAccess::ScopedAccess(SharedImageTexture* texture,
                                                const SyncToken& sync_token,

@@ -7440,6 +7440,7 @@ Called by update_use_counter_css.py.-->
   <int value="838" label="corner-end-end-shape"/>
   <int value="839" label="reading-order"/>
   <int value="840" label="column-rule-outset"/>
+  <int value="841" label="row-rule-outset"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

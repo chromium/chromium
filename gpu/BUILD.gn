@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
@@ -148,7 +147,7 @@ static_library("test_support") {
   deps += [ "//third_party/angle:translator" ]
 }
 
-if (!is_android && !is_fuchsia && !is_chromeos_ash && !is_ios) {
+if (!is_android && !is_fuchsia && !is_chromeos && !is_ios) {
   proto_library("gl_lpm_fuzzer_proto") {
     sources = [ "command_buffer/tests/lpm/gl_lpm_fuzzer.proto" ]
 
@@ -551,7 +550,7 @@ test("gpu_unittests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     # Image decode acceleration with hardware is only supported in Chrome OS.
     # The intention is to run this test in the linux-chromeos build.
     sources += [ "ipc/service/image_decode_accelerator_stub_unittest.cc" ]
@@ -624,7 +623,6 @@ test("gpu_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
     "//components/viz/common:shared_image_format",
