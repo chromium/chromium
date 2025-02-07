@@ -2814,6 +2814,8 @@ source_set("browser") {
       "date_time_chooser/ios/date_time_chooser_view_controller.h",
       "date_time_chooser/ios/date_time_chooser_view_controller.mm",
       "devtools/protocol/native_input_event_builder_ios.mm",
+      "renderer_host/begin_frame_source_ios.h",
+      "renderer_host/begin_frame_source_ios.mm",
       "renderer_host/browser_compositor_ios.h",
       "renderer_host/browser_compositor_ios.mm",
       "renderer_host/delegated_frame_host_client_ios.cc",

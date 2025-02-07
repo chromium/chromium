@@ -321,6 +321,15 @@ viz_component("common") {
     deps += [ "//ui/base" ]
   }
 
+  if (is_ios) {
+    sources += [
+      "frame_sinks/external_begin_frame_source_ios.h",
+      "frame_sinks/external_begin_frame_source_ios.mm",
+    ]
+
+    frameworks = [ "CoreGraphics.framework" ]
+  }
+
   if (is_android) {
     deps += [ "//gpu/config" ]
   }

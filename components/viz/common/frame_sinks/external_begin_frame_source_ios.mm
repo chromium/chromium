@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/viz/service/frame_sinks/external_begin_frame_source_ios.h"
+#import "components/viz/common/frame_sinks/external_begin_frame_source_ios.h"
 
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>

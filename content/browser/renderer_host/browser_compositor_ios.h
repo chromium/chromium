@@ -10,17 +10,21 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/common/frame_sinks/external_begin_frame_source_ios.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer_observer.h"
 #include "ui/display/screen_info.h"
 
 namespace content {
+
+class BeginFrameSourceIOS;
 
 class BrowserCompositorIOSClient {
  public:
@@ -195,6 +199,7 @@ class CONTENT_EXPORT BrowserCompositorIOS : public DelegatedFrameHostClient,
   float scale_factor_ = 1.f;
   gfx::DisplayColorSpaces display_color_spaces_;
   std::unique_ptr<ui::CompositorLock> compositor_suspended_lock_;
+  std::unique_ptr<BeginFrameSourceIOS> begin_frame_source_;
 
   base::WeakPtrFactory<BrowserCompositorIOS> weak_factory_;
 };

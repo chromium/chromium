@@ -450,6 +450,11 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   if (compositor->use_external_begin_frame_control()) {
     root_params->external_begin_frame_controller =
         external_begin_frame_controller.BindNewEndpointAndPassReceiver();
+    if (auto* factory =
+            compositor->external_begin_frame_controler_client_factory()) {
+      root_params->external_begin_frame_controller_client =
+          factory->CreateExternalBeginFrameControllerClient();
+    }
   }
 
   root_params->frame_sink_id = compositor->frame_sink_id();

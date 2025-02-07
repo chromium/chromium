@@ -142,6 +142,17 @@ class COMPOSITOR_EXPORT ContextFactory {
   virtual viz::HostFrameSinkManager* GetHostFrameSinkManager() = 0;
 };
 
+// Factory object to create a ExternalBeginFrameControllerClient on demand.
+class COMPOSITOR_EXPORT ExternalBeginFrameControllerClientFactory {
+ public:
+  virtual ~ExternalBeginFrameControllerClientFactory() = default;
+
+  // Create a new client.
+  virtual mojo::PendingAssociatedRemote<
+      viz::mojom::ExternalBeginFrameControllerClient>
+  CreateExternalBeginFrameControllerClient() = 0;
+};
+
 // Compositor object to take care of GPU painting.
 // A Browser compositor object is responsible for generating the final
 // displayable form of pixels comprising a single widget's contents. It draws an
@@ -544,6 +555,16 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
     return property_tree_delegate_.get();
   }
 
+  ExternalBeginFrameControllerClientFactory*
+  external_begin_frame_controler_client_factory() {
+    return external_begin_frame_controler_client_factory_.get();
+  }
+
+  void SetExternalBeginFrameControllerClientFactory(
+      ExternalBeginFrameControllerClientFactory* factory) {
+    external_begin_frame_controler_client_factory_ = factory;
+  }
+
  private:
   friend class base::RefCounted<Compositor>;
   friend class TotalAnimationThroughputReporter;
@@ -582,6 +603,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private_;
   mojo::AssociatedRemote<viz::mojom::ExternalBeginFrameController>
       external_begin_frame_controller_;
+  raw_ptr<ExternalBeginFrameControllerClientFactory>
+      external_begin_frame_controler_client_factory_;
 
   std::unique_ptr<PendingBeginFrameArgs> pending_begin_frame_args_;
 
