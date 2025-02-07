@@ -306,8 +306,9 @@ group("gn_all") {
     }
 
     if (enable_ml_internal) {
-      deps +=
-          [ "//components/optimization_guide/internal:ondevice_model_example" ]
+      deps += [
+        "//components/optimization_guide/internal:ondevice_model_benchmark",
+      ]
     }
 
     if (enable_pdf) {

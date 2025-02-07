@@ -1263,8 +1263,7 @@
       },
       'optimization_guide-mac-arm64': {
         'additional_compile_targets': [
-          'ondevice_model_benchmark',
-          'ondevice_model_example',
+          'ondevice_model_benchmark'
         ],
         'mixins': [
           'chrome-swarming-pool',
@@ -1278,8 +1277,7 @@
       },
       'optimization_guide-mac-x64': {
         'additional_compile_targets': [
-          'ondevice_model_benchmark',
-          'ondevice_model_example',
+          'ondevice_model_benchmark'
         ],
         'mixins': [
           'chrome-swarming-pool',
@@ -1293,8 +1291,7 @@
       },
       'optimization_guide-win-arm64': {
         'additional_compile_targets': [
-          'ondevice_model_benchmark',
-          'ondevice_model_example',
+          'ondevice_model_benchmark'
         ],
         'mixins': [
           'chrome-swarming-pool',
@@ -1308,8 +1305,7 @@
       },
       'optimization_guide-win32': {
         'additional_compile_targets': [
-          'ondevice_model_benchmark',
-          'ondevice_model_example',
+          'ondevice_model_benchmark'
         ],
         'mixins': [
           'chrome-intelligence-swarming-pool',
@@ -1323,8 +1319,7 @@
       },
       'optimization_guide-win64': {
         'additional_compile_targets': [
-          'ondevice_model_benchmark',
-          'ondevice_model_example',
+          'ondevice_model_benchmark'
         ],
         'mixins': [
           'chrome-intelligence-swarming-pool',
