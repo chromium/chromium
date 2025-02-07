@@ -59,7 +59,7 @@ ChildProcessTaskPortProvider::ChildProcessTaskPortProvider() {
 
   const std::string dispatch_name = base::StringPrintf(
       "%s.ChildProcessTaskPortProvider.%p", base::apple::BaseBundleID(), this);
-  notification_source_ = std::make_unique<base::apple::DispatchSourceMach>(
+  notification_source_ = std::make_unique<base::apple::DispatchSource>(
       dispatch_name.c_str(), notification_port_.get(), ^{
         OnTaskPortDied();
       });
