@@ -2862,16 +2862,19 @@ class OopPathPixelTest : public OopPixelTest,
     display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
     display_item_list->Finalize();
 
-    auto comparator =
-#if BUILDFLAG(IS_IOS)
-        // TODO(crbug.com/40280014): We have larger errors on the platform, but
-        // the images here still seem visually indistinguishable.
-        FuzzyPixelComparator().SetErrorPixelsPercentageLimit(0.5f);
-#else
-        // Allow 8 pixels in 100x100 image to be different due to non-AA pixel
-        // rounding.
+    // Allow 8 pixels in 100x100 image to be different due to non-AA pixel
+    // rounding.
+    FuzzyPixelComparator comparator =
         FuzzyPixelComparator().SetErrorPixelsPercentageLimit(0.08f);
-#endif
+
+    // TODO(crbug.com/40280014): We have larger errors when running these
+    // tests with Graphite, but the images here still seem visually
+    // indistinguishable.
+    auto* cmd = base::CommandLine::ForCurrentProcess();
+    if (features::IsSkiaGraphiteEnabled(cmd)) {
+      comparator.SetErrorPixelsPercentageLimit(0.5f);
+    }
+
     auto actual = Raster(display_item_list, options);
     ExpectEquals(actual, FILE_PATH_LITERAL("oop_path.png"), comparator);
   }
