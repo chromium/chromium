@@ -944,7 +944,8 @@ inline void DispatchEventsOnWindowAndFocusedElement(Document* document,
     // Use focus_type mojom::blink::FocusType::kPage, same as used in
     // DispatchBlurEvent.
     focused_element->SetFocused(false, mojom::blink::FocusType::kPage);
-    focused_element->SetHasFocusWithinUpToAncestor(false, nullptr);
+    focused_element->SetHasFocusWithinUpToAncestor(
+        false, nullptr, /*need_snap_container_search=*/false);
     DispatchBlurEvent(*document, *focused_element);
   }
 
@@ -957,7 +958,8 @@ inline void DispatchEventsOnWindowAndFocusedElement(Document* document,
     // Use focus_type mojom::blink::FocusType::kPage, same as used in
     // DispatchFocusEvent.
     focused_element->SetFocused(true, mojom::blink::FocusType::kPage);
-    focused_element->SetHasFocusWithinUpToAncestor(true, nullptr);
+    focused_element->SetHasFocusWithinUpToAncestor(
+        true, nullptr, /*need_snap_container_search=*/false);
     DispatchFocusEvent(*document, *focused_element);
   }
 }

@@ -3400,8 +3400,10 @@ void Element::MovedFrom(ContainerNode& old_parent) {
     // The "focus within" flag is set separately on each ancestor, and affects
     // the :focus-within CSS property. We set it to the right value here because
     // we skipped the step that sets it on removal/insertion.
-    old_parent_element->SetHasFocusWithinUpToAncestor(false, common_ancestor);
-    new_parent_element->SetHasFocusWithinUpToAncestor(true, common_ancestor);
+    old_parent_element->SetHasFocusWithinUpToAncestor(
+        false, common_ancestor, /*need_snap_container_search=*/false);
+    new_parent_element->SetHasFocusWithinUpToAncestor(
+        true, common_ancestor, /*need_snap_container_search=*/false);
   }
 }
 
@@ -7196,7 +7198,7 @@ void Element::FocusWithinStateChanged() {
   PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
 }
 
-void Element::SetHasFocusWithinUpToAncestor(bool flag,
+void Element::SetHasFocusWithinUpToAncestor(bool has_focus_within,
                                             Element* ancestor,
                                             bool need_snap_container_search) {
   bool reached_ancestor = false;
@@ -7204,7 +7206,7 @@ void Element::SetHasFocusWithinUpToAncestor(bool flag,
        element && (need_snap_container_search || !reached_ancestor);
        element = FlatTreeTraversal::ParentElement(*element)) {
     if (!reached_ancestor && element != ancestor) {
-      element->SetHasFocusWithin(flag);
+      element->SetHasFocusWithin(has_focus_within);
       element->FocusWithinStateChanged();
     }
     // If |ancestor| or any of its ancestors is a snap container, that snap

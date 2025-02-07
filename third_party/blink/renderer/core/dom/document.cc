@@ -5412,7 +5412,8 @@ bool Document::SetFocusedElement(Element* new_focused_element,
   // Remove focus from the existing focus node (if any)
   if (old_focused_element) {
     old_focused_element->SetFocused(false, params.type);
-    old_focused_element->SetHasFocusWithinUpToAncestor(false, ancestor, true);
+    old_focused_element->SetHasFocusWithinUpToAncestor(
+        false, ancestor, /*need_snap_container_search=*/true);
 
     DisplayLockUtilities::ElementLostFocus(old_focused_element);
 
@@ -5488,7 +5489,8 @@ bool Document::SetFocusedElement(Element* new_focused_element,
     if (focused_element_ == nullptr) {
       return false;
     }
-    focused_element_->SetHasFocusWithinUpToAncestor(true, ancestor, true);
+    focused_element_->SetHasFocusWithinUpToAncestor(
+        true, ancestor, /*need_snap_container_search=*/true);
     DisplayLockUtilities::ElementGainedFocus(focused_element_.Get());
 
     // Element::setFocused for frames can dispatch events.
