@@ -237,7 +237,7 @@ GpuFeatureStatus Get2DCanvasFeatureStatus(
 GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
     const std::set<int>& blocklisted_features,
     const GpuPreferences& gpu_preferences) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Disable OOP-C if explicitly turned off from the command line.
   base::FeatureList* feature_list = base::FeatureList::GetInstance();
   if (feature_list && feature_list->IsFeatureOverriddenFromCommandLine(
@@ -250,7 +250,7 @@ GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
   // encode artifacts (b/318721705).
   if (gpu_preferences.use_vulkan != VulkanImplementationName::kNone)
     return kGpuFeatureStatusEnabled;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Canvas OOP Rasterization on platforms that are not fully enabled is
   // controlled by a finch experiment.

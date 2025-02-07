@@ -152,7 +152,7 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 bool CanAccessDeviceFile(const GPUInfo& gpu_info) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   if (gpu_info.gpu.vendor_id != 0x10de ||  // NVIDIA
       gpu_info.gpu.driver_vendor != "NVIDIA")
     return true;
@@ -327,7 +327,7 @@ GpuInit::~GpuInit() {
 bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
                                         const GpuPreferences& gpu_preferences) {
   GPU_STARTUP_TRACE_EVENT("gpu::GpuInit::InitializeAndStartSandbox");
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   LOG(WARNING) << "Starting gpu initialization.";
 #endif
   gpu_preferences_ = gpu_preferences;
@@ -417,7 +417,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   // Don't start watchdog immediately, to allow developers to switch to VT2 on
   // startup.
-  constexpr bool delayed_watchdog_enable = BUILDFLAG(IS_CHROMEOS_ASH);
+  constexpr bool delayed_watchdog_enable = BUILDFLAG(IS_CHROMEOS);
 
   // Start the GPU watchdog only after anything that is expected to be time
   // consuming has completed, otherwise the process is liable to be aborted.
@@ -451,12 +451,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   params.handle_overlays_swap_failure =
       base::FeatureList::IsEnabled(features::kHandleOverlaysSwapFailure);
 
-  // Page flip testing will only happen in ash-chrome, not in lacros-chrome.
-  // Therefore, we only allow or disallow sync and real buffer page flip
-  // testing for ash-chrome.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   params.allow_sync_and_real_buffer_page_flip_testing = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ui::OzonePlatform::InitializeForGPU(params);
 #endif  // BUILDFLAG(IS_OZONE)
 
@@ -972,12 +969,9 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   params.handle_overlays_swap_failure =
       base::FeatureList::IsEnabled(features::kHandleOverlaysSwapFailure);
 
-  // Page flip testing will only happen in ash-chrome, not in lacros-chrome.
-  // Therefore, we only allow or disallow sync and real buffer page flip
-  // testing for ash-chrome.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   params.allow_sync_and_real_buffer_page_flip_testing = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
   bool needs_more_info = true;

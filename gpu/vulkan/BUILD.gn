@@ -125,7 +125,6 @@ if (enable_vulkan) {
       ":buildflags",
       "//base",
       "//build:android_buildflags",
-      "//build:chromeos_buildflags",
       "//components/crash/core/common:crash_key",
       "//gpu/ipc/common:vulkan_ycbcr_info",
       "//ui/base:ozone_buildflags",
@@ -173,7 +172,7 @@ if (enable_vulkan) {
       deps += [ "//ui/ozone:drm_modifiers_filter" ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//ui/gfx/linux:drm" ]
     }
 
