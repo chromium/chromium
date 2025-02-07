@@ -9455,13 +9455,17 @@ test("unit_tests") {
       "../browser/enterprise/connectors/reporting/extension_install_event_router_unittest.cc",
       "../browser/enterprise/connectors/reporting/extension_telemetry_event_router_unittest.cc",
       "../browser/enterprise/connectors/reporting/realtime_reporting_client_unittest.cc",
+      "../browser/enterprise/connectors/reporting/reporting_event_router_unittest.cc",
       "../browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_unittest.cc",
       "../browser/interstitials/enterprise_util_unittest.cc",
       "../browser/safe_browsing/download_protection/deep_scanning_request_unittest.cc",
       "../browser/ui/webui/management/management_ui_handler_unittest.cc",
       "../browser/ui/webui/management/management_ui_unittest.cc",
     ]
-    deps += [ "../browser/enterprise/connectors/test:test_support" ]
+    deps += [
+      "../browser/enterprise/connectors/test:test_support",
+      "//components/enterprise/connectors/core:test_support",
+    ]
     if (is_chromeos) {
       deps += [
         "//chrome/browser/ash/net",

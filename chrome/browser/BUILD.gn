@@ -6567,6 +6567,8 @@ static_library("browser") {
       "enterprise/connectors/reporting/realtime_reporting_client.h",
       "enterprise/connectors/reporting/realtime_reporting_client_factory.cc",
       "enterprise/connectors/reporting/realtime_reporting_client_factory.h",
+      "enterprise/connectors/reporting/reporting_event_router.cc",
+      "enterprise/connectors/reporting/reporting_event_router.h",
     ]
   }
 
