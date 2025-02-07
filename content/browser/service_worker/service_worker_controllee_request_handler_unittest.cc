@@ -102,14 +102,15 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
           blink::StorageKey::CreateFirstParty(
               url::Origin::Create(resource_request.url)));
       handler_->MaybeCreateLoader(
-          resource_request,
-          nullptr,
+          resource_request, nullptr,
           base::BindOnce(
               [](base::OnceClosure closure,
                  std::optional<NavigationLoaderInterceptor::Result>
                      interceptor_result) { std::move(closure).Run(); },
               loader_loop_.QuitClosure()),
-          base::DoNothing());
+          base::BindOnce([](ResponseHeadUpdateParams) {
+            return static_cast<network::mojom::URLLoaderFactory*>(nullptr);
+          }));
     }
 
     void WaitLoader() { loader_loop_.Run(); }

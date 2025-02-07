@@ -415,17 +415,21 @@ void MergeCancelOfResponses(
 // Stores in |*new_url| the redirect request of the extension with highest
 // precedence. Extensions that did not command to redirect the request are
 // ignored in this logic.
-void MergeRedirectUrlOfResponses(const GURL& url,
-                                 const EventResponseDeltas& deltas,
-                                 GURL* new_url,
-                                 IgnoredActions* ignored_actions);
+void MergeRedirectUrlOfResponses(
+    const GURL& url,
+    const EventResponseDeltas& deltas,
+    GURL* new_url,
+    std::optional<extensions::ExtensionId>* extension_id,
+    IgnoredActions* ignored_actions);
 // Stores in |*new_url| the redirect request of the extension with highest
 // precedence. Extensions that did not command to redirect the request are
 // ignored in this logic.
-void MergeOnBeforeRequestResponses(const GURL& url,
-                                   const EventResponseDeltas& deltas,
-                                   GURL* new_url,
-                                   IgnoredActions* ignored_actions);
+void MergeOnBeforeRequestResponses(
+    const GURL& url,
+    const EventResponseDeltas& deltas,
+    GURL* new_url,
+    std::optional<extensions::ExtensionId>* extension_id,
+    IgnoredActions* ignored_actions);
 // Modifies the "Cookie" header in |request_headers| according to
 // |deltas.request_cookie_modifications|. Conflicts are currently ignored
 // silently.
@@ -474,6 +478,7 @@ void MergeOnHeadersReceivedResponses(
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
     GURL* preserve_fragment_on_redirect_url,
+    std::optional<extensions::ExtensionId>* extenion_id,
     IgnoredActions* ignored_actions,
     bool* response_headers_modified,
     std::vector<const extensions::declarative_net_request::RequestAction*>*

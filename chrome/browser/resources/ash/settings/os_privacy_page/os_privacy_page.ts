@@ -220,17 +220,6 @@ export class OsSettingsPrivacyPageElement extends
         readOnly: true,
       },
 
-      /**
-       * Whether to show the new UI for OS Sync Settings
-       * which include sublabel and Apps toggle
-       * shared between Ash and Lacros.
-       */
-      showSyncSettingsRevamp_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('showSyncSettingsRevamp'),
-        readOnly: true,
-      },
-
       isAuthenticating_: {
         type: Boolean,
         value: false,
@@ -267,7 +256,6 @@ export class OsSettingsPrivacyPageElement extends
   private showDisableProtectionDialog_: boolean;
   private showPasswordPromptDialog_: boolean;
   private showSecureDnsSetting_: boolean;
-  private showSyncSettingsRevamp_: boolean;
   private syncBrowserProxy_: SyncBrowserProxy;
   private isAuthenticating_: boolean;
 
@@ -392,13 +380,6 @@ export class OsSettingsPrivacyPageElement extends
       return this.i18n('lockScreenPinOrPassword');
     }
     return this.i18n('lockScreenPasswordOnly');
-  }
-
-  private getSyncAdvancedTitle_(): string {
-    if (this.showSyncSettingsRevamp_) {
-      return this.i18n('syncAdvancedDevicePageTitle');
-    }
-    return this.i18n('syncAdvancedPageTitle');
   }
 
   private getSyncAndGoogleServicesSubtext_(): string {

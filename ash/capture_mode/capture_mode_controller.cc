@@ -2086,14 +2086,29 @@ void CaptureModeController::MaybeShowScannerDisclaimerOnSunfishStartup(
       // Hence we should skip showing the disclaimer.
       !Shell::Get()->scanner_controller() ||
       !Shell::Get()->scanner_controller()->CanShowConsentScreenEntryPoints()) {
+    if (!features::IsSunfishFeatureEnabled() && IsActive()) {
+      // Should stop because if both scanner and sunfish are disabled, then
+      // there is nothing you can do in the session.
+      Stop();
+    }
     return;
   }
   // Since this is at the end of startup internal, the capture_mode_session
   // should exist.
   CHECK(capture_mode_session_);
 
+  // If declined, we should completely stop the sunfish session if only scanner
+  // is enabled. If both scanner consent is declined and sunfish is disabled,
+  // then there is nothing you can do in the session.
+  // Otherwise, allow the session to continue (DoNothing) since sunfish can run
+  // without scanner.
+  base::RepeatingClosure decline_callback =
+      features::IsSunfishFeatureEnabled()
+          ? base::DoNothing()
+          : base::BindRepeating(&CaptureModeController::Stop,
+                                weak_ptr_factory_.GetWeakPtr());
   capture_mode_session_->MaybeShowScannerDisclaimer(
-      /*accept_callback=*/base::DoNothing());
+      /*accept_callback=*/base::DoNothing(), decline_callback);
 }
 
 void CaptureModeController::OnScannerActionsFetched(

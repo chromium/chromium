@@ -74,7 +74,8 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   void PushPropertiesTo(LayerImpl* layer) override;
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   bool is_surface_layer() const override;
   gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;

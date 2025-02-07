@@ -77,6 +77,7 @@ cc_component("cc") {
     "input/snap_selection_strategy.cc",
     "input/snap_selection_strategy.h",
     "input/touch_action.h",
+    "layers/append_quads_context.h",
     "layers/append_quads_data.cc",
     "layers/append_quads_data.h",
     "layers/content_layer_client.h",

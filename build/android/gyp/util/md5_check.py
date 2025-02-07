@@ -114,6 +114,8 @@ def CallAndRecordIfStale(function,
 
   zip_allowlist = set(track_subpaths_allowlist or [])
   for path in input_paths:
+    if os.path.isabs(path):
+      path = os.path.relpath(path)
     # It's faster to md5 an entire zip file than it is to just locate & hash
     # its central directory (which is what this used to do).
     if path in zip_allowlist:

@@ -167,6 +167,7 @@ void HeadsUpDisplayLayerImpl::DidDraw(
 }
 
 void HeadsUpDisplayLayerImpl::AppendQuads(
+    const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   viz::SharedQuadState* shared_quad_state =

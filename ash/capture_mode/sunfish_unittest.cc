@@ -4012,8 +4012,35 @@ TEST_F(ScannerTest,
   EXPECT_TRUE(controller->IsActive());
 }
 
-TEST_F(ScannerTest,
-       DisclaimerDeclineHidesDisclaimerSetPrefsAndContinuesSession) {
+TEST_F(ScannerTest, DisclaimerDeclineHidesDisclaimerSetPrefsAndEndsSession) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+
+  views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
+      kDisclaimerViewDeclineButtonId);
+  LeftClickOn(decline_button);
+
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+  EXPECT_FALSE(controller->capture_mode_session());
+  EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_F(
+    ScannerTest,
+    DisclaimerDeclineHidesDisclaimerSetPrefsAndDoesNotEndIfSunfishFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kSunfishFeature);
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       kSunfishConsentDisclaimerAccepted, false);
 

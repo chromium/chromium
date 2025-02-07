@@ -552,6 +552,8 @@ IN_PROC_BROWSER_TEST_P(WebAccessibleResourcesBrowserRedirectTest, Manifests) {
   TestBrowserRedirectMV3(is_war_for_redirect_enabled);
 }
 
+// TODO(crbug.com/40060076): Add a test for a server redirect from A to B to C.
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

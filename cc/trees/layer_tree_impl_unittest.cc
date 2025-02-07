@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
@@ -2520,8 +2521,8 @@ TEST_F(LayerTreeImplTest, CheckRenderSurfaceIsFastRoundedCorner) {
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData append_quads_data;
 
-  render_surface->AppendQuads(DRAW_MODE_HARDWARE, render_pass.get(),
-                              &append_quads_data);
+  render_surface->AppendQuads({.draw_mode = DRAW_MODE_HARDWARE},
+                              render_pass.get(), &append_quads_data);
 
   ASSERT_EQ(1u, render_pass->shared_quad_state_list.size());
   viz::SharedQuadState* shared_quad_state =

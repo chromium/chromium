@@ -186,7 +186,12 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // NavigationLoaderInterceptor::MaybeCreateLoader. It allows an interceptor
   // to initially elect to handle a request, and later decide to fallback to
   // the default behavior. This is needed for service worker network fallback.
-  void FallbackToNonInterceptedRequest(
+  //
+  // This is a static method + WeakPtr `self` argument, to return `nullptr` when
+  // `self` is destroyed (`base::BindOnce` + non-static member method +
+  // `WeakPtr` doesn't work if the return type is not `void`).
+  static network::mojom::URLLoaderFactory* FallbackToNonInterceptedRequest(
+      base::WeakPtr<NavigationURLLoaderImpl> self,
       ResponseHeadUpdateParams head_update_params);
 
   void CreateThrottlingLoaderAndStart(

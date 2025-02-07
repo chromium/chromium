@@ -98,6 +98,7 @@ bool PaintedScrollbarLayerImpl::WillDraw(
 }
 
 void PaintedScrollbarLayerImpl::AppendQuads(
+    const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   AppendThumbQuads(render_pass, append_quads_data);

@@ -84,6 +84,7 @@ class TestWithCastEnvironment : public ::testing::Test,
   TestWithCastEnvironment(const TestWithCastEnvironment&) = delete;
   TestWithCastEnvironment& operator=(const TestWithCastEnvironment&) = delete;
   TestWithCastEnvironment& operator=(TestWithCastEnvironment&&) = delete;
+  ~TestWithCastEnvironment() override;
 
  protected:
   using WithCastEnvironment::WithCastEnvironment;

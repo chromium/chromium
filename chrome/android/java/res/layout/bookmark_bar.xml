@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 <org.chromium.chrome.browser.bookmarks.bar.BookmarkBar
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/bookmark_bar_padding"
@@ -18,6 +19,17 @@ found in the LICENSE file.
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_weight="1" />
+
+  <ImageButton
+      android:id="@+id/bookmark_bar_overflow_button"
+      android:layout_width="@dimen/bookmark_bar_overflow_button_size"
+      android:layout_height="@dimen/bookmark_bar_overflow_button_size"
+      android:layout_marginStart="@dimen/bookmark_bar_spacing"
+      android:background="?attr/selectableItemBackground"
+      android:contentDescription="@string/bookmark_bar_overflow_button_content_description"
+      android:scaleType="fitCenter"
+      android:src="@drawable/ic_keyboard_double_arrow_right_24dp"
+      app:tint="@color/default_icon_color_tint_list" />
 
   <View
       android:layout_width="@dimen/bookmark_bar_divider_width"

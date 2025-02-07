@@ -19,6 +19,14 @@ class BookmarkBarProperties {
     public static final WritableObjectPropertyKey<Callback<Integer>> HEIGHT_CHANGE_CALLBACK =
             new WritableObjectPropertyKey<>();
 
+    /** The callback to notify of bookmark bar overflow button click events. */
+    public static final WritableObjectPropertyKey<Runnable> OVERFLOW_BUTTON_CLICK_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
+    /** The visibility of the bookmark bar overflow button. */
+    public static final WritableIntPropertyKey OVERFLOW_BUTTON_VISIBILITY =
+            new WritableIntPropertyKey();
+
     /** The top margin to use during bookmark bar layout. */
     public static final WritableIntPropertyKey TOP_MARGIN = new WritableIntPropertyKey();
 
@@ -26,5 +34,11 @@ class BookmarkBarProperties {
     public static final WritableIntPropertyKey VISIBILITY = new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {HEIGHT_CHANGE_CALLBACK, TOP_MARGIN, VISIBILITY};
+            new PropertyKey[] {
+                HEIGHT_CHANGE_CALLBACK,
+                OVERFLOW_BUTTON_CLICK_CALLBACK,
+                OVERFLOW_BUTTON_VISIBILITY,
+                TOP_MARGIN,
+                VISIBILITY
+            };
 }

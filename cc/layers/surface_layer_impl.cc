@@ -186,7 +186,8 @@ bool SurfaceLayerImpl::WillDraw(
   return will_draw;
 }
 
-void SurfaceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void SurfaceLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                   viz::CompositorRenderPass* render_pass,
                                    AppendQuadsData* append_quads_data) {
   AppendRainbowDebugBorder(render_pass);
 

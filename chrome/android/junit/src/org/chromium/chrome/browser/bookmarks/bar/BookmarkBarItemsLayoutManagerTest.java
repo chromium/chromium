@@ -8,6 +8,10 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +22,15 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.ui.base.LocalizationUtils;
@@ -31,6 +41,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.IntConsumer;
 import java.util.function.IntUnaryOperator;
@@ -46,6 +57,10 @@ public class BookmarkBarItemsLayoutManagerTest {
     private static final PropertyKey[] ALL_KEYS = new PropertyKey[] {HEIGHT, WIDTH};
 
     private static final int VIEW_TYPE = 1;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Callback<Boolean> mItemsOverflowSupplierObserver;
 
     private SimpleRecyclerViewAdapter mAdapter;
     private int mItemMaxWidth;
@@ -110,6 +125,44 @@ public class BookmarkBarItemsLayoutManagerTest {
     private int calculateLayoutWidth(@NonNull List<Integer> itemWidths) {
         return itemWidths.stream().mapToInt(Integer::intValue).sum()
                 + Math.max(0, mItemSpacing * (itemWidths.size() - 1));
+    }
+
+    @Test
+    @SmallTest
+    public void testItemsOverflowChangeCallback() {
+        // Bind observer and verify initial event propagation.
+        verify(mItemsOverflowSupplierObserver, never()).onResult(any());
+        mLayoutManager.getItemsOverflowSupplier().addObserver(mItemsOverflowSupplierObserver);
+        Robolectric.flushForegroundThreadScheduler();
+        verify(mItemsOverflowSupplierObserver).onResult(false);
+        clearInvocations(mItemsOverflowSupplierObserver);
+
+        // Set up items.
+        final var itemHeight = 10;
+        final var itemWidth = 10;
+        final var itemWidths = Collections.nCopies(10, itemWidth);
+        mModel.set(buildItemList(itemWidths, itemHeight));
+
+        // Perform layout of view w/ less space than is needed and verify event propagation.
+        mView.layout(0, 0, calculateLayoutWidth(itemWidths) - 1, itemHeight);
+        verify(mItemsOverflowSupplierObserver).onResult(true);
+        clearInvocations(mItemsOverflowSupplierObserver);
+
+        // Verify re-layout is a no-op.
+        mView.layout(mView.getLeft(), mView.getTop(), mView.getRight(), mView.getBottom());
+        verify(mItemsOverflowSupplierObserver, never()).onResult(any());
+
+        // Perform layout of view w/ as much space as is needed and verify event propagation.
+        mView.layout(0, 0, calculateLayoutWidth(itemWidths), itemHeight);
+        verify(mItemsOverflowSupplierObserver).onResult(false);
+        clearInvocations(mItemsOverflowSupplierObserver);
+
+        // Verify re-layout is a no-op.
+        mView.layout(mView.getLeft(), mView.getTop(), mView.getRight(), mView.getBottom());
+        verify(mItemsOverflowSupplierObserver, never()).onResult(any());
+
+        // Clean up.
+        mLayoutManager.getItemsOverflowSupplier().removeObserver(mItemsOverflowSupplierObserver);
     }
 
     @Test

@@ -54,6 +54,7 @@ class CompositorRenderPass;
 namespace cc {
 
 class AppendQuadsData;
+struct AppendQuadsContext;
 struct LayerDebugInfo;
 class LayerTreeImpl;
 class MicroBenchmarkImpl;
@@ -138,9 +139,10 @@ class CC_EXPORT LayerImpl {
   // the layer is destroyed.
   virtual bool WillDraw(DrawMode draw_mode,
                         viz::ClientResourceProvider* resource_provider);
-  virtual void AppendQuads(viz::CompositorRenderPass* render_pass,
+  virtual void AppendQuads(const AppendQuadsContext& context,
+                           viz::CompositorRenderPass* render_pass,
                            AppendQuadsData* append_quads_data) {}
-  virtual void DidDraw(viz::ClientResourceProvider* resource_provider);
+  virtual void DidDraw(viz::ClientResourceProvider* resource_provider) {}
 
   // Verify that the resource ids in the quad are valid.
   void ValidateQuadResources(viz::DrawQuad* quad) const {
@@ -589,7 +591,6 @@ class CC_EXPORT LayerImpl {
  protected:
   friend class TreeSynchronizer;
 
-  DrawMode current_draw_mode_;
   EffectTree& GetEffectTree() const;
   PropertyTrees* GetPropertyTrees() const;
   ClipTree& GetClipTree() const;

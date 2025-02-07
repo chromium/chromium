@@ -61,6 +61,7 @@
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scrollbar_animation_controller.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
@@ -1412,7 +1413,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // texture suddenly appearing in the future.
   DrawResult draw_result = DrawResult::kSuccess;
 
-  const DrawMode draw_mode = GetDrawMode();
+  const AppendQuadsContext context = {.draw_mode = GetDrawMode()};
 
   int num_missing_tiles = 0;
   CHECK(!frame->checkerboarded_needs_raster);
@@ -1457,12 +1458,12 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
                  EffectTreeLayerListIterator::State::kContributingSurface) {
         RenderSurfaceImpl* render_surface = it.current_render_surface();
         if (render_surface->contributes_to_drawn_surface()) {
-          render_surface->AppendQuads(draw_mode, target_render_pass,
+          render_surface->AppendQuads(context, target_render_pass,
                                       &append_quads_data);
         }
       } else if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
         LayerImpl* layer = it.current_layer();
-        if (layer->WillDraw(draw_mode, resource_provider_.get())) {
+        if (layer->WillDraw(context.draw_mode, resource_provider_.get())) {
           DCHECK_EQ(active_tree_.get(), layer->layer_tree_impl());
 
           frame->will_draw_layers.push_back(layer);
@@ -1481,7 +1482,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
             }
           }
           layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
-          layer->AppendQuads(target_render_pass, &append_quads_data);
+          layer->AppendQuads(context, target_render_pass, &append_quads_data);
         } else {
           if (settings_.enable_compositing_based_throttling) {
             throttle_decider_.ProcessLayerNotToDraw(layer);

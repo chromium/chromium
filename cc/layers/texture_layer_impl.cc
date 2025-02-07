@@ -113,7 +113,8 @@ bool TextureLayerImpl::WillDraw(
   return resource_id_ != viz::kInvalidResourceId;
 }
 
-void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void TextureLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                   viz::CompositorRenderPass* render_pass,
                                    AppendQuadsData* append_quads_data) {
   DCHECK(resource_id_);
 

@@ -312,7 +312,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling googletest
   # and whatever else without interference from each other.
-  'googletest_revision': 'e235eb34c6c4fed790ccdad4b16394301360dcd4',
+  'googletest_revision': 'e5443e5c65f23bfd2a9d56a30bb5b1de91a48ff9',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling lighttpd
   # and whatever else without interference from each other.
@@ -352,7 +352,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': '0a40d5cb87cd4e685047b28ccd8b1d116267be7c',
+  'chromium_variations_revision': '270a25f8795caf0a798ebf5a7d69284e3d830d19',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -372,7 +372,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '2b2ec38869d83d9e9f1bec2427a42e3e2bb99044',
+  'devtools_frontend_revision': '250194ed20869038dbb01602b259605471289601',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -2804,7 +2804,7 @@ deps = {
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '450cceb587613ac1469c5a131fac15935c99e0e7',
 
   'src/third_party/webgpu-cts/src':
-    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '9f2c2c04ebbb6d0089ce637231bfa902470d9fcc',
+    Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'c019bac293d0473aafc758de86584d2a8ea20459',
 
   'src/third_party/webpagereplay':
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
@@ -2856,7 +2856,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/linux-amd64',
-          'version': 'SyfDblOWETv0is0nmc7L-IAyPVblkilH14LtUYNErvMC',
+          'version': '-pgwc4DvHKBc-M2kfGh_CpDsCibSDgSFKpC62i2sfs4C',
         },
       ],
       'dep_type': 'cipd',
@@ -2877,7 +2877,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'bA2IOYIBpZfv7UUAoIplW4d6Mi-tplIg2_bKCEAqGgsC',
+          'version': 'FbgsExsn0P2Jp9noFNwBm05l33pK1tNe3NG9-dKbBMIC',
         },
       ],
       'dep_type': 'cipd',
@@ -2888,7 +2888,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-arm64',
-          'version': 'FFwfjoM2rWofJpdAOXarxaD7HBDCpZsytl6BZYh6nigC',
+          'version': 'hywR0VGUAR95_-fLHpoyvpVT9T2u8qlj4TLj_VxIyMEC',
         },
       ],
       'dep_type': 'cipd',

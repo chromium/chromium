@@ -946,6 +946,7 @@ static bool MergeRedirectUrlOfResponsesHelper(
     const GURL& url,
     const EventResponseDeltas& deltas,
     GURL* new_url,
+    std::optional<extensions::ExtensionId>* extension_id,
     IgnoredActions* ignored_actions,
     bool consider_only_cancel_scheme_urls) {
   // Redirecting WebSocket handshake request is prohibited.
@@ -967,6 +968,7 @@ static bool MergeRedirectUrlOfResponsesHelper(
 
     if (!redirected || *new_url == delta.new_url) {
       *new_url = delta.new_url;
+      *extension_id = delta.extension_id;
       redirected = true;
     } else {
       ignored_actions->emplace_back(delta.extension_id,
@@ -976,29 +978,34 @@ static bool MergeRedirectUrlOfResponsesHelper(
   return redirected;
 }
 
-void MergeRedirectUrlOfResponses(const GURL& url,
-                                 const EventResponseDeltas& deltas,
-                                 GURL* new_url,
-                                 IgnoredActions* ignored_actions) {
+void MergeRedirectUrlOfResponses(
+    const GURL& url,
+    const EventResponseDeltas& deltas,
+    GURL* new_url,
+    std::optional<extensions::ExtensionId>* extension_id,
+    IgnoredActions* ignored_actions) {
   // First handle only redirects to data:// URLs and about:blank. These are a
   // special case as they represent a way of cancelling a request.
-  if (MergeRedirectUrlOfResponsesHelper(url, deltas, new_url, ignored_actions,
-                                        true)) {
+  if (MergeRedirectUrlOfResponsesHelper(url, deltas, new_url, extension_id,
+                                        ignored_actions, true)) {
     // If any extension cancelled a request by redirecting to a data:// URL or
     // about:blank, we don't consider the other redirects.
     return;
   }
 
   // Handle all other redirects.
-  MergeRedirectUrlOfResponsesHelper(url, deltas, new_url, ignored_actions,
-                                    false);
+  MergeRedirectUrlOfResponsesHelper(url, deltas, new_url, extension_id,
+                                    ignored_actions, false);
 }
 
-void MergeOnBeforeRequestResponses(const GURL& url,
-                                   const EventResponseDeltas& deltas,
-                                   GURL* new_url,
-                                   IgnoredActions* ignored_actions) {
-  MergeRedirectUrlOfResponses(url, deltas, new_url, ignored_actions);
+void MergeOnBeforeRequestResponses(
+    const GURL& url,
+    const EventResponseDeltas& deltas,
+    GURL* new_url,
+    std::optional<extensions::ExtensionId>* extension_id,
+    IgnoredActions* ignored_actions) {
+  MergeRedirectUrlOfResponses(url, deltas, new_url, extension_id,
+                              ignored_actions);
 }
 
 static bool DoesRequestCookieMatchFilter(
@@ -1595,6 +1602,7 @@ void MergeOnHeadersReceivedResponses(
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
     GURL* preserve_fragment_on_redirect_url,
+    std::optional<extensions::ExtensionId>* extenion_id,
     IgnoredActions* ignored_actions,
     bool* response_headers_modified,
     std::vector<const DNRRequestAction*>* matched_dnr_actions) {
@@ -1708,7 +1716,9 @@ void MergeOnHeadersReceivedResponses(
                                            override_response_headers);
 
   GURL new_url;
-  MergeRedirectUrlOfResponses(request.url, deltas, &new_url, ignored_actions);
+  std::optional<extensions::ExtensionId> extension_id;
+  MergeRedirectUrlOfResponses(request.url, deltas, &new_url, &extension_id,
+                              ignored_actions);
   if (new_url.is_valid()) {
     // Only create a copy if we really want to modify the response headers.
     if (override_response_headers->get() == nullptr) {

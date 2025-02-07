@@ -103,6 +103,7 @@ void ViewTransitionContentLayerImpl::SetOriginatingSurfaceContentRect(
 }
 
 void ViewTransitionContentLayerImpl::AppendQuads(
+    const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   // Skip live content elements that don't have a corresponding resource render

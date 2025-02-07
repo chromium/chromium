@@ -778,17 +778,15 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     HistoryItem* current_item = window_->document()->Loader()->GetHistoryItem();
     destination_state = current_item->GetNavigationApiState();
   }
-  NavigationDestination* destination =
-      MakeGarbageCollected<NavigationDestination>(
-          params->url, params->event_type != NavigateEventType::kCrossDocument,
-          destination_state);
+  NavigationHistoryEntry* destination_entry = nullptr;
   if (IsBackForwardOrRestore(params->frame_load_type)) {
     auto iter = keys_to_indices_.find(key);
     if (iter != keys_to_indices_.end()) {
-      destination->SetDestinationEntry(entries_[iter->value]);
+      destination_entry = entries_[iter->value];
     }
   }
-  init->setDestination(destination);
+  init->setDestination(MakeGarbageCollected<NavigationDestination>(
+      params, destination_state, destination_entry));
 
   bool should_allow_traversal_cancellation =
       IsBackForwardOrRestore(params->frame_load_type) &&

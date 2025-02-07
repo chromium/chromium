@@ -11,5 +11,5 @@
   readonly attribute USVString url;
   readonly attribute long long index;
   readonly attribute boolean sameDocument;
-  [CallWith=ScriptState] any getState();
+  [CallWith=Isolate] any getState();
 };

@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/completion_event.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer_impl.h"
@@ -251,7 +252,8 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   host_impl.active_tree()->root_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
-  host_impl.active_tree()->root_layer()->AppendQuads(render_pass.get(), &data);
+  host_impl.active_tree()->root_layer()->AppendQuads(
+      {.draw_mode = DRAW_MODE_SOFTWARE}, render_pass.get(), &data);
   host_impl.active_tree()->root_layer()->DidDraw(nullptr);
 }
 

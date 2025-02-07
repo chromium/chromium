@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 
 namespace extensions {
 
@@ -37,12 +38,14 @@ ExtensionNavigationRegistry::GetFactoryInstance() {
 
 void ExtensionNavigationRegistry::RecordExtensionRedirect(
     int64_t navigation_handle_id,
-    const GURL& target_url) {
+    const GURL& target_url,
+    const ExtensionId& extension_id) {
   if (!IsEnabled()) {
     return;
   }
 
-  redirect_metadata_.emplace(navigation_handle_id, target_url);
+  redirect_metadata_.emplace(navigation_handle_id,
+                             Metadata(target_url, extension_id));
 }
 
 void ExtensionNavigationRegistry::Erase(int64_t navigation_handle_id) {
@@ -57,8 +60,8 @@ void ExtensionNavigationRegistry::Erase(int64_t navigation_handle_id) {
   redirect_metadata_.erase(it);
 }
 
-std::optional<GURL> ExtensionNavigationRegistry::GetAndErase(
-    int64_t navigation_handle_id) {
+std::optional<ExtensionNavigationRegistry::Metadata>
+ExtensionNavigationRegistry::GetAndErase(int64_t navigation_handle_id) {
   if (!IsEnabled()) {
     return std::nullopt;
   }
@@ -67,9 +70,10 @@ std::optional<GURL> ExtensionNavigationRegistry::GetAndErase(
   if (it == redirect_metadata_.end()) {
     return std::nullopt;
   }
-  GURL result = it->second;
+
+  Metadata metadata = it->second;
   redirect_metadata_.erase(it);
-  return result;
+  return metadata;
 }
 
 bool ExtensionNavigationRegistry::IsEnabled() {
@@ -77,13 +81,15 @@ bool ExtensionNavigationRegistry::IsEnabled() {
       extensions_features::kExtensionWARForRedirect);
 }
 
-bool ExtensionNavigationRegistry::CanRedirectSucceed(int64_t navigation_id,
-                                                     const GURL& url) {
+bool ExtensionNavigationRegistry::CanRedirect(int64_t navigation_id,
+                                              const GURL& gurl,
+                                              const Extension& extension) {
   if (!IsEnabled()) {
     return true;
   }
 
-  std::optional<GURL> extension_redirect_recorded = GetAndErase(navigation_id);
+  std::optional<Metadata> extension_redirect_recorded =
+      GetAndErase(navigation_id);
 
   // Block requests for navigations unaltered by webRequest.
   if (!extension_redirect_recorded.has_value()) {
@@ -93,9 +99,13 @@ bool ExtensionNavigationRegistry::CanRedirectSucceed(int64_t navigation_id,
   // Block requests if the extension or url are unexpected.
   // TODO(crbug.com/40060076): Verify WAR access for the recorded extension
   // instead of checking for equality with the target extension.
-  auto recorded_url = extension_redirect_recorded.value();
-  if (recorded_url != url) {
+  auto metadata = extension_redirect_recorded.value();
+  if (metadata.gurl != gurl) {
     return false;
+  }
+
+  if (metadata.extension_id == extension.id()) {
+    return true;
   }
 
   return true;

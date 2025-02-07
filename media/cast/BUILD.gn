@@ -163,6 +163,8 @@ static_library("test_support") {
     "test/fake_video_encode_accelerator_factory.h",
     "test/mock_openscreen_environment.cc",
     "test/mock_openscreen_environment.h",
+    "test/mock_video_encoder.cc",
+    "test/mock_video_encoder.h",
     "test/test_with_cast_environment.cc",
     "test/test_with_cast_environment.h",
     "test/utility/audio_utility.cc",
@@ -175,6 +177,7 @@ static_library("test_support") {
 
   deps = [
     ":common",
+    ":encoding",
     ":sender",
     "//base/test:test_support",
     "//media",
@@ -195,6 +198,7 @@ test("cast_unittests") {
     "encoding/encoding_support_unittest.cc",
     "encoding/external_video_encoder_unittest.cc",
     "encoding/media_video_encoder_wrapper_unittest.cc",
+    "encoding/size_adaptable_video_encoder_base_unittest.cc",
     "encoding/video_encoder_unittest.cc",
     "encoding/vpx_quantizer_parser_unittest.cc",
     "logging/log_event_dispatcher_unittest.cc",

@@ -200,6 +200,7 @@ found in the LICENSE file.
     <dimen name="bookmark_bar_divider_width">2dp</dimen>
     <dimen name="bookmark_bar_item_max_width">187dp</dimen>
     <dimen name="bookmark_bar_item_spacing">@dimen/bookmark_bar_spacing</dimen>
+    <dimen name="bookmark_bar_overflow_button_size">24dp</dimen>
     <dimen name="bookmark_bar_padding">8dp</dimen>
     <dimen name="bookmark_bar_spacing">8dp</dimen>
 

@@ -49,6 +49,7 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/packet.h"
 #include "media/cast/encoding/encoding_support.h"
+#include "media/cast/encoding/video_encoder.h"
 #include "media/cast/openscreen/config_conversions.h"
 #include "media/cast/sender/audio_sender.h"
 #include "media/cast/sender/video_sender.h"
@@ -469,18 +470,23 @@ void OpenscreenSessionHost::OnNegotiated(
               media::cast::OperationalStatus::STATUS_CODEC_RUNTIME_ERROR));
       gpu_factories = &gpu_factories_factory_->GetInstance();
     }
-    auto video_sender = std::make_unique<media::cast::VideoSender>(
+
+    auto video_encoder = media::cast::VideoEncoder::Create(
         cast_environment_, *video_config,
+        base::MakeRefCounted<media::MojoVideoEncoderMetricsProviderFactory>(
+            media::mojom::VideoEncoderUseCase::kCastMirroring,
+            std::move(metrics_provider_pending_remote))
+            ->CreateVideoEncoderMetricsProvider(),
         base::BindRepeating(&OpenscreenSessionHost::OnVideoEncoderStatus,
                             weak_factory_.GetWeakPtr(), *video_config),
         base::BindRepeating(
             &OpenscreenSessionHost::CreateVideoEncodeAccelerator,
             weak_factory_.GetWeakPtr()),
+        gpu_factories);
+
+    auto video_sender = std::make_unique<media::cast::VideoSender>(
+        std::move(video_encoder), cast_environment_, *video_config,
         std::move(senders.video_sender),
-        base::MakeRefCounted<media::MojoVideoEncoderMetricsProviderFactory>(
-            media::mojom::VideoEncoderUseCase::kCastMirroring,
-            std::move(metrics_provider_pending_remote))
-            ->CreateVideoEncoderMetricsProvider(),
         base::BindRepeating(&OpenscreenSessionHost::SetTargetPlayoutDelay,
                             weak_factory_.GetWeakPtr()),
         base::BindRepeating(&OpenscreenSessionHost::ProcessFeedback,
@@ -488,8 +494,7 @@ void OpenscreenSessionHost::OnNegotiated(
         // This is safe since it is only called synchronously and we own
         // the video sender instance.
         base::BindRepeating(&OpenscreenSessionHost::GetVideoNetworkBandwidth,
-                            base::Unretained(this)),
-        gpu_factories);
+                            base::Unretained(this)));
     video_stream_ = std::make_unique<VideoRtpStream>(
         std::move(video_sender), weak_factory_.GetWeakPtr(),
         mirror_settings_.refresh_interval());

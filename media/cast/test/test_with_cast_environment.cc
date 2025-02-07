@@ -29,4 +29,6 @@ WithCastEnvironment::~WithCastEnvironment() {
   task_environment_.RunUntilQuit();
 }
 
+TestWithCastEnvironment::~TestWithCastEnvironment() = default;
+
 }  // namespace media::cast

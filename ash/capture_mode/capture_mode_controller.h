@@ -573,6 +573,8 @@ class ASH_EXPORT CaptureModeController
 
   // Shows scanner discliamer if necessary, which has an option to accept or
   // decline consent for scanner.
+  // If only scanner is enabled, then stops the session if declined since there
+  // is nothing you can do in the session.
   void MaybeShowScannerDisclaimerOnSunfishStartup(bool startup_success);
 
   // Called back when the Scanner feature has processed a captured image to

@@ -30,6 +30,22 @@ struct SenderEncodedFrame;
 // SizeAdaptableVideoEncoderBase acts as a proxy to automatically detect when
 // the owned instance should be replaced with one that can handle the new frame
 // size.
+//
+// The status returned to `status_change_cb` is expected to work like this:
+//
+// Step 1: In the SizeAdaptableVideoEncoderBase ctor, we post a task to the
+//         main thread that updates the status to STATUS_INITIALIZED. This is
+//         how the consumer knows that it can post its first frame.
+// Step 2: The consumer posts the first video frame.
+// Step 3: Since the first video frame has a valid size, we now can spin up a
+//         backing encoder instance in TrySpawningReplacementEncoder(). This is
+//         "replacing" the nullptr encoder that was set on initialization.
+// Step 4: Status changes to STATUS_CODEC_REINIT_PENDING while we are spawning
+//         the replacement. Frames should not be sent for encoding during this
+//         time.
+// Step 5: Once the replacement `encoder_` has been initialized, it calls
+//        OnEncoderStatusChange() with STATUS_INITIALIZED, which is passed to
+//        `status_change_cb_`.
 class SizeAdaptableVideoEncoderBase : public VideoEncoder {
  public:
   SizeAdaptableVideoEncoderBase(

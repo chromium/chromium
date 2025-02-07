@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/at_exit.h"
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -70,8 +71,14 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
     const base::CommandLine* command_line =
         base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(flag)) {
-      return callback.Run(command_line->GetSwitchValueASCII(flag),
-                          std::move(args)...);
+      std::string decoded_value;
+      if (!base::Base64Decode(command_line->GetSwitchValueASCII(flag),
+                              &decoded_value)) {
+        LOG(ERROR) << "Could not decode switch value: " << flag;
+        return false;
+      }
+
+      return callback.Run(decoded_value, std::move(args)...);
     }
     LOG(ERROR) << "Missing switch: " << flag;
     return false;

@@ -413,7 +413,8 @@ GURL GetNewUrl(const GURL& redirect_url,
 void RecordThatNavigationWasInitiatedByExtension(
     const WebRequestInfo* request,
     content::BrowserContext* browser_context,
-    GURL* new_url) {
+    GURL* new_url,
+    const ExtensionId& extension_id) {
   GURL new_location = new_url ? *new_url : GURL();
 
   // Now that the event type has been signaled, record that webRequest has
@@ -422,7 +423,8 @@ void RecordThatNavigationWasInitiatedByExtension(
     // Store the target url.
     // TODO(crbug.com/40060076): Record the extension id that caused the action.
     ExtensionNavigationRegistry::Get(browser_context)
-        ->RecordExtensionRedirect(request->navigation_id.value(), new_location);
+        ->RecordExtensionRedirect(request->navigation_id.value(), new_location,
+                                  extension_id);
   }
 }
 
@@ -1024,8 +1026,8 @@ int WebRequestEventRouter::OnBeforeRequest(
                     browser_context, action.extension_id, request->url,
                     action.redirect_url.value());
           }
-          RecordThatNavigationWasInitiatedByExtension(request, browser_context,
-                                                      new_url);
+          RecordThatNavigationWasInitiatedByExtension(
+              request, browser_context, new_url, action.extension_id);
           return net::OK;
         case DNRRequestAction::Type::MODIFY_HEADERS:
           // Unlike other actions, allow web request extensions to intercept
@@ -2441,11 +2443,12 @@ int WebRequestEventRouter::ExecuteDeltas(
 
   extension_web_request_api_helpers::IgnoredActions ignored_actions;
   std::vector<const DNRRequestAction*> matched_dnr_actions;
+  std::optional<ExtensionId> extension_id;
   if (blocked_request.event == EventTypes::kOnBeforeRequest) {
     CHECK(!blocked_request.callback.is_null());
     helpers::MergeOnBeforeRequestResponses(
         request->url, blocked_request.response_deltas, blocked_request.new_url,
-        &ignored_actions);
+        &extension_id, &ignored_actions);
   } else if (blocked_request.event == EventTypes::kOnBeforeSendHeaders) {
     CHECK(!blocked_request.before_send_headers_callback.is_null());
     helpers::MergeOnBeforeSendHeadersResponses(
@@ -2459,7 +2462,8 @@ int WebRequestEventRouter::ExecuteDeltas(
         *request, blocked_request.response_deltas,
         blocked_request.original_response_headers.get(),
         blocked_request.override_response_headers, blocked_request.new_url,
-        &ignored_actions, &response_headers_modified, &matched_dnr_actions);
+        &extension_id, &ignored_actions, &response_headers_modified,
+        &matched_dnr_actions);
   } else if (blocked_request.event == EventTypes::kOnAuthRequired) {
     CHECK(blocked_request.callback.is_null());
     CHECK(!blocked_request.auth_callback.is_null());
@@ -2481,9 +2485,6 @@ int WebRequestEventRouter::ExecuteDeltas(
     OnDNRActionMatched(browser_context, *request, *action);
   }
 
-  RecordThatNavigationWasInitiatedByExtension(request, browser_context,
-                                              blocked_request.new_url);
-
   const bool redirected =
       blocked_request.new_url && !blocked_request.new_url->is_empty();
 
@@ -2491,6 +2492,10 @@ int WebRequestEventRouter::ExecuteDeltas(
     GetExtensionWebRequestTimeTracker().SetRequestCanceled(request->id);
   } else if (redirected) {
     GetExtensionWebRequestTimeTracker().SetRequestRedirected(request->id);
+
+    RecordThatNavigationWasInitiatedByExtension(request, browser_context,
+                                                blocked_request.new_url,
+                                                extension_id.value_or(""));
   }
 
   // Log UMA metrics. Note: We are not necessarily concerned with the final

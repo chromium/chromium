@@ -36,7 +36,7 @@ class TestMd5Check(unittest.TestCase):
     # Test out empty zip file to start.
     _WriteZipFile(input_file2.name, [])
     input_files = [input_file1.name, input_file2.name]
-    zip_paths = [input_file2.name]
+    zip_paths = [os.path.relpath(input_file2.name)]
 
     record_path = tempfile.NamedTemporaryFile(suffix='.stamp')
 
@@ -103,18 +103,24 @@ class TestMd5Check(unittest.TestCase):
 
     input_file1.write(b'some more input')
     input_file1.flush()
-    CheckCallAndRecord(True, 'changed input file should trigger call',
-                       expected_changes='*Modified: %s' % input_file1.name,
+    CheckCallAndRecord(True,
+                       'changed input file should trigger call',
+                       expected_changes='*Modified: %s' %
+                       os.path.relpath(input_file1.name),
                        added_or_modified_only=True)
 
     input_files = input_files[:1]
-    CheckCallAndRecord(True, 'removing file should trigger call',
-                       expected_changes='*Removed: %s' % input_file1.name,
+    CheckCallAndRecord(True,
+                       'removing file should trigger call',
+                       expected_changes='*Removed: %s' %
+                       os.path.relpath(input_file1.name),
                        added_or_modified_only=False)
 
     input_files.append(input_file1.name)
-    CheckCallAndRecord(True, 'added input file should trigger call',
-                       expected_changes='*Added: %s' % input_file1.name,
+    CheckCallAndRecord(True,
+                       'added input file should trigger call',
+                       expected_changes='*Added: %s' %
+                       os.path.relpath(input_file1.name),
                        added_or_modified_only=True)
 
     input_strings[0] = input_strings[0] + ' a bit longer'
@@ -136,26 +142,25 @@ class TestMd5Check(unittest.TestCase):
         added_or_modified_only=False)
 
     _WriteZipFile(input_file2.name, [('path/1.txt', '1')])
-    CheckCallAndRecord(
-        True,
-        'added subpath should trigger call',
-        expected_changes='*Modified: %s*Subpath added: %s' % (input_file2.name,
-                                                              'path/1.txt'),
-        added_or_modified_only=True,
-        track_subentries=True)
+    CheckCallAndRecord(True,
+                       'added subpath should trigger call',
+                       expected_changes='*Modified: %s*Subpath added: %s' %
+                       (os.path.relpath(input_file2.name), 'path/1.txt'),
+                       added_or_modified_only=True,
+                       track_subentries=True)
     _WriteZipFile(input_file2.name, [('path/1.txt', '2')])
-    CheckCallAndRecord(
-        True,
-        'changed subpath should trigger call',
-        expected_changes='*Modified: %s*Subpath modified: %s' %
-        (input_file2.name, 'path/1.txt'),
-        added_or_modified_only=True,
-        track_subentries=True)
+    CheckCallAndRecord(True,
+                       'changed subpath should trigger call',
+                       expected_changes='*Modified: %s*Subpath modified: %s' %
+                       (os.path.relpath(input_file2.name), 'path/1.txt'),
+                       added_or_modified_only=True,
+                       track_subentries=True)
 
     _WriteZipFile(input_file2.name, [])
-    CheckCallAndRecord(True, 'removed subpath should trigger call',
-                       expected_changes='*Modified: %s*Subpath removed: %s' % (
-                                        input_file2.name, 'path/1.txt'),
+    CheckCallAndRecord(True,
+                       'removed subpath should trigger call',
+                       expected_changes='*Modified: %s*Subpath removed: %s' %
+                       (os.path.relpath(input_file2.name), 'path/1.txt'),
                        added_or_modified_only=False)
 
 

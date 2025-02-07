@@ -90,9 +90,12 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // Passed as the RequestHandler for
   // NavigationLoaderInterceptor::MaybeCreateLoader.
   void StartRequest(
-      const network::ResourceRequest& resource_request,
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
   // The navigation request that was holding this job is
   // going away. Calling this internally calls |DeleteIfNeeded()|
@@ -104,8 +107,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   base::WeakPtr<ServiceWorkerMainResourceLoader> AsWeakPtr();
 
  private:
-  class StreamWaiter;
   class RaceNetworkRequestURLLoaderClient;
+  class StreamWaiter;
+
   enum class Status {
     kNotStarted,
     // |receiver_| is bound and the fetch event is being dispatched to the
@@ -257,7 +261,10 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
+  int32_t request_id_ = 0;
+  uint32_t options_ = 0;
   network::ResourceRequest resource_request_;
+  net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
   base::WeakPtr<ServiceWorkerClient> service_worker_client_;
   const FrameTreeNodeId frame_tree_node_id_;

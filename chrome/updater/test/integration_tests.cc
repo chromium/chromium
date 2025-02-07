@@ -1523,6 +1523,49 @@ TEST_P(IntegrationMetainstallerTest, UIAndPings) {
       /*expected_exit_code=*/73118,
       /*additional_switches=*/base::Value::List().Append("invalid-switch")));
 }
+
+class IntegrationMetainstallerLangTest
+    : public ::testing::WithParamInterface<std::string>,
+      public IntegrationTest {
+ protected:
+  void SetUp() override {
+    IntegrationTest::SetUp();
+    test_server_ = std::make_unique<ScopedServer>(test_commands_);
+  }
+
+  void TearDown() override {
+    ASSERT_NO_FATAL_FAILURE(Install());
+    ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+    ASSERT_NO_FATAL_FAILURE(Uninstall());
+
+    IntegrationTest::TearDown();
+  }
+
+  std::string lang() const { return GetParam(); }
+
+  std::unique_ptr<ScopedServer> test_server_;
+  static constexpr char kAppId[] = "test1";
+};
+
+INSTANTIATE_TEST_SUITE_P(IntegrationMetainstallerLangTestCases,
+                         IntegrationMetainstallerLangTest,
+                         ::testing::Values("en", "de", "ar", "hi"));
+
+TEST_P(IntegrationMetainstallerLangTest, Test) {
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId, /*is_silent_install=*/false,
+      /*tag=*/
+      base::StrCat({"appguid=", kAppId, "&lang=", lang(), "&usagestats=0"}),
+      /*child_window_text_to_find=*/
+      base::WideToUTF8(GetLocalizedStringF(IDS_GENERIC_METAINSTALLER_ERROR_BASE,
+                                           L"INVALID_OPTION",
+                                           base::UTF8ToWide(lang()))),
+      /*always_launch_cmd=*/false,
+      /*verify_app_logo_loaded=*/false, /*expect_success=*/false,
+      /*wait_for_the_installer=*/true,
+      /*expected_exit_code=*/73118,
+      /*additional_switches=*/base::Value::List().Append("invalid-switch")));
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, NoCheckWhenLastCheckedRecently) {
