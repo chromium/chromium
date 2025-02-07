@@ -355,7 +355,6 @@ component("headless_non_renderer") {
     ":backend_cdp_bindings",
     "//base:base_static",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//build/config/linux/dbus:buildflags",
     "//components/cookie_config",
     "//components/crash/core/common:common",
