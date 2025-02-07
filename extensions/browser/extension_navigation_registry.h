@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_NAVIGATION_REGISTRY_H_
 #define EXTENSIONS_BROWSER_EXTENSION_NAVIGATION_REGISTRY_H_
 
-#include <queue>
-
 #include "base/containers/flat_map.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -27,6 +25,14 @@ class ExtensionNavigationRegistry : public BrowserContextKeyedAPI {
 
   ~ExtensionNavigationRegistry() override;
 
+  struct Metadata {
+    explicit Metadata(GURL gurl, ExtensionId extension_id)
+        : gurl(gurl), extension_id(extension_id) {}
+
+    GURL gurl;
+    ExtensionId extension_id;
+  };
+
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<ExtensionNavigationRegistry>*
   GetFactoryInstance();
@@ -40,15 +46,18 @@ class ExtensionNavigationRegistry : public BrowserContextKeyedAPI {
 
   // Record specific metadata about a navigation.
   void RecordExtensionRedirect(int64_t navigation_handle_id,
-                               const GURL& target_url);
+                               const GURL& target_url,
+                               const ExtensionId& extension_id);
 
   // Return metadata if it exists and remove it from memory.
-  std::optional<GURL> GetAndErase(int64_t navigation_handle_id);
+  std::optional<Metadata> GetAndErase(int64_t navigation_handle_id);
 
   // Determine if the server redirect is allowed to succeed. This is not
   // idempotent because it erases the corresponding record on the first call, so
   // this should only be called once for a given stage in the navigation.
-  bool CanRedirectSucceed(int64_t navigation_id, const GURL& url);
+  bool CanRedirect(int64_t navigation_id,
+                   const GURL& gurl,
+                   const Extension& extension);
 
  private:
   // Determine whether the feature is enabled.
@@ -62,8 +71,8 @@ class ExtensionNavigationRegistry : public BrowserContextKeyedAPI {
   const raw_ptr<content::BrowserContext> browser_context_;
 
   // An ID in existence means that the navigation was intercepted by WebRequest.
-  base::flat_map</*navigation_id=*/int64_t, /*new_url=*/GURL>
-      redirect_metadata_;
+  using NavigationId = int64_t;
+  base::flat_map<NavigationId, Metadata> redirect_metadata_;
 };
 
 }  // namespace extensions

@@ -218,6 +218,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     // code once that's supported. https://crbug.com/649869
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
+  CHECK(target_extension);
 
   // Hosted apps don't have any associated resources outside of icons, so
   // block any requests to URLs in their extension origin.
@@ -311,10 +312,10 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
                                     : "Extensions.WAR.XOriginWebAccessible.MV3",
                                 is_accessible);
 
-      bool can_redirect_succeed =
-          ExtensionNavigationRegistry::Get(browser_context)
-              ->CanRedirectSucceed(navigation_handle()->GetNavigationId(), url);
-      if (!is_accessible && !can_redirect_succeed) {
+      if (!is_accessible &&
+          !ExtensionNavigationRegistry::Get(browser_context)
+               ->CanRedirect(navigation_handle()->GetNavigationId(), url,
+                             *target_extension)) {
         return content::NavigationThrottle::BLOCK_REQUEST;
       }
     }
