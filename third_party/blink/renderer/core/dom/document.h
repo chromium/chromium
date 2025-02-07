@@ -1864,15 +1864,6 @@ class CORE_EXPORT Document : public ContainerNode,
     suppress_mutation_events_ = suppress;
   }
 
-  // IsInCreateFragmentForInnerOuterHTML returns true while
-  // CreateFragmentForInnerOuterHTML is running.
-  bool IsInCreateFragmentForInnerOuterHTMLFastPath() const {
-    return is_in_create_fragment_for_inner_outer_html_fast_path_;
-  }
-  void SetIsInCreateFragmentForInnerOuterHTMLFastPath(bool value) {
-    is_in_create_fragment_for_inner_outer_html_fast_path_ = value;
-  }
-
   bool IsVerticalScrollEnforced() const { return is_vertical_scroll_enforced_; }
   bool IsFocusAllowed() const;
 
@@ -2848,7 +2839,6 @@ class CORE_EXPORT Document : public ContainerNode,
   unsigned slot_assignment_recalc_depth_ = 0;
   unsigned flat_tree_traversal_forbidden_recursion_depth_ = 0;
   bool suppress_mutation_events_ = false;
-  bool is_in_create_fragment_for_inner_outer_html_fast_path_ = false;
 
   Member<DOMFeaturePolicy> policy_;
 
