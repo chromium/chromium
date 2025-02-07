@@ -614,15 +614,9 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone ||
           result.dynamic_pseudo == kPseudoIdNone) {
         Element* style_container_candidate =
-            style_recalc_context_.style_container;
-        if (!style_container_candidate) {
-          if (pseudo_style_request_.pseudo_id == kPseudoIdNone) {
-            style_container_candidate =
-                FlatTreeTraversal::ParentElement(context_.GetElement());
-          } else {
-            style_container_candidate = &context_.GetElement();
-          }
-        }
+            pseudo_style_request_.pseudo_id == kPseudoIdNone
+                ? FlatTreeTraversal::ParentElement(context_.GetElement())
+                : &context_.GetElement();
         if (!EvaluateAndAddContainerQueries(
                 style_container_candidate, *container_query,
                 style_recalc_context_, container_selector_cache_, result_)) {
