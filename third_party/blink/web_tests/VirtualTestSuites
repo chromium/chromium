@@ -3312,7 +3312,7 @@
     ],
     "args": ["--enable-features=SelectParserRelaxation",
              "--disable-features=CustomizableSelect"],
-    "expires": "Feb 1, 2025",
+    "expires": "Aug 1, 2025",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   {
@@ -3337,7 +3337,7 @@
       "html5lib/generated"
     ],
     "args": ["--disable-features=CustomizableSelect,SelectParserRelaxation"],
-    "expires": "Feb 1, 2025",
+    "expires": "Aug 1, 2025",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   {
@@ -3347,7 +3347,7 @@
       "external/wpt/html/semantics/forms/the-select-element/customizable-select/select-parsing.tentative.html"
     ],
     "args": ["--enable-features=InputClosesSelect,SelectParserRelaxation"],
-    "expires": "Feb 1, 2025",
+    "expires": "Aug 1, 2025",
     "owners": ["jarhar@chromium.org", "dom-dev@google.com"]
   },
   {
