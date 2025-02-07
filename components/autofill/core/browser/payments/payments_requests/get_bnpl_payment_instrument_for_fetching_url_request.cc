@@ -102,7 +102,10 @@ void GetBnplPaymentInstrumentForFetchingUrlRequest::ParseResponse(
 }
 
 bool GetBnplPaymentInstrumentForFetchingUrlRequest::IsResponseComplete() {
-  return !response_details_.redirect_url.is_empty();
+  return response_details_.redirect_url.is_valid() &&
+         response_details_.success_url_prefix.is_valid() &&
+         response_details_.failure_url_prefix.is_valid() &&
+         !response_details_.context_token.empty();
 }
 
 void GetBnplPaymentInstrumentForFetchingUrlRequest::RespondToDelegate(
