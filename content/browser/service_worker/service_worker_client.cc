@@ -595,7 +595,7 @@ std::optional<blink::StorageKey> GetStorageKeyFromSharedWorkerHost(
 
 blink::StorageKey ServiceWorkerClient::CalculateStorageKeyForUpdateUrls(
     const GURL& url,
-    const net::IsolationInfo& isolation_info_from_interceptor) const {
+    const net::IsolationInfo& isolation_info_from_handle) const {
   CHECK(!is_response_committed());
 
   const url::Origin origin = url::Origin::Create(url);
@@ -608,7 +608,7 @@ blink::StorageKey ServiceWorkerClient::CalculateStorageKeyForUpdateUrls(
             // response commit.
             return GetStorageKeyFromRenderFrameHost(
                 ongoing_navigation_frame_tree_node_id_, origin,
-                base::OptionalToPtr(isolation_info_from_interceptor.nonce()));
+                base::OptionalToPtr(isolation_info_from_handle.nonce()));
           },
           [&](blink::DedicatedWorkerToken dedicated_worker_token) {
             auto* process = RenderProcessHost::FromID(GetProcessId());
@@ -636,7 +636,7 @@ blink::StorageKey ServiceWorkerClient::CalculateStorageKeyForUpdateUrls(
   // CreateFromOriginAndIsolationInfo() will create a key based on
   // net::features::kThirdPartyStoragePartitioning state.
   return blink::StorageKey::CreateFromOriginAndIsolationInfo(
-      origin, isolation_info_from_interceptor);
+      origin, isolation_info_from_handle);
 }
 
 void ServiceWorkerClient::UpdateUrls(

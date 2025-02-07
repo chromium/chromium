@@ -174,11 +174,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // The storage key to be used for `UpdateUrls()`.
   // For other purposes, use `key()` instead.
-  // `isolation_info_from_interceptor` is
-  // `isolation_info_from_interceptor::isolation_info_`.
+  // `isolation_info_from_handle` is
+  // `ServiceWorkerMainResourceHandle::isolation_info_`.
   blink::StorageKey CalculateStorageKeyForUpdateUrls(
       const GURL& url,
-      const net::IsolationInfo& isolation_info_from_interceptor) const;
+      const net::IsolationInfo& isolation_info_from_handle) const;
 
   // For service worker clients. Makes this client be controlled by
   // |registration|'s active worker, or makes this client be not
