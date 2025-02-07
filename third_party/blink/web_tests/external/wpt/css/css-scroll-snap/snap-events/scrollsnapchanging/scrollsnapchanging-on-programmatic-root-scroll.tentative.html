@@ -8,26 +8,20 @@
   <script src="/resources/testdriver-actions.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/dom/events/scrolling/scroll_support.js"></script>
-  <script src="/css/css-scroll-snap-2/resources/common.js"></script>
-  <script src="/css/css-scroll-snap-2/resources/programmatic-scroll-common.js"></script>
-  <script src="/web-animations/testcommon.js"></script>
+  <script src="/css/css-scroll-snap/snap-events/resources/common.js"></script>
+ß  <script src="/web-animations/testcommon.js"></script>
 </head>
 
 <body>
   <style>
-    #scroller {
-      height: 400px;
-      width: 400px;
-      position: relative;
-      overflow: scroll;
+    :root {
       scroll-snap-type: y mandatory;
-      border: solid 1px black;
     }
 
     .box {
       position: absolute;
       left: 150px;
-      height: 350px;
+      height: 80vh;
       width: 100px;
       border: solid 1px white;
     }
@@ -53,11 +47,11 @@
     }
 
     #snap_area_2 {
-      top: 352px;
+      top: calc(80vh + 2px);
     }
 
     #snap_area_3 {
-      top: 704px;
+      top: calc(160vh + 4px);
     }
 
     .large_space {
@@ -66,14 +60,12 @@
       position: absolute;
     }
   </style>
-  <div id="scroller">
-    <div class="large_space"></div>
-    <div id="snap_area_1" class="blue snap box"></div>
-    <div id="snap_area_2" class="green snap box"></div>
-    <div id="snap_area_3" class="yellow snap box"></div>
-  </div>
+  <div class="large_space"></div>
+  <div id="snap_area_1" class="blue snap box"></div>
+  <div id="snap_area_2" class="green snap box"></div>
+  <div id="snap_area_3" class="yellow snap box"></div>
   <script>
-    const scroller = document.getElementById("scroller");
+    const scroller = document.scrollingElement;
     const snap_area_2 = document.getElementById("snap_area_2");
 
     promise_test(async (t) => {
@@ -108,25 +100,24 @@
       };
       await test_snap_event(t, test_data, "scrollsnapchanging",
                             /*use_onsnap_member*/true);
-    }, "Element.onscrollsnapchanging fires on programmatic scrolls that changes a " +
+    }, "Document.scrollsnapchanging fires on programmatic scrolls that changes a" +
        "scroller's snap targets.");
 
     promise_test(async (t) => {
       checkSnapEventSupport("scrollsnapchanging");
       await waitForScrollReset(t, scroller);
       await waitForCompositorCommit();
-      let snap_event_promise = waitForSnapEvent(scroller, "scrollsnapchanging", false);
+      let snap_event_promise = waitForSnapEvent(document, "scrollsnapchanging", false);
       // The snap areas are far apart enough that 10px is not enough to trigger
       // a change in snap targets.
       const small_scroll_offset = 10;
-      // Set the scroll destination to just a little off (0, 0) top so we snap
-      // back to the top box.
       scroller.scrollTo(0, small_scroll_offset);
       let evt = await snap_event_promise;
       assert_equals(evt, null, "no snap event since scroller is back to top");
       assert_equals(scroller.scrollTop, 0, "scroller snaps back to the top");
       assert_equals(scroller.scrollLeft, 0, "scroller snaps back to the left");
-    }, "scrollsnapchanging should not fire since the snap target doesn't change.");
+    }, "scrollsnapchanging does not fire on programmatic scrolls that don't " +
+    "trigger a change in snap targets.");
   </script>
 </body>
 

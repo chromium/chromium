@@ -412,9 +412,9 @@ external/wpt/css/css-scoping/shadow-host-with-before-after.html
 external/wpt/css/css-scroll-anchoring/fullscreen-crash.html
 # Known to be very flaky: https://crbug.com/375047154
 external/wpt/css/css-scrollbars/*
-external/wpt/css/css-scroll-snap-2/scrollsnapchanging/scrollsnapchanging-on-*
-external/wpt/css/css-scroll-snap-2/scroll-start/scroll-start-fieldset.tentative.html
-external/wpt/css/css-scroll-snap-2/scroll-initial-target/scroll-initial-target-rtl.tentative.html
+external/wpt/css/css-scroll-snap/snap-events/scrollsnapchanging/scrollsnapchanging-on-*
+external/wpt/css/css-scroll-snap/snap-events/scroll-start/scroll-start-fieldset.tentative.html
+external/wpt/css/css-scroll-snap/snap-events/scroll-initial-target/scroll-initial-target-rtl.tentative.html
 external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary-viewport-covering.tentative.html
 external/wpt/css/css-scroll-snap/snap-after-relayout/changing-scroll-snap-align-nested.tentative.html
 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/common-to-both-axes-supercedes-first-in-tree-order.html
