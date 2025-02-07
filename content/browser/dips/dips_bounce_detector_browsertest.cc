@@ -3699,13 +3699,62 @@ class LocalStorage : public SiteStorage {
   std::string_view name() const override { return "LocalStorage"; }
 };
 
+class NetworkStorage : public SiteStorage {
+  base::expected<std::string, std::string> ReadValue(
+      content::RenderFrameHost* frame) const override {
+    constexpr char kScript[] = R"(
+      (async function() {
+        const response = await fetch('/test-cache');
+        return response.text();
+      })();
+    )";
+    content::EvalJsResult result = content::EvalJs(
+        frame, kScript, content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+    if (!result.error.empty()) {
+      return base::unexpected(result.error);
+    }
+    if (result.value.is_none()) {
+      return base::ok("");
+    }
+    return base::ok(result.ExtractString());
+  }
+
+  testing::AssertionResult WriteValue(content::RenderFrameHost* frame,
+                                      std::string_view value,
+                                      bool partitioned) const override {
+    constexpr char kScriptTemplate[] = R"(
+      fetch('/test-cache', {
+        headers: {
+          'Custom-Cache-Value': $1,
+        },
+      });
+    )";
+    return content::ExecJs(frame, content::JsReplace(kScriptTemplate, value),
+                           content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  }
+
+  std::string_view name() const override { return "NetworkStorage"; }
+};
+
 void PrintTo(const SiteStorage* storage, std::ostream* os) {
   *os << storage->name();
 }
 
 static constexpr CookieStorage kCookieStorage;
 static constexpr LocalStorage kLocalStorage;
+static constexpr NetworkStorage kNetworkStorage;
 }  // namespace
+
+// For tests around partitioned storage deletion, using network storage will
+// fail, since there is no current support for partitioned HTTP cache deletion.
+// For now, we skip those tests.
+//
+// TODO(crbug.com/390205857): Remove this macro and stop skipping tests once
+// there is support for partitioned HTTP cache deletion.
+#define SKIP_DELETION_TEST_FOR_PARTITIONED_NETWORK_STORAGE()            \
+  if (GetParam()->name() == "NetworkStorage") {                         \
+    GTEST_SKIP() << "Skipping tests using partitioned network storage"; \
+  }
 
 class BtmDataDeletionBrowserTest
     : public BtmBounceDetectorBrowserTest,
@@ -3715,6 +3764,31 @@ class BtmDataDeletionBrowserTest
     BtmBounceDetectorBrowserTest::SetUpOnMainThread();
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.AddDefaultHandlers(kContentTestDataDir);
+    // Register a handler that sets and caches ETag values.
+    https_server_.RegisterRequestHandler(base::BindLambdaForTesting(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url != "/test-cache") {
+            return nullptr;
+          }
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->AddCustomHeader("Cache-Control", "no-cache");
+          if (request.headers.find("Custom-Cache-Value") !=
+              request.headers.end()) {
+            // Set the ETag to be the value of the custom header passed in.
+            response->AddCustomHeader("ETag",
+                                      request.headers.at("Custom-Cache-Value"));
+          } else if (request.headers.find("If-None-Match") !=
+                     request.headers.end()) {
+            // There's an ETag. Use the cached value as the response body.
+            response->AddCustomHeader("ETag",
+                                      request.headers.at("If-None-Match"));
+            response->set_content(request.headers.at("If-None-Match"));
+          }
+          return response;
+        }));
     ASSERT_TRUE(https_server_.Start());
 
     browser_client().SetBlockThirdPartyCookiesByDefault(true);
@@ -3893,6 +3967,8 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DontDeleteOtherDomains) {
 
 IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest,
                        DontDeleteDomainWhenPartitioned) {
+  SKIP_DELETION_TEST_FOR_PARTITIONED_NETWORK_STORAGE();
+
   WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on b.test embedded in a.test.
@@ -3937,6 +4013,8 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteSubdomains) {
 }
 
 IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteEmbedded3Ps) {
+  SKIP_DELETION_TEST_FOR_PARTITIONED_NETWORK_STORAGE();
+
   WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on a.test embedded in b.test.
@@ -3961,6 +4039,8 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteEmbedded3Ps) {
 
 IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest,
                        DeleteEmbedded3Ps_Subdomain) {
+  SKIP_DELETION_TEST_FOR_PARTITIONED_NETWORK_STORAGE();
+
   WebContents* web_contents = GetActiveWebContents();
 
   // Set storage on a.test embedded in sub.b.test.
@@ -4008,7 +4088,9 @@ IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteEmbedded1Ps) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          BtmDataDeletionBrowserTest,
-                         ::testing::Values(&kCookieStorage, &kLocalStorage));
+                         ::testing::Values(&kCookieStorage,
+                                           &kLocalStorage,
+                                           &kNetworkStorage));
 
 class BtmBounceDetectorBFCacheTest : public BtmBounceDetectorBrowserTest,
                                      public testing::WithParamInterface<bool> {
