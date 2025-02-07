@@ -1442,7 +1442,8 @@ void CaptureModeSession::AddSmartActionsButton() {
 }
 
 void CaptureModeSession::MaybeShowScannerDisclaimer(
-    base::RepeatingClosure accept_callback) {
+    base::RepeatingClosure accept_callback,
+    base::RepeatingClosure decline_callback) {
   if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
           prefs::kSunfishConsentDisclaimerAccepted)) {
     if (accept_callback) {
@@ -1456,7 +1457,8 @@ void CaptureModeSession::MaybeShowScannerDisclaimer(
                           weak_ptr_factory_.GetWeakPtr(),
                           std::move(accept_callback)),
       base::BindRepeating(&CaptureModeSession::OnDisclaimerDeclined,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(decline_callback)));
   disclaimer_->Show();
 }
 
@@ -1506,11 +1508,14 @@ void CaptureModeSession::ShowActionContainerError(
   UpdateActionContainerWidget();
 }
 
-void CaptureModeSession::OnDisclaimerDeclined() {
+void CaptureModeSession::OnDisclaimerDeclined(base::RepeatingClosure callback) {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kConsentDisclaimerRejected);
 
   disclaimer_.reset();
+  if (callback) {
+    std::move(callback).Run();
+  }
 }
 
 void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
@@ -1525,10 +1530,12 @@ void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
   }
 }
 
-void CaptureModeSession::OnSmartActionsButtonPressed() {
-  MaybeShowScannerDisclaimer(base::BindRepeating(
-      &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
-      weak_ptr_factory_.GetWeakPtr()));
+  void CaptureModeSession::OnSmartActionsButtonPressed() {
+  MaybeShowScannerDisclaimer(
+      /*accept_callback=*/base::BindRepeating(
+          &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
+          weak_ptr_factory_.GetWeakPtr()),
+      /*decline_callback=*/base::DoNothing());
 }
 
 void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
