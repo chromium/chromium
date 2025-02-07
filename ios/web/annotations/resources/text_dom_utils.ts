@@ -51,7 +51,7 @@ const IGNORE_NODE_NAMES = new Set([
 function getMetaContentByHttpEquiv(httpEquiv: string): string {
   const metas = document.getElementsByTagName('meta');
   for (const meta of metas) {
-    if (meta.httpEquiv.toLowerCase() === httpEquiv) {
+    if (meta.httpEquiv && meta.httpEquiv.toLowerCase() === httpEquiv) {
       return meta.content;
     }
   }
