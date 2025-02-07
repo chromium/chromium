@@ -26,6 +26,28 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(DataSharingIntentType) -->
+
+<enum name="DataSharingIntentType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Stop sharing"/>
+  <int value="2" label="Leave group"/>
+  <int value="3" label="Remove access"/>
+  <int value="4" label="Update access"/>
+  <int value="5" label="Block user"/>
+  <int value="6" label="Remove user"/>
+  <int value="7" label="Remove access token"/>
+  <int value="8" label="Add access token"/>
+  <int value="9" label="Copy link"/>
+  <int value="10" label="Block and leave"/>
+  <int value="11" label="Open group details"/>
+  <int value="12" label="Open learn more url"/>
+  <int value="13" label="Accept join and open"/>
+  <int value="14" label="Abandoned join"/>
+</enum>
+
+<!-- LINT.ThenChange(chrome/browser/resources/data_sharing/data_sharing_app.ts:DataSharingIntentType) -->
+
 <enum name="JoinActionStateAndroid">
   <int value="0" label="Join triggered"/>
   <int value="1" label="Profile available"/>
