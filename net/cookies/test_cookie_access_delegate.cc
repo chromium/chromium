@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -38,8 +39,9 @@ CookieAccessSemantics TestCookieAccessDelegate::GetAccessSemantics(
 }
 
 CookieScopeSemantics TestCookieAccessDelegate::GetScopeSemantics(
-    const CanonicalCookie& cookie) const {
-  auto it = expectations_scoped_.find(GetKeyForDomainValue(cookie.Domain()));
+    const std::string_view domain) const {
+  auto it =
+      expectations_scoped_.find(GetKeyForDomainValue(std::string(domain)));
   if (it != expectations_scoped_.end()) {
     return it->second;
   }
@@ -135,9 +137,10 @@ void TestCookieAccessDelegate::SetExpectationForCookieDomain(
 }
 
 void TestCookieAccessDelegate::SetExpectationForCookieScope(
-    const std::string& cookie_domain,
+    const std::string_view& cookie_domain,
     CookieScopeSemantics scoped_semantics) {
-  expectations_scoped_[GetKeyForDomainValue(cookie_domain)] = scoped_semantics;
+  expectations_scoped_[GetKeyForDomainValue(std::string(cookie_domain))] =
+      scoped_semantics;
 }
 
 void TestCookieAccessDelegate::SetIgnoreSameSiteRestrictionsScheme(

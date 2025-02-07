@@ -717,18 +717,18 @@ class NET_EXPORT CookieMonster : public CookieStore {
   CookieAccessSemantics GetAccessSemanticsForCookie(
       const CanonicalCookie& cookie) const;
 
-  // Get the cookie's scope semantics (LEGACY or NONLEGACY), by checking for a
+  // Get the domain's scope semantics (LEGACY or NONLEGACY), by checking for a
   // value from the cookie access delegate, if it is non-null. Otherwise returns
   // UNKNOWN.
-  CookieScopeSemantics GetScopeSemanticsForCookie(
-      const CanonicalCookie& cookie) const;
+  CookieScopeSemantics GetScopeSemanticsForCookieDomain(
+      const std::string_view domain) const;
 
   // This function will use the pref_delegate to help identify if a cookie's
   // domain is entering or exiting legacy scope mode for the first time. If this
   // is the first time it is entering legacy mode DeleteAllAliasingCookies will
   // be called for this cookie's domain.
   CookieScopeSemantics CheckAndActivateLegacyScopeBehavior(
-      const CanonicalCookie& cookie);
+      const std::string_view domain);
 
   // Helper function to delete all aliasing cookies for a given domain.
   // This function will loop through partitioned and non-partitioned cookie maps

@@ -2770,11 +2770,15 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   }
 
   if (session_cleanup_cookie_store) {
+    // If the pref service was registered and initialized use it.
+    // If not, use nullptr to indicate prefs aren't available.
     std::unique_ptr<net::CookieMonster> cookie_store =
         std::make_unique<net::CookieMonster>(
             session_cleanup_cookie_store.get(), net_log,
-            std::make_unique<KnownLegacyScopeDomainsPrefDelegate>(
-                pref_service.get()));
+            pref_service
+                ? std::make_unique<KnownLegacyScopeDomainsPrefDelegate>(
+                      pref_service.get())
+                : nullptr);
     if (params_->persist_session_cookies) {
       cookie_store->SetPersistSessionCookies(true);
     }

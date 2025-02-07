@@ -38,7 +38,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   CookieAccessSemantics GetAccessSemantics(
       const CanonicalCookie& cookie) const override;
   CookieScopeSemantics GetScopeSemantics(
-      const CanonicalCookie& cookie) const override;
+      const std::string_view domain) const override;
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const SiteForCookies& site_for_cookies) const override;
@@ -67,7 +67,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   // Sets the expected return value for Cookie Scoped Semantics for any cookie
   // whose Domain matches `cookie_domain`. Pass the value of `cookie.Domain()`
   // and any leading dot will be discarded.
-  void SetExpectationForCookieScope(const std::string& cookie_domain,
+  void SetExpectationForCookieScope(const std::string_view& cookie_domain,
                                     CookieScopeSemantics scoped_semantics);
 
   // Sets the expected return value for ShouldAlwaysAttachSameSiteCookies.
