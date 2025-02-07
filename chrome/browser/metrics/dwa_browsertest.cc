@@ -20,32 +20,92 @@
 #include "components/unified_consent/unified_consent_service.h"
 #include "content/public/test/browser_test.h"
 
-// TODO(crbug.com/391901366): Add #else preprocessor directive to support
-// Android browser tests.
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#else
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
 #endif
 
 namespace metrics::dwa {
 
-// TODO(crbug.com/391901366): Add #else preprocessor directive to support
-// Android browser tests.
 #if !BUILDFLAG(IS_ANDROID)
 typedef Browser* PlatformBrowser;
+#else
+class TestTabModel;
+typedef std::unique_ptr<TestTabModel> PlatformBrowser;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/391901366): Remove preprocessor directive to enable for
-// Android browser tests.
-#if !BUILDFLAG(IS_ANDROID)
 DwaService* GetDwaService() {
   return g_browser_process->GetMetricsServicesManager()->GetDwaService();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool IsDwaAllowedForAllProfiles() {
   return g_browser_process->GetMetricsServicesManager()
       ->IsDwaAllowedForAllProfiles();
 }
+
+// TODO(crbug.com/394933307): Refactor common code in UKM and DWA browsertests.
+#if BUILDFLAG(IS_ANDROID)
+// ActivityType that doesn't restore tabs on cold start.
+// Any type other than kTabbed is fine.
+const auto TEST_ACTIVITY_TYPE = chrome::android::ActivityType::kCustomTab;
+
+// TestTabModel provides a means of creating a tab associated with a given
+// profile. The new tab can then be added to Android's TabModelList.
+class TestTabModel : public TabModel {
+ public:
+  explicit TestTabModel(Profile* profile)
+      : TabModel(profile, TEST_ACTIVITY_TYPE),
+        web_contents_(content::WebContents::Create(
+            content::WebContents::CreateParams(GetProfile()))) {}
+
+  ~TestTabModel() override = default;
+
+  // TabModel:
+  int GetTabCount() const override { return 0; }
+  int GetActiveIndex() const override { return 0; }
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override {
+    return nullptr;
+  }
+  content::WebContents* GetActiveWebContents() const override {
+    return web_contents_.get();
+  }
+  content::WebContents* GetWebContentsAt(int index) const override {
+    return nullptr;
+  }
+  TabAndroid* GetTabAt(int index) const override { return nullptr; }
+  void SetActiveIndex(int index) override {}
+  void ForceCloseAllTabs() override {}
+  void CloseTabAt(int index) override {}
+  void CreateTab(TabAndroid* parent,
+                 content::WebContents* web_contents,
+                 bool select) override {}
+  void HandlePopupNavigation(TabAndroid* parent,
+                             NavigateParams* params) override {}
+  content::WebContents* CreateNewTabForDevTools(const GURL& url) override {
+    return nullptr;
+  }
+  bool IsSessionRestoreInProgress() const override { return false; }
+  bool IsActiveModel() const override { return false; }
+  void AddObserver(TabModelObserver* observer) override {}
+  void RemoveObserver(TabModelObserver* observer) override {}
+  int GetTabCountNavigatedInTimeWindow(
+      const base::Time& begin_time,
+      const base::Time& end_time) const override {
+    return 0;
+  }
+  void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
+                                      const base::Time& end_time) override {}
+
+ private:
+  // The WebContents associated with this tab's profile.
+  std::unique_ptr<content::WebContents> web_contents_;
+};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // A helper object for overriding metrics enabled state.
 class MetricsConsentOverride {
@@ -84,6 +144,23 @@ class DwaBrowserTest : public SyncTest {
 
   DwaBrowserTest(const DwaBrowserTest&) = delete;
   DwaBrowserTest& operator=(const DwaBrowserTest&) = delete;
+
+#if BUILDFLAG(IS_ANDROID)
+  void PreRunTestOnMainThread() override {
+    // At some point during set-up, Android's TabModelList is populated with a
+    // TabModel. However, it is desirable to begin the tests with an empty
+    // TabModelList to avoid complicated logic in CreatePlatformBrowser.
+    //
+    // For example, if the pre-existing TabModel is not deleted and if the first
+    // tab created in a test is an incognito tab, then CreatePlatformBrowser
+    // would need to remove the pre-existing TabModel and add a new one.
+    // Having an empty TabModelList allows us to simply add the appropriate
+    // TabModel.
+    EXPECT_EQ(1U, TabModelList::models().size());
+    TabModelList::RemoveTabModel(TabModelList::models()[0]);
+    EXPECT_EQ(0U, TabModelList::models().size());
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   void AssertDwaIsEnabledAndAllowed() const {
     ASSERT_TRUE(metrics::dwa::DwaRecorder::Get()->IsEnabled());
@@ -193,34 +270,47 @@ class DwaBrowserTest : public SyncTest {
     return harness;
   }
 
-// TODO(crbug.com/391901366): Add #else preprocessor directive to support
-// Android browser tests.
-#if !BUILDFLAG(IS_ANDROID)
   // Creates and returns a platform-appropriate browser for |profile|.
   PlatformBrowser CreatePlatformBrowser(Profile* profile) {
+#if !BUILDFLAG(IS_ANDROID)
     return CreateBrowser(profile);
+#else
+    std::unique_ptr<TestTabModel> tab_model =
+        std::make_unique<TestTabModel>(profile);
+    TabModelList::AddTabModel(tab_model.get());
+    EXPECT_TRUE(content::NavigateToURL(tab_model->GetActiveWebContents(),
+                                       GURL("about:blank")));
+    return tab_model;
+#endif
   }
 
   // Creates a platform-appropriate incognito browser for |profile|.
   PlatformBrowser CreateIncognitoPlatformBrowser(Profile* profile) {
     EXPECT_TRUE(profile->IsOffTheRecord());
+#if !BUILDFLAG(IS_ANDROID)
     return CreateIncognitoBrowser(profile);
+#else
+    // On Android, an incognito platform is the same as a regular platform
+    // browser but with an incognito profile. The incognito profile is validated
+    // with profile->IsOffTheRecord().
+    return CreatePlatformBrowser(profile);
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   // Closes |browser| in a way that is appropriate for the platform.
   void ClosePlatformBrowser(PlatformBrowser& browser) {
+#if !BUILDFLAG(IS_ANDROID)
     CloseBrowserSynchronously(browser);
-  }
-
+#else
+    TabModelList::RemoveTabModel(browser.get());
+    browser.reset();
 #endif  // !BUILDFLAG(IS_ANDROID)
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/391901366): Remove preprocessor directive to enable for
-// Android browser tests.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, DwaServiceCheck) {
   MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
@@ -250,12 +340,8 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, DwaServiceCheck) {
 
   ClosePlatformBrowser(browser);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Make sure that DWA is disabled and purged while an incognito window is open.
-// TODO(crbug.com/391901366): Remove preprocessor directive to enable for
-// Android browser tests.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, RegularBrowserPlusIncognitoCheck) {
   dwa::DwaRecorder* dwa_recorder = metrics::dwa::DwaRecorder::Get();
   MetricsConsentOverride metrics_consent(true);
@@ -309,12 +395,8 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, RegularBrowserPlusIncognitoCheck) {
 
   ClosePlatformBrowser(browser1);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Make sure opening a regular browser after Incognito doesn't enable DWA.
-// TODO(crbug.com/391901366): Remove preprocessor directive to enable for
-// Android browser tests.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, IncognitoPlusRegularBrowserCheck) {
   dwa::DwaRecorder* dwa_recorder = metrics::dwa::DwaRecorder::Get();
   MetricsConsentOverride metrics_consent(true);
@@ -335,13 +417,9 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, IncognitoPlusRegularBrowserCheck) {
 
   ClosePlatformBrowser(browser);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // This test ensures that disabling MSBB UKM consent disables and purges DWA.
 // Additionally ensures that DWA is disabled until all UKM consents are enabled.
-// TODO(crbug.com/391901366): Remove preprocessor directive to enable for
-// Android browser tests.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Msbb) {
   MetricsConsentOverride metrics_consent(true);
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
@@ -365,6 +443,9 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, UkmConsentChangeCheck_Msbb) {
   RecordTestMetricsAndAssertMetricsRecorded();
 }
 
+// Not enabled on Android because on Android, kApps and kExtensions is not
+// registered through UserSelectableType.
+#if !BUILDFLAG(IS_ANDROID)
 // This test ensures that disabling Extensions UKM consent disables and purges
 // DWA. Additionally ensures that DWA is disabled until all UKM consents are
 // enabled.
