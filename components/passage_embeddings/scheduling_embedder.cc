@@ -56,12 +56,6 @@ SchedulingEmbedder::SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
       use_performance_scenario_(use_performance_scenario) {
 #if BUILDFLAG(USE_BLINK)
   if (use_performance_scenario_) {
-    loading_scenario_ =
-        blink::performance_scenarios::GetLoadingScenario(ScenarioScope::kGlobal)
-            ->load(std::memory_order_relaxed);
-    input_scenario_ =
-        blink::performance_scenarios::GetInputScenario(ScenarioScope::kGlobal)
-            ->load(std::memory_order_relaxed);
     performance_scenario_observation_.Observe(
         blink::performance_scenarios::PerformanceScenarioObserverList::
             GetForScope(ScenarioScope::kGlobal)
@@ -175,9 +169,16 @@ bool SchedulingEmbedder::IsPerformanceScenarioReady() {
     // Do not block on performance scenario if user initiated a query.
     return true;
   }
-  return (loading_scenario_ == LoadingScenario::kNoPageLoading ||
-          loading_scenario_ == LoadingScenario::kBackgroundPageLoading) &&
-         input_scenario_ == InputScenario::kNoInput;
+
+  LoadingScenario loading_scenario =
+      blink::performance_scenarios::GetLoadingScenario(ScenarioScope::kGlobal)
+          ->load(std::memory_order_relaxed);
+  InputScenario input_scenario =
+      blink::performance_scenarios::GetInputScenario(ScenarioScope::kGlobal)
+          ->load(std::memory_order_relaxed);
+  return (loading_scenario == LoadingScenario::kNoPageLoading ||
+          loading_scenario == LoadingScenario::kBackgroundPageLoading) &&
+         input_scenario == InputScenario::kNoInput;
 #else
   return true;
 #endif
@@ -216,7 +217,6 @@ void SchedulingEmbedder::OnLoadingScenarioChanged(
     LoadingScenario new_scenario) {
   VLOG(5) << "SchedulingEmbedder using new loading scenario: "
           << static_cast<int>(new_scenario);
-  loading_scenario_ = new_scenario;
   SubmitWorkToEmbedder();
 }
 
@@ -225,7 +225,6 @@ void SchedulingEmbedder::OnInputScenarioChanged(ScenarioScope scope,
                                                 InputScenario new_scenario) {
   VLOG(5) << "SchedulingEmbedder using new input scenario: "
           << static_cast<int>(new_scenario);
-  input_scenario_ = new_scenario;
   SubmitWorkToEmbedder();
 }
 #endif
