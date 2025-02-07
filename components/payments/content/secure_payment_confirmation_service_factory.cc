@@ -7,15 +7,18 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/secure_payment_confirmation_service.h"
-#if BUILDFLAG(IS_ANDROID)
-#include "components/webauthn/android/internal_authenticator_android.h"
-#endif
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/secure_payment_confirmation_utils.h"
 #include "content/public/browser/web_contents.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/webauthn/android/internal_authenticator_android.h"
+#else
+#include "components/webauthn/content/browser/internal_authenticator_impl.h"
+#endif
 
 namespace payments {
 
@@ -37,13 +40,16 @@ void CreateSecurePaymentConfirmationService(
   CHECK(render_frame_host);
 
   std::unique_ptr<webauthn::InternalAuthenticator> maybe_authenticator;
+  if (render_frame_host->IsActive() && render_frame_host->IsRenderFrameLive()) {
 #if BUILDFLAG(IS_ANDROID)
-  maybe_authenticator =
-      render_frame_host->IsActive() && render_frame_host->IsRenderFrameLive()
-          ? std::make_unique<webauthn::InternalAuthenticatorAndroid>(
-                render_frame_host)
-          : nullptr;
+    maybe_authenticator =
+        std::make_unique<webauthn::InternalAuthenticatorAndroid>(
+            render_frame_host);
+#else
+    maybe_authenticator =
+        std::make_unique<content::InternalAuthenticatorImpl>(render_frame_host);
 #endif
+  }
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See DocumentService for details.
