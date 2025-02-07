@@ -120,6 +120,11 @@ class EntityType final {
   constexpr EntityType(EntityType&&) = default;
   constexpr EntityType& operator=(EntityType&&) = default;
 
+  // Comparator that ranks types by their priority for import on form
+  // submission.
+  // `ImportOrder(x, y) == true` means `x` has higher priority than `y`.
+  static bool ImportOrder(const EntityType& lhs, const EntityType& rhs);
+
   constexpr EntityTypeName name() const { return name_; }
 
   // The string representation of the name. This is unique among all entity

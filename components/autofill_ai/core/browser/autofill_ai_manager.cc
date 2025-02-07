@@ -69,12 +69,6 @@ using autofill::LoggingScope;
 using autofill::LogMessage;
 using autofill::SuggestionType;
 
-// TODO(crbug.com/389629676): Remove this in favour of an implementation that
-// lives in EntityType (or similar), as a way to avoid missing new entities.
-static constexpr auto kEntitiesOrderedByImportPreference =
-    std::array{autofill::EntityType(autofill::EntityTypeName::kPassport),
-               autofill::EntityType(autofill::EntityTypeName::kLoyaltyCard)};
-
 bool CheckIfEntitySatisfiesConstraints(const autofill::EntityInstance& entity) {
   autofill::DenseSet<autofill::AttributeType> attribute_types;
   for (const autofill::AttributeInstance& attribute_instance :
@@ -373,31 +367,27 @@ void AutofillAiManager::MaybeImportForm(
           std::move(autofill_callback).Run(std::move(form), false);
           return;
         }
-        for (const autofill::EntityType& entity_type :
-             kEntitiesOrderedByImportPreference) {
-          for (autofill::EntityInstance& entity :
-               entity_instances_from_form) {
-            if (entity.type() != entity_type) {
-              continue;
-            }
 
-            if (ShouldShowNewEntitySavePrompt(entity, current_entities)) {
-              self->client_->ShowSaveAutofillAiBubble(
-                  std::move(entity),
-                  BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
-                           AutofillAiManager::EntityUpdateType::kSave));
-              std::move(autofill_callback).Run(std::move(form), true);
-              return;
-            } else if (std::optional<autofill::EntityInstance>
-                           maybe_entity_to_update =
-                               MaybeUpdateEntity(entity, current_entities)) {
-              self->client_->ShowSaveAutofillAiBubble(
-                  std::move(*maybe_entity_to_update),
-                  BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
-                           AutofillAiManager::EntityUpdateType::kUpdate));
-              std::move(autofill_callback).Run(std::move(form), true);
-              return;
-            }
+        std::ranges::sort(entity_instances_from_form,
+                          autofill::EntityInstance::ImportOrder);
+
+        for (autofill::EntityInstance& entity : entity_instances_from_form) {
+          if (ShouldShowNewEntitySavePrompt(entity, current_entities)) {
+            self->client_->ShowSaveAutofillAiBubble(
+                std::move(entity),
+                BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
+                         AutofillAiManager::EntityUpdateType::kSave));
+            std::move(autofill_callback).Run(std::move(form), true);
+            return;
+          } else if (std::optional<autofill::EntityInstance>
+                         maybe_entity_to_update =
+                             MaybeUpdateEntity(entity, current_entities)) {
+            self->client_->ShowSaveAutofillAiBubble(
+                std::move(*maybe_entity_to_update),
+                BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
+                         AutofillAiManager::EntityUpdateType::kUpdate));
+            std::move(autofill_callback).Run(std::move(form), true);
+            return;
           }
         }
         std::move(autofill_callback).Run(std::move(form), false);
