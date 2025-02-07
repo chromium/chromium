@@ -59,7 +59,6 @@ import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
@@ -505,12 +504,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 (profile) -> {
                     BookmarkModel bookmarkModel =
                             profile == null ? null : BookmarkModel.getForProfile(profile);
-                    // Give BookmarkBridge a Supplier<PartnerBookmark.BookmarkIterator> so that
-                    // PartnerBookmarksShim can be loaded lazily when BookmarkModel is needed.
-                    // Set this prior to setting the BookmarkModel supplier to ensure that the
-                    // bookmark model can be loaded immediately when it's available
-                    bookmarkModel.setPartnerBookmarkIteratorSupplier(
-                            () -> AppHooks.get().getPartnerBookmarkIterator());
                     mBookmarkModelSupplier.set(bookmarkModel);
                 });
 

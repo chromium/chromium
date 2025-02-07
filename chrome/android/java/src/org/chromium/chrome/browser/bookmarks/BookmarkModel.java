@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.bookmarks;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -33,6 +35,18 @@ public class BookmarkModel extends BookmarkBridge {
     public static void setInstanceForTesting(BookmarkModel bookmarkModel) {
         sInstanceForTesting = bookmarkModel;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
+    }
+
+    /** Sets a pre-configured runnable which loads the parter bookmarks shim. */
+    public static void setPartnerBookmarkIteratorProvider(
+            @NonNull PartnerBookmarkIteratorProvider provider) {
+        BookmarkBridge.setPartnerBookmarkIteratorProvider(provider);
+    }
+
+    /** Provider for the PartnerBookmark iterator. */
+    public interface PartnerBookmarkIteratorProvider {
+        /** Fetches the iterator of PartnerBookmarks and notifieds the callback when ready. */
+        void getIterator(Callback<PartnerBookmark.BookmarkIterator> iterator);
     }
 
     /**

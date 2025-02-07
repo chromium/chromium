@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark;
@@ -51,6 +52,12 @@ public class AppHooks {
     @Nullable
     public PartnerBookmark.BookmarkIterator getPartnerBookmarkIterator() {
         return PartnerBookmarksProviderIterator.createIfAvailable();
+    }
+
+    /** Async fetch the iterator of partner bookmarks (or null if not available). */
+    public void requestPartnerBookmarkIterator(
+            Callback<PartnerBookmark.BookmarkIterator> callback) {
+        callback.onResult(PartnerBookmarksProviderIterator.createIfAvailable());
     }
 
     /** Returns the URL to the WebAPK creation/update server. */

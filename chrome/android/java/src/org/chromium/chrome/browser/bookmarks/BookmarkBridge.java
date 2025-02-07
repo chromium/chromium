@@ -20,8 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -39,16 +38,16 @@ import java.util.List;
  * in native.
  */
 class BookmarkBridge {
+    private static OneshotSupplierImpl<BookmarkModel.PartnerBookmarkIteratorProvider>
+            sPartnerBookmarkIteratorSupplier = new OneshotSupplierImpl<>();
+
     private final ObserverList<BookmarkModelObserver> mObservers = new ObserverList<>();
+    private final Profile mProfile;
 
     private long mNativeBookmarkBridge;
-    private Profile mProfile;
     private boolean mIsDoingExtensiveChanges;
     private boolean mIsNativeBookmarkModelLoaded;
-
-    private boolean mPartnerBookmarkIteratorInitialized;
-    private Supplier<PartnerBookmark.BookmarkIterator> mPartnerBookmarkIteratorSupplier =
-            () -> null;
+    private boolean mInitializedPartnerBookmarks;
 
     // Lazily set pseudo-constants. These should never change at runtime. Used to avoid crossing
     // JNI to fetch information.
@@ -79,6 +78,12 @@ class BookmarkBridge {
         return new BookmarkModel(nativeBookmarkBridge, profile);
     }
 
+    /** Sets a pre-configured runnable which loads the parter bookmarks shim. */
+    public static void setPartnerBookmarkIteratorProvider(
+            @NonNull BookmarkModel.PartnerBookmarkIteratorProvider provider) {
+        sPartnerBookmarkIteratorSupplier.set(provider);
+    }
+
     BookmarkBridge(long nativeBookmarkBridge, Profile profile) {
         mNativeBookmarkBridge = nativeBookmarkBridge;
         mProfile = profile;
@@ -93,17 +98,7 @@ class BookmarkBridge {
             mNativeBookmarkBridge = 0;
             mIsNativeBookmarkModelLoaded = false;
         }
-        if (mPartnerBookmarkIteratorSupplier != null) {
-            mPartnerBookmarkIteratorSupplier = null;
-        }
         mObservers.clear();
-    }
-
-    /** Sets a pre-configured runnable which loads the parter bookmarks shim. */
-    public void setPartnerBookmarkIteratorSupplier(
-            @NonNull Supplier<PartnerBookmark.BookmarkIterator> partnerBookmarkIteratorSupplier) {
-        mPartnerBookmarkIteratorInitialized = true;
-        mPartnerBookmarkIteratorSupplier = partnerBookmarkIteratorSupplier;
     }
 
     /** Returns the most recently added BookmarkId */
@@ -182,16 +177,26 @@ class BookmarkBridge {
                     public void bookmarkModelChanged() {}
                 });
 
-        assert mPartnerBookmarkIteratorInitialized;
-        if (mPartnerBookmarkIteratorSupplier != null) {
-            // Start reading as a fail-safe measure to avoid waiting forever if the caller forgets
-            // to call kickOffReading().
-            PartnerBookmarksShim.kickOffReading(
-                    ContextUtils.getApplicationContext(),
-                    mProfile,
-                    mPartnerBookmarkIteratorSupplier.get());
-        }
+        initializePartnerBookmarksIfNeeded();
         return false;
+    }
+
+    private void initializePartnerBookmarksIfNeeded() {
+        if (mInitializedPartnerBookmarks) return;
+
+        mInitializedPartnerBookmarks = true;
+        assert sPartnerBookmarkIteratorSupplier.hasValue();
+        sPartnerBookmarkIteratorSupplier.runSyncOrOnAvailable(
+                (provider) -> {
+                    // Don't attempt to load partner bookmarks if the bridge has been deleted.
+                    if (mNativeBookmarkBridge == 0) return;
+
+                    provider.getIterator(
+                            (iterator) -> {
+                                PartnerBookmarksShim.kickOffReading(
+                                        ContextUtils.getApplicationContext(), mProfile, iterator);
+                            });
+                });
     }
 
     /**

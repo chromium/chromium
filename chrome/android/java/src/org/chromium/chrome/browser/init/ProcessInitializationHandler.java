@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.backup.ChromeBackupAgentImpl;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
 import org.chromium.chrome.browser.browserservices.ClearDataDialogResultRecorder;
 import org.chromium.chrome.browser.contacts_picker.ChromePickerAdapter;
@@ -430,6 +431,17 @@ public class ProcessInitializationHandler {
 
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
         setProcessStateSummaryForAnrs(true);
+
+        // Give BookmarkModel a provider of PartnerBookmark.BookmarkIterator so that
+        // PartnerBookmarksShim can be loaded lazily when BookmarkModel is needed.
+        BookmarkModel.setPartnerBookmarkIteratorProvider(
+                (callback) -> {
+                    callback.onResult(AppHooks.get().getPartnerBookmarkIterator());
+                });
+        // TODO(crbug.com/384197258): Replace with the above call once the downstream code has
+        // landed.
+        // BookmarkModel.setPartnerBookmarkIteratorProvider(
+        //        AppHooks.get()::requestPartnerBookmarkIterator);
 
         List<Profile> profiles = ProfileManager.getLoadedProfiles();
         assert !profiles.isEmpty()
