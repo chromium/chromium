@@ -6673,7 +6673,7 @@ std::unique_ptr<InterestGroupAuction::Bid>
 InterestGroupAuction::CreatePrimaryBidFromServerResponse(
     auction_worklet::mojom::BidRole bid_role) {
   DCHECK(saved_response_->ad_render_url.is_valid());
-  DCHECK_GT(buyer_helpers_.size(), 0u);
+  CHECK(!buyer_helpers_.empty());
   blink::InterestGroupKey winning_group(saved_response_->interest_group_owner,
                                         saved_response_->interest_group_name);
   std::vector<blink::AdDescriptor> ad_components;
