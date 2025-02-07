@@ -184,6 +184,14 @@ class LegacyRunner:
             },
         },
     }
+    # Some merge scripts need these two props. eg: The android result merge
+    # incorporates buildnumber in the GS URL it uploads to. We don't want the
+    # URL in UTR runs colliding with real builds' URLs, so we go with a dummy
+    # hardcoded 0. This might lead to URLs for UTR runs colliding with other
+    # UTR runs, but at least they'll be isolated from real builds.
+    # TODO(crbug.com/395081730): Remove these two props when safe.
+    input_props['buildername'] = builder
+    input_props['buildnumber'] = 0
     # TODO(crbug.com/41492688): Ensure the chrome version for internal builders
     # when they are added.
     # Set reclient and siso to use untrusted even for imitating ci builders
