@@ -1122,17 +1122,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Birch.Coral.{TabOrApp}InfoWithEmptyTitle"
-    enum="CoralSource" expires_after="2025-07-13">
-  <owner>zxdan@chromium.org</owner>
-  <owner>cros-coral@google.com</owner>
-  <summary>The number of {TabOrApp} info with an empty title.</summary>
-  <token key="TabOrApp">
-    <variant name="App" summary="app entity"/>
-    <variant name="Tab" summary="tab entity"/>
-  </token>
-</histogram>
-
 <histogram name="Ash.Birch.Latency{Type}" units="ms" expires_after="2025-04-13">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>

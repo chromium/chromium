@@ -30,7 +30,6 @@
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -38,9 +37,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/wm/core/window_util.h"
-
-#undef ENABLED_VLOG_LEVEL
-#define ENABLED_VLOG_LEVEL 1
 
 // Implement custom hash for EntityPtr because GURL doesn't support hash.
 // We can dedup by possibly_invalid_spec() as it's how we transform GURL
@@ -173,6 +169,8 @@ coral::mojom::AppPtr GetBasicAppInfoFromWindow(aura::Window* window) {
 // Unordered set is used because we need to dedup identical entities, but we
 // don't need to sort them.
 std::unordered_set<coral::mojom::EntityPtr> GetInSessionTabAndWebAppData() {
+  // TODO(zxdan) add more tab metadata, app data,
+  // and handle in-session use cases.
   std::unordered_set<coral::mojom::EntityPtr> entities;
   const TabClusterUIController* tab_cluster_ui_controller =
       Shell::Get()->tab_cluster_ui_controller();
@@ -594,7 +592,6 @@ void BirchCoralProvider::HandlePostLoginDataRequest() {
     }
   }
 
-  FilterCoralContentItems(&tab_app_data, CoralSource::kPostLogin);
   request_.set_source(CoralSource::kPostLogin);
   request_.set_content(std::move(tab_app_data));
   Shell::Get()->coral_controller()->GenerateContentGroups(
@@ -620,7 +617,7 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
     active_tab_app_data.push_back(
         std::move(non_web_apps.extract(non_web_apps.begin()).value()));
   }
-  FilterCoralContentItems(&active_tab_app_data, CoralSource::kInSession);
+  FilterCoralContentItems(&active_tab_app_data);
   request_.set_source(CoralSource::kInSession);
   request_.set_content(std::move(active_tab_app_data));
   Shell::Get()->coral_controller()->GenerateContentGroups(
@@ -705,31 +702,9 @@ void BirchCoralProvider::HandleCoralResponse(
 }
 
 void BirchCoralProvider::FilterCoralContentItems(
-    std::vector<coral::mojom::EntityPtr>* items,
-    CoralSource source) {
+    std::vector<coral::mojom::EntityPtr>* items) {
   CHECK(coral_item_remover_);
   coral_item_remover_->FilterRemovedItems(items);
-
-  // Remove the items with an empty title.
-  auto removed = std::ranges::remove_if(
-      *items, [source](const coral::mojom::EntityPtr& entity) {
-        if (entity->is_tab() && entity->get_tab()->title.empty()) {
-          VLOG(1) << "An empty titled tab with url: "
-                  << entity->get_tab()->url.possibly_invalid_spec();
-          base::UmaHistogramEnumeration("Ash.Birch.Coral.TabInfoWithEmptyTitle",
-                                        source);
-          return true;
-        }
-        if (entity->is_app() && entity->get_app()->title.empty()) {
-          VLOG(1) << "An empty titled app with id: " << entity->get_app()->id;
-          base::UmaHistogramEnumeration("Ash.Birch.Coral.AppInfoWithEmptyTitle",
-                                        source);
-          return true;
-        }
-        return false;
-      });
-
-  items->erase(removed.begin(), removed.end());
 }
 
 void BirchCoralProvider::MaybeCacheTabEmbedding(TabClusterUIItem* tab_item) {
