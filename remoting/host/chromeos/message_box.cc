@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -64,6 +65,8 @@ class MessageBox::Core : public views::DialogDelegateView {
   ResultCallback result_callback_;
   raw_ptr<MessageBox> message_box_;
 
+  bool is_shown_ = false;
+
   // Owned by the native widget hierarchy.
   raw_ptr<views::MessageBoxView> message_box_view_;
 };
@@ -108,6 +111,9 @@ MessageBox::Core::Core(const std::u16string& title_label,
 }
 
 void MessageBox::Core::Show(gfx::NativeView parent) {
+  CHECK(!is_shown_) << "Show() should only be called once.";
+  is_shown_ = true;
+
   // The widget is owned by the NativeWidget.  See  comments in widget.h.
   views::Widget* widget =
       CreateDialogWidget(/* delegate=*/this,
