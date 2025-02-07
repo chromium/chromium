@@ -17,7 +17,8 @@ namespace tracing {
 
 BackgroundTracingAgentImpl::BackgroundTracingAgentImpl(
     mojo::PendingRemote<mojom::BackgroundTracingAgentClient> client)
-    : client_(std::move(client)) {
+    : client_(std::move(client)),
+      task_runner_{base::SequencedTaskRunner::GetCurrentDefault()} {
   client_->OnInitialized();
   NamedTriggerManager::SetInstance(this);
 }
@@ -53,9 +54,22 @@ bool BackgroundTracingAgentImpl::DoEmitNamedTrigger(
     std::optional<int32_t> value) {
   TRACE_EVENT_INSTANT("latency", "NamedTrigger",
                       base::trace_event::TriggerFlow(trigger_name, value));
+  DoEmitNamedTriggerImpl(trigger_name, value);
+  return true;
+}
+
+void BackgroundTracingAgentImpl::DoEmitNamedTriggerImpl(
+    const std::string& trigger_name,
+    std::optional<int32_t> value) {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&BackgroundTracingAgentImpl::DoEmitNamedTriggerImpl,
+                       weak_factory_.GetWeakPtr(), trigger_name, value));
+    return;
+  }
   client_->OnTriggerBackgroundTrace(
       tracing::mojom::BackgroundTracingRule::New(trigger_name), value);
-  return true;
 }
 
 void BackgroundTracingAgentImpl::OnHistogramChanged(

@@ -52,6 +52,9 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
                           uint64_t name_hash,
                           base::Histogram::Sample32 actual_value);
 
+  void DoEmitNamedTriggerImpl(const std::string& trigger_name,
+                              std::optional<int32_t> value);
+
   mojo::Remote<mojom::BackgroundTracingAgentClient> client_;
   base::Time histogram_last_changed_;
   // Tracks histogram names and corresponding registered callbacks.
@@ -60,6 +63,7 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
       std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
       histogram_callback_map_;
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<BackgroundTracingAgentImpl> weak_factory_{this};
 };
 
