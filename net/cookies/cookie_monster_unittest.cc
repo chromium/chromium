@@ -2735,7 +2735,7 @@ TEST_F(CookieMonsterLegacyScopeTest, DeleteAllAliasCookies) {
           MatchesCookieNameValue("D", "1"), MatchesCookieNameValue("D", "2")));
 
   // Run the function for this domain.
-  cm->DeleteAllAliasingCookies(cm->GetKey("www.example.com"));
+  cm->DeleteAllAliasingCookies(cm->GetKey("example.com"));
   cookies = GetAllCookies(cm.get());
 
   EXPECT_THAT(cookies,
@@ -2835,7 +2835,7 @@ TEST_F(CookieMonsterLegacyScopeTest, DeleteAllAliasPartitionedCookies) {
     ASSERT_TRUE(cookie.IsPartitioned());
   }
 
-  cm->DeleteAllAliasingCookies(cm->GetKey("www.example.com"));
+  cm->DeleteAllAliasingCookies(cm->GetKey("example.com"));
   cookies = GetAllCookies(cm.get());
 
   // Confirm that only non aliasing cookie are left.
@@ -2946,7 +2946,7 @@ TEST_F(CookieMonsterLegacyScopeTest, CheckAndActivateLegacyScopeBehavior) {
           MatchesCookieNameValue("D", "1"), MatchesCookieNameValue("D", "2")));
 
   // Switch to legacy mode.
-  access_delegate_->SetExpectationForCookieScope("www.example.com",
+  access_delegate_->SetExpectationForCookieScope("example.com",
                                                  CookieScopeSemantics::LEGACY);
   cm->SetCookieAccessDelegate(std::move(access_delegate_));
 
@@ -3076,7 +3076,7 @@ TEST_F(CookieMonsterLegacyScopeTest,
           MatchesCookieNameValue("D", "1"), MatchesCookieNameValue("D", "2")));
 
   // Switch to legacy mode.
-  access_delegate_->SetExpectationForCookieScope("www.example.com",
+  access_delegate_->SetExpectationForCookieScope("example.com",
                                                  CookieScopeSemantics::LEGACY);
   cm->SetCookieAccessDelegate(std::move(access_delegate_));
 
@@ -3250,7 +3250,7 @@ TEST_F(CookieMonsterLegacyScopeTest,
           MatchesCookieNameValue("D", "1"), MatchesCookieNameValue("D", "2")));
 
   // Switch to legacy mode.
-  access_delegate_->SetExpectationForCookieScope("www.example.com",
+  access_delegate_->SetExpectationForCookieScope("example.com",
                                                  CookieScopeSemantics::LEGACY);
   cm->SetCookieAccessDelegate(std::move(access_delegate_));
 
@@ -3373,7 +3373,7 @@ TEST_F(CookieMonsterLegacyScopeTest,
   }
 
   // Switch to legacy mode.
-  access_delegate_->SetExpectationForCookieScope("www.example.com",
+  access_delegate_->SetExpectationForCookieScope("example.com",
                                                  CookieScopeSemantics::LEGACY);
   cm->SetCookieAccessDelegate(std::move(access_delegate_));
 

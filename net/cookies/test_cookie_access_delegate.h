@@ -105,7 +105,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
                                  base::OnceCallback<void(T)> callback) const;
 
   std::map<std::string, CookieAccessSemantics> expectations_;
-  std::map<std::string, CookieScopeSemantics> expectations_scoped_;
+  std::map<SchemefulSite, CookieScopeSemantics> expectations_scoped_;
   std::map<std::string, bool> ignore_samesite_restrictions_schemes_;
   base::flat_map<SchemefulSite, FirstPartySetEntry> first_party_sets_;
   FirstPartySetsCacheFilter first_party_sets_cache_filter_;
