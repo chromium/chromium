@@ -8,8 +8,10 @@
 
 #include <ranges>
 #include <string>
+#include <string_view>
 
 #include "base/atomic_sequence_num.h"
+#include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -33,7 +35,9 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/service/variations_field_trial_creator.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_switches.h"
@@ -91,7 +95,8 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeEndToEndBrowserTestHelper,
       << "crash_streak=" << crash_streak;
 }
 
-class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
+class VariationsSafeModeEndToEndBrowserTest
+    : public ::testing::TestWithParam<std::string> {
  public:
   void SetUp() override {
     ::testing::Test::SetUp();
@@ -126,10 +131,11 @@ class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
     // compatibility with the crashing study in the seed.
     sub_test.AppendSwitchASCII(switches::kFakeVariationsChannel, "canary");
 
-    // TODO(crbug.com/379869158): Update the test to also support
-    // seed-file-based variations seeds.
-    sub_test.AppendSwitchASCII(::switches::kForceFieldTrials,
-                               "SeedFileTrial/Control_V5");
+    // Assign the test experiment group.
+    // TODO(crbug.com/391565578): Remove after Seed File experiment is complete.
+    sub_test.AppendSwitchASCII(
+        ::switches::kForceFieldTrials,
+        base::StrCat({variations::kSeedFileTrial, "/", GetParam()}));
 
     // Explicitly avoid any terminal control characters in the output.
     sub_test.AppendSwitchASCII("gtest_color", "no");
@@ -194,7 +200,12 @@ class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
   base::FilePath local_state_file_;
 };
 
-TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeSeedEndToEnd) {
+INSTANTIATE_TEST_SUITE_P(SeedFileExperimentGroups,
+                         VariationsSafeModeEndToEndBrowserTest,
+                         ::testing::Values(variations::kControlGroup,
+                                           variations::kSeedFilesGroup));
+
+TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeSeedEndToEnd) {
   base::CommandLine sub_test = SetUpSubTest();
 
   // Initial sub-test run should be successful.
@@ -203,8 +214,32 @@ TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeSeedEndToEnd) {
   // To speed up the test, skip the first k-1 crashing runs.
   const int initial_crash_count = kCrashStreakSafeSeedThreshold - 1;
 
-  // Inject the safe and crashing seeds into the Local State of |sub_test|.
-  {
+  // Inject the safe and crashing seeds into the Seed Files XOR Local State of
+  // |sub_test|. Experiment moving the seed from Local State to Seed File
+  // in progress, so we need to cover both cases.
+  if (GetParam() == variations::kSeedFilesGroup) {
+    auto local_state = LoadLocalState(local_state_file());
+    local_state->SetInteger(prefs::kVariationsCrashStreak, initial_crash_count);
+    // Since the signature is still in Local State, we need to write it there.
+    // TODO(crbug.com/380465790): Write signature to Seed File once it is moved
+    // there.
+    local_state->SetString(kSafeSeedPrefKeys.base64_signature_key,
+                           kTestSeedData.base64_signature);
+    local_state->SetString(kRegularSeedPrefKeys.base64_signature_key,
+                           kCrashingSeedData.base64_signature);
+    local_state->CommitPendingWrite();
+    ASSERT_EQ(local_state->GetString(prefs::kVariationsCompressedSeed), "");
+    ASSERT_EQ(local_state->GetString(prefs::kVariationsSafeCompressedSeed), "");
+    // Write the seeds to the Seed Files.
+    // TODO(crbug.com/380465790, crbug.com/369108446): Update seed file name.
+    ASSERT_TRUE(
+        base::WriteFile(user_data_dir().AppendASCII("VariationsSafeSeedV1"),
+                        kTestSeedData.GetCompressedData()));
+    ASSERT_TRUE(base::WriteFile(user_data_dir().AppendASCII("VariationsSeedV1"),
+                                kCrashingSeedData.GetCompressedData()));
+  } else {
+    // GetParam() == variations::kControlGroup
+    // TODO(crbug.com/379869158): Remove after Seed File experiment is complete.
     auto local_state = LoadLocalState(local_state_file());
     local_state->SetInteger(prefs::kVariationsCrashStreak, initial_crash_count);
     WriteSeedData(local_state.get(), kTestSeedData, kSafeSeedPrefKeys);
@@ -227,7 +262,7 @@ TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeSeedEndToEnd) {
   RunAndExpectSuccessfulSubTest(sub_test);
 }
 
-TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedNullSeedEndToEnd) {
+TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedNullSeedEndToEnd) {
   base::ScopedAllowBlockingForTesting allow_io;
   base::CommandLine sub_test = SetUpSubTest();
 
@@ -237,8 +272,32 @@ TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedNullSeedEndToEnd) {
   // To speed up the test, skip the first k-1 crashing runs.
   const int initial_crash_count = kCrashStreakNullSeedThreshold - 1;
 
-  // Inject the crashing seeds for both Regular and Safe.
-  {
+  // Inject the crashing seeds for both Regular and Safe into the Seed Files XOR
+  // Local State of |sub_test|. Experiment moving the seed from Local State to
+  // Seed File in progress, so we need to cover both cases.
+  if (GetParam() == variations::kSeedFilesGroup) {
+    auto local_state = LoadLocalState(local_state_file());
+    local_state->SetInteger(prefs::kVariationsCrashStreak, initial_crash_count);
+    // TODO(crbug.com/380465790): Write signature to Seed File once it is moved
+    // there.
+    local_state->SetString(kSafeSeedPrefKeys.base64_signature_key,
+                           kCrashingSeedData.base64_signature);
+    local_state->SetString(kRegularSeedPrefKeys.base64_signature_key,
+                           kCrashingSeedData.base64_signature);
+    local_state->CommitPendingWrite();
+    ASSERT_EQ(local_state->GetString(prefs::kVariationsCompressedSeed), "");
+    ASSERT_EQ(local_state->GetString(prefs::kVariationsSafeCompressedSeed), "");
+    // Write the seeds to the Seed Files.
+    // TODO(crbug.com/380465790, crbug.com/369108446): Update seed file name.
+    auto seed_compressed_data = kCrashingSeedData.GetCompressedData();
+    ASSERT_TRUE(
+        base::WriteFile(user_data_dir().AppendASCII("VariationsSafeSeedV1"),
+                        seed_compressed_data));
+    ASSERT_TRUE(base::WriteFile(user_data_dir().AppendASCII("VariationsSeedV1"),
+                                seed_compressed_data));
+  } else {
+    // GetParam() == variations::kControlGroup
+    // TODO(crbug.com/391565578): Remove after Seed File experiment is complete.
     auto local_state = LoadLocalState(local_state_file());
     local_state->SetInteger(prefs::kVariationsCrashStreak, initial_crash_count);
     WriteSeedData(local_state.get(), kCrashingSeedData, kSafeSeedPrefKeys);
