@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -35,11 +33,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
-import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.ui.base.TestActivity;
 
@@ -118,26 +114,16 @@ public class SharedImageTilesCoordinatorUnitTest {
                         /* role= */ 0,
                         /* avatarUrl= */ null,
                         /* givenName= */ null);
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(
-                        new GroupData(
-                                /* groupId= */ null,
-                                /* displayName= */ null,
-                                new GroupMember[] {
-                                    memberValid1, memberValid2, memberInvalid1, memberInvalid2
-                                },
-                                /* accessToken= */ null),
-                        PeopleGroupActionFailure.UNKNOWN);
+        GroupData groupData =
+                new GroupData(
+                        /* groupId= */ null,
+                        /* displayName= */ null,
+                        new GroupMember[] {
+                            memberValid1, memberValid2, memberInvalid1, memberInvalid2
+                        },
+                        /* accessToken= */ null);
 
-        doAnswer(
-                        invocation -> {
-                            Callback<GroupDataOrFailureOutcome> callback =
-                                    invocation.getArgument(1);
-                            callback.onResult(outcome);
-                            return null;
-                        })
-                .when(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID), any(Callback.class));
+        doReturn(groupData).when(mCollaborationService).getGroupData(eq(COLLABORATION_ID));
     }
 
     @Test

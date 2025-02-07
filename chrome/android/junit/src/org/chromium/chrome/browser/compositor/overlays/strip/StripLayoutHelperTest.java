@@ -292,7 +292,8 @@ public class StripLayoutHelperTest {
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
-        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
+        mSharedGroupTestHelper =
+                new SharedGroupTestHelper(mDataSharingService, mCollaborationService);
     }
 
     @After
@@ -3446,6 +3447,9 @@ public class StripLayoutHelperTest {
         // Verify group unshared and avatar resources cleared when only one collaborator.
         verifySharedGroupState(groupTitle, false);
 
+        // Populate face pile during SharedImageTilesCoordinator#updateCollaborationId.
+        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+
         // Group changed that shared with multiple collaborators.
         mSharingObserverCaptor
                 .getValue()
@@ -3455,8 +3459,6 @@ public class StripLayoutHelperTest {
                                 SharedGroupTestHelper.GROUP_MEMBER1,
                                 SharedGroupTestHelper.GROUP_MEMBER2));
 
-        // Populate face pile during SharedImageTilesCoordinator#updateCollaborationId.
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
         loadAvatarBitmap();
 
         // Verify group shared state is updated and avatar resource is initialized.
@@ -3501,6 +3503,12 @@ public class StripLayoutHelperTest {
         verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        if (multipleCollaborators) {
+            mSharedGroupTestHelper.respondToReadGroup(
+                    COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        } else {
+            mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
+        }
 
         // Group the first and second tabs and setup the tab group sync state.
         SavedTabGroup savedTabGroup = null;
@@ -3535,15 +3543,7 @@ public class StripLayoutHelperTest {
                                         COLLABORATION_ID1,
                                         SharedGroupTestHelper.GROUP_MEMBER1,
                                         SharedGroupTestHelper.GROUP_MEMBER2));
-            } else {
-                // Collaboration group already exists. Read group during #createGroupTitle to
-                // confirm multiple collaborators.
-                mSharedGroupTestHelper.respondToReadGroup(
-                        COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
             }
-            // Populate face pile during SharedImageTilesCoordinator#updateCollaborationId.
-            mSharedGroupTestHelper.respondToReadGroup(
-                    COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
             loadAvatarBitmap();
         } else {
             if (!duringStripBuild) {
@@ -3554,9 +3554,6 @@ public class StripLayoutHelperTest {
                         .onGroupAdded(
                                 SharedGroupTestHelper.newGroupData(
                                         COLLABORATION_ID1, SharedGroupTestHelper.GROUP_MEMBER1));
-            } else {
-                // Read group during #createGroupTitle to confirm single collaborator.
-                mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
             }
         }
         return groupTitle;

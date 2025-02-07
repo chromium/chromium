@@ -19,8 +19,8 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
+import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
-import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -42,6 +42,7 @@ public class SharedImageTilesCoordinator {
     private final SharedImageTilesView mView;
     private final @SharedImageTilesType int mType;
     private final @NonNull DataSharingService mDataSharingService;
+    private final @NonNull CollaborationService mCollaborationService;
     private @NonNull String mCollaborationId;
     private int mAvailableMemberCount;
     private int mIconTilesCount;
@@ -71,6 +72,7 @@ public class SharedImageTilesCoordinator {
         mContext = context;
         mType = type;
         mDataSharingService = dataSharingService;
+        mCollaborationService = collaborationService;
 
         mView =
                 (SharedImageTilesView)
@@ -119,21 +121,14 @@ public class SharedImageTilesCoordinator {
 
         resetTracker();
 
-        // Fetch group information from DataSharingService.
-        // TODO(crbug.com/381138936): Migrate to cached readGroup.
-        mDataSharingService.readGroup(
-                mCollaborationId,
-                (result) -> {
-                    if (result.actionFailure != PeopleGroupActionFailure.UNKNOWN) {
-                        // Error occurred. Remove all view.
-                        updateMembersCount(0);
-                        finishedCallback.onResult(false);
-                        return;
-                    }
-
-                    assert result.groupData != null;
-                    onGroupMembersChangedInternal(result.groupData.members, finishedCallback);
-                });
+        GroupData groupData = mCollaborationService.getGroupData(mCollaborationId);
+        if (groupData == null) {
+            // Error occurred. Remove all view.
+            updateMembersCount(0);
+            finishedCallback.onResult(false);
+            return;
+        }
+        onGroupMembersChangedInternal(groupData.members, finishedCallback);
     }
 
     /**

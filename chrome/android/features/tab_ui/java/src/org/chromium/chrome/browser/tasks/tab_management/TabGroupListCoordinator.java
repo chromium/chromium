@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
@@ -44,7 +43,6 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
@@ -156,8 +154,6 @@ public class TabGroupListCoordinator {
         MessagingBackendService messagingBackendService =
                 MessagingBackendServiceFactory.getForProfile(profile);
 
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
         ActionConfirmationManager actionConfirmationManager =
                 new ActionConfirmationManager(profile, context, modalDialogManager);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
@@ -173,7 +169,6 @@ public class TabGroupListCoordinator {
                         dataSharingService,
                         collaborationService,
                         messagingBackendService,
-                        identityManager,
                         paneManager,
                         tabGroupUiActionHandler,
                         actionConfirmationManager,

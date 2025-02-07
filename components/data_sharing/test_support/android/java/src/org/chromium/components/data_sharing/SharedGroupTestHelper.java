@@ -5,12 +5,12 @@
 package org.chromium.components.data_sharing;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.mockito.ArgumentCaptor;
 
 import org.chromium.base.Callback;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.GaiaId;
@@ -36,13 +36,18 @@ public class SharedGroupTestHelper {
             newGroupMember(GAIA_ID2, DISPLAY_NAME2, EMAIL2, MemberRole.MEMBER, GIVEN_NAME2);
 
     private final DataSharingService mDataSharingService;
+    private final CollaborationService mCollaborationService;
     private final ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
 
     /**
      * @param mockDataSharingService A mock {@link DataSharingService}.
+     * @param mockCollaborationService A mock {@link CollaborationService}.
      */
-    public SharedGroupTestHelper(DataSharingService mockDataSharingService) {
+    public SharedGroupTestHelper(
+            DataSharingService mockDataSharingService,
+            CollaborationService mockCollaborationService) {
         mDataSharingService = mockDataSharingService;
+        mCollaborationService = mockCollaborationService;
         mReadGroupCallbackCaptor = ArgumentCaptor.forClass(Callback.class);
     }
 
@@ -65,20 +70,11 @@ public class SharedGroupTestHelper {
 
     /** Responds to a readGroup call on the {@link DataSharingService}. */
     public void respondToReadGroup(String collaborationId, GroupMember... members) {
-        verify(mDataSharingService, atLeastOnce())
-                .readGroup(eq(collaborationId), mReadGroupCallbackCaptor.capture());
-        GroupData groupData = newGroupData(collaborationId, members);
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
+        when(mCollaborationService.getGroupData(eq(collaborationId)))
+                .thenReturn(newGroupData(collaborationId, members));
     }
 
-    public void respondToReadGroup(
-            String collaborationId, @PeopleGroupActionFailure int actionFailure) {
-        verify(mDataSharingService)
-                .readGroup(eq(collaborationId), mReadGroupCallbackCaptor.capture());
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(/* groupData= */ null, actionFailure);
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
+    public void respondToReadGroupWithFailure(String collaborationId) {
+        when(mCollaborationService.getGroupData(eq(collaborationId))).thenReturn(null);
     }
 }

@@ -213,7 +213,7 @@ public class TabUiUtils {
         }
 
         @MemberRole
-        int memberRole = TabShareUtils.getSelfMemberRole(shareGroup, account.getGaiaId());
+        int memberRole = collaborationService.getCurrentUserRoleForGroup(collaborationId);
         Callback<MaybeBlockingResult> onActionConfirmation =
                 (MaybeBlockingResult maybeBlockingResult) -> {
                     if (maybeBlockingResult.result

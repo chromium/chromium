@@ -1523,6 +1523,8 @@ public class TabGridDialogMediatorUnitTest {
         CoreAccountInfo coreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL1, GAIA_ID1);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
+                .thenReturn(MemberRole.OWNER);
 
         mMediator.onToolbarMenuItemClick(R.id.delete_shared_group, TAB_GROUP_ID, COLLABORATION_ID1);
         verify(mActionConfirmationManager).processDeleteSharedGroupAttempt(eq(GROUP_TITLE), any());
@@ -1537,6 +1539,8 @@ public class TabGridDialogMediatorUnitTest {
         CoreAccountInfo coreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL2, GAIA_ID2);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
+                .thenReturn(MemberRole.MEMBER);
 
         mMediator.onToolbarMenuItemClick(R.id.leave_group, TAB_GROUP_ID, COLLABORATION_ID1);
         verify(mActionConfirmationManager).processLeaveGroupAttempt(eq(GROUP_TITLE), any());

@@ -60,6 +60,7 @@ import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
+import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GaiaId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -208,6 +209,8 @@ public class TabUiUtilsUnitTest {
         mockIdentity(EMAIL1, GAIA_ID1);
         createSyncGroup(COLLABORATION_ID1);
         createSharedGroup(GROUP_MEMBER1, GROUP_MEMBER2);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
+                .thenReturn(MemberRole.OWNER);
 
         TabUiUtils.exitSharedTabGroupWithDialog(
                 ApplicationProvider.getApplicationContext(),
@@ -234,6 +237,8 @@ public class TabUiUtilsUnitTest {
         mockIdentity(EMAIL1, GAIA_ID1);
         createSyncGroup(COLLABORATION_ID1);
         createSharedGroup(GROUP_MEMBER1, GROUP_MEMBER2);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
+                .thenReturn(MemberRole.OWNER);
 
         TabUiUtils.exitSharedTabGroupWithDialog(
                 ApplicationProvider.getApplicationContext(),
@@ -339,6 +344,8 @@ public class TabUiUtilsUnitTest {
         mockIdentity(EMAIL2, GAIA_ID2);
         createSyncGroup(COLLABORATION_ID1);
         createSharedGroup(GROUP_MEMBER1, GROUP_MEMBER2);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
+                .thenReturn(MemberRole.MEMBER);
 
         TabUiUtils.exitSharedTabGroupWithDialog(
                 ApplicationProvider.getApplicationContext(),
@@ -367,6 +374,8 @@ public class TabUiUtilsUnitTest {
         group.title = null;
         when(mFilter.getTabGroupTitle(ROOT_ID)).thenReturn(null);
         createSharedGroup(GROUP_MEMBER1, GROUP_MEMBER2);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
+                .thenReturn(MemberRole.MEMBER);
 
         TabUiUtils.exitSharedTabGroupWithDialog(
                 ApplicationProvider.getApplicationContext(),
