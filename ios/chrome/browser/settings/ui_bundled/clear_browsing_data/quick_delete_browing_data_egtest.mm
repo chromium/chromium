@@ -514,7 +514,13 @@ void NoDeleteBrowsingDataDialogHistogram(
 }
 
 // Tests the "sign out of Chrome" link in the footer.
-- (void)testSignOutFooterLink {
+// TODO(crbug.com/395061778): Test is flaky on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSignOutFooterLink FLAKY_testSignOutFooterLink
+#else
+#define MAYBE_testSignOutFooterLink testSignOutFooterLink
+#endif
+- (void)MAYBE_testSignOutFooterLink {
   // Sign in is required to show the footer.
   [self signIn];
 

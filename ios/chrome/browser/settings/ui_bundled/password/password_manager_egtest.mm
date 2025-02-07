@@ -2872,7 +2872,15 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Tests that the percentage of favicons for the password manager metric is
 // logged properly when there are passwords with a favicon.
-- (void)testLogFaviconsForPasswordsPercentageMetricWithPassword {
+// TODO(crbug.com/395064486): Test is flaky on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testLogFaviconsForPasswordsPercentageMetricWithPassword \
+  FLAKY_testLogFaviconsForPasswordsPercentageMetricWithPassword
+#else
+#define MAYBE_testLogFaviconsForPasswordsPercentageMetricWithPassword \
+  testLogFaviconsForPasswordsPercentageMetricWithPassword
+#endif
+- (void)MAYBE_testLogFaviconsForPasswordsPercentageMetricWithPassword {
   // Sign-in and synced user.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
