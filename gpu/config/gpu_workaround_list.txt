@@ -93,6 +93,7 @@ max_3d_array_texture_size_1024
 max_copy_texture_chromium_size_1048576
 max_msaa_sample_count_2
 max_msaa_sample_count_4
+max_num_hw_video_decoders_10
 msaa_is_slow
 msaa_is_slow_2
 multisample_renderbuffer_resize_emulation

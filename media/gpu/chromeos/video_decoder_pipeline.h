@@ -278,7 +278,38 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
                            PickDecoderOutputFormatLinearModifier);
 #endif
 
+  // DecoderReservation is an RAII class for managing the number of simultaneous
+  // decoder instances. On some devices, we need to limit the number of
+  // simultaneous decoder instances. This may be done for SOC-specific reasons.
+  // The current number of decoders is tracked within the class.
+  class DecoderReservation {
+   public:
+    DecoderReservation(const DecoderReservation&) = delete;
+    DecoderReservation& operator=(const DecoderReservation&) = delete;
+    // Upon destruction of the DecoderReservation |num_decoder_instances_| is
+    // decremented.
+    ~DecoderReservation();
+
+    // Take() performs thread-safe reservation of a DecoderReservation. If
+    // Take() fails, it returns nullptr.
+    static std::unique_ptr<DecoderReservation> Take(int max_decoders);
+
+   private:
+    explicit DecoderReservation(bool reservation_taken);
+
+    // Tracks the number of decoder instances globally in the process.
+    // |num_decoder_instances_| is incremented  by calling Take() and
+    // decremented by the DecoderReservation destructor.
+    static base::AtomicRefCount num_decoder_instances_;
+
+    // If the reservation was taken with a particular limit, we need to
+    // decrement |num_decoder_instances_|. If there was no limit, then don't
+    // bother.
+    const bool reservation_taken_;
+  };
+
   VideoDecoderPipeline(
+      std::unique_ptr<DecoderReservation> decoder_reservation,
       const gpu::GpuDriverBugWorkarounds& workarounds,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
@@ -346,6 +377,9 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
   // Used to determine the decoder's maximum output frame pool size.
   size_t GetDecoderMaxOutputFramePoolSize() const;
+
+  // Holds a reservation to the decoder slot that this takes.
+  std::unique_ptr<DecoderReservation> decoder_reservation_;
 
   // Used to figure out the supported configurations in Initialize().
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
