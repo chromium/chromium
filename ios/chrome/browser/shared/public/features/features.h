@@ -597,21 +597,8 @@ bool IsWebChannelsEnabled();
 // Whether the Discover service is created early, alongside the app creation.
 bool IsDiscoverFeedServiceCreatedEarly();
 
-// Whether feed background refresh is enabled and the capability was enabled at
-// startup.
+// Whether feed background refresh is enabled.
 bool IsFeedBackgroundRefreshEnabled();
-
-// Whether feed background refresh capability is enabled. Returns the value in
-// NSUserDefaults set by
-// `SaveFeedBackgroundRefreshCapabilityEnabledForNextColdStart()`. This is used
-// because registering for background refreshes must happen early in app
-// initialization and FeatureList is not yet available. Enabling or disabling
-// background refresh features will always take effect after two cold starts
-// after the feature has been changed on the server (once for the Finch
-// configuration, and another for reading the stored value from NSUserDefaults).
-// This function always returns false if the `IOS_BACKGROUND_MODE_ENABLED`
-// buildflag is not defined.
-bool IsFeedBackgroundRefreshCapabilityEnabled();
 
 // Saves whether any background refresh experiment is enabled. This call
 // DCHECKs on the availability of `base::FeatureList`.
@@ -626,11 +613,6 @@ void SetFeedRefreshTimestamp(NSDate* timestamp, NSString* NSUserDefaultsKey);
 // defaults.
 bool IsFeedOverrideDefaultsEnabled();
 
-// Returns true if the user should receive a local notification when a feed
-// background refresh is completed. Background refresh completion notifications
-// are only enabled by Experimental Settings.
-bool IsFeedBackgroundRefreshCompletedNotificationEnabled();
-
 // Whether the Following feed should also be refreshed in the background.
 bool IsFollowingFeedBackgroundRefreshEnabled();
 
@@ -638,7 +620,7 @@ bool IsFollowingFeedBackgroundRefreshEnabled();
 bool IsServerDrivenBackgroundRefreshScheduleEnabled();
 
 // Whether a new refresh should be scheduled after completion of a previous
-// background refresh.
+// background refresh. Not currently used in code.
 bool IsRecurringBackgroundRefreshScheduleEnabled();
 
 // Returns the max age that the cache is still considered fresh. In other words,
