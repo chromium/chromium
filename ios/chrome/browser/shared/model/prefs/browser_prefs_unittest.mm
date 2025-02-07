@@ -158,8 +158,6 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   // Simulate registering a value different from default in localState
   // prefService.
   local_state()->SetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount, 10);
-  local_state()->SetList(prefs::kIosLatestMostVisitedSites,
-                         list_example.Clone());
   local_state()->SetString(prefs::kIosSafetyCheckManagerPasswordCheckResult,
                            "Example");
   local_state()->SetDict(prefs::kIosPreRestoreAccountInfo,
@@ -171,11 +169,6 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(
       local_state()->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
       10);
-
-  EXPECT_EQ(pref_service()->GetList(prefs::kIosLatestMostVisitedSites),
-            base::Value::List());
-  EXPECT_EQ(local_state()->GetList(prefs::kIosLatestMostVisitedSites),
-            list_example);
 
   EXPECT_EQ(pref_service()->GetString(
                 prefs::kIosSafetyCheckManagerPasswordCheckResult),
@@ -198,11 +191,6 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(
       local_state()->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
       0);
-
-  EXPECT_EQ(pref_service()->GetList(prefs::kIosLatestMostVisitedSites),
-            list_example);
-  EXPECT_EQ(local_state()->GetList(prefs::kIosLatestMostVisitedSites),
-            base::Value::List());
 
   EXPECT_EQ(pref_service()->GetString(
                 prefs::kIosSafetyCheckManagerPasswordCheckResult),
