@@ -332,6 +332,9 @@ constexpr base::FeatureParam<bool> kHandleSidePanelTextDirectives{
     &kLensOverlayContextualSearchbox, "handle-side-panel-text-directives",
     true};
 
+constexpr base::FeatureParam<bool> kHoldContextualQueriesUntilAck{
+    &kLensOverlayContextualSearchbox, "hold-csb-queries-until-ack", true};
+
 constexpr base::FeatureParam<bool> kZstdCompressPdfBytes{
     &kLensOverlayContextualSearchbox, "ztsd-compress-pdf-bytes", false};
 
@@ -806,6 +809,10 @@ bool IsLensOverlayRoutingInfoEnabled() {
 
 bool HandleSidePanelTextDirectivesEnabled() {
   return kHandleSidePanelTextDirectives.Get();
+}
+
+bool ShouldHoldContextualQueriesUntilAck() {
+  return kHoldContextualQueriesUntilAck.Get();
 }
 
 bool ShouldZstdCompressPdfBytes() {

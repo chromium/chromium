@@ -1205,6 +1205,9 @@ void LensOverlayQueryController::PageContentResponseHandler(
 void LensOverlayQueryController::PageContentUploadProgressHandler(
     uint64_t position,
     uint64_t total) {
+  if(lens::features::ShouldHoldContextualQueriesUntilAck()) {
+    return;
+  }
   if (position == total) {
     PageContentUploadFinished();
   }
