@@ -12,7 +12,6 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/manager/display_manager.h"
@@ -106,13 +105,6 @@ class InputInjectorChromeosTest : public ash::AshTestBase {
   ~InputInjectorChromeosTest() override = default;
 
   void SetUp() override {
-    // Unset the resource bundle set by our own test suite...
-    ui::ResourceBundle::CleanupSharedInstance();
-    // ... since Ash requires that we load their resource bundle.
-    ash::AshTestSuite::LoadTestResources();
-
-    ax_platform_.emplace();
-
     ash::AshTestBase::SetUp();
 
     input_injector_ = std::make_unique<InputInjectorChromeos>(
@@ -129,7 +121,6 @@ class InputInjectorChromeosTest : public ash::AshTestBase {
     delegate_ = nullptr;
     input_injector_.reset();
     ash::AshTestBase::TearDown();
-    ax_platform_.reset();
   }
 
   void CreateSingleDisplay(const std::string& display_specs) {
@@ -198,7 +189,6 @@ class InputInjectorChromeosTest : public ash::AshTestBase {
  private:
   raw_ptr<FakeSystemInputInjector> delegate_;
   std::unique_ptr<InputInjectorChromeos> input_injector_;
-  std::optional<ui::AXPlatformForTest> ax_platform_;
 };
 
 TEST_F(InputInjectorChromeosTest, ShouldUseRemoteInputDeviceId) {

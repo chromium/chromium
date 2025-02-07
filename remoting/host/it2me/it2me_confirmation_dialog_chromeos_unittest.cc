@@ -10,15 +10,17 @@
 #include <optional>
 #include <string>
 
+#include "ash/test/ash_test_base.h"
 #include "base/i18n/message_formatter.h"
+#include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "remoting/base/string_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/message_center/lock_screen/fake_lock_screen_controller.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_paths.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_list.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -32,20 +34,32 @@ using base::test::TestFuture;
 using DialogStyle = It2MeConfirmationDialog::DialogStyle;
 constexpr char kTestingRemoteEmail[] = "remote@gmail.com";
 
+void LoadUiTestResources() {
+  base::FilePath ui_test_pak_path;
+  ASSERT_TRUE(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
+  ui::ResourceBundle::CleanupSharedInstance();
+  ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
+  ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources("en-US");
+}
+
 }  // namespace
 
 class It2MeConfirmationDialogChromeOSTest
-    : public testing::TestWithParam<DialogStyle> {
+    : public ash::AshTestBase,
+      public testing::WithParamInterface<DialogStyle> {
  public:
   void SetUp() override {
+    ash::AshTestBase::SetUp();
+
+    // It2MeConfirmationDialogChromeOS requires the UI resource bundle.
+    LoadUiTestResources();
+
     dialog = CreateDialog(GetParam());
-    message_center::MessageCenter::Initialize(
-        std::make_unique<message_center::FakeLockScreenController>());
   }
 
   void TearDown() override {
     dialog.reset();
-    message_center::MessageCenter::Shutdown();
+    ash::AshTestBase::TearDown();
   }
 
   message_center::MessageCenter& message_center() const {
@@ -119,7 +133,6 @@ class It2MeConfirmationDialogChromeOSTest
     It2MeConfirmationDialogFactory dialog_factory{dialog_style};
     return dialog_factory.Create();
   }
-  base::test::SingleThreadTaskEnvironment environment_;
 };
 
 TEST_P(It2MeConfirmationDialogChromeOSTest, NotificationShouldHaveDesiredText) {
