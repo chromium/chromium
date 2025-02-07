@@ -25,6 +25,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -150,6 +151,11 @@ constexpr uint32_t kScancodesDrallion[] = {
     0xEA, 0xE7, 0xD5, 0xD6, 0x95, 0x91, 0xA0,
     0xAE, 0xB0, 0x44, 0x57, 0xd7, 0x8B, 0xD3,
 };
+
+// For Vivaldi keyboard, some are having delete key on the top row.
+constexpr uint32_t kScancodeDelete = 0xD3;
+constexpr auto kModelsWithTopRowDelete =
+    base::MakeFixedFlatSet<std::string_view>({"rull", "teltic"});
 
 // Turkish F-Type xkb keyboard layout id which is used to differentiate between
 // a device from 'tr' region with Q-Type vs F-Type.
@@ -339,6 +345,19 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
         top_row_keys.push_back(top_row_key);
         top_row_key_scancode_indexes[top_row_scan_codes[i]] = index++;
       }
+
+      // If the model contains a delete key in the top row, append it to the
+      // last.
+      constexpr char kModelNameFileName[] = "/run/chromeos-config/v1/name";
+      std::string model_name;
+      if (base::ReadFileToString(base::FilePath(kModelNameFileName),
+                                 &model_name)) {
+        if (kModelsWithTopRowDelete.contains(model_name)) {
+          top_row_keys.push_back(mojom::TopRowKey::kDelete);
+          top_row_key_scancode_indexes[kScancodeDelete] = index++;
+        }
+      }
+
       break;
     }
 
