@@ -2851,19 +2851,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordMigrationWarning.EmptySheetTrigger2"
-    enum="PasswordMigrationWarningTriggers" expires_after="2025-02-10">
-  <owner>izuzic@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    This histogram logs the UI surface that led to showing an empty local
-    passwords migration warning sheet. Recorded when the sheet is closing, but
-    only if it was blank. Android only. This replaces
-    PasswordManager.PasswordMigrationWarning.EmptySheetTrigger which had a bug
-    causing it to also report triggers of non-empty sheets.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PasswordMigrationWarning.Export.Event"
     enum="PasswordExportEvent" expires_after="2024-08-25">
   <owner>ioanap@chromium.org</owner>
@@ -2885,17 +2872,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     Recorded when the export flow finishes. Logged only on Android. This is an
     updated version of PasswordManager.PasswordMigrationWarning.Export.Result,
     which logs more possible export flow results in adition to the old values.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.PasswordMigrationWarning.SheetStateAtClosing"
-    enum="PasswordMigrationWarningSheetStateAtClosing"
-    expires_after="2025-04-13">
-  <owner>izuzic@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    This histogram logs the state of the local passwords migration warning
-    bottom sheet. Recorded when the sheet is closing. Android only.
   </summary>
 </histogram>
 

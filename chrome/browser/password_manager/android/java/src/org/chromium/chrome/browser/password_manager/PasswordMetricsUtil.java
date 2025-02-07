@@ -62,27 +62,6 @@ public class PasswordMetricsUtil {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
-        PasswordMigrationWarningSheetStateAtClosing.FULL_SHEET_CLOSED,
-        PasswordMigrationWarningSheetStateAtClosing.EMPTY_SHEET_CLOSED_BY_USER_INTERACTION,
-        PasswordMigrationWarningSheetStateAtClosing.EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION,
-        PasswordMigrationWarningSheetStateAtClosing.COUNT
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface PasswordMigrationWarningSheetStateAtClosing {
-        int FULL_SHEET_CLOSED = 0;
-        int EMPTY_SHEET_CLOSED_BY_USER_INTERACTION = 1;
-        int EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION = 2;
-        int COUNT = 3;
-    }
-
-    public static final String PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING =
-            "PasswordManager.PasswordMigrationWarning.SheetStateAtClosing";
-    public static final String PASSWORD_MIGRATION_WARNING_EMPTY_SHEET_TRIGGER =
-            "PasswordManager.PasswordMigrationWarning.EmptySheetTrigger2";
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({
         HistogramExportResult.SUCCESS,
         HistogramExportResult.USER_ABORTED,
         HistogramExportResult.WRITE_FAILED,
