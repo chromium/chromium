@@ -1041,6 +1041,7 @@ const int kExpectedExitAnimationCount = 2;
       presentResultsPageAnimated:!isStateRestoration
                       sceneState:self.browser->GetSceneState()
                    maximizeSheet:maximizeSheet
+                startInTranslate:_selectionViewController.translateFilterActive
                       completion:^{
                         [weakSelf resultsBottomSheetPresented];
                       }];

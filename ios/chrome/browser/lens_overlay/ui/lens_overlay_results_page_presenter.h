@@ -36,6 +36,7 @@
 - (void)presentResultsPageAnimated:(BOOL)animated
                         sceneState:(SceneState*)sceneState
                      maximizeSheet:(BOOL)maximizeSheet
+                  startInTranslate:(BOOL)startInTranslate
                         completion:(void (^)(void))completion;
 
 // Dismisses the presented page from the base view controller.

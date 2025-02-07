@@ -54,6 +54,9 @@ class GURL;
 // Defines the interface for interacting with a Chrome Lens Overlay.
 @protocol ChromeLensOverlay
 
+// Whether the current mode is translate.
+@property(nonatomic, readonly) BOOL translateFilterActive;
+
 // Sets the delegate for `ChromeLensOverlay`.
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate;
 

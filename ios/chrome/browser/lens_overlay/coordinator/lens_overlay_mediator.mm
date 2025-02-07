@@ -332,6 +332,12 @@
     self.omniboxClient->SetLensResultHasThumbnail(!result.isTextSelection);
   }
   [self updateOmniboxText:result.queryText];
+
+  if (result.isGeneratedInTranslate) {
+    [self.presentationDelegate didLoadTranslateResult];
+  } else {
+    [self.presentationDelegate didLoadSelectionResult];
+  }
 }
 
 /// Updates the steady state omnibox text.

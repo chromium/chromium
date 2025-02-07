@@ -18,6 +18,12 @@
 // Request resizing the bottom sheet to minimum size.
 - (void)requestMinimizeBottomSheet;
 
+// Handle a selection result loaded in the bottom sheet.
+- (void)didLoadSelectionResult;
+
+// Handle a translation result loaded in the bottom sheet.
+- (void)didLoadTranslateResult;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_BOTTOM_SHEET_PRESENTATION_DELEGATE_H_

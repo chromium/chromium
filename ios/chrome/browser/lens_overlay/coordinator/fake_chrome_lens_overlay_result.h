@@ -18,6 +18,8 @@
 @property(nonatomic, strong) UIImage* selectionPreviewImage;
 /// Data containing the suggest signals.
 @property(nonatomic, strong) NSData* suggestSignals;
+/// Whether the result was generated in the translate filter in Lens.
+@property(nonatomic, readonly) BOOL isGeneratedInTranslate;
 /// Query text.
 @property(nonatomic, copy) NSString* queryText;
 /// Whether the result represents a text selection.

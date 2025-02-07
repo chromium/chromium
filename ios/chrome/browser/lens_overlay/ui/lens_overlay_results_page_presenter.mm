@@ -86,6 +86,7 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 - (void)presentResultsPageAnimated:(BOOL)animated
                         sceneState:(SceneState*)sceneState
                      maximizeSheet:(BOOL)maximizeSheet
+                  startInTranslate:(BOOL)startInTranslate
                         completion:(void (^)(void))completion {
   __weak UIWindow* window = sceneState.window;
   if (!_baseViewController || !_resultViewController || !window) {
@@ -109,8 +110,13 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
       [[LensOverlayPanTracker alloc] initWithView:_baseViewController.view];
   [_basePanTracker startTracking];
 
+  SheetDetentPresentationStategy strategy =
+      startInTranslate ? SheetDetentPresentationStategyTranslate
+                       : SheetDetentPresentationStategySelection;
   _detentsManager =
-      [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet];
+      [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet
+                                                      window:window
+                                        presentationStrategy:strategy];
   _detentsManager.observer = self;
   [_detentsManager adjustDetentsForState:SheetDetentStateUnrestrictedMovement];
 
@@ -125,7 +131,7 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   // bottom sheet is presented. Otherwise the coachmark will appear displaced.
   // This is a known limitation on the Lens side, as there is currently no
   // independent way of adjusting the insets for the coachmark alone.
-  [self adjustSelectionOcclusionInsetsForWindow:window];
+  [self adjustSelectionOcclusionInsets];
 
   // Presenting the bottom sheet adds a gesture recognizer on the main window
   // which in turn causes the touches on Lens Overlay to get canceled.
@@ -209,10 +215,11 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
   }
 }
 
-- (void)adjustSelectionOcclusionInsetsForWindow:(UIWindow*)window {
+- (void)adjustSelectionOcclusionInsets {
   // Pad the offset by a small ammount to avoid having the bottom edge of the
   // selection overlapped over the sheet.
-  CGFloat estimatedMediumDetentHeight = window.frame.size.height / 2;
+  CGFloat estimatedMediumDetentHeight =
+      _detentsManager.estimatedMediumDetentHeight;
   CGFloat offsetNeeded = estimatedMediumDetentHeight + kSelectionOffsetPadding;
 
   [self.delegate onResultsPageVerticalOcclusionInsetsSettled:offsetNeeded];
@@ -306,6 +313,18 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 // Request resizing the bottom sheet to minimum size.
 - (void)requestMinimizeBottomSheet {
   [_detentsManager requestMinimizeBottomSheet];
+}
+
+- (void)didLoadSelectionResult {
+  _detentsManager.presentationStrategy =
+      SheetDetentPresentationStategySelection;
+  [self adjustSelectionOcclusionInsets];
+}
+
+- (void)didLoadTranslateResult {
+  _detentsManager.presentationStrategy =
+      SheetDetentPresentationStategyTranslate;
+  [self adjustSelectionOcclusionInsets];
 }
 
 @end
