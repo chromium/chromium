@@ -174,7 +174,9 @@ enum class TimeDimension {
 std::u16string GetElapsedTimeText(base::TimeDelta time_delta) {
   TimeDimension dimension;
   int number;
-  if (time_delta < base::Hours(1)) {
+  if (time_delta < base::Minutes(1)) {
+    return l10n_util::GetStringUTF16(IDS_DATA_SHARING_RECENT_ACTIVITY_JUST_NOW);
+  } else if (time_delta < base::Hours(1)) {
     dimension = TimeDimension::kMinutes;
     number = time_delta.InMinutes();
   } else if (time_delta < base::Days(1)) {
