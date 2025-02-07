@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
@@ -1883,6 +1884,37 @@ TEST_F(StyleResolverTestCQ, DependsOnStyleContainerQueries) {
   EXPECT_FALSE(c->ComputedStyleRef().DependsOnSizeContainerQueries());
   EXPECT_FALSE(d->ComputedStyleRef().DependsOnSizeContainerQueries());
   EXPECT_FALSE(e->ComputedStyleRef().DependsOnSizeContainerQueries());
+}
+
+TEST_F(StyleResolverTest, AffectedByFunctionalMedia) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      @function --a() {
+        result: 10px;
+      }
+      @function --b() {
+        result: 10px;
+        @media (width) {
+          result: 20px;
+        }
+      }
+      #a { width: --a(); }
+      #b { width: --b(); }
+    </style>
+    <div id=a></div>
+    <div id=b></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+
+  EXPECT_FALSE(a->ComputedStyleRef().AffectedByFunctionalMedia());
+  EXPECT_TRUE(b->ComputedStyleRef().AffectedByFunctionalMedia());
 }
 
 TEST_F(StyleResolverTest, AnchorQueriesMPC) {

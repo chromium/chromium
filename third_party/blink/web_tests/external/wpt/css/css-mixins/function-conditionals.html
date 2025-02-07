@@ -108,6 +108,136 @@
   </style>
 </template>
 
+<!-- @media -->
+
+<template data-name="Basic @media">
+  <style>
+    @function --f() {
+      result: FAIL;
+      @media (width > 0px) {
+        result: PASS;
+      }
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Basic @media (false)">
+  <style>
+    @function --f() {
+      result: PASS;
+      @media (not (width)) {
+        result: FAIL;
+      }
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Nested @media">
+  <style>
+    @function --f() {
+      result: FAIL;
+      @media (width > 0px) {
+        @media (not (height: 99999999px)) {
+          result: PASS;
+        }
+        @media (width: 99999999px) {
+          result: FAIL;
+        }
+      }
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Nested @media (false)">
+  <style>
+    @function --f() {
+      result: PASS;
+      @media (not (width > 0px)) {
+        @media (not (height: 99999999px)) {
+          result: FAIL;
+        }
+        @media (width: 99999999px) {
+          result: FAIL;
+        }
+      }
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="Locals within @media">
+  <style>
+    @function --f() {
+      --x: FAIL;
+      @media (width > 0px) {
+        --x: PASS;
+      }
+      result: var(--x);
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="@supports within @media">
+  <style>
+    @function --f() {
+      --x: FAIL;
+      @media (width > 0px) {
+        @supports (color: green) {
+          --x: PASS;
+        }
+        @supports (not (color: green)) {
+          --x: FAIL;
+        }
+      }
+      result: var(--x);
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
+<template data-name="@media within @supports">
+  <style>
+    @function --f() {
+      --x: FAIL;
+      @supports (color: green) {
+        @media (width > 0px) {
+          --x: PASS;
+        }
+        @media (width = 99999999999px) {
+          --x: FAIL;
+        }
+      }
+      result: var(--x);
+    }
+    #target {
+      --actual: --f();
+      --expected: PASS;
+    }
+  </style>
+</template>
+
 <script>
   test_all_templates();
 </script>

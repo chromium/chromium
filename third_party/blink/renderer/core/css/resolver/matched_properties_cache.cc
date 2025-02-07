@@ -270,6 +270,12 @@ bool MatchedPropertiesCache::IsStyleCacheable(
       builder.StyleType() == kPseudoIdHighlight) {
     return false;
   }
+  // Functional media queries cause the style to depend directly on
+  // the current MediaValues, without going through RuleSet invalidation.
+  // These values are not captured by the MatchResult.
+  if (builder.AffectedByFunctionalMedia()) {
+    return false;
+  }
   return true;
 }
 

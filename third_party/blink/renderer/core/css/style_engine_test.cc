@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_scope_frame.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -155,6 +156,10 @@ class StyleEngineTest : public PageTestBase {
     holder->GetDocument().documentElement()->setInnerHTML(html);
     holder->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     return holder;
+  }
+
+  wtf_size_t FunctionalMediaQueryResultsSize() {
+    return GetStyleEngine().functional_media_query_results_.size();
   }
 };
 
@@ -3491,6 +3496,213 @@ TEST_F(StyleEngineTest,
   EXPECT_EQ(
       Color::FromRGB(0, 128, 0),
       div->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
+TEST_F(StyleEngineTest, FunctionalMediaTargetedRecalcNoChange) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      @function --a() {
+        result: 1;
+      }
+      @function --b() {
+        result: 2;
+        @media (width > 1000px) {
+          result: 3;
+        }
+      }
+      #a { z-index: --a(); }
+      #b { z-index: --b(); }
+    </style>
+    <div id=a></div>
+    <div id=b></div>
+    <div id=c></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+
+  EXPECT_EQ(1u, a->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(2u, b->ComputedStyleRef().ZIndex());
+
+  wtf_size_t initial_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().View()->SetLayoutSizeFixedToFrameSize(false);
+  GetDocument().View()->SetLayoutSize(gfx::Size(900, 600));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(0u, GetStyleEngine().StyleForElementCount() - initial_count);
+}
+
+TEST_F(StyleEngineTest, FunctionalMediaTargetedRecalcChange) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      @function --a() {
+        result: 1;
+      }
+      @function --b() {
+        result: 2;
+        @media (width > 1000px) {
+          result: 3;
+        }
+      }
+      #a { z-index: --a(); }
+      #b { z-index: --b(); }
+    </style>
+    <div id=a></div>
+    <div id=b></div>
+    <div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+
+  EXPECT_EQ(1u, a->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(2u, b->ComputedStyleRef().ZIndex());
+
+  wtf_size_t initial_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().View()->SetLayoutSizeFixedToFrameSize(false);
+  GetDocument().View()->SetLayoutSize(gfx::Size(1200, 600));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - initial_count);
+  EXPECT_EQ(1u, a->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(3u, b->ComputedStyleRef().ZIndex());
+}
+
+TEST_F(StyleEngineTest, FunctionalMediaSharedInvalidationData) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      @function --z-index() {
+        result: 1;
+        @media (width > 1000px) {
+          result: 2;
+        }
+      }
+      div { z-index: --z-index(); }
+    </style>
+    <div id=a></div>
+    <div id=b></div>
+    <div id=c></div>
+    <div id=d></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
+  Element* d = GetDocument().getElementById(AtomicString("d"));
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+  ASSERT_TRUE(c);
+  ASSERT_TRUE(d);
+
+  EXPECT_EQ(1u, a->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(1u, b->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(1u, c->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(1u, d->ComputedStyleRef().ZIndex());
+
+  // Even though multiple elements perform the same evaluation,
+  // there is only one entry in `StyleEngine::functional_media_query_results_`.
+  EXPECT_EQ(1u, FunctionalMediaQueryResultsSize());
+
+  GetDocument().View()->SetLayoutSizeFixedToFrameSize(false);
+  GetDocument().View()->SetLayoutSize(gfx::Size(1200, 600));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(2u, a->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(2u, b->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(2u, c->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(2u, d->ComputedStyleRef().ZIndex());
+}
+
+TEST_F(StyleEngineTest, FunctionalMediaSharedInvalidationData_Prelude) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      @function --z-index-1() {
+        result: 1;
+        @media (width > 1000px) {
+          result: 2;
+        }
+      }
+      @function --z-index-2() {
+        result: 3;
+        @media (width > 1000px) { /* Identical to the other prelude */
+          result: 4;
+        }
+      }
+      #a, #b { z-index: --z-index-1(); }
+      #c, #d { z-index: --z-index-2(); }
+    </style>
+    <div id=a></div>
+    <div id=b></div>
+    <div id=c></div>
+    <div id=d></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  Element* b = GetDocument().getElementById(AtomicString("b"));
+  Element* c = GetDocument().getElementById(AtomicString("c"));
+  Element* d = GetDocument().getElementById(AtomicString("d"));
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+  ASSERT_TRUE(c);
+  ASSERT_TRUE(d);
+
+  EXPECT_EQ(1u, a->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(1u, b->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(3u, c->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(3u, d->ComputedStyleRef().ZIndex());
+
+  // @media preludes that are identical should collapse into one.
+  EXPECT_EQ(1u, FunctionalMediaQueryResultsSize());
+
+  GetDocument().View()->SetLayoutSizeFixedToFrameSize(false);
+  GetDocument().View()->SetLayoutSize(gfx::Size(1200, 600));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(2u, a->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(2u, b->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(4u, c->ComputedStyleRef().ZIndex());
+  EXPECT_EQ(4u, d->ComputedStyleRef().ZIndex());
+}
+
+TEST_F(StyleEngineTest, FunctionalMediaInvalidationDataClearedOnFullRecalc) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      @function --z-index() {
+        result: 0;
+        @media (width > 100px) { result: 1; }
+        @media (width > 200px) { result: 2; }
+        @media (width > 300px) { result: 3; }
+        @media (width > 400px) { result: 4; }
+        @media (width > 500px) { result: 5; }
+        @media (width > 600px) { result: 6; }
+        @media (width > 700px) { result: 7; }
+        @media (width > 800px) { result: 8; }
+        @media (width > 900px) { result: 9; }
+      }
+      div { z-index: --z-index(); }
+    </style>
+    <div id=a></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* a = GetDocument().getElementById(AtomicString("a"));
+  ASSERT_TRUE(a);
+  EXPECT_EQ(9u, FunctionalMediaQueryResultsSize());
+
+  GetStyleEngine().MarkAllElementsForStyleRecalc(
+      StyleChangeReasonForTracing::Create("test"));
+  EXPECT_EQ(0u, FunctionalMediaQueryResultsSize());
 }
 
 TEST_F(StyleEngineTest, RevertUseCount) {

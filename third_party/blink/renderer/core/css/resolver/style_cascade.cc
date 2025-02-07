@@ -1818,8 +1818,14 @@ void StyleCascade::FlattenFunctionBody(
       if (supports_rule->ConditionIsSupported()) {
         FlattenFunctionBody(*supports_rule, result, locals);
       }
+    } else if (auto* media_rule = DynamicTo<StyleRuleMedia>(child.Get())) {
+      state_.StyleBuilder().SetAffectedByFunctionalMedia();
+      if (GetDocument().GetStyleEngine().EvaluateFunctionalMediaQuery(
+              *media_rule->MediaQueries())) {
+        FlattenFunctionBody(*media_rule, result, locals);
+      }
     }
-    // TODO(crbug.com/325504770): Support @media, @container.
+    // TODO(crbug.com/325504770): Support @container.
   }
 }
 

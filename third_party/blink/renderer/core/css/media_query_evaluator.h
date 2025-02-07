@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/kleene_value.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -99,6 +100,8 @@ class CORE_EXPORT MediaQueryEvaluator final
   // Returns true if any of the media queries in the results lists changed its
   // evaluation.
   bool DidResultsChange(const HeapVector<MediaQuerySetResult>& results) const;
+  bool DidResultsChange(
+      const HeapHashMap<Member<const MediaQuerySet>, bool>& results) const;
 
   void Trace(Visitor*) const;
 
