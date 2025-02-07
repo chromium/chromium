@@ -1769,8 +1769,14 @@ Superellipse StyleBuilderConverter::ConvertCornerShape(
     const CSSValue& value) {
   if (const auto* keyword = DynamicTo<CSSIdentifierValue>(value)) {
     switch (keyword->GetValueID()) {
+      case CSSValueID::kBevel:
+        return Superellipse::Bevel();
+      case CSSValueID::kNotch:
+        return Superellipse::Notch();
       case CSSValueID::kRound:
         return Superellipse::Round();
+      case CSSValueID::kSquircle:
+        return Superellipse::Squircle();
       case CSSValueID::kScoop:
         return Superellipse::Scoop();
       case CSSValueID::kStraight:

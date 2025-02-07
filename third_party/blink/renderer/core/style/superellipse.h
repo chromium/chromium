@@ -12,11 +12,20 @@ namespace blink {
 // https://drafts.csswg.org/css-borders-4/#funcdef-superellipse
 class Superellipse {
  public:
+  // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-bevel
+  static Superellipse Bevel() { return Superellipse(1.); }
+
+  // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-notch
+  static Superellipse Notch() { return Superellipse(0.); }
+
   // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-round
   static Superellipse Round() { return Superellipse(2); }
 
   // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-scoop
   static Superellipse Scoop() { return Superellipse(0.5); }
+
+  // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-squircle
+  static Superellipse Squircle() { return Superellipse(4); }
 
   // https://drafts.csswg.org/css-borders-4/#valdef-corner-shape-value-straight
   static Superellipse Straight() {

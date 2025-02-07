@@ -5090,8 +5090,10 @@ CSSValue* ParseBorderRadiusCorner(CSSParserTokenStream& stream,
 
 const CSSValue* ParseCornerShape(CSSParserTokenStream& stream,
                                  const CSSParserContext& context) {
-  if (const auto* ident = ConsumeIdent<CSSValueID::kRound, CSSValueID::kScoop,
-                                       CSSValueID::kStraight>(stream)) {
+  if (const auto* ident =
+          ConsumeIdent<CSSValueID::kBevel, CSSValueID::kNotch,
+                       CSSValueID::kRound, CSSValueID::kScoop,
+                       CSSValueID::kSquircle, CSSValueID::kStraight>(stream)) {
     return ident;
   }
 
