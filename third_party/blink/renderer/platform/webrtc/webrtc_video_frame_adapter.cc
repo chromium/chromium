@@ -283,7 +283,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
         // synchronized with the GPU.
         gpu::SyncToken empty_sync_token;
         media::SimpleSyncTokenClient simple_client(empty_sync_token);
-        dst_frame->UpdateAcquireSyncToken(&simple_client);
+        dst_frame->UpdateAcquireSyncToken(empty_sync_token);
         dst_frame->UpdateReleaseSyncToken(&simple_client);
 
         auto vf = ConstructVideoFrameFromGpu(std::move(dst_frame));

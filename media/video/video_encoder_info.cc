@@ -45,13 +45,17 @@ bool operator==(const VideoEncoderInfo& lhs, const VideoEncoderInfo& rhs) {
                   lhs.is_hardware_accelerated, lhs.supports_simulcast,
                   lhs.reports_average_qp, lhs.requested_resolution_alignment,
                   lhs.apply_alignment_to_all_simulcast_layers,
-                  lhs.fps_allocation, lhs.resolution_rate_limits) ==
+                  lhs.fps_allocation, lhs.resolution_rate_limits,
+                  lhs.supports_gpu_shared_images,
+                  lhs.gpu_supported_pixel_formats) ==
          std::tie(rhs.implementation_name, rhs.frame_delay, rhs.input_capacity,
                   rhs.supports_native_handle, rhs.has_trusted_rate_controller,
                   rhs.is_hardware_accelerated, rhs.supports_simulcast,
                   rhs.reports_average_qp, rhs.requested_resolution_alignment,
                   rhs.apply_alignment_to_all_simulcast_layers,
-                  rhs.fps_allocation, rhs.resolution_rate_limits);
+                  rhs.fps_allocation, rhs.resolution_rate_limits,
+                  rhs.supports_gpu_shared_images,
+                  rhs.gpu_supported_pixel_formats);
 }
 
 bool VideoEncoderInfo::DoesSupportGpuSharedImages(VideoPixelFormat format) {

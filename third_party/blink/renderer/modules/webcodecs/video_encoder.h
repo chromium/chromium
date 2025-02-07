@@ -14,6 +14,7 @@
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_pool.h"
+#include "media/video/video_encoder_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_output_callback.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoder_base.h"
@@ -190,6 +191,9 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   // The color space corresponding to the last emitted output. Used to update
   // emitted VideoDecoderConfig when necessary.
   gfx::ColorSpace last_output_color_space_;
+
+  // Latest VideoEncoderInfo reported by encoder
+  media::VideoEncoderInfo encoder_info_;
 };
 
 }  // namespace blink
