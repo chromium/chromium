@@ -485,7 +485,9 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
   // widget that are instantiated later on, thus why we call it towards the end
   // of this function.
   hotseat_widget()->InitializeAccessibilityProperties();
-  desk_button_widget()->InitializeAccessibleProperties();
+  if (ash::features::IsDeskButtonEnabled()) {
+    desk_button_widget()->InitializeAccessibleProperties();
+  }
   status_area_widget_->InitializeAccessibleProperties();
   status_area_widget_->InitializeTrayButtonsAccessibleNavFocus();
 }
