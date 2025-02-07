@@ -78,7 +78,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       NavigationLoaderInterceptor::FallbackCallback fallback_callback,
       std::string fetch_event_client_id,
       base::WeakPtr<ServiceWorkerClient> service_worker_client,
-      FrameTreeNodeId frame_tree_node_id,
       base::TimeTicks find_registration_start_time);
 
   ServiceWorkerMainResourceLoader(const ServiceWorkerMainResourceLoader&) =
@@ -290,7 +289,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
   base::WeakPtr<ServiceWorkerClient> service_worker_client_;
-  const FrameTreeNodeId frame_tree_node_id_;
 
   std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;
   std::unique_ptr<ServiceWorkerCacheStorageMatcher> cache_matcher_;

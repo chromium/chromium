@@ -132,11 +132,9 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     NavigationLoaderInterceptor::FallbackCallback fallback_callback,
     std::string fetch_event_client_id,
     base::WeakPtr<ServiceWorkerClient> service_worker_client,
-    FrameTreeNodeId frame_tree_node_id,
     base::TimeTicks find_registration_start_time)
     : fallback_callback_(std::move(fallback_callback)),
       service_worker_client_(std::move(service_worker_client)),
-      frame_tree_node_id_(frame_tree_node_id),
       is_browser_startup_completed_(
           GetContentClient()->browser()->IsBrowserStartupComplete()),
       frame_tree_node_type_(
@@ -535,13 +533,19 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
     return false;
   }
 
+  if (!service_worker_client_) {
+    return false;
+  }
+
   // Create URLLoader related assets to handle the request triggered by
   // RaceNetworkRequset.
   mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
   forwarded_race_network_request_url_loader_factory_.emplace(
       forwarding_client.InitWithNewPipeAndPassReceiver(),
-      ServiceWorkerFetchDispatcher::CreateNetworkURLLoaderFactory(
-          context, frame_tree_node_id_));
+      service_worker_client_->CreateNetworkURLLoaderFactory(
+          ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::
+              kRaceNetworkRequest,
+          context->storage_partition(), resource_request_));
   CHECK(!race_network_request_url_loader_client_);
   race_network_request_url_loader_client_.emplace(
       resource_request_, AsWeakPtr(), std::move(forwarding_client));
@@ -567,8 +571,10 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
   race_network_request_url_loader_client_->Bind(&client_to_pass);
   CHECK(!race_network_request_url_loader_factory_);
   race_network_request_url_loader_factory_ =
-      ServiceWorkerFetchDispatcher::CreateNetworkURLLoaderFactory(
-          context, frame_tree_node_id_);
+      service_worker_client_->CreateNetworkURLLoaderFactory(
+          ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::
+              kRaceNetworkRequest,
+          context->storage_partition(), resource_request_);
 
   // Perform fetch
   CHECK_EQ(commit_responsibility(), FetchResponseFrom::kNoResponseYet);
@@ -592,7 +598,7 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
 bool ServiceWorkerMainResourceLoader::MaybeStartNavigationPreload(
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper) {
   if (fetch_dispatcher_->MaybeStartNavigationPreload(
-          resource_request_, context_wrapper, frame_tree_node_id_)) {
+          resource_request_, context_wrapper, service_worker_client_)) {
     SetDispatchedPreloadType(DispatchedPreloadType::kNavigationPreload);
     return true;
   }
@@ -997,10 +1003,15 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
   if (!is_synthetic_response_used_) {
     return false;
   }
+  if (!service_worker_client_) {
+    return false;
+  }
 
   synthetic_response_manager_.emplace(
-      ServiceWorkerFetchDispatcher::CreateNetworkURLLoaderFactory(
-          context_wrapper, frame_tree_node_id_),
+      service_worker_client_->CreateNetworkURLLoaderFactory(
+          ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::
+              kSyntheticNetworkRequest,
+          context_wrapper->storage_partition(), resource_request_),
       version);
 
   // Initiate the network request. If the request URL is eligible for the

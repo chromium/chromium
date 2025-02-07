@@ -85,8 +85,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   ServiceWorkerMainResourceLoaderInterceptor(
       base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
-      bool skip_service_worker,
-      FrameTreeNodeId frame_tree_node_id);
+      bool skip_service_worker);
 
   // Returns true if a ServiceWorkerMainResourceLoaderInterceptor should be
   // created for a navigation to |url|.
@@ -112,11 +111,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   // For all clients:
   const bool skip_service_worker_;
-
-  // For window clients:
-  // If the intercepted resource load is on behalf
-  // of a window, the |frame_tree_node_id_| will be set.
-  const FrameTreeNodeId frame_tree_node_id_;
 
   // Handles a single request. Set to a new instance on redirects.
   std::unique_ptr<ServiceWorkerControlleeRequestHandler> request_handler_;

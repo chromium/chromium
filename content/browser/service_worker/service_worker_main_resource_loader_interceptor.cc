@@ -91,8 +91,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle),
-      request_info.begin_params->skip_service_worker,
-      request_info.frame_tree_node_id));
+      request_info.begin_params->skip_service_worker));
 }
 
 std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
@@ -144,8 +143,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
   }
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
-      std::move(navigation_handle), resource_request.skip_service_worker,
-      FrameTreeNodeId()));
+      std::move(navigation_handle), resource_request.skip_service_worker));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
@@ -217,7 +215,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   request_handler_ = std::make_unique<ServiceWorkerControlleeRequestHandler>(
       context_core->AsWeakPtr(), handle_->fetch_event_client_id(),
       handle_->service_worker_client(), skip_service_worker,
-      frame_tree_node_id_, handle_->service_worker_accessed_callback());
+      handle_->service_worker_accessed_callback());
 
   request_handler_->MaybeCreateLoader(
       tentative_resource_request, browser_context, std::move(loader_callback),
@@ -240,11 +238,8 @@ void ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
 ServiceWorkerMainResourceLoaderInterceptor::
     ServiceWorkerMainResourceLoaderInterceptor(
         base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
-        bool skip_service_worker,
-        FrameTreeNodeId frame_tree_node_id)
-    : handle_(std::move(handle)),
-      skip_service_worker_(skip_service_worker),
-      frame_tree_node_id_(frame_tree_node_id) {
+        bool skip_service_worker)
+    : handle_(std::move(handle)), skip_service_worker_(skip_service_worker) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(handle_);
   CHECK(handle_->scoped_service_worker_client());
