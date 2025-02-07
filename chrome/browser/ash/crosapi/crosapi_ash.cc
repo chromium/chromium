@@ -14,8 +14,6 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/subscriber_crosapi.h"
-#include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
 #include "chrome/browser/apps/digital_goods/digital_goods_ash.h"
 #include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
@@ -282,14 +280,6 @@ void CrosapiAsh::BindAccountManager(
           ->GetAccountManagerMojoService(
               /*profile_path=*/GetAshProfile()->GetPath().value());
   account_manager_mojo_service->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindAppServiceProxy(
-    mojo::PendingReceiver<crosapi::mojom::AppServiceProxy> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* subscriber_crosapi =
-      apps::SubscriberCrosapiFactory::GetForProfile(profile);
-  subscriber_crosapi->RegisterAppServiceProxyFromCrosapi(std::move(receiver));
 }
 
 void CrosapiAsh::BindArc(mojo::PendingReceiver<mojom::Arc> receiver) {

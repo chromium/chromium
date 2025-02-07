@@ -37,7 +37,6 @@
 #include "ui/gfx/image/image_skia_rep.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/app_service/subscriber_crosapi.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -168,28 +167,6 @@ class FakeAppRegistryCacheObserver : public apps::AppRegistryCache::Observer {
       app_registry_cache_observer_{this};
 
   std::set<std::string> app_ids_;
-};
-
-class FakeSubscriberForProxyTest : public SubscriberCrosapi {
- public:
-  explicit FakeSubscriberForProxyTest(Profile* profile)
-      : SubscriberCrosapi(profile) {
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->RegisterCrosApiSubScriber(this);
-  }
-
-  PreferredAppsList& preferred_apps_list() { return preferred_apps_list_; }
-
-  void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override {
-    preferred_apps_list_.ApplyBulkUpdate(std::move(changes));
-  }
-
-  void InitializePreferredApps(apps::PreferredApps preferred_apps) override {
-    preferred_apps_list_.Init(std::move(preferred_apps));
-  }
-
- private:
-  apps::PreferredAppsList preferred_apps_list_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -865,8 +842,6 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
   auto intent_filter_c =
       apps_util::MakeIntentFilterForUrlScope(GURL("https://www.c.com/"));
 
-  FakeSubscriberForProxyTest sub(proxy()->profile());
-
   FakePublisherForProxyTest pub(
       proxy(), AppType::kArc,
       std::vector<std::string>{kAppId1, kAppId2, kAppId3});
@@ -884,13 +859,6 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
   EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId2));
   EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId3));
 
-  EXPECT_EQ(kAppId1, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.a.com/")));
-  EXPECT_EQ(kAppId1, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.b.com/")));
-  EXPECT_EQ(kAppId2, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.c.com/")));
-
   // App 3 overlaps with both App 1 and 2. Both previous apps should have all
   // their supported link filters removed.
   IntentFilters app_3_filters;
@@ -902,13 +870,6 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
   EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId2));
   EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId3));
 
-  EXPECT_EQ(std::nullopt, sub.preferred_apps_list().FindPreferredAppForUrl(
-                              GURL("https://www.a.com/")));
-  EXPECT_EQ(kAppId3, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.b.com/")));
-  EXPECT_EQ(kAppId3, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.c.com/")));
-
   // Setting App 3 as preferred again should not change anything.
   app_3_filters = std::vector<IntentFilterPtr>();
   app_3_filters.push_back(intent_filter_b->Clone());
@@ -916,14 +877,10 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsSetSupportedLinks) {
   proxy()->SetSupportedLinksPreference(kAppId3, std::move(app_3_filters));
 
   EXPECT_TRUE(pub.AppHasSupportedLinksPreference(kAppId3));
-  EXPECT_EQ(kAppId3, sub.preferred_apps_list().FindPreferredAppForUrl(
-                         GURL("https://www.c.com/")));
 
   proxy()->RemoveSupportedLinksPreference(kAppId3);
 
   EXPECT_FALSE(pub.AppHasSupportedLinksPreference(kAppId3));
-  EXPECT_EQ(std::nullopt, sub.preferred_apps_list().FindPreferredAppForUrl(
-                              GURL("https://www.c.com/")));
 }
 
 TEST_F(AppServiceProxyTest, LaunchCallback) {

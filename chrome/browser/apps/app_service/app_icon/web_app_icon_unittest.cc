@@ -58,6 +58,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {

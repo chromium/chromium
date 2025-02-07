@@ -221,7 +221,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   friend class AppStorageTest;
   friend class AppServiceProxyAsh;
   friend class AppServiceProxyBase;
-  friend class AppServiceProxyLacros;
 
   // Called by AppServiceProxy::OnApps when publishers publish changes on apps,
   // to notifies all observers of state-and-delta AppUpdate's and then merges
