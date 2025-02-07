@@ -3030,7 +3030,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
       function otherNotify(clickedElement) {
         clickedElement.ariaNotify("world", {"interrupt": "pending",
                                             "notificationId": "test",
-                                            "priority": "important"});
+                                            "priority": "high"});
       }
       </script>)HTML");
 
@@ -3066,7 +3066,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(
         std::vector<int32_t>{
-            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNone)},
+            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNormal)},
         button->GetIntListAttribute(
             ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
   }
@@ -3098,8 +3098,8 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
             ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties));
 
     EXPECT_EQ(
-        std::vector<int32_t>{static_cast<int32_t>(
-            ax::mojom::AriaNotificationPriority::kImportant)},
+        std::vector<int32_t>{
+            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kHigh)},
         button->GetIntListAttribute(
             ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
   }
@@ -3150,7 +3150,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(
         std::vector<int32_t>{
-            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNone)},
+            static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNormal)},
         button->GetIntListAttribute(
             ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
   };
@@ -3171,7 +3171,7 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
       function notify(clickedElement) {
         clickedElement.ariaNotify("one", {"notificationId": "kOne",
                                           "interrupt": "all"});
-        clickedElement.ariaNotify("two", {"priority": "important"});
+        clickedElement.ariaNotify("two", {"priority": "high"});
         clickedElement.ariaNotify("three", {"notificationId": "kThree",
                                             "interrupt": "pending"});
       }
@@ -3212,10 +3212,10 @@ IN_PROC_BROWSER_TEST_F(AriaNotifyCrossPlatformAccessibilityBrowserTest,
 
     EXPECT_EQ(
         std::vector<int32_t>(
-            {static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNone),
+            {static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNormal),
+             static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kHigh),
              static_cast<int32_t>(
-                 ax::mojom::AriaNotificationPriority::kImportant),
-             static_cast<int32_t>(ax::mojom::AriaNotificationPriority::kNone)}),
+                 ax::mojom::AriaNotificationPriority::kNormal)}),
         button->GetIntListAttribute(
             ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
   }

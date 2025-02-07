@@ -1537,6 +1537,6 @@ enum AriaNotificationInterrupt {
 };
 
 enum AriaNotificationPriority {
-  kNone,
-  kImportant,
+  kNormal,
+  kHigh,
 };

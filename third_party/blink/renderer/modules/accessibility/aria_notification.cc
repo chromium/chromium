@@ -26,10 +26,10 @@ ax::mojom::blink::AriaNotificationInterrupt AsEnum(
 ax::mojom::blink::AriaNotificationPriority AsEnum(
     const V8AriaNotifyPriority& priority) {
   switch (priority.AsEnum()) {
-    case V8AriaNotifyPriority::Enum::kNone:
-      return ax::mojom::blink::AriaNotificationPriority::kNone;
-    case V8AriaNotifyPriority::Enum::kImportant:
-      return ax::mojom::blink::AriaNotificationPriority::kImportant;
+    case V8AriaNotifyPriority::Enum::kNormal:
+      return ax::mojom::blink::AriaNotificationPriority::kNormal;
+    case V8AriaNotifyPriority::Enum::kHigh:
+      return ax::mojom::blink::AriaNotificationPriority::kHigh;
   }
   NOTREACHED();
 }
