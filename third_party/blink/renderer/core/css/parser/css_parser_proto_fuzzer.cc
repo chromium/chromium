@@ -15,8 +15,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
-protobuf_mutator::protobuf::LogSilencer log_silencer;
-
 using css_proto_converter::Input;
 
 DEFINE_BINARY_PROTO_FUZZER(const Input& input) {

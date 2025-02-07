@@ -376,7 +376,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
-  'libprotobuf-mutator': 'a304ec48dcf15d942607032151f7e9ee504b5dcf',
+  'libprotobuf-mutator': '7bf98f78a30b067e22420ff699348f084f802e12',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling android_sdk_build-tools_version
   # and whatever else without interference from each other.
@@ -2583,7 +2583,7 @@ deps = {
   },
 
   'src/third_party/protobuf-javascript/src':
-    Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + 'e34549db516f8712f678fcd4bc411613b5cc5295',
+    Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + '426b2e025aa59c23a1b6e19fbacd6b4a11bfad16',
 
   'src/third_party/pthreadpool/src':
     Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + 'e1469417238e13eebaa001779fa031ed25c59def',

@@ -7,10 +7,6 @@
 
 #include "third_party/openscreen/src/cast/common/channel/message_framer.h"
 #include "third_party/openscreen/src/platform/base/span.h"
-#include "third_party/protobuf/src/google/protobuf/stubs/logging.h"
-
-// Silence logging from the protobuf library.
-google::protobuf::LogSilencer log_silencer;
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   openscreen::ByteView buffer(data, size);
