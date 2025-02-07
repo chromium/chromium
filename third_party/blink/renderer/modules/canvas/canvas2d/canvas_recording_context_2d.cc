@@ -7,12 +7,20 @@
 #include <cmath>
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
 
@@ -235,6 +243,103 @@ void CanvasRecordingContext2D::resetTransform() {
   // non-invertible.
 }
 
+double CanvasRecordingContext2D::globalAlpha() const {
+  return GetState().GlobalAlpha();
+}
+
+void CanvasRecordingContext2D::setGlobalAlpha(double alpha) {
+  if (!(alpha >= 0 && alpha <= 1)) {
+    return;
+  }
+  CanvasRenderingContext2DState& state = GetState();
+  if (state.GlobalAlpha() == alpha) {
+    return;
+  }
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
+    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetGlobalAlpha,
+                                                alpha);
+  }
+  state.SetGlobalAlpha(alpha);
+}
+
+String CanvasRecordingContext2D::globalCompositeOperation() const {
+  auto [composite_op, blend_mode] =
+      CompositeAndBlendOpsFromSkBlendMode(GetState().GlobalComposite());
+  return CanvasCompositeOperatorName(composite_op, blend_mode);
+}
+
+void CanvasRecordingContext2D::setGlobalCompositeOperation(
+    const String& operation) {
+  CompositeOperator op = kCompositeSourceOver;
+  BlendMode blend_mode = BlendMode::kNormal;
+  if (!ParseCanvasCompositeAndBlendMode(operation, op, blend_mode)) {
+    return;
+  }
+  SkBlendMode sk_blend_mode = WebCoreCompositeToSkiaComposite(op, blend_mode);
+  CanvasRenderingContext2DState& state = GetState();
+  if (state.GlobalComposite() == sk_blend_mode) {
+    return;
+  }
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kSetGlobalCompositeOpertion, sk_blend_mode);
+  }
+  state.SetGlobalComposite(sk_blend_mode);
+}
+
+const V8UnionCanvasFilterOrString* CanvasRecordingContext2D::filter() const {
+  const CanvasRenderingContext2DState& state = GetState();
+  if (CanvasFilter* filter = state.GetCanvasFilter()) {
+    return MakeGarbageCollected<V8UnionCanvasFilterOrString>(filter);
+  }
+  return MakeGarbageCollected<V8UnionCanvasFilterOrString>(
+      state.UnparsedCSSFilter());
+}
+
+void CanvasRecordingContext2D::setFilter(
+    ScriptState* script_state,
+    const V8UnionCanvasFilterOrString* input) {
+  if (!input) {
+    return;
+  }
+
+  CanvasRenderingContext2DState& state = GetState();
+  switch (input->GetContentType()) {
+    case V8UnionCanvasFilterOrString::ContentType::kCanvasFilter:
+      UseCounter::Count(GetTopExecutionContext(),
+                        WebFeature::kCanvasRenderingContext2DCanvasFilter);
+      state.SetCanvasFilter(input->GetAsCanvasFilter());
+      SnapshotStateForFilter();
+      // TODO(crbug.com/40191831): Instrument new canvas APIs.
+      identifiability_study_helper_.set_encountered_skipped_ops();
+      break;
+    case V8UnionCanvasFilterOrString::ContentType::kString: {
+      const String& filter_string = input->GetAsString();
+      if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
+        identifiability_study_helper_.UpdateBuilder(
+            CanvasOps::kSetFilter,
+            IdentifiabilitySensitiveStringToken(filter_string));
+      }
+      if (!state.GetCanvasFilter() && !state.IsFontDirtyForFilter() &&
+          filter_string == state.UnparsedCSSFilter()) {
+        return;
+      }
+      const CSSValue* css_value = CSSParser::ParseSingleValue(
+          CSSPropertyID::kFilter, filter_string,
+          MakeGarbageCollected<CSSParserContext>(
+              kHTMLStandardMode,
+              ExecutionContext::From(script_state)->GetSecureContextMode()));
+      if (!css_value || css_value->IsCSSWideKeyword()) {
+        return;
+      }
+      state.SetUnparsedCSSFilter(filter_string);
+      state.SetCSSFilter(css_value);
+      SnapshotStateForFilter();
+      break;
+    }
+  }
+}
+
 double CanvasRecordingContext2D::shadowOffsetX() const {
   return GetState().ShadowOffset().x();
 }
@@ -295,6 +400,10 @@ void CanvasRecordingContext2D::setShadowBlur(double blur) {
 void CanvasRecordingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(state_stack_);
   CanvasPath::Trace(visitor);
+}
+
+HTMLCanvasElement* CanvasRecordingContext2D::HostAsHTMLCanvasElement() const {
+  return nullptr;
 }
 
 }  // namespace blink

@@ -116,7 +116,6 @@ class TextCluster;
 class TextClusterOptions;
 class TextMetrics;
 class V8GPUTextureFormat;
-class V8UnionCanvasFilterOrString;
 struct V8CanvasStyle;
 enum class CanvasOps;
 enum class ColorParseResult;
@@ -175,16 +174,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
 
   String shadowColor() const;
   void setShadowColor(const String&);
-
-  // Alpha value that goes from 0 to 1.
-  double globalAlpha() const;
-  void setGlobalAlpha(double);
-
-  String globalCompositeOperation() const;
-  void setGlobalCompositeOperation(const String&);
-
-  const V8UnionCanvasFilterOrString* filter() const;
-  void setFilter(ScriptState*, const V8UnionCanvasFilterOrString* input);
 
   void save();
   void restore(ExceptionState& exception_state);
@@ -397,7 +386,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
                         CanvasPerformanceMonitor::DrawType) = 0;
 
   virtual sk_sp<PaintFilter> StateGetFilter() = 0;
-  void SnapshotStateForFilter();
+  void SnapshotStateForFilter() final;
 
   virtual CanvasRenderingContextHost* GetCanvasRenderingContextHost() const {
     return nullptr;
@@ -564,7 +553,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   explicit BaseRenderingContext2D(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  virtual HTMLCanvasElement* HostAsHTMLCanvasElement() const;
   virtual OffscreenCanvas* HostAsOffscreenCanvas() const;
   virtual FontSelector* GetFontSelector() const;
   const Font* AccessFont(HTMLCanvasElement* canvas);

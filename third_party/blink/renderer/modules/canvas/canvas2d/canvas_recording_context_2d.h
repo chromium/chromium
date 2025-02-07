@@ -18,6 +18,8 @@ namespace blink {
 
 class DOMMatrix;
 class DOMMatrixInit;
+class HTMLCanvasElement;
+class V8UnionCanvasFilterOrString;
 
 // CanvasRecordingContext2D implements the canvas_recording_context_2d.idl, a 2D
 // context API that records PaintOps. This class holds the canvas recording API
@@ -48,6 +50,17 @@ class MODULES_EXPORT CanvasRecordingContext2D : public CanvasPath {
   virtual DOMMatrix* getTransform();
   virtual void resetTransform();
 
+  // Functions implementing the CanvasCompositing interface.
+  // Alpha value that goes from 0 to 1.
+  double globalAlpha() const;
+  void setGlobalAlpha(double);
+
+  String globalCompositeOperation() const;
+  void setGlobalCompositeOperation(const String&);
+
+  const V8UnionCanvasFilterOrString* filter() const;
+  void setFilter(ScriptState*, const V8UnionCanvasFilterOrString* input);
+
   // Functions implementing the CanvasShadowStyles interface.
   virtual double shadowOffsetX() const;
   virtual void setShadowOffsetX(double);
@@ -63,6 +76,11 @@ class MODULES_EXPORT CanvasRecordingContext2D : public CanvasPath {
 
  protected:
   CanvasRecordingContext2D();
+  virtual HTMLCanvasElement* HostAsHTMLCanvasElement() const;
+
+  // Helper functions for Filter.
+  virtual void SnapshotStateForFilter() {}
+
   ALWAYS_INLINE CanvasRenderingContext2DState& GetState() const {
     return *state_stack_.back();
   }

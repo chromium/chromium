@@ -1192,99 +1192,6 @@ void BaseRenderingContext2D::setLineDashOffset(double offset) {
   state.SetLineDashOffset(ClampTo<float>(offset));
 }
 
-double BaseRenderingContext2D::globalAlpha() const {
-  return GetState().GlobalAlpha();
-}
-
-void BaseRenderingContext2D::setGlobalAlpha(double alpha) {
-  if (!(alpha >= 0 && alpha <= 1))
-    return;
-  CanvasRenderingContext2DState& state = GetState();
-  if (state.GlobalAlpha() == alpha) {
-    return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetGlobalAlpha,
-                                                alpha);
-  }
-  state.SetGlobalAlpha(alpha);
-}
-
-String BaseRenderingContext2D::globalCompositeOperation() const {
-  auto [composite_op, blend_mode] =
-      CompositeAndBlendOpsFromSkBlendMode(GetState().GlobalComposite());
-  return CanvasCompositeOperatorName(composite_op, blend_mode);
-}
-
-void BaseRenderingContext2D::setGlobalCompositeOperation(
-    const String& operation) {
-  CompositeOperator op = kCompositeSourceOver;
-  BlendMode blend_mode = BlendMode::kNormal;
-  if (!ParseCanvasCompositeAndBlendMode(operation, op, blend_mode))
-    return;
-  SkBlendMode sk_blend_mode = WebCoreCompositeToSkiaComposite(op, blend_mode);
-  CanvasRenderingContext2DState& state = GetState();
-  if (state.GlobalComposite() == sk_blend_mode) {
-    return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kSetGlobalCompositeOpertion, sk_blend_mode);
-  }
-  state.SetGlobalComposite(sk_blend_mode);
-}
-
-const V8UnionCanvasFilterOrString* BaseRenderingContext2D::filter() const {
-  const CanvasRenderingContext2DState& state = GetState();
-  if (CanvasFilter* filter = state.GetCanvasFilter()) {
-    return MakeGarbageCollected<V8UnionCanvasFilterOrString>(filter);
-  }
-  return MakeGarbageCollected<V8UnionCanvasFilterOrString>(
-      state.UnparsedCSSFilter());
-}
-
-void BaseRenderingContext2D::setFilter(
-    ScriptState* script_state,
-    const V8UnionCanvasFilterOrString* input) {
-  if (!input)
-    return;
-
-  CanvasRenderingContext2DState& state = GetState();
-  switch (input->GetContentType()) {
-    case V8UnionCanvasFilterOrString::ContentType::kCanvasFilter:
-      UseCounter::Count(GetTopExecutionContext(),
-                        WebFeature::kCanvasRenderingContext2DCanvasFilter);
-      state.SetCanvasFilter(input->GetAsCanvasFilter());
-      SnapshotStateForFilter();
-      // TODO(crbug.com/1234113): Instrument new canvas APIs.
-      identifiability_study_helper_.set_encountered_skipped_ops();
-      break;
-    case V8UnionCanvasFilterOrString::ContentType::kString: {
-      const String& filter_string = input->GetAsString();
-      if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-        identifiability_study_helper_.UpdateBuilder(
-            CanvasOps::kSetFilter,
-            IdentifiabilitySensitiveStringToken(filter_string));
-      }
-      if (!state.GetCanvasFilter() && !state.IsFontDirtyForFilter() &&
-          filter_string == state.UnparsedCSSFilter()) {
-        return;
-      }
-      const CSSValue* css_value = CSSParser::ParseSingleValue(
-          CSSPropertyID::kFilter, filter_string,
-          MakeGarbageCollected<CSSParserContext>(
-              kHTMLStandardMode,
-              ExecutionContext::From(script_state)->GetSecureContextMode()));
-      if (!css_value || css_value->IsCSSWideKeyword())
-        return;
-      state.SetUnparsedCSSFilter(filter_string);
-      state.SetCSSFilter(css_value);
-      SnapshotStateForFilter();
-      break;
-    }
-  }
-}
-
 AffineTransform BaseRenderingContext2D::GetTransform() const {
   return GetState().GetTransform();
 }
@@ -3133,10 +3040,6 @@ static inline TextDirection ToTextDirection(
       return TextDirection::kLtr;
   }
   NOTREACHED();
-}
-
-HTMLCanvasElement* BaseRenderingContext2D::HostAsHTMLCanvasElement() const {
-  return nullptr;
 }
 
 OffscreenCanvas* BaseRenderingContext2D::HostAsOffscreenCanvas() const {
