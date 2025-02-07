@@ -1,7 +1,0 @@
-This is a wdspec test.
-[FAIL] test_pointer_down_closes_browsing_context
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_click_navigation
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-Harness: the test ran to completion.
-

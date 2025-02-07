@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_beforeunload
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-Harness: the test ran to completion.
-

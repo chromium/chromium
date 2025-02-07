@@ -1,25 +1,5 @@
 This is a wdspec test.
-[FAIL] test_history_url_update[-#foo-pushState]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_history_url_update[#foo-#bar-pushState]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_history_url_update[#foo-#foo-pushState]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_history_url_update[#bar--pushState]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_history_url_update[-#foo-replaceState]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_history_url_update[#foo-#bar-replaceState]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_history_url_update[#foo-#foo-replaceState]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_history_url_update[#bar--replaceState]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_history_state_update[pushState]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_history_state_update[replaceState]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_history_document_open
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+  AssertionError
 Harness: the test ran to completion.
 

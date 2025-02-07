@@ -1,9 +1,0 @@
-This is a wdspec test.
-[FAIL] test_channel[default]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_channel[with serializationOptions]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_channel[with ownership]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-Harness: the test ran to completion.
-

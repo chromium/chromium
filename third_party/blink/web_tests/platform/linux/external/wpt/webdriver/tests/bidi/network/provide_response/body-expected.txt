@@ -1,9 +1,0 @@
-This is a wdspec test.
-[FAIL] test_body_before_request_sent[/webdriver/tests/bidi/network/support/provide_response.html-<div id=from-provide-response>-!!document.getElementById('from-provide-response')]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_body_before_request_sent[/webdriver/tests/bidi/network/support/provide_response.js-window.isFromProvideResponse = true;-window.isFromProvideResponse == true;]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_body_before_request_sent[/webdriver/tests/bidi/network/support/provide_response.css-div { color: rgb(255, 0, 0) }-\\n              const div = document.querySelector('div');\\n              window.getComputedStyle(div).color === 'rgb(255, 0, 0)'\\n            ]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-Harness: the test ran to completion.
-
