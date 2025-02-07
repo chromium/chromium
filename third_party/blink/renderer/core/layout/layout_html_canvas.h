@@ -102,7 +102,7 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
 
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
-  void IntrinsicSizeChanged() override {
+  void NaturalSizeChanged() override {
     NOT_DESTROYED();
     CanvasSizeChanged();
   }

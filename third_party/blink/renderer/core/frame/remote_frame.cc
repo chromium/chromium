@@ -748,7 +748,7 @@ void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
   sizing_info.has_height = info->has_height;
   View()->SetNaturalDimensions(sizing_info);
 
-  owner->IntrinsicSizingInfoChanged();
+  owner->NaturalSizingInfoChanged();
 }
 
 // Update the proxy's SecurityContext with new sandbox flags or permissions

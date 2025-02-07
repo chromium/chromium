@@ -111,7 +111,7 @@ class CORE_EXPORT HTMLPlugInElement
       HeapVector<CSSPropertyValue, 8>&) override;
   // HTMLFrameOwnerElement overrides:
   void DisconnectContentFrame() override;
-  void IntrinsicSizingInfoChanged() final;
+  void NaturalSizingInfoChanged() final;
 
   virtual bool HasFallbackContent() const;
   // Create or update the LayoutEmbeddedContent and return it, triggering layout

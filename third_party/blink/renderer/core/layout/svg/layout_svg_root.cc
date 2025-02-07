@@ -282,7 +282,7 @@ void LayoutSVGRoot::IntrinsicSizingInfoChanged() {
   if (!IsEmbeddedThroughFrameContainingSVGDocument())
     return;
   DCHECK(GetFrame()->Owner());
-  GetFrame()->Owner()->IntrinsicSizingInfoChanged();
+  GetFrame()->Owner()->NaturalSizingInfoChanged();
 }
 
 void LayoutSVGRoot::StyleDidChange(StyleDifference diff,

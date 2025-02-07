@@ -305,7 +305,7 @@ class DummyFrameOwner final : public GarbageCollected<DummyFrameOwner>,
   }
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) override {}
   void DispatchLoad() override {}
-  void IntrinsicSizingInfoChanged() override {}
+  void NaturalSizingInfoChanged() override {}
   void SetNeedsOcclusionTracking(bool) override {}
   AtomicString BrowsingContextContainerName() const override {
     return AtomicString();

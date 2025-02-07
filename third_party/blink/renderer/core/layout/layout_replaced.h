@@ -102,7 +102,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // transformations - such as 'object-view-box' - applied.
   // This function is public only so we can call it when computing
   // intrinsic size in LayoutNG.
-  PhysicalNaturalSizingInfo ComputeIntrinsicSizingInfo() const;
+  PhysicalNaturalSizingInfo ComputeNaturalSizingInfo() const;
 
   // This callback must be invoked whenever the underlying natural dimensions
   // has changed.
@@ -110,7 +110,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // The natural dimensions can change due to the network (from the default
   // natural size [see above] to the actual natural dimensions) or to some CSS
   // properties like 'zoom' or 'image-orientation'.
-  virtual void IntrinsicSizeChanged();
+  virtual void NaturalSizeChanged();
 
   bool RespectsCSSOverflow() const override;
 

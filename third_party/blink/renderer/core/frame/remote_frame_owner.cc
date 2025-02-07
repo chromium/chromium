@@ -69,7 +69,7 @@ void RemoteFrameOwner::DispatchLoad() {
   local_frame_host.DispatchLoad();
 }
 
-void RemoteFrameOwner::IntrinsicSizingInfoChanged() {
+void RemoteFrameOwner::NaturalSizingInfoChanged() {
   LocalFrame& local_frame = To<LocalFrame>(*frame_);
   std::optional<NaturalSizingInfo> natural_sizing_info =
       local_frame.View()->GetNaturalDimensions();

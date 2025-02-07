@@ -294,7 +294,7 @@ void HTMLImageElement::SetBestFitURLAndDPRFromImageCandidate(
     layout_image->SetImageDevicePixelRatio(image_device_pixel_ratio_);
 
     if (old_image_device_pixel_ratio != image_device_pixel_ratio_)
-      layout_image->IntrinsicSizeChanged();
+      layout_image->NaturalSizeChanged();
   }
 
   if (intrinsic_sizing_viewport_dependant) {

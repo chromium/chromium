@@ -578,7 +578,7 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
   if (update_behavior == kUpdateSizeChanged && element_->GetLayoutObject() &&
       element_->GetLayoutObject()->IsImage() &&
       new_image_content == old_image_content) {
-    To<LayoutImage>(element_->GetLayoutObject())->IntrinsicSizeChanged();
+    To<LayoutImage>(element_->GetLayoutObject())->NaturalSizeChanged();
   } else {
     bool is_lazyload = lazy_image_load_state_ == LazyImageLoadState::kDeferred;
 

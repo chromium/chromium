@@ -91,7 +91,7 @@ void LayoutReplaced::StyleDidChange(StyleDifference diff,
   float old_zoom = had_style ? old_style->EffectiveZoom()
                              : ComputedStyleInitialValues::InitialZoom();
   if (Style() && StyleRef().EffectiveZoom() != old_zoom)
-    IntrinsicSizeChanged();
+    NaturalSizeChanged();
 
   if ((IsLayoutImage() || IsVideo() || IsCanvas()) && !ClipsToContentBox() &&
       !StyleRef().ObjectPropertiesPreventReplacedOverflow()) {
@@ -109,7 +109,7 @@ void LayoutReplaced::StyleDidChange(StyleDifference diff,
   }
 }
 
-void LayoutReplaced::IntrinsicSizeChanged() {
+void LayoutReplaced::NaturalSizeChanged() {
   NOT_DESTROYED();
   SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kSizeChanged);
@@ -340,7 +340,7 @@ PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(
   return PhysicalRect(rect.offset, PhysicalSize(ToRoundedSize(rect.size)));
 }
 
-PhysicalNaturalSizingInfo LayoutReplaced::ComputeIntrinsicSizingInfo() const {
+PhysicalNaturalSizingInfo LayoutReplaced::ComputeNaturalSizingInfo() const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
   PhysicalNaturalSizingInfo sizing_info = GetNaturalDimensions();

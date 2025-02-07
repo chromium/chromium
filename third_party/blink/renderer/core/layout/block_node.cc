@@ -1518,7 +1518,7 @@ LogicalSize BlockNode::GetReplacedAspectRatio() const {
 
   if (!ShouldApplySizeContainment()) {
     const PhysicalNaturalSizingInfo legacy_sizing_info =
-        To<LayoutReplaced>(*box_).ComputeIntrinsicSizingInfo();
+        To<LayoutReplaced>(*box_).ComputeNaturalSizingInfo();
     if (!legacy_sizing_info.aspect_ratio.IsEmpty()) {
       return legacy_sizing_info.aspect_ratio.ConvertToLogical(
           Style().GetWritingMode());

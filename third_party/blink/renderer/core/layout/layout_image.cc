@@ -91,7 +91,7 @@ void LayoutImage::StyleDidChange(StyleDifference diff,
       old_style ? old_style->ImageOrientation()
                 : ComputedStyleInitialValues::InitialImageOrientation();
   if (StyleRef().ImageOrientation() != old_orientation) {
-    IntrinsicSizeChanged();
+    NaturalSizeChanged();
   }
 
   bool tracing_enabled;
