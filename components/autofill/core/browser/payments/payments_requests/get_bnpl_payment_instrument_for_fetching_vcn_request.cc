@@ -104,7 +104,10 @@ void GetBnplPaymentInstrumentForFetchingVcnRequest::ParseResponse(
 }
 
 bool GetBnplPaymentInstrumentForFetchingVcnRequest::IsResponseComplete() {
-  return !response_details_.pan.empty();
+  return !response_details_.pan.empty() && !response_details_.cvv.empty() &&
+         !response_details_.expiration_month.empty() &&
+         !response_details_.expiration_year.empty() &&
+         !response_details_.cardholder_name.empty();
 }
 
 void GetBnplPaymentInstrumentForFetchingVcnRequest::RespondToDelegate(
