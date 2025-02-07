@@ -2,3 +2,4 @@ nyquist@chromium.org
 twellington@chromium.org
 
 per-file family_info_feedback_source.*=file://chrome/browser/android/supervised_user/OWNERS
+per-file java/src/org/chromium/chrome/browser/feedback/OmniboxFeedbackSource.java=file://components/omnibox/browser/android/OWNERS

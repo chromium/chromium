@@ -63,6 +63,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feedback/IMEFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/InterestFeedFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/LowEndDeviceFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/OmniboxFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/PermissionFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/ProcessIdFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/SystemInfoFeedbackSource.java",
