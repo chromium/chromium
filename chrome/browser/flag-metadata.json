@@ -2290,6 +2290,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "enable-accessibility-captions-on-braille-display",
+    "owners": [ "anastasi@google.com", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-accessibility-deprecate-type-announce",
     "owners": ["mschillaci@google.com", "twellington@chromium.org", "zork@chromium.org", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 137

@@ -773,6 +773,9 @@ extern const char kAccessibilityMouseKeysDescription[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationName[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
 
+extern const char kAccessibilityCaptionsOnBrailleDisplayName[];
+extern const char kAccessibilityCaptionsOnBrailleDisplayDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kBiometricAuthIdentityCheckName[];
 extern const char kBiometricAuthIdentityCheckDescription[];

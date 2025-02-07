@@ -1353,6 +1353,11 @@ const char kAccessibilityMouseKeysName[] = "Mouse Keys";
 const char kAccessibilityMouseKeysDescription[] =
     "This option enables you to control the mouse with the keyboard.";
 
+const char kAccessibilityCaptionsOnBrailleDisplayName[] =
+    "Captions on Braille Display";
+const char kAccessibilityCaptionsOnBrailleDisplayDescription[] =
+    "This option allows access to captions for media via a braille display.";
+
 const char kNewMacNotificationAPIName[] =
     "Determines which notification API to use on macOS devices";
 const char kNewMacNotificationAPIDescription[] =
