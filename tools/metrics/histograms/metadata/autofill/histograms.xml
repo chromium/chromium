@@ -2365,6 +2365,31 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.EditedDistanceAutofilledFieldAtSubmission.AddressOnTyping"
+    units="units" expires_after="2025-06-22">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The string distance between the filled value and the value submitted.
+    Emitted on form submission for each field where an autofill address
+    suggestion on typing is accepted.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.EditedPercentageAutofilledFieldAtSubmission.AddressOnTyping"
+    units="%" expires_after="2025-06-22">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The ratio between the number of characters edited and the total length of
+    the original string filled. This metric tries to measure the feature overall
+    feature value. Emitted on form submission for each field where an autofill
+    address suggestion on typing is accepted.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.EmailHeuristicOnlyAcceptance"
     enum="BooleanAutofillFillingAcceptance" expires_after="2025-06-22">
   <owner>battre@chromium.org</owner>
