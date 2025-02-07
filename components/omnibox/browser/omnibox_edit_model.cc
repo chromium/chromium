@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -2175,6 +2176,22 @@ const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
   return &iter->second;
 }
 
+const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
+    const std::u16string& keyword) const {
+  DCHECK(popup_view_);
+
+  auto it = std::ranges::find_if(autocomplete_controller()->result(),
+                                 [&keyword](const AutocompleteMatch& match) {
+                                   return match.associated_keyword &&
+                                          match.associated_keyword->keyword ==
+                                              keyword;
+                                 });
+  return it == autocomplete_controller()->result().end()
+             ? nullptr
+             : GetPopupRichSuggestionBitmap(std::distance(
+                   autocomplete_controller()->result().begin(), it));
+}
+
 void OmniboxEditModel::SetPopupRichSuggestionBitmap(int result_index,
                                                     const SkBitmap& bitmap) {
   DCHECK(popup_view_);
@@ -2857,17 +2874,4 @@ std::u16string OmniboxEditModel::GetText() const {
   } else {
     NOTREACHED();
   }
-}
-
-const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
-    const std::u16string& keyword) const {
-  DCHECK(popup_view_);
-
-  for (size_t i = 0; i < autocomplete_controller()->result().size(); ++i) {
-    auto& result_match = autocomplete_controller()->result().match_at(i);
-    if (result_match.keyword == keyword) {
-      return GetPopupRichSuggestionBitmap(i);
-    }
-  }
-  return nullptr;
 }

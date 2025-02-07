@@ -27,6 +27,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -83,9 +85,14 @@ SelectedKeywordView::SelectedKeywordView(
 SelectedKeywordView::~SelectedKeywordView() = default;
 
 void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
+  const int icon_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
   using_custom_image_ = !image.IsEmpty();
   if (using_custom_image_) {
-    IconLabelBubbleView::SetImageModel(ui::ImageModel::FromImage(image));
+    IconLabelBubbleView::SetImageModel(ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            image.AsImageSkia(),
+            skia::ImageOperations::ResizeMethod::RESIZE_LANCZOS3,
+            gfx::Size(icon_size, icon_size))));
     return;
   }
 
@@ -109,8 +116,7 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
   }
 
   IconLabelBubbleView::SetImageModel(ui::ImageModel::FromVectorIcon(
-      *vector_icon, GetForegroundColor(),
-      GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
+      *vector_icon, GetForegroundColor(), icon_size));
 }
 
 void SelectedKeywordView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
