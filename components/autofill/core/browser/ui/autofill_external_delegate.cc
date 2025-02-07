@@ -843,11 +843,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kRetrieveAutofillAi:
-      if (AutofillAiDelegate* delegate =
-              manager_->client().GetAutofillAiDelegate()) {
-        delegate->OnClickedTriggerSuggestion(query_form_, query_field_,
-                                             CreateUpdateSuggestionsCallback());
-      }
       return;
     case SuggestionType::kFillAutofillAi:
       FillAutofillAiData(suggestion);

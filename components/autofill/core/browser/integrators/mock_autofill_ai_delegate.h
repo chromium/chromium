@@ -33,12 +33,6 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
               (const override));
   MOCK_METHOD(bool, IsUserEligible, (), (const override));
   MOCK_METHOD(void, UserClickedLearnMore, (), (override));
-  MOCK_METHOD(void,
-              OnClickedTriggerSuggestion,
-              (const FormData& form,
-               const FormFieldData& trigger_field,
-               UpdateSuggestionsCallback update_suggestions_callback),
-              (override));
   MOCK_METHOD(
       void,
       MaybeImportForm,

@@ -1164,16 +1164,6 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion_TriggerSource) {
                                           SuggestionPosition{.row = 1});
 }
 
-// Tests that on acceptance of a `kRetrieveAutofillAi` suggestion,
-// the `AutofillAiDelegate::OnClickedTriggerSuggestion()` event handler is
-// called.
-TEST_F(AutofillExternalDelegateTest,
-       DidAcceptRetrieveAutofillAiSuggestionCallsEventHandler) {
-  EXPECT_CALL(*client().GetAutofillAiDelegate(), OnClickedTriggerSuggestion);
-  external_delegate().DidAcceptSuggestion(
-      Suggestion(u"Autocomplete", SuggestionType::kRetrieveAutofillAi), {});
-}
-
 // Tests that on acceptance of a `kFillAutofillAi` suggestion with
 // `Suggestion::AutofillAiPayload` payload, the full form is filled
 // accordingly.

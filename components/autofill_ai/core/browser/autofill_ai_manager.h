@@ -74,10 +74,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       const autofill::AutofillField& field) const override;
   bool IsUserEligible() const override;
   void UserClickedLearnMore() override;
-  void OnClickedTriggerSuggestion(
-      const autofill::FormData& form,
-      const autofill::FormFieldData& trigger_field,
-      UpdateSuggestionsCallback update_suggestions_callback) override;
   void MaybeImportForm(
       std::unique_ptr<autofill::FormStructure> form,
       base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
@@ -114,14 +110,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   void OnSavePromptAcceptance(
       EntityUpdateType update_type,
       AutofillAiClient::SavePromptAcceptanceResult result);
-
-  // Receives prediction improvements for all fields in `form`, then calls
-  // `update_suggestions_callback_`.
-  void RetrievePredictions(
-      const autofill::FormData& form,
-      const autofill::FormFieldData& trigger_field,
-      UpdateSuggestionsCallback update_suggestions_callback,
-      bool update_to_loading_suggestion);
 
   void OnReceivedAXTree(const autofill::FormData& form,
                         const autofill::FormFieldData& trigger_field,

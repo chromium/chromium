@@ -52,13 +52,6 @@ class AutofillAiDelegate {
   // TODO(crbug.com/365512352): Remove if not needed.
   virtual void UserClickedLearnMore() = 0;
 
-  // Called when the `SuggestionType::kRetrieveAutofillAi` suggestion was
-  // accepted.
-  virtual void OnClickedTriggerSuggestion(
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      UpdateSuggestionsCallback update_suggestions_callback) = 0;
-
   // Displays an import bubble for `form` if Autofill AI is interested in the
   // form and then calls `autofill_callback`. It is guaranteed that `form` is
   // non-null.

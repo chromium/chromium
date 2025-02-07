@@ -284,31 +284,6 @@ bool AutofillAiManager::IsUserEligible() const {
   return client_->IsUserEligible();
 }
 
-void AutofillAiManager::RetrievePredictions(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field,
-    UpdateSuggestionsCallback update_suggestions_callback,
-    bool update_to_loading_suggestion) {
-  if (prediction_retrieval_state_ ==
-      PredictionRetrievalState::kIsLoadingPredictions) {
-    return;
-  }
-  update_suggestions_callback_ = std::move(update_suggestions_callback);
-  if (update_to_loading_suggestion) {
-    UpdateSuggestions(CreateLoadingSuggestions());
-  }
-  prediction_retrieval_state_ = PredictionRetrievalState::kIsLoadingPredictions;
-  last_queried_form_global_id_ = form.global_id();
-  if (kExtractAXTreeForPredictions.Get()) {
-    client_->GetAXTree(base::BindOnce(&AutofillAiManager::OnReceivedAXTree,
-                                      weak_ptr_factory_.GetWeakPtr(), form,
-                                      trigger_field));
-  } else {
-    optimization_guide::proto::AXTreeUpdate ax_tree_update;
-    OnReceivedAXTree(form, trigger_field, std::move(ax_tree_update));
-  }
-}
-
 void AutofillAiManager::OnReceivedAXTree(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
@@ -385,21 +360,6 @@ void AutofillAiManager::UpdateSuggestionsAfterReceivedPredictions(
 // `UserClickedManagePredictionsImprovements()`.
 void AutofillAiManager::UserClickedLearnMore() {
   client_->OpenAutofillAiSettings();
-}
-
-void AutofillAiManager::OnClickedTriggerSuggestion(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field,
-    UpdateSuggestionsCallback update_suggestions_callback) {
-  // Reset the manager's state. This is necessary because the trigger suggestion
-  // may have been shown as a last resort after a failed prediction retrieval.
-  // In this case, the manager might contain stale state (e.g. error state,
-  // previous predictions) that needs to be cleared before starting a new
-  // retrieval.
-  Reset();
-  RetrievePredictions(form, trigger_field,
-                      std::move(update_suggestions_callback),
-                      /*update_to_loading_suggestion=*/true);
 }
 
 void AutofillAiManager::OnSuggestionsShown(
