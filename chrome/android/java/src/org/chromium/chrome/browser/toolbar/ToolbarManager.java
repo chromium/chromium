@@ -2428,14 +2428,6 @@ public class ToolbarManager
     }
 
     /**
-     * Unfocus the url bar when back press is performed. Do nothing if it is unfocused.
-     * @return Whether url bar is focused when this method is called.
-     */
-    public boolean unfocusUrlBarOnBackPress() {
-        return mLocationBar.unfocusUrlBarOnBackPressed();
-    }
-
-    /**
      * See {@link #setUrlBarFocus}, but if native is not loaded it will queue the request instead of
      * dropping it.
      */

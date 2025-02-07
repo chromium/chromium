@@ -1121,11 +1121,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
-        public boolean unfocusUrlBarOnBackPressed() {
-            return false;
-        }
-
-        @Override
         public void showBrandingLocationBar() {
             mBrandingStarted = true;
 
