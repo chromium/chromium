@@ -1626,37 +1626,14 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     return false;
   }
 
-  // For now, we only support @function rules that contain a single
-  // CSSNestedDeclarations rule with a single 'result' descriptor.
-  //
-  // TODO(crbug.com/325504770): Support conditional rules.
-  HeapVector<Member<StyleRuleBase>>& child_rules = function->ChildRules();
-  if (child_rules.size() != 1u) {
-    return false;
-  }
-  const auto* function_declarations =
-      DynamicTo<StyleRuleFunctionDeclarations>(child_rules.front().Get());
-  if (!function_declarations) {
-    return false;
-  }
-  const CSSPropertyValueSet& propety_value_set =
-      function_declarations->Properties();
-
-  // Collect local variables from the rule into a map. This is needed
-  // for ApplyLocalVariables, see documentation in the header file.
+  const CSSUnparsedDeclarationValue* unresolved_result = nullptr;
   HeapHashMap<String, Member<const CSSValue>> unresolved_locals;
-  for (const CSSPropertyValue& property_value :
-       propety_value_set.Properties()) {
-    if (property_value.PropertyID() == CSSPropertyID::kVariable) {
-      const auto& unresolved_local =
-          To<CSSUnparsedDeclarationValue>(property_value.Value());
-      unresolved_locals.insert(property_value.CustomPropertyName(),
-                               &unresolved_local);
-    }
-  }
 
-  const auto* unresolved_result = DynamicTo<CSSUnparsedDeclarationValue>(
-      propety_value_set.GetPropertyCSSValue(CSSPropertyID::kResult));
+  // Flattens the function body, consisting of any number of
+  // CSSFunctionDeclarations and conditional rules, into the final
+  // (unresolved) values for 'result'/locals.
+  FlattenFunctionBody(*function, unresolved_result, unresolved_locals);
+
   if (!unresolved_result) {
     return false;
   }
@@ -1813,6 +1790,37 @@ const CSSValue* StyleCascade::ResolveLocalVariable(
   }
   // TODO: Work with CSSVariableData directly.
   return MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
+}
+
+void StyleCascade::FlattenFunctionBody(
+    StyleRuleGroup& group,
+    const CSSUnparsedDeclarationValue*& result,
+    HeapHashMap<String, Member<const CSSValue>>& locals) {
+  for (const Member<StyleRuleBase>& child : group.ChildRules()) {
+    if (auto* function_declarations =
+            DynamicTo<StyleRuleFunctionDeclarations>(child.Get())) {
+      const CSSPropertyValueSet& propety_value_set =
+          function_declarations->Properties();
+      for (const CSSPropertyValue& property_value :
+           propety_value_set.Properties()) {
+        if (property_value.PropertyID() == CSSPropertyID::kVariable) {
+          const auto& unresolved_local =
+              To<CSSUnparsedDeclarationValue>(property_value.Value());
+          locals.Set(property_value.CustomPropertyName(), &unresolved_local);
+        }
+      }
+      if (auto* r = DynamicTo<CSSUnparsedDeclarationValue>(
+              propety_value_set.GetPropertyCSSValue(CSSPropertyID::kResult))) {
+        result = r;
+      }
+    } else if (auto* supports_rule =
+                   DynamicTo<StyleRuleSupports>(child.Get())) {
+      if (supports_rule->ConditionIsSupported()) {
+        FlattenFunctionBody(*supports_rule, result, locals);
+      }
+    }
+    // TODO(crbug.com/325504770): Support @media, @container.
+  }
 }
 
 bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,

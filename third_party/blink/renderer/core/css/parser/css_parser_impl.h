@@ -133,19 +133,28 @@ class CORE_EXPORT CSSParserImpl {
       CSSAtRuleID::kCSSAtRuleRightBottom,
   };
 
-  // Rules that are valid when nested within a style rule.
+  // Conditional rules can nest inside style rules (see kNestedGroupRules)
+  // and are valid within @function.
   //
-  // https://drafts.csswg.org/css-nesting/#nested-group-rules
-  static constexpr AllowedRules kNestedGroupRules = {
+  // https://drafts.csswg.org/css-conditional-3/#conditional-group-rule
+  // https://drafts.csswg.org/css-mixins-1/#conditional-rules
+  static constexpr AllowedRules kConditionalRules = {
       CSSAtRuleID::kCSSAtRuleMedia,
       CSSAtRuleID::kCSSAtRuleSupports,
       CSSAtRuleID::kCSSAtRuleContainer,
-      CSSAtRuleID::kCSSAtRuleLayer,
-      CSSAtRuleID::kCSSAtRuleScope,
-      CSSAtRuleID::kCSSAtRuleStartingStyle,
-      CSSAtRuleID::kCSSAtRuleViewTransition,
-      CSSAtRuleID::kCSSAtRuleApplyMixin,
   };
+
+  // Rules that are valid when nested within a style rule.
+  //
+  // https://drafts.csswg.org/css-nesting/#nested-group-rules
+  static constexpr AllowedRules kNestedGroupRules =
+      kConditionalRules | AllowedRules{
+                              CSSAtRuleID::kCSSAtRuleLayer,
+                              CSSAtRuleID::kCSSAtRuleScope,
+                              CSSAtRuleID::kCSSAtRuleStartingStyle,
+                              CSSAtRuleID::kCSSAtRuleViewTransition,
+                              CSSAtRuleID::kCSSAtRuleApplyMixin,
+                          };
 
   // Represents the start and end offsets of a CSSParserTokenRange.
   struct RangeOffset {

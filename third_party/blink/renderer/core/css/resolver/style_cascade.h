@@ -535,6 +535,22 @@ class CORE_EXPORT StyleCascade {
                                        CascadeResolver&,
                                        const CSSParserContext&,
                                        FunctionContext&);
+  // @function rules can contain conditional rules, such as @media.
+  // When these rules are encountered, they either evaluate to "true",
+  // in which case we should behave as if the contents of the conditional rule
+  // existed in place of the rule, or they evaluate to "false", in which
+  // case we should behave as if the conditional rule did not exist at all [1].
+  //
+  // This goes though all the child rules in `group`, collects any local
+  // variables specified (as well as the 'result' descriptor), evaluating
+  // conditionals as needed. When the function returns, `result` holds the last
+  // seen value of the 'result' descriptor, and `locals` holds the last seen
+  // values of all local variables.
+  //
+  // [1] https://drafts.csswg.org/css-mixins-1/#conditional-rules
+  void FlattenFunctionBody(StyleRuleGroup& group,
+                           const CSSUnparsedDeclarationValue*& result,
+                           HeapHashMap<String, Member<const CSSValue>>& locals);
 
   CSSVariableData* GetVariableData(const CustomProperty&) const;
   CSSVariableData* GetEnvironmentVariable(const AtomicString&,
