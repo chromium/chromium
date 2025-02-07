@@ -16,6 +16,8 @@ source_set("tab_resumption") {
   deps = [
     ":constants",
     "//base",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
     "//components/page_image_service",
     "//components/segmentation_platform/public",
     "//components/sessions:session_id",
@@ -55,6 +57,7 @@ source_set("tab_resumption") {
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/browser/ui/content_suggestions/shop_card:shop_card_data",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/browser/visited_url_ranking/model",

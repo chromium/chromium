@@ -389,7 +389,9 @@ using segmentation_platform::TipIdentifier;
         initWithLocalState:GetApplicationContext()->GetLocalState()
                prefService:prefs
            identityManager:identityManager
-                   browser:self.browser];
+                   browser:self.browser
+           shoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                               profile)];
     _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     _tabResumptionMediator.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;

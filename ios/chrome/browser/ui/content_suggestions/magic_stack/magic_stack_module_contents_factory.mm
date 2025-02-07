@@ -30,6 +30,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_price_tracking_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/standalone_module_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
@@ -143,10 +145,18 @@
 }
 
 - (UIView*)tabResumptionViewForConfig:(TabResumptionItem*)tabResumptionItem {
-  TabResumptionView* tabResumptionView =
-      [[TabResumptionView alloc] initWithItem:tabResumptionItem];
-  tabResumptionView.commandHandler = tabResumptionItem.commandHandler;
-  return tabResumptionView;
+  if (tabResumptionItem.shopCardData.shopCardItemType ==
+      ShopCardItemType::kPriceTrackableProductOnTab) {
+    ShopCardPriceTrackingView* shopCardPriceTrackingView =
+        [[ShopCardPriceTrackingView alloc] initWithItem:tabResumptionItem];
+    shopCardPriceTrackingView.commandHandler = tabResumptionItem.commandHandler;
+    return shopCardPriceTrackingView;
+  } else {
+    TabResumptionView* tabResumptionView =
+        [[TabResumptionView alloc] initWithItem:tabResumptionItem];
+    tabResumptionView.commandHandler = tabResumptionItem.commandHandler;
+    return tabResumptionView;
+  }
 }
 
 - (UIView*)parcelTrackingViewForConfig:(ParcelTrackingItem*)parcelTrackingItem {

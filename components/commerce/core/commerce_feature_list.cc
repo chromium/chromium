@@ -368,6 +368,8 @@ BASE_FEATURE(kParcelTrackingRegionLaunched,
              "ParcelTrackingRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+extern const char kShopCardArm4[] = "arm_4";
+
 const char kProductSpecificationsSetValidForClusteringTimeParam[] =
     "set-valid-for-clustering-time";
 const base::FeatureParam<base::TimeDelta>

@@ -176,6 +176,11 @@ constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
     // Empty JSON string.
     ""};
 
+inline constexpr base::FeatureParam<std::string> kShopCardVariation{
+    &kShopCard, "ShopCardVariant", ""};
+
+extern const char kShopCardArm4[];
+
 // Feature params for product specifications.
 extern const char kProductSpecificationsSetValidForClusteringTimeParam[];
 extern const base::FeatureParam<base::TimeDelta>
