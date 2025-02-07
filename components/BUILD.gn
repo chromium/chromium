@@ -334,6 +334,7 @@ test("components_unittests") {
     "//components/signin/core/browser:unit_tests",
     "//components/signin/internal/identity_manager:unit_tests",
     "//components/signin/public/base:unit_tests",
+    "//components/signin/public/browser:unit_tests",
     "//components/signin/public/identity_manager:unit_tests",
     "//components/signin/public/webdata:unit_tests",
     "//components/speech:unit_tests",

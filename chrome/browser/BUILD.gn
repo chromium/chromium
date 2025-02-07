@@ -3399,6 +3399,7 @@ static_library("browser") {
       "//components/sharing_message",
       "//components/signin/internal/identity_manager",  # cf android/signin/DEPS
       "//components/signin/public/android:jni_headers",
+      "//components/signin/public/browser",
       "//components/subresource_filter/android",
       "//components/supervised_user/core/browser",
       "//components/supervised_user/core/browser:fetcher",

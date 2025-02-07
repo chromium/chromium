@@ -46,7 +46,10 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/signin/public/browser:java_enums",
+  ]
   resources_package = "org.chromium.chrome.browser.signin.services"
 }
 
@@ -99,6 +102,7 @@ robolectric_library("junit") {
     ":java_resources",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:callback_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",

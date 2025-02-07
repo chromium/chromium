@@ -1,0 +1,53 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+source_set("browser") {
+  sources = [
+    "web_signin_tracker.cc",
+    "web_signin_tracker.h",
+  ]
+
+  deps = [
+    "//components/signin/core/browser:browser",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+  ]
+}
+
+if (is_android) {
+  java_cpp_enum("java_enums") {
+    sources = [ "web_signin_tracker.h" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "web_signin_tracker_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/core/browser:browser",
+    "//components/signin/public/base",
+    "//components/signin/public/base:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
+    "//google_apis",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//components/account_manager_core:test_support" ]
+  }
+}

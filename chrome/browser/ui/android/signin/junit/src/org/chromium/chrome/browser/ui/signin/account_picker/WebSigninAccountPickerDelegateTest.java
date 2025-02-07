@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -40,8 +40,7 @@ import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.signin.base.GoogleServiceAuthError.State;
+import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -83,7 +82,8 @@ public class WebSigninAccountPickerDelegateTest {
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
-    @Captor private ArgumentCaptor<WebSigninBridge.Listener> mWebSigninBridgeListenerCaptor;
+    @Captor
+    private ArgumentCaptor<Callback<@WebSigninTrackerResult Integer>> mWebSigninCallbackCaptor;
 
     private WebSigninAccountPickerDelegate mDelegate;
 
@@ -118,14 +118,11 @@ public class WebSigninAccountPickerDelegateTest {
         InOrder calledInOrder = inOrder(mWebSigninBridgeFactoryMock, mSigninManagerMock);
         calledInOrder
                 .verify(mWebSigninBridgeFactoryMock)
-                .create(
-                        eq(mProfileMock),
-                        eq(mCoreAccountInfo),
-                        mWebSigninBridgeListenerCaptor.capture());
+                .create(eq(mProfileMock), eq(mCoreAccountInfo), mWebSigninCallbackCaptor.capture());
         calledInOrder
                 .verify(mSigninManagerMock)
                 .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.WEB_SIGNIN), any());
-        mWebSigninBridgeListenerCaptor.getValue().onSigninSucceeded();
+        mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
         verify(mTabMock).loadUrl(mLoadUrlParamsCaptor.capture());
         LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
         Assert.assertEquals("Continue url does not match!", CONTINUE_URL, loadUrlParams.getUrl());
@@ -161,7 +158,6 @@ public class WebSigninAccountPickerDelegateTest {
                         mSigninManagerMock,
                         mWebSigninBridgeFactoryMock,
                         mSigninManagerMock);
-        calledInOrder.verify(mWebSigninBridgeMock).destroy();
         calledInOrder.verify(mSigninManagerMock).signOut(anyInt());
         calledInOrder
                 .verify(mWebSigninBridgeFactoryMock)
@@ -173,43 +169,33 @@ public class WebSigninAccountPickerDelegateTest {
 
     @Test
     public void testSignInFailedWithConnectionError() {
-        GoogleServiceAuthError error = new GoogleServiceAuthError(State.CONNECTION_FAILED);
         mDelegate.signIn(mCoreAccountInfo, mAccountPickerBottomSheetMediatorMock);
         verify(mWebSigninBridgeFactoryMock)
-                .create(
-                        eq(mProfileMock),
-                        eq(mCoreAccountInfo),
-                        mWebSigninBridgeListenerCaptor.capture());
-        mWebSigninBridgeListenerCaptor.getValue().onSigninFailed(error);
+                .create(eq(mProfileMock), eq(mCoreAccountInfo), mWebSigninCallbackCaptor.capture());
+        mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.OTHER_ERROR);
         verify(mAccountPickerBottomSheetMediatorMock).switchToTryAgainView();
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.GENERIC_ERROR_SHOWN,
                         SigninAccessPoint.WEB_SIGNIN);
 
-        // WebSigninBridge should be kept alive in case cookies are taking longer to
-        // generate than usual
-        verify(mWebSigninBridgeMock, never()).destroy();
+        // WebSigninBridge should be destroyed after the sign-in result is known.
+        verify(mWebSigninBridgeMock).destroy();
     }
 
     @Test
     public void testSignInFailedWithGaiaError() {
-        GoogleServiceAuthError error = new GoogleServiceAuthError(State.INVALID_GAIA_CREDENTIALS);
         mDelegate.signIn(mCoreAccountInfo, mAccountPickerBottomSheetMediatorMock);
         verify(mWebSigninBridgeFactoryMock)
-                .create(
-                        eq(mProfileMock),
-                        eq(mCoreAccountInfo),
-                        mWebSigninBridgeListenerCaptor.capture());
-        mWebSigninBridgeListenerCaptor.getValue().onSigninFailed(error);
+                .create(eq(mProfileMock), eq(mCoreAccountInfo), mWebSigninCallbackCaptor.capture());
+        mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.AUTH_ERROR);
         verify(mAccountPickerBottomSheetMediatorMock).switchToAuthErrorView();
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.AUTH_ERROR_SHOWN,
                         SigninAccessPoint.WEB_SIGNIN);
 
-        // WebSigninBridge should be kept alive in case cookies are taking longer to
-        // generate than usual
-        verify(mWebSigninBridgeMock, never()).destroy();
+        // WebSigninBridge should be destroyed after the sign-in result is known.
+        verify(mWebSigninBridgeMock).destroy();
     }
 }
