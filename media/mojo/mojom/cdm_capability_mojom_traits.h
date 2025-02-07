@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_MOJOM_CDM_CAPABILITY_MOJOM_TRAITS_H_
 
 #include "base/containers/flat_set.h"
+#include "base/version.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/content_decryption_module.h"
@@ -53,6 +54,11 @@ struct StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability> {
   static const base::flat_set<media::CdmSessionType>& session_types(
       const media::CdmCapability& input) {
     return input.session_types;
+  }
+
+  // CDM version.
+  static const base::Version version(const media::CdmCapability& input) {
+    return input.version;
   }
 
   static bool Read(media::mojom::CdmCapabilityDataView input,

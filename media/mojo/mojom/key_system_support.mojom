@@ -6,6 +6,7 @@ module media.mojom;
 
 import "media/mojo/mojom/content_decryption_module.mojom";
 import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/version.mojom";
 
 struct VideoCodecInfo {
   // Array of VideoCodecProfiles supported. If no profiles for a
@@ -32,6 +33,7 @@ struct CdmCapability {
 
   array<EncryptionScheme> encryption_schemes;
   array<CdmSessionType> session_types;
+  mojo_base.mojom.Version version;
 };
 
 // See media::CdmCapabilityQueryStatus

@@ -56,13 +56,12 @@ using Robustness = content::CdmInfo::Robustness;
 // Create a CdmInfo for a Widevine CDM, using |version|, |cdm_library_path|, and
 // |capability|.
 std::unique_ptr<content::CdmInfo> CreateWidevineCdmInfo(
-    const base::Version& version,
     const base::FilePath& cdm_library_path,
     media::CdmCapability capability) {
   return std::make_unique<content::CdmInfo>(
       kWidevineKeySystem, Robustness::kSoftwareSecure, std::move(capability),
       /*supports_sub_key_systems=*/false, kWidevineCdmDisplayName,
-      kWidevineCdmType, version, cdm_library_path);
+      kWidevineCdmType, cdm_library_path);
 }
 
 // On desktop Linux and ChromeOS, given |cdm_base_path| that points to a folder
@@ -82,15 +81,13 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoFromWidevineDirectory(
 
   // Manifest should be at the top level.
   auto manifest_path = cdm_base_path.Append(FILE_PATH_LITERAL("manifest.json"));
-  base::Version version;
   media::CdmCapability capability;
-  if (!ParseCdmManifestFromPath(manifest_path, &version, &capability)) {
+  if (!ParseCdmManifestFromPath(manifest_path, &capability)) {
     DLOG(ERROR) << __func__ << " no manifest: " << manifest_path;
     return nullptr;
   }
 
-  return CreateWidevineCdmInfo(version, cdm_library_path,
-                               std::move(capability));
+  return CreateWidevineCdmInfo(cdm_library_path, std::move(capability));
 }
 #endif  // (BUILDFLAG(BUNDLE_WIDEVINE_CDM) ||
         // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)) && (BUILDFLAG(IS_LINUX) ||
@@ -161,7 +158,7 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   cdms->emplace_back(
       kWidevineKeySystem, Robustness::kSoftwareSecure, std::nullopt,
       /*supports_sub_key_systems=*/false, kWidevineCdmDisplayName,
-      kWidevineCdmType, base::Version(), base::FilePath());
+      kWidevineCdmType, base::FilePath());
 
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The Widevine CDM on Linux/ChromeOS needs to be registered (and loaded)
@@ -204,18 +201,20 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 
   if (bundled_widevine && !hinted_widevine) {
     // Only a bundled version is available, so use it.
-    VLOG(1) << "Registering bundled Widevine " << bundled_widevine->version;
+    VLOG(1) << "Registering bundled Widevine "
+            << bundled_widevine->capability->version;
     cdms->push_back(*bundled_widevine);
   } else if (!bundled_widevine && hinted_widevine) {
     // Only a component updated version is available, so use it.
-    VLOG(1) << "Registering hinted Widevine " << hinted_widevine->version;
+    VLOG(1) << "Registering hinted Widevine "
+            << hinted_widevine->capability->version;
     cdms->push_back(*hinted_widevine);
   } else if (!bundled_widevine && !hinted_widevine) {
     VLOG(1) << "Widevine enabled but no library found";
   } else {
     // Both a bundled CDM and a hinted CDM found, so choose between them.
-    base::Version bundled_version = bundled_widevine->version;
-    base::Version hinted_version = hinted_widevine->version;
+    base::Version bundled_version = bundled_widevine->capability->version;
+    base::Version hinted_version = hinted_widevine->capability->version;
     DVLOG(1) << __func__ << " bundled: " << bundled_version;
     DVLOG(1) << __func__ << " hinted: " << hinted_version;
 
@@ -249,7 +248,7 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   cdms->emplace_back(
       kWidevineKeySystem, Robustness::kHardwareSecure, std::nullopt,
       /*supports_sub_key_systems=*/false, kWidevineCdmDisplayName,
-      kWidevineCdmType, base::Version(), base::FilePath());
+      kWidevineCdmType, base::FilePath());
 
 #elif BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   media::CdmCapability capability;
@@ -312,7 +311,8 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
   media::CdmCapability capability(
       {}, {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
       {media::CdmSessionType::kTemporary,
-       media::CdmSessionType::kPersistentLicense});
+       media::CdmSessionType::kPersistentLicense},
+      base::Version("0.1.0.0"));
 
   // Register media::kExternalClearKeyDifferentCdmTypeTestKeySystem first
   // separately. Otherwise, it'll be treated as a sub-key-system of normal
@@ -322,14 +322,13 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
       media::kExternalClearKeyDifferentCdmTypeTestKeySystem,
       Robustness::kSoftwareSecure, capability,
       /*supports_sub_key_systems=*/false, media::kClearKeyCdmDisplayName,
-      media::kClearKeyCdmDifferentCdmType, base::Version("0.1.0.0"),
-      clear_key_cdm_path));
+      media::kClearKeyCdmDifferentCdmType, clear_key_cdm_path));
 
   cdms->push_back(content::CdmInfo(
       media::kExternalClearKeyKeySystem, Robustness::kSoftwareSecure,
       capability,
       /*supports_sub_key_systems=*/true, media::kClearKeyCdmDisplayName,
-      media::kClearKeyCdmType, base::Version("0.1.0.0"), clear_key_cdm_path));
+      media::kClearKeyCdmType, clear_key_cdm_path));
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -349,15 +348,14 @@ void AddMediaFoundationClearKey(std::vector<content::CdmInfo>* cdms) {
   // Supported codecs are hard-coded in ExternalClearKeyKeySystemInfo.
   media::CdmCapability capability(
       {}, {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
-      {media::CdmSessionType::kTemporary});
+      {media::CdmSessionType::kTemporary}, base::Version("0.1.0.0"));
 
-  cdms->push_back(
-      content::CdmInfo(media::kMediaFoundationClearKeyKeySystem,
-                       Robustness::kHardwareSecure, capability,
-                       /*supports_sub_key_systems=*/false,
-                       media::kMediaFoundationClearKeyCdmDisplayName,
-                       media::kMediaFoundationClearKeyCdmType,
-                       base::Version("0.1.0.0"), clear_key_cdm_path));
+  cdms->push_back(content::CdmInfo(
+      media::kMediaFoundationClearKeyKeySystem, Robustness::kHardwareSecure,
+      capability,
+      /*supports_sub_key_systems=*/false,
+      media::kMediaFoundationClearKeyCdmDisplayName,
+      media::kMediaFoundationClearKeyCdmType, clear_key_cdm_path));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

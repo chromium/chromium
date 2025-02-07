@@ -96,7 +96,7 @@ void RegisterWidevineCdmWithChrome(const base::Version& cdm_version,
   content::CdmInfo cdm_info(
       kWidevineKeySystem, content::CdmInfo::Robustness::kSoftwareSecure,
       std::move(capability), /*supports_sub_key_systems=*/false,
-      kWidevineCdmDisplayName, kWidevineCdmType, cdm_version, cdm_path);
+      kWidevineCdmDisplayName, kWidevineCdmType, cdm_path);
   content::CdmRegistry::GetInstance()->RegisterCdm(cdm_info);
 }
 #endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
@@ -117,10 +117,9 @@ bool UpdateHintFile(const base::FilePath& cdm_base_path) {
 
   auto manifest_path =
       bundled_cdm_file_path.Append(FILE_PATH_LITERAL("manifest.json"));
-  base::Version version;
   media::CdmCapability capability;
-  if (ParseCdmManifestFromPath(manifest_path, &version, &capability)) {
-    bundled_version = version;
+  if (ParseCdmManifestFromPath(manifest_path, &capability)) {
+    bundled_version = capability.version;
   }
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 
@@ -182,9 +181,8 @@ void VerifyManifestAndUpdateHintFile(const std::string& image_dir) {
   // Image loaded, so check that the manifest is valid.
   base::FilePath mount_point(image_dir);
   auto manifest_path = mount_point.Append(FILE_PATH_LITERAL("manifest.json"));
-  base::Version version;
   media::CdmCapability capability;
-  if (!ParseCdmManifestFromPath(manifest_path, &version, &capability)) {
+  if (!ParseCdmManifestFromPath(manifest_path, &capability)) {
     VLOG(1) << "Widevine image does not contain expected manifest.";
     return;
   }
