@@ -221,13 +221,19 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #else
 #include "base/task/current_thread.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
+#include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
+#include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_untrusted_ui.mojom.h"
 #include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/lens/lens_features.h"
+#include "components/search/ntp_features.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -4407,6 +4413,60 @@ TEST_F(
                               content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                               std::move(filter_builder));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Ensures New Tab page local storage is clear when Microsoft auth service
+// exists.
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearNewTabPageLocalStorage) {
+  // Setup features that allows auth service to be created.
+  base::test::ScopedFeatureList features;
+  GetProfile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kNtpSharepointModuleVisible, base::Value(true));
+  features.InitWithFeatures(
+      /*enabled_features=*/{ntp_features::kNtpMicrosoftAuthenticationModule,
+                            ntp_features::kNtpSharepointModule},
+      /*disabled_features=*/{});
+
+  // Set auth service access token.
+  new_tab_page::mojom::AccessTokenPtr access_token =
+      new_tab_page::mojom::AccessToken::New();
+  access_token->token = "1234";
+  access_token->expiration = base::Time::Now() + base::Minutes(20);
+  auto* auth_service = MicrosoftAuthServiceFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(auth_service);
+  auth_service->SetAccessToken(std::move(access_token));
+
+  // Create local storage with fake data.
+  auto* local_storage_control =
+      GetProfile()->GetDefaultStoragePartition()->GetLocalStorageControl();
+  mojo::Remote<blink::mojom::StorageArea> area;
+  blink::StorageKey key = blink::StorageKey::CreateFromStringForTesting(
+      chrome::kChromeUINewTabPageURL);
+  local_storage_control->BindStorageArea(key,
+                                         area.BindNewPipeAndPassReceiver());
+  base::test::TestFuture<bool> put_future;
+  area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, std::nullopt, "source",
+            put_future.GetCallback());
+  ASSERT_TRUE(put_future.Get());
+
+  // Verify fake data has been persisted into local storage.
+  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
+      usage_future;
+  local_storage_control->GetUsage(usage_future.GetCallback());
+  EXPECT_EQ(usage_future.Get().size(), 1u);
+
+  // Clear local storage.
+  BlockUntilBrowsingDataRemoved(base::Time::Now(), base::Time::Max(),
+                                content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                                false);
+
+  // Verify local storage and auth data has been cleared.
+  usage_future.Clear();
+  local_storage_control->GetUsage(usage_future.GetCallback());
+  EXPECT_EQ(usage_future.Get().size(), 0u);
+  EXPECT_TRUE(auth_service->GetAccessToken().empty());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ChromeBrowsingDataRemoverDelegateOriginTrialsTest
     : public ChromeBrowsingDataRemoverDelegateTest {
