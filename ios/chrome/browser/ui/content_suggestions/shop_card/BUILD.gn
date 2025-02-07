@@ -12,6 +12,7 @@ source_set("shop_card") {
     ":price_tracking_shop_card",
     ":shop_card_data",
     "//base:base",
+    "//components/commerce/core:feature_list",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
   ]

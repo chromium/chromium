@@ -153,6 +153,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_tap_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_metrics.h"
@@ -274,6 +275,7 @@ using segmentation_platform::TipIdentifier;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   TabResumptionMediator* _tabResumptionMediator;
   PriceTrackingPromoMediator* _priceTrackingPromoMediator;
+  ShopCardMediator* _shopCardMediator;
   SendTabPromoMediator* _sendTabPromoMediator;
 
   MagicStackCollectionViewController* _magicStackCollectionView;
@@ -420,6 +422,16 @@ using segmentation_platform::TipIdentifier;
     _priceTrackingPromoMediator.actionDelegate = self;
     _priceTrackingPromoMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     [moduleMediators addObject:_priceTrackingPromoMediator];
+  }
+  if (base::FeatureList::IsEnabled(commerce::kShopCard) &&
+      (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 ||
+       commerce::kShopCardVariation.Get() == commerce::kShopCardArm2)) {
+    // If ShopCard experiment is on, create the ShopCard mediator.
+    // Note at this point we don't know which of the 4 variants will show.
+    _shopCardMediator = [[ShopCardMediator alloc]
+        initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                                    profile)];
+    [moduleMediators addObject:_shopCardMediator];
   }
 
   if (IsIOSParcelTrackingEnabled() &&
