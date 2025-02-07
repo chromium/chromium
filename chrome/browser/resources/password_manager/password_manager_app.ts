@@ -329,7 +329,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     this.$.toast.show();
   }
 
-  private async onValueCopied_(event: ValueCopiedEvent) {
+  private onValueCopied_(event: ValueCopiedEvent) {
     this.showUndo_ = false;
     this.toastMessage_ = event.detail.toastMessage;
     this.$.toast.show();

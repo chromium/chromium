@@ -21,11 +21,14 @@ base::TimeDelta kCookieSyncRepeatTime = base::Minutes(5);
 }  // namespace
 
 AuthController::AuthController(Profile* profile,
-                               signin::IdentityManager* identity_manager)
+                               signin::IdentityManager* identity_manager,
+                               bool use_for_fre)
     : profile_(profile),
       identity_manager_(identity_manager),
       cookie_synchronizer_(
-          std::make_unique<GlicCookieSynchronizer>(profile, identity_manager)),
+          std::make_unique<GlicCookieSynchronizer>(profile,
+                                                   identity_manager,
+                                                   use_for_fre)),
       observation_(this) {
   observation_.Observe(identity_manager_);
 }

@@ -72,10 +72,6 @@ export class FakeSpeechSynthesis {
   }
 
   speak(utterance: SpeechSynthesisUtterance) {
-    if (this.maxSegments_ &&
-        this.maxSegments_ <= this.spokenUtterances.length) {
-      return;
-    }
     this.currentUtterance = utterance;
     this.paused = false;
     this.speaking = true;
@@ -95,6 +91,12 @@ export class FakeSpeechSynthesis {
     if (this.triggerUtteranceStartedEventNext && utterance.onstart) {
       utterance.onstart(new SpeechSynthesisEvent('start', {utterance}));
       this.triggerUtteranceStartedEventNext = false;
+    }
+
+
+    if (this.maxSegments_ &&
+        this.maxSegments_ <= this.spokenUtterances.length) {
+      return;
     }
 
     if (utterance.onend) {

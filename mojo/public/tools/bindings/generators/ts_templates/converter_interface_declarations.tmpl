@@ -1,12 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-{%- for struct in typemapped_structs %}
-import type {
-  {{struct.name}}MojoType
-{%-   if not loop.last -%},{% endif %}
-} from './{{module_filename}}';
-{%- endfor %}
+import {mojo} from '//resources/mojo/mojo/public/js/bindings.js';
 
 {% for path, types in converter_imports.items()|sort -%}
 import type {
@@ -20,16 +15,29 @@ import type {
 {%- for struct in typemapped_structs %}
 
 export class {{struct.name}}DataView {
-  private readonly mojoType: {{struct.name}}MojoType;
+  private readonly decoder_: mojo.internal.Decoder;
+  private readonly version_: number;
+  private readonly fieldSpecs_: Array<mojo.internal.StructFieldSpec<any, any>>;
 
-  constructor(mojoType: {{struct.name}}MojoType) {
-    this.mojoType = mojoType;
+  constructor(decoder: mojo.internal.Decoder,
+              version: number,
+              fieldSpecs: Array<mojo.internal.StructFieldSpec<any, any>>) {
+    this.decoder_ = decoder;
+    this.version_ = version;
+    this.fieldSpecs_ = fieldSpecs;
   }
-{%-    for packed_field in struct.packed.packed_fields %}
+{%-    for packed_field in struct.packed.packed_fields_in_ordinal_order %}
 {%-      set f = packed_field.field %}
 
-  {{f.name}}(): {{f.kind|ts_type_maybe_nullable}} {
-    return this.mojoType.{{f.name}};
+  get {{f.name}}(): {{f.kind|ts_type_maybe_nullable}} {
+    const field = this.fieldSpecs_[{{loop.index0}}];
+{%-       if packed_field|is_nullable_value_kind_packed_field %}
+{# TODO(ffred): nullable primitives don't generate correct converter #}
+{# interfaces atm. #}
+    throw new Error("unsupported");
+{%-       else %}
+    return mojo.internal.decodeStructField(this.decoder_, field!, this.version_);
+{%-       endif %}
   }
 {%-   endfor %}
 }

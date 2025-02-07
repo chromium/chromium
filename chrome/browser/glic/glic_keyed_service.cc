@@ -38,14 +38,15 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
     : profile_(profile),
       configuration_(profile),
       metrics_(std::make_unique<GlicMetrics>()),
-      window_controller_(std::make_unique<GlicWindowController>(profile, this)),
+      window_controller_(
+          std::make_unique<GlicWindowController>(profile,
+                                                 identity_manager,
+                                                 this)),
       focused_tab_manager_(profile, *window_controller_),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
-      fre_cookie_synchronizer_(profile,
-                               identity_manager,
-                               /*use_for_fre=*/true),
-      auth_controller_(
-          std::make_unique<AuthController>(profile, identity_manager)),
+      auth_controller_(std::make_unique<AuthController>(profile,
+                                                        identity_manager,
+                                                        /*use_for_fre=*/false)),
       profile_manager_(profile_manager) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   metrics_->SetWindowController(window_controller_.get());
@@ -270,12 +271,6 @@ void GlicKeyedService::Reload() {
 
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-void GlicKeyedService::SyncWebviewCookiesForFre(
-    glic::mojom::FrePageHandler::SyncWebviewCookiesCallback callback) {
-  fre_cookie_synchronizer_.CopyCookiesToWebviewStoragePartition(
-      std::move(callback));
 }
 
 bool GlicKeyedService::IsActiveWebContents(content::WebContents* contents) {

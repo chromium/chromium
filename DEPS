@@ -288,7 +288,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': '38aa0780bb362a5f84518aa951d36dc0e05e101c',
+  'angle_revision': 'c24468c9c59b84693370d9163c4cd14a6907e32e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -396,7 +396,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '63656cd44585cd2df02eb26971f66fdda8170d9b',
+  'dawn_revision': '85752dd4120cf5e120ddf4061be840d7e03f5b23',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -492,7 +492,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    '76c5ea75f96351db4919c1a866d7a70e574d951d',
+  'llvm_libc_revision':    '47743799c0dcb5f2eee290a03ea1791ac1bb1ba2',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -2866,7 +2866,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/windows-amd64',
-          'version': '9Hv-kHZCrWcpmmCeJzdl3J5RKGwJKmXamMlSfwt1rOQC',
+          'version': 'Y2CXZ8_HyluSS4BRUQXF9-V3QrJDHoEkSzwfIdGEUGMC',
         },
       ],
       'dep_type': 'cipd',

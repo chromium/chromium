@@ -805,6 +805,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ColumnRuleBreak() == b.ColumnRuleBreak();
     case CSSPropertyID::kRowRuleBreak:
       return a.RowRuleBreak() == b.RowRuleBreak();
+    case CSSPropertyID::kColumnRuleOutset:
+      return a.ColumnRuleOutset() == b.ColumnRuleOutset();
     case CSSPropertyID::kColumnRuleColor:
       return a.ColumnRuleColor() == b.ColumnRuleColor() &&
              a.InternalVisitedColumnRuleColor() ==

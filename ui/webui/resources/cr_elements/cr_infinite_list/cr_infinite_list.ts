@@ -116,7 +116,7 @@ export class CrInfiniteListElement<T = object> extends CrLitElement {
         null;
   }
 
-  private async onItemFocus_(e: Event) {
+  private onItemFocus_(e: Event) {
     const list = this.querySelector('cr-lazy-list');
     assert(list);
     const renderedItems = list.domItems();

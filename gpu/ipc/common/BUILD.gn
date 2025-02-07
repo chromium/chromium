@@ -78,6 +78,7 @@ source_set("ipc_common_sources") {
 
   sources = [
     "command_buffer_id.h",
+    "command_buffer_trace_utils.h",
     "gpu_client_ids.h",
     "gpu_disk_cache_type.cc",
     "gpu_disk_cache_type.h",

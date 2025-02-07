@@ -74,7 +74,9 @@ class GlicWindowController : public views::WidgetObserver {
   GlicWindowController(const GlicWindowController&) = delete;
   GlicWindowController& operator=(const GlicWindowController&) = delete;
 
-  GlicWindowController(Profile* profile, GlicKeyedService* service);
+  GlicWindowController(Profile* profile,
+                       signin::IdentityManager* identity_manager,
+                       GlicKeyedService* service);
   ~GlicWindowController() override;
 
   // Show, summon, or activate the panel if needed, or close it if it's already

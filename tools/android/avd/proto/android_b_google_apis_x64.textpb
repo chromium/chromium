@@ -17,7 +17,8 @@ system_image_name: "system-images;android-Baklava;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-baklava/google_apis/x86_64"
-  version: "NiUdfK52dd95Jg31iuLsUo8MWtJivde2HtdAOzBcb9MC"
+  # Created in https://ci.chromium.org/ui/b/8723654448977873105
+  version: "SJicjC_PpvmL0jmM-Ljqt3gpi9AQaxpqi5FFJ0WhMFoC"
 }
 avd_name: "android_b_google_apis_x64"
 

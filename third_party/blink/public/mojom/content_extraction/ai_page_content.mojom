@@ -10,6 +10,9 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+[EnableIfNot=is_android]
+import "ui/base/cursor/mojom/cursor_type.mojom";
+
 // This is a mojom representation of the corresponding AnnotatedPageContent
 // proto.
 // See components/optimization_guide/proto/features/common_quality_data.proto
@@ -66,12 +69,45 @@ struct AIPageContentGeometry {
   // Whether the content node is fixed or sticky position. This may suggest
   // that the node is a header, footer, or sidebar.
   bool is_fixed_or_sticky_position;
+};
 
+struct AIPageContentInteractionInfo {
   // Whether the content node can scroll in the x direction.
   bool scrolls_overflow_x;
 
   // Whether the content node can scroll in the y direction.
   bool scrolls_overflow_y;
+
+  // Whether the content node is selectable.
+  bool is_selectable;
+
+  // Whether the content node is editable; i.e. whether the user can type into
+  // it. This refers to the text actually being editable, not whether the
+  // content node is a text field.
+  bool is_editable;
+
+  // Whether the content node can be resized. This is relevant for scroll
+  // containers and iframes which have the CSS resize behavior.
+  bool can_resize_horizontal;
+  bool can_resize_vertical;
+
+  // Whether the content node is focusable.
+  bool is_focusable;
+
+  // Whether the content node is focused.
+  bool is_focused;
+
+  // Whether the content node is draggable.
+  bool is_draggable;
+
+  // Whether the content node is clickable. This checks for whether the node is
+  // a clickable control (e.g. form control elements) or has activation
+  // behavior. It also checks for whether the node has a click handler.
+  bool is_clickable;
+
+  // The cursor type for the content node.
+  [EnableIfNot=is_android]
+  ui.mojom.CursorType cursor_type;
 };
 
 enum AIPageContentTextSize {
@@ -203,6 +239,9 @@ struct AIPageContentAttributes {
 
   // Geometry of the common_ancestor_dom_node_id.
   AIPageContentGeometry? geometry;
+
+  // Interaction information for the common_ancestor_dom_node_id.
+  AIPageContentInteractionInfo? interaction_info;
 
   // Only set if attribute_type is kText.
   AIPageContentTextInfo? text_info;

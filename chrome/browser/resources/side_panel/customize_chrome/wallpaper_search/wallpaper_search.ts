@@ -351,7 +351,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     }
   }
 
-  private async fetchDescriptors_() {
+  private fetchDescriptors_() {
     this.wallpaperSearchHandler_.getDescriptors().then(({descriptors}) => {
       if (descriptors) {
         // Order the descriptors so they appear alphabetically in all languages.

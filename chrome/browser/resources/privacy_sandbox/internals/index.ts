@@ -128,8 +128,7 @@ class DataLoader {
     this.pageHandler = handler;
   }
 
-  async maybeAddPrefsToDom(
-      parentElement: HTMLElement|null, prefNameList: string[]) {
+  maybeAddPrefsToDom(parentElement: HTMLElement|null, prefNameList: string[]) {
     if (parentElement) {
       this.addPrefsToDom(parentElement, prefNameList);
     } else {
@@ -138,7 +137,7 @@ class DataLoader {
     }
   }
 
-  async addPrefsToDom(parentElement: HTMLElement, prefNameList: string[]) {
+  addPrefsToDom(parentElement: HTMLElement, prefNameList: string[]) {
     prefNameList.forEach(async (prefName) => {
       const prefValue = await this.pageHandler.readPref(prefName);
       const item = document.createElement('pref-display');

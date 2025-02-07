@@ -1149,7 +1149,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * save.
    * @param streamUrl Unique identifier for a PDF Viewer instance.
    */
-  private async onSave_(streamUrl: string) {
+  private onSave_(streamUrl: string) {
     if (streamUrl !== this.browserApi!.getStreamInfo().streamUrl) {
       return;
     }
@@ -1460,14 +1460,22 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
   }
 
+  // <if expr="enable_ink">
   protected async onPrint_() {
     record(UserAction.PRINT);
-    // <if expr="enable_ink">
     await this.exitAnnotationMode_();
-    // </if>
     assert(this.currentController);
     this.currentController.print();
   }
+  // </if>
+
+  // <if expr="not enable_ink">
+  protected onPrint_() {
+    record(UserAction.PRINT);
+    assert(this.currentController);
+    this.currentController.print();
+  }
+  // </if>
 
   /**
    * Updates the toolbar's annotation available flag depending on current

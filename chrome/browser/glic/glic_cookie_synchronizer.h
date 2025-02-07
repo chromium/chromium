@@ -41,7 +41,7 @@ class GlicCookieSynchronizer
   // FRE webview. Otherwise, it is configured for use by the main glic webview.
   GlicCookieSynchronizer(content::BrowserContext* context,
                          signin::IdentityManager* identity_manager,
-                         bool use_for_fre = false);
+                         bool use_for_fre);
   GlicCookieSynchronizer(const GlicCookieSynchronizer&) = delete;
   GlicCookieSynchronizer& operator=(const GlicCookieSynchronizer&) = delete;
   virtual ~GlicCookieSynchronizer();

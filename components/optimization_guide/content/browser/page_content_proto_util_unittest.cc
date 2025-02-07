@@ -438,8 +438,6 @@ TEST(PageContentProtoUtilTest, ConvertGeometry) {
   text_node->content_attributes->geometry->visible_bounding_box =
       gfx::Rect(11, 21, 31, 41);
   text_node->content_attributes->geometry->is_fixed_or_sticky_position = true;
-  text_node->content_attributes->geometry->scrolls_overflow_x = true;
-  text_node->content_attributes->geometry->scrolls_overflow_y = true;
   root_content->root_node->children_nodes.emplace_back(std::move(text_node));
 
   proto::AnnotatedPageContent proto;
@@ -462,8 +460,6 @@ TEST(PageContentProtoUtilTest, ConvertGeometry) {
   EXPECT_EQ(geometry.visible_bounding_box().width(), 31);
   EXPECT_EQ(geometry.visible_bounding_box().height(), 41);
   EXPECT_TRUE(geometry.is_fixed_or_sticky_position());
-  EXPECT_TRUE(geometry.scrolls_overflow_x());
-  EXPECT_TRUE(geometry.scrolls_overflow_y());
 }
 
 TEST(PageContentProtoUtilTest, ConvertAnnotatedRoles) {

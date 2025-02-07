@@ -304,8 +304,7 @@ export class PowerBookmarksService {
    * results. Used to batch data fetching in any cases where it is particularly
    * expensive.
    */
-  async refreshDataForBookmarks(bookmarks:
-                                    chrome.bookmarks.BookmarkTreeNode[]) {
+  refreshDataForBookmarks(bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
     bookmarks.forEach(
         (bookmark) => this.findBookmarkImageUrls_(bookmark, true, false));
   }
@@ -496,7 +495,7 @@ export class PowerBookmarksService {
    * Assigns an image url for the given bookmark. Also assigns an image url to
    * all children if recurse is true.
    */
-  private async findBookmarkImageUrls_(
+  private findBookmarkImageUrls_(
       bookmark: chrome.bookmarks.BookmarkTreeNode, recurse: boolean,
       forceUpdate: boolean) {
     const hasImage =

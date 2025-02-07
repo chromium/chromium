@@ -263,7 +263,7 @@ export class CheckupDetailsSectionElement extends
         PasswordCheckInteraction.SHOW_PASSWORD);
   }
 
-  private async onMenuEditPasswordClick_() {
+  private onMenuEditPasswordClick_() {
     this.activeListItem_?.showEditDialog();
     this.$.moreActionsMenu.close();
     this.activeListItem_ = null;
@@ -271,7 +271,7 @@ export class CheckupDetailsSectionElement extends
         PasswordCheckInteraction.EDIT_PASSWORD);
   }
 
-  private async onMenuDeletePasswordClick_() {
+  private onMenuDeletePasswordClick_() {
     this.activeListItem_?.showDeleteDialog();
     this.$.moreActionsMenu.close();
     this.activeListItem_ = null;

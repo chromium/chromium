@@ -333,7 +333,7 @@ suite('Speech', () => {
   });
 
   test('previous granularity plays from there', async () => {
-    speechSynthesis.setMaxSegments(7);
+    speechSynthesis.setMaxSegments(8);
     chrome.readingMode.initAxPositionWithNode(2);
     app.playSpeech();
     speechSynthesis.clearSpokenUtterances();

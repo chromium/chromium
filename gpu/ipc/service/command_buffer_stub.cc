@@ -32,6 +32,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_crash_keys.h"
+#include "gpu/ipc/common/command_buffer_trace_utils.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
@@ -478,13 +479,21 @@ void CommandBufferStub::OnAsyncFlush(
     int32_t put_offset,
     uint32_t flush_id,
     const std::vector<SyncToken>& sync_token_fences) {
-  TRACE_EVENT1("gpu", "CommandBufferStub::OnAsyncFlush", "put_offset",
-               put_offset);
   DCHECK(command_buffer_);
   // We received this message out-of-order. This should not happen but is here
   // to catch regressions. Ignore the message.
   DVLOG_IF(0, flush_id - last_flush_id_ >= 0x8000000U)
       << "Received a Flush message out-of-order";
+
+  const uint64_t global_flush_id =
+      GlobalFlushTracingId(channel_->client_id(), flush_id);
+  TRACE_EVENT_WITH_FLOW0(
+      "gpu,toplevel.flow", "CommandBuffer::Flush",
+      TRACE_ID_WITH_SCOPE("CommandBuffer::Flush", global_flush_id),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+
+  TRACE_EVENT1("gpu", "CommandBufferStub::OnAsyncFlush", "put_offset",
+               put_offset);
 
   last_flush_id_ = flush_id;
   gpu::CommandBuffer::State pre_state = command_buffer_->GetState();
@@ -504,9 +513,15 @@ void CommandBufferStub::OnAsyncFlush(
     ReportState();
 
 #if BUILDFLAG(IS_ANDROID)
-  GpuChannelManager* manager = channel_->gpu_channel_manager();
-  manager->DidAccessGpu();
+  channel_->gpu_channel_manager()->DidAccessGpu();
 #endif
+
+  if (!HasUnprocessedCommands()) {
+    TRACE_EVENT_WITH_FLOW0(
+        "gpu,toplevel.flow", "CommandBuffer::FlushComplete",
+        TRACE_ID_WITH_SCOPE("CommandBuffer::Flush", global_flush_id),
+        TRACE_EVENT_FLAG_FLOW_IN);
+  }
 }
 
 void CommandBufferStub::RegisterTransferBuffer(

@@ -826,7 +826,7 @@ export class ProductSpecificationsElement extends CrLitElement {
     return this.tableColumns_.length >= loadTimeData.getInteger('maxTableSize');
   }
 
-  private async onSetUpdated_(set: ProductSpecificationsSet) {
+  private onSetUpdated_(set: ProductSpecificationsSet) {
     // If the page does not have focus, schedule the update for later in case a
     // newer update is received before the tab is focused. This prevents all
     // updates from triggering at the same time, which may cause a flicker.
@@ -924,7 +924,7 @@ export class ProductSpecificationsElement extends CrLitElement {
     }
   }
 
-  private async onSetAdded_(set: ProductSpecificationsSet) {
+  private onSetAdded_(set: ProductSpecificationsSet) {
     if (this.showEmptyState_) {
       this.sets_ = [set].concat(this.sets_);
     }

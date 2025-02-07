@@ -52,7 +52,7 @@ const oneGoogleBarApi = (() => {
       fnName: string, ...args: any[]): Promise<unknown> {
     const {gbar} = window as Window & Gbar;
     if (!gbar) {
-      return;
+      return Promise.resolve();
     }
 
     const barApi = new (gbar.P as any)();

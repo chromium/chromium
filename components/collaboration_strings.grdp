@@ -31,12 +31,20 @@
   <message name="IDS_COLLABORATION_SEVERAL_GROUPS_REMOVED_NOTIFICATION" desc="Format for the notification text appearing when more than 2 tab groups are no longer shared with the user.">
     <ph name="GROUP_COUNT">$1<ex>5</ex></ph> tab groups no longer available
   </message>
+  <!-- Error Messages -->
   <message name ="IDS_COLLABORATION_SOMETHING_WENT_WRONG_HEADER" desc="The header of the error dialog something went wrong.">
     Something went wrong.
   </message>
   <message name ="IDS_COLLABORATION_SOMETHING_WENT_WRONG_BODY" desc="The body of of the error dialog something went wrong.">
     There was an error. Try again.
   </message>
+  <message name="IDS_COLLABORATION_LINK_FAILED_HEADER" desc="The title for the link failed dialog.">
+    This link doesn’t work
+  </message>
+  <message name="IDS_COLLABORATION_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
+    Contact the sender to ask for a new link
+  </message>
+  <!-- Error Messages -->
   <!-- /Collaboration -->
 
   <!-- Data Sharing -->

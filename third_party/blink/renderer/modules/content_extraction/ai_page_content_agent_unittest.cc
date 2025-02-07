@@ -42,7 +42,7 @@ class AIPageContentAgentTest : public testing::Test {
   ~AIPageContentAgentTest() override = default;
 
   void SetUp() override {
-    helper_.Initialize();
+    helper_.InitializeWithSettings(&UpdateWebSettings);
     helper_.Resize(kWindowSize);
     ASSERT_TRUE(helper_.LocalMainFrame());
   }
@@ -246,6 +246,11 @@ class AIPageContentAgentTest : public testing::Test {
   const mojom::blink::AIPageContentOptions default_options_;
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
+
+ private:
+  static void UpdateWebSettings(WebSettings* settings) {
+    settings->SetTextAreasAreResizable(true);
+  }
 };
 
 TEST_F(AIPageContentAgentTest, Basic) {
@@ -1073,8 +1078,10 @@ TEST_F(AIPageContentAgentTest, FixedPosition) {
   CheckContainerNode(fixed_element);
   EXPECT_TRUE(
       fixed_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(fixed_element.content_attributes->geometry->scrolls_overflow_x);
-  EXPECT_FALSE(fixed_element.content_attributes->geometry->scrolls_overflow_y);
+  EXPECT_FALSE(
+      fixed_element.content_attributes->interaction_info->scrolls_overflow_x);
+  EXPECT_FALSE(
+      fixed_element.content_attributes->interaction_info->scrolls_overflow_y);
   CheckTextNode(*fixed_element.children_nodes[0],
                 "This element stays in place when the page is scrolled.");
 
@@ -1082,16 +1089,20 @@ TEST_F(AIPageContentAgentTest, FixedPosition) {
   CheckContainerNode(sticky_element);
   EXPECT_TRUE(
       sticky_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(sticky_element.content_attributes->geometry->scrolls_overflow_x);
-  EXPECT_FALSE(sticky_element.content_attributes->geometry->scrolls_overflow_y);
+  EXPECT_FALSE(
+      sticky_element.content_attributes->interaction_info->scrolls_overflow_x);
+  EXPECT_FALSE(
+      sticky_element.content_attributes->interaction_info->scrolls_overflow_y);
   CheckTextNode(*sticky_element.children_nodes[0],
                 "This element stays in place when the page is scrolled.");
 
   const auto& normal_element = *root.children_nodes[2];
   EXPECT_FALSE(
       normal_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(normal_element.content_attributes->geometry->scrolls_overflow_x);
-  EXPECT_FALSE(normal_element.content_attributes->geometry->scrolls_overflow_y);
+  EXPECT_FALSE(
+      normal_element.content_attributes->interaction_info->scrolls_overflow_x);
+  EXPECT_FALSE(
+      normal_element.content_attributes->interaction_info->scrolls_overflow_y);
   CheckTextNode(normal_element,
                 "This element flows naturally with the document.");
 }
@@ -1157,17 +1168,17 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
   const auto& root = *content->root_node;
   ASSERT_EQ(root.children_nodes.size(), 4u);
 
-  EXPECT_TRUE(root.content_attributes->geometry->scrolls_overflow_x);
-  EXPECT_TRUE(root.content_attributes->geometry->scrolls_overflow_y);
+  EXPECT_TRUE(root.content_attributes->interaction_info->scrolls_overflow_x);
+  EXPECT_TRUE(root.content_attributes->interaction_info->scrolls_overflow_y);
 
   const auto& scrollable_x_element = *root.children_nodes[0];
   CheckContainerNode(scrollable_x_element);
   EXPECT_FALSE(scrollable_x_element.content_attributes->geometry
                    ->is_fixed_or_sticky_position);
-  EXPECT_TRUE(
-      scrollable_x_element.content_attributes->geometry->scrolls_overflow_x);
-  EXPECT_FALSE(
-      scrollable_x_element.content_attributes->geometry->scrolls_overflow_y);
+  EXPECT_TRUE(scrollable_x_element.content_attributes->interaction_info
+                  ->scrolls_overflow_x);
+  EXPECT_FALSE(scrollable_x_element.content_attributes->interaction_info
+                   ->scrolls_overflow_y);
   CheckTextNode(
       *scrollable_x_element.children_nodes[0],
       "ABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVW"
@@ -1178,10 +1189,10 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
   CheckContainerNode(scrollable_y_element);
   EXPECT_FALSE(scrollable_y_element.content_attributes->geometry
                    ->is_fixed_or_sticky_position);
-  EXPECT_FALSE(
-      scrollable_y_element.content_attributes->geometry->scrolls_overflow_x);
-  EXPECT_TRUE(
-      scrollable_y_element.content_attributes->geometry->scrolls_overflow_y);
+  EXPECT_FALSE(scrollable_y_element.content_attributes->interaction_info
+                   ->scrolls_overflow_x);
+  EXPECT_TRUE(scrollable_y_element.content_attributes->interaction_info
+                  ->scrolls_overflow_y);
   CheckTextNode(*scrollable_y_element.children_nodes[0],
                 "Some long text to make it scrollable. Some long text to make "
                 "it scrollable. Some long text to make it scrollable. Some "
@@ -1191,10 +1202,10 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
   CheckContainerNode(auto_scroll_x_element);
   EXPECT_FALSE(auto_scroll_x_element.content_attributes->geometry
                    ->is_fixed_or_sticky_position);
-  EXPECT_TRUE(
-      auto_scroll_x_element.content_attributes->geometry->scrolls_overflow_x);
-  EXPECT_FALSE(
-      auto_scroll_x_element.content_attributes->geometry->scrolls_overflow_y);
+  EXPECT_TRUE(auto_scroll_x_element.content_attributes->interaction_info
+                  ->scrolls_overflow_x);
+  EXPECT_FALSE(auto_scroll_x_element.content_attributes->interaction_info
+                   ->scrolls_overflow_y);
   CheckTextNode(
       *auto_scroll_x_element.children_nodes[0],
       "ABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVW"
@@ -1205,10 +1216,10 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
   CheckContainerNode(auto_scroll_y_element);
   EXPECT_FALSE(auto_scroll_y_element.content_attributes->geometry
                    ->is_fixed_or_sticky_position);
-  EXPECT_FALSE(
-      auto_scroll_y_element.content_attributes->geometry->scrolls_overflow_x);
-  EXPECT_TRUE(
-      auto_scroll_y_element.content_attributes->geometry->scrolls_overflow_y);
+  EXPECT_FALSE(auto_scroll_y_element.content_attributes->interaction_info
+                   ->scrolls_overflow_x);
+  EXPECT_TRUE(auto_scroll_y_element.content_attributes->interaction_info
+                  ->scrolls_overflow_y);
   CheckTextNode(*auto_scroll_y_element.children_nodes[0],
                 "Some long text to make it scrollable. Some long text to make "
                 "it scrollable. Some long text to make it scrollable. Some "
@@ -1894,6 +1905,116 @@ TEST_F(AIPageContentAgentTest, FormWithRadio) {
   EXPECT_EQ(radio2.children_nodes.size(), 0u);
 
   CheckTextNode(*form.children_nodes[3], "I have a car");
+}
+
+TEST_F(AIPageContentAgentTest, InteractiveElements) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    div {"
+      "      resize: both;"
+      "      overflow: auto;"
+      "      border: 1px solid black;"
+      "      width: 200px;"
+      "    }"
+      "  </style>"
+      "  <textarea>text</textarea>"
+      "  <button>button</button>"
+      "  <div>resize</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 3u);
+
+  const auto& text_area = *root.children_nodes[0];
+  CheckFormControlNode(text_area, mojom::blink::FormControlType::kTextArea);
+  EXPECT_TRUE(text_area.content_attributes->interaction_info->is_selectable);
+  EXPECT_FALSE(text_area.content_attributes->interaction_info->is_editable);
+  EXPECT_TRUE(text_area.content_attributes->interaction_info->is_focusable);
+  EXPECT_FALSE(text_area.content_attributes->interaction_info->is_focused);
+  EXPECT_FALSE(text_area.content_attributes->interaction_info->is_draggable);
+  EXPECT_TRUE(text_area.content_attributes->interaction_info->is_clickable);
+  EXPECT_TRUE(
+      text_area.content_attributes->interaction_info->can_resize_vertical);
+  EXPECT_TRUE(
+      text_area.content_attributes->interaction_info->can_resize_horizontal);
+
+  EXPECT_EQ(text_area.children_nodes.size(), 1u);
+  const auto& text_area_text = *text_area.children_nodes[0];
+  CheckTextNode(text_area_text, "text");
+  EXPECT_TRUE(
+      text_area_text.content_attributes->interaction_info->is_selectable);
+  EXPECT_TRUE(text_area_text.content_attributes->interaction_info->is_editable);
+  EXPECT_FALSE(
+      text_area_text.content_attributes->interaction_info->is_focusable);
+  EXPECT_FALSE(text_area_text.content_attributes->interaction_info->is_focused);
+  EXPECT_FALSE(
+      text_area_text.content_attributes->interaction_info->is_draggable);
+  EXPECT_FALSE(
+      text_area_text.content_attributes->interaction_info->is_clickable);
+  EXPECT_FALSE(
+      text_area_text.content_attributes->interaction_info->can_resize_vertical);
+  EXPECT_FALSE(text_area_text.content_attributes->interaction_info
+                   ->can_resize_horizontal);
+
+  const auto& button = *root.children_nodes[1];
+  CheckFormControlNode(button, mojom::blink::FormControlType::kButtonSubmit);
+  EXPECT_TRUE(button.content_attributes->interaction_info->is_selectable);
+  EXPECT_FALSE(button.content_attributes->interaction_info->is_editable);
+  EXPECT_TRUE(button.content_attributes->interaction_info->is_focusable);
+  EXPECT_FALSE(button.content_attributes->interaction_info->is_focused);
+  EXPECT_FALSE(button.content_attributes->interaction_info->is_draggable);
+  EXPECT_TRUE(button.content_attributes->interaction_info->is_clickable);
+  EXPECT_FALSE(
+      button.content_attributes->interaction_info->can_resize_vertical);
+  EXPECT_FALSE(
+      button.content_attributes->interaction_info->can_resize_horizontal);
+
+  EXPECT_EQ(button.children_nodes.size(), 1u);
+  const auto& button_text = *button.children_nodes[0];
+  CheckTextNode(button_text, "button");
+  EXPECT_TRUE(button_text.content_attributes->interaction_info->is_selectable);
+  EXPECT_FALSE(button_text.content_attributes->interaction_info->is_editable);
+  EXPECT_FALSE(button_text.content_attributes->interaction_info->is_focusable);
+  EXPECT_FALSE(button_text.content_attributes->interaction_info->is_focused);
+  EXPECT_FALSE(button_text.content_attributes->interaction_info->is_draggable);
+  EXPECT_FALSE(button_text.content_attributes->interaction_info->is_clickable);
+  EXPECT_FALSE(
+      button_text.content_attributes->interaction_info->can_resize_vertical);
+  EXPECT_FALSE(
+      button_text.content_attributes->interaction_info->can_resize_horizontal);
+
+  const auto& resize = *root.children_nodes[2];
+  CheckContainerNode(resize);
+  EXPECT_TRUE(resize.content_attributes->interaction_info->is_selectable);
+  EXPECT_FALSE(resize.content_attributes->interaction_info->is_editable);
+  EXPECT_FALSE(resize.content_attributes->interaction_info->is_focusable);
+  EXPECT_FALSE(resize.content_attributes->interaction_info->is_focused);
+  EXPECT_FALSE(resize.content_attributes->interaction_info->is_draggable);
+  EXPECT_FALSE(resize.content_attributes->interaction_info->is_clickable);
+  EXPECT_TRUE(resize.content_attributes->interaction_info->can_resize_vertical);
+  EXPECT_TRUE(
+      resize.content_attributes->interaction_info->can_resize_horizontal);
+
+  EXPECT_EQ(resize.children_nodes.size(), 1u);
+  const auto& resize_text = *resize.children_nodes[0];
+  CheckTextNode(resize_text, "resize");
+  EXPECT_TRUE(resize_text.content_attributes->interaction_info->is_selectable);
+  EXPECT_FALSE(resize_text.content_attributes->interaction_info->is_editable);
+  EXPECT_FALSE(resize_text.content_attributes->interaction_info->is_focusable);
+  EXPECT_FALSE(resize_text.content_attributes->interaction_info->is_focused);
+  EXPECT_FALSE(resize_text.content_attributes->interaction_info->is_draggable);
+  EXPECT_FALSE(resize_text.content_attributes->interaction_info->is_clickable);
+  EXPECT_FALSE(
+      resize_text.content_attributes->interaction_info->can_resize_vertical);
+  EXPECT_FALSE(
+      resize_text.content_attributes->interaction_info->can_resize_horizontal);
 }
 
 }  // namespace

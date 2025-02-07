@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
@@ -37,6 +38,10 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace blink {
 namespace {
 
@@ -60,6 +65,94 @@ bool IsHeadingTag(const HTMLElement& element) {
          element.HasTagName(html_names::kH5Tag) ||
          element.HasTagName(html_names::kH6Tag);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+ui::mojom::blink::CursorType GetCursorType(const ComputedStyle& style,
+                                           bool is_selectable) {
+  const auto& cursor = style.Cursor();
+  const auto& iBeamCursor = style.IsHorizontalWritingMode()
+                                ? ui::mojom::blink::CursorType::kIBeam
+                                : ui::mojom::blink::CursorType::kVerticalText;
+  switch (cursor) {
+    case ECursor::kNone:
+      return ui::mojom::blink::CursorType::kNone;
+    case ECursor::kCopy:
+      return ui::mojom::blink::CursorType::kCopy;
+    case ECursor::kAuto:
+      if (is_selectable) {
+        return iBeamCursor;
+      }
+      return ui::mojom::blink::CursorType::kPointer;
+    case ECursor::kCrosshair:
+      return ui::mojom::blink::CursorType::kCross;
+    case ECursor::kDefault:
+      return ui::mojom::blink::CursorType::kPointer;
+    case ECursor::kPointer:
+      return ui::mojom::blink::CursorType::kPointer;
+    case ECursor::kMove:
+      return ui::mojom::blink::CursorType::kMove;
+    case ECursor::kVerticalText:
+      return ui::mojom::blink::CursorType::kVerticalText;
+    case ECursor::kCell:
+      return ui::mojom::blink::CursorType::kCell;
+    case ECursor::kContextMenu:
+      return ui::mojom::blink::CursorType::kContextMenu;
+    case ECursor::kAlias:
+      return ui::mojom::blink::CursorType::kAlias;
+    case ECursor::kProgress:
+      return ui::mojom::blink::CursorType::kProgress;
+    case ECursor::kNoDrop:
+      return ui::mojom::blink::CursorType::kNoDrop;
+    case ECursor::kNotAllowed:
+      return ui::mojom::blink::CursorType::kNotAllowed;
+    case ECursor::kZoomIn:
+      return ui::mojom::blink::CursorType::kZoomIn;
+    case ECursor::kZoomOut:
+      return ui::mojom::blink::CursorType::kZoomOut;
+    case ECursor::kEResize:
+      return ui::mojom::blink::CursorType::kEastResize;
+    case ECursor::kNeResize:
+      return ui::mojom::blink::CursorType::kNorthEastResize;
+    case ECursor::kNwResize:
+      return ui::mojom::blink::CursorType::kNorthWestResize;
+    case ECursor::kNResize:
+      return ui::mojom::blink::CursorType::kNorthResize;
+    case ECursor::kSeResize:
+      return ui::mojom::blink::CursorType::kSouthEastResize;
+    case ECursor::kSwResize:
+      return ui::mojom::blink::CursorType::kSouthWestResize;
+    case ECursor::kSResize:
+      return ui::mojom::blink::CursorType::kSouthResize;
+    case ECursor::kWResize:
+      return ui::mojom::blink::CursorType::kWestResize;
+    case ECursor::kEwResize:
+      return ui::mojom::blink::CursorType::kEastWestResize;
+    case ECursor::kNsResize:
+      return ui::mojom::blink::CursorType::kNorthSouthResize;
+    case ECursor::kNeswResize:
+      return ui::mojom::blink::CursorType::kNorthEastSouthWestResize;
+    case ECursor::kNwseResize:
+      return ui::mojom::blink::CursorType::kNorthWestSouthEastResize;
+    case ECursor::kColResize:
+      return ui::mojom::blink::CursorType::kColumnResize;
+    case ECursor::kRowResize:
+      return ui::mojom::blink::CursorType::kRowResize;
+    case ECursor::kText:
+      return iBeamCursor;
+    case ECursor::kWait:
+      return ui::mojom::blink::CursorType::kWait;
+    case ECursor::kHelp:
+      return ui::mojom::blink::CursorType::kHelp;
+    case ECursor::kAllScroll:
+      return ui::mojom::blink::CursorType::kMove;
+    case ECursor::kGrab:
+      return ui::mojom::blink::CursorType::kGrab;
+    case ECursor::kGrabbing:
+      return ui::mojom::blink::CursorType::kGrabbing;
+  }
+  NOTREACHED();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 mojom::blink::AIPageContentAnchorRel GetAnchorRel(const AtomicString& rel) {
   if (rel == "noopener") {
@@ -773,7 +866,8 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   auto content_node = mojom::blink::AIPageContentNode::New();
   content_node->content_attributes =
       mojom::blink::AIPageContentAttributes::New();
-  auto& attributes = *content_node->content_attributes;
+  mojom::blink::AIPageContentAttributes& attributes =
+      *content_node->content_attributes;
   AddAnnotatedRoles(object, attributes.annotated_roles);
 
   // Set the attribute type and add any special attributes if the attribute type
@@ -853,6 +947,8 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
 
   AddNodeGeometry(object, attributes);
 
+  AddNodeInteractionInfo(object, attributes);
+
   return content_node;
 }
 
@@ -875,7 +971,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
   }
 
   attributes.geometry = mojom::blink::AIPageContentGeometry::New();
-  auto& geometry = *attributes.geometry;
+  mojom::blink::AIPageContentGeometry& geometry = *attributes.geometry;
 
   geometry.outer_bounding_box =
       object.AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
@@ -889,8 +985,45 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
   geometry.is_fixed_or_sticky_position =
       object.Style()->GetPosition() == EPosition::kFixed ||
       object.Style()->GetPosition() == EPosition::kSticky;
-  geometry.scrolls_overflow_x = object.Style()->ScrollsOverflowX();
-  geometry.scrolls_overflow_y = object.Style()->ScrollsOverflowY();
+}
+
+void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
+    const LayoutObject& object,
+    mojom::blink::AIPageContentAttributes& attributes) const {
+  attributes.interaction_info =
+      mojom::blink::AIPageContentInteractionInfo::New();
+  mojom::blink::AIPageContentInteractionInfo& interaction_info =
+      *attributes.interaction_info;
+  const ComputedStyle& style = *object.Style();
+  interaction_info.scrolls_overflow_x = style.ScrollsOverflowX();
+  interaction_info.scrolls_overflow_y = style.ScrollsOverflowY();
+  bool is_selectable = object.IsSelectable();
+  interaction_info.is_selectable = is_selectable;
+
+#if !BUILDFLAG(IS_ANDROID)
+  interaction_info.cursor_type = GetCursorType(style, is_selectable);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  if (auto* node = object.GetNode()) {
+    interaction_info.is_editable = IsEditable(*node);
+  }
+
+  if (auto* box = DynamicTo<LayoutBox>(object)) {
+    if (box->CanResize()) {
+      EResize resize = style.UsedResize();
+      interaction_info.can_resize_vertical =
+          resize == EResize::kVertical || resize == EResize::kBoth;
+      interaction_info.can_resize_horizontal =
+          resize == EResize::kHorizontal || resize == EResize::kBoth;
+    }
+  }
+
+  if (auto* element = DynamicTo<HTMLElement>(object.GetNode())) {
+    interaction_info.is_focusable = element->IsFocusable();
+    interaction_info.is_focused = element->IsFocused();
+    interaction_info.is_draggable = element->draggable();
+    interaction_info.is_clickable = element->IsMaybeClickable();
+  }
 }
 
 }  // namespace blink

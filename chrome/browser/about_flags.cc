@@ -8329,6 +8329,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          webnn::mojom::features::kExperimentalWebMachineLearningNeuralNetwork)},
 
+#if BUILDFLAG(IS_MAC)
+    {"webnn-coreml", flag_descriptions::kWebNNCoreMLName,
+     flag_descriptions::kWebNNCoreMLDescription, kOsMac,
+     FEATURE_VALUE_TYPE(webnn::mojom::features::kWebNNCoreML)},
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
     {"webnn-directml", flag_descriptions::kWebNNDirectMLName,
      flag_descriptions::kWebNNDirectMLDescription, kOsWin,

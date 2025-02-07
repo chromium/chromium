@@ -139,7 +139,7 @@ export class DeclutterPageElement extends CrLitElement {
     }
   }
 
-  private async maybeAddScrollListener_() {
+  private maybeAddScrollListener_() {
     const scrollable = this.shadowRoot!.querySelector('#scrollable');
     if (scrollable) {
       scrollable.addEventListener('scroll', this.updateScroll_.bind(this));

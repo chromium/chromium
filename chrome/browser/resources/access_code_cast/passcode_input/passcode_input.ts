@@ -239,7 +239,7 @@ export class PasscodeInputElement extends PolymerElement {
     });
   }
 
-  private async afterPageLoaded(callback: () => void) {
+  private afterPageLoaded(callback: () => void) {
     if (this.afterFirstRender) {
       callback();
     } else {

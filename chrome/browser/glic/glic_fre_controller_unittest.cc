@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,9 +33,11 @@ class GlicFreControllerTest : public testing::Test {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
-
+    identity_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     profile_ = testing_profile_manager_->CreateTestingProfile("profile");
-    glic_fre_controller_ = std::make_unique<GlicFreController>();
+
+    glic_fre_controller_ = std::make_unique<GlicFreController>(
+        profile_, identity_env_->identity_manager());
   }
 
   Profile* profile() { return profile_; }
@@ -47,13 +50,19 @@ class GlicFreControllerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_env_;
   std::unique_ptr<GlicFreController> glic_fre_controller_;
   raw_ptr<Profile> profile_ = nullptr;
 };
 
 TEST_F(GlicFreControllerTest, AcceptFre) {
+  // TODO: Without this line, there's a sequence check error in
+  // shell_integration::DefaultWebClientWorker::OnCheckIsDefaultComplete.
+  // Likely a problem with the test environment configuration.
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               false);
   PrefService* const profile_pref_service = profile()->GetPrefs();
-  glic_fre_controller()->AcceptFre(profile());
+  glic_fre_controller()->AcceptFre();
   EXPECT_TRUE(profile_pref_service->GetBoolean(prefs::kGlicCompletedFre));
 }
 

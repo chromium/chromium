@@ -26,6 +26,8 @@ class CollaborationControllerDelegate {
       kUnknown = 0,
       // Show the generic error dialog.
       kGenericError = 1,
+      // Show the link invalid error dialog.
+      kInvalidUrl = 2,
     };
 
     explicit ErrorInfo(Type type) : type(type) { GetStringForErrorType(); }
@@ -38,6 +40,12 @@ class CollaborationControllerDelegate {
    private:
     void GetStringForErrorType() {
       switch (type) {
+        case Type::kInvalidUrl:
+          error_header =
+              l10n_util::GetStringUTF8(IDS_COLLABORATION_LINK_FAILED_HEADER);
+          error_body =
+              l10n_util::GetStringUTF8(IDS_COLLABORATION_LINK_FAILED_BODY);
+          break;
         case Type::kGenericError:
         default:
           error_header = l10n_util::GetStringUTF8(

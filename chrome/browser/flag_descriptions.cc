@@ -2459,6 +2459,12 @@ const char kExperimentalWebMachineLearningNeuralNetworkDescription[] =
     "Enables additional, experimental features in Web Machine Learning Neural "
     "Network (WebNN) API. Requires the \"WebNN API\" flag to be enabled.";
 
+const char kWebNNCoreMLName[] = "Core ML backend for WebNN";
+const char kWebNNCoreMLDescription[] =
+    "Enables using Core ML for GPU and "
+    "NPU inference with the WebNN API. Disabling this flag enables a "
+    "fallback to TFLite.";
+
 const char kWebNNDirectMLName[] = "DirectML backend for WebNN";
 const char kWebNNDirectMLDescription[] =
     "Enables using DirectML for GPU and "

@@ -114,8 +114,8 @@ GURL GetWebstoreUpdateUrl() {
 
 GURL GetWebstoreReportAbuseUrl(const extensions::ExtensionId& extension_id,
                                const std::string& referrer_id) {
-  return GURL(base::StringPrintf("%s/report/%s?utm_source=%s",
-                                 GetWebstoreLaunchURL().spec().c_str(),
+  return GURL(base::StringPrintf("%sdetail/%s/report?utm_source=%s",
+                                 GetNewWebstoreLaunchURL().spec().c_str(),
                                  extension_id.c_str(), referrer_id.c_str()));
 }
 

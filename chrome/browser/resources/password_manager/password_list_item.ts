@@ -84,7 +84,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
     this.$.seePasswordDetails.focus();
   }
 
-  private async onRowClick_() {
+  private onRowClick_() {
     const ids = this.item.entries.map(entry => entry.id);
     PasswordManagerImpl.getInstance()
         .requestCredentialsDetails(ids)

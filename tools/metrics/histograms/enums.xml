@@ -10790,6 +10790,7 @@ from previous Chrome versions.
   <int value="-1321640296"
       label="AutofillDownstreamCvcPromptUseGooglePayLogo:enabled"/>
   <int value="-1321212159" label="MediaAppAnnotation:enabled"/>
+  <int value="-1320724945" label="WebNNCoreML:disabled"/>
   <int value="-1319688939" label="ignore-gpu-blacklist"/>
   <int value="-1318914924" label="OverflowIconsForMediaControls:enabled"/>
   <int value="-1317782739" label="OmniboxAsyncViewInflation:enabled"/>
@@ -19062,6 +19063,7 @@ from previous Chrome versions.
   <int value="1927259098" label="TranslateLanguageByULP:enabled"/>
   <int value="1927374573" label="EnterpriseRealtimeExtensionRequest:enabled"/>
   <int value="1927572319" label="OmniboxShortcutExpanding:enabled"/>
+  <int value="1928193837" label="WebNNCoreML:enabled"/>
   <int value="1928641476" label="enable-builtin-hls:disabled"/>
   <int value="1928944156" label="ReadLaterNewBadgePromo:disabled"/>
   <int value="1929174284" label="ChromeManagementPageAndroid:disabled"/>

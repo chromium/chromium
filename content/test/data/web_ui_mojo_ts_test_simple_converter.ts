@@ -10,6 +10,6 @@ export class SimpleTypeConverter implements SimpleMappedTypeTypeMapper<string> {
   }
 
   convert(dataView: SimpleMappedTypeDataView): string {
-    return dataView.value();
+    return dataView.value;
   }
 }

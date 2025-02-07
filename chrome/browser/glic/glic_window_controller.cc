@@ -205,10 +205,13 @@ class GlicWindowController::AnchorObserver : public views::ViewObserver,
   raw_ptr<GlicWindowController> controller_;
 };
 
-GlicWindowController::GlicWindowController(Profile* profile,
-                                           GlicKeyedService* glic_service)
+GlicWindowController::GlicWindowController(
+    Profile* profile,
+    signin::IdentityManager* identity_manager,
+    GlicKeyedService* glic_service)
     : profile_(profile),
-      fre_controller_(std::make_unique<GlicFreController>()),
+      fre_controller_(
+          std::make_unique<GlicFreController>(profile, identity_manager)),
       window_finder_(std::make_unique<WindowFinder>()),
       glic_service_(glic_service) {}
 
@@ -304,19 +307,12 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
   Browser* new_attached_browser =
       bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
 
-  if (!fre_controller_) {
-    // It can be the case that the fre_controller_ is torn down (eg, this
-    // happens when it is closed via the context menu). Recreate the
-    // controller here, if needed.
-    fre_controller_ = std::make_unique<GlicFreController>();
-  }
-
   // Show the FRE if not yet completed, and if we have a browser to use.
-  if (fre_controller_->ShouldShowFreDialog(profile_)) {
+  if (fre_controller_->ShouldShowFreDialog()) {
     if (!fre_controller_->CanShowFreDialog(new_attached_browser)) {
       return;
     }
-    fre_controller_->ShowFreDialog(profile_, new_attached_browser);
+    fre_controller_->ShowFreDialog(new_attached_browser);
     return;
   }
 
@@ -629,9 +625,6 @@ content::WebContents* GlicWindowController::GetWebContents() {
 }
 
 content::WebContents* GlicWindowController::GetFreWebContents() {
-  if (!fre_controller_) {
-    return nullptr;
-  }
   return fre_controller_->GetWebContents();
 }
 
@@ -1212,7 +1205,7 @@ void GlicWindowController::Shutdown() {
   // Hide first, then clean up (but do not animate).
   ForceClose();
   contents_.reset();
-  fre_controller_.reset();
+  fre_controller_->Shutdown();
 }
 
 void GlicWindowController::ResetPresentationTimingState() {

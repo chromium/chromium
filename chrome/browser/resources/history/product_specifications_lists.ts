@@ -113,7 +113,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     this.callbackRouter_ = this.productSpecificationsProxy_.getCallbackRouter();
   }
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.focusGrid_ = new FocusGrid();
 

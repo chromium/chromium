@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/shell_integration.h"
 
 class Browser;
@@ -34,35 +35,49 @@ class GlicFreController {
   GlicFreController(const GlicFreController&) = delete;
   GlicFreController& operator=(const GlicFreController&) = delete;
 
-  GlicFreController();
+  GlicFreController(Profile* profile,
+                    signin::IdentityManager* identity_manager);
   ~GlicFreController();
 
+  // Close any windows and destroy web contents.
+  void Shutdown();
+
   // Returns whether the FRE dialog should be shown.
-  bool ShouldShowFreDialog(Profile* profile);
+  bool ShouldShowFreDialog();
 
   // Returns whether the FRE can be shown.
   bool CanShowFreDialog(Browser* browser);
 
-  void ShowFreDialog(Profile* profile, Browser* browser);
+  void ShowFreDialog(Browser* browser);
 
   // Closes the FRE modal dialog and immediately opens a glic window attached to
   // the same browser.
-  void AcceptFre(Profile* profile);
+  void AcceptFre();
   // Closes the FRE modal dialog.
   void DismissFre();
 
   // Returns the WebContents from the dialog view.
   content::WebContents* GetWebContents();
 
+  base::WeakPtr<GlicFreController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicFreControllerTest,
                            UpdateLauncherOnFreCompletion);
+  void ShowFreDialogAfterAuthCheck(base::WeakPtr<Browser> browser,
+                                   AuthController::BeforeShowResult result);
   static void OnCheckIsDefaultBrowserFinished(
       version_info::Channel channel,
       shell_integration::DefaultWebClientState state);
 
+  raw_ptr<Profile> profile_;
   std::unique_ptr<views::Widget> fre_widget_;
   raw_ptr<GlicFreDialogView> fre_view_;
+  bool first_time_pref_check_done_ = false;
+  AuthController auth_controller_;
+  base::WeakPtrFactory<GlicFreController> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

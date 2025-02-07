@@ -179,15 +179,11 @@ export type Typemapped = number;
 const converterForTypemapped: TypemappedTypeMapper<number>
     = new Converter();
 
-const adapterForTypemapped = new mojo.internal.TypemapAdapter(
-  (mojoType: TypemappedMojoType) =>
-      converterForTypemapped.convert(new TypemappedDataView(mojoType)),
-);
-
 mojo.internal.TypemappedStruct<number, TypemappedMojoType> (
     TypemappedSpec.$,
     'Typemapped',
-    adapterForTypemapped,
+    TypemappedDataView,
+    converterForTypemapped,
     [
       mojo.internal.StructField<number, number>(
         'field', 0,

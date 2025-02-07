@@ -44,9 +44,4 @@ function onNewWindow(e: any) {
   e.stopPropagation();
 }
 
-// Blocking on cookie syncing here introduces latency, we should consider ways
-// to avoid it.
-freHandler.syncWebviewCookies().then(() => {
-  // Load the web client only after cookie sync is complete.
-  webview.src = loadTimeData.getString('glicFreURL');
-});
+webview.src = loadTimeData.getString('glicFreURL');

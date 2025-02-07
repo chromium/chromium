@@ -30,18 +30,33 @@ namespace glic {
 constexpr static int kFreDefaultWidth = 512;
 constexpr static int kFreDefaultHeight = 614;
 
-GlicFreController::GlicFreController() = default;
+GlicFreController::GlicFreController(Profile* profile,
+                                     signin::IdentityManager* identity_manager)
+    : profile_(profile),
+      auth_controller_(profile, identity_manager, /*use_for_fre=*/true) {}
 
 GlicFreController::~GlicFreController() = default;
 
-bool GlicFreController::ShouldShowFreDialog(Profile* profile) {
+void GlicFreController::Shutdown() {
+  DismissFre();
+}
+
+bool GlicFreController::ShouldShowFreDialog() {
+  PrefService* prefs = profile_->GetPrefs();
+  if (!first_time_pref_check_done_) {
+    first_time_pref_check_done_ = true;
+    // If `--glic-always-open-fre` is present, unset this pref to ensure the FRE
+    // is shown for testing convenience. Do this only once so that we can test
+    // the accept flow.
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(::switches::kGlicAlwaysOpenFre)) {
+      prefs->SetBoolean(prefs::kGlicCompletedFre, false);
+    }
+  }
+
   // If the given profile has not previously completed the FRE, then it should
   // be shown.
-  // Always show the FRE if `--glic-always-open-fre` is present, for
-  // testing convenience.
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  return !profile->GetPrefs()->GetBoolean(prefs::kGlicCompletedFre) ||
-         command_line->HasSwitch(::switches::kGlicAlwaysOpenFre);
+  return !prefs->GetBoolean(prefs::kGlicCompletedFre);
 }
 
 bool GlicFreController::CanShowFreDialog(Browser* browser) {
@@ -58,11 +73,30 @@ bool GlicFreController::CanShowFreDialog(Browser* browser) {
   return tab && tab->CanShowModalUI();
 }
 
-void GlicFreController::ShowFreDialog(Profile* profile, Browser* browser) {
+void GlicFreController::ShowFreDialog(Browser* browser) {
+  auth_controller_.CheckAuthBeforeShow(
+      base::BindOnce(&GlicFreController::ShowFreDialogAfterAuthCheck,
+                     GetWeakPtr(), browser->AsWeakPtr()));
+}
+
+void GlicFreController::ShowFreDialogAfterAuthCheck(
+    base::WeakPtr<Browser> browser,
+    AuthController::BeforeShowResult result) {
+  if (result == AuthController::BeforeShowResult::kShowingReauthSigninPage) {
+    return;
+  }
+  // Abort if the browser was closed, to avoid crashing. Note, the user
+  // shouldn't have much chance to close the browser between ShowFreDialog() and
+  // ShowFreDialogAfterAuthCheck().
+  if (!browser) {
+    return;
+  }
+
   // Close any existing FRE dialog before showing.
   DismissFre();
+
   fre_view_ = new GlicFreDialogView(
-      profile, gfx::Size(kFreDefaultWidth, kFreDefaultHeight));
+      profile_, gfx::Size(kFreDefaultWidth, kFreDefaultHeight));
 
   tabs::TabInterface* tab_interface = tabs::TabInterface::GetFromContents(
       browser->tab_strip_model()->GetActiveWebContents());
@@ -73,9 +107,9 @@ void GlicFreController::ShowFreDialog(Profile* profile, Browser* browser) {
                     ->CreateShowDialogAndBlockTabInteraction(fre_view_);
 }
 
-void GlicFreController::AcceptFre(Profile* profile) {
+void GlicFreController::AcceptFre() {
   // Update FRE related preferences.
-  profile->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
 
   // Enable the launcher if it is still disabled by default and the browser
   // is default or is on the stable channel.
@@ -94,8 +128,8 @@ void GlicFreController::AcceptFre(Profile* profile) {
   // Show a glic window attached to the last active browser of the glic
   // profile, which should correspond to the browser used by the FRE.
   if (Browser* new_attached_browser =
-          chrome::FindLastActiveWithProfile(profile)) {
-    glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(
+          chrome::FindLastActiveWithProfile(profile_)) {
+    glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->ToggleUI(
         new_attached_browser, /*prevent_close=*/true, InvocationSource::kFre);
   }
 }

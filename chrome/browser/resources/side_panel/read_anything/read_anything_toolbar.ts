@@ -364,7 +364,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // Internet connections. Since we don't want this to block the rest of
   // Reading Mode from loading, we load this stylesheet asynchronously
   // in TypeScript instead of in read_anything.html
-  async loadFontsStylesheet() {
+  loadFontsStylesheet() {
     const link = document.createElement('link');
     link.rel = 'preload';
     link.as = 'style';
