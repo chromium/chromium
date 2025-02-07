@@ -220,10 +220,14 @@ void GenAiModelHandler::InquireGenAiOnDeviceModel(
     std::string rendered_text,
     permissions::RequestType request_type,
     base::OnceCallback<void(std::optional<PermissionsAiResponse>)> callback) {
-  // Close off the previous session if session's model execution from a previous
-  // call into InquireOnDeviceModel is still happening.
+  // TODO(crbug.com/382447738): It can happen that a new inquiry comes before
+  // the previous finishes its execution. To avoid unexpected behavior return
+  // `std::nullopt` which means another type of CPSS logic will be executed.
   if (session_) {
-    session_.reset();
+    LogOnDeviceModelSessionCreationSuccess(
+        /*success=*/false, /*creation_time=*/base::Microseconds(0));
+    std::move(callback).Run(std::nullopt);
+    return;
   }
   base::TimeTicks session_creation_start_time = base::TimeTicks::Now();
 
