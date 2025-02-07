@@ -234,7 +234,9 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
         media_element_->GetWebMediaPlayer(),
         media_element_->GetExecutionContext()->GetTaskRunner(
             TaskType::kInternalMediaRealTime));
-    media_element_->GetWebMediaPlayer()->SetRenderMutedAudio(true);
+    if (base::FeatureList::IsEnabled(media::kRenderMutedAudio)) {
+      media_element_->GetWebMediaPlayer()->SetRenderMutedAudio(true);
+    }
   }
 
   MediaStreamComponentVector video_components = descriptor->VideoComponents();
