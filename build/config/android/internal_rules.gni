@@ -3936,6 +3936,8 @@ if (enable_java_templates) {
           "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerImpl.kt",
           "java/androidx/core/os/BuildCompat.kt",
           "webengine_shell_apk/src/org/chromium/webengine/shell/*.kt",
+          "local_modifications/pdf/java/androidx/pdf/viewer/fragment/PdfViewerFragment.kt",
+          "local_modifications/pdf/java/androidx/pdf/viewer/fragment/insets/TranslateInsetsAnimationCallback.kt",
         ]
         _found_kt = filter_exclude(_kt_files, _kt_allowlist)
         assert(
