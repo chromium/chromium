@@ -19,8 +19,8 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common import service
 from selenium.webdriver.chrome.service import Service as ChromeService
 
-DEFAULT_WAIT_TIMEOUT = 10     # 10 seconds timeout
-DEFAULT_WAIT_INTERVAL = 0.3   # 0.3 seconds wait intervals
+DEFAULT_WAIT_TIMEOUT = 60   # 60 seconds timeout
+DEFAULT_WAIT_INTERVAL = 1   # 1 second wait intervals
 
 @attr.attrs()
 class DriverFactory:
