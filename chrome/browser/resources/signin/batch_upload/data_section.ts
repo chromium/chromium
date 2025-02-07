@@ -209,7 +209,7 @@ export class DataSectionElement extends DataSectionElementBase {
 
   // Needs to react to both property change (through a reset caused from all
   // checkboxes being unselected) and user action.
-  protected async onToggleChanged_(e: CustomEvent<{value: boolean}>) {
+  protected onToggleChanged_(e: CustomEvent<{value: boolean}>) {
     this.resetWithState_(/*disabled=*/ !e.detail.value);
 
     // Notify the parent with the new toggle value.

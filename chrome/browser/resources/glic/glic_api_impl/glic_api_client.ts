@@ -190,8 +190,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   // GlicBrowserHost implementation.
 
-  async getChromeVersion() {
-    return this.chromeVersion!;
+  getChromeVersion() {
+    return Promise.resolve(this.chromeVersion!);
   }
 
   async createTab(
@@ -354,7 +354,7 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
 // This should be called on or before page load.
 export function createGlicHostRegistryOnLoad(): Promise<GlicHostRegistry> {
   const {promise, resolve} = Promise.withResolvers<GlicHostRegistry>();
-  const messageHandler = async (event: MessageEvent) => {
+  const messageHandler = (event: MessageEvent) => {
     if (event.origin !== 'chrome://glic' || event.source === null) {
       return;
     }

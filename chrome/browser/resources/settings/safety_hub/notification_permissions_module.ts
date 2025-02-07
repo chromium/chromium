@@ -187,7 +187,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
             ({...site, detail: site.notificationInfoString}));
   }
 
-  private async setHeaderToCompletionState_() {
+  private setHeaderToCompletionState_() {
     assert(this.toastText_);
     this.headerString_ = this.toastText_!;
     this.subheaderString_ = '';

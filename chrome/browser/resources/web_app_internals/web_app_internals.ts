@@ -105,7 +105,7 @@ function updateDevProxyInstallButtonState() {
   iwaDevProxyInstallButton.disabled = iwaDevProxyInstallUrl.value.length === 0;
 }
 
-async function setDevInstallMessageText(
+function setDevInstallMessageText(
     message: string,
 ) {
   setTimeout(() => {
@@ -283,7 +283,7 @@ async function iwaDevFetchUpdateManifest() {
 }
 
 // Logic for handling the channel switching dialog for IWAs.
-async function showSwitchChannelDialog(appId: string, name: string) {
+function showSwitchChannelDialog(appId: string, name: string) {
   switchChannelButton.addEventListener('click', async () => {
     const updateChannel =
         getRequiredElement('iwa-update-channel') as HTMLInputElement;
@@ -327,7 +327,7 @@ closeSwitchChannelDialogButton.addEventListener('click', () => {
 });
 
 // Logic for handling the version pinning for IWAs.
-async function showPinnedVersionDialog(appId: string, name: string) {
+function showPinnedVersionDialog(appId: string, name: string) {
   const pinButton =
       getRequiredElement('iwa-pinned-version-dialog-pin') as HTMLButtonElement;
   const unpinButton = getRequiredElement('iwa-pinned-version-dialog-unpin') as
@@ -403,7 +403,7 @@ getRequiredElement('iwa-updates-search-button')
 const iwaRotateKeyButton =
     getRequiredElement('iwa-rotate-key-button') as HTMLButtonElement;
 
-iwaRotateKeyButton.addEventListener('click', async () => {
+iwaRotateKeyButton.addEventListener('click', () => {
   const webBundleId =
       getRequiredElement('iwa-kr-web-bundle-id') as HTMLInputElement;
   const publicKeyBase64 =
@@ -593,7 +593,7 @@ function prepareAppButtons(
   return {updateMsg, buttonsSection};
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   if (loadTimeData.getBoolean('isIwaPolicyInstallEnabled')) {
     showIwaSection('iwa-updates-container');
   }

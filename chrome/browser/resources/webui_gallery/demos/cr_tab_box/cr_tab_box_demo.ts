@@ -21,7 +21,7 @@ class CrTabBoxDemoElement extends CustomElement {
 
   private tabBox_: CrTabBoxElement|null = null;
 
-  async connectedCallback() {
+  connectedCallback() {
     this.tabBox_ = this.shadowRoot!.querySelector('cr-tab-box');
     assert(this.tabBox_);
     this.tabBox_.addEventListener(

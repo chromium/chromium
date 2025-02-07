@@ -258,7 +258,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   /**
    * Helper function that checks whether the entered url is valid.
    */
-  private async validateWebsite_() {
+  private validateWebsite_() {
     if (this.website_.length === 0) {
       this.websiteErrorMessage_ = null;
       return;

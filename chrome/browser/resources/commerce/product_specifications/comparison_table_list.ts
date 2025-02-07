@@ -164,11 +164,11 @@ export class ComparisonTableListElement extends CrLitElement {
     await this.$.toast.get().show();
   }
 
-  protected async onShowContextMenuClick_() {
+  protected onShowContextMenuClick_() {
     this.$.menu.get().showAt(this.$.more);
   }
 
-  protected async onOpenAllClick_() {
+  protected onOpenAllClick_() {
     this.productSpecificationsProxy_.showProductSpecificationsSetsForUuids(
         Array.from(this.selectedUuids_), ShowSetDisposition.kInNewTabs);
     this.$.menu.get().close();
@@ -176,7 +176,7 @@ export class ComparisonTableListElement extends CrLitElement {
     this.fire('open-all-finished-for-testing');
   }
 
-  protected async onOpenAllInNewWindowClick_() {
+  protected onOpenAllInNewWindowClick_() {
     this.productSpecificationsProxy_.showProductSpecificationsSetsForUuids(
         Array.from(this.selectedUuids_), ShowSetDisposition.kInNewWindow);
     this.$.menu.get().close();
@@ -184,7 +184,7 @@ export class ComparisonTableListElement extends CrLitElement {
     this.fire('open-all-in-new-window-finished-for-testing');
   }
 
-  protected async onUndoDeletionClick_() {
+  protected onUndoDeletionClick_() {
     this.cancelPendingDeletionTimeout_();
     this.tablesPendingDeletion_.clear();
     this.$.toast.get().hide();

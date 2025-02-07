@@ -947,7 +947,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         toPercent(contextMenuY)} + 12px)`;
   }
 
-  private async handleCopy() {
+  private handleCopy() {
     if (this.textSelectionStartIndex < 0 || this.textSelectionEndIndex < 0) {
       return;
     }
@@ -1091,7 +1091,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     }
   }
 
-  private async screenshotDataReceived(screenshotBitmap: ImageBitmap) {
+  private screenshotDataReceived(screenshotBitmap: ImageBitmap) {
     renderScreenshot(this.$.backgroundImageCanvas, screenshotBitmap);
     // Start the canvas as the same dimensions as the viewport, since we are
     // assuming the screenshot takes up the viewport dimensions. Our resize

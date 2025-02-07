@@ -599,7 +599,7 @@ export class AppElement extends AppElementBase {
     this.realboxCanShowSecondarySide = e.matches;
   }
 
-  private async onLazyRendered_() {
+  private onLazyRendered_() {
     // Integration tests use this attribute to determine when lazy load has
     // completed.
     document.documentElement.setAttribute('lazy-loaded', String(true));

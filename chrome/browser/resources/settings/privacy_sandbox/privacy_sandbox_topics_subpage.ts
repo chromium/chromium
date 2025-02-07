@@ -257,7 +257,7 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
     // After allowing or blocking the last item, the focus is lost after the
     // item is removed. Set the focus to the #blockedTopicsRow element.
-    afterNextRender(this, async () => {
+    afterNextRender(this, () => {
       if (!this.shadowRoot!.activeElement) {
         this.shadowRoot!.querySelector<HTMLElement>('#blockedTopicsRow')
             ?.focus();

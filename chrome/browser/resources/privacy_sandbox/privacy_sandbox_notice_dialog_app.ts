@@ -64,7 +64,7 @@ export class PrivacySandboxNoticeDialogAppElement extends
 
     // Schedules a callback to run after the current render cycle is completed,
     // elements should be fully rendered at this point.
-    afterNextRender(this, async () => {
+    afterNextRender(this, () => {
       this.resizeAndShowNativeDialog().then(() => {
         this.updateScrollableContents();
         this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_SHOWN);

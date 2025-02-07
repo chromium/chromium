@@ -748,7 +748,7 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private async loadImages_() {
+  private loadImages_() {
     if (!chrome.readingMode.imagesFeatureEnabled) {
       return;
     }
@@ -1507,7 +1507,7 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  async preprocessTextForSpeech() {
+  preprocessTextForSpeech() {
     chrome.readingMode.preprocessTextForSpeech();
   }
 
