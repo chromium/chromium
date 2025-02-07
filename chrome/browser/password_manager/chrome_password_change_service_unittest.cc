@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -87,6 +88,7 @@ class ChromePasswordChangeServiceTest : public testing::Test,
 };
 
 TEST_F(ChromePasswordChangeServiceTest, PasswordChangeSupportedForURL) {
+  base::HistogramTester histogram_tester;
   GURL url("https://test.com/");
   EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url))
       .WillOnce(testing::Return(GURL("https://test.com/password/")));
@@ -95,9 +97,12 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeSupportedForURL) {
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(change_service()->IsPasswordChangeSupported(url));
+  histogram_tester.ExpectUniqueSample(
+      ChromePasswordChangeService::kHasPasswordChangeUrlHistogram, true, 1);
 }
 
 TEST_F(ChromePasswordChangeServiceTest, PasswordChangeNotSupportedForUrl) {
+  base::HistogramTester histogram_tester;
   GURL url("https://test.com/");
   EXPECT_CALL(affiliation_service(), GetChangePasswordURL(url))
       .WillOnce(testing::Return(GURL()));
@@ -106,6 +111,8 @@ TEST_F(ChromePasswordChangeServiceTest, PasswordChangeNotSupportedForUrl) {
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
       .WillOnce(testing::Return(true));
   EXPECT_FALSE(change_service()->IsPasswordChangeSupported(url));
+  histogram_tester.ExpectUniqueSample(
+      ChromePasswordChangeService::kHasPasswordChangeUrlHistogram, false, 1);
 }
 
 TEST_F(ChromePasswordChangeServiceTest,

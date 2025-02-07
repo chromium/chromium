@@ -40,6 +40,8 @@ class ChromePasswordChangeService
   using OpenNewTabCallback =
       base::RepeatingCallback<content::WebContents*(const GURL&,
                                                     content::WebContents*)>;
+  static constexpr char kHasPasswordChangeUrlHistogram[] =
+      "PasswordManager.HasPasswordChangeUrl";
 
   ChromePasswordChangeService(
       affiliations::AffiliationService* affiliation_service,

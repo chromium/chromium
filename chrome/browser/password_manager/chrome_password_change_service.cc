@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -102,7 +103,10 @@ bool ChromePasswordChangeService::IsPasswordChangeSupported(const GURL& url) {
     return true;
   }
 
-  return affiliation_service_->GetChangePasswordURL(url).is_valid();
+  const bool has_change_url =
+      affiliation_service_->GetChangePasswordURL(url).is_valid();
+  base::UmaHistogramBoolean(kHasPasswordChangeUrlHistogram, has_change_url);
+  return has_change_url;
 }
 
 void ChromePasswordChangeService::OfferPasswordChangeUi(

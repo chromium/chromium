@@ -1755,6 +1755,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.HasPasswordChangeUrl" enum="Boolean"
+    expires_after="2025-11-30">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records whether the password change flow is supported for the current site.
+    The metric is recorded when the leak check notification is triggered.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.HttpCredentials2"
     enum="PasswordManagerHttpCredentialType" expires_after="2025-06-22">
   <owner>kazinova@google.com</owner>
