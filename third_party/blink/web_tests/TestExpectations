@@ -2704,12 +2704,18 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-fonts/font-synthesis-style-oblique-only.html [ Failure ]
+[ Win10.20h2 ] external/wpt/css/css-fonts/parsing/font-synthesis-computed.html [ Failure Timeout ]
+[ Mac14 ] external/wpt/css/css-pseudo/active-selection-021.html [ Failure ]
+[ Mac12 ] external/wpt/html/cross-origin-opener-policy/popup-with-structured-header.https.html [ Crash ]
+crbug.com/394919517 [ Mac11-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
 crbug.com/394919517 [ Mac15 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
 crbug.com/394919517 [ Mac14-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
 crbug.com/394919517 [ Mac14 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
 crbug.com/394919517 [ Mac13-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
 crbug.com/394919517 [ Mac12-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
 crbug.com/394919517 [ Mac12 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/394919517 [ Mac15-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
 crbug.com/394656809 [ Mac13 ] external/wpt/css/css-overflow/scroll-marker-group-keeps-active-in-view.html [ Failure ]
 crbug.com/394331189 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?7-8 [ Crash Failure ]
 crbug.com/394331189 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/popup-unsafe-none-with-same-origin.https.html [ Crash ]

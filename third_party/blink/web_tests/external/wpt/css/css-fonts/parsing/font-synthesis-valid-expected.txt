@@ -1,11 +1,29 @@
 This is a testharness.js-based test.
+[FAIL] e.style['font-synthesis'] = "oblique-only" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['font-synthesis'] = "position" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-synthesis'] = "oblique-only weight" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-synthesis'] = "small-caps oblique-only" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-synthesis'] = "oblique-only weight small-caps" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-synthesis'] = "oblique-only small-caps weight " should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-synthesis'] = "small-caps oblique-only weight " should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['font-synthesis'] = "position style" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-synthesis'] = "position oblique-only" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['font-synthesis'] = "position weight style" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-synthesis'] = "position weight oblique-only" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['font-synthesis'] = "position weight small-caps style" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['font-synthesis'] = "position weight small-caps oblique-only" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 
