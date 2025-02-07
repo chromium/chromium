@@ -34,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -100,7 +101,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
  public:
   AccountSelectionBubbleViewTest() {
     content::IdentityProviderMetadata idp_metadata;
+    // Set the brand icon so it is laid out in the tests.
     idp_metadata.brand_icon_url = GURL(kIdpBrandIconUrl);
+    idp_metadata.brand_decoded_icon =
+        gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(1));
     idp_data_ = base::MakeRefCounted<content::IdentityProviderData>(
         kIdpForDisplay, idp_metadata, CreateTestClientMetadata(),
         blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
@@ -1353,9 +1357,10 @@ TEST_F(AccountSelectionBubbleViewTest, ErrorWithDifferentErrorCodes) {
                   GURL(u"https://idp-example.com/more-details"));
 }
 
-// Tests that the brand icon view is hidden if the brand icon URL is invalid.
-TEST_F(AccountSelectionBubbleViewTest, InvalidBrandIconUrlHidesBrandIcon) {
+// Tests that the brand icon view is hidden if the brand icon is empty.
+TEST_F(AccountSelectionBubbleViewTest, EmptyBrandIconHidesImageView) {
   idp_data_->idp_metadata.brand_icon_url = GURL("invalid url");
+  idp_data_->idp_metadata.brand_decoded_icon = gfx::Image();
   CreateAndShowSingleAccountPicker();
 
   views::View* brand_icon_image_view = static_cast<views::View*>(

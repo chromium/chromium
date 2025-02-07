@@ -321,7 +321,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
           disclosure_fields = kDefaultDisclosureFields) {
     return base::MakeRefCounted<content::IdentityProviderData>(
         /*idp_for_display=*/"", content::IdentityProviderMetadata(),
-        content::ClientMetadata(GURL(), GURL(), GURL()),
+        content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
         blink::mojom::RpContext::kSignIn, disclosure_fields,
         has_login_status_mismatch);
   }

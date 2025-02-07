@@ -483,7 +483,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
   void DownloadAndDecodeImage(const GURL& url,
                               ImageCallback callback) override {
-    EXPECT_TRUE(url == GURL(kAccountPicture) || url == GURL(kAccountPicture404))
+    EXPECT_TRUE(url == GURL(kAccountPicture) ||
+                url == GURL(kAccountPicture404) || url == GURL(kRpBrandIconUrl))
         << url;
     ++num_fetched_[FetchedEndpoint::PICTURE];
     if (url == GURL(kAccountPicture404)) {

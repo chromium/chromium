@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
@@ -415,7 +416,15 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       const std::string& rp_brand_icon_url = kRpBrandIconUrl) {
     const std::string kAccountSuffix = "suffix";
     idp_data_->idp_metadata.brand_icon_url = GURL(idp_brand_icon_url);
+    if (idp_data_->idp_metadata.brand_icon_url.is_valid()) {
+      idp_data_->idp_metadata.brand_decoded_icon =
+          gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(1));
+    }
     idp_data_->client_metadata.brand_icon_url = GURL(rp_brand_icon_url);
+    if (idp_data_->client_metadata.brand_icon_url.is_valid()) {
+      idp_data_->client_metadata.brand_decoded_icon =
+          gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(1));
+    }
     IdentityRequestAccountPtr account(CreateTestIdentityRequestAccount(
         kAccountSuffix, idp_data_, login_state));
     CreateAndShowRequestPermissionDialog(*account);
@@ -662,6 +671,9 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void SetIdpBrandIcon(const std::string& url) {
     idp_data_->idp_metadata.brand_icon_url = GURL(url);
+    if (!idp_data_->idp_metadata.brand_icon_url.is_valid()) {
+      idp_data_->idp_metadata.brand_decoded_icon = gfx::Image();
+    }
   }
 
  private:

@@ -30,13 +30,16 @@ enum class IdentityRequestDialogDisclosureField { kName, kEmail, kPicture };
 struct CONTENT_EXPORT ClientMetadata {
   ClientMetadata(const GURL& terms_of_service_url,
                  const GURL& privacy_policy_url,
-                 const GURL& brand_icon_url);
+                 const GURL& brand_icon_url,
+                 const gfx::Image& brand_decoded_icon);
   ClientMetadata(const ClientMetadata& other);
   ~ClientMetadata();
 
   GURL terms_of_service_url;
   GURL privacy_policy_url;
   GURL brand_icon_url;
+  // This will be an empty image if the fetching never happened or if it failed.
+  gfx::Image brand_decoded_icon;
 };
 
 struct CONTENT_EXPORT IdentityCredentialTokenError {
@@ -68,6 +71,8 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   // Whether this IdP has any filtered out account. This is reset to false each
   // time the accounts dialog is shown and recomputed then.
   bool has_filtered_out_account{false};
+  // This will be an empty image if fetching failed.
+  gfx::Image brand_decoded_icon;
 };
 
 class CONTENT_EXPORT IdentityProviderData
