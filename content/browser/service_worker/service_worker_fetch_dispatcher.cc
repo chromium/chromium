@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -343,7 +344,11 @@ CreateNetworkFactoryForNavigationPreload(FrameTreeNode& frame_tree_node,
   // Make the network factory.
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
       NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
-          std::move(header_client), std::move(factory_builder), &partition));
+          std::move(header_client), std::move(factory_builder), &partition,
+          // TODO(crbug.com/390003764): Consider whether/how to apply devtools
+          // cookies setting overrides for a service worker.
+          /*devtools_cookie_overrides=*/std::nullopt,
+          /*cookie_overrides=*/std::nullopt));
 }
 
 }  // namespace

@@ -69,6 +69,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/frame_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -95,6 +97,10 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
 #include "url/url_constants.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/common/extension_features.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -2355,4 +2361,93 @@ INSTANTIATE_TEST_SUITE_P(
                         : "BundledCodeCache_Disabled";
     });
 
+class DevToolsOverridesThirdPartyCookiesBrowserTest
+    : public InProcessBrowserTest,
+      public content::TestDevToolsProtocolClient {
+ public:
+  DevToolsOverridesThirdPartyCookiesBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    // The 3PCD tracking protection feature must be disabled so that we can
+    // disable third-party cookies by changing the devtools overrides.
+    disabled_features.push_back(
+        content_settings::features::kTrackingProtection3pcd);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    // This feature must be enabled to align the behavior in the test with the
+    // actual behavior in the branded-build. Related bug: crbug.com/385032014.
+    enabled_features.push_back(
+        {extensions_features::kForceWebRequestProxyForTest, {}});
+
+#endif
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+
+    // Open DevTools and enable network agent.
+    AttachToWebContents(web_contents());
+    SendCommandAsync("Network.enable");
+  }
+
+  void TearDownOnMainThread() override {
+    DetachProtocolClient();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  GURL GetURL(std::string_view host) { return https_server_.GetURL(host, "/"); }
+
+  void NavigateToPageWithFrame(std::string_view host,
+                               Browser* browser_ptr = nullptr) {
+    GURL main_url(https_server_.GetURL(host, "/iframe.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser_ptr ? browser_ptr : browser(), main_url));
+  }
+
+  void NavigateFrameTo(std::string_view host, std::string_view path) {
+    GURL page = https_server_.GetURL(host, path);
+    EXPECT_TRUE(NavigateIframeToURL(web_contents(), "test", page));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsOverridesThirdPartyCookiesBrowserTest,
+                       DevToolsForceDisableTPC) {
+  const std::string_view kHostA = "a.test";
+  const std::string_view kHostB = "b.test";
+  // Apply devtools overrides to enable 3pc restriction.
+  base::Value::Dict command_params;
+  command_params.Set("enableThirdPartyCookieRestriction", true);
+  command_params.Set("disableThirdPartyCookieMetadata", false);
+  command_params.Set("disableThirdPartyCookieHeuristics", false);
+  SendCommandSync("Network.setCookieControls", std::move(command_params));
+
+  NavigateToPageWithFrame(kHostA);
+  // Navigate iframe to a cross-site, cookie-setting endpoint, and verify that
+  // setting 3pc should be blocked due to devtools overrides.
+  NavigateFrameTo(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)), "");
+
+  SendCommandAsync("Network.disable");
+  // The override should stop working and setting 3pc is re-allowed after
+  // devtools is disabled.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure");
+  EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
+            "thirdparty=1");
+}
 }  // namespace

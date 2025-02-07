@@ -59,6 +59,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/url_util.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
@@ -1931,7 +1932,11 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
   if (use_client_header_factory) {
     remote = NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
         std::move(header_client), std::move(factory_builder),
-        storage_partition());
+        storage_partition(),
+        // TODO(crbug.com/390003764): Apply devtools cookies setting overrides
+        // for a service worker
+        /*devtools_cookie_overrides=*/std::nullopt,
+        /*cookie_overrides=*/std::nullopt);
   } else {
     DCHECK(storage_partition());
     if (base::FeatureList::IsEnabled(
