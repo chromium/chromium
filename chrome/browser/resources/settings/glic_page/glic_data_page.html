@@ -7,17 +7,17 @@
   <settings-toggle-button
       id="geolocationToggle" pref="[[fakePref_]]" disabled
       label="$i18n{glicLocationToggle}"
-      sub-label="$i18n{glicLocationToggleSublabel}" icon="settings:location-on">
+      sub-label="$i18n{glicLocationToggleSublabel}">
   </settings-toggle-button>
   <settings-toggle-button
       id="microphoneToggle" pref="[[fakePref_]]" disabled
       label="$i18n{glicMicrophoneToggle}"
-      sub-label="$i18n{glicMicrophoneToggleSublabel}" icon="privacy:mic">
+      sub-label="$i18n{glicMicrophoneToggleSublabel}">
   </settings-toggle-button>
   <settings-toggle-button
       id="tabAccessToggle" pref="[[fakePref_]]" disabled
       label="$i18n{glicTabAccessToggle}"
-      sub-label="$i18n{glicTabAccessToggleSublabel}" icon="settings:tab">
+      sub-label="$i18n{glicTabAccessToggleSublabel}">
   </settings-toggle-button>
 </template>
 
@@ -27,17 +27,17 @@
   <settings-toggle-button
       id="geolocationToggle" pref="{{prefs.glic.geolocation_enabled}}"
       label="$i18n{glicLocationToggle}"
-      sub-label="$i18n{glicLocationToggleSublabel}" icon="settings:location-on">
+      sub-label="$i18n{glicLocationToggleSublabel}">
   </settings-toggle-button>
   <settings-toggle-button
       id="microphoneToggle" pref="{{prefs.glic.microphone_enabled}}"
       label="$i18n{glicMicrophoneToggle}"
-      sub-label="$i18n{glicMicrophoneToggleSublabel}" icon="privacy:mic">
+      sub-label="$i18n{glicMicrophoneToggleSublabel}">
   </settings-toggle-button>
   <settings-toggle-button
       id="tabAccessToggle" pref="{{prefs.glic.tab_context_enabled}}"
       label="$i18n{glicTabAccessToggle}"
-      sub-label="$i18n{glicTabAccessToggleSublabel}" icon="settings:tab"
+      sub-label="$i18n{glicTabAccessToggleSublabel}"
       on-checked-changed="onTabAccessToggleChange_">
     <cr-expand-button id="tabAccessExpandButton" no-hover slot="more-actions"
         expanded="{{tabAccessToggleExpanded_}}">
