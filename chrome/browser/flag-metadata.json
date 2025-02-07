@@ -59,6 +59,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "add-address-manually",
+    "owners": [ "sinhasourav@google.com", "noemies@google.com", "bling-transactions@google.com" ],
+    "expiry_milestone": 138
+  },
+  {
     "name": "add-printer-via-printscanmgr",
     "owners": [ "pmoy@chromium.org", "project-bolton-eng@google.com" ],
     "expiry_milestone": 133
