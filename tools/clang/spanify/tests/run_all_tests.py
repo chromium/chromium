@@ -9,25 +9,25 @@ import sys
 
 
 def RunRewritingTests():
-  subprocess.run([
-      "tools/clang/scripts/test_tool.py", "--extract-edits-path", "..",
-      "--apply-edits", "spanify"
-  ])
+    subprocess.run([
+        "tools/clang/scripts/test_tool.py", "--extract-edits-path", "..",
+        "--apply-edits", "spanify"
+    ])
 
 
 def main():
-  if not os.path.exists("ATL_OWNERS"):
-    sys.stderr.write(
-        "Please run run_all_tests.py from the root dir of Chromium")
-    return -1
+    if not os.path.exists("ATL_OWNERS"):
+        sys.stderr.write(
+            "Please run run_all_tests.py from the root dir of Chromium")
+        return -1
 
-  if not os.path.exists("third_party/llvm-build/Release+Asserts/bin/"
-                        "spanify"):
-    sys.stderr.write("Please build spanify first")
-    return -1
+    if not os.path.exists("third_party/llvm-build/Release+Asserts/bin/"
+                          "spanify"):
+        sys.stderr.write("Please build spanify first")
+        return -1
 
-  RunRewritingTests()
+    RunRewritingTests()
 
 
 if __name__ == "__main__":
-  main()
+    main()
