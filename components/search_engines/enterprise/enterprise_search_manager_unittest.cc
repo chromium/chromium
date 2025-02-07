@@ -4,6 +4,7 @@
 
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -151,6 +152,33 @@ TEST_F(EnterpriseSearchManagerTest, SearchAggregatorsOnly) {
       std::move(pref_value));
 }
 
+TEST_F(EnterpriseSearchManagerTest,
+       SearchAggregatorsOnlyWithRequireShortcutTrue) {
+  base::Value::List pref_value;
+  pref_value.Append(
+      GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/true));
+  pref_value.Append(
+      GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/false));
+
+  base::MockRepeatingCallback<void(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector&&)>
+      callback;
+  EXPECT_CALL(callback,
+              Run(ElementsAre(
+                  Pointee(Property(&TemplateURLData::keyword, u"@aggregator")),
+                  Pointee(Property(&TemplateURLData::keyword, u"aggregator")))))
+      .Times(1);
+
+  EnterpriseSearchManager manager(pref_service(), callback.Get());
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
+      std::move(pref_value));
+  pref_service()->SetManagedPref(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      base::Value(true));
+}
+
 TEST_F(EnterpriseSearchManagerTest, SiteSearchAndSearchAggregators) {
   base::Value::List site_search_pref_value;
   site_search_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
@@ -285,7 +313,7 @@ class EnterpriseSearchManagerProviderInjectionTest
                         const std::string& search_url,
                         const std::string& suggest_url,
                         const std::string& icon_url,
-                        bool trigger_omnibox_blending,
+                        bool require_shortcut,
                         base::TimeDelta callback_delay,
                         int num_suggestions,
                         const std::string& response_type) {
@@ -295,15 +323,10 @@ class EnterpriseSearchManagerProviderInjectionTest
     scoped_config_.Get().search_url = search_url;
     scoped_config_.Get().suggest_url = suggest_url;
     scoped_config_.Get().icon_url = icon_url;
-    scoped_config_.Get().trigger_omnibox_blending = trigger_omnibox_blending;
+    scoped_config_.Get().require_shortcut = require_shortcut;
     scoped_config_.Get().callback_delay = callback_delay;
     scoped_config_.Get().num_suggestions = num_suggestions;
     scoped_config_.Get().response_type = response_type;
-  }
-
-  void InitScopedConfig(bool enabled, bool trigger_omnibox_blending) {
-    scoped_config_.Get().enabled = enabled;
-    scoped_config_.Get().trigger_omnibox_blending = trigger_omnibox_blending;
   }
 
   omnibox_feature_configs::ScopedConfigForTesting<
@@ -341,13 +364,9 @@ TEST_P(EnterpriseSearchManagerProviderInjectionTest, Verify) {
 
   // Configure mock settings for test case.
   if (test_case.mock_setting_status == MockSettingStatus::kDisabled) {
-    InitScopedConfig(
-        /*enabled=*/false,
-        /*trigger_omnibox_blending=*/true);
-
+    scoped_config_.Get().enabled = false;
     EXPECT_FALSE(scoped_config_.Get().enabled);
     EXPECT_FALSE(scoped_config_.Get().AreMockEnginesValid());
-    EXPECT_TRUE(scoped_config_.Get().trigger_omnibox_blending);
   } else {
     // Use empty shortcut for invalid mock engine.
     InitScopedConfig(
@@ -360,7 +379,7 @@ TEST_P(EnterpriseSearchManagerProviderInjectionTest, Verify) {
         /*search_url=*/"https://www.mocked.com/q={searchTerms}",
         /*suggest_url=*/"https://www.mocked.com/ac",
         /*icon_url=*/"https://www.mocked.com/favicon.ico",
-        /*trigger_omnibox_blending=*/true,
+        /*require_shortcut=*/true,
         /*callback_delay=*/base::Milliseconds(0),
         /*num_suggestions=*/4,
         /*response_type=*/"success");
@@ -369,7 +388,7 @@ TEST_P(EnterpriseSearchManagerProviderInjectionTest, Verify) {
     EXPECT_EQ(
         scoped_config_.Get().AreMockEnginesValid(),
         test_case.mock_setting_status == MockSettingStatus::kEnabledValid);
-    EXPECT_TRUE(scoped_config_.Get().trigger_omnibox_blending);
+    EXPECT_TRUE(scoped_config_.Get().require_shortcut);
   }
 
   base::MockRepeatingCallback<void(
@@ -396,4 +415,162 @@ TEST_P(EnterpriseSearchManagerProviderInjectionTest, Verify) {
   }
 
   EnterpriseSearchManager manager(pref_service(), callback.Get());
+}
+
+struct RequireShortcutTestCase {
+  std::optional<bool> policy_require_shortcut;
+  std::optional<bool> mock_require_shortcut;
+  bool expected_result;
+} kRequireShortcutTestCases[] = {
+    {
+        .policy_require_shortcut = std::nullopt,
+        .mock_require_shortcut = std::nullopt,
+        .expected_result = false,
+    },
+    {
+        .policy_require_shortcut = std::nullopt,
+        .mock_require_shortcut = false,
+        .expected_result = false,
+    },
+    {
+        .policy_require_shortcut = std::nullopt,
+        .mock_require_shortcut = true,
+        .expected_result = true,
+    },
+    {
+        .policy_require_shortcut = false,
+        .mock_require_shortcut = std::nullopt,
+        .expected_result = false,
+    },
+    {
+        .policy_require_shortcut = false,
+        .mock_require_shortcut = false,
+        .expected_result = false,
+    },
+    {
+        .policy_require_shortcut = false,
+        .mock_require_shortcut = true,
+        .expected_result = false,
+    },
+    {
+        .policy_require_shortcut = true,
+        .mock_require_shortcut = std::nullopt,
+        .expected_result = true,
+    },
+    {
+        .policy_require_shortcut = true,
+        .mock_require_shortcut = false,
+        .expected_result = true,
+    },
+    {
+        .policy_require_shortcut = true,
+        .mock_require_shortcut = true,
+        .expected_result = true,
+    },
+};
+
+class EnterpriseSearchManagerRequireShortcutTest
+    : public EnterpriseSearchManagerTestBase,
+      public testing::WithParamInterface<RequireShortcutTestCase> {
+ public:
+  EnterpriseSearchManagerRequireShortcutTest() = default;
+  ~EnterpriseSearchManagerRequireShortcutTest() override = default;
+
+  void SetUp() override {
+    EnterpriseSearchManagerTestBase::SetUp();
+
+    scoped_feature_list_.InitAndEnableFeature(
+        omnibox::kEnableSearchAggregatorPolicy);
+  }
+
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::SearchAggregatorProvider>
+      scoped_config_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         EnterpriseSearchManagerRequireShortcutTest,
+                         testing::ValuesIn(kRequireShortcutTestCases));
+
+TEST_P(EnterpriseSearchManagerRequireShortcutTest, GetRequireShortcutValue) {
+  RequireShortcutTestCase test_case = GetParam();
+
+  // Configure policy for test case.
+  if (test_case.policy_require_shortcut.has_value()) {
+    base::Value::List pref_value;
+    pref_value.Append(
+        GenerateSearchAggregatorPrefEntry("from_policy", /*featured=*/true));
+    pref_value.Append(
+        GenerateSearchAggregatorPrefEntry("from_policy", /*featured=*/false));
+    pref_service()->SetManagedPref(
+        EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
+        std::move(pref_value));
+    pref_service()->SetManagedPref(
+        EnterpriseSearchManager::
+            kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+        base::Value(test_case.policy_require_shortcut.value()));
+  }
+
+  // Configure mock settings for test case.
+  if (test_case.mock_require_shortcut.has_value()) {
+    scoped_config_.Get().enabled = true;
+    scoped_config_.Get().name = "Mocked";
+    scoped_config_.Get().shortcut = "mocked";
+    scoped_config_.Get().search_url = "https://www.mocked.com/q={searchTerms}";
+    scoped_config_.Get().suggest_url = "https://www.mocked.com/ac";
+    scoped_config_.Get().require_shortcut =
+        test_case.mock_require_shortcut.value();
+  }
+
+  // Initialize `EnterpriseSearchManager` based on policy and mock settings.
+  base::MockRepeatingCallback<void(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector&&)>
+      callback;
+  EnterpriseSearchManager manager(pref_service(), callback.Get());
+
+  // Verify preference values for test case.
+  const PrefService::Preference* pref = pref_service()->FindPreference(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName);
+  EXPECT_TRUE(pref);
+  EXPECT_EQ(pref->IsManaged(), test_case.policy_require_shortcut.has_value());
+  EXPECT_EQ(pref->GetValue()->GetBool(),
+            test_case.policy_require_shortcut.value_or(false));
+
+  // Verify `GetRequireShortcutValue()` for test case.
+  EXPECT_EQ(manager.GetRequireShortcutValue(), test_case.expected_result);
+}
+
+// Test `GetRequireShortcutValue()`, verifying that mock setting
+// `require_shortcut` field is ignored if mock setting does not have a valid
+// search engine defined.
+TEST_F(EnterpriseSearchManagerRequireShortcutTest,
+       GetRequireShortcutValueInvalidMockSetting) {
+  // Configure invalid mock settings.
+  scoped_config_.Get().enabled = false;
+  scoped_config_.Get().name = "Mocked";
+  scoped_config_.Get().shortcut = "mocked";
+  scoped_config_.Get().search_url = "https://www.mocked.com/q={searchTerms}";
+  scoped_config_.Get().suggest_url = "https://www.mocked.com/ac";
+  scoped_config_.Get().require_shortcut = true;
+
+  // Initialize `EnterpriseSearchManager` based on policy and mock settings.
+  base::MockRepeatingCallback<void(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector&&)>
+      callback;
+  EnterpriseSearchManager manager(pref_service(), callback.Get());
+
+  // Verify preference values for test case.
+  const PrefService::Preference* pref = pref_service()->FindPreference(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName);
+  EXPECT_TRUE(pref);
+  EXPECT_FALSE(pref->IsManaged());
+  EXPECT_FALSE(pref->GetValue()->GetBool());
+
+  // Verify `GetRequireShortcutValue()` is false/default.
+  EXPECT_EQ(manager.GetRequireShortcutValue(), false);
 }
