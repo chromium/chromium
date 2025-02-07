@@ -424,6 +424,9 @@ crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
 
+# The yellow border doesn't draw properly with graphite which needs investigation.
+crbug.com/395060191 [ android android-sm-a235m no-passthrough graphite-enabled ] Pixel_OffscreenCanvasTransferAfterStyleResize [ Failure ]
+crbug.com/395060191 [ android android-sm-a235m no-passthrough graphite-enabled ] Pixel_OffscreenCanvasTransferBeforeStyleResize [ Failure ]
 
 # Fails with hung renderer
 crbug.com/1372149 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] Pixel_WebGLFloat [ Failure ]
