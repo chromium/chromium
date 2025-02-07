@@ -110,6 +110,7 @@ template("system_image_stub_apk") {
       "//third_party/protobuf/python/google/protobuf/internal/message_listener.py",
       "//third_party/protobuf/python/google/protobuf/internal/message_test.py",
       "//third_party/protobuf/python/google/protobuf/internal/proto_builder_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/python_edition_defaults.py",
       "//third_party/protobuf/python/google/protobuf/internal/python_message.py",
       "//third_party/protobuf/python/google/protobuf/internal/reflection_test.py",
       "//third_party/protobuf/python/google/protobuf/internal/service_reflection_test.py",
