@@ -65,10 +65,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   ~AutofillAiManager() override;
 
   // autofill::AutofillAiDelegate:
-  std::vector<autofill::Suggestion> GetSuggestions(
-      const std::vector<autofill::Suggestion>& autofill_suggestions,
-      const autofill::FormData& form,
-      const autofill::FormFieldData& field) override;
   void GetSuggestionsV2(autofill::FormGlobalId form_global_id,
                         autofill::FieldGlobalId field_global_id,
                         bool is_manual_fallback,
@@ -174,11 +170,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
 
   // Logger that records various Autofill AI metrics.
   AutofillAiLogger logger_;
-
-  // Sets the potentially new state of the `form` fields' focusability in the
-  // `cache_`. This is meant to be called in `GetSuggestions()`, which is
-  // expected to be called on field focus.
-  void UpdateFieldFocusabilityInCache(const autofill::FormData& form);
 
   autofill::LogManager* GetCurrentLogManager();
 

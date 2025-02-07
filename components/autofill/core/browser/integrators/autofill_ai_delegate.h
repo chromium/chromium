@@ -31,14 +31,6 @@ class AutofillAiDelegate {
 
   virtual ~AutofillAiDelegate() = default;
 
-  // Returns Autofill AI suggestions combined with `autofill_suggestions`. May
-  // return an empty vector.
-  // TODO(crbug.com/389629573): This method is deprecated and should be deleted.
-  virtual std::vector<Suggestion> GetSuggestions(
-      const std::vector<Suggestion>& autofill_suggestions,
-      const FormData& form,
-      const FormFieldData& field) = 0;
-
   // Returns AutofillAi suggestions. These suggestions can be filling
   // suggestions when triggered via left click, or loading suggestions when
   // using manual fallbacks.
