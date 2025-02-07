@@ -74,6 +74,12 @@
         padding-inline-start: 0;
       }
 
+      #toastText {
+        align-items: center;
+        display: flex;
+        max-width: 300px;
+        min-height: var(--cr-section-two-line-min-height);
+      }
     </style>
     <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
       <div id="explanationText" class="secondary">
@@ -315,3 +321,12 @@
         search-filter="[[searchTerm]]"
         cookies-exception-type="third-party">
     </site-list>
+    <cr-toast id="toast">
+      <div id="toastText">$i18n{privacySandboxCookiesDialog}</div>
+      <cr-button on-click="onPrivacySandboxClick_">
+        $i18n{privacySandboxCookiesDialogMore}
+      </cr-button>
+      <a id="privacySandboxLink" href="adPrivacy"
+          target="_blank" tabindex="-1" aria-disabled="true"
+          role="none"></a>
+    </cr-toast>

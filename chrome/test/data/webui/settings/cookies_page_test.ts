@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsCollapseRadioButtonElement, SettingsRadioGroupElement, SettingsCookiesPageElement} from 'chrome://settings/lazy_load.js';
 import {CookieControlsMode, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl,ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -182,29 +182,160 @@ suite('CookiesPageTest', function() {
         testMetricsBrowserProxy.reset();
       });
 
-  test('cookieBlockingSettingsUserActions', async function() {
-    // Disabling third-party cookies should update the cookie controls mode pref
-    // and emit the user action.
+  test('privacySandboxToast', async function() {
+    assertFalse(page.$.toast.open);
+
+    // Disabling third-party cookies should display the privacy sandbox toast.
     blockThirdParty().click();
     await eventToPromise('selected-changed', primarySettingGroup());
     await flushTasks();
     assertEquals(
         page.getPref('profile.cookie_controls_mode.value'),
         CookieControlsMode.BLOCK_THIRD_PARTY);
-    assertEquals(
-        'Settings.PrivacySandbox.Block3PCookies',
-        await testMetricsBrowserProxy.whenCalled('recordAction'));
-    testMetricsBrowserProxy.resetResolver('recordAction');
+    // TODO(crbug.com/40244046): Check histograms.
+    assertTrue(page.$.toast.open);
 
-    // Disabling privacy sandbox APIs should not affect cookie blocking, but it
-    // does affect the user action to not be emitted here.
+    // Clicking the toast link should be recorded in UMA and should dismiss
+    // the toast.
+    page.$.toast.querySelector('cr-button')!.click();
+    // TODO(crbug.com/40244046): Check histograms.
+    assertFalse(page.$.toast.open);
+
+    // Re-enabling 3P cookies for regular sessions should not display the toast.
+    blockThirdPartyIncognito().click();
+    await eventToPromise('selected-changed', primarySettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('profile.cookie_controls_mode.value'),
+        CookieControlsMode.INCOGNITO_ONLY);
+    assertFalse(page.$.toast.open);
+
+    // The toast should not be displayed if the user has any privacy sandbox
+    // APIs disabled.
     page.set('prefs.privacy_sandbox.m1.topics_enabled.value', false);
     blockThirdParty().click();
     await flushTasks();
     assertEquals(
         page.getPref('profile.cookie_controls_mode.value'),
         CookieControlsMode.BLOCK_THIRD_PARTY);
-    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertFalse(page.$.toast.open);
+
+    // Reset the state to show the toast.
+    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
+    page.set(
+        'prefs.profile.cookie_controls_mode.value',
+        CookieControlsMode.INCOGNITO_ONLY);
+    blockThirdParty().click();
+    await eventToPromise('selected-changed', primarySettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('profile.cookie_controls_mode.value'),
+        CookieControlsMode.BLOCK_THIRD_PARTY);
+    // TODO(crbug.com/40244046): Check histograms.
+    assertTrue(page.$.toast.open);
+
+    // Reselecting a non-3P cookie blocking setting should hide the toast.
+    allowThirdParty().click();
+    await eventToPromise('selected-changed', primarySettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('profile.cookie_controls_mode.value'),
+        CookieControlsMode.OFF);
+    assertFalse(page.$.toast.open);
+
+    // Navigating away from the page should hide the toast, even if navigated
+    // back to.
+    blockThirdParty().click();
+    await eventToPromise('selected-changed', primarySettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('profile.cookie_controls_mode.value'),
+        CookieControlsMode.BLOCK_THIRD_PARTY);
+    assertTrue(page.$.toast.open);
+    Router.getInstance().navigateTo(routes.BASIC);
+    Router.getInstance().navigateTo(routes.COOKIES);
+    await flushTasks();
+    assertFalse(page.$.toast.open);
+  });
+
+  test('privacySandboxToast_alwaysBlock3pcsIncognito', async function() {
+    loadTimeData.overrideValues({
+      isAlwaysBlock3pcsIncognitoEnabled: true,
+      is3pcdCookieSettingsRedesignEnabled: false,
+      isPrivacySandboxRestricted: false,
+    });
+    assertFalse(page.$.toast.open);
+
+    // Disabling third-party cookies should display the privacy sandbox toast.
+    page.set(
+        'prefs.generated.third_party_cookie_blocking_setting.value',
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+    blockAll3pc().click();
+    await eventToPromise(
+        'selected-changed', thirdPartyCookieBlockingSettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('generated.third_party_cookie_blocking_setting.value'),
+        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
+    assertTrue(page.$.toast.open);
+
+    // Re-enabling 3P cookies for regular sessions should not display the toast.
+    block3pcIncognito().click();
+    await eventToPromise(
+        'selected-changed', thirdPartyCookieBlockingSettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('generated.third_party_cookie_blocking_setting.value'),
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+    assertFalse(page.$.toast.open);
+
+    // The toast should not be displayed if the user has any privacy sandbox
+    // APIs disabled.
+    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', false);
+    blockAll3pc().click();
+    await flushTasks();
+    assertEquals(
+        page.getPref('generated.third_party_cookie_blocking_setting.value'),
+        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
+    assertFalse(page.$.toast.open);
+
+    // Reset the state to show the toast.
+    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
+    page.set(
+        'prefs.generated.third_party_cookie_blocking_setting.value',
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+    blockAll3pc().click();
+    await eventToPromise(
+        'selected-changed', thirdPartyCookieBlockingSettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('generated.third_party_cookie_blocking_setting.value'),
+        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
+    assertTrue(page.$.toast.open);
+
+    // Reselecting a non-3P cookie blocking setting should hide the toast.
+    block3pcIncognito().click();
+    await eventToPromise(
+        'selected-changed', thirdPartyCookieBlockingSettingGroup());
+    await flushTasks();
+    assertEquals(
+        page.getPref('generated.third_party_cookie_blocking_setting.value'),
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
+    assertFalse(page.$.toast.open);
+  });
+
+  test('privacySandboxToast_restrictedSandbox', async function() {
+    // No toast should be shown if the privacy sandbox is restricted
+    loadTimeData.overrideValues({isPrivacySandboxRestricted: true});
+    resetRouterForTesting();
+
+    page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
+    blockThirdParty().click();
+    assertEquals(
+        'Settings.PrivacySandbox.Block3PCookies',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+    assertFalse(page.$.toast.open);
   });
 
   test('disabledRWSToggle', async () => {
