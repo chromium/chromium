@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/glic_settings_util.h"
+#include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/widget/widget.h"
@@ -141,16 +143,26 @@ void GlicKeyedService::CreateTab(
     std::move(callback).Run(nullptr);
     return;
   }
-  // TODO(crbug.com/393391681): This is a placeholder implementation. Implement
-  // createTab() correctly. It should consider which window to use, and observe
-  // the `open_in_background` flag. It should return actual data using the
-  // callback.
   NavigateParams params(profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = open_in_background
                            ? WindowOpenDisposition::NEW_BACKGROUND_TAB
                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
-  std::move(callback).Run(glic::mojom::TabData::New());
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      Navigate(&params);
+  if (!navigation_handle.get()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  // Right after requesting the navigation, the WebContents will have almost no
+  // information to populate TabData, hence the overriding of the URL. Should we
+  // ever want to send more data back to the web client, we should wait until
+  // the navigation commits.
+  mojom::TabDataPtr tab_data =
+      CreateTabData(navigation_handle.get()->GetWebContents());
+  if (tab_data) {
+    tab_data->url = url;
+  }
+  std::move(callback).Run(std::move(tab_data));
 }
 
 void GlicKeyedService::OpenGlicSettingsPage() {

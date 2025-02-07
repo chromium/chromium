@@ -52,6 +52,7 @@ interface PageElementTypes {
   desktopScreenshot: HTMLButtonElement;
   desktopScreenshotImg: HTMLImageElement;
   desktopScreenshotErrorReason: HTMLSpanElement;
+  createTabInBackground: HTMLInputElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -223,8 +224,9 @@ $.changeProfileBn.addEventListener('click', () => {
 // Add listeners to demo elements:
 $.newtabbn.addEventListener('click', async () => {
   const url = $.URL.value;
-  await getBrowser()!.createTab!(url, {});
-  logMessage('createTab done');
+  const openInBackground = $.createTabInBackground.checked;
+  const tabData = await getBrowser()!.createTab!(url, {openInBackground});
+  logMessage(`createTab done: ${JSON.stringify(tabData)}`);
 });
 
 $.reloadpage.addEventListener('click', () => {

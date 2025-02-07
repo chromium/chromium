@@ -15,12 +15,14 @@
 //   functionality and data, as needed.
 // - Functions are documented with their known behavior. Exceptions and promise
 //   failures should will be documented only if they are expected.
-// - The browser provided tab and window IDs are not stable between Chrome
-//   restarts, and should not be saved to persisted storage for later reuse.
+// - The browser provided tab and window IDs are based on the browser's
+//   SessionID values, which are not stable between Chrome restarts, and should
+//   not be saved to persisted storage for later reuse. See:
+//   https://crsrc.org/c/components/sessions/core/session_id.h
 // - URLs can be arbitrarily long but any URL sent or received through this API
 //   will be silently made empty if exceeding the 2 MiB length limit imposed by
 //   Mojo's URL implementation. See:
-//   https://source.chromium.org/chromium/chromium/src/+/main:url/mojom/url.mojom
+//   https://crsrc.org/c/url/mojom/url.mojom
 
 /** Allows the Glic web client to register with the host WebUI. */
 export declare interface GlicHostRegistry {
