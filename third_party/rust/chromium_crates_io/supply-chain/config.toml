@@ -392,7 +392,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rustversion:1.0.19"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."ryu:1.0.18"]
+[policy."ryu:1.0.19"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."semver:1.0.25"]
@@ -719,7 +719,7 @@ https://crbug.com/366411886
 """
 
 [[exemptions.ryu]]
-version = "1.0.18"
+version = "1.0.19"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024.
@@ -729,6 +729,7 @@ lack of a fully-audited baseline nothing was recorded in audits.toml
 
 Exemption updated to 1.0.17 in Feb 2024.
 Exemption updated to 1.0.18 in May 2024.
+Exemption updated to 1.0.19 in Feb 2025.
 """
 
 [[exemptions.smallvec]]

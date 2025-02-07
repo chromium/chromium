@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.36"
 name = "ryu"
-version = "1.0.18"
+version = "1.0.19"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = [
@@ -21,6 +21,7 @@ exclude = [
     "performance.png",
     "chart/**",
 ]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
@@ -41,6 +42,9 @@ repository = "https://github.com/dtolnay/ryu"
 rustdoc-args = ["--generate-link-to-definition"]
 targets = ["x86_64-unknown-linux-gnu"]
 
+[features]
+small = []
+
 [lib]
 name = "ryu"
 path = "src/lib.rs"
@@ -51,36 +55,36 @@ name = "upstream_benchmark"
 path = "examples/upstream_benchmark.rs"
 
 [[test]]
-name = "s2f_test"
-path = "tests/s2f_test.rs"
-
-[[test]]
 name = "common_test"
 path = "tests/common_test.rs"
 
 [[test]]
-name = "s2d_test"
-path = "tests/s2d_test.rs"
-
-[[test]]
-name = "d2s_test"
-path = "tests/d2s_test.rs"
-
-[[test]]
-name = "f2s_test"
-path = "tests/f2s_test.rs"
+name = "d2s_intrinsics_test"
+path = "tests/d2s_intrinsics_test.rs"
 
 [[test]]
 name = "d2s_table_test"
 path = "tests/d2s_table_test.rs"
 
 [[test]]
+name = "d2s_test"
+path = "tests/d2s_test.rs"
+
+[[test]]
 name = "exhaustive"
 path = "tests/exhaustive.rs"
 
 [[test]]
-name = "d2s_intrinsics_test"
-path = "tests/d2s_intrinsics_test.rs"
+name = "f2s_test"
+path = "tests/f2s_test.rs"
+
+[[test]]
+name = "s2d_test"
+path = "tests/s2d_test.rs"
+
+[[test]]
+name = "s2f_test"
+path = "tests/s2f_test.rs"
 
 [[bench]]
 name = "bench"
@@ -94,10 +98,7 @@ optional = true
 version = "1.8"
 
 [dev-dependencies.rand]
-version = "0.8"
+version = "0.9"
 
 [dev-dependencies.rand_xorshift]
-version = "0.3"
-
-[features]
-small = []
+version = "0.4"

@@ -67,7 +67,7 @@ fn test_random() {
 }
 
 #[test]
-#[cfg_attr(miri, ignore)]
+#[cfg_attr(miri, ignore = "too slow for miri")]
 fn test_non_finite() {
     for i in 0u64..1 << 23 {
         let f = f64::from_bits((((1 << 11) - 1) << 52) + (i << 29));

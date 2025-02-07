@@ -1,6 +1,6 @@
 [package]
 name = "ryu"
-version = "1.0.18"
+version = "1.0.19"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["value-formatting", "no-std", "no-std::no-alloc"]
 description = "Fast floating point to string conversion"
@@ -24,8 +24,8 @@ no-panic = { version = "0.1", optional = true }
 
 [dev-dependencies]
 num_cpus = "1.8"
-rand = "0.8"
-rand_xorshift = "0.3"
+rand = "0.9"
+rand_xorshift = "0.4"
 
 [lib]
 doc-scrape-examples = false

@@ -38,6 +38,12 @@ jobs:
       - run: cargo test --features small
       - run: cargo build --tests --features no-panic --release
         if: matrix.rust == 'nightly'
+      - uses: actions/upload-artifact@v4
+        if: matrix.rust == 'nightly' && always()
+        with:
+          name: Cargo.lock
+          path: Cargo.lock
+        continue-on-error: true
 
   msrv:
     name: Rust 1.36.0
