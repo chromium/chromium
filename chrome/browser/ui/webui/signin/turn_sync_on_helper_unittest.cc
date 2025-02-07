@@ -1290,9 +1290,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountNewProfile) {
   CheckDelegateCalls();
   CheckSigninMetrics(
       {.sign_in_access_point =
-           switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-               ? signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience
-               : kAccessPoint,
+           signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience,
        .sign_in_recorded = true,
        .sync_opt_in_started = true});
 }
@@ -1372,9 +1370,7 @@ TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
   CheckDelegateCalls();
   CheckSigninMetrics(
       {.sign_in_access_point =
-           switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-               ? signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience
-               : kAccessPoint,
+           signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience,
        .sign_in_recorded = true,
        .sync_opt_in_started = true});
 }
@@ -1466,16 +1462,11 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
   CheckDelegateCalls();
   CheckSigninMetrics(
       {.sign_in_access_point =
-           switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-               ? signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience
-               : kAccessPoint,
+           signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience,
        .sign_in_recorded = true,
        .sync_opt_in_started = true,
-       .profile_signout =
-           switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-               ? std::optional<signin_metrics::ProfileSignout>(
-                     signin_metrics::ProfileSignout::kMovePrimaryAccount)
-               : std::nullopt});
+       .profile_signout = std::optional<signin_metrics::ProfileSignout>(
+           signin_metrics::ProfileSignout::kMovePrimaryAccount)});
 }
 
 // Test that the unconsented primary account is removed is not forced to have a

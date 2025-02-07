@@ -678,10 +678,6 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
           IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE,
           l10n_util::GetStringUTF16(IDS_PASSWORDS_WEB_LINK)));
 
-  html_source->AddBoolean(
-      "unoDesktopEnabled",
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
-
   html_source->AddBoolean("isImprovedSettingsUIOnDesktopEnabled",
                           switches::IsImprovedSettingsUIOnDesktopEnabled());
 
@@ -3533,9 +3529,7 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString(
       "siteDataPageClearOnExitRadioSubLabel",
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-          ? IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_WITH_EXCEPTION_RADIO_SUBLABEL
-          : IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_SUBLABEL);
+      IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_WITH_EXCEPTION_RADIO_SUBLABEL);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -13935,9 +13935,6 @@ This can include information about installed software, files, your browser, and 
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL" desc="Label of the cancel button in the web signin interception bubble (profile switch variant)">
           Cancel
         </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL" desc="Label of the profile switch button in the web signin interception bubble">
-          Ok
-        </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_DESC_SUPERVISED" desc="This string is the body of a dialog about signing in to Chrome with the user's Google Account. It appears when a kid tries to sign in to a Google service (like Gmail) with their account while using someone else’s Chrome profile. The message explains the overarching user benefit of signing in: Kids of a certain age are motivated to get their parents’ help staying safer online, so the tone should be motivating. The body text is after the 'Sign in to Chrome in a new profile?' string. We want users to understand why signing in to their own profile is beneficial, and click 'Continue as name' to sign in to their Google Account.">
           To stay safer online with your parent’s choices, sign in to your own profile as <ph name="USER_EMAIL">$1<ex>john@gmail.com</ex></ph>
         </message>
@@ -13946,9 +13943,6 @@ This can include information about installed software, files, your browser, and 
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT" desc="Label of the Accept button of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account. It also uses the given name of the user.">
           Continue as <ph name="NAME">$1<ex>Bob</ex></ph>
-        </message>
-        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC" desc="Body of the web signin interception bubble when the new account is personal and the existing account is managed">
-          This will separate your browsing from <ph name="EXISTING_USER">$1<ex>bob@example.com</ex></ph>
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_BY_TOKEN" desc="Body of the web signin interception bubble when the new account is managed via a token">
           You just signed in a managed account, creating a new managed profile will allow you to access some resources linked to that account.

@@ -147,13 +147,6 @@ export class SettingsClearBrowsingDataDialogElement extends
         ],
       },
 
-      unoDesktopEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('unoDesktopEnabled');
-        },
-      },
-
       clearingInProgress_: {
         type: Boolean,
         value: false,
@@ -271,7 +264,6 @@ export class SettingsClearBrowsingDataDialogElement extends
   syncStatus: SyncStatus|undefined;
   private counters_: {[k: string]: string};
   private clearFromOptions_: DropdownMenuOptionList;
-  private unoDesktopEnabled_: boolean;
   private clearingInProgress_: boolean;
   private clearingDataAlertString_: string;
   private clearButtonDisabled_: boolean;
@@ -433,7 +425,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     // </if>
 
     // The exception is not shown for SIGNED_IN_PAUSED.
-    if (this.unoDesktopEnabled_ && signedInState === SignedInState.SIGNED_IN) {
+    if (signedInState === SignedInState.SIGNED_IN) {
       return clearCookiesSummarySignedIn;
     }
 
@@ -648,16 +640,14 @@ export class SettingsClearBrowsingDataDialogElement extends
         this.syncStatus.signedInState === SignedInState.SYNCING) {
       return true;
     }
-    return this.unoDesktopEnabled_ && this.isClearPrimaryAccountAllowed_ &&
-        this.isSignedIn_;
+    return this.isClearPrimaryAccountAllowed_ && this.isSignedIn_;
   }
 
   /**
    * @return Whether the signed info description should be shown in the footer.
    */
   private showSigninInfo_(): boolean {
-    return this.unoDesktopEnabled_ && this.isSignedIn_ &&
-        this.isClearPrimaryAccountAllowed_ &&
+    return this.isSignedIn_ && this.isClearPrimaryAccountAllowed_ &&
         (!this.syncStatus ||
          this.syncStatus.signedInState !== SignedInState.SYNCING);
   }

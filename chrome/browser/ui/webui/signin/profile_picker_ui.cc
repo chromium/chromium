@@ -157,9 +157,7 @@ void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
 
   html_source->AddLocalizedString(
       "profileTypeChoiceSubtitle",
-      base::FeatureList::IsEnabled(switches::kExplicitBrowserSigninUIOnDesktop)
-          ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO
-          : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE);
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO);
 
   html_source->AddString("minimumPickerSize",
                          base::StringPrintf("%ipx", kMinimumPickerSizePx));

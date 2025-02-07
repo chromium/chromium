@@ -29,9 +29,7 @@ class SyncSettingsInteractiveTest
  public:
   SyncSettingsInteractiveTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {switches::kImprovedSettingsUIOnDesktop,
-         switches::kExplicitBrowserSigninUIOnDesktop},
+        /*enabled_features=*/{switches::kImprovedSettingsUIOnDesktop},
         /*disabled_features=*/{});
   }
 
