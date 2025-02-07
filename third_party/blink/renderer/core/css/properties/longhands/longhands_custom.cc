@@ -5331,6 +5331,23 @@ const CSSValue* RowRuleBreak::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.RowRuleBreak());
 }
 
+const CSSValue* ColumnRuleOutset::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeLengthOrPercent(
+      stream, context, CSSPrimitiveValue::ValueRange::kAll);
+}
+
+const CSSValue* ColumnRuleOutset::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
+      style.ColumnRuleOutset(), style);
+}
+
 const blink::Color InternalVisitedColumnRuleColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style,
