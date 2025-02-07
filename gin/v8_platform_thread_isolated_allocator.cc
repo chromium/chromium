@@ -29,6 +29,11 @@ void ThreadIsolatedAllocator::Initialize(int pkey) {
   pkey_ = pkey;
   partition_alloc::PartitionOptions opts;
   opts.thread_isolation = partition_alloc::ThreadIsolationOption(pkey_);
+
+  // TODO(crbug.com/40274683): This will disappear when we reduce
+  // freelist impl selection to a compile-time seam.
+  opts.use_pool_offset_freelists = partition_alloc::PartitionOptions::kEnabled;
+
   allocator_.init(opts);
 }
 
