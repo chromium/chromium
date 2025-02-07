@@ -257,8 +257,26 @@ class ExternalVideoEncoder::VEAClientImpl final
       const int index = free_input_buffer_index_.back();
       auto& mapped_region = input_buffers_[index];
       DCHECK(mapped_region.IsValid());
+
+      // NOTE: the returned frame_coded_size_ from the VEA does not take into
+      // account where in the original frame the visible rect was located. Which
+      // is not an error.
+      //
+      // NOTE: I420CopyWithPadding requires that (1) the destination frame has a
+      // visible rect rooted at (0, 0) with the same size as the source rect,
+      // and (2) the coded_size of the destination frame is larger or equal to
+      // the visible size.
+      //
+      // TODO(issuetracker.google.com/394800925): while this fix is helpful,
+      // it has also exposed a larger problem where there is bizarre cropping
+      // of desktop capture on macOS. Figure out why we even ever have a visible
+      // rect not rooted at zero.
+      CHECK_GE(frame_coded_size_.height(),
+               video_frame->visible_rect().height());
+      CHECK_GE(frame_coded_size_.width(), video_frame->visible_rect().width());
       frame = VideoFrame::WrapExternalData(
-          video_frame->format(), frame_coded_size_, video_frame->visible_rect(),
+          video_frame->format(), frame_coded_size_,
+          gfx::Rect(video_frame->visible_rect().size()),
           video_frame->visible_rect().size(),
           static_cast<uint8_t*>(mapped_region.mapping.memory()),
           mapped_region.mapping.size(), video_frame->timestamp());
