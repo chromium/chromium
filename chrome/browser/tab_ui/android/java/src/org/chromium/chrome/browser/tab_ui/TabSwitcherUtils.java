@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -24,9 +26,11 @@ public class TabSwitcherUtils {
      * @param onNavigationFinished Runnable to run after navigation to TabSwitcher is finished.
      */
     public static void navigateToTabSwitcher(
-            LayoutManager layoutManager, boolean animate, Runnable onNavigationFinished) {
+            LayoutManager layoutManager, boolean animate, @Nullable Runnable onNavigationFinished) {
         if (layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-            onNavigationFinished.run();
+            if (onNavigationFinished != null) {
+                onNavigationFinished.run();
+            }
             return;
         }
 
@@ -36,7 +40,9 @@ public class TabSwitcherUtils {
                     public void onFinishedShowing(int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER) {
                             layoutManager.removeObserver(this);
-                            onNavigationFinished.run();
+                            if (onNavigationFinished != null) {
+                                onNavigationFinished.run();
+                            }
                         }
                     }
                 });

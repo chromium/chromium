@@ -3882,8 +3882,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
             DataSharingTabManager dataSharingTabManager =
                     mRootUiCoordinator.getDataSharingTabManager();
-            Runnable showJoinFlowRunnable = () -> dataSharingTabManager.initiateJoinFlow(this, url);
-            doRunnableOnTabSwitcher(showJoinFlowRunnable);
+            dataSharingTabManager.initiateJoinFlow(
+                    this, url, () -> doRunnableOnTabSwitcher(/* runnable= */ null));
         } else if (IntentUtils.safeHasExtra(
                 intent, DataSharingNotificationManager.TAB_GROUP_SYNC_ID_EXTRA)) {
             String syncId =

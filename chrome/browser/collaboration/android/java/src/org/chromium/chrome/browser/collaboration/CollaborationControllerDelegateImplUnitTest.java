@@ -107,7 +107,9 @@ public class CollaborationControllerDelegateImplUnitTest {
                         type,
                         mDataSharingTabManager,
                         mSigninAndHistorySyncActivityLauncher,
-                        mLoadingFullscreenCoordinator);
+                        mLoadingFullscreenCoordinator,
+                        /* switchToTabSwitcherRunnable= */ null);
+
         if (type == FlowType.JOIN) {
             verify(mLoadingFullscreenCoordinator).startLoading(any());
         }

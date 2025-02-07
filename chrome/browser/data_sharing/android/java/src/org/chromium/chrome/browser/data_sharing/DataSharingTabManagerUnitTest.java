@@ -201,7 +201,7 @@ public class DataSharingTabManagerUnitTest {
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
 
         CollaborationControllerDelegateFactory collaborationControllerDelegateFactory =
-                (type) -> {
+                (type, runnable) -> {
                     return mCollaborationControllerDelegate;
                 };
 

@@ -13,8 +13,12 @@ import org.chromium.components.collaboration.FlowType;
 @FunctionalInterface
 public interface CollaborationControllerDelegateFactory {
     /**
-     * @return a {@link CollaborationControllerDelegate}.
+     * Returns a {@link CollaborationControllerDelegate}.
+     *
+     * @param type The flow type of the new flow.
+     * @param switchToTabSwitcherRunnable The runnable to switch to tab switcher view.
      */
     @NonNull
-    CollaborationControllerDelegate create(@FlowType int type);
+    CollaborationControllerDelegate create(
+            @FlowType int type, Runnable switchToTabSwitcherRunnable);
 }
