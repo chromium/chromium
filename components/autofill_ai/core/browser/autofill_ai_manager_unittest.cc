@@ -944,36 +944,6 @@ TEST_F(AutofillAiManagerTest,
                              form.fields()[1].IsFocusable())))));
 }
 
-class AutofillAiManagerUserFeedbackTest
-    : public AutofillAiManagerTest,
-      public testing::WithParamInterface<AutofillAiManager::UserFeedback> {};
-
-// Given a non-null feedback id, tests that an attempt to open the feedback page
-// is only made if `UserFeedback::kThumbsDown` was received.
-TEST_P(AutofillAiManagerUserFeedbackTest,
-       TryToOpenFeedbackPageNeverCalledIfUserFeedbackThumbsDown) {
-  using UserFeedback = AutofillAiManager::UserFeedback;
-  test_api(manager()).SetFormFillingPredictionsModelExecutionId(
-      "randomstringrjb");
-  EXPECT_CALL(client(), TryToOpenFeedbackPage)
-      .Times(GetParam() == UserFeedback::kThumbsDown);
-  manager().UserFeedbackReceived(GetParam());
-}
-
-// Tests that the feedback page will never be opened if no feedback id is set.
-TEST_P(AutofillAiManagerUserFeedbackTest,
-       TryToOpenFeedbackPageNeverCalledIfNoFeedbackIdPresent) {
-  test_api(manager()).SetFormFillingPredictionsModelExecutionId(std::nullopt);
-  EXPECT_CALL(client(), TryToOpenFeedbackPage).Times(0);
-  manager().UserFeedbackReceived(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    AutofillAiManagerUserFeedbackTest,
-    testing::Values(AutofillAiManager::UserFeedback::kThumbsUp,
-                    AutofillAiManager::UserFeedback::kThumbsDown));
-
 class AutofillAiManagerImportFormTest
     : public AutofillAiManagerTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {

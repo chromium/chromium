@@ -59,9 +59,6 @@ class AutofillAiDelegate {
   // experience.
   virtual bool IsUserEligible() const = 0;
 
-  // Called when a feedback about the feature is given by the user.
-  virtual void UserFeedbackReceived(UserFeedback feedback) = 0;
-
   // Called when users click the "learn more" link.
   // TODO(crbug.com/365512352): Remove if not needed.
   virtual void UserClickedLearnMore() = 0;

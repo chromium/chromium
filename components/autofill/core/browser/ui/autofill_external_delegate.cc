@@ -943,12 +943,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
           absl::get<AutofillAiSuggestionButtonAction>(button_action);
       switch (action) {
         case AutofillAiSuggestionButtonAction::kThumbsUpClicked:
-          delegate->UserFeedbackReceived(
-              AutofillAiDelegate::UserFeedback::kThumbsUp);
-          break;
         case AutofillAiSuggestionButtonAction::kThumbsDownClicked:
-          delegate->UserFeedbackReceived(
-              AutofillAiDelegate::UserFeedback::kThumbsDown);
           break;
         case AutofillAiSuggestionButtonAction::kLearnMoreClicked:
           delegate->UserClickedLearnMore();

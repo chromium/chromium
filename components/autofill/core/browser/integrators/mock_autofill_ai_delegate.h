@@ -33,7 +33,6 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
                bool is_manual_fallback,
                GetSuggestionsCallback callback),
               (override));
-  MOCK_METHOD(void, UserFeedbackReceived, (UserFeedback feedback), (override));
   MOCK_METHOD(bool,
               IsEligibleForAutofillAi,
               (const FormStructure& form, const AutofillField& field),

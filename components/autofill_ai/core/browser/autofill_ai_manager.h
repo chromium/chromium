@@ -77,7 +77,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       const autofill::FormStructure& form,
       const autofill::AutofillField& field) const override;
   bool IsUserEligible() const override;
-  void UserFeedbackReceived(UserFeedback feedback) override;
   void UserClickedLearnMore() override;
   void OnClickedTriggerSuggestion(
       const autofill::FormData& form,

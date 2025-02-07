@@ -436,14 +436,6 @@ void AutofillAiManager::UpdateSuggestionsAfterReceivedPredictions(
   }
 }
 
-void AutofillAiManager::UserFeedbackReceived(UserFeedback feedback) {
-  if (form_filling_predictions_model_execution_id_ &&
-      feedback == UserFeedback::kThumbsDown) {
-    client_->TryToOpenFeedbackPage(
-        *form_filling_predictions_model_execution_id_);
-  }
-}
-
 void AutofillAiManager::SaveAutofillAiDataUserFeedbackReceived(
     const std::string& model_execution_id,
     UserFeedback feedback) {
