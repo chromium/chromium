@@ -70,6 +70,7 @@
 <translation id="2459183986985456602">เปิดแท็บล่าสุดของฉันใน Chromium</translation>
 <translation id="2476409803017965813">คุณอัปเดตสิ่งที่เลือกไว้ได้ทุกเมื่อในการตั้งค่า Chromium</translation>
 <translation id="2478931088402984578">เลือก <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้นเพื่อแชร์และเปิดลิงก์ได้อย่างง่ายดาย</translation>
 <translation id="2512597191798760956">กดไอคอน Chromium ค้างไว้แล้วคลิก "แก้ไขหน้าจอหลัก"</translation>
 <translation id="2517624234762908348">ซิงค์ข้อมูล Chromium</translation>
 <translation id="2592940277904433508">ใช้ Chromium ต่อ</translation>
@@ -167,6 +168,7 @@
 <translation id="5088872414922783602">เข้าถึง Chromium ได้เร็วขึ้นจากแถบแอปในหน้าจอหลัก</translation>
 <translation id="5124429847818367226">ตอนนี้คุณจะใช้ Chromium ทุกครั้งที่ท่องเว็บหรือแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ ได้</translation>
 <translation id="5131565040785979529">องค์กร <ph name="DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chromium</translation>
+<translation id="5134464247000681876">เปิดลิงก์จาก Gmail, Maps, YouTube และแอปอื่นๆ ใน Chromium</translation>
 <translation id="5224391634244552924">ไม่มีรหัสผ่านที่บันทึกไว้ Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="5259423875997548710">ค้นหาภาพใน Chromium</translation>
 <translation id="5308226104666789935">Chromium ตรวจหาอัปเดตไม่ได้</translation>
@@ -260,6 +262,7 @@
 <translation id="7674213385180944843">เปิดการตั้งค่า &gt; ความเป็นส่วนตัว &gt; กล้อง &gt; Chromium แล้วเปิดกล้องถ่ายรูป</translation>
 <translation id="7733418656985455268">เคล็ดลับสำหรับ Chromium: ค้นหาด้วย Lens</translation>
 <translation id="7747820849741499258">ค้นหาใน Chromium</translation>
+<translation id="7753923083404296545">เปิดในโหมดไม่ระบุตัวตนของ Chromium</translation>
 <translation id="7762622637388462191">ล็อกแท็บที่ไม่ระบุตัวตนเมื่อคุณออกจาก Chromium หรือเปลี่ยนไปใช้แอปอื่น</translation>
 <translation id="7763454117143368771">ใช้ Chromium เป็นเบราว์เซอร์เริ่มต้นเพื่อป้องกันเว็บไซต์อันตรายและรักษารหัสผ่านให้ปลอดภัย</translation>
 <translation id="7784950022329154821">ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chromium</translation>

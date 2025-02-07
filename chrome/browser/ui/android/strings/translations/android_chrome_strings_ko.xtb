@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1009406586654360474">Google 비밀번호 관리자를 열고 설정으로 이동합니다. '가져오기'를 선택하고 내보낸 비밀번호가 포함된 CSV 파일을 추가합니다.</translation>
-<translation id="1010225406377140704">발신자에게 새 링크를 요청하세요.</translation>
 <translation id="1011749477052068769">여기로 이동</translation>
 <translation id="1014147525163127655">이 기기에 <ph name="ORIGIN" />의 패스키가 없습니다</translation>
 <translation id="1016498331642356377">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
@@ -1723,7 +1722,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8683039184091909753">이미지</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
-<translation id="8703372953981978786">링크가 작동하지 않음</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8723453889042591629">이 페이지를 빠르게 번역합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
 <translation id="8725066075913043281">다시 시도하기</translation>

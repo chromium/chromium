@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Pas maintenant</translation>
 <translation id="100957008357583611">Utiliser la localisation?</translation>
 <translation id="1010200102790553230">Charger la page plus tard</translation>
+<translation id="1010225406377140704">Communiquez avec l'expéditeur pour demander un nouveau lien.</translation>
 <translation id="1011206368273183593">Préparation des fichiers en cours…</translation>
 <translation id="1014509239502131234">Annulation du résultat en cours…</translation>
 <translation id="1015730422737071372">Fournir des détails supplémentaires</translation>
@@ -1164,6 +1165,7 @@
 <translation id="3076865167425975822">Systèmes d'exploitation</translation>
 <translation id="3080254622891793721">Images</translation>
 <translation id="3082007635241601060">Laissez Google utiliser vos paniers pour trouver des rabais personnalisés le cas échéant</translation>
+<translation id="3086269988715347183">Vous n'avez pas approuvé <ph name="BLOCKED_URL" /> auparavant</translation>
 <translation id="3086579638707268289">Votre activité sur le Web est actuellement surveillée</translation>
 <translation id="3087734570205094154">Bas</translation>
 <translation id="3090667236485488075">Verre</translation>
@@ -1239,6 +1241,7 @@
 <translation id="3203025201812691413">L'URL ne peut pas être vide</translation>
 <translation id="320323717674993345">Annuler le paiement</translation>
 <translation id="3203366800380907218">Du Web</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> pourrait comporter un contenu pour adultes</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208701679386778924">Veuillez envoyer un rapport afin que nous puissions améliorer d'autres mises à jour de ChromeOS.</translation>
 <translation id="3209034400446768650">Cette page peut exiger des frais</translation>
@@ -2973,6 +2976,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6254436959401408446">Mémoire insuffisante pour ouvrir cette page</translation>
 <translation id="625463612687472648">Arrêter l'autorisation</translation>
 <translation id="6259156558325130047">&amp;Rétablir la réorganisation</translation>
+<translation id="6259282549512536479">Vous avez précédemment bloqué <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872">Favoris de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6264485186158353794">Retour à la sécurité</translation>
@@ -3105,6 +3109,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6465306955648956876">Gérer les mots de passe...</translation>
 <translation id="646789491285795429">Vous suivez déjà ce produit</translation>
 <translation id="6468485451923838994">Polices</translation>
+<translation id="6469702164109431067">Mots de passe et clés d'accès</translation>
 <translation id="647261751007945333">Règles relatives aux appareils</translation>
 <translation id="6472874020827012601">Tissu (mat)</translation>
 <translation id="647330291963761005">Installation des mises à jour en cours…</translation>
@@ -4348,6 +4353,7 @@ Détails supplémentaires :
 <translation id="8699041776323235191">Appareil HID</translation>
 <translation id="8699985386408839112">Enveloppe Kaku nᵒ 1</translation>
 <translation id="8702965365666568344">Ruban de montage</translation>
+<translation id="8703372953981978786">Ce lien ne fonctionne pas</translation>
 <translation id="8703575177326907206">Votre connexion à <ph name="DOMAIN" /> n'est pas chiffrée.</translation>
 <translation id="8705331520020532516">Numéro de série</translation>
 <translation id="8706806585855470492">Vous pourrez partager et rejoindre des groupes d'onglets ainsi que collaborer dans ces derniers</translation>

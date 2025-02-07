@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="1009406586654360474">Åpne Google Passordlagring, og gå til innstillingene. Velg «Importer», og legg til CSV-filen som inneholder de eksporterte passordene dine.</translation>
-<translation id="1010225406377140704">Kontakt avsenderen for å be om en ny link</translation>
 <translation id="1011749477052068769">Flytt hit</translation>
 <translation id="1014147525163127655">Det finnes ingen passnøkler for <ph name="ORIGIN" /> på denne enheten</translation>
 <translation id="1016498331642356377">Søk raskt med stemmen din. Trykk og hold for å redigere denne snarveien.</translation>
@@ -1723,7 +1722,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8683039184091909753">bilde</translation>
 <translation id="869891660844655955">Utløpsdato</translation>
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
-<translation id="8703372953981978786">Denne linken fungerer ikke</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8723453889042591629">Oversett denne siden raskt. Trykk og hold for å redigere denne snarveien.</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>

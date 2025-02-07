@@ -70,6 +70,7 @@
 <translation id="2459183986985456602">Перейти на последнюю вкладку в Chromium.</translation>
 <translation id="2476409803017965813">Изменить список выбранных уведомлений можно в любой момент в настройках Chromium.</translation>
 <translation id="2478931088402984578">Выберите <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2485774047568879945">Сделайте Chromium браузером по умолчанию, чтобы легко отправлять и открывать ссылки.</translation>
 <translation id="2512597191798760956">Нажмите на значок Chromium и удерживайте, затем выберите "Изменить экран "Домой"</translation>
 <translation id="2517624234762908348">Синхронизировать данные Chromium</translation>
 <translation id="2592940277904433508">Продолжить работу в Chromium</translation>
@@ -167,6 +168,7 @@
 <translation id="5088872414922783602">Добавьте Chromium на панель Dock для быстрого доступа.</translation>
 <translation id="5124429847818367226">Теперь можно сделать так, что при переходе по ссылкам в сообщениях, документах и других приложениях будет открываться браузер Chromium.</translation>
 <translation id="5131565040785979529">Аккаунтом, в который вы вошли, и использованием Chromium управляет ваша организация (<ph name="DOMAIN" />).</translation>
+<translation id="5134464247000681876">Открывайте ссылки из Gmail, Карт, YouTube и других приложений в Chromium.</translation>
 <translation id="5224391634244552924">Сохраненных паролей нет. Чтобы браузер Chromium мог проверять пароли, сохраните их.</translation>
 <translation id="5259423875997548710">Искать изображения в Chromium.</translation>
 <translation id="5308226104666789935">Браузеру Chromium не удалось проверить наличие обновлений</translation>
@@ -260,6 +262,7 @@
 <translation id="7674213385180944843">Откройте "Настройки &gt; Конфиденциальность &gt; Камера &gt; Chromium" и включите камеру.</translation>
 <translation id="7733418656985455268">Совет по работе с Chromium: используйте Объектив для поиска информации</translation>
 <translation id="7747820849741499258">Искать в Chromium</translation>
+<translation id="7753923083404296545">Открыто в режиме инкогнито в Chromium.</translation>
 <translation id="7762622637388462191">Блокируйте доступ к вкладкам инкогнито, когда вы выходите из Chromium или переключаетесь на другое приложение.</translation>
 <translation id="7763454117143368771">Сделайте Chromium браузером по умолчанию, чтобы защитить себя от опасных сайтов и обеспечить безопасность паролей.</translation>
 <translation id="7784950022329154821">Блокировать доступ к вкладкам инкогнито при закрытии Chromium</translation>

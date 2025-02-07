@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1009406586654360474">Agorwch Reolwr Cyfrineiriau Googler ac ewch i'r gosodiadau. Dewiswch “Mewnforio” ac ychwanegwch y ffeil CSV sy'n cynnwys eich cyfrineiriau wedi'u hallforio.</translation>
-<translation id="1010225406377140704">Cysylltwch â'r anfonwr i ofyn am ddolen newydd</translation>
 <translation id="1011749477052068769">Symud yma</translation>
 <translation id="1014147525163127655">Does dim codau pas ar gyfer <ph name="ORIGIN" /> ar y ddyfais hon</translation>
 <translation id="1016498331642356377">Chwilio yn gyflym â'ch llais. I olygu'r llwybr byr hwn, cyffwrddwch a daliwch.</translation>
@@ -1723,7 +1722,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8683039184091909753">llun</translation>
 <translation id="869891660844655955">Dyddiad darfod</translation>
 <translation id="8699120352855309748">Peidiwch â chynnig cyfieithu'r ieithoedd hyn</translation>
-<translation id="8703372953981978786">Nid yw'r ddolen hon yn gweithio</translation>
 <translation id="8712637175834984815">Iawn</translation>
 <translation id="8723453889042591629">Cyfieithwch y dudalen hon yn gyflym. I olygu'r llwybr byr hwn, cyffwrddwch a daliwch.</translation>
 <translation id="8725066075913043281">Rhoi cynnig arall arni</translation>

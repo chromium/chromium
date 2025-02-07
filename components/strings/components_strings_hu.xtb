@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Ne most</translation>
 <translation id="100957008357583611">Engedélyezi a helyadatok használatát?</translation>
 <translation id="1010200102790553230">Oldal betöltése később</translation>
+<translation id="1010225406377140704">Új link kéréséhez felveheti a kapcsolatot a küldővel</translation>
 <translation id="1011206368273183593">Fájlok előkészítése…</translation>
 <translation id="1014509239502131234">Folyamatban van az eredmény generálásának visszavonása</translation>
 <translation id="1015730422737071372">További részletek megadása</translation>
@@ -3105,6 +3106,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6465306955648956876">Jelszavak kezelése…</translation>
 <translation id="646789491285795429">Ön már nyomon követi ezt a terméket</translation>
 <translation id="6468485451923838994">Betűtípusok</translation>
+<translation id="6469702164109431067">Jelszavak és azonosítókulcsok</translation>
 <translation id="647261751007945333">Eszközházirendek</translation>
 <translation id="6472874020827012601">Szövet (matt)</translation>
 <translation id="647330291963761005">Frissítések telepítése</translation>
@@ -4351,6 +4353,7 @@ További részletek:
 <translation id="8699041776323235191">HID-eszköz</translation>
 <translation id="8699985386408839112">Kaku 1 boríték</translation>
 <translation id="8702965365666568344">Ragasztószalag</translation>
+<translation id="8703372953981978786">Ez a link nem működik</translation>
 <translation id="8703575177326907206">A kapcsolat (<ph name="DOMAIN" />) nem titkosított.</translation>
 <translation id="8705331520020532516">Sorozatszám</translation>
 <translation id="8706806585855470492">Megoszthat lapcsoportokat, csatlakozhat hozzájuk, és együtt dolgozhat másokkal bennük</translation>

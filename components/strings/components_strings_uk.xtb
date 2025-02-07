@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Не зараз</translation>
 <translation id="100957008357583611">Використовувати геодані?</translation>
 <translation id="1010200102790553230">Завантажити сторінку пізніше</translation>
+<translation id="1010225406377140704">Зв’яжіться з відправником і попросіть надіслати нове посилання</translation>
 <translation id="1011206368273183593">Підготовка файлів</translation>
 <translation id="1014509239502131234">Відміна результату</translation>
 <translation id="1015730422737071372">Надати додаткову інформацію</translation>
@@ -1164,6 +1165,7 @@
 <translation id="3076865167425975822">Операційні системи</translation>
 <translation id="3080254622891793721">Зображення</translation>
 <translation id="3082007635241601060">Надайте Google доступ до своїх кошиків, щоб наші системи могли знаходити для вас персоналізовані знижки</translation>
+<translation id="3086269988715347183">Ви ще не схвалювали сайт <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Ваші дії в Інтернеті відстежуються</translation>
 <translation id="3087734570205094154">Низ</translation>
 <translation id="3090667236485488075">Скло</translation>
@@ -1239,6 +1241,7 @@
 <translation id="3203025201812691413">Потрібно вказати URL-адресу</translation>
 <translation id="320323717674993345">Скасувати оплату</translation>
 <translation id="3203366800380907218">З Інтернету</translation>
+<translation id="3207830513221832868">Сайт <ph name="BLOCKED_URL" /> може містити контент для повнолітніх</translation>
 <translation id="3207960819495026254">Створено закладку</translation>
 <translation id="3208701679386778924">Надішліть звіт, щоб ми могли покращити інші оновлення ChromeOS.</translation>
 <translation id="3209034400446768650">На сторінці може стягуватися плата</translation>
@@ -2973,6 +2976,7 @@
 <translation id="6254436959401408446">Недостатньо пам’яті, щоб відкрити цю сторінку</translation>
 <translation id="625463612687472648">Відкликати дозвіл</translation>
 <translation id="6259156558325130047">&amp;Повторити перевпорядкування</translation>
+<translation id="6259282549512536479">Ви раніше блокували сайт <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872">Закладки <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Усе одно завантажити</translation>
 <translation id="6264485186158353794">Повернутися на безпечну сторінку</translation>
@@ -3105,6 +3109,7 @@
 <translation id="6465306955648956876">Керувати паролями…</translation>
 <translation id="646789491285795429">Ви вже відстежуєте ціну на цей товар</translation>
 <translation id="6468485451923838994">Шрифти</translation>
+<translation id="6469702164109431067">Паролі й ключі доступу</translation>
 <translation id="647261751007945333">Правила пристрою</translation>
 <translation id="6472874020827012601">Тканина (матова)</translation>
 <translation id="647330291963761005">Встановлюються оновлення</translation>
@@ -4350,6 +4355,7 @@
 <translation id="8699041776323235191">Пристрій HID</translation>
 <translation id="8699985386408839112">Конверт Kaku 1</translation>
 <translation id="8702965365666568344">Монтажна стрічка</translation>
+<translation id="8703372953981978786">Це посилання не працює</translation>
 <translation id="8703575177326907206">Ваше з’єднання з <ph name="DOMAIN" /> не зашифровано.</translation>
 <translation id="8705331520020532516">Серійний номер</translation>
 <translation id="8706806585855470492">Ви зможете ділитися групами вкладок, приєднуватися до них і працювати в них разом з іншими користувачами</translation>

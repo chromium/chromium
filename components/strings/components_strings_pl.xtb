@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Nie teraz</translation>
 <translation id="100957008357583611">Użyć lokalizacji?</translation>
 <translation id="1010200102790553230">Wczytaj stronę później</translation>
+<translation id="1010225406377140704">Skontaktuj się z nadawcą, aby poprosić o nowy link</translation>
 <translation id="1011206368273183593">Przygotowuję pliki</translation>
 <translation id="1014509239502131234">Cofam wynik</translation>
 <translation id="1015730422737071372">Podaj dodatkowe informacje</translation>
@@ -3108,6 +3109,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6465306955648956876">Zarządzaj hasłami…</translation>
 <translation id="646789491285795429">Śledzisz już ten produkt</translation>
 <translation id="6468485451923838994">Czcionki</translation>
+<translation id="6469702164109431067">Hasła i klucze dostępu</translation>
 <translation id="647261751007945333">Zasady dotyczące urządzeń</translation>
 <translation id="6472874020827012601">Tkanina (matowa)</translation>
 <translation id="647330291963761005">Instaluję aktualizacje</translation>
@@ -4352,6 +4354,7 @@ Dodatkowe informacje:
 <translation id="8699041776323235191">Urządzenie HID</translation>
 <translation id="8699985386408839112">Koperta Kaku 1</translation>
 <translation id="8702965365666568344">Taśma montażowa</translation>
+<translation id="8703372953981978786">Ten link nie działa</translation>
 <translation id="8703575177326907206">Połączenie z witryną <ph name="DOMAIN" /> nie jest szyfrowane.</translation>
 <translation id="8705331520020532516">Numer seryjny</translation>
 <translation id="8706806585855470492">Będziesz mieć możliwość udostępniania grup kart, dołączania do nich i używania ich do współpracy</translation>

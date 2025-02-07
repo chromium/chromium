@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1009406586654360474">Open Google Wachtwoordmanager en ga naar de instellingen. Selecteer Importeren en voeg het csv-bestand met je geëxporteerde wachtwoorden toe.</translation>
-<translation id="1010225406377140704">Je kunt contact opnemen met de afzender om een nieuwe link te vragen</translation>
 <translation id="1011749477052068769">Hierheen verplaatsen</translation>
 <translation id="1014147525163127655">Er zijn geen toegangssleutels voor <ph name="ORIGIN" /> op dit apparaat</translation>
 <translation id="1016498331642356377">Zoek snel met je stem. Tik en houd vast om deze snelkoppeling te bewerken.</translation>
@@ -1723,7 +1722,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8683039184091909753">afbeelding</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699120352855309748">Niet aanbieden om deze talen te vertalen</translation>
-<translation id="8703372953981978786">Deze link werkt niet</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8723453889042591629">Vertaal deze pagina snel. Houd je vinger op het scherm om deze snelkoppeling te bewerken.</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>

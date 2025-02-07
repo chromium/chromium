@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Şimdi Değil</translation>
 <translation id="100957008357583611">Konumunuz kullanılsın mı?</translation>
 <translation id="1010200102790553230">Sayfayı daha sonra yükle</translation>
+<translation id="1010225406377140704">Yeni bir bağlantı istemek için bağlantıyı gönderen kişiyle iletişime geçin</translation>
 <translation id="1011206368273183593">Dosyalar hazırlanıyor</translation>
 <translation id="1014509239502131234">Sonuç geri alınıyor</translation>
 <translation id="1015730422737071372">Diğer ayrıntıları sağlayın</translation>
@@ -1164,6 +1165,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3076865167425975822">İşletim Sistemleri</translation>
 <translation id="3080254622891793721">Grafik</translation>
 <translation id="3082007635241601060">Kişiye özel indirimler olduğunda Google'ın bunları bulabilmesi için alışveriş sepetlerinizi kullanmasına izin verin</translation>
+<translation id="3086269988715347183"><ph name="BLOCKED_URL" /> adresini daha önce onaylamadınız</translation>
 <translation id="3086579638707268289">Web'de etkinliğiniz izleniyor</translation>
 <translation id="3087734570205094154">Alt</translation>
 <translation id="3090667236485488075">Cam</translation>
@@ -1239,6 +1241,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3203025201812691413">URL boş olamaz</translation>
 <translation id="320323717674993345">Ödemeyi iptal et</translation>
 <translation id="3203366800380907218">Web'den</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> adresinde erişkinlere uygun içerik olabilir</translation>
 <translation id="3207960819495026254">Yer işareti koyuldu</translation>
 <translation id="3208701679386778924">ChromeOS güncellemelerini daha iyi hale getirebilmemiz için lütfen rapor gönderin.</translation>
 <translation id="3209034400446768650">Sayfa sizden ücret alabilir</translation>
@@ -2973,6 +2976,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6254436959401408446">Bu sayfayı açmaya yetecek kadar bellek yok</translation>
 <translation id="625463612687472648">İzin vermeyi durdur</translation>
 <translation id="6259156558325130047">Sıralama Değişikliğini &amp;Yeniden Yap</translation>
+<translation id="6259282549512536479"><ph name="BLOCKED_URL" /> adresini daha önce engellemiştiniz</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> yer işaretleri</translation>
 <translation id="6264376385120300461">Yine de indir</translation>
 <translation id="6264485186158353794">Güvenliğe geri dön</translation>
@@ -3105,6 +3109,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6465306955648956876">Şifreleri yönet...</translation>
 <translation id="646789491285795429">Bu ürünü zaten takip ediyorsunuz</translation>
 <translation id="6468485451923838994">Yazı tipleri</translation>
+<translation id="6469702164109431067">Şifreler ve geçiş anahtarları</translation>
 <translation id="647261751007945333">Cihaz politikaları</translation>
 <translation id="6472874020827012601">Kumaş (Mat)</translation>
 <translation id="647330291963761005">Güncellemeler yükleniyor</translation>
@@ -4350,6 +4355,7 @@ Ek ayrıntılar:
 <translation id="8699041776323235191">HID cihazı</translation>
 <translation id="8699985386408839112">Zarf Kaku 1</translation>
 <translation id="8702965365666568344">Montaj Bandı</translation>
+<translation id="8703372953981978786">Bu bağlantı çalışmıyor</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> bağlantınız şifrelenmedi.</translation>
 <translation id="8705331520020532516">Seri Numarası</translation>
 <translation id="8706806585855470492">Sekme gruplarını paylaşabilir, bunlara katılabilir ve gruplarda ortak çalışma yapabilirsiniz</translation>

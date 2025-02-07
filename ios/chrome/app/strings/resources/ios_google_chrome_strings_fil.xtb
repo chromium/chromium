@@ -121,6 +121,7 @@ Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka n
 <translation id="4064699917955374540">Para magamit at ma-save ang data ng Chrome sa iyong Google Account, i-verify na ikaw ito.</translation>
 <translation id="417201473131094001">Hindi sinusuportahan sa Chrome Canary</translation>
 <translation id="424864128008805179">Mag-sign out sa Chrome?</translation>
+<translation id="4430797724889237570">Buksan ang mga link mula sa Gmail, Maps, YouTube, at iba pang app sa Chrome</translation>
 <translation id="447252321002412580">Tumulong sa pagpapahusay sa mga feature at performance ng Chrome</translation>
 <translation id="4523886039239821078">Nagiging dahilan ang ilang add-on ng pag-crash ng Chrome. Paki-uninstall.</translation>
 <translation id="4633328489441962921">Hindi matingnan ng Chrome kung may mga update</translation>
@@ -206,6 +207,7 @@ Subukang maghintay nang ilang minuto bago lumipat ng account. Kung lilipat ka ng
 
 Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at ma-save ang data sa Chrome sa iyong Google Account.</translation>
 <translation id="6533470733797826516">Mas mabilis na makapag-sign in gamit ang autofill ng Chrome</translation>
+<translation id="6536544321553662809">Itakda ang Chrome bilang iyong default browser para madaling makapag-share at makapagbukas ng mga link</translation>
 <translation id="6545449117344801102">Dine-detect ng Chrome ang mga address at ginagamit nito ang Google Maps para bigyan ka ng mga direksyon at lokal na impormasyon.</translation>
 <translation id="6636941099779251629">Nire-require sa iyo ng organisasyon mo na mag-sign in para magamit ang Chrome. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Magpapadala ng na-obfuscate na bahagi ng URL sa Google sa pamamagitan ng server ng privacy na nagha-hide ng iyong IP address. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chrome sa Google ng mga URL, kabilang ang ilang content ng page</translation>
@@ -291,6 +293,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8371138994040262994">Bubuksan ang mga setting sa Chrome.</translation>
 <translation id="8387459386171870978">Ipagpatuloy ang paggamit ng Chrome</translation>
+<translation id="8392023217086447677">Binuksan sa Incognito sa Chrome</translation>
 <translation id="840168496893712993">Nagiging dahilan ang ilang add-on ng pag-crash ng Chrome. Pakisubukang i-uninstall ang mga ito.</translation>
 <translation id="8413500425974960807">Tip sa Chrome: Ilipat ang Chrome sa dock</translation>
 <translation id="8413795581997394485">Nagpoprotekta laban sa mga site, download, at extension na kilalang mapanganib. Kapag bumisita ka sa isang site, magpapadala ang Chrome ng na-obfuscate na bahagi ng URL sa Google sa pamamagitan ng server ng privacy na nagha-hide ng IP address. Kung may gagawing kahina-hinala ang isang site, ipapadala rin ang mga buong URL at bahagi ng content page.</translation>

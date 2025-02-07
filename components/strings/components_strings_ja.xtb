@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">後で</translation>
 <translation id="100957008357583611">位置情報を使用しますか？</translation>
 <translation id="1010200102790553230">後でページを読み込む</translation>
+<translation id="1010225406377140704">送信者に連絡して新しいリンクをリクエストしてください</translation>
 <translation id="1011206368273183593">ファイルを準備しています</translation>
 <translation id="1014509239502131234">結果を元に戻しています</translation>
 <translation id="1015730422737071372">詳細を報告する</translation>
@@ -3108,6 +3109,7 @@
 <translation id="6465306955648956876">パスワードを管理...</translation>
 <translation id="646789491285795429">この商品はすでにトラッキングしています</translation>
 <translation id="6468485451923838994">フォント</translation>
+<translation id="6469702164109431067">パスワードとパスキー</translation>
 <translation id="647261751007945333">デバイス ポリシー</translation>
 <translation id="6472874020827012601">布（非光沢）</translation>
 <translation id="647330291963761005">アップデートをインストールしています</translation>
@@ -4354,6 +4356,7 @@
 <translation id="8699041776323235191">HID デバイス</translation>
 <translation id="8699985386408839112">角形 1 号封筒</translation>
 <translation id="8702965365666568344">粘着テープ</translation>
+<translation id="8703372953981978786">このリンクは機能していません</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> への接続は暗号化されていません。</translation>
 <translation id="8705331520020532516">シリアル番号</translation>
 <translation id="8706806585855470492">タブグループの共有、参加、共同作業を行うことができます</translation>

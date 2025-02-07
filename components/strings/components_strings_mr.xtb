@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">सध्या नाही</translation>
 <translation id="100957008357583611">तुमचे स्थान वापरायचे का?</translation>
 <translation id="1010200102790553230">पेज नंतर लोड करा</translation>
+<translation id="1010225406377140704">नवीन लिंकची विनंती करण्यासाठी पाठवणाऱ्याशी संपर्क साधा</translation>
 <translation id="1011206368273183593">फाइल तयार करत आहे</translation>
 <translation id="1014509239502131234">परिणाम पहिल्यासारखे करत आहे</translation>
 <translation id="1015730422737071372">अतिरिक्त तपशील प्रदान करा</translation>
@@ -1164,6 +1165,7 @@
 <translation id="3076865167425975822">ऑपरेटिंग सिस्टीम</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
 <translation id="3082007635241601060">उपलब्ध असतील, तेव्हा पर्सनलाइझ केलेल्या सवलती शोधण्यासाठी Google ला तुमची कार्ट वापरू द्या</translation>
+<translation id="3086269988715347183">तुम्ही याआधी <ph name="BLOCKED_URL" /> ला मंजुरी दिलेली नाही</translation>
 <translation id="3086579638707268289">वेबवरील तुमच्या ॲक्टिव्हिटीचे नियंत्रण केले जात आहे</translation>
 <translation id="3087734570205094154">तळाकडील</translation>
 <translation id="3090667236485488075">ग्लास</translation>
@@ -1239,6 +1241,7 @@
 <translation id="3203025201812691413">URL रिकामी असू शकत नाही</translation>
 <translation id="320323717674993345">पेमेंट रद्द करा</translation>
 <translation id="3203366800380907218">वेबवरील</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> मध्ये प्रौढ आशय असू शकतो</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
 <translation id="3208701679386778924">कृपया अहवाल पाठवा, जेणेकरून आम्ही पुढील ChromeOS अपडेटमध्ये सुधारणा करू शकू.</translation>
 <translation id="3209034400446768650">पेज कदाचित शुल्क आकारू शकते</translation>
@@ -2973,6 +2976,7 @@
 <translation id="6254436959401408446">हे पेज उघडण्‍यासाठी पुरेशी मेमरी नाही</translation>
 <translation id="625463612687472648">अनुमती देणे थांबवा</translation>
 <translation id="6259156558325130047">&amp;पुनर्क्रमित करा पुन्हा करा</translation>
+<translation id="6259282549512536479">तुम्ही याआधी <ph name="BLOCKED_URL" /> ब्लॉक केलेली आहे</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
 <translation id="6264485186158353794">सुरक्षिततेकडे परत</translation>
@@ -3105,6 +3109,7 @@
 <translation id="6465306955648956876">पासवर्ड व्यवस्थापित करा...</translation>
 <translation id="646789491285795429">तुम्ही आधीच या उत्पादनाचा माग ठेवत आहात</translation>
 <translation id="6468485451923838994">फॉंट</translation>
+<translation id="6469702164109431067">पासवर्ड आणि पासकी</translation>
 <translation id="647261751007945333">डिव्हाइस धोरणे</translation>
 <translation id="6472874020827012601">फॅब्रिक (मॅट)</translation>
 <translation id="647330291963761005">अपडेट इंस्टॉल करत आहे</translation>
@@ -4349,6 +4354,7 @@
 <translation id="8699041776323235191">HID डिव्हाइस</translation>
 <translation id="8699985386408839112">एन्व्हलप काकू १</translation>
 <translation id="8702965365666568344">माउंटिंग टेप</translation>
+<translation id="8703372953981978786">ही लिंक काम करत नाही</translation>
 <translation id="8703575177326907206">तुमचे <ph name="DOMAIN" /> चे कनेक्शन एंक्रिप्ट केलेले नाही.</translation>
 <translation id="8705331520020532516">सिरीअल नंबर</translation>
 <translation id="8706806585855470492">तुम्हाला टॅब गटांमध्ये शेअर करता येईल, सामील होता येईल आणि सहयोग करता येईल</translation>

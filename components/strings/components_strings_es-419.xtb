@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Ahora no</translation>
 <translation id="100957008357583611">¿Deseas usar tu ubicación?</translation>
 <translation id="1010200102790553230">Cargar la página más tarde</translation>
+<translation id="1010225406377140704">Comunícate con el remitente para solicitar un nuevo vínculo</translation>
 <translation id="1011206368273183593">Preparando archivos</translation>
 <translation id="1014509239502131234">Deshaciendo resultado</translation>
 <translation id="1015730422737071372">Proporciona más detalles</translation>
@@ -3109,6 +3110,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6465306955648956876">Administrar contraseñas…</translation>
 <translation id="646789491285795429">Ya estás realizando un seguimiento de este producto</translation>
 <translation id="6468485451923838994">Fuentes</translation>
+<translation id="6469702164109431067">Contraseñas y llaves de acceso</translation>
 <translation id="647261751007945333">Políticas de dispositivos</translation>
 <translation id="6472874020827012601">Tela (mate)</translation>
 <translation id="647330291963761005">Se instalarán las actualizaciones.</translation>
@@ -4354,6 +4356,7 @@ Detalles adicionales:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8699985386408839112">Sobre Kaku n.º 1</translation>
 <translation id="8702965365666568344">Cinta de montaje</translation>
+<translation id="8703372953981978786">Este vínculo no funciona</translation>
 <translation id="8703575177326907206">Tu conexión a <ph name="DOMAIN" /> no está cifrada.</translation>
 <translation id="8705331520020532516">Número de serie</translation>
 <translation id="8706806585855470492">Podrás compartir grupos de pestañas, unirte a ellos y colaborar</translation>

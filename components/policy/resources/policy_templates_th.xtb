@@ -2250,23 +2250,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="264771271300359481">ไม่อนุญาตให้เว็บไซต์ใช้สิทธิ์เข้าถึงคลิปบอร์ด</translation>
 <translation id="2649537800219643135">แหล่งที่มาของรูปภาพหน้าจอล็อกสำหรับโปรแกรมรักษาหน้าจอของผู้ใช้</translation>
 <translation id="2649896281375932517">ให้ผู้ใช้เลือก</translation>
-<translation id="2649948251789347405">นโยบายนี้อนุญาตให้ผู้ดูแลระบบตั้งค่าเครื่องมือรวบรวมข้อมูลการค้นหาขององค์กรที่กำหนดซึ่งจะแสดงคำแนะนำและผลการค้นหาในแถบที่อยู่เมื่อถูกเรียกให้แสดงโดยคีย์เวิร์ดเฉพาะ ผู้ใช้เริ่มการค้นหาได้โดยการพิมพ์คีย์เวิร์ดที่ระบุในช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> โดยใส่หรือไม่ใส่คำนำหน้า @ (เช่น <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) ตามด้วยการกด Space หรือ Tab ในแถบที่อยู่
-
-ต้องใส่ข้อมูลในช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />
-
-ช่อง <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับชื่อเครื่องมือค้นหาที่แสดงให้ผู้ใช้เห็นในแถบที่อยู่
-
-ช่อง <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> สอดคล้องกับคีย์เวิร์ดที่ผู้ใช้ป้อนเพื่อเรียกใช้การค้นหา ทางลัดมีคำและอักขระธรรมดาได้ แต่ต้องไม่มีการเว้นวรรคหรือเริ่มต้นด้วยสัญลักษณ์ @ และทางลัดต้องไม่ซ้ำกัน
-
-ช่อง <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่จะค้นหา ป้อนที่อยู่เว็บสำหรับหน้าผลการค้นหาของเครื่องมือค้นหา แล้วใช้ <ph name="SEARCH_TERM_MARKER" /> แทนตำแหน่งที่เป็นคำค้นหา
-
-ช่อง <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ที่ให้การแนะนำการค้นหา หาก <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> มี <ph name="SEARCH_TERM_MARKER" /> Chrome จะได้รับการแนะนำการค้นหาจากคำขอ GET ไปยัง URL ที่แทนที่ <ph name="SEARCH_TERM_MARKER" /> ด้วยคำค้นหาของผู้ใช้ มิเช่นนั้น ระบบจะสร้างคำขอ POST และส่งคำค้นหาของผู้ใช้ในพารามิเตอร์ POST ภายใต้คีย์ <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />
-
-ช่อง <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> จะระบุ URL ไปยังรูปภาพที่จะใช้ในการแนะนำการค้นหา ระบบจะใช้ไอคอนเริ่มต้นเมื่อไม่ได้ตั้งค่าช่องนี้ ขอแนะนำให้ใช้ไอคอน Fav (ตัวอย่าง <ph name="ICON_URL_EXAMPLE" />)
-
-ใน <ph name="MS_WIN_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่เข้าร่วมโดเมน <ph name="MS_AD_NAME" />, เข้าร่วม <ph name="MS_AAD_NAME" /> หรือลงทะเบียนใน<ph name="CHROME_ENTERPRISE_CORE_NAME" />
-
-ใน <ph name="MAC_OS_NAME" /> นโยบายนี้ใช้ได้เฉพาะในอินสแตนซ์ที่จัดการผ่าน MDM, เข้าร่วมโดเมนผ่าน MCX หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" /></translation>
 <translation id="2650049181907741121">การทำงานของอุปกรณ์เมื่อผู้ใช้ปิดฝา</translation>
 <translation id="2652747206827086936">ปิดใช้การ์ดไฟล์ SharePoint และ OneDrive ของ NTP</translation>
 <translation id="2656559539624760733">ไม่ใช้ Chrome Root Store</translation>
@@ -5142,17 +5125,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns *
 <translation id="4857223512478723171">ไม่อนุญาตให้ใช้โหมดเต็มหน้าจอ</translation>
 <translation id="4857888176748302062">อนุญาตให้ต้นทางค้นหาแอตทริบิวต์ของอุปกรณ์</translation>
 <translation id="4858735034935305895">อนุญาตโหมดเต็มหน้าจอ</translation>
-<translation id="4858882153530729282">นโยบายนี้ควบคุมว่าจะมีการแบ่งพาร์ติชัน URL ของ BLOB ในระหว่างการดึงข้อมูลและไปยังส่วนต่างๆ หรือไม่
-หากตั้งค่านโยบายนี้เป็น "เปิดใช้" หรือไม่ได้ตั้งค่า ระบบจะแบ่งพาร์ติชัน URL ของ BLOB
-หากตั้งค่านโยบายนี้เป็น "ปิดใช้" ระบบจะไม่แบ่งพาร์ติชัน URL ของ BLOB
-
-หากปิดใช้การแบ่งพาร์ติชันพื้นที่เก็บข้อมูลสำหรับต้นทางระดับบนสุดที่ระบุโดย <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> หรือ <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> ไว้ ก็จะไม่มีการแบ่งพาร์ติชัน URL ของ BLOB ด้วย
-
-หากคุณต้องใช้นโยบาย โปรดรายงานข้อบกพร่องใน crbug.com โดยอธิบาย Use Case และสำเนาถึง {janiceliu, awillia}@chromium.org นโยบายนี้มีกำหนดเวลาที่จะให้บริการผ่าน <ph name="PRODUCT_NAME" /> เวอร์ชัน 138 ซึ่งหลังจากนั้นระบบจะนำการใช้งานเดิมออก
-
-หมายเหตุ: เฉพาะกระบวนการแสดงผลที่เพิ่งเริ่มใหม่เท่านั้นที่จะแสดงการเปลี่ยนแปลงนโยบายนี้ขณะที่เบราว์เซอร์ทำงานอยู่
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับการแบ่งพาร์ติชันพื้นที่เก็บข้อมูลของบุคคลที่สามได้ใน https://developers.google.com/privacy-sandbox/cookies/storage-partitioning</translation>
 <translation id="4860900625632464759">อนุญาตให้ผู้ใช้ซิงค์ข้อความ SMS ระหว่างโทรศัพท์กับ Chromebook</translation>
 <translation id="486146220825734683">ไม่อนุญาตให้ผู้ใช้จดจำรหัสผ่าน Kerberos</translation>
 <translation id="4861767323695239729">กำหนดค่าวิธีการป้อนข้อมูลที่อนุญาตในเซสชันผู้ใช้</translation>

@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Hindi Ngayon</translation>
 <translation id="100957008357583611">Gamitin ang iyong lokasyon?</translation>
 <translation id="1010200102790553230">I-load ang page sa ibang pagkakataon</translation>
+<translation id="1010225406377140704">Makipag-ugnayan sa sender para humingi ng bagong link</translation>
 <translation id="1011206368273183593">Ihinahanda ang mga file</translation>
 <translation id="1014509239502131234">Ina-undo ang resulta</translation>
 <translation id="1015730422737071372">Magbigay ng mga karagdagang detalye</translation>
@@ -3108,6 +3109,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6465306955648956876">Pamahalaan ang mga password...</translation>
 <translation id="646789491285795429">Sinusubaybayan mo na ang produktong ito</translation>
 <translation id="6468485451923838994">Mga Font</translation>
+<translation id="6469702164109431067">Mga password at passkey</translation>
 <translation id="647261751007945333">Mga patakaran sa device</translation>
 <translation id="6472874020827012601">Tela (Matte)</translation>
 <translation id="647330291963761005">Ini-install ang mga update</translation>
@@ -4352,6 +4354,7 @@ Mga karagdagang detalye:
 <translation id="8699041776323235191">HID device</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">Mounting Tape</translation>
+<translation id="8703372953981978786">Hindi gumagana ang link na ito</translation>
 <translation id="8703575177326907206">Ang iyong koneksyon sa <ph name="DOMAIN" /> ay hindi naka-encrypt.</translation>
 <translation id="8705331520020532516">Serial Number</translation>
 <translation id="8706806585855470492">Magagawa mong mag-share ng, sumali sa, at makipag-collaborate sa mga grupo ng tab</translation>

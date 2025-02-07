@@ -272,7 +272,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1177863135347784049">Sesuaikan</translation>
 <translation id="1178093605842850860">Diizinkan membaca &amp; mengubah situs ini</translation>
 <translation id="1178581264944972037">Jeda</translation>
-<translation id="1178601482396475810">Kelola sinkronisasi perangkat</translation>
 <translation id="117916940443676133">Kunci keamanan Anda tidak dilindungi PIN. Untuk mengelola data login, buat PIN terlebih dahulu.</translation>
 <translation id="1179400851034021914">IBAN tidak valid</translation>
 <translation id="1179902906564467236">Ikuti petunjuk di ponsel atau gunakan aplikasi kamera</translation>
@@ -1469,7 +1468,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="2003596238737586336">Jadwal saat ini disetel ke <ph name="SUNRISE" /> - <ph name="SUNSET" />. Setelan ini dikelola oleh administrator Anda.</translation>
 <translation id="2004413981947727241">Gunakan sandi Anda di perangkat mana pun</translation>
 <translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
-<translation id="2005199804247617997">Profil lainnya</translation>
 <translation id="2006638907958895361">Buka Link di <ph name="APP" /></translation>
 <translation id="2007404777272201486">Laporkan Masalah...</translation>
 <translation id="200781997903833896">Untuk menggunakan fitur Baca Lisan, kosongkan ruang penyimpanan di perangkat Anda</translation>
@@ -1694,7 +1692,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2158249272743343757">Hapus data personalisasi...</translation>
 <translation id="2158475082070321257">Salin link ke sorotan</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">Merangkum konten atau mengajukan pertanyaan lanjutan.</translation>
 <translation id="2161058806218011758">Cakupan <ph name="SHORTCUT" /> untuk <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">Tambahkan Wi-Fi...</translation>
 <translation id="2162155940152307086">Sinkronisasi akan dimulai setelah Anda meninggalkan setelan sinkronisasi</translation>
@@ -1960,7 +1957,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2333166365943957309">Hierarki UI</translation>
 <translation id="233375395665273385">Hapus dan logout</translation>
 <translation id="233471714539944337">Konten sensitif</translation>
-<translation id="2335111415680198280">{0,plural, =1{Tutup # jendela}other{Tutup # jendela}}</translation>
 <translation id="2335758110242123814">Buka grup</translation>
 <translation id="2336228925368920074">Bookmark Semua Tab...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> sedang mencetak 1 halaman ke <ph name="PRINTER_NAME" /></translation>
@@ -3756,7 +3752,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3629664892718440872">Ingat pilihan ini</translation>
 <translation id="3630132874740063857">Ponsel Anda</translation>
 <translation id="3630995161997703415">Tambahkan situs ini ke rak Anda agar dapat digunakan setiap saat</translation>
-<translation id="3632929818790223729">Pisahkan tab dengan tab aktif</translation>
 <translation id="3634652306074934350">Masa berlaku permintaan izin habis</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) terdeteksi</translation>
 <translation id="3635353578505343390">Kirim masukan ke Google</translation>
@@ -5880,7 +5875,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="512642543295077915">penelusuran + backspace</translation>
 <translation id="5126611267288187364">Lihat perubahan</translation>
 <translation id="5127620150973591153">ID koneksi aman: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">Sinkronisasi nonaktif</translation>
 <translation id="5127881134400491887">Mengelola koneksi jaringan</translation>
 <translation id="5127934926273826089">Bunga</translation>
 <translation id="5127986747308934633">Administrator mengontrol perangkat Anda</translation>
@@ -5969,6 +5963,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5190926251776387065">Aktifkan port</translation>
 <translation id="5190959794678983197">Tidak ada mikrofon</translation>
 <translation id="5191094172448199359">PIN yang Anda masukkan tidak cocok</translation>
+<translation id="5191251636205085390">Pelajari dan kontrol teknologi baru yang ditujukan untuk menggantikan cookie pihak ketiga</translation>
 <translation id="519185197579575131">Gunakan QT</translation>
 <translation id="5192062846343383368">Buka aplikasi Family Link untuk melihat setelan pengawasan Anda</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 Kunci sandi}other{{COUNT} Kunci sandi}}</translation>
@@ -8920,7 +8915,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7349010927677336670">Kelancaran Video</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} sandi hanya disimpan ke perangkat ini}other{{COUNT} sandi hanya disimpan ke perangkat ini}}</translation>
 <translation id="7352651011704765696">Terjadi error</translation>
-<translation id="7352664183151911163">Di seluruh aplikasi dan browser Chrome Anda</translation>
 <translation id="7353261921908507769">Kontak dapat berbagi dengan Anda saat mereka berada di sekitar. Transfer tidak akan dimulai sampai Anda menerimanya.</translation>
 <translation id="7353432112255316844">Verifikasi Diri Anda</translation>
 <translation id="735361434055555355">Menginstal Linux...</translation>
@@ -10064,7 +10058,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8140869601171867148">Akun Google Anda adalah akun yang sama dengan yang Anda gunakan untuk Gmail, YouTube, Chrome, dan produk Google lainnya.
     Gunakan akun Anda untuk mengakses semua bookmark, file, dan lainnya dengan mudah.</translation>
 <translation id="8141418916163800697">Anda dapat menyiapkan fitur lainnya di setelan Phone Hub</translation>
-<translation id="814156740715940972">Pisahkan Tab Dengan Tab Aktif</translation>
 <translation id="8141584439523427891">Membuka di browser alternatif sekarang</translation>
 <translation id="8141725884565838206">Kelola sandi Anda</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 video}other{# video}}</translation>
@@ -11198,7 +11191,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8946359700442089734">Fitur debug belum diaktifkan sepenuhnya di perangkat <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8946954897220903437">Ciutkan semua permintaan di kolom URL</translation>
 <translation id="894763922177556086">Baik</translation>
-<translation id="8949304443659090542">Kelola sinkronisasi browser Chrome</translation>
 <translation id="895054485242522631">Situs dapat menggunakan sensor gerakan</translation>
 <translation id="8951256747718668828">Tidak dapat menyelesaikan pemulihan karena terjadi error</translation>
 <translation id="8951465597020890363">Tetap keluar dari mode tamu?</translation>
@@ -11219,7 +11211,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8963117664422609631">Buka setelan situs</translation>
 <translation id="8964927371396953727">Verifikasi diri Anda untuk menggunakan dan menyimpan sandi di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Masukkan sandi lama</translation>
-<translation id="8966809848145604011">Profil Lainnya</translation>
 <translation id="8967427617812342790">Tambahkan ke daftar bacaan</translation>
 <translation id="8967548289042494261">Hapus <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Penulis Gambar Sistem ChromeOS</translation>

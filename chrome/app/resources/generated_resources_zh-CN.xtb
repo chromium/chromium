@@ -272,7 +272,6 @@
 <translation id="1177863135347784049">自定义</translation>
 <translation id="1178093605842850860">可以读取和更改此网站</translation>
 <translation id="1178581264944972037">暂停</translation>
-<translation id="1178601482396475810">管理设备同步</translation>
 <translation id="117916940443676133">您尚未设置 PIN 码来保护您的安全密钥。要管理登录数据，请先创建一个 PIN 码。</translation>
 <translation id="1179400851034021914">IBAN 无效</translation>
 <translation id="1179902906564467236">按照手机上的说明操作或使用相机应用</translation>
@@ -1452,7 +1451,6 @@
 <translation id="2003596238737586336">当前的时间安排设置为<ph name="SUNRISE" /> - <ph name="SUNSET" />。此设置由您的管理员管理。</translation>
 <translation id="2004413981947727241">在任意设备上都能使用您的密码</translation>
 <translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
-<translation id="2005199804247617997">其他个人资料</translation>
 <translation id="2006638907958895361">在<ph name="APP" />中打开链接</translation>
 <translation id="2007404777272201486">报告问题...</translation>
 <translation id="200781997903833896">如需使用“大声朗读”功能，请清理设备空间</translation>
@@ -1677,7 +1675,6 @@
 <translation id="2158249272743343757">删除个性化数据…</translation>
 <translation id="2158475082070321257">复制指向突出显示的内容的链接</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">总结内容或提出后续问题。</translation>
 <translation id="2161058806218011758">“<ph name="EXTENSION_NAME" />”的 <ph name="SHORTCUT" /> 范围</translation>
 <translation id="216169395504480358">添加 Wi-Fi...</translation>
 <translation id="2162155940152307086">一旦您离开同步设置页面，同步功能就会启动</translation>
@@ -1940,7 +1937,6 @@
 <translation id="2333166365943957309">界面层次结构</translation>
 <translation id="233375395665273385">删除数据并退出账号</translation>
 <translation id="233471714539944337">敏感内容</translation>
-<translation id="2335111415680198280">{0,plural, =1{关闭 # 个窗口}other{关闭 # 个窗口}}</translation>
 <translation id="2335758110242123814">打开分组</translation>
 <translation id="2336228925368920074">为所有标签页添加书签...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" />正在使用<ph name="PRINTER_NAME" />打印 1 页</translation>
@@ -3733,7 +3729,6 @@
 <translation id="3629664892718440872">记住此选择</translation>
 <translation id="3630132874740063857">您的手机</translation>
 <translation id="3630995161997703415">请将此网站添加到您的任务栏中，以便随时使用</translation>
-<translation id="3632929818790223729">在选定标签页与当前活动标签页之间创建分屏视图</translation>
 <translation id="3634652306074934350">权限请求已过期</translation>
 <translation id="3635199270495525546">检测到可信平台模块 (TPM)</translation>
 <translation id="3635353578505343390">向 Google 发送反馈</translation>
@@ -5855,7 +5850,6 @@
 <translation id="512642543295077915">搜索键 + 退格键</translation>
 <translation id="5126611267288187364">查看更改</translation>
 <translation id="5127620150973591153">安全配对号码：<ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">同步功能已关闭</translation>
 <translation id="5127881134400491887">管理网络连接</translation>
 <translation id="5127934926273826089">鲜花/礼品</translation>
 <translation id="5127986747308934633">您的管理员正在控制您的设备</translation>
@@ -5944,6 +5938,7 @@
 <translation id="5190926251776387065">启用此端口</translation>
 <translation id="5190959794678983197">没有麦克风</translation>
 <translation id="5191094172448199359">您输入的 PIN 码不一致</translation>
+<translation id="5191251636205085390">了解和掌控旨在取代第三方 Cookie 的新技术</translation>
 <translation id="519185197579575131">使用 QT</translation>
 <translation id="5192062846343383368">打开 Family Link 应用，查看您的监管设置</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 个通行密钥}other{{COUNT} 个通行密钥}}</translation>
@@ -8891,7 +8886,6 @@
 <translation id="7349010927677336670">视频流畅性</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{有 {COUNT} 个密码仅保存在此设备上}other{有 {COUNT} 个密码仅保存在此设备上}}</translation>
 <translation id="7352651011704765696">出了点问题</translation>
-<translation id="7352664183151911163">在您所用的各款应用和 Chrome 浏览器上保持同步</translation>
 <translation id="7353261921908507769">附近的所有联系人都可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
 <translation id="7353432112255316844">请验证是您本人在操作</translation>
 <translation id="735361434055555355">正在安装 Linux…</translation>
@@ -10036,7 +10030,6 @@
 <translation id="8140869601171867148">您的 Google 账号即您用于 Gmail、YouTube、Chrome 和其他 Google 产品的账号。
     使用该账号可轻松访问您的所有书签、文件和其他内容。</translation>
 <translation id="8141418916163800697">您可以在 Phone Hub 设置中设置更多功能</translation>
-<translation id="814156740715940972">在选定标签页与当前活动标签页之间创建分屏视图</translation>
 <translation id="8141584439523427891">目前正在替代浏览器中打开</translation>
 <translation id="8141725884565838206">管理您的密码</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 个视频}other{# 个视频}}</translation>
@@ -11170,7 +11163,6 @@
 <translation id="8946359700442089734">此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上未完全启用调试功能。</translation>
 <translation id="8946954897220903437">收起地址栏中的所有请求</translation>
 <translation id="894763922177556086">良好</translation>
-<translation id="8949304443659090542">管理 Chrome 浏览器同步</translation>
 <translation id="895054485242522631">网站可以使用移动传感器</translation>
 <translation id="8951256747718668828">发生错误，因此无法完成恢复</translation>
 <translation id="8951465597020890363">仍要退出访客模式？</translation>
@@ -11191,7 +11183,6 @@
 <translation id="8963117664422609631">转到网站设置</translation>
 <translation id="8964927371396953727">请验证您的身份，以便将密码保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些密码</translation>
 <translation id="8965037249707889821">输入旧密码</translation>
-<translation id="8966809848145604011">其他个人资料</translation>
 <translation id="8967427617812342790">添加到阅读清单</translation>
 <translation id="8967548289042494261">卸载 <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Chrome 操作系统映像写入工具</translation>

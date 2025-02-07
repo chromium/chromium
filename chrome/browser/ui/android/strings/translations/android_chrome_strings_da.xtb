@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1009406586654360474">Åbn Google Adgangskodeadministrator, og gå til indstillingerne. Vælg "Importér", og tilføj den CSV-fil, der indeholder dine eksporterede adgangskoder.</translation>
-<translation id="1010225406377140704">Kontakt afsenderen for at bede om et nyt link</translation>
 <translation id="1011749477052068769">Flyt hertil</translation>
 <translation id="1014147525163127655">Der er ingen adgangsnøgler til <ph name="ORIGIN" /> på denne enhed</translation>
 <translation id="1016498331642356377">Søg hurtigt med din stemme. Hold fingeren på genvejen for at redigere.</translation>
@@ -1723,7 +1722,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8683039184091909753">billede</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8699120352855309748">Tilbyd ikke at oversætte disse sprog</translation>
-<translation id="8703372953981978786">Dette link fungerer ikke</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8723453889042591629">Oversæt hurtigt denne side. Hold fingeren nede for at redigere denne genvej.</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>

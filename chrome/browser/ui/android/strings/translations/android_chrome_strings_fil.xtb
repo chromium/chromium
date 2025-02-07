@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1009406586654360474">Buksan ang Google Password Manager at pumunta sa mga setting. Piliin ang “Mag-import“ at idagdag ang CSV file na naglalaman ng iyong mga na-export na password.</translation>
-<translation id="1010225406377140704">Makipag-ugnayan sa sender para humingi ng bagong link</translation>
 <translation id="1011749477052068769">Ilipat dito</translation>
 <translation id="1014147525163127655">Walang anumang passkey para sa <ph name="ORIGIN" /> sa device na ito</translation>
 <translation id="1016498331642356377">Mabilis na maghanap gamit ang iyong boses. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
@@ -1723,7 +1722,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8683039184091909753">larawan</translation>
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8699120352855309748">Huwag mag-alok na isalin ang mga wikang ito</translation>
-<translation id="8703372953981978786">Hindi gumagana ang link na ito</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8723453889042591629">Mabilis na isalin ang page na ito. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
 <translation id="8725066075913043281">Subukan ulit</translation>

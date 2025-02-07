@@ -272,7 +272,6 @@
 <translation id="1177863135347784049">سفارشی</translation>
 <translation id="1178093605842850860">اجازه دارد این سایت را بخواند و تغییر دهد</translation>
 <translation id="1178581264944972037">مکث</translation>
-<translation id="1178601482396475810">مدیریت همگام‌سازی دستگاه</translation>
 <translation id="117916940443676133">کلید امنیتی‌تان پین ندارد و محافظت‌شده نیست. برای مدیریت داده‌های ورود به سیستم، ابتدا پین ایجاد کنید.</translation>
 <translation id="1179400851034021914">‏‫IBAN نامعتبر است</translation>
 <translation id="1179902906564467236">دستورالعمل‌های روی تلفنتان را دنبال کنید یا از برنامه دوربین استفاده کنید</translation>
@@ -1466,7 +1465,6 @@
 <translation id="2003596238737586336">زمان‌بندی فعلی روی <ph name="SUNRISE" /> تا <ph name="SUNSET" /> تنظیم شده است. این تنظیم را سرپرست شما مدیریت می‌کند.</translation>
 <translation id="2004413981947727241">در هر دستگاهی از گذرواژه‌هایتان استفاده کنید</translation>
 <translation id="2004697686368036666">ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند</translation>
-<translation id="2005199804247617997">نمایه‌های دیگر</translation>
 <translation id="2006638907958895361">باز کردن پیوند در <ph name="APP" /></translation>
 <translation id="2007404777272201486">گزارش یک مسئله...</translation>
 <translation id="200781997903833896">برای استفاده از «بلند خواندن»، فضای دستگاهتان را خالی کنید</translation>
@@ -1691,7 +1689,6 @@
 <translation id="2158249272743343757">حذف داده‌های شخصی‌سازی…</translation>
 <translation id="2158475082070321257">کپی کردن پیوند به مورد برجسته‌شده</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">محتوا را خلاصه کنید یا سؤالات بیشتری بپرسید.</translation>
 <translation id="2161058806218011758">دامنه <ph name="SHORTCUT" /> برای <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">‏افزودن Wi-Fi…</translation>
 <translation id="2162155940152307086">از صفحه تنظیمات همگام‌سازی که خارج شوید، همگام‌سازی شروع می‌شود</translation>
@@ -1957,7 +1954,6 @@
 <translation id="2333166365943957309">سلسله‌مراتب واسط کاربر</translation>
 <translation id="233375395665273385">حذف و خروج از سیستم</translation>
 <translation id="233471714539944337">محتوای حساس</translation>
-<translation id="2335111415680198280">{0,plural, =1{بستن # پنجره}one{بستن # پنجره}other{بستن # پنجره}}</translation>
 <translation id="2335758110242123814">باز کردن گروه</translation>
 <translation id="2336228925368920074">نشانک‌گذاری همه برگه‌ها...</translation>
 <translation id="2336258397628212480">‫<ph name="APP_NAME" /> درحال چاپ کردن ۱ صفحه با <ph name="PRINTER_NAME" /> است</translation>
@@ -3753,7 +3749,6 @@
 <translation id="3629664892718440872">این گزینه به‌خاطر سپرده شود</translation>
 <translation id="3630132874740063857">تلفن شما</translation>
 <translation id="3630995161997703415">این سایت را به قفسه‌تان اضافه کنید تا هر زمان که بخواهید از آن استفاده کنید</translation>
-<translation id="3632929818790223729">تقسیم کردن برگه با برگه فعال</translation>
 <translation id="3634652306074934350">درخواست اجازه منقضی شد</translation>
 <translation id="3635199270495525546">‏«مدول پلاتفرم مطمئن» (TPM) شناسایی شده است</translation>
 <translation id="3635353578505343390">‏ارسال بازخورد به Google</translation>
@@ -4264,7 +4259,7 @@
 <translation id="3955896417885489542">‏مرور گزینه‌های Google Play بعد از راه‌اندازی</translation>
 <translation id="3957079323242030166">‏داده‌های پشتیبان‌گیری‌شده جزو سهمیه ذخیره‌سازی Drive شما به حساب نمی‌آیند.</translation>
 <translation id="3957663711862465084">‏تنظیمات USB</translation>
-<translation id="3957844511978444971">‏برای تأیید انتخاب خود از میان این تنظیمات سرویس‌های Google، روی «پذیرفتن» تک‌ضرب بزنید.</translation>
+<translation id="3957844511978444971">‏برای تأیید کردن انتخاب این تنظیمات سرویس‌های Google، روی «پذیرفتن» تک‌ضرب بزنید.</translation>
 <translation id="3958088479270651626">وارد کردن نشانک‌ها و تنظیمات</translation>
 <translation id="3958110062351175311">مجاز به نمایش درخواست‌ها در نوارابزار</translation>
 <translation id="3958821725268247062"><ph name="APP_NAME" /> قبلاً نصب شده است</translation>
@@ -5877,7 +5872,6 @@
 <translation id="512642543295077915">جستجو + پس‌بَر</translation>
 <translation id="5126611267288187364">مشاهده تغییرات</translation>
 <translation id="5127620150973591153">شناسه اتصال ایمن: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">همگام‌سازی خاموش است</translation>
 <translation id="5127881134400491887">مدیریت اتصالات شبکه</translation>
 <translation id="5127934926273826089">گل</translation>
 <translation id="5127986747308934633">دستگاهتان تحت کنترل سرپرست است</translation>
@@ -5966,6 +5960,7 @@
 <translation id="5190926251776387065">فعال کردن درگاه</translation>
 <translation id="5190959794678983197">میکروفن متصل نیست</translation>
 <translation id="5191094172448199359">پین‌هایی که وارد کردید مطابقت ندارند</translation>
+<translation id="5191251636205085390">با فناوری‌های جدیدی که قرار است جایگزین کوکی‌های طرف سوم شود آشنا شوید و آن‌ها را کنترل کنید</translation>
 <translation id="519185197579575131">‏استفاده از QT</translation>
 <translation id="5192062846343383368">‏برای مشاهده تنظیمات نظارت، برنامه Family Link را باز کنید</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{‫۱ گذرکلید}one{‫{COUNT} گذرکلید}other{‫{COUNT} گذرکلید}}</translation>
@@ -8919,7 +8914,6 @@
 <translation id="7349010927677336670">روان بودن ویدیو</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{‫{COUNT} گذرواژه فقط در این دستگاه ذخیره شده است}one{‫{COUNT} گذرواژه فقط در این دستگاه ذخیره شده است}other{‫{COUNT} گذرواژه فقط در این دستگاه ذخیره شده است}}</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
-<translation id="7352664183151911163">‏بین برنامه‌ها و مرورگر Chrome</translation>
 <translation id="7353261921908507769">وقتی مخاطبینتان نزدیک شما باشند می‌توانند با شما هم‌رسانی کنند. تا درخواست را نپذیرید، انتقال شروع نخواهد شد.</translation>
 <translation id="7353432112255316844">تأیید کنید هویتتان</translation>
 <translation id="735361434055555355">‏درحال نصب Linux…</translation>
@@ -10063,7 +10057,6 @@
 <translation id="8140869601171867148">‏«حساب Google» شما همان حسابی است که برای Gmail،‏ YouTube،‏ Chrome، و دیگر محصولات Google استفاده می‌کنید.
     از حسابتان برای دسترسی راحت به همه نشانک‌ها، فایل‌ها، و موارد دیگر استفاده کنید.</translation>
 <translation id="8141418916163800697">می‌توانید در تنظیمات «مرکز کنترل تلفن»، ویژگی‌های بیشتری را راه‌اندازی کنید</translation>
-<translation id="814156740715940972">تقسیم کردن برگه با برگه فعال</translation>
 <translation id="8141584439523427891">اکنون باز کردن در مرورگر جایگزین</translation>
 <translation id="8141725884565838206">مدیریت گذرواژه‌های شما</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{یک ویدیو}one{# ویدیو}other{# ویدیو}}</translation>
@@ -11198,7 +11191,6 @@
 <translation id="8946359700442089734">ویژگی‌های رفع اشکال در این دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /> کاملاً فعال نشدند.</translation>
 <translation id="8946954897220903437">جمع کردن همه درخواست‌ها در نوار نشانی</translation>
 <translation id="894763922177556086">خوب</translation>
-<translation id="8949304443659090542">‏مدیریت همگام‌سازی مرورگر Chrome</translation>
 <translation id="895054485242522631">سایت‌ها می‌توانند از حسگرهای حرکتی استفاده کنند</translation>
 <translation id="8951256747718668828">خطایی رخ داد و بازیابی کامل نشد</translation>
 <translation id="8951465597020890363">درهرصورت از حالت مهمان خارج می‌شوید؟</translation>
@@ -11219,7 +11211,6 @@
 <translation id="8963117664422609631">رفتن به تنظیمات سایت</translation>
 <translation id="8964927371396953727">برای استفاده از گذرواژه‌ها و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، هویت خود را به‌تأیید برسانید</translation>
 <translation id="8965037249707889821">گذرواژه قدیمی را وارد کنید</translation>
-<translation id="8966809848145604011">نمایه‌های دیگر</translation>
 <translation id="8967427617812342790">افزودن به فهرست خواندن</translation>
 <translation id="8967548289042494261">حذف <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">‏ایجادکننده تصویر سیستمی ChromeOS</translation>

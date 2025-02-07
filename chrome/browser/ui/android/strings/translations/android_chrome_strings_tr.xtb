@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1009406586654360474">Google Şifre Yöneticisi'ni açıp ayarlara gidin. "İçe aktar"ı seçin ve dışa aktardığınız şifrelerin yer aldığı CSV dosyasını ekleyin.</translation>
-<translation id="1010225406377140704">Yeni bir bağlantı istemek için bağlantıyı gönderen kişiyle iletişime geçin</translation>
 <translation id="1011749477052068769">Buraya taşı</translation>
 <translation id="1014147525163127655">Bu cihazda <ph name="ORIGIN" /> için geçiş anahtarı yok</translation>
 <translation id="1016498331642356377">Hızlıca sesinizle arama yapın. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
@@ -1723,7 +1722,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8683039184091909753">resim</translation>
 <translation id="869891660844655955">Son kullanma tarihi</translation>
 <translation id="8699120352855309748">Şu dilleri çevirmeyi önerme</translation>
-<translation id="8703372953981978786">Bu bağlantı çalışmıyor</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8723453889042591629">Bu sayfayı hızlıca çevirin. Bu kısayolu düzenlemek için dokunup basılı tutun.</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>

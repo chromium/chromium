@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">ਹੁਣ ਨਹੀਂ</translation>
 <translation id="100957008357583611">ਕੀ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ?</translation>
 <translation id="1010200102790553230">ਪੰਨਾ ਬਾਅਦ ਵਿੱਚ ਲੋਡ ਕਰੋ</translation>
+<translation id="1010225406377140704">ਨਵਾਂ ਲਿੰਕ ਮੰਗਣ ਲਈ, ਭੇਜਣ ਵਾਲੇ ਨਾਲ ਸੰਪਰਕ ਕਰੋ</translation>
 <translation id="1011206368273183593">ਫ਼ਾਈਲਾਂ ਤਿਆਰ ਹੋ ਰਹੀਆਂ ਹਨ</translation>
 <translation id="1014509239502131234">ਨਤੀਜੇ ਨੂੰ ਅਣਕੀਤਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1015730422737071372">ਵਾਧੂ ਵੇਰਵੇ ਮੁਹੱਈਆ ਕਰਵਾਓ</translation>
@@ -1164,6 +1165,7 @@
 <translation id="3076865167425975822">ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ</translation>
 <translation id="3080254622891793721">ਗ੍ਰਾਫ਼ਿਕ</translation>
 <translation id="3082007635241601060">ਉਪਲਬਧ ਹੋਣ 'ਤੇ ਵਿਅਕਤੀਗਤ ਛੋਟਾਂ ਲੱਭਣ ਲਈ Google ਨੂੰ ਤੁਹਾਡੇ ਕਾਰਟਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਿਓ</translation>
+<translation id="3086269988715347183">ਤੁਸੀਂ <ph name="BLOCKED_URL" /> ਨੂੰ ਪਹਿਲਾਂ ਮਨਜ਼ੂਰੀ ਨਹੀਂ ਦਿੱਤੀ ਹੈ</translation>
 <translation id="3086579638707268289">ਵੈੱਬ 'ਤੇ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3087734570205094154">ਹੇਠਲਾ</translation>
 <translation id="3090667236485488075">ਗਲਾਸ</translation>
@@ -1237,6 +1239,7 @@
 <translation id="3203025201812691413">URL ਨੂੰ ਖਾਲੀ ਨਹੀਂ ਛੱਡਿਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="320323717674993345">ਭੁਗਤਾਨ ਰੱਦ ਕਰੋ</translation>
 <translation id="3203366800380907218">ਵੈੱਬ ਤੋਂ</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> ਵਿੱਚ ਬਾਲਗਾਂ ਲਈ ਸਮੱਗਰੀ ਹੋ ਸਕਦੀ ਹੈ</translation>
 <translation id="3207960819495026254">ਬੁੱਕਮਾਰਕ ਕੀਤੇ</translation>
 <translation id="3208701679386778924">ਕਿਰਪਾ ਕਰਕੇ ਰਿਪੋਰਟ ਭੇਜੋ ਤਾਂ ਜੋ ਅਸੀਂ ChromeOS 'ਤੇ ਹੋਰ ਅੱਪਡੇਟਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾ ਸਕੀਏ।</translation>
 <translation id="3209034400446768650">ਸ਼ਾਇਦ ਪੰਨੇ ਵੱਲੋਂ ਖਰਚੇ ਲਏ ਜਾਣ</translation>
@@ -2969,6 +2972,7 @@
 <translation id="6254436959401408446">ਇਸ ਪੰਨੇ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਲੋੜੀਂਦੀ ਮੈਮੋਰੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="625463612687472648">ਆਗਿਆ ਬੰਦ ਕਰੋ</translation>
 <translation id="6259156558325130047">&amp;ਦੁਬਾਰਾ ਕ੍ਰਮ ਦੇਣ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
+<translation id="6259282549512536479">ਤੁਸੀਂ ਪਹਿਲਾਂ <ph name="BLOCKED_URL" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਸੀ</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ਬੁੱਕਮਾਰਕਸ</translation>
 <translation id="6264376385120300461">ਫਿਰ ਵੀ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="6264485186158353794">ਸੁਰੱਖਿਆ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
@@ -3101,6 +3105,7 @@
 <translation id="6465306955648956876">ਪਾਸਵਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ...</translation>
 <translation id="646789491285795429">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਇਸ ਉਤਪਾਦ ਨੂੰ ਟਰੈਕ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="6468485451923838994">ਫੌਂਟ</translation>
+<translation id="6469702164109431067">ਪਾਸਵਰਡ ਅਤੇ ਪਾਸਕੀਆਂ</translation>
 <translation id="647261751007945333">ਡੀਵਾਈਸ ਨੀਤੀਆਂ</translation>
 <translation id="6472874020827012601">ਕੱਪੜਾ (ਮੈਟ)</translation>
 <translation id="647330291963761005">ਅੱਪਡੇਟ ਸਥਾਪਤ ਹੋ ਰਹੇ ਹਨ</translation>
@@ -4344,6 +4349,7 @@
 <translation id="8699041776323235191">HID ਡੀਵਾਈਸ</translation>
 <translation id="8699985386408839112">ਕਾਕੂ 1 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="8702965365666568344">ਮਾਊਂਟਿੰਗ ਟੇਪ</translation>
+<translation id="8703372953981978786">ਇਹ ਲਿੰਕ ਕੰਮ ਨਹੀਂ ਕਰਦਾ</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> ਨਾਲ ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਐਨਕ੍ਰਿਪਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8705331520020532516">ਸੀਰੀਅਲ ਨੰਬਰ</translation>
 <translation id="8706806585855470492">ਤੁਸੀਂ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਸਾਂਝਾ ਕਰਨ, ਸ਼ਾਮਲ ਹੋਣ ਅਤੇ ਸਹਿਯੋਗ ਕਰਨ ਦਾ ਮੌਕਾ ਪ੍ਰਾਪਤ ਕਰੋਗੇ</translation>

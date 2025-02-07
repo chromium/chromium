@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1009406586654360474">เปิดเครื่องมือจัดการรหัสผ่านบน Google แล้วไปที่การตั้งค่า เลือก "นำเข้า" แล้วเพิ่มไฟล์ CSV ที่มีรหัสผ่านที่ส่งออก</translation>
-<translation id="1010225406377140704">ติดต่อผู้ส่งเพื่อขอลิงก์ใหม่</translation>
 <translation id="1011749477052068769">ย้ายมาที่นี่</translation>
 <translation id="1014147525163127655">ไม่มีพาสคีย์สำหรับ <ph name="ORIGIN" /> บนอุปกรณ์นี้</translation>
 <translation id="1016498331642356377">ค้นหาด้วยเสียงอย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
@@ -1723,7 +1722,6 @@
 <translation id="8683039184091909753">รูปภาพ</translation>
 <translation id="869891660844655955">วันหมดอายุ</translation>
 <translation id="8699120352855309748">ไม่ต้องเสนอการแปลภาษาเหล่านี้</translation>
-<translation id="8703372953981978786">ลิงก์นี้ใช้ไม่ได้</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
 <translation id="8723453889042591629">แปลหน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>

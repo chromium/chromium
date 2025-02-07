@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">總結</translation>
 <translation id="123124571410524056">可能有網絡入口</translation>
 <translation id="1232610416724362657">瀑布</translation>
+<translation id="1238163879850290856">重設即可防止他人存取資料，建議只使用你信任的輸入法。</translation>
 <translation id="1238612778414822719">HTTPS 延遲時間</translation>
 <translation id="1252766349417594414">搖桿</translation>
 <translation id="1270369111467284986">可疑的強制網絡入口</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">右邊 Shift</translation>
 <translation id="4654549501020883054">每日變更</translation>
 <translation id="4655868084888499342">圖片已經設定成桌布</translation>
+<translation id="4660989616054030633">生成式 AI 可能會出錯 (包括人物資料)，請加以複查</translation>
 <translation id="4661249927038176904">超現實</translation>
 <translation id="4661392828086261436">此更新由裝置製造商提供，尚未經 Google 驗證</translation>
 <translation id="4664651912255946953">毛皮</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">隱藏摘要</translation>
 <translation id="6075872808778243331">(Android) HTTP 延遲時間</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
+<translation id="6079693086494835199">重設即可確保預設首頁並非仿冒詐騙網站，建議只使用你信任的網站。</translation>
 <translation id="6091080061796993741">黃色</translation>
 <translation id="6104112872696127344">掃瞄已取消</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入您的舊密碼</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">栗紅色和粉紅色</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">重設即可防止他人使用你的麥克風或攝錄機，建議只將權限授予你信任的網站。</translation>
 <translation id="6188737759358894319">建立時間：<ph name="DATE" /></translation>
 <translation id="6189418609903030344">電池容量會隨使用時間增加而下降</translation>
 <translation id="6189987971574353264">播放</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">將鍵盤調暗</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />測試已取消</translation>
 <translation id="631063167932043783">探索應用程式</translation>
+<translation id="6314333689576767865">Chromebook 已重設為安全預設值。你可隨時在「設定」中變更。</translation>
 <translation id="6318437367327684789">不限時間</translation>
 <translation id="6319207335391420837">更新「<ph name="DEVICE_NAME" />」的韌體</translation>
 <translation id="6321407676395378991">開啟螢幕保護程式</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">已提交意見</translation>
 <translation id="6866732840889595464">雛菊</translation>
 <translation id="6871256179359663621">淺紫色</translation>
+<translation id="6887967050249348172">系統已停用擴充程式，避免設定變更。建議只啟用你信任的擴充程式。</translation>
 <translation id="6889786074662672253">重新啟動時，請勿拔除此外部裝置的插頭或關閉電腦。您可將此視窗縮到最小。此操作可能需要幾分鐘，這段期間外部裝置可能無法正常運作。</translation>
 <translation id="6899460405678814458">顯示摘要</translation>
 <translation id="6900701049656042631">此相簿沒有任何相片。如要新增相片，請前往 <ph name="LINK" /></translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">還原咗快速鍵</translation>
 <translation id="725133483556299729">揀電郵地址</translation>
 <translation id="7255187042098209569">粉紅色和紫色</translation>
+<translation id="7267918995585557751">重設即可確保預設起始網頁並非仿冒詐騙網站，建議只使用你信任的網站。</translation>
 <translation id="7271000785316964275">古典派</translation>
 <translation id="7271040990581020067">掃瞄器目前正在使用中，請稍後再試。</translation>
 <translation id="7271932918253517778">如果快速鍵包括最上排的按鍵，亦需要使用<ph name="META_KEY" />鍵。</translation>
@@ -1423,7 +1430,6 @@
 <translation id="7618216277886673749">選取<ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">中性色調</translation>
 <translation id="7620771111601174153">前往說明中心瞭解詳情</translation>
-<translation id="7625095758347640998">AI 桌布</translation>
 <translation id="763165478673169849">上次重設時間</translation>
 <translation id="7633068090678117093">背景圖片</translation>
 <translation id="763873111564339966">靛藍色</translation>
@@ -1486,6 +1492,7 @@
 <translation id="7903695460270716054">選擇精選藝術品和圖片</translation>
 <translation id="7912005977894000746">返去主頁</translation>
 <translation id="7915220255123750251">管理網絡 APN 設定。APN 會在流動網絡和互聯網之間建立連線。</translation>
+<translation id="7915759923880480519">重設即可保護透過網絡傳送的資料。建議只使用你信任的網絡。</translation>
 <translation id="7936303884198020182">找不到域名伺服器</translation>
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7943235353293548836">持續 keepalive 間隔</translation>
@@ -1711,6 +1718,7 @@
 <translation id="89945434909472341">村莊</translation>
 <translation id="8997710128084572139">裝置有 <ph name="BATTERY_PERCENTAGE" />% 電。</translation>
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>
+<translation id="9000871120886759611">重設即可確保系統以你偏好的語言顯示資料，請確認設定中只有你偏好的語言。</translation>
 <translation id="9003499805101629690">薄餅</translation>
 <translation id="9003704114456258138">頻率</translation>
 <translation id="901834265349196618">電郵</translation>

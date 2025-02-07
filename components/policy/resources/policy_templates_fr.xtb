@@ -2247,23 +2247,6 @@ Le système n'interroge les enregistrements AAAA que si un hôte IPv6 global pe
 <translation id="264771271300359481">Interdire à tous les sites d'utiliser l'autorisation d'accès au presse-papiers</translation>
 <translation id="2649537800219643135">Source de l'image affichée sur l'écran de verrouillage de l'économiseur d'écran de l'utilisateur.</translation>
 <translation id="2649896281375932517">Choix laissé aux utilisateurs</translation>
-<translation id="2649948251789347405">Cette règle permet aux administrateurs de définir un agrégateur de recherche d'entreprise dédié qui fournira des recommandations et des résultats de recherche dans la barre d'adresse lorsqu'il sera déclenché par un mot clé spécifique. Les utilisateurs peuvent lancer une recherche en saisissant dans la barre d'adresse le mot clé indiqué dans le champ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, avec ou sans le préfixe @ (par exemple, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), puis en appuyant sur la barre d'espace ou la touche de tabulation.
-
-Les champs suivants sont obligatoires : <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> et <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-Le champ <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> correspond au nom du moteur de recherche que l'utilisateur verra dans la barre d'adresse.
-
-Le champ <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> correspond au mot clé que l'utilisateur saisit pour déclencher la recherche. Le raccourci peut contenir des mots et caractères bruts, mais il ne peut pas inclure d'espaces ni commencer par le symbole @. Les raccourcis doivent être uniques.
-
-Le champ <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> spécifie l'URL sur laquelle effectuer la recherche. Saisissez l'adresse Web de la page de résultats du moteur de recherche, et utilisez <ph name="SEARCH_TERM_MARKER" /> à la place de la requête.
-
-Le champ <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> indique l'URL qui fournit des suggestions de recherche. Si <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contient <ph name="SEARCH_TERM_MARKER" />, Chrome obtiendra alors des suggestions de recherche via une demande GET à l'URL, en remplaçant <ph name="SEARCH_TERM_MARKER" /> par la requête de recherche de l'utilisateur. Sinon, une requête POST sera envoyée et la requête de l'utilisateur sera transmise dans les paramètres POST sous la clé <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-Le champ <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> indique l'URL d'une image qui sera utilisée dans les suggestions de recherche. Si ce champ n'est pas défini, une icône par défaut sera utilisée. Il est recommandé d'utiliser un favicon (exemple : <ph name="ICON_URL_EXAMPLE" />).
-
-Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2650049181907741121">Action à effectuer lorsque l'utilisateur ferme le couvercle</translation>
 <translation id="2652747206827086936">Désactiver la carte de fichiers SharePoint et OneDrive pour la page "Nouvel onglet"</translation>
 <translation id="2656559539624760733">Ne pas utiliser pas le Chrome Root Store.</translation>
@@ -5147,17 +5130,6 @@ Cette règle est provisoire et sera supprimée en 2026.</translation>
 <translation id="4857223512478723171">Ne pas autoriser le mode plein écran</translation>
 <translation id="4857888176748302062">Autoriser les origines à interroger les attributs des appareils</translation>
 <translation id="4858735034935305895">Autoriser le mode plein écran</translation>
-<translation id="4858882153530729282">Cette règle détermine si les URL blob sont partitionnées lors de l'extraction et de la navigation.
-Si cette règle est activée ou n'est pas configurée, les URL blob sont partitionnées.
-Si elle est désactivée, les URL blob ne sont pas partitionnées.
-
-De plus, si le partitionnement du stockage est désactivé pour une origine de premier niveau donnée par <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> ou <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />, les URL blob ne sont pas partitionnées.
-
-Si vous devez utiliser cette règle, veuillez signaler un bug sur crbug.com en expliquant votre cas d'utilisation et mettez en copie {janiceliu, awillia}@chromium.org. Cette règle sera disponible jusqu'à la version 138 de <ph name="PRODUCT_NAME" />, après quoi l'ancienne implémentation sera supprimée.
-
-REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.
-
-Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="4860900625632464759">Autoriser les utilisateurs à synchroniser les SMS entre leur téléphone et leur Chromebook</translation>
 <translation id="486146220825734683">Ne pas autoriser les utilisateurs à mémoriser les mots de passe Kerberos</translation>
 <translation id="4861767323695239729">Configurer les modes de saisie autorisés dans une session utilisateur</translation>
@@ -5418,6 +5390,7 @@ Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle
 <translation id="5030415914668947893">Autoriser la collecte de métriques avec clé d'URL </translation>
 <translation id="5033070732967197381">Autoriser les requêtes API WebAuthn sur les sites avec des certificats TLS non fonctionnels.</translation>
 <translation id="5034504101537897433">Activer les rapports d'erreur de l'appareil</translation>
+<translation id="5035980227219807711">Désactiver le provisionnement des certificats client pour les navigateurs</translation>
 <translation id="5036013147560568855">Version du protocole de provisionnement de certificat. La valeur par défaut est 1. 1 correspond au protocole "statique". 2 correspond au protocole "dynamique".</translation>
 <translation id="5036559232677914717">Cette règle permet de définir le comportement du système au démarrage. Désactiver cette règle revient à ne pas la configurer, car le comportement de <ph name="PRODUCT_NAME" /> au démarrage doit être spécifié.
 
@@ -8575,6 +8548,7 @@ Si cette règle est désactivée, les utilisateurs ne peuvent pas contourner la 
 <translation id="7174158612490351828">Liste de clés publiques de certificat qui ne devraient plus être approuvées par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur TLS.
 
 La valeur de la règle est une liste de certificats X.509 encodés en base64. Les certificats associés à un SPKI (SubjectPublicKeyInfo) correspondant ne seront plus approuvés.</translation>
+<translation id="7174997120839381414">Activer le provisionnement des certificats client pour les navigateurs</translation>
 <translation id="717630378807352957">Autorise toutes les imprimantes répertoriées dans le fichier de configuration.</translation>
 <translation id="7177293255621000064">Si vous définissez cette règle sur "True", tous les types de supports de stockage externes (clés USB, disques durs externes, cartes SD, autres cartes mémoire, etc.) sont alors indisponibles dans l'explorateur de fichiers. Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les utilisateurs peuvent utiliser des supports de stockage externes sur leur appareil.
 
@@ -9050,6 +9024,7 @@ Si cette règle est vide, aucune exception à <ph name="FLOATING_SSO_DOMAIN_BLOC
       Si elle est désactivée, la conversion d'unités pour Réponses rapides est désactivée.</translation>
 <translation id="7584363090329234690">Autoriser l'arrière-plan de visioconférence par IA générative sans améliorer les modèles d'IA</translation>
 <translation id="7585312329612243723">Activer le flux d'attestation <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL dans les navigateurs gérés</translation>
+<translation id="7586199729147257934">Activer le provisionnement des certificats client pour les navigateurs gérés</translation>
 <translation id="7587345076013230465">Demander à l'utilisateur de sélectionner le certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats sur l'écran de connexion</translation>
 <translation id="7587921466180902617">Active la version dogfood de l'enregistreur d'écran pour les utilisateurs de Family Link</translation>
 <translation id="7595074040612182185">Permet de lister les formats d'URL indiquant quels sites peuvent afficher des images.
@@ -10091,6 +10066,9 @@ Les certificats doivent être encodés en base64.</translation>
 <translation id="8399825694820904218">Si cette règle est définie sur un nombre, <ph name="PRODUCT_NAME" /> affiche un message pendant le nombre de millisecondes défini, puis ouvre un navigateur secondaire.
 
 Si cette règle n'est pas configurée ou qu'elle est définie sur 0, l'URL sélectionnée s'ouvre automatiquement dans un navigateur secondaire.</translation>
+<translation id="8400225642589806131">Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_ENABLED" /> (valeur 1), <ph name="PRODUCT_NAME" /> demandera un certificat client au serveur de gestion des appareils pour une session de navigateur gérée. Ce certificat sera disponible, par exemple, pour les connexions mTLS.
+
+Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED" /> (valeur 0) ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> ne pourra pas demander de certificat client. Si le certificat client géré d'un navigateur a déjà été provisionné en raison de l'activation de cette règle auparavant, il ne sera pas supprimé. Toutefois, il ne sera pas disponible pour les connexions mTLS ni renouvelé quand il arrivera à expiration.</translation>
 <translation id="8402079500086185021">Toujours ouvrir les fichiers PDF en externe</translation>
 <translation id="8402357110539568621">Permet d'activer la fonctionnalité d'accessibilité de clavier virtuel.
 

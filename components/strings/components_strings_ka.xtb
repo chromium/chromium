@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">ახლა არა</translation>
 <translation id="100957008357583611">გსურთ თქვენი მდებარეობის გამოყენება?</translation>
 <translation id="1010200102790553230">გვერდის მოგვიანებით ჩატვირთვა</translation>
+<translation id="1010225406377140704">დაუკავშირდით გამომგზავნს ახალი ბმულის მოსათხოვად</translation>
 <translation id="1011206368273183593">მიმდინარეობს ფაილების მომზადება</translation>
 <translation id="1014509239502131234">შედეგების გაუქმება</translation>
 <translation id="1015730422737071372">მიუთითეთ დამატებითი დეტალები</translation>
@@ -3108,6 +3109,7 @@
 <translation id="6465306955648956876">პაროლების მართვა…</translation>
 <translation id="646789491285795429">ამ პროდუქტს თვალს უკვე ადევნებთ</translation>
 <translation id="6468485451923838994">შრიფტები</translation>
+<translation id="6469702164109431067">პაროლები და წვდომის გასაღებები</translation>
 <translation id="647261751007945333">მოწყობილობის წესები</translation>
 <translation id="6472874020827012601">ქსოვილი (მქრქალი)</translation>
 <translation id="647330291963761005">მიმდინარეობს განახლებების ინსტალაცია</translation>
@@ -4351,6 +4353,7 @@
 <translation id="8699041776323235191">HID მოწყობილობა</translation>
 <translation id="8699985386408839112">კონვერტი Kaku 1</translation>
 <translation id="8702965365666568344">სამონტაჟო ლენტი</translation>
+<translation id="8703372953981978786">ეს ბმული არ მუშაობს</translation>
 <translation id="8703575177326907206">თქვენი კავშირი <ph name="DOMAIN" />-თან არ არის დაშიფრული.</translation>
 <translation id="8705331520020532516">სერიული ნომერი</translation>
 <translation id="8706806585855470492">თქვენ შეძლებთ ჩანართების ჯგუფების გაზიარებას, მათში შეერთებას და თანამშრომლობას</translation>

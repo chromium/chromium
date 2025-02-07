@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Ne sada</translation>
 <translation id="100957008357583611">Koristiti vašu lokaciju?</translation>
 <translation id="1010200102790553230">Učitaj stranicu kasnije</translation>
+<translation id="1010225406377140704">Obratite se pošiljatelju i zatražite novu vezu</translation>
 <translation id="1011206368273183593">Priprema datoteka</translation>
 <translation id="1014509239502131234">Poništavanje rezultata</translation>
 <translation id="1015730422737071372">Navedite dodatne pojedinosti</translation>
@@ -3107,6 +3108,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6465306955648956876">Upravljajte zaporkama...</translation>
 <translation id="646789491285795429">Već pratite ovaj proizvod</translation>
 <translation id="6468485451923838994">Fontovi</translation>
+<translation id="6469702164109431067">Zaporke i pristupni ključevi</translation>
 <translation id="647261751007945333">Pravila uređaja</translation>
 <translation id="6472874020827012601">Tkanina (mat)</translation>
 <translation id="647330291963761005">Instaliranje ažuriranja</translation>
@@ -4352,6 +4354,7 @@ Dodatne pojedinosti:
 <translation id="8699041776323235191">HID uređaj</translation>
 <translation id="8699985386408839112">Omotnica Kaku 1</translation>
 <translation id="8702965365666568344">Traka za montažu</translation>
+<translation id="8703372953981978786">Ova veza ne funkcionira</translation>
 <translation id="8703575177326907206">Vaša veza s <ph name="DOMAIN" /> nije šifrirana.</translation>
 <translation id="8705331520020532516">Serijski broj</translation>
 <translation id="8706806585855470492">Možete dijeliti, pridruživati se i surađivati u grupama kartica</translation>

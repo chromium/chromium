@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Vēlāk</translation>
 <translation id="100957008357583611">Vai izmantot jūsu atrašanās vietas datus?</translation>
 <translation id="1010200102790553230">Ielādēt lapu vēlāk</translation>
+<translation id="1010225406377140704">Sazinieties ar nosūtītāju un lūdziet jaunu saiti.</translation>
 <translation id="1011206368273183593">Notiek failu sagatavošana…</translation>
 <translation id="1014509239502131234">Rezultāta atsaukšana</translation>
 <translation id="1015730422737071372">Sniegt papildu informāciju</translation>
@@ -1164,6 +1165,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3076865167425975822">Operētājsistēmas</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Ļaujiet uzņēmumam Google izmantot jūsu grozus, lai atrastu personalizētas atlaides, kad tās pieejamas.</translation>
+<translation id="3086269988715347183">Jūs iepriekš neesat apstiprinājis vietni <ph name="BLOCKED_URL" />.</translation>
 <translation id="3086579638707268289">Jūsu darbības tīmeklī tiek uzraudzītas</translation>
 <translation id="3087734570205094154">Apakšā</translation>
 <translation id="3090667236485488075">Stikls</translation>
@@ -1239,6 +1241,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3203025201812691413">URL lauks nedrīkst būt tukšs.</translation>
 <translation id="320323717674993345">Atcelt maksājumu</translation>
 <translation id="3203366800380907218">No tīmekļa</translation>
+<translation id="3207830513221832868">Vietnē <ph name="BLOCKED_URL" /> var būt ietverts galvenokārt pieaugušajiem paredzēts saturs.</translation>
 <translation id="3207960819495026254">Atzīmēts kā grāmatzīme</translation>
 <translation id="3208701679386778924">Lūdzu, nosūtiet atsauksmes, lai mēs varētu uzlabot nākamos Chrome OS atjauninājumus.</translation>
 <translation id="3209034400446768650">Lapā var tikt iekasēta nauda</translation>
@@ -2971,6 +2974,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6254436959401408446">Nav pietiekami daudz vietas atmiņā, lai atvērtu šo lapu</translation>
 <translation id="625463612687472648">Atsaukt atļauju</translation>
 <translation id="6259156558325130047">&amp;Pārkārtošanas atsaukuma atcelšana</translation>
+<translation id="6259282549512536479">Jūs iepriekš bloķējāt vietni <ph name="BLOCKED_URL" />.</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> grāmatzīmes</translation>
 <translation id="6264376385120300461">Tomēr lejupielādēt</translation>
 <translation id="6264485186158353794">Atpakaļ drošībā</translation>
@@ -3103,6 +3107,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6465306955648956876">Pārvaldīt paroles...</translation>
 <translation id="646789491285795429">Jūs jau sekojat līdzi šī produkta informācijai.</translation>
 <translation id="6468485451923838994">Fonti</translation>
+<translation id="6469702164109431067">Paroles un piekļuves atslēgas</translation>
 <translation id="647261751007945333">Ierīces politikas</translation>
 <translation id="6472874020827012601">Audums (matēts)</translation>
 <translation id="647330291963761005">Notiek atjauninājumu instalēšana</translation>
@@ -4348,6 +4353,7 @@ Papildu informācija:
 <translation id="8699041776323235191">HID ierīce</translation>
 <translation id="8699985386408839112">Aploksne Kaku 1</translation>
 <translation id="8702965365666568344">Montāžas lente</translation>
+<translation id="8703372953981978786">Šī saite nedarbojas</translation>
 <translation id="8703575177326907206">Jūsu savienojums ar <ph name="DOMAIN" /> nav kodēts.</translation>
 <translation id="8705331520020532516">Sērijas numurs</translation>
 <translation id="8706806585855470492">Jūs varēsiet kopīgot ciļņu grupas, kā arī pievienoties tām un sadarboties tajās.</translation>

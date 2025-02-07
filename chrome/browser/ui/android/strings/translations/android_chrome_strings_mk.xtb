@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1009406586654360474">Отворете ја Google Password Manager и одете во поставките. Изберете „Увезете“ и додајте ја CSV-датотеката што ги содржи извезените лозинки.</translation>
-<translation id="1010225406377140704">Контактирајте со испраќачот за да побарате нов линк</translation>
 <translation id="1011749477052068769">Премести тука</translation>
 <translation id="1014147525163127655">Нема криптографски клучеви за <ph name="ORIGIN" /> на уредов</translation>
 <translation id="1016498331642356377">Брзо пребарајте со гласот. За да ја измените сликава од екранот, допрете и задржете.</translation>
@@ -1723,7 +1722,6 @@
 <translation id="8683039184091909753">слика</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699120352855309748">Не нуди превод за овие јазици</translation>
-<translation id="8703372953981978786">Линков не функционира</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="8723453889042591629">Брзо преведи ја страницава. За да ја измените кратенкава, допрете и задржете.</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>

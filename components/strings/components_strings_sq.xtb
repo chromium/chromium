@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Jo tani</translation>
 <translation id="100957008357583611">Të përdoret vendndodhja jote?</translation>
 <translation id="1010200102790553230">Ngarkoje faqen më vonë</translation>
+<translation id="1010225406377140704">Kontakto me dërguesin për t'i kërkuar një lidhje të re</translation>
 <translation id="1011206368273183593">Skedarët po përgatiten</translation>
 <translation id="1014509239502131234">Po zhbëhen rezultatet</translation>
 <translation id="1015730422737071372">Jep detaje të tjera</translation>
@@ -1164,6 +1165,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3076865167425975822">Sistemet operative</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Lejo që Google të përdorë grumbujt e tu të artikujve për të gjetur zbritje të personalizuara kur ato ofrohen</translation>
+<translation id="3086269988715347183">Nuk e ke miratuar <ph name="BLOCKED_URL" /> më parë</translation>
 <translation id="3086579638707268289">Aktiviteti yt në ueb po monitorohet</translation>
 <translation id="3087734570205094154">Në fund</translation>
 <translation id="3090667236485488075">Qelq</translation>
@@ -1239,6 +1241,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3203025201812691413">URL-ja nuk mund të jetë bosh</translation>
 <translation id="320323717674993345">Anulo pagesën</translation>
 <translation id="3203366800380907218">Nga uebi</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> mund të ketë përmbajtje për të rritur</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3208701679386778924">Dërgo një raport që të mund t'i përmirësojmë përditësimet e mëtejshme të ChromeOS.</translation>
 <translation id="3209034400446768650">Faqja mund të tarifojë para</translation>
@@ -2971,6 +2974,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6254436959401408446">Nuk ka memorie të mjaftueshme për të hapur këtë faqe</translation>
 <translation id="625463612687472648">Ndalo lejimin</translation>
 <translation id="6259156558325130047">&amp;Ribëj riporosinë</translation>
+<translation id="6259282549512536479">Ke bllokuar më parë <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872">Faqeshënuesit e <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
 <translation id="6264485186158353794">Kthehu aty ku je i sigurt</translation>
@@ -3103,6 +3107,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6465306955648956876">Menaxho fjalëkalimet...</translation>
 <translation id="646789491285795429">Po e monitoron tashmë këtë produkt</translation>
 <translation id="6468485451923838994">Shkrimet</translation>
+<translation id="6469702164109431067">Fjalëkalimet dhe çelësat e kalimit</translation>
 <translation id="647261751007945333">Politikat e pajisjes</translation>
 <translation id="6472874020827012601">Pëlhurë (mat)</translation>
 <translation id="647330291963761005">Përditësimet po instalohen</translation>
@@ -4346,6 +4351,7 @@ Detaje shtesë:
 <translation id="8699041776323235191">Pajisje HID</translation>
 <translation id="8699985386408839112">Zarf Kaku 1</translation>
 <translation id="8702965365666568344">Shirit montimi</translation>
+<translation id="8703372953981978786">Kjo lidhje nuk funksionon</translation>
 <translation id="8703575177326907206">Lidhja me <ph name="DOMAIN" /> nuk është e enkriptuar.</translation>
 <translation id="8705331520020532516">Numri i serisë</translation>
 <translation id="8706806585855470492">Do të mund të ndash, të bashkohesh dhe të bashkëpunosh në grupet e skedave</translation>

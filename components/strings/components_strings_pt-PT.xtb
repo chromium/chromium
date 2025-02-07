@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Agora não</translation>
 <translation id="100957008357583611">Quer utilizar a sua localização?</translation>
 <translation id="1010200102790553230">Carregar a página mais tarde</translation>
+<translation id="1010225406377140704">Contacte o remetente para pedir um novo link</translation>
 <translation id="1011206368273183593">A preparar os ficheiros</translation>
 <translation id="1014509239502131234">A anular o resultado</translation>
 <translation id="1015730422737071372">Forneça mais detalhes</translation>
@@ -3108,6 +3109,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6465306955648956876">Gerir palavras-passe…</translation>
 <translation id="646789491285795429">Já está a acompanhar este produto</translation>
 <translation id="6468485451923838994">Tipos de letra</translation>
+<translation id="6469702164109431067">Palavras-passe e chaves de acesso</translation>
 <translation id="647261751007945333">Políticas do dispositivo</translation>
 <translation id="6472874020827012601">Tecido (mate)</translation>
 <translation id="647330291963761005">A instalar atualizações</translation>
@@ -4352,6 +4354,7 @@ Detalhes adicionais:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">Fita adesiva para montagem</translation>
+<translation id="8703372953981978786">Este link não funciona</translation>
 <translation id="8703575177326907206">A sua ligação a <ph name="DOMAIN" /> não está encriptada.</translation>
 <translation id="8705331520020532516">Número de série</translation>
 <translation id="8706806585855470492">Vai poder partilhar, aderir e colaborar em grupos de separadores</translation>

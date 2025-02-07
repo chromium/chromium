@@ -272,7 +272,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1177863135347784049">Aangepast</translation>
 <translation id="1178093605842850860">Toestemming om deze site te lezen en te wijzigen</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
-<translation id="1178601482396475810">Apparaatsynchronisatie beheren</translation>
 <translation id="117916940443676133">Je beveiligingssleutel is niet beveiligd met een pincode. Maak eerst een pincode als je de inloggegevens wilt beheren.</translation>
 <translation id="1179400851034021914">IBAN is ongeldig</translation>
 <translation id="1179902906564467236">Volg de instructies op je telefoon of gebruik de camera-app</translation>
@@ -1459,7 +1458,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="2003596238737586336">Huidige planning is ingesteld op <ph name="SUNRISE" /> - <ph name="SUNSET" />. Deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="2004413981947727241">Je wachtwoorden gebruiken op elk apparaat</translation>
 <translation id="2004697686368036666">Functies op bepaalde sites werken misschien niet</translation>
-<translation id="2005199804247617997">Andere profielen</translation>
 <translation id="2006638907958895361">Link openen in <ph name="APP" /></translation>
 <translation id="2007404777272201486">Een probleem melden...</translation>
 <translation id="200781997903833896">Maak ruimte vrij op je apparaat om Voorlezen te gebruiken</translation>
@@ -1684,7 +1682,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2158249272743343757">Personalisatiegegevens verwijderen…</translation>
 <translation id="2158475082070321257">Link naar markering kopiëren</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">Vat content samen of stel vervolgvragen.</translation>
 <translation id="2161058806218011758">Bereik van <ph name="SHORTCUT" /> voor <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">Wifi toevoegen...</translation>
 <translation id="2162155940152307086">De synchronisatie wordt gestart wanneer je de synchronisatie-instellingen verlaat</translation>
@@ -1947,7 +1944,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2333166365943957309">UI-hiërarchie</translation>
 <translation id="233375395665273385">Verwijderen en uitloggen</translation>
 <translation id="233471714539944337">Gevoelige content</translation>
-<translation id="2335111415680198280">{0,plural, =1{# venster sluiten}other{# vensters sluiten}}</translation>
 <translation id="2335758110242123814">Groep openen</translation>
 <translation id="2336228925368920074">Bookmark toevoegen aan alle tabbladen...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> drukt 1 pagina af naar <ph name="PRINTER_NAME" /></translation>
@@ -3741,7 +3737,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3629664892718440872">Deze keuze onthouden</translation>
 <translation id="3630132874740063857">Je telefoon</translation>
 <translation id="3630995161997703415">Voeg deze site aan je plank toe om hem altijd te kunnen gebruiken</translation>
-<translation id="3632929818790223729">Tabblad splitsen met actief tabblad</translation>
 <translation id="3634652306074934350">Rechtenverzoek is verlopen</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) waargenomen</translation>
 <translation id="3635353578505343390">Feedback sturen naar Google</translation>
@@ -5863,7 +5858,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="512642543295077915">zoeken + backspace</translation>
 <translation id="5126611267288187364">Wijzigingen bekijken</translation>
 <translation id="5127620150973591153">Beveiligde verbindings-ID: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">Synchronisatie staat uit</translation>
 <translation id="5127881134400491887">Netwerkverbindingen beheren</translation>
 <translation id="5127934926273826089">Bloemen</translation>
 <translation id="5127986747308934633">Je beheerder beheert je apparaat</translation>
@@ -5952,6 +5946,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5190926251776387065">Poort activeren</translation>
 <translation id="5190959794678983197">Geen microfoon</translation>
 <translation id="5191094172448199359">De pincodes die je hebt opgegeven, komen niet overeen</translation>
+<translation id="5191251636205085390">Bekijk meer informatie over en beheer nieuwe technologieën die cookies van derden willen vervangen</translation>
 <translation id="519185197579575131">QT gebruiken</translation>
 <translation id="5192062846343383368">Open de Family Link-app om de instellingen voor toezicht te bekijken</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 toegangssleutel}other{{COUNT} toegangssleutels}}</translation>
@@ -8899,7 +8894,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7349010927677336670">Vloeiendheid van de video</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} wachtwoord wordt alleen op dit apparaat opgeslagen}other{{COUNT} wachtwoorden worden alleen op dit apparaat opgeslagen}}</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
-<translation id="7352664183151911163">In je apps en in de Chrome-browser</translation>
 <translation id="7353261921908507769">Je contacten kunnen met je delen als ze in de buurt zijn. Overdrachten worden pas gestart nadat je ze accepteert.</translation>
 <translation id="7353432112255316844">Bevestigen dat jij het bent</translation>
 <translation id="735361434055555355">Linux installeren...</translation>
@@ -10042,7 +10036,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8140869601171867148">Je Google-account is hetzelfde account dat je gebruikt voor Gmail, YouTube, Chrome en andere Google-producten.
     Gebruik je account om makkelijk toegang te krijgen tot onder andere al je bookmarks en bestanden.</translation>
 <translation id="8141418916163800697">Je kunt meer functies instellen in de Telefoonhub-instellingen</translation>
-<translation id="814156740715940972">Tabblad splitsen met actief tabblad</translation>
 <translation id="8141584439523427891">Wordt nu geopend in een alternatieve browser</translation>
 <translation id="8141725884565838206">Je wachtwoorden beheren</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{een video}other{# video's}}</translation>
@@ -11177,7 +11170,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8946359700442089734">Foutopsporingsfuncties zijn niet volledig aangezet op dit <ph name="IDS_SHORT_PRODUCT_NAME" />-apparaat.</translation>
 <translation id="8946954897220903437">Alle verzoeken in de adresbalk samenvouwen</translation>
 <translation id="894763922177556086">Goed</translation>
-<translation id="8949304443659090542">Chrome-browsersynchronisatie beheren</translation>
 <translation id="895054485242522631">Sites kunnen bewegingssensoren gebruiken</translation>
 <translation id="8951256747718668828">De herstelactie kan niet worden voltooid door een fout</translation>
 <translation id="8951465597020890363">Gastmodus toch sluiten?</translation>
@@ -11198,7 +11190,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8963117664422609631">Naar de site-instellingen</translation>
 <translation id="8964927371396953727">Laat verifiëren dat jij het bent om wachtwoorden in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
 <translation id="8965037249707889821">Oud wachtwoord opgeven</translation>
-<translation id="8966809848145604011">Andere profielen</translation>
 <translation id="8967427617812342790">Toevoegen aan leeslijst</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> verwijderen</translation>
 <translation id="8968527460726243404">ChromeOS System Image Writer</translation>

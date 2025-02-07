@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Inte nu</translation>
 <translation id="100957008357583611">Får din plats användas?</translation>
 <translation id="1010200102790553230">Läs in sidan senare</translation>
+<translation id="1010225406377140704">Kontakta avsändaren och be om en ny länk</translation>
 <translation id="1011206368273183593">Filerna förbereds</translation>
 <translation id="1014509239502131234">Ångrar resultatet</translation>
 <translation id="1015730422737071372">Ange ytterligare information</translation>
@@ -1164,6 +1165,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3076865167425975822">Operativsystem</translation>
 <translation id="3080254622891793721">Bild</translation>
 <translation id="3082007635241601060">Tillåt att Google använder dina kundvagnar för att leta efter anpassade rabatter</translation>
+<translation id="3086269988715347183">Du har inte godkänt <ph name="BLOCKED_URL" /> tidigare</translation>
 <translation id="3086579638707268289">Din aktivitet på webben övervakas</translation>
 <translation id="3087734570205094154">Nederst</translation>
 <translation id="3090667236485488075">Glas</translation>
@@ -1239,6 +1241,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3203025201812691413">Webbadressen får inte lämnas tom</translation>
 <translation id="320323717674993345">Avbryt betalningen</translation>
 <translation id="3203366800380907218">Från webben</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> kan ha innehåll för vuxna</translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
 <translation id="3208701679386778924">Skicka en rapport så att vi kan förbättra framtida ChromeOS-uppdateringar.</translation>
 <translation id="3209034400446768650">Sidan kan vara avgiftsbelagd</translation>
@@ -2973,6 +2976,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6254436959401408446">Det finns inte tillräckligt med minne för att öppna den här sidan</translation>
 <translation id="625463612687472648">Dra tillbaka behörigheten</translation>
 <translation id="6259156558325130047">&amp;Gör om Ändra ordning</translation>
+<translation id="6259282549512536479">Du har tidigare blockerat <ph name="BLOCKED_URL" /></translation>
 <translation id="6263376278284652872">Bokmärken för <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Ladda ned ändå</translation>
 <translation id="6264485186158353794">Tillbaka till säker webbplats</translation>
@@ -3105,6 +3109,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6465306955648956876">Hantera lösenord …</translation>
 <translation id="646789491285795429">Du bevakar redan den här produkten</translation>
 <translation id="6468485451923838994">Teckensnitt</translation>
+<translation id="6469702164109431067">Lösenord och nycklar</translation>
 <translation id="647261751007945333">Enhetspolicyer</translation>
 <translation id="6472874020827012601">Tyg (matt)</translation>
 <translation id="647330291963761005">Uppdateringar installeras</translation>
@@ -4350,6 +4355,7 @@ Mer information:
 <translation id="8699041776323235191">HID-enhet</translation>
 <translation id="8699985386408839112">Kaku 1-kuvert</translation>
 <translation id="8702965365666568344">Monteringstejp</translation>
+<translation id="8703372953981978786">Den här länken fungerar inte</translation>
 <translation id="8703575177326907206">Din anslutning till <ph name="DOMAIN" /> är inte krypterad.</translation>
 <translation id="8705331520020532516">Serienummer</translation>
 <translation id="8706806585855470492">Du kan dela, gå med i och samarbeta i flikgrupper</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1009406586654360474">Odprite Googlovega upravitelja gesel in odprite nastavitve. Izberite »Uvozi« in dodajte datoteko CSV, ki vsebuje izvožena gesla.</translation>
-<translation id="1010225406377140704">Obrnite se na pošiljatelja in ga prosite za novo povezavo</translation>
 <translation id="1011749477052068769">Premik sem</translation>
 <translation id="1014147525163127655">V tej napravi ni ključev za dostop za aplikacijo <ph name="ORIGIN" />.</translation>
 <translation id="1016498331642356377">Hitro iščite z glasom. Če želite urediti to bližnjico, pridržite.</translation>
@@ -1723,7 +1722,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8683039184091909753">slika</translation>
 <translation id="869891660844655955">Datum izteka</translation>
 <translation id="8699120352855309748">Ne ponudi prevajanja teh jezikov</translation>
-<translation id="8703372953981978786">Ta povezava ne deluje</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="8723453889042591629">Hitro prevedite to stran. Če želite urediti to bližnjico, pridržite.</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>

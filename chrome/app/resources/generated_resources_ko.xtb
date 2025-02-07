@@ -272,7 +272,6 @@
 <translation id="1177863135347784049">맞춤설정</translation>
 <translation id="1178093605842850860">이 사이트를 읽고 변경할 수 있음</translation>
 <translation id="1178581264944972037">일시중지</translation>
-<translation id="1178601482396475810">기기 동기화 관리하기</translation>
 <translation id="117916940443676133">보안 키가 PIN으로 보호되어 있지 않습니다. 로그인 데이터를 관리하려면 PIN을 만드세요.</translation>
 <translation id="1179400851034021914">IBAN이 잘못되었습니다.</translation>
 <translation id="1179902906564467236">휴대전화의 안내를 따르거나 카메라 앱을 사용하세요.</translation>
@@ -1470,7 +1469,6 @@
 <translation id="2003596238737586336">현재 일정은 <ph name="SUNRISE" />~<ph name="SUNSET" />(으)로 설정되어 있습니다. 관리자가 관리하는 설정입니다.</translation>
 <translation id="2004413981947727241">어느 기기에서나 비밀번호 사용하기</translation>
 <translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
-<translation id="2005199804247617997">기타 프로필</translation>
 <translation id="2006638907958895361"><ph name="APP" />에서 링크 열기</translation>
 <translation id="2007404777272201486">문제 신고...</translation>
 <translation id="200781997903833896">소리 내어 읽어주기를 사용하려면 기기의 저장공간을 확보하세요</translation>
@@ -1695,7 +1693,6 @@
 <translation id="2158249272743343757">맞춤설정 데이터 삭제…</translation>
 <translation id="2158475082070321257">하이라이트 링크 복사</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">콘텐츠를 요약하거나 후속 질문을 던져보세요.</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" />의 <ph name="SHORTCUT" /> 범위</translation>
 <translation id="216169395504480358">Wi-Fi 추가</translation>
 <translation id="2162155940152307086">동기화 설정을 종료하면 동기화가 시작됩니다.</translation>
@@ -1962,7 +1959,6 @@
 <translation id="2333166365943957309">UI 계층 구조</translation>
 <translation id="233375395665273385">삭제 및 로그아웃</translation>
 <translation id="233471714539944337">민감한 콘텐츠</translation>
-<translation id="2335111415680198280">{0,plural, =1{창 #개 닫기}other{창 #개 닫기}}</translation>
 <translation id="2335758110242123814">그룹 열기</translation>
 <translation id="2336228925368920074">모든 탭 북마크...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" />에서 <ph name="PRINTER_NAME" /> 프린터로 1페이지를 인쇄하는 중입니다.</translation>
@@ -3758,7 +3754,6 @@
 <translation id="3629664892718440872">이 선택사항 저장</translation>
 <translation id="3630132874740063857">휴대전화</translation>
 <translation id="3630995161997703415">이 사이트를 언제든지 사용할 수 있도록 앱 표시줄에 추가합니다</translation>
-<translation id="3632929818790223729">선택한 탭과 활성 탭 분할</translation>
 <translation id="3634652306074934350">권한 요청 만료됨</translation>
 <translation id="3635199270495525546">신뢰할 수 있는 플랫폼 모듈(TPM) 감지됨</translation>
 <translation id="3635353578505343390">Google에 의견 보내기</translation>
@@ -5881,7 +5876,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="512642543295077915">검색 + 백스페이스</translation>
 <translation id="5126611267288187364">변경사항 보기</translation>
 <translation id="5127620150973591153">보안 연결 ID: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">동기화 사용 안함</translation>
 <translation id="5127881134400491887">네트워크 연결 관리</translation>
 <translation id="5127934926273826089">꽃</translation>
 <translation id="5127986747308934633">관리자가 내 기기를 제어하는 중임</translation>
@@ -5970,6 +5964,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5190926251776387065">포트 활성화</translation>
 <translation id="5190959794678983197">마이크 없음</translation>
 <translation id="5191094172448199359">입력한 PIN이 일치하지 않음</translation>
+<translation id="5191251636205085390">타사 쿠키를 대체하는 것을 목표로 하는 새로운 기술을 알아보고 관리하세요.</translation>
 <translation id="519185197579575131">QT 사용</translation>
 <translation id="5192062846343383368">Family Link 앱을 열어 감독 설정을 확인합니다.</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{패스키 1개}other{패스키 {COUNT}개}}</translation>
@@ -8921,7 +8916,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7349010927677336670">동영상 화질</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{비밀번호 {COUNT}개가 이 기기에만 저장됩니다}other{비밀번호 {COUNT}개가 이 기기에만 저장됩니다}}</translation>
 <translation id="7352651011704765696">문제가 발생했습니다.</translation>
-<translation id="7352664183151911163">여러 앱 및 Chrome 브라우저</translation>
 <translation id="7353261921908507769">연락처에 있는 사용자가 근처에 있는 경우 나와 공유할 수 있습니다. 내가 수락하지 않으면 전송이 시작되지 않습니다.</translation>
 <translation id="7353432112255316844">본인 인증</translation>
 <translation id="735361434055555355">Linux 설치 중...</translation>
@@ -10066,7 +10060,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8140869601171867148">Google 계정이란 Gmail, YouTube, Chrome, 기타 Google 제품에 사용하는 계정과 동일한 계정입니다.
     내 계정을 사용하여 모든 북마크, 파일 등에 쉽게 액세스해 보세요.</translation>
 <translation id="8141418916163800697">휴대전화 허브 설정에서 더 많은 기능을 설정할 수 있습니다.</translation>
-<translation id="814156740715940972">선택한 탭과 활성 탭 분할</translation>
 <translation id="8141584439523427891">지금 대체 브라우저에서 열립니다.</translation>
 <translation id="8141725884565838206">비밀번호 관리</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{동영상 1개}other{동영상 #개}}</translation>
@@ -11200,7 +11193,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8946359700442089734">이 <ph name="IDS_SHORT_PRODUCT_NAME" /> 기기에서 디버깅 기능의 사용 설정을 완료하지 못했습니다.</translation>
 <translation id="8946954897220903437">주소 표시줄의 모든 요청 접기</translation>
 <translation id="894763922177556086">좋음</translation>
-<translation id="8949304443659090542">Chrome 브라우저 동기화 관리</translation>
 <translation id="895054485242522631">사이트에서 움직임 감지 센서를 사용할 수 있음</translation>
 <translation id="8951256747718668828">오류로 인해 복원을 완료할 수 없습니다.</translation>
 <translation id="8951465597020890363">게스트 모드를 종료하시겠습니까?</translation>
@@ -11221,7 +11213,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>
 <translation id="8964927371396953727"><ph name="ACCOUNT_EMAIL" /> 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
 <translation id="8965037249707889821">이전 비밀번호 입력</translation>
-<translation id="8966809848145604011">기타 프로필</translation>
 <translation id="8967427617812342790">읽기 목록에 추가</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> 삭제</translation>
 <translation id="8968527460726243404">ChromeOS 시스템 이미지 작성기</translation>

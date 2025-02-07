@@ -70,6 +70,7 @@ Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te da
 <translation id="2459183986985456602">Otwórz moją ostatnio używaną kartę w Chromium.</translation>
 <translation id="2476409803017965813">Wybrane opcje możesz zmienić w dowolnym momencie w ustawieniach Chromium.</translation>
 <translation id="2478931088402984578">Wybierz <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Ustaw Chromium jako przeglądarkę domyślną, aby łatwo udostępniać i otwierać linki</translation>
 <translation id="2512597191798760956">Naciśnij i przytrzymaj ikonę Chromium i kliknij „Edytuj ekran główny”</translation>
 <translation id="2517624234762908348">Synchronizuj dane Chromium</translation>
 <translation id="2592940277904433508">Nadal korzystaj z Chromium</translation>
@@ -167,6 +168,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim
 <translation id="5088872414922783602">Otwieraj Chromium szybciej z Docka na ekranie głównym.</translation>
 <translation id="5124429847818367226">Teraz możesz używać Chromium za każdym razem, gdy przeglądasz lub klikasz linki w wiadomościach, dokumentach i innych aplikacjach.</translation>
 <translation id="5131565040785979529">Twoja organizacja (<ph name="DOMAIN" />) zarządza kontem, na które się logujesz, i korzystaniem z Chromium.</translation>
+<translation id="5134464247000681876">Otwieraj linki z Gmaila, Map, YouTube i innych aplikacji w Chromium</translation>
 <translation id="5224391634244552924">Brak zapisanych haseł. Chromium może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="5259423875997548710">Wyszukaj elementy wizualne w Chromium.</translation>
 <translation id="5308226104666789935">Chromium nie może sprawdzić dostępności aktualizacji</translation>
@@ -260,6 +262,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="7674213385180944843">Wybierz Ustawienia &gt; Prywatność &gt; Aparat &gt; Chromium i włącz aparat.</translation>
 <translation id="7733418656985455268">Wskazówka dotycząca Chromium: wyszukuj za pomocą Obiektywu</translation>
 <translation id="7747820849741499258">Wyszukaj w Chromium</translation>
+<translation id="7753923083404296545">Otwarto w Chromium w trybie incognito</translation>
 <translation id="7762622637388462191">Po zamknięciu Chromium lub przełączeniu się na inną aplikację zablokuj karty incognito.</translation>
 <translation id="7763454117143368771">Używaj Chromium jako przeglądarki domyślnej, aby korzystać z ochrony przed niebezpiecznymi stronami i bezpiecznie przechowywać swoje hasła</translation>
 <translation id="7784950022329154821">Blokuj karty incognito po zamknięciu Chromium</translation>

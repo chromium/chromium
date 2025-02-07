@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1009406586654360474">Hap "Menaxherin e fjalëkalimeve të Google" dhe shko te cilësimet. Zgjidh "Importo" dhe shto skedarin CSV që përmban fjalëkalimet e tua të eksportuara.</translation>
-<translation id="1010225406377140704">Kontakto me dërguesin për t'i kërkuar një lidhje të re</translation>
 <translation id="1011749477052068769">Zhvendose këtu</translation>
 <translation id="1014147525163127655">Nuk ka asnjë çelës kalimi për <ph name="ORIGIN" /> në këtë pajisje</translation>
 <translation id="1016498331642356377">Kërko me shpejtësi me zërin tënd. Për ta modifikuar këtë shkurtore, preke dhe mbaje të prekur.</translation>
@@ -1723,7 +1722,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8683039184091909753">imazhi</translation>
 <translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8699120352855309748">Mos ofro t'i përkthesh këto gjuhë</translation>
-<translation id="8703372953981978786">Kjo lidhje nuk funksionon</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8723453889042591629">Përktheje me shpejtësi këtë faqe. Për ta modifikuar këtë shkurtore, preke dhe mbaje shtypur.</translation>
 <translation id="8725066075913043281">Provo sërish</translation>

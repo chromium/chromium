@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
 <translation id="1009406586654360474">Abre el Gestor de contraseñas de Google y ve a la configuración. Selecciona Importar y añade el archivo CSV que contiene tus contraseñas exportadas.</translation>
-<translation id="1010225406377140704">Ponte en contacto con el remitente para pedirle un enlace nuevo</translation>
 <translation id="1011749477052068769">Mover aquí</translation>
 <translation id="1014147525163127655">No hay claves de acceso para <ph name="ORIGIN" /> en este dispositivo</translation>
 <translation id="1016498331642356377">Busca rápidamente con la voz. Para editar este acceso directo, mantenlo pulsado.</translation>
@@ -1723,7 +1722,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8683039184091909753">imagen</translation>
 <translation id="869891660844655955">Fecha de caducidad</translation>
 <translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>
-<translation id="8703372953981978786">Este enlace no funciona</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8723453889042591629">Traduce esta página rápidamente. Para editar este acceso directo, mantenlo pulsado.</translation>
 <translation id="8725066075913043281">Reintentar</translation>

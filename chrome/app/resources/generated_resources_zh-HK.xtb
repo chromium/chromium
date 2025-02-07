@@ -272,7 +272,6 @@
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178093605842850860">已允許讀取及變更此網站</translation>
 <translation id="1178581264944972037">暫停</translation>
-<translation id="1178601482396475810">管理裝置同步設定</translation>
 <translation id="117916940443676133">您的安全密鑰並未受 PIN 保護。請先建立 PIN 以管理登入資料。</translation>
 <translation id="1179400851034021914">IBAN 無效</translation>
 <translation id="1179902906564467236">按照手機的指示操作，或使用相機應用程式</translation>
@@ -1375,6 +1374,7 @@
 <translation id="1936157145127842922">在資料夾中顯示</translation>
 <translation id="1936931585862840749">使用數字指定列印份數 (1 至 <ph name="MAX_COPIES" /> 份)。</translation>
 <translation id="1937774647013465102">此裝置使用 <ph name="ARCHITECTURE_DEVICE" />，因此無法匯入容器架構類型 <ph name="ARCHITECTURE_CONTAINER" />。您可嘗試將此容器還原至其他裝置，或透過 Files 應用程式存取此容器圖片內的檔案。</translation>
+<translation id="1938116692670653897">目前的顏色主題</translation>
 <translation id="1938351510777341717">外置 Command 鍵</translation>
 <translation id="1940221956626514677">自訂工具列</translation>
 <translation id="1940546824932169984">已連接的裝置</translation>
@@ -1469,7 +1469,6 @@
 <translation id="2003596238737586336">目前的時間表已設定為<ph name="SUNRISE" />至<ph name="SUNSET" />。此設定由管理員管理。</translation>
 <translation id="2004413981947727241">在任何裝置都能使用你的密碼</translation>
 <translation id="2004697686368036666">部分網站的功能可能會無法正常運作</translation>
-<translation id="2005199804247617997">其他個人檔案</translation>
 <translation id="2006638907958895361">在 <ph name="APP" />中開啟連結</translation>
 <translation id="2007404777272201486">報告問題…</translation>
 <translation id="200781997903833896">如要使用「朗讀」功能，請騰出裝置空間</translation>
@@ -1694,7 +1693,6 @@
 <translation id="2158249272743343757">刪除個人化資料…</translation>
 <translation id="2158475082070321257">複製突顯文字的連結</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">總結內容或提出跟進問題。</translation>
 <translation id="2161058806218011758">「<ph name="EXTENSION_NAME" />」的<ph name="SHORTCUT" />範圍</translation>
 <translation id="216169395504480358">新增 Wi-Fi…</translation>
 <translation id="2162155940152307086">當您離開同步處理設定頁面後，系統就會啟用同步處理功能</translation>
@@ -1960,7 +1958,6 @@
 <translation id="2333166365943957309">使用者介面階層</translation>
 <translation id="233375395665273385">刪除並登出</translation>
 <translation id="233471714539944337">敏感內容</translation>
-<translation id="2335111415680198280">{0,plural, =1{關閉 # 個視窗}other{關閉 # 個視窗}}</translation>
 <translation id="2335758110242123814">開啟群組</translation>
 <translation id="2336228925368920074">將所有分頁加入書籤…</translation>
 <translation id="2336258397628212480">「<ph name="APP_NAME" />」正在使用「<ph name="PRINTER_NAME" />」列印 1 頁內容</translation>
@@ -2147,6 +2144,10 @@
 <translation id="2462332841984057083">已有其他程序正在設定 Steam，請等待設定完成。</translation>
 <translation id="2462724976360937186">憑證授權單位金鑰識別碼</translation>
 <translation id="2462752602710430187">已新增「<ph name="PRINTER_NAME" />」</translation>
+<translation id="2464075479326723132">這裡顯示的建議檔案可助你輕鬆繼續近期的 Microsoft SharePoint 和 OneDrive 活動。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        你可透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="2464079411014186876">雪糕</translation>
 <translation id="2467755475704469005">未偵測到任何裝置。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">加入<ph name="OWNER_FIRST_NAME" />和另外 <ph name="NUM_OTHER_MEMBERS" /> 人所在的分頁群組</translation>
@@ -3753,7 +3754,6 @@
 <translation id="3629664892718440872">記住這個選擇</translation>
 <translation id="3630132874740063857">您的手機</translation>
 <translation id="3630995161997703415">將此網站加到捷徑列，即可隨時使用</translation>
-<translation id="3632929818790223729">分割顯示所選分頁和使用中的分頁</translation>
 <translation id="3634652306074934350">權限要求已過期</translation>
 <translation id="3635199270495525546">偵測到可信任平台模組 (TPM)</translation>
 <translation id="3635353578505343390">傳送意見給 Google</translation>
@@ -4006,6 +4006,7 @@
 <translation id="3787434344076711519">正在等待翻譯</translation>
 <translation id="3788301286821743879">無法啟動 Kiosk 應用程式。</translation>
 <translation id="3788401245189148511">要求存取下列權限：</translation>
+<translation id="3789432704615470433">SharePoint 和 OneDrive 檔案</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3790417903123637354">發生錯誤，請稍後再試</translation>
 <translation id="379082410132524484">您的付款卡已過期</translation>
@@ -5869,7 +5870,6 @@
 <translation id="512642543295077915">搜尋鍵 + Backspace 鍵</translation>
 <translation id="5126611267288187364">查看變更</translation>
 <translation id="5127620150973591153">安全連線 ID：<ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">同步處理已停用</translation>
 <translation id="5127881134400491887">管理網絡連線</translation>
 <translation id="5127934926273826089">花</translation>
 <translation id="5127986747308934633">管理員正在控制您的裝置</translation>
@@ -5958,6 +5958,7 @@
 <translation id="5190926251776387065">啟用連接埠</translation>
 <translation id="5190959794678983197">沒有麥克風</translation>
 <translation id="5191094172448199359">您輸入的 PIN 不符</translation>
+<translation id="5191251636205085390">瞭解及控制用於取代第三方 Cookie 的全新技術</translation>
 <translation id="519185197579575131">使用 QT</translation>
 <translation id="5192062846343383368">開啟 Family Link 應用程式以查看監控設定</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 個密鑰}other{{COUNT} 個密鑰}}</translation>
@@ -6186,6 +6187,7 @@
 <translation id="5360150013186312835">在工具列上顯示</translation>
 <translation id="5362741141255528695">選取私密金鑰檔案。</translation>
 <translation id="536278396489099088">ChromeOS 系統狀態和報告</translation>
+<translation id="5362916924854054326">不要顯示 SharePoint 和 OneDrive 檔案</translation>
 <translation id="5363109466694494651">執行 Powerwash 並還原</translation>
 <translation id="5365881113273618889">您選取的資料夾包含敏感檔案。確定要將此資料夾的寫入權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="536638840841140142">無</translation>
@@ -8905,7 +8907,6 @@
 <translation id="7349010927677336670">影片流暢度</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} 個密碼只會儲存至此裝置。}other{{COUNT} 個密碼只會儲存至此裝置。}}</translation>
 <translation id="7352651011704765696">發生問題</translation>
-<translation id="7352664183151911163">涵蓋所有應用程式和 Chrome 瀏覽器</translation>
 <translation id="7353261921908507769">聯絡人在附近時可與您分享內容。您必須選擇接受，系統才能傳送檔案。</translation>
 <translation id="7353432112255316844">驗證身分</translation>
 <translation id="735361434055555355">正在安裝 Linux…</translation>
@@ -10049,7 +10050,6 @@
 <translation id="8140869601171867148">Google 帳戶是指你在 Gmail、YouTube、Chrome 和其他 Google 產品使用的帳戶。
     透過帳戶，你可輕鬆存取所有書籤、檔案及其他內容。</translation>
 <translation id="8141418916163800697">您可在 Phone Hub 設定中設定更多功能</translation>
-<translation id="814156740715940972">分割顯示所選分頁和使用中的分頁</translation>
 <translation id="8141584439523427891">正在替代瀏覽器中開啟</translation>
 <translation id="8141725884565838206">管理您的密碼</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 部影片}other{# 部影片}}</translation>
@@ -10766,6 +10766,10 @@
 <translation id="865936634714975126">在網址中新增查詢參數以選擇網頁載入類型。範例：chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">「<ph name="FEATURE_NAME" />」聯絡人</translation>
 <translation id="8659609431223166673">視窗移咗去下面</translation>
+<translation id="8660288500924118793">這裡顯示的日曆可讓你輕鬆瀏覽「Outlook 日曆」中的下一項活動。
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       你可透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="8661290697478713397">在無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="8662474268934425487">登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">加入 <ph name="TYPE" /> 網絡</translation>
@@ -11181,7 +11185,6 @@
 <translation id="8946359700442089734">這部 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置未完全啟用偵錯功能。</translation>
 <translation id="8946954897220903437">收合網址列中的所有要求</translation>
 <translation id="894763922177556086">良好</translation>
-<translation id="8949304443659090542">管理 Chrome 瀏覽器同步設定</translation>
 <translation id="895054485242522631">網站可使用動作感應器</translation>
 <translation id="8951256747718668828">發生錯誤，因此無法完成還原程序</translation>
 <translation id="8951465597020890363">仍要退出訪客模式嗎？</translation>
@@ -11202,7 +11205,6 @@
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8964927371396953727">請驗證你的身分，以在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存密碼</translation>
 <translation id="8965037249707889821">輸入舊密碼</translation>
-<translation id="8966809848145604011">其他個人檔案</translation>
 <translation id="8967427617812342790">加入閱讀清單</translation>
 <translation id="8967548289042494261">移除 <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Chrome 作業系統圖片撰寫工具</translation>

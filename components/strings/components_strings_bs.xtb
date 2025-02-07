@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Ne sada</translation>
 <translation id="100957008357583611">Koristiti vašu lokaciju?</translation>
 <translation id="1010200102790553230">Učitaj stranicu kasnije</translation>
+<translation id="1010225406377140704">Kontaktirajte pošiljaoca da zatražite novi link</translation>
 <translation id="1011206368273183593">Pripremanje fajlova</translation>
 <translation id="1014509239502131234">Poništavanje rezultata</translation>
 <translation id="1015730422737071372">Navedite dodatne detalje</translation>
@@ -3108,6 +3109,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6465306955648956876">Upravljajte lozinkama…</translation>
 <translation id="646789491285795429">Već pratite ovaj proizvod</translation>
 <translation id="6468485451923838994">Fontovi</translation>
+<translation id="6469702164109431067">Lozinke i pristupni ključevi</translation>
 <translation id="647261751007945333">Pravila uređaja</translation>
 <translation id="6472874020827012601">Tkanina (mat)</translation>
 <translation id="647330291963761005">Instaliranje ažuriranja</translation>
@@ -4352,6 +4354,7 @@ Dodatni detalji:
 <translation id="8699041776323235191">uređaj HID</translation>
 <translation id="8699985386408839112">Koverta Kaku 1</translation>
 <translation id="8702965365666568344">Montažna traka</translation>
+<translation id="8703372953981978786">Link ne funkcionira</translation>
 <translation id="8703575177326907206">Vaša veza na domenu <ph name="DOMAIN" /> nije šifrirana.</translation>
 <translation id="8705331520020532516">Serijski broj</translation>
 <translation id="8706806585855470492">Moći ćete dijeliti grupe kartica, pridruživati im se i sarađivati u njima</translation>

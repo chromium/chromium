@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Ekki núna</translation>
 <translation id="100957008357583611">Nota staðsetninguna þína?</translation>
 <translation id="1010200102790553230">Hlaða síðu seinna</translation>
+<translation id="1010225406377140704">Hafðu samband við sendandann til að biðja um nýjan tengil.</translation>
 <translation id="1011206368273183593">Undirbýr skrár</translation>
 <translation id="1014509239502131234">Afturkallar niðurstöðu</translation>
 <translation id="1015730422737071372">Veita frekari upplýsingar</translation>
@@ -1164,6 +1165,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3076865167425975822">Stýrikerfi</translation>
 <translation id="3080254622891793721">Grafík</translation>
 <translation id="3082007635241601060">Leyfðu Google að nota innkaupakörfurnar þínar til að finna sérsniðna afslætti sem eru í boði</translation>
+<translation id="3086269988715347183">Þú hefur ekki samþykkt <ph name="BLOCKED_URL" /> áður</translation>
 <translation id="3086579638707268289">Verið er að fylgjast með aðgerðum þínum á vefnum</translation>
 <translation id="3087734570205094154">Neðst</translation>
 <translation id="3090667236485488075">Gler</translation>
@@ -1239,6 +1241,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3203025201812691413">Vefslóðin má ekki vera tóm</translation>
 <translation id="320323717674993345">Hætta við greiðslu</translation>
 <translation id="3203366800380907218">Af vefnum</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> gæti innihaldið efni fyrir fullorðna</translation>
 <translation id="3207960819495026254">Í bókamerkjum</translation>
 <translation id="3208701679386778924">Sendu okkur skýrslu svo við getum gert ChromeOS-uppfærslur enn betri.</translation>
 <translation id="3209034400446768650">Síðan kann að rukka gjald</translation>
@@ -2973,6 +2976,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6254436959401408446">Ekki nóg minni til að birta þessa síðu</translation>
 <translation id="625463612687472648">Hætta að leyfa</translation>
 <translation id="6259156558325130047">Endu&amp;rtaka nýja röðun</translation>
+<translation id="6259282549512536479">Þú hefur áður sett <ph name="BLOCKED_URL" /> á bannlista</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> bókamerki</translation>
 <translation id="6264376385120300461">Sækja samt</translation>
 <translation id="6264485186158353794">Aftur í öruggt skjól</translation>
@@ -3105,6 +3109,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6465306955648956876">Stjórna aðgangsorðum...</translation>
 <translation id="646789491285795429">Þú ert þegar að vakta þessa vöru</translation>
 <translation id="6468485451923838994">Leturgerðir</translation>
+<translation id="6469702164109431067">Aðgangsorð og aðgangslyklar</translation>
 <translation id="647261751007945333">Reglur tækis</translation>
 <translation id="6472874020827012601">Vefnaður (mattur)</translation>
 <translation id="647330291963761005">Setur upp uppfærslur</translation>
@@ -4348,6 +4353,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8699041776323235191">HID-tæki</translation>
 <translation id="8699985386408839112">Umslag: kaku 1</translation>
 <translation id="8702965365666568344">Festingarlímband</translation>
+<translation id="8703372953981978786">Tengillinn virkar ekki</translation>
 <translation id="8703575177326907206">Tengingin þín við <ph name="DOMAIN" /> er ekki dulkóðuð.</translation>
 <translation id="8705331520020532516">Raðnúmer</translation>
 <translation id="8706806585855470492">Þú munt geta deilt, tekið þátt í og unnið með öðrum í flipahópum</translation>

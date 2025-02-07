@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">現在不要</translation>
 <translation id="100957008357583611">要允許網站使用你的位置資訊嗎？</translation>
 <translation id="1010200102790553230">稍後再載入頁面</translation>
+<translation id="1010225406377140704">請與傳送者聯絡，要求對方提供新連結</translation>
 <translation id="1011206368273183593">正在準備檔案</translation>
 <translation id="1014509239502131234">復原結果</translation>
 <translation id="1015730422737071372">提供其他詳細資訊</translation>
@@ -3106,6 +3107,7 @@
 <translation id="6465306955648956876">管理密碼...</translation>
 <translation id="646789491285795429">你已追蹤這項商品</translation>
 <translation id="6468485451923838994">字型</translation>
+<translation id="6469702164109431067">密碼和密碼金鑰</translation>
 <translation id="647261751007945333">裝置政策</translation>
 <translation id="6472874020827012601">織品 (霧面)</translation>
 <translation id="647330291963761005">正在安裝更新</translation>
@@ -4350,6 +4352,7 @@
 <translation id="8699041776323235191">HID 裝置</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">膠帶</translation>
+<translation id="8703372953981978786">這個連結無效</translation>
 <translation id="8703575177326907206">你到 <ph name="DOMAIN" /> 的連線未加密。</translation>
 <translation id="8705331520020532516">序號</translation>
 <translation id="8706806585855470492">你將可分享、加入分頁群組並在其中協作</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1009406586654360474">Отворете Google Мениджър на пароли и след това настройките. Изберете „Импортиране“ и добавете CSV файла, който съдържа експортираните ви пароли.</translation>
-<translation id="1010225406377140704">Свържете се с подателя, за да поискате нова връзка</translation>
 <translation id="1011749477052068769">Преместване тук</translation>
 <translation id="1014147525163127655">На това устройство няма ключове за достъп за <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Бързо търсене с гласа ви. За да редактирате този пряк път, докоснете и задръжте.</translation>
@@ -1723,7 +1722,6 @@
 <translation id="8683039184091909753">изображение</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
-<translation id="8703372953981978786">Тази връзка не работи</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8723453889042591629">Бърз превод на страницата. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>

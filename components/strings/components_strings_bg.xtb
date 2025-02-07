@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Не сега</translation>
 <translation id="100957008357583611">Да се използва ли местоположението ви?</translation>
 <translation id="1010200102790553230">Зареждане на страницата по-късно</translation>
+<translation id="1010225406377140704">Свържете се с подателя, за да поискате нова връзка</translation>
 <translation id="1011206368273183593">Файловете се подготвят</translation>
 <translation id="1014509239502131234">Резултатът се отменя</translation>
 <translation id="1015730422737071372">Въвеждане на допълнителни подробности</translation>
@@ -3108,6 +3109,7 @@
 <translation id="6465306955648956876">Управление на паролите...</translation>
 <translation id="646789491285795429">Вече следите този продукт</translation>
 <translation id="6468485451923838994">Шрифтове</translation>
+<translation id="6469702164109431067">Пароли и кодове за достъп</translation>
 <translation id="647261751007945333">Правила за устройството</translation>
 <translation id="6472874020827012601">Текстил (матиран)</translation>
 <translation id="647330291963761005">Актуализациите се инсталират</translation>
@@ -4352,6 +4354,7 @@
 <translation id="8699041776323235191">HID устройство</translation>
 <translation id="8699985386408839112">Плик Kaku 1</translation>
 <translation id="8702965365666568344">Монтажна лента</translation>
+<translation id="8703372953981978786">Тази връзка не работи</translation>
 <translation id="8703575177326907206">Връзката ви с <ph name="DOMAIN" /> не е шифрована.</translation>
 <translation id="8705331520020532516">Сериен номер</translation>
 <translation id="8706806585855470492">Ще можете да споделяте, да се присъединявате и да си сътрудничите в групи раздели</translation>

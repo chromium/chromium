@@ -272,7 +272,6 @@
 <translation id="1177863135347784049">কাস্টম</translation>
 <translation id="1178093605842850860">এই সাইট পড়ার ও পরিবর্তন করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1178581264944972037">বিরতি</translation>
-<translation id="1178601482396475810">ডিভাইস সিঙ্ক ম্যানেজ করুন</translation>
 <translation id="117916940443676133">আপনার নিরাপত্তা কী কোনও পিন দ্বারা সুরক্ষিত নেই। সাইন-ইন ডেটা ম্যানেজ করতে, প্রথমে পিন তৈরি করুন।</translation>
 <translation id="1179400851034021914">ভুল IBAN</translation>
 <translation id="1179902906564467236">আপনার ফোনে নির্দেশাবলী ফলো করুন অথবা ক্যামেরা অ্যাপ ব্যবহার করুন</translation>
@@ -1470,7 +1469,6 @@
 <translation id="2003596238737586336">বর্তমান শিডিউল <ph name="SUNRISE" /> - <ph name="SUNSET" />-এর মধ্যে সেট করা হয়েছে। আপনার অ্যাডমিনিস্ট্রেটর এই সেটিং ম্যানেজ করে।</translation>
 <translation id="2004413981947727241">যেকোনও ডিভাইসে আপনার পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="2004697686368036666">কিছু সাইটের ফিচার কাজ নাও করতে পারে</translation>
-<translation id="2005199804247617997">অন্যান্য প্রোফাইল</translation>
 <translation id="2006638907958895361"><ph name="APP" />-এ লিঙ্ক খুলুন</translation>
 <translation id="2007404777272201486">কোনও সমস্যা অভিযোগ করুন...</translation>
 <translation id="200781997903833896">'জোরে পড়ো' ফিচার ব্যবহার করতে, আপনার ডিভাইসে স্টোরেজ খালি করুন</translation>
@@ -1695,7 +1693,6 @@
 <translation id="2158249272743343757">পছন্দমতো সাজিয়ে নেওয়া সংক্রান্ত ডেটা মুছুন...</translation>
 <translation id="2158475082070321257">হাইলাইট করা টেক্সটের লিঙ্ক কপি করুন</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">কন্টেন্ট সংক্ষিপ্ত করুন বা ফলো-আপ সম্পর্কিত প্রশ্ন জিজ্ঞাসা করুন।</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" />-এর জন্য <ph name="SHORTCUT" />-এর স্কোপ</translation>
 <translation id="216169395504480358">Wi-fi জুড়ুন ...</translation>
 <translation id="2162155940152307086">আপনি সিঙ্ক সেটিংস পৃষ্ঠাটি ছেড়ে গেলে সিঙ্ক করা শুরু হবে</translation>
@@ -1961,7 +1958,6 @@
 <translation id="2333166365943957309">UI হায়ারার্কি</translation>
 <translation id="233375395665273385">মুছুন ও সাইন-আউট করুন</translation>
 <translation id="233471714539944337">সংবেদনশীল কন্টেন্ট</translation>
-<translation id="2335111415680198280">{0,plural, =1{#টি উইন্ডো বন্ধ করুন}one{#টি উইন্ডো বন্ধ করুন}other{#টি উইন্ডো বন্ধ করুন}}</translation>
 <translation id="2335758110242123814">গ্রুপ খুলুন</translation>
 <translation id="2336228925368920074">সকল ট্যাব বুকমার্ক করুন...</translation>
 <translation id="2336258397628212480"><ph name="PRINTER_NAME" /> থেকে <ph name="APP_NAME" />-এর মাধ্যমে ১টি পৃষ্ঠা প্রিন্ট করা হচ্ছে</translation>
@@ -3757,7 +3753,6 @@
 <translation id="3629664892718440872">এই পছন্দ মনে রাখবেন</translation>
 <translation id="3630132874740063857">আপনার ফোন</translation>
 <translation id="3630995161997703415">যেকোনও সময় ব্যবহার করার জন্য এই সাইটটিকে আপনার শেল্ফে যোগ করুন</translation>
-<translation id="3632929818790223729">চালু ট্যাবের মাধ্যমে ট্যাব স্প্লিট করুন</translation>
 <translation id="3634652306074934350">অনুমতি পাওয়ার জন্য করা অনুরোধের সময়সীমা শেষ</translation>
 <translation id="3635199270495525546">ট্রাস্টেড প্ল্যাটফর্ম মডিউল (TPM) শনাক্ত করা হয়েছে</translation>
 <translation id="3635353578505343390">Google-এ মতামত জানান</translation>
@@ -5881,7 +5876,6 @@
 <translation id="512642543295077915">search + backspace</translation>
 <translation id="5126611267288187364">পরিবর্তনগুলি দেখুন</translation>
 <translation id="5127620150973591153">নিরাপদ কানেকশন আইডি: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">সিঙ্ক বন্ধ রয়েছে</translation>
 <translation id="5127881134400491887">নেটওয়ার্ক সংযোগগুলি পরিচালনা করুন</translation>
 <translation id="5127934926273826089">ফুল</translation>
 <translation id="5127986747308934633">আপনার অ্যাডমিনিস্ট্রেটর আপনার ডিভাইস নিয়ন্ত্রণ করছেন</translation>
@@ -5970,6 +5964,7 @@
 <translation id="5190926251776387065">পোর্ট চালু করুন</translation>
 <translation id="5190959794678983197">কোনও মাইক্রোফোন নেই</translation>
 <translation id="5191094172448199359">আপনার লেখা পিন মিলছে না</translation>
+<translation id="5191251636205085390">থার্ড-পার্টি কুকি সরানোর নতুন প্রযুক্তি ও তা নিয়ন্ত্রণ সংক্রান্ত তথ্যগুলি জানুন</translation>
 <translation id="519185197579575131">QT ব্যবহার করুন</translation>
 <translation id="5192062846343383368">আপনার তত্ত্বাবধান সেটিংস দেখতে Family Link অ্যাপ খুলুন</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{১টি পাসকী}one{{COUNT}টি পাসকী}other{{COUNT}টি পাসকী}}</translation>
@@ -8924,7 +8919,6 @@
 <translation id="7349010927677336670">ভিডিও কেমন চলছে</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{{COUNT}টি পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ করা আছে}one{{COUNT}টি পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ করা আছে}other{{COUNT}টি পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ করা আছে}}</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
-<translation id="7352664183151911163">আপনার অ্যাপ এবং Chrome ব্রাউজার অ্যাক্সেস করুন</translation>
 <translation id="7353261921908507769">আপনার পরিচিতি তালিকার কেউ আশেপাশে থাকলে তবেই তারা আপনার সাথে শেয়ার করতে পারবে। আপনি সম্মতি না দেওয়া পর্যন্ত ট্রান্সফার চালু করা যাবে না।</translation>
 <translation id="7353432112255316844">নিজের পরিচয় যাচাই করুন</translation>
 <translation id="735361434055555355">Linux ইনস্টল করা হচ্ছে...</translation>
@@ -10068,7 +10062,6 @@
 <translation id="8140869601171867148">আপনার Google অ্যাকাউন্ট হল সেই একই অ্যাকাউন্ট যা আপনি Gmail, YouTube, Chrome ও অন্যান্য Google প্রোডাক্টের ব্যবহারের জন্য করেন।
     আপনার বুকমার্ক, ফাইল ও আরও অনেক কিছু সহজে ব্যবহার করতে আপনার অ্যাকাউন্ট ব্যবহার করুন।</translation>
 <translation id="8141418916163800697">আপনি ফোন হাব সেটিংসে আরও ফিচার সেট-আপ করতে পারেন</translation>
-<translation id="814156740715940972">চালু ট্যাবের মাধ্যমে ট্যাব স্প্লিট করুন</translation>
 <translation id="8141584439523427891">এখন অন্য ব্রাউজারে খোলা হচ্ছে</translation>
 <translation id="8141725884565838206">আপনার পাসওয়ার্ডগুলি পরিচালনা করুন</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{একটি ভিডিও}one{#টি ভিডিও}other{#টি ভিডিও}}</translation>
@@ -11203,7 +11196,6 @@
 <translation id="8946359700442089734">এই <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইসে ডিবাগিং বৈশিষ্ট্যগুলি সম্পূর্ণরূপে চালু করা নেই৷</translation>
 <translation id="8946954897220903437">অ্যাড্রেস বারে থাকা সব অনুরোধ আড়াল করুন</translation>
 <translation id="894763922177556086">শক্তিশালী</translation>
-<translation id="8949304443659090542">Chrome ব্রাউজার সিঙ্ক ম্যানেজ করতে চান</translation>
 <translation id="895054485242522631">সাইট মোশন সেন্সর ব্যবহার করতে পারে</translation>
 <translation id="8951256747718668828">কোনও সমস্যার জন্য ফিরিয়ে আনা যায়নি</translation>
 <translation id="8951465597020890363">তবে গেস্ট মোড থেকে বেরিয়ে আসবেন?</translation>
@@ -11224,7 +11216,6 @@
 <translation id="8963117664422609631">সাইট সেটিংসে যান</translation>
 <translation id="8964927371396953727">আপনার অ্যাকাউন্ট, <ph name="ACCOUNT_EMAIL" />-এ পাসওয়ার্ড ব্যবহার ও সেভ করতে আপনার পরিচয় যাচাই করুন</translation>
 <translation id="8965037249707889821">পুরানো পাসওয়ার্ড লিখুন</translation>
-<translation id="8966809848145604011">অন্যান্য প্রোফাইল</translation>
 <translation id="8967427617812342790">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> সরিয়ে দিন</translation>
 <translation id="8968527460726243404">ChromeOS সিস্টেম ছবি রচয়িতা</translation>

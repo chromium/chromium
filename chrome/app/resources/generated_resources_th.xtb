@@ -272,7 +272,6 @@
 <translation id="1177863135347784049">ที่กำหนดเอง</translation>
 <translation id="1178093605842850860">ได้รับอนุญาตให้อ่านและเปลี่ยนแปลงเว็บไซต์นี้</translation>
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
-<translation id="1178601482396475810">จัดการการซิงค์อุปกรณ์</translation>
 <translation id="117916940443676133">คีย์ความปลอดภัยไม่มีการป้องกันด้วย PIN หากต้องการจัดการข้อมูลการลงชื่อเข้าใช้ ให้สร้าง PIN ขึ้นมาก่อน</translation>
 <translation id="1179400851034021914">IBAN ไม่ถูกต้อง</translation>
 <translation id="1179902906564467236">ทำตามวิธีการในโทรศัพท์หรือใช้แอปกล้อง</translation>
@@ -1365,6 +1364,7 @@
 <translation id="1936157145127842922">แสดงในโฟลเดอร์</translation>
 <translation id="1936931585862840749">ใช้ตัวเลขเพื่อระบุจำนวนสำเนาที่ต้องการพิมพ์ (1 ถึง <ph name="MAX_COPIES" />)</translation>
 <translation id="1937774647013465102">นำเข้าสถาปัตยกรรมคอนเทนเนอร์ประเภท <ph name="ARCHITECTURE_CONTAINER" /> ด้วยอุปกรณ์นี้ ซึ่งเป็นประเภท <ph name="ARCHITECTURE_DEVICE" /> ไม่ได้ คุณลองคืนค่าคอนเทนเนอร์นี้ไปยังอุปกรณ์อื่นได้ หรือเข้าถึงไฟล์ภายในรูปภาพของคอนเทนเนอร์นี้โดยเปิดในแอป Files</translation>
+<translation id="1938116692670653897">ธีมสีปัจจุบัน</translation>
 <translation id="1938351510777341717">แป้น Command ภายนอก</translation>
 <translation id="1940221956626514677">ปรับแต่งแถบเครื่องมือ</translation>
 <translation id="1940546824932169984">อุปกรณ์ที่เชื่อมต่อ</translation>
@@ -1459,7 +1459,6 @@
 <translation id="2003596238737586336">กำหนดเวลาปัจจุบันคือ <ph name="SUNRISE" /> - <ph name="SUNSET" /> การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="2004413981947727241">ใช้รหัสผ่านของคุณในอุปกรณ์ใดก็ได้</translation>
 <translation id="2004697686368036666">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
-<translation id="2005199804247617997">โปรไฟล์อื่นๆ</translation>
 <translation id="2006638907958895361">เปิดลิงก์ใน <ph name="APP" /></translation>
 <translation id="2007404777272201486">รายงานปัญหา...</translation>
 <translation id="200781997903833896">หากต้องการใช้ฟีเจอร์ "อ่านออกเสียง" ให้เพิ่มพื้นที่ว่างในอุปกรณ์</translation>
@@ -1684,7 +1683,6 @@
 <translation id="2158249272743343757">ลบข้อมูลการปรับเปลี่ยนในแบบของคุณ...</translation>
 <translation id="2158475082070321257">คัดลอกลิงก์ไปยังไฮไลต์</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">สรุปเนื้อหาหรือถามคำถามติดตามผล</translation>
 <translation id="2161058806218011758">ขอบเขตของ <ph name="SHORTCUT" /> สำหรับ <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">เพิ่ม WiFi...</translation>
 <translation id="2162155940152307086">การซิงค์จะเริ่มขึ้นเมื่อคุณออกจากการตั้งค่า</translation>
@@ -1947,7 +1945,6 @@
 <translation id="2333166365943957309">ลำดับชั้น UI</translation>
 <translation id="233375395665273385">ลบและออกจากระบบ</translation>
 <translation id="233471714539944337">เนื้อหาที่ละเอียดอ่อน</translation>
-<translation id="2335111415680198280">{0,plural, =1{ปิด # หน้าต่าง}other{ปิด # หน้าต่าง}}</translation>
 <translation id="2335758110242123814">เปิดกลุ่ม</translation>
 <translation id="2336228925368920074">บุ๊กมาร์กแท็บทั้งหมด...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> กำลังพิมพ์ 1 หน้าจาก <ph name="PRINTER_NAME" /></translation>
@@ -2134,6 +2131,10 @@
 <translation id="2462332841984057083">กําลังตั้งค่า Steam อยู่แล้ว โปรดรอให้การตั้งค่าเสร็จสมบูรณ์</translation>
 <translation id="2462724976360937186">รหัสคีย์ผู้ออกใบรับรอง</translation>
 <translation id="2462752602710430187">เพิ่ม <ph name="PRINTER_NAME" /> แล้ว</translation>
+<translation id="2464075479326723132">สิ่งที่เห็นนี้คือไฟล์แนะนำซึ่งช่วยให้คุณกลับไปยังกิจกรรมล่าสุดใน SharePoint และ OneDrive ของ Microsoft ได้อย่างง่ายดาย
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        คุณสามารถจัดการการตั้งค่าจากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
 <translation id="2464079411014186876">ไอศกรีม</translation>
 <translation id="2467755475704469005">ไม่พบอุปกรณ์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก <ph name="NUM_OTHER_MEMBERS" /> คน</translation>
@@ -3741,7 +3742,6 @@
 <translation id="3629664892718440872">จำตัวเลือกนี้</translation>
 <translation id="3630132874740063857">โทรศัพท์ของคุณ</translation>
 <translation id="3630995161997703415">เพิ่มเว็บไซต์นี้ลงในชั้นวางเพื่อใช้งานได้ทุกเมื่อ</translation>
-<translation id="3632929818790223729">แยกแท็บกับแท็บที่ใช้งานอยู่</translation>
 <translation id="3634652306074934350">คำขอสิทธิ์หมดอายุแล้ว</translation>
 <translation id="3635199270495525546">ตรวจพบ Trusted Platform Module (TPM)</translation>
 <translation id="3635353578505343390">ส่งความคิดเห็นไปยัง Google</translation>
@@ -3994,6 +3994,7 @@
 <translation id="3787434344076711519">กำลังรอการแปล</translation>
 <translation id="3788301286821743879">เปิดแอปพลิเคชันคีออสก์ไม่ได้</translation>
 <translation id="3788401245189148511">ส่วนขยายต้องการจะ:</translation>
+<translation id="3789432704615470433">ไฟล์ SharePoint และ OneDrive</translation>
 <translation id="3789841737615482174">ติดตั้ง</translation>
 <translation id="3790417903123637354">เกิดข้อผิดพลาด ลองอีกครั้งภายหลัง</translation>
 <translation id="379082410132524484">บัตรของคุณหมดอายุแล้ว</translation>
@@ -5864,7 +5865,6 @@
 <translation id="512642543295077915">ค้นหา + Backspace</translation>
 <translation id="5126611267288187364">ดูการเปลี่ยนแปลง</translation>
 <translation id="5127620150973591153">รหัสการเชื่อมต่อที่ปลอดภัย: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">การซิงค์ปิดอยู่</translation>
 <translation id="5127881134400491887">จัดการการเชื่อมต่อเครือข่าย</translation>
 <translation id="5127934926273826089">ดอกไม้</translation>
 <translation id="5127986747308934633">ผู้ดูแลระบบกำลังควบคุมอุปกรณ์ของคุณ</translation>
@@ -5953,6 +5953,7 @@
 <translation id="5190926251776387065">เปิดใช้งานพอร์ต</translation>
 <translation id="5190959794678983197">ไม่มีไมโครโฟน</translation>
 <translation id="5191094172448199359">PIN ที่คุณป้อนไม่ตรงกัน</translation>
+<translation id="5191251636205085390">ดูข้อมูลและควบคุมเทคโนโลยีใหม่ๆ ที่มีจุดประสงค์เพื่อมาแทนที่คุกกี้ของบุคคลที่สาม</translation>
 <translation id="519185197579575131">ใช้ QT</translation>
 <translation id="5192062846343383368">เปิดแอป Family Link เพื่อดูการตั้งค่าการควบคุมดูแล</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{พาสคีย์ 1 รายการ}other{พาสคีย์ {COUNT} รายการ}}</translation>
@@ -6181,6 +6182,7 @@
 <translation id="5360150013186312835">แสดงในแถบเครื่องมือ</translation>
 <translation id="5362741141255528695">เลือกไฟล์กุญแจส่วนตัว</translation>
 <translation id="536278396489099088">สถานะและรายงานระบบ ChromeOS</translation>
+<translation id="5362916924854054326">ไม่ต้องแสดงไฟล์ SharePoint และ OneDrive</translation>
 <translation id="5363109466694494651">Powerwash และเปลี่ยนกลับ</translation>
 <translation id="5365881113273618889">โฟลเดอร์ที่คุณเลือกมีไฟล์ที่ละเอียดอ่อน แน่ใจไหมว่าต้องการให้สิทธิ์การเข้าถึงในการเขียนโฟลเดอร์นี้อย่างถาวรแก่ "<ph name="APP_NAME" />"</translation>
 <translation id="536638840841140142">ไม่มี</translation>
@@ -8900,7 +8902,6 @@
 <translation id="7349010927677336670">ความลื่นไหลของวิดีโอ</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{รหัสผ่าน {COUNT} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{รหัสผ่าน {COUNT} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
-<translation id="7352664183151911163">ในแอปและเบราว์เซอร์ Chrome</translation>
 <translation id="7353261921908507769">รายชื่อติดต่อจะแชร์เนื้อหากับคุณได้เมื่ออยู่ใกล้เคียง การโอนจะไม่เริ่มจนกว่าคุณจะยอมรับ</translation>
 <translation id="7353432112255316844">ยืนยันว่าเป็นคุณ</translation>
 <translation id="735361434055555355">กำลังติดตั้ง Linux...</translation>
@@ -10044,7 +10045,6 @@
 <translation id="8140869601171867148">บัญชี Google เป็นบัญชีเดียวกับที่คุณใช้สำหรับ Gmail, YouTube, Chrome และผลิตภัณฑ์อื่นๆ ของ Google
     ใช้บัญชีเพื่อเข้าถึงบุ๊กมาร์ก ไฟล์ และอื่นๆ ทั้งหมดได้อย่างง่ายดาย</translation>
 <translation id="8141418916163800697">คุณตั้งค่าฟีเจอร์อื่นๆ ได้ในการตั้งค่าฮับโทรศัพท์</translation>
-<translation id="814156740715940972">แยกแท็บกับแท็บที่ใช้งานอยู่</translation>
 <translation id="8141584439523427891">กำลังเปิดเบราว์เซอร์สำรองอยู่ในขณะนี้</translation>
 <translation id="8141725884565838206">จัดการรหัสผ่านของคุณ</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{1 วิดีโอ}other{# วิดีโอ}}</translation>
@@ -10761,6 +10761,10 @@
 <translation id="865936634714975126">เพิ่มพารามิเตอร์การค้นหาใน URL เพื่อเลือกประเภทเมื่อโหลดหน้าเว็บ ตัวอย่างเช่น chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">รายชื่อติดต่อของ<ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">หน้าต่างเลื่อนลง</translation>
+<translation id="8660288500924118793">สิ่งที่เห็นนี้คือปฏิทินซึ่งช่วยให้คุณไปยังกิจกรรมถัดไปในปฏิทิน Outlook ได้อย่างง่ายดาย
+       <ph name="BREAK" />
+        <ph name="BREAK" />
+        คุณสามารถจัดการการตั้งค่าจากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
 <translation id="8661290697478713397">เปิดลิงก์ในหน้าต่าง&amp;ที่ไม่ระบุตัวตน</translation>
 <translation id="8662474268934425487">ลงชื่อเข้าใช้ <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">เข้าร่วมเครือข่าย <ph name="TYPE" /></translation>
@@ -11178,7 +11182,6 @@
 <translation id="8946359700442089734">ไม่ได้เปิดใช้ฟีเจอร์การแก้ไขข้อบกพร่องอย่างสมบูรณ์บนอุปกรณ์ <ph name="IDS_SHORT_PRODUCT_NAME" /> นี้</translation>
 <translation id="8946954897220903437">ยุบคำขอทั้งหมดในแถบที่อยู่</translation>
 <translation id="894763922177556086">ดี</translation>
-<translation id="8949304443659090542">จัดการการซิงค์ของเบราว์เซอร์ Chrome</translation>
 <translation id="895054485242522631">เว็บไซต์ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวได้</translation>
 <translation id="8951256747718668828">คืนค่าให้เสร็จสมบูรณ์ไม่ได้เนื่องจากเกิดข้อผิดพลาด</translation>
 <translation id="8951465597020890363">ออกจากโหมดผู้มาเยือนใช่ไหม</translation>
@@ -11199,7 +11202,6 @@
 <translation id="8963117664422609631">ไปที่การตั้งค่าเว็บไซต์</translation>
 <translation id="8964927371396953727">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกรหัสผ่านในบัญชี <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">ป้อนรหัสผ่านเก่า</translation>
-<translation id="8966809848145604011">โปรไฟล์อื่นๆ</translation>
 <translation id="8967427617812342790">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="8967548289042494261">นำ <ph name="VM_NAME" /> ออก</translation>
 <translation id="8968527460726243404">ตัวเขียนอิมเมจระบบ ChromeOS</translation>

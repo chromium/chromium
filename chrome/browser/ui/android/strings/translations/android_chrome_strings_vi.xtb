@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1009406586654360474">Mở Trình quản lý mật khẩu của Google rồi chuyển đến phần cài đặt. Chọn "Nhập" rồi thêm tệp CSV chứa các mật khẩu đã xuất của bạn.</translation>
-<translation id="1010225406377140704">Liên hệ với người gửi để yêu cầu đường liên kết mới</translation>
 <translation id="1011749477052068769">Chuyển đến đây</translation>
 <translation id="1014147525163127655">Không có khoá truy cập nào cho <ph name="ORIGIN" /> trên thiết bị này</translation>
 <translation id="1016498331642356377">Tìm kiếm nhanh bằng giọng nói. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
@@ -1723,7 +1722,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8683039184091909753">hình ảnh</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>
-<translation id="8703372953981978786">Đường liên kết này không hoạt động</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8723453889042591629">Dịch nhanh trang này. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
 <translation id="8725066075913043281">Thử lại</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1009406586654360474">Öffne den Google Passwortmanager und rufe die Einstellungen auf. Wähle „Importieren“ aus und füge die CSV‑Datei mit den exportierten Passwörtern hinzu.</translation>
-<translation id="1010225406377140704">Bitte den Absender um einen neuen Link</translation>
 <translation id="1011749477052068769">Hierhin verschieben</translation>
 <translation id="1014147525163127655">Für <ph name="ORIGIN" /> gibt es auf diesem Gerät keine Passkeys</translation>
 <translation id="1016498331642356377">Schnelle Sprachsuche verwenden. Zum Ändern Schaltfläche gedrückt halten.</translation>
@@ -1723,7 +1722,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8683039184091909753">Bild</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8699120352855309748">Übersetzen dieser Sprachen nicht anbieten</translation>
-<translation id="8703372953981978786">Dieser Link funktioniert nicht</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8723453889042591629">Diese Seite schnell übersetzen. Zum Ändern der Tastenkombination Schaltfläche gedrückt halten.</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>

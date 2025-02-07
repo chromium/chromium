@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Jangan Sekarang</translation>
 <translation id="100957008357583611">Gunakan lokasi Anda?</translation>
 <translation id="1010200102790553230">Muat halaman nanti</translation>
+<translation id="1010225406377140704">Hubungi pengirim untuk meminta link baru</translation>
 <translation id="1011206368273183593">Menyiapkan file</translation>
 <translation id="1014509239502131234">Urungkan hasil</translation>
 <translation id="1015730422737071372">Berikan detail tambahan</translation>
@@ -3108,6 +3109,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6465306955648956876">Kelola sandi...</translation>
 <translation id="646789491285795429">Anda sudah memantau produk ini</translation>
 <translation id="6468485451923838994">Font</translation>
+<translation id="6469702164109431067">Sandi dan kunci sandi</translation>
 <translation id="647261751007945333">Kebijakan perangkat</translation>
 <translation id="6472874020827012601">Kain (Matte)</translation>
 <translation id="647330291963761005">Menginstal update</translation>
@@ -4348,6 +4350,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8699041776323235191">Perangkat HID</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">Plester Pemasangan</translation>
+<translation id="8703372953981978786">Link ini tidak berfungsi</translation>
 <translation id="8703575177326907206">Sambungan ke <ph name="DOMAIN" /> tidak dienkripsi.</translation>
 <translation id="8705331520020532516">Nomor Seri</translation>
 <translation id="8706806585855470492">Anda akan dapat berbagi, bergabung, dan berkolaborasi dalam grup tab</translation>

@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">अहिले होइन</translation>
 <translation id="100957008357583611">यो वेबसाइटलाई आफ्नो यन्त्रको स्थान प्रयोग गर्न दिने हो?</translation>
 <translation id="1010200102790553230">पृष्ठ पछि लोड गर्नुहोस्</translation>
+<translation id="1010225406377140704">नयाँ लिंक माग्न प्रेषकलाई सम्पर्क गर्नुहोस्</translation>
 <translation id="1011206368273183593">फाइलहरू तयार पारिँदै छन्</translation>
 <translation id="1014509239502131234">परिणाम अन्डू गरिँदै छ</translation>
 <translation id="1015730422737071372">थप विवरणहरू उपलब्ध गराउनुहोस्</translation>
@@ -1164,6 +1165,7 @@
 <translation id="3076865167425975822">आपरेटिङ सिस्टमहरू</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
 <translation id="3082007635241601060">तपाईंका निम्ति उपलब्ध छुटहरू भेट्टाउने प्रयोजनका लागि Google लाई तपाईंका कार्ट प्रयोग गर्ने अनुमति दिनुहोस्</translation>
+<translation id="3086269988715347183">तपाईंले यसअघि <ph name="BLOCKED_URL" /> अनुमोदन गर्नुभएको छैन</translation>
 <translation id="3086579638707268289">वेबको तपाईंको क्रियाकलापको निगरानी गरिँदै छ</translation>
 <translation id="3087734570205094154">तल</translation>
 <translation id="3090667236485488075">ग्लास</translation>
@@ -1236,6 +1238,7 @@
 <translation id="3203025201812691413">URL खाली खाली हुनु हुँदैन</translation>
 <translation id="320323717674993345">भुक्तानी रद्द गर्नुहोस्</translation>
 <translation id="3203366800380907218">वेबबाट प्राप्त</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> मा वयस्क लक्षित सामग्री हुन सक्छ</translation>
 <translation id="3207960819495026254">बुकमार्क लगाइयो</translation>
 <translation id="3208701679386778924">हामी ChromeOS का अपडेटहरूको गुणस्तर अझ सुधार गर्न सकौँ भन्नाका लागि कृपया रिपोर्ट पेस गर्नुहोस्।</translation>
 <translation id="3209034400446768650">यो पृष्ठले शुल्क लिन सक्छ</translation>
@@ -2363,7 +2366,7 @@
     <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5169827969064885044">तपाईं आफ्नो सङ्गठनको खातामाथिको पहुँच गुमाउन सक्नुहुन्छ वा तपाईंको पहिचान चोरी हुन सक्छ। Chrome तपाईंलाई आफ्नो पासवर्ड अहिले नै परिवर्तन गर्न सिफारिस गर्छ।</translation>
 <translation id="5171045022955879922">युआरएल खोल्नुहोस् वा टाइप गर्नुहोस्</translation>
-<translation id="5172758083709347301">यन्त्र</translation>
+<translation id="5172758083709347301">मेसिन</translation>
 <translation id="5177076414499237632">यो पेजका स्रोत र विषयका बारेमा जान्नुहोस्</translation>
 <translation id="5179490652562926740">भुक्तानीको प्रमाणीकरणसम्बन्धी सेटिङ सेभ गरिएको छ</translation>
 <translation id="5180662470511508940">किबोर्ड लक गर्ने अनुमति दिन अस्वीकार गरिएको छ</translation>
@@ -2971,6 +2974,7 @@
 <translation id="6254436959401408446">यो पृष्ठ खोल्नका लागि पर्याप्त मेमोरी छैन</translation>
 <translation id="625463612687472648">अनुमति रद्द गर्नुहोस्</translation>
 <translation id="6259156558325130047">क्रम परिवर्तन गर्ने कार्य &amp;पुन: गर्नुहोस्</translation>
+<translation id="6259282549512536479">तपाईंले यसअघि <ph name="BLOCKED_URL" /> ब्लक गर्नुभएको छ</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्कहरू</translation>
 <translation id="6264376385120300461">जे भए पनि डाउनलोड गर्नुहोस्</translation>
 <translation id="6264485186158353794">सुरक्षामा फर्कनुहोस्</translation>
@@ -3103,6 +3107,7 @@
 <translation id="6465306955648956876">पासवर्डहरूको व्यवस्थापन गर्नुहोस्...</translation>
 <translation id="646789491285795429">तपाईंले यो उत्पादन ट्र्याक गर्न थालिसक्नुभएको छ</translation>
 <translation id="6468485451923838994">फन्टहरू</translation>
+<translation id="6469702164109431067">पासवर्ड तथा पासकी</translation>
 <translation id="647261751007945333">यन्त्र नीतिहरू</translation>
 <translation id="6472874020827012601">फेब्रिक (म्याट)</translation>
 <translation id="647330291963761005">अपडेटहरू इन्स्टल गरिँदै छन्</translation>
@@ -3365,7 +3370,7 @@
 <translation id="6963693576491380224">सरकारी तथा सार्वजनिक क्षेत्रका जागिरहरू</translation>
 <translation id="6964255747740675745">नेटवर्कको कन्फिगुरेसन पार्स गर्न सकिएन (अमान्य JSON)।</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
-<translation id="6965978654500191972">यन्त्र</translation>
+<translation id="6965978654500191972">डिभाइस</translation>
 <translation id="696703987787944103">बोधात्मक</translation>
 <translation id="6967851206780867018">सामग्रीका कारण एउटा फाइल ब्लक गरिएको छ</translation>
 <translation id="6970885655016700774">फेब्रिक (अर्काइभल)</translation>
@@ -4346,6 +4351,7 @@
 <translation id="8699041776323235191">HID यन्त्र</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">माउन्टिङ टेप</translation>
+<translation id="8703372953981978786">यो लिंकले काम गर्दैन</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> सँग तपाईंको जडान गुप्तलिखित छैन।</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>
 <translation id="8706806585855470492">तपाईं ट्याब समूह सेयर गर्न, तिनमा सामेल हुन र सहकार्य गर्न पाउनु हुने छ</translation>

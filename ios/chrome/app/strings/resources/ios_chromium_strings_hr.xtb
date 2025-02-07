@@ -70,6 +70,7 @@ Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi ć
 <translation id="2459183986985456602">Otvori moju najnoviju karticu u Chromiumu.</translation>
 <translation id="2476409803017965813">Svoje odabire uvijek možete ažurirati u postavkama Chromiuma.</translation>
 <translation id="2478931088402984578">Odaberite <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Postavite Chromium kao zadani preglednik da biste jednostavno dijelili i otvarali veze</translation>
 <translation id="2512597191798760956">Pritisnite i zadržite ikonu Chromiuma i kliknite opciju Uredite početni zaslon</translation>
 <translation id="2517624234762908348">Sinkroniziraj podatke iz Chromiuma</translation>
 <translation id="2592940277904433508">Nastavi s upotrebom Chromiuma</translation>
@@ -167,6 +168,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="5088872414922783602">Brže pristupite Chromiumu putem donje trake početnog zaslona.</translation>
 <translation id="5124429847818367226">Sad možete koristiti Chromium svaki put kad pregledavate ili dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji ste prijavljeni i načinom na koji se Chromium upotrebljava.</translation>
+<translation id="5134464247000681876">Otvorite veze iz Gmaila, Karata, YouTubea i drugih aplikacija u Chromiumu</translation>
 <translation id="5224391634244552924">Nema nijedne spremljene zaporke. Chromium može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="5259423875997548710">Pretraživanje vizualnih elemenata u Chromiumu.</translation>
 <translation id="5308226104666789935">Chromium ne može provjeriti ima li ažuriranja</translation>
@@ -260,6 +262,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="7674213385180944843">Otvorite Postavke &gt; Privatnost &gt; Fotoaparat &gt; Chromium i uključite fotoaparat.</translation>
 <translation id="7733418656985455268">Savjet za Chrome: pretražujte pomoću Objektiva</translation>
 <translation id="7747820849741499258">Pretraži u Chromiumu</translation>
+<translation id="7753923083404296545">Otvoreno u anonimnom načinu Chromiuma</translation>
 <translation id="7762622637388462191">Zaključajte anonimne kartice kad napustite Chromium ili se prebacite u drugu aplikaciju.</translation>
 <translation id="7763454117143368771">Koristite Chromium kao zadani preglednik da biste se zaštitili od opasnih web-lokacija i očuvali sigurnost svojih zaporki</translation>
 <translation id="7784950022329154821">Zaključaj anonimne kartice pri zatvaranju Chromiuma</translation>

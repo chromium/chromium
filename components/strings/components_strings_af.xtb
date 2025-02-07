@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Nie nou nie</translation>
 <translation id="100957008357583611">Gebruik jou ligging?</translation>
 <translation id="1010200102790553230">Laai bladsy later</translation>
+<translation id="1010225406377140704">Kontak die sender om te vra vir ’n nuwe skakel</translation>
 <translation id="1011206368273183593">Berei tans lêers voor</translation>
 <translation id="1014509239502131234">Resultaat word ontdoen</translation>
 <translation id="1015730422737071372">Verskaf bykomende besonderhede</translation>
@@ -1164,6 +1165,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3076865167425975822">Bedryfstelsels</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3082007635241601060">Laat Google jou mandjies gebruik om gepersonaliseerde afslag te vind wanneer dit beskikbaar is</translation>
+<translation id="3086269988715347183">Jy het nie voorheen <ph name="BLOCKED_URL" /> goedgekeur nie</translation>
 <translation id="3086579638707268289">Jou aktiwiteit op die web word gemonitor</translation>
 <translation id="3087734570205094154">Onderkant</translation>
 <translation id="3090667236485488075">Glas</translation>
@@ -1239,6 +1241,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3203025201812691413">URL kan nie leeg wees nie</translation>
 <translation id="320323717674993345">Kanselleer betaling</translation>
 <translation id="3203366800380907218">Op die web</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> kan volwasse inhoud bevat</translation>
 <translation id="3207960819495026254">Geboekmerk</translation>
 <translation id="3208701679386778924">Stuur asseblief ’n verslag sodat ons toekomstige ChromeOS-opdaterings kan verbeter.</translation>
 <translation id="3209034400446768650">Bladsy kan geld hef</translation>
@@ -2973,6 +2976,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6254436959401408446">Nie genoeg berging om hierdie bladsy oop te maak nie</translation>
 <translation id="625463612687472648">Hou op om toe te laat</translation>
 <translation id="6259156558325130047">Herdoen herrangskik</translation>
+<translation id="6259282549512536479">Jy het voorheen <ph name="BLOCKED_URL" /> geblokkeer</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-boekmerke</translation>
 <translation id="6264376385120300461">Laai in elk geval af</translation>
 <translation id="6264485186158353794">Terug na veiligheid</translation>
@@ -3105,6 +3109,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6465306955648956876">Bestuur wagwoorde …</translation>
 <translation id="646789491285795429">Jy spoor reeds hierdie produk na</translation>
 <translation id="6468485451923838994">Lettertipes</translation>
+<translation id="6469702164109431067">Wagwoorde en toegangsleutels</translation>
 <translation id="647261751007945333">Toestelbeleide</translation>
 <translation id="6472874020827012601">Tekstiel (mat)</translation>
 <translation id="647330291963761005">Installeer tans opdaterings</translation>
@@ -4348,6 +4353,7 @@ Bykomende besonderhede:
 <translation id="8699041776323235191">HID-toestel</translation>
 <translation id="8699985386408839112">Koevert Kaku 1</translation>
 <translation id="8702965365666568344">Monteerband</translation>
+<translation id="8703372953981978786">Hierdie skakel werk nie</translation>
 <translation id="8703575177326907206">Jou verbinding aan <ph name="DOMAIN" /> is nie geënkripteer nie.</translation>
 <translation id="8705331520020532516">Reeksnommer</translation>
 <translation id="8706806585855470492">Jy sal in oortjiegroepe kan deel, aansluit en saamwerk</translation>

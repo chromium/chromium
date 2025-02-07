@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Ez une honetan</translation>
 <translation id="100957008357583611">Kokapena erabili nahi duzu?</translation>
 <translation id="1010200102790553230">Kargatu orria geroago</translation>
+<translation id="1010225406377140704">Beste esteka bat eskatzeko, jarri igorlearekin harremanetan</translation>
 <translation id="1011206368273183593">Fitxategiak prestatzen</translation>
 <translation id="1014509239502131234">Emaitza desegiten</translation>
 <translation id="1015730422737071372">Eman xehetasun gehiago</translation>
@@ -1164,6 +1165,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3076865167425975822">Sistema eragileak</translation>
 <translation id="3080254622891793721">Grafikoa</translation>
 <translation id="3082007635241601060">Utzi Google-ri saskiak erabiltzen bertako produktuen deskontu pertsonalizatuak bilatzeko</translation>
+<translation id="3086269988715347183">Inoiz ez duzu onartu <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Webgunean egiten ari zarena gainbegiratzen ari dira</translation>
 <translation id="3087734570205094154">Behekoa</translation>
 <translation id="3090667236485488075">Beira</translation>
@@ -1236,6 +1238,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3203025201812691413">URLa ezin da hutsik egon</translation>
 <translation id="320323717674993345">Utzi bertan behera ordainketa</translation>
 <translation id="3203366800380907218">Saretik</translation>
+<translation id="3207830513221832868">Baliteke <ph name="BLOCKED_URL" /> webguneak helduentzako edukia izatea</translation>
 <translation id="3207960819495026254">Laster-marka gisa gordea</translation>
 <translation id="3208701679386778924">Bidali txosten bat, ChromeOS-en eguneratzeak hobe ditzagun.</translation>
 <translation id="3209034400446768650">Baliteke orriak dirua kobratzea</translation>
@@ -2968,6 +2971,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6254436959401408446">Ez dago fitxategia irekitzeko behar adina memoria</translation>
 <translation id="625463612687472648">Utzi erabiltzeko baimena emateari</translation>
 <translation id="6259156558325130047">&amp;Berregin berrantolatzea</translation>
+<translation id="6259282549512536479">Lehen <ph name="BLOCKED_URL" /> blokeatu zenuen</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> laster-marka</translation>
 <translation id="6264376385120300461">Deskargatu halere</translation>
 <translation id="6264485186158353794">Itzuli segurtasunera</translation>
@@ -3100,6 +3104,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6465306955648956876">Kudeatu pasahitzak…</translation>
 <translation id="646789491285795429">Produktuaren jarraipena egiten ari zara jada</translation>
 <translation id="6468485451923838994">Letrak</translation>
+<translation id="6469702164109431067">Pasahitzak eta sarbide-gakoak</translation>
 <translation id="647261751007945333">Gailuaren gidalerroak</translation>
 <translation id="6472874020827012601">Ehuna (matea)</translation>
 <translation id="647330291963761005">Eguneratzeak instalatzen</translation>
@@ -4343,6 +4348,7 @@ Xehetasun gehiago:
 <translation id="8699041776323235191">HID gailua</translation>
 <translation id="8699985386408839112">Kaku gutun-azala 1</translation>
 <translation id="8702965365666568344">Oratzeko zinta</translation>
+<translation id="8703372953981978786">Esteka honek ez du funtzionatzen</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> domeinuarekiko duzun konexioa ez dago enkriptatuta.</translation>
 <translation id="8705331520020532516">Serie-zenbakia</translation>
 <translation id="8706806585855470492">Fitxa taldeak partekatzeko, haietan sartzeko eta elkarlanean jarduteko aukera izango duzu</translation>
