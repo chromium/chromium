@@ -638,13 +638,11 @@ std::vector<device::BluetoothAdapter::BluetoothRole>
 FakeCentral::GetSupportedRoles() {
   NOTREACHED();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void FakeCentral::SetStandardChromeOSAdapterName() {
   NOTREACHED();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 base::WeakPtr<device::BluetoothAdapter> FakeCentral::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

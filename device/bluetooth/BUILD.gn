@@ -1,8 +1,8 @@
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//device/bluetooth/cast_bluetooth.gni")
 import("//device/bluetooth/emulation/buildflags.gni")
@@ -113,7 +113,6 @@ source_set("fake_bluetooth") {
 
   deps = [
     ":bluetooth",
-    "//build:chromeos_buildflags",
     "//device/bluetooth/public/cpp",
     "//device/bluetooth/public/mojom:fake_bluetooth_interfaces",
     "//mojo/public/cpp/bindings",
@@ -180,7 +179,6 @@ component("bluetooth") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//components/prefs",
     "//crypto",
@@ -213,14 +211,11 @@ component("bluetooth") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
-  }
-
-  if (is_chromeos_ash) {
     deps += [
       "//ash/constants",
       "//chromeos/ash/services/nearby/public/cpp/",
       "//chromeos/ash/services/secure_channel/public/cpp/shared",
+      "//chromeos/constants",
     ]
   }
 
@@ -597,12 +592,6 @@ component("bluetooth") {
           "chromeos_platform_features.h",
         ]
         deps += [ "//services/data_decoder/public/mojom" ]
-        if (is_chromeos_lacros) {
-          deps += [
-            "//chromeos/lacros",
-            "//chromeos/startup",
-          ]
-        }
       }
       if (use_dbus) {
         public_deps += [ "//dbus" ]
@@ -684,8 +673,6 @@ static_library("mocks") {
     "//net",
     "//testing/gmock",
   ]
-
-  deps = [ "//build:chromeos_buildflags" ]
 }
 
 if (is_android) {

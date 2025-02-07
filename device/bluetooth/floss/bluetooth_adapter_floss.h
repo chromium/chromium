@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
@@ -185,16 +185,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       override;
 
   std::vector<BluetoothRole> GetSupportedRoles() override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Set the adapter name to one chosen from the system information. Only Ash
-  // needs to do this.
+  // Set the adapter name to one chosen from the system information.
   void SetStandardChromeOSAdapterName() override;
-  // Enable telephony feature for floss. Only Ash needs to do this.
+  // Enable telephony feature for floss.
   void ConfigureBluetoothTelephony(bool enabled);
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // ScannerClientObserver overrides
   void ScannerRegistered(device::BluetoothUUID uuid,
