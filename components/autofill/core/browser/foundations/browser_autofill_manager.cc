@@ -1648,15 +1648,13 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
                              &autofill_field)) {
     return;
   }
-  form_filler_->FillOrPreviewForm(
-      action_persistence, form, &profile, CHECK_DEREF(form_structure),
-      CHECK_DEREF(autofill_field), /*ignorable_skip_reasons=*/{},
-      trigger_source);
+  form_filler_->FillOrPreviewForm(action_persistence, form, &profile,
+                                  CHECK_DEREF(form_structure),
+                                  CHECK_DEREF(autofill_field), trigger_source);
 }
 
 void BrowserAutofillManager::FillOrPreviewFormWithAutofillAiData(
     mojom::ActionPersistence action_persistence,
-    const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
     const FormData& form,
     const FormFieldData& trigger_field,
     const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill) {
@@ -1668,7 +1666,6 @@ void BrowserAutofillManager::FillOrPreviewFormWithAutofillAiData(
   }
   form_filler_->FillOrPreviewForm(action_persistence, form, values_to_fill,
                                   *form_structure, *autofill_trigger_field,
-                                  ignorable_skip_reasons,
                                   AutofillTriggerSource::kAutofillAi);
 }
 
@@ -1806,8 +1803,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     }
     self.form_filler_->FillOrPreviewForm(
         action_persistence, form, &credit_card, CHECK_DEREF(form_structure),
-        CHECK_DEREF(autofill_field), /*ignorable_skip_reasons=*/{},
-        trigger_source, /*is_refill=*/false);
+        CHECK_DEREF(autofill_field), trigger_source, /*is_refill=*/false);
   };
 
   // Callback when the credit was feched asynchronously.

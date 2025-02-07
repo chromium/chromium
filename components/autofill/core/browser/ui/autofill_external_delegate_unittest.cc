@@ -1193,7 +1193,7 @@ TEST_F(AutofillExternalDelegateTest, DidAcceptFillAutofillAiFillsFullForm) {
   Suggestion fill_suggestion =
       Suggestion(u"Autocomplete", SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(
-      {{field_to_fill->global_id(), value_to_fill}}, {});
+      {{field_to_fill->global_id(), value_to_fill}});
 
   std::vector<FormFieldData> filled_fields;
   EXPECT_CALL(driver(), ApplyFormAction)

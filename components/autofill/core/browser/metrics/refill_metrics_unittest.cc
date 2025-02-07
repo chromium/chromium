@@ -25,7 +25,7 @@ class RefillMetricsTest : public AutofillMetricsBaseTest, public testing::Test {
             mojom::ActionPersistence::kFill, form, filling_payload,
             *autofill_manager().FindCachedFormById(form.global_id()),
             *autofill_manager().GetAutofillField(form, form.fields().front()),
-            /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup);
+            AutofillTriggerSource::kPopup);
   }
 };
 

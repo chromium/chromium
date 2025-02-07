@@ -172,10 +172,8 @@ Suggestion::PlusAddressPayload::~PlusAddressPayload() = default;
 Suggestion::AutofillAiPayload::AutofillAiPayload() = default;
 
 Suggestion::AutofillAiPayload::AutofillAiPayload(
-    const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill,
-    const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons)
-    : values_to_fill(std::move(values_to_fill)),
-      ignorable_skip_reasons(std::move(ignorable_skip_reasons)) {}
+    const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill)
+    : values_to_fill(std::move(values_to_fill)) {}
 
 Suggestion::AutofillAiPayload::AutofillAiPayload(const AutofillAiPayload&) =
     default;

@@ -1179,8 +1179,8 @@ void AutofillExternalDelegate::FillAutofillAiData(
     Suggestion::AutofillAiPayload payload =
         suggestion.GetPayload<Suggestion::AutofillAiPayload>();
     manager_->FillOrPreviewFormWithAutofillAiData(
-        mojom::ActionPersistence::kFill, payload.ignorable_skip_reasons,
-        query_form_, query_field_, payload.values_to_fill);
+        mojom::ActionPersistence::kFill, query_form_, query_field_,
+        payload.values_to_fill);
   }
 }
 

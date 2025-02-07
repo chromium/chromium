@@ -33,11 +33,6 @@ using autofill::FieldGlobalId;
 
 constexpr int kNumberFieldsToShowInSuggestionLabel = 2;
 
-// TODO(crbug.com/364808228): Remove.
-constexpr autofill::DenseSet<autofill::FieldFillingSkipReason>
-    kIgnorableSkipReasons = {
-        autofill::FieldFillingSkipReason::kNotInFilledSection};
-
 // Checks if the cached predictions for a given `form` and Autofill profile have
 // at least one matching autofill suggestion for the specified `field_type`.
 bool CacheHasMatchingAutofillSuggestion(
@@ -404,8 +399,7 @@ std::vector<autofill::Suggestion> CreateFillingSuggestionsV2(
       values_to_fill.emplace_back(field->global_id(),
                                   base::UTF8ToUTF16(attribute->value()));
     }
-    auto payload = autofill::Suggestion::AutofillAiPayload(
-        values_to_fill, kIgnorableSkipReasons);
+    auto payload = autofill::Suggestion::AutofillAiPayload(values_to_fill);
     suggestions.back().payload = payload;
   }
 
@@ -423,8 +417,8 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
       cache.at(field.global_id());
   autofill::Suggestion suggestion(prediction.value,
                                   autofill::SuggestionType::kFillAutofillAi);
-  auto payload = autofill::Suggestion::AutofillAiPayload(GetValuesToFill(cache),
-                                                         kIgnorableSkipReasons);
+  auto payload =
+      autofill::Suggestion::AutofillAiPayload(GetValuesToFill(cache));
   suggestion.payload = payload;
   suggestion.icon = autofill::Suggestion::Icon::kAutofillAi;
 
