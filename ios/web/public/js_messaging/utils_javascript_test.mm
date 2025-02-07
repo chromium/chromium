@@ -185,15 +185,17 @@ TEST_F(UtilsJavaScriptTest, Trim) {
     NSString* input_string;
     NSString* expected_output;
   } test_data[] = {
-      {@"  content", @"content"},
-      {@"content  ", @"content"},
-      {@"  content  ", @"content"},
-      {@"  cont   ent  ", @"cont   ent"},
+      {@"'  content'", @"content"},
+      {@"'content  '", @"content"},
+      {@"'  content  '", @"content"},
+      {@"'  cont   ent  '", @"cont   ent"},
+      {@"null", @""},
+      {@"undefined", @""},
   };
   for (size_t i = 0; i < std::size(test_data); i++) {
     TestData& data = test_data[i];
     NSString* js = [NSString
-        stringWithFormat:@"__gCrWeb.utils_tests.trim('%@')", data.input_string];
+        stringWithFormat:@"__gCrWeb.utils_tests.trim(%@)", data.input_string];
     id result = web::test::ExecuteJavaScript(web_view(), js);
 
     EXPECT_NSEQ(data.expected_output, result)
