@@ -34,6 +34,8 @@ RemoteSuggestionsServiceFactory::BuildServiceInstanceFor(
 }
 
 RemoteSuggestionsServiceFactory::RemoteSuggestionsServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("RemoteSuggestionsService") {}
+    : ProfileKeyedServiceFactoryIOS("RemoteSuggestionsService",
+                                    ProfileSelection::kOwnInstanceInIncognito) {
+}
 
 RemoteSuggestionsServiceFactory::~RemoteSuggestionsServiceFactory() {}
