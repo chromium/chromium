@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>CSS Gaps: column-rule-outset getComputedStyle()</title>
+  <title>CSS Gaps: *-rule-outset getComputedStyle()</title>
   <link rel="author" title="Sam Davis Omekara Jr." href="mailto:samomekarajr@microsoft.com">
   <link rel="help" href="https://drafts.csswg.org/css-gaps-1/#outset">
   <script src="/resources/testharness.js"></script>
@@ -22,9 +22,9 @@
     test_computed_value("column-rule-outset", "-20px");
     test_computed_value("column-rule-outset", "0.5em", "20px");
     test_computed_value("column-rule-outset", "calc(10px + 0.5em)", "30px");
-    test_computed_value("column-rule-outset", "calc(10px - 0.5em)", "-10px");
-    test_computed_value("column-rule-outset", "30%");
-    test_computed_value("column-rule-outset", "calc(25% + 10px)");
+    test_computed_value("row-rule-outset", "calc(10px - 0.5em)", "-10px");
+    test_computed_value("row-rule-outset", "30%");
+    test_computed_value("row-rule-outset", "calc(25% + 10px)");
   </script>
 </body>
 </html>

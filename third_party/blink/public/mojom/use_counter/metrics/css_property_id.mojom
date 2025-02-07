@@ -897,6 +897,7 @@ enum CSSSampleId {
     kCornerEndEndShape = 838,
     kReadingOrder = 839,
     kColumnRuleOutset = 840,
+    kRowRuleOutset = 841,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
