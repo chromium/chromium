@@ -289,6 +289,7 @@ void UserSessionActivityReporter::StopTimers() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   reporting_timer_.Stop();
   collect_idle_state_timer_.Stop();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 bool UserSessionActivityReporter::IsSessionActive() const {
