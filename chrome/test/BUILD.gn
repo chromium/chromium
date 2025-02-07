@@ -7582,7 +7582,6 @@ test("unit_tests") {
       "../browser/resource_coordinator/tab_memory_metrics_reporter_unittest.cc",
       "../browser/resource_coordinator/test_lifecycle_unit.cc",
       "../browser/resource_coordinator/test_lifecycle_unit.h",
-      "../browser/resource_coordinator/usage_clock_unittest.cc",
       "../browser/resources_integrity_unittest.cc",
       "../browser/safe_browsing/generated_safe_browsing_pref_unittest.cc",
       "../browser/search/background/ntp_background_service_unittest.cc",

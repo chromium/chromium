@@ -12,8 +12,6 @@
 
 namespace resource_coordinator {
 
-class UsageClock;
-
 class TestLifecycleUnit : public LifecycleUnitBase {
  public:
   using LifecycleUnitBase::OnLifecycleUnitVisibilityChanged;
@@ -22,7 +20,7 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   explicit TestLifecycleUnit(
       base::TimeTicks last_focused_time = base::TimeTicks(),
       bool can_discard = true);
-  TestLifecycleUnit(content::Visibility visibility, UsageClock* usage_clock);
+  explicit TestLifecycleUnit(content::Visibility visibility);
   explicit TestLifecycleUnit(LifecycleUnitSourceBase* source);
 
   TestLifecycleUnit(const TestLifecycleUnit&) = delete;

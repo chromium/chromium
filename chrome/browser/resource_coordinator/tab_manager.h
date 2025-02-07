@@ -23,7 +23,6 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
-#include "chrome/browser/resource_coordinator/usage_clock.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "ui/gfx/native_widget_types.h"
@@ -90,8 +89,6 @@ class TabManager : public LifecycleUnitObserver,
   void AddObserver(TabLifecycleObserver* observer);
   void RemoveObserver(TabLifecycleObserver* observer);
 
-  UsageClock* usage_clock() { return &usage_clock_; }
-
  private:
   friend class TabManagerStatsCollectorTest;
 
@@ -153,9 +150,6 @@ class TabManager : public LifecycleUnitObserver,
 
   class TabManagerSessionRestoreObserver;
   std::unique_ptr<TabManagerSessionRestoreObserver> session_restore_observer_;
-
-  // A clock that advances when Chrome is in use.
-  UsageClock usage_clock_;
 
   // Weak pointer factory used for posting delayed tasks.
   base::WeakPtrFactory<TabManager> weak_ptr_factory_{this};

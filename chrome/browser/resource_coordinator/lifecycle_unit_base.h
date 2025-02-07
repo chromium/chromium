@@ -17,7 +17,6 @@
 namespace resource_coordinator {
 
 class LifecycleUnitSourceBase;
-class UsageClock;
 
 using ::mojom::LifecycleUnitState;
 using ::mojom::LifecycleUnitStateChangeReason;
@@ -26,8 +25,7 @@ using ::mojom::LifecycleUnitStateChangeReason;
 class LifecycleUnitBase : public LifecycleUnit {
  public:
   explicit LifecycleUnitBase(LifecycleUnitSourceBase* source,
-                             content::Visibility visibility,
-                             UsageClock* usage_clock);
+                             content::Visibility visibility);
 
   LifecycleUnitBase(const LifecycleUnitBase&) = delete;
   LifecycleUnitBase& operator=(const LifecycleUnitBase&) = delete;
@@ -38,7 +36,6 @@ class LifecycleUnitBase : public LifecycleUnit {
   LifecycleUnitSource* GetSource() const override;
   int32_t GetID() const override;
   base::TimeTicks GetWallTimeWhenHidden() const override;
-  base::TimeDelta GetChromeUsageTimeWhenHidden() const override;
   LifecycleUnitState GetState() const override;
   base::TimeTicks GetStateChangeTime() const override;
   size_t GetDiscardCount() const override;
@@ -92,14 +89,6 @@ class LifecycleUnitBase : public LifecycleUnit {
   // The wall time when this LifecycleUnit was last hidden, or TimeDelta::Max()
   // if this LifecycleUnit is currently visible.
   base::TimeTicks wall_time_when_hidden_;
-
-  // A clock that measures Chrome usage time.
-  const raw_ptr<UsageClock> usage_clock_;
-
-  // The Chrome usage time measured by |usage_clock_| when this LifecycleUnit
-  // was last hidden, or TimeDelta::Max() if this LifecycleUnit is currently
-  // visible.
-  base::TimeDelta chrome_usage_time_when_hidden_;
 
   // The number of times that this lifecycle unit has been discarded.
   int discard_count_ = 0;

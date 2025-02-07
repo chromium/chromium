@@ -122,15 +122,13 @@ StateChangeReason DiscardReasonToStateChangeReason(
 
 }  // namespace
 
-
 TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
     TabLifecycleUnitSource* source,
     base::ObserverList<TabLifecycleObserver>::UncheckedAndDanglingUntriaged*
         observers,
-    UsageClock* usage_clock,
     content::WebContents* web_contents,
     TabStripModel* tab_strip_model)
-    : LifecycleUnitBase(source, web_contents->GetVisibility(), usage_clock),
+    : LifecycleUnitBase(source, web_contents->GetVisibility()),
       content::WebContentsObserver(web_contents),
       observers_(observers),
       tab_strip_model_(tab_strip_model) {

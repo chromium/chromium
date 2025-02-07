@@ -4018,8 +4018,6 @@ static_library("browser") {
       "resource_coordinator/tab_manager.h",
       "resource_coordinator/tab_manager_resource_coordinator_signal_observer.cc",
       "resource_coordinator/tab_manager_resource_coordinator_signal_observer.h",
-      "resource_coordinator/usage_clock.cc",
-      "resource_coordinator/usage_clock.h",
       "resources_integrity.cc",
       "resources_integrity.h",
       "safe_browsing/generated_safe_browsing_pref.cc",
