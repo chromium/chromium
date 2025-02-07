@@ -147,6 +147,7 @@ export class ModulesV2Element extends AppElementBase {
   private setModulesLoadableListenerId_: number|null = null;
   private containerObserver_: MutationObserver|null = null;
   private templateInstances_: TemplateInstanceBase[] = [];
+  private availableModulesIds_: string[]|null = null;
   private modulesLoadInitiated_: boolean = false;
   private moduleLoadPromise_: Promise<void>|null = null;
   // TODO(crbug.com/385174675): Remove |modulesReloadable_| flag when safe.
@@ -304,12 +305,21 @@ export class ModulesV2Element extends AppElementBase {
       await this.moduleLoadPromise_;
     }
 
-    const newlyEnabledModuleIds =
-        prevDisabledIds.filter(id => !newDisabledIds.includes(id));
-    this.newlyEnabledModuleIds_ =
-        this.newlyEnabledModuleIds_.concat(newlyEnabledModuleIds);
+    if (!this.availableModulesIds_) {
+      const modulesIdNames = (await this.handler_.getModulesIdNames()).data;
+      // TODO(crbug.com/385174675): Set |this.availableModulesIds_| in
+      // |this.loadModules_()| when Microsoft modules are enabled ToT, as this
+      // experimental behavior is currently gated to the Microsoft modules.
+      this.availableModulesIds_ = modulesIdNames.map((m: ModuleIdName) => m.id);
+    }
 
-    if (newlyEnabledModuleIds.length === 0) {
+    const filteredNewlyEnabledModuleIds =
+        prevDisabledIds.filter(id => !newDisabledIds.includes(id))
+            .filter(id => this.availableModulesIds_!.includes(id));
+    this.newlyEnabledModuleIds_ =
+        this.newlyEnabledModuleIds_.concat(filteredNewlyEnabledModuleIds);
+
+    if (filteredNewlyEnabledModuleIds.length === 0) {
       return;
     }
 
