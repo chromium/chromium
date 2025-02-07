@@ -396,8 +396,6 @@ void AutofillAiManager::OnReceivedPredictions(
         return buffer;
       }();
 
-  form_filling_predictions_model_execution_id_ = model_execution_id;
-
   if (predictions_or_error.has_value()) {
     prediction_retrieval_state_ = PredictionRetrievalState::kDoneSuccess;
     cache_ = std::move(predictions_or_error.value());
@@ -433,14 +431,6 @@ void AutofillAiManager::UpdateSuggestionsAfterReceivedPredictions(
     case PredictionRetrievalState::kReady:
     case PredictionRetrievalState::kIsLoadingPredictions:
       NOTREACHED();
-  }
-}
-
-void AutofillAiManager::SaveAutofillAiDataUserFeedbackReceived(
-    const std::string& model_execution_id,
-    UserFeedback feedback) {
-  if (feedback == UserFeedback::kThumbsDown) {
-    client_->TryToOpenFeedbackPage(model_execution_id);
   }
 }
 
@@ -551,7 +541,6 @@ void AutofillAiManager::Reset() {
   cache_ = std::nullopt;
   last_queried_form_global_id_ = std::nullopt;
   update_suggestions_callback_ = base::NullCallback();
-  form_filling_predictions_model_execution_id_ = std::nullopt;
   loading_suggestion_timer_.Stop();
   prediction_retrieval_state_ = PredictionRetrievalState::kReady;
   error_or_no_info_suggestion_shown_ = false;

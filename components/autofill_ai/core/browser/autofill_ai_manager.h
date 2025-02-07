@@ -104,13 +104,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   void AddStrikeForImportFromForm(const autofill::FormStructure& form);
   void RemoveStrikesForImportFromForm(const autofill::FormStructure& form);
 
-  // Called when feedback about the feature is given by the user for saving
-  // Autofill AI data. `model_execution_id` identifies the model execution
-  // logs and will be sent part of the user feedback.
-  void SaveAutofillAiDataUserFeedbackReceived(
-      const std::string& model_execution_id,
-      UserFeedback feedback);
-
   base::flat_map<autofill::FieldGlobalId, bool> GetFieldValueSensitivityMap(
       const autofill::FormData& form_data);
 
@@ -211,12 +204,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // Address suggestions that will be shown as defined in
   // `CreateFillingSuggestions()` after Autofill AI was triggered.
   std::vector<autofill::Suggestion> autofill_suggestions_;
-
-  // Stores the model execution id for the latest successful retrieval of
-  // prediction improvements. If set, the feedback page will open when the
-  // "thumbs down" icon is clicked.
-  std::optional<std::string> form_filling_predictions_model_execution_id_ =
-      std::nullopt;
 
   // Updates currently shown suggestions if their
   // `AutofillClient::SuggestionUiSessionId` hasn't changed since the trigger

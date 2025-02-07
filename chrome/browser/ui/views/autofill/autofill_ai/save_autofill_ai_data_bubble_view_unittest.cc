@@ -34,10 +34,8 @@ class MockSaveAutofillAiDataController : public SaveAutofillAiDataController {
   MOCK_METHOD(void,
               OfferSave,
               (autofill::EntityInstance,
-               AutofillAiClient::SavePromptAcceptanceCallback
-                   save_prompt_acceptance_callback,
-               LearnMoreClickedCallback,
-               UserFeedbackCallback),
+               AutofillAiClient::SavePromptAcceptanceCallback,
+               LearnMoreClickedCallback),
               (override));
   MOCK_METHOD(base::optional_ref<const autofill::EntityInstance>,
               GetAutofillAiData,

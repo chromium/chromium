@@ -215,9 +215,7 @@ void ChromeAutofillAiClient::ShowSaveAutofillAiBubble(
         std::move(entity), std::move(prompt_acceptance_callback),
         base::BindRepeating(
             &autofill_ai::AutofillAiManager::UserClickedLearnMore,
-            prediction_improvements_manager_.GetWeakPtr()),
-        // TODO(crbug.com/389629676): Delete feedback infrastructure.
-        base::DoNothing());
+            prediction_improvements_manager_.GetWeakPtr()));
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

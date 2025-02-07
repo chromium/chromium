@@ -25,9 +25,6 @@ class AutofillAiDelegate {
   using GetSuggestionsCallback =
       base::OnceCallback<void(std::vector<autofill::Suggestion>)>;
 
-  // Specifies the types of feedback users can give.
-  enum class UserFeedback { kThumbsUp, kThumbsDown };
-
   using UpdateSuggestionsCallback =
       base::RepeatingCallback<void(std::vector<Suggestion>,
                                    AutofillSuggestionTriggerSource)>;
