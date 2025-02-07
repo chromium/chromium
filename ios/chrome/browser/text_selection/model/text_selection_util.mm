@@ -34,3 +34,6 @@ bool IsExpKitTextClassifierEntityEnabled() {
          base::FeatureList::IsEnabled(kEnableExpKitTextClassifierPhoneNumber) ||
          base::FeatureList::IsEnabled(kEnableExpKitTextClassifierEmail);
 }
+
+const char kForceAllowDomainForEntitySelection[] =
+    "force-allow-domain-for-entity-selection";
