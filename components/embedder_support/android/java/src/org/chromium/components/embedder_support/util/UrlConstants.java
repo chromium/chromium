@@ -124,6 +124,7 @@ public class UrlConstants {
             "https://myactivity.google.com/myactivity?utm_source=chrome_qd";
 
     public static final String GOOGLE_PRIVACY_POLICY = "https://policies.google.com/privacy";
+    public static final String GOOGLE_PRIVACY_POLICY_CHINA = "https://policies.google.cn/privacy";
 
     public static final String GOOGLE_URL = "https://www.google.com/";
 
