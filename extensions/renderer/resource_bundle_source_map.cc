@@ -49,12 +49,14 @@ ResourceBundleSourceMap::~ResourceBundleSourceMap() {
 
 void ResourceBundleSourceMap::RegisterSource(const char* const name,
                                              int resource_id) {
+  base::AutoLock lock(lock_);
   resource_map_.emplace(name, resource_id);
 }
 
 v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
     v8::Isolate* isolate,
     const std::string& name) const {
+  base::AutoLock lock(lock_);
   auto resource_iter = resource_map_.find(name);
   if (resource_iter == resource_map_.end()) {
     DUMP_WILL_BE_NOTREACHED()
@@ -90,6 +92,7 @@ v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
 }
 
 bool ResourceBundleSourceMap::Contains(const std::string& name) const {
+  base::AutoLock lock(lock_);
   return base::Contains(resource_map_, name);
 }
 
