@@ -212,15 +212,15 @@ def AggregateVectorIcons(working_directory, file_list, output_cc, output_h, outp
           (icon_name, extension) = os.path.splitext(
                                    os.path.basename(path_map[icon]))
           formatted_name = GetIconName(icon_name)
-          icon_representations = ExtractIconReps(path_map[icon])
-          icon_representation_strings = []
+          icon_file_contents = []
+          with open(path_map[icon], "r") as icon_file:
+                icon_file_contents = icon_file.readlines()
           output_test_h.write("""TEST_F(VectorIconsTest, Parse{}) {{ \\
               std::string s = \\\n""".format(formatted_name[1:]))
-          for i, size in enumerate(sorted(icon_representations, reverse=True)):
-            vector_commands = icon_representations[size]
-            for command in vector_commands.split("\n"):
-                output_test_h.write("\"{} \" \\\n".format(command))
-            output_test_h.write(" \\\n");
+          for line in icon_file_contents:
+            line = line.rstrip()
+            line = line.replace("\"", "\\\"")
+            output_test_h.write("\"{}\\n\" \\\n".format(line))
           output_test_h.write("""; \\
               CheckThatParsedElementsMatch(s, {}); \\
               }} \\\n \\\n""".format(formatted_name))
