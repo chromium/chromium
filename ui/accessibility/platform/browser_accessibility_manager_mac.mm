@@ -454,9 +454,9 @@ void BrowserAccessibilityManagerMac::FireAriaNotificationEvent(
   auto MapPropertiesToNSAccessibilityPriorityLevel =
       [&]() -> NSAccessibilityPriorityLevel {
     switch (priority_property) {
-      case ax::mojom::AriaNotificationPriority::kNone:
+      case ax::mojom::AriaNotificationPriority::kNormal:
         return NSAccessibilityPriorityMedium;
-      case ax::mojom::AriaNotificationPriority::kImportant:
+      case ax::mojom::AriaNotificationPriority::kHigh:
         return NSAccessibilityPriorityHigh;
     }
     NOTREACHED();

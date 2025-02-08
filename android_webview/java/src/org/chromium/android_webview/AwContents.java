@@ -46,6 +46,7 @@ import android.view.inputmethod.InputConnection;
 import android.view.textclassifier.TextClassifier;
 import android.webkit.JavascriptInterface;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -678,6 +679,25 @@ public class AwContents implements SmartClipProvider {
     // (ie before it is destroyed).
     private CleanupReference mCleanupReference;
 
+    private final Object mAsyncShouldInterceptRequestCallbackLock = new Object();
+
+    @GuardedBy("mAsyncShouldInterceptRequestCallbackLock")
+    @Nullable
+    private AsyncShouldInterceptRequestCallback mAsyncShouldInterceptRequestCallback;
+
+    public void setAsyncShouldInterceptRequestCallback(
+            AsyncShouldInterceptRequestCallback callback) {
+        synchronized (mAsyncShouldInterceptRequestCallbackLock) {
+            mAsyncShouldInterceptRequestCallback = callback;
+        }
+    }
+
+    public void clearAsyncShouldInterceptRequestCallback() {
+        synchronized (mAsyncShouldInterceptRequestCallbackLock) {
+            mAsyncShouldInterceptRequestCallback = null;
+        }
+    }
+
     // --------------------------------------------------------------------------------------------
     private class BackgroundThreadClientImpl extends AwContentsBackgroundThreadClient {
         // All methods are called on the background thread.
@@ -691,12 +711,20 @@ public class AwContents implements SmartClipProvider {
             // Return the response directly if the url is default video poster url.
             webResourceResponseInfo = mDefaultVideoPosterRequestHandler.shouldInterceptRequest(url);
             if (webResourceResponseInfo != null) {
-                callback.intercept(webResourceResponseInfo, request);
+                callback.intercept(webResourceResponseInfo);
                 return;
             }
 
-            webResourceResponseInfo = mContentsClient.shouldInterceptRequest(request);
-            callback.intercept(webResourceResponseInfo, request);
+            AsyncShouldInterceptRequestCallback asyncCallback;
+            synchronized (mAsyncShouldInterceptRequestCallbackLock) {
+                asyncCallback = mAsyncShouldInterceptRequestCallback;
+            }
+            if (asyncCallback == null) {
+                webResourceResponseInfo = mContentsClient.shouldInterceptRequest(request);
+                callback.intercept(webResourceResponseInfo);
+            } else {
+                asyncCallback.shouldInterceptRequestAsync(request, callback);
+            }
         }
     }
 

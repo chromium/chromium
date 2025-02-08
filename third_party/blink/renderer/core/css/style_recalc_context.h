@@ -46,10 +46,6 @@ class CORE_EXPORT StyleRecalcContext {
   // This is used to evaluate container queries in ElementRuleCollector.
   Element* container = nullptr;
 
-  // Used to decide which is the the closest style() @container candidate for
-  // ::slotted() and ::part() rule matching. Otherwise nullptr.
-  Element* style_container = nullptr;
-
   // Used to evaluate anchor() and anchor-size() queries.
   //
   // For normal (non-interleaved) style recalcs, this will be nullptr.

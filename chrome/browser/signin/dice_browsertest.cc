@@ -432,10 +432,6 @@ class DiceBrowserTest : public InProcessBrowserTest,
         reconcilor_blocked_count_(0),
         reconcilor_unblocked_count_(0),
         reconcilor_started_count_(0) {
-    // TODO(b/320650075): Adapt tests for
-    // `switches::kExplicitBrowserSigninUIOnDesktop` is enabled.
-    feature_list_.InitAndDisableFeature(
-        switches::kExplicitBrowserSigninUIOnDesktop);
     https_server_.RegisterDefaultHandler(base::BindRepeating(
         &FakeGaia::HandleSigninURL, main_email_,
         base::BindRepeating(&DiceBrowserTest::OnSigninRequest,
@@ -788,13 +784,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
                   ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
                   .empty());
 
-  // Make sure we are recording this value for the Control group of the
-  // `switches::kExplicitBrowserSigninUIOnDesktop` experiment.
-  ASSERT_FALSE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
-  histogram_tester.ExpectUniqueSample(
-      "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",
-      ShouldShowChromeSigninBubbleWithReason::kShouldShow, 1);
-
   EXPECT_EQ(1, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(1);
   EXPECT_EQ(1, reconcilor_started_count_);
@@ -981,16 +970,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, RevokeSyncAccountInAuthErrorState) {
   ASSERT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
           GetMainAccountID()));
-
-  // Revoking the sync consent should clear the primary account as it is in
-  // an permanent auth error state.
-  RevokeSyncConsent(GetIdentityManager());
-
-  // Updating the primary is done asynchronously. Wait for the update to happen.
-  WaitForPrimaryAccount(GetIdentityManager(), signin::ConsentLevel::kSignin,
-                        CoreAccountId());
-  EXPECT_FALSE(
-      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
 // Checks that Dice request header is not set from request from WebUI.
@@ -1149,13 +1128,15 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
 // Regression test for https://crbug.com/1304055.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
                        CloseBrowserWhileInitializingSyncConfirmation) {
-  // Signin using the Chrome Sync endpoint.
-  browser()->signin_view_controller()->ShowSignin(
-      signin_metrics::AccessPoint::kSettings);
-
   content::TestNavigationObserver sync_confirmation_url_observer(
-      GURL("chrome://sync-confirmation?style=0"));
+      GURL("chrome://sync-confirmation?style=0&is_sync_promo=true"));
   sync_confirmation_url_observer.StartWatchingNewWebContents();
+
+  // Signin using the Chrome Sync endpoint.
+  browser()->signin_view_controller()->ShowDiceEnableSyncTab(
+      signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo,
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      /*email_hint=*/std::string());
 
   // Receive token.
   SendRefreshTokenResponse();

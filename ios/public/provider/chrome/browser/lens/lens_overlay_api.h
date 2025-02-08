@@ -34,6 +34,10 @@ class GURL;
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
     suggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result;
 
+// The lens overlay has suggest signals available for the given result.
+- (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
+    hasSuggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result;
+
 // The lens overlay requested to open a URL (e.g. after a selection in the
 // flyout menu).
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
@@ -49,6 +53,9 @@ class GURL;
 
 // Defines the interface for interacting with a Chrome Lens Overlay.
 @protocol ChromeLensOverlay
+
+// Whether the current mode is translate.
+@property(nonatomic, readonly) BOOL translateFilterActive;
 
 // Sets the delegate for `ChromeLensOverlay`.
 - (void)setLensOverlayDelegate:(id<ChromeLensOverlayDelegate>)delegate;

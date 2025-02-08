@@ -578,7 +578,7 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
   if (update_behavior == kUpdateSizeChanged && element_->GetLayoutObject() &&
       element_->GetLayoutObject()->IsImage() &&
       new_image_content == old_image_content) {
-    To<LayoutImage>(element_->GetLayoutObject())->IntrinsicSizeChanged();
+    To<LayoutImage>(element_->GetLayoutObject())->NaturalSizeChanged();
   } else {
     bool is_lazyload = lazy_image_load_state_ == LazyImageLoadState::kDeferred;
 
@@ -870,13 +870,12 @@ gfx::Size ImageLoader::AccessNaturalSize() const {
 
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     gfx::Size concrete_object_size;
-    NaturalSizingInfo sizing_info;
-    if (SVGImageForContainer::GetNaturalDimensions(*svg_image, nullptr,
-                                                   sizing_info)) {
+    if (std::optional<NaturalSizingInfo> sizing_info =
+            SVGImageForContainer::GetNaturalDimensions(*svg_image, nullptr)) {
       concrete_object_size =
           ToRoundedSize(PhysicalSize::FromSizeFFloor(blink::ConcreteObjectSize(
-              sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
-                                      LayoutReplaced::kDefaultHeight))));
+              *sizing_info, gfx::SizeF(LayoutReplaced::kDefaultWidth,
+                                       LayoutReplaced::kDefaultHeight))));
     }
     if (size != concrete_object_size) {
       element_->GetDocument().CountUse(

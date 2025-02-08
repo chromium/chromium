@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enums.h"
+
+class Profile;
 
 namespace glic {
 
@@ -18,7 +21,7 @@ class GlicWindowController;
 // convenience.
 class GlicMetrics {
  public:
-  GlicMetrics();
+  explicit GlicMetrics(Profile* profile);
   GlicMetrics(const GlicMetrics&) = delete;
   GlicMetrics& operator=(const GlicMetrics&) = delete;
   ~GlicMetrics();
@@ -44,6 +47,9 @@ class GlicMetrics {
   void SetWindowController(GlicWindowController* controller);
 
  private:
+  // Called when `impression_timer_` fires.
+  void OnImpressionTimerFired();
+
   // These members are cleared in OnResponseStopped.
   base::TimeTicks input_submitted_time_;
   mojom::WebClientMode input_mode_;
@@ -56,9 +62,13 @@ class GlicMetrics {
   base::TimeTicks session_start_time_;
   InvocationSource invocation_source_ = InvocationSource::kOsButton;
 
+  // Used to record impressions of glic entry points.
+  base::RepeatingTimer impression_timer_;
+
   // The owner of this class is responsible for maintaining appropriate lifetime
   // for controller_.
   raw_ptr<GlicWindowController> controller_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace glic

@@ -12,11 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
-#include "components/bookmarks/browser/base_bookmark_model_observer.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
@@ -51,7 +50,7 @@ class Widget;
 // TODO(crbug.com/382749219): This class has some unnecessary complexity
 // stemming from the fact that it's trying to handle distinct requirements from
 // various clients. This client-specific logic should be split out.
-class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
+class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
                              public BookmarkContextMenuObserver {
  public:
   BookmarkMenuDelegate(Browser* browser,
@@ -84,11 +83,11 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // Returns the id given to the next menu.
   int next_menu_id() const { return next_menu_id_; }
 
-  bookmarks::BookmarkModel* GetBookmarkModel() {
-    return const_cast<bookmarks::BookmarkModel*>(
-        const_cast<const BookmarkMenuDelegate*>(this)->GetBookmarkModel());
+  BookmarkMergedSurfaceService* GetBookmarkMergedSurfaceService() {
+    return const_cast<BookmarkMergedSurfaceService*>(
+        const_cast<const BookmarkMenuDelegate*>(this)
+            ->GetBookmarkMergedSurfaceService());
   }
-  const bookmarks::BookmarkModel* GetBookmarkModel() const;
   bookmarks::ManagedBookmarkService* GetManagedBookmarkService();
   const BookmarkMergedSurfaceService* GetBookmarkMergedSurfaceService() const;
 
@@ -135,16 +134,30 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   int GetMaxWidthForMenu(views::MenuItemView* menu);
   void WillShowMenu(views::MenuItemView* menu);
 
-  // BookmarkModelObserver methods.
-  void BookmarkModelChanged() override;
+  // BookmarkMergedSurfaceServiceObserver:
+  void BookmarkMergedSurfaceServiceLoaded() override {}
+  void BookmarkMergedSurfaceServiceBeingDeleted() override {}
+  void BookmarkNodeAdded(const BookmarkParentFolder& parent,
+                         size_t index) override {}
+  void BookmarkNodesRemoved(
+      const BookmarkParentFolder& parent,
+      const base::flat_set<const bookmarks::BookmarkNode*>& nodes) override {}
+  void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
+                         size_t old_index,
+                         const BookmarkParentFolder& new_parent,
+                         size_t new_index) override {}
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override {}
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkParentFolderChildrenReordered(
+      const BookmarkParentFolder& folder) override {}
+  void BookmarkAllUserNodesRemoved() override {}
 
   // TODO(crbug.com/393126961): Update this to override the base
   // BookmarkNodeMoved method, once the crashes are resolved.
   // Until then, this method won't be invoked.
-  void DoBookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
+  void DoBookmarkNodeMoved(const BookmarkParentFolder& old_parent,
                            size_t old_index,
-                           const bookmarks::BookmarkNode* new_parent,
+                           const BookmarkParentFolder& new_parent,
                            size_t new_index);
 
   // BookmarkContextMenuObserver methods.
@@ -355,9 +368,9 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // enable mnemonics.
   bool menu_uses_mnemonics_ = false;
 
-  base::ScopedObservation<bookmarks::BookmarkModel,
-                          bookmarks::BaseBookmarkModelObserver>
-      bookmark_model_observation_{this};
+  base::ScopedObservation<BookmarkMergedSurfaceService,
+                          BookmarkMergedSurfaceServiceObserver>
+      bookmark_merged_service_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_MENU_DELEGATE_H_

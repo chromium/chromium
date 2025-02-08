@@ -124,22 +124,11 @@ class ShowPromoTest : public testing::Test {
       identity_test_env_adaptor_;
 };
 
-TEST_F(ShowPromoTest, DoNotShowSignInPromoWithoutExplicitBrowserSignin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
-                             switches::kImprovedSigninUIOnDesktop});
-
-  EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
-  EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile(),
-                                            autofill::test::StandardProfile()));
-}
 
 TEST_F(ShowPromoTest, DoNotShowAddressSignInPromoWithoutImprovedBrowserSignin) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
+      /*enabled_features=*/{},
       /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop});
 
   EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile(),
@@ -193,8 +182,7 @@ class ShowSigninPromoTestExplicitBrowserSignin : public ShowPromoTest {
   void SetUp() override {
     ShowPromoTest::SetUp();
     feature_list.InitWithFeatures(
-        /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
-                              switches::kImprovedSigninUIOnDesktop},
+        /*enabled_features=*/{switches::kImprovedSigninUIOnDesktop},
         /*disabled_features=*/{});
     ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
         .WillByDefault(testing::Return(syncer::DataTypeSet::All()));

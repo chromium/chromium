@@ -341,11 +341,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "ondevice_model_example",
-    label = "//components/optimization_guide/internal:ondevice_model_example",
-)
-
-targets.compile_target(
     name = "pdf_fuzzers",
     label = "//pdf/pdfium/fuzzers:pdf_fuzzers",
     # All references have been moved to starlark

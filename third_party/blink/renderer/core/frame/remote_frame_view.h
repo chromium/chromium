@@ -67,9 +67,9 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   void SetNeedsOcclusionTracking(bool);
   bool NeedsOcclusionTracking() const { return needs_occlusion_tracking_; }
 
-  bool GetIntrinsicSizingInfo(NaturalSizingInfo&) const override;
+  std::optional<NaturalSizingInfo> GetNaturalDimensions() const override;
 
-  void SetIntrinsicSizeInfo(const NaturalSizingInfo& size_info);
+  void SetNaturalDimensions(const NaturalSizingInfo& size_info);
 
   bool CanThrottleRendering() const override;
   void VisibilityForThrottlingChanged() override;
@@ -125,8 +125,7 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   std::optional<gfx::Size> frozen_size_;
   float compositing_scale_factor_ = 1.0f;
 
-  NaturalSizingInfo intrinsic_sizing_info_;
-  bool has_intrinsic_sizing_info_ = false;
+  std::optional<NaturalSizingInfo> natural_sizing_info_;
   bool needs_occlusion_tracking_ = false;
   bool needs_frame_rect_propagation_ = false;
 };

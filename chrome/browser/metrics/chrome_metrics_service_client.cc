@@ -41,6 +41,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/metrics/accessibility_state_provider.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 #include "chrome/browser/metrics/chrome_metrics_extensions_helper.h"
@@ -765,6 +766,9 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   // Gets access to persistent metrics shared by sub-processes.
   CHECK(metrics::SubprocessMetricsProvider::GetInstance());
 
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<AccessibilityStateProvider>());
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ExtensionsMetricsProvider>(metrics_state_manager_));
@@ -1001,6 +1005,9 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 void ChromeMetricsServiceClient::RegisterUKMProviders() {
   // Note: if you make changes here please also consider whether they should go
   // in AndroidMetricsServiceClient::CreateUkmService().
+  ukm_service_->RegisterMetricsProvider(
+      std::make_unique<AccessibilityStateProvider>());
+
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::NetworkMetricsProvider>(
           content::CreateNetworkConnectionTrackerAsyncGetter(),

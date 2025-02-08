@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/levenshtein_distance.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -75,14 +76,14 @@ AddressFormEventLogger::~AddressFormEventLogger() {
   // suggestions and profile usage.
   for (auto [guid, last_used_time] :
        autofill_on_typing_suggestion_profile_last_used_time_per_guid_) {
-    UMA_HISTOGRAM_COUNTS_1000(
+    base::UmaHistogramCounts1000(
         "Autofill.AddressSuggestionOnTypingShown.DaysSinceLastUse.Profile",
         last_used_time.InDays());
   }
 
   for (const std::string& profile_accepted_guid :
        autofill_on_typing_suggestion_accepted_profile_used_) {
-    UMA_HISTOGRAM_COUNTS_1000(
+    base::UmaHistogramCounts1000(
         "Autofill.AddressSuggestionOnTypingAccepted.DaysSinceLastUse.Profile",
         autofill_on_typing_suggestion_profile_last_used_time_per_guid_
             [profile_accepted_guid]
@@ -153,6 +154,10 @@ void AddressFormEventLogger::OnDidAcceptAutofillOnTyping(
     const std::u16string& value,
     FieldType field_type_used_to_build_suggestion,
     const std::string profile_used_guid) {
+  if (value.empty()) {
+    return;
+  }
+
   CHECK(fields_where_autofill_on_typing_was_shown_.contains(field_global_id));
   CHECK(autofill_on_typing_suggestion_profile_last_used_time_per_guid_.contains(
       profile_used_guid));
@@ -235,10 +240,25 @@ void AddressFormEventLogger::LogAutofillAddressOnTypingCorrectnessMetrics(
   for (const auto& [field_global_id, filled_value] :
        autofill_on_typing_value_used_) {
     if (submitted_fields_values.contains(field_global_id)) {
+      const std::u16string submitted_value =
+          submitted_fields_values.at(field_global_id);
       base::UmaHistogramBoolean(
           "Autofill.EditedAutofilledFieldAtSubmission.AddressOnTyping",
           filled_value == submitted_fields_values.at(field_global_id));
       logged_correctness_for_field.insert(field_global_id);
+      size_t filled_value_and_submitted_value_distance =
+          base::LevenshteinDistance(filled_value, submitted_value);
+      base::UmaHistogramCounts100(
+          "Autofill.EditedDistanceAutofilledFieldAtSubmission.AddressOnTyping",
+          filled_value_and_submitted_value_distance);
+
+      int edited_percentage = 100 *
+                                filled_value_and_submitted_value_distance /
+                                filled_value.length();
+      base::UmaHistogramCounts100(
+          "Autofill.EditedPercentageAutofilledFieldAtSubmission."
+          "AddressOnTyping",
+          edited_percentage);
     }
   }
 

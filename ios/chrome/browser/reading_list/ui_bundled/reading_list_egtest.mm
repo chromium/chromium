@@ -396,7 +396,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
 
 // Opens the page security info bubble.
 void OpenPageSecurityInfoBubble() {
-  // In UI Refresh, the security info is accessed through the tools menu.
+  // The security info is accessed through the tools menu.
   [ChromeEarlGreyUI openToolsMenu];
   // Tap on the Page Info button.
   [ChromeEarlGreyUI

@@ -659,13 +659,11 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
         ui::kColorSysTonalContainer};
 
     mixer[kColorTaskManagerSearchBarBackground] = {SK_ColorTRANSPARENT};
-    mixer[kColorTaskManagerSearchBarHoverOn] = {ui::GetResultingPaintColor(
-        ui::kColorSysStateHoverOnSubtle, kColorTaskManagerSearchBarBackground)};
     mixer[kColorTaskManagerSearchBarTransparent] = {SK_ColorTRANSPARENT};
     mixer[kColorTaskManagerSearchBarPlaceholderText] = {
         ui::kColorTextfieldForeground};
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   mixer[kColorThumbnailTabBackground] =
       ui::PickGoogleColor(ui::kColorAccent, ui::kColorFrameActive,
                           color_utils::kMinimumVisibleContrastRatio);

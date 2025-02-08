@@ -43,7 +43,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_prefs.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
@@ -493,21 +492,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
   views::test::WidgetDestroyedWaiter(password_bubble).Wait();
 }
 
-class PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam
-    : public PasswordBubbleInteractiveUiTest,
-      public base::test::WithFeatureOverride {
- public:
-  PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam()
-      : base::test::WithFeatureOverride(
-            switches::kExplicitBrowserSigninUIOnDesktop) {}
-
-  bool is_explicit_browser_signin() const { return IsParamFeatureEnabled(); }
-};
-
 // This is a regression test for crbug.com/1335418
-IN_PROC_BROWSER_TEST_P(
-    PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam,
-    SaveUiDismissalReason) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
   base::HistogramTester histogram_tester;
 
   SetupPendingPassword();
@@ -516,13 +502,12 @@ IN_PROC_BROWSER_TEST_P(
   content::RunAllPendingInMessageLoop();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (is_explicit_browser_signin()) {
-    // Bubble is still showing because of the Sign in Promo showing after saving
-    // the password.
-    ASSERT_TRUE(IsBubbleShowing());
-    // Close it without any action.
-    PasswordBubbleViewBase::manage_password_bubble()->CloseCurrentBubble();
-  }
+  // Bubble is still showing because of the Sign in Promo showing after saving
+  // the password.
+  ASSERT_TRUE(IsBubbleShowing());
+  // Close it without any action.
+  PasswordBubbleViewBase::manage_password_bubble()->CloseCurrentBubble();
+
 #endif
 
   ASSERT_FALSE(IsBubbleShowing());
@@ -533,9 +518,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-IN_PROC_BROWSER_TEST_P(
-    PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam,
-    DismissBubbleBeforeSignInPromoDoesNotIncrementPref) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+                       DismissBubbleBeforeSignInPromoDoesNotIncrementPref) {
   signin::IdentityTestEnvironment identity_test_env;
 
   AccountInfo info = identity_test_env.MakeAccountAvailable(
@@ -550,9 +534,6 @@ IN_PROC_BROWSER_TEST_P(
                    .GetAutofillSigninPromoDismissCount(info.gaia));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam);
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        ClosesBubbleOnNavigationToFullPasswordManager) {

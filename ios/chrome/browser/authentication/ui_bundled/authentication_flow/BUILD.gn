@@ -125,11 +125,13 @@ source_set("authentication_flow_performer") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "authentication_flow_in_profile_unittest.mm",
     "authentication_flow_performer_unittest.mm",
     "authentication_flow_unittest.mm",
   ]
   deps = [
     ":authentication_flow",
+    ":authentication_flow_in_profile",
     ":authentication_flow_performer",
     "//base",
     "//base/test:test_support",

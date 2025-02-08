@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h"
@@ -17,6 +18,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/render_thread_impl.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"
 #include "sandbox/policy/win/sandbox_warmup.h"
 #include "sandbox/win/src/sandbox.h"
@@ -72,6 +74,12 @@ bool RendererMainPlatformDelegate::EnableSandbox() {
 
   if (target_services) {
     sandbox::policy::WarmupRandomnessInfrastructure();
+
+    if (base::FeatureList::IsEnabled(
+            sandbox::policy::features::kEnableCsrssLockdown)) {
+      bool hooked = sandbox::policy::HookDwriteGetUserDefaultLCID();
+      base::UmaHistogramBoolean("Process.Sandbox.DwriteHookStatus", hooked);
+    }
 
     target_services->LowerToken();
     return true;

@@ -1,8 +1,8 @@
 enum AriaNotifyInterrupt { "none", "all", "pending" };
-enum AriaNotifyPriority { "none", "important" };
+enum AriaNotifyPriority { "normal", "high" };
 
 dictionary AriaNotificationOptions {
   AriaNotifyInterrupt interrupt = "none";
-  AriaNotifyPriority priority = "none";
+  AriaNotifyPriority priority = "normal";
   DOMString notificationId = "";
 };

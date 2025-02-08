@@ -69,11 +69,11 @@ When rolling in new versions of WPT support, make note of the revision you want
 to roll to.  You can then call "./checkout.sh REVISION clone" which will
 pull in all the code.
 
-It is also important to update the hashes in the 'Version:' fields of
-//third_party/wpt_tools/README.chromium. While you're in this file, look at the
-"Local Modifications" section which lists ways in which Chromium has diverged
-from WPT. Make sure these modifications are persisted when reviewing the changes
-being made.
+It is also important to update the hash in the `Revision` field of
+`//third_party/wpt_tools/README.chromium`. While you're in this file, look at
+the "Local Modifications" section which lists ways in which Chromium has
+diverged from WPT. Make sure these modifications are persisted when reviewing
+the changes being made.
 
 You can examine what's pulled in and update WPTIncludeList if some new files are
 required to run the updated version.

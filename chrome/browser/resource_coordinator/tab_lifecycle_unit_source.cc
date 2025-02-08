@@ -114,10 +114,8 @@ class TabLifecycleStateObserver : public performance_manager::PageNodeObserver,
   }
 };
 
-TabLifecycleUnitSource::TabLifecycleUnitSource(
-    UsageClock* usage_clock)
-    : browser_tab_strip_tracker_(this, nullptr),
-      usage_clock_(usage_clock) {
+TabLifecycleUnitSource::TabLifecycleUnitSource()
+    : browser_tab_strip_tracker_(this, nullptr) {
   // In unit tests, tabs might already exist when TabLifecycleUnitSource is
   // instantiated. No TabLifecycleUnit is created for these tabs.
 
@@ -230,8 +228,7 @@ void TabLifecycleUnitSource::OnTabInserted(TabStripModel* tab_strip_model,
     TabLifecycleUnitHolder::CreateForWebContents(contents);
     auto* holder = TabLifecycleUnitHolder::FromWebContents(contents);
     holder->set_lifecycle_unit(std::make_unique<TabLifecycleUnit>(
-        this, &tab_lifecycle_observers_, usage_clock_, contents,
-        tab_strip_model));
+        this, &tab_lifecycle_observers_, contents, tab_strip_model));
     lifecycle_unit = holder->lifecycle_unit();
     if (GetFocusedTabStripModel() == tab_strip_model && foreground)
       UpdateFocusedTabTo(lifecycle_unit);

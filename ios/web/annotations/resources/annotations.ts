@@ -168,7 +168,7 @@ function hasNoTranslate(): boolean {
 function getMetaContentByHttpEquiv(httpEquiv: string) {
   const metaTags = document.getElementsByTagName('meta');
   for (let metaTag of metaTags) {
-    if (metaTag.httpEquiv.toLowerCase() === httpEquiv) {
+    if (metaTag.httpEquiv && metaTag.httpEquiv.toLowerCase() === httpEquiv) {
       return metaTag.content;
     }
   }

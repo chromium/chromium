@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Հիմա չէ</translation>
 <translation id="100957008357583611">Օգտագործե՞լ ձեր տեղադրության տվյալները</translation>
 <translation id="1010200102790553230">Էջը բեռնել ավելի ուշ</translation>
+<translation id="1010225406377140704">Կապվեք ուղարկողի հետ՝ խնդրելով նոր հղում ուղարկել</translation>
 <translation id="1011206368273183593">Ֆայլերի նախապատրաստում</translation>
 <translation id="1014509239502131234">Արդյունքը հետարկվում է</translation>
 <translation id="1015730422737071372">Տրամադրել լրացուցիչ տեղեկություններ</translation>
@@ -1170,6 +1171,7 @@
 <translation id="3076865167425975822">Օպերացիոն համակարգեր</translation>
 <translation id="3080254622891793721">Գրաֆիկա</translation>
 <translation id="3082007635241601060">Հասանելի դարձրեք Google-ին ձեր զամբյուղները, որպեսզի մեր համակարգերը կարողանան անհատականացված զեղչեր գտնել ձեզ համար</translation>
+<translation id="3086269988715347183">Դուք նախկինում չեք հաստատել <ph name="BLOCKED_URL" /> կայքը</translation>
 <translation id="3086579638707268289">Ձեր գործողությունները համացանցում հետագծվում են</translation>
 <translation id="3087734570205094154">Ներքև</translation>
 <translation id="3090667236485488075">Ապակի</translation>
@@ -1245,6 +1247,7 @@
 <translation id="3203025201812691413">URL-ը չի կարող դատարկ լինել</translation>
 <translation id="320323717674993345">Չեղարկել վճարումը</translation>
 <translation id="3203366800380907218">Համացանցից</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> կայքում կարող է մեծահասակների համար նախատեսված բովանդակություն լինել</translation>
 <translation id="3207960819495026254">Էջանշված է</translation>
 <translation id="3208701679386778924">Կարծիք հայտնեք, որպեսզի մենք կարողանաք բարելավել ChromeOS-ի հետագա թարմացումները։</translation>
 <translation id="3209034400446768650">Այս էջը կարող է գումար գանձել ձեզնից</translation>
@@ -2982,6 +2985,7 @@
 <translation id="6254436959401408446">Այս էջը բացելու համար բավարար տարածք չկա</translation>
 <translation id="625463612687472648">Չեղարկել թույլտվությունը</translation>
 <translation id="6259156558325130047">&amp;Վերարկել վերադասավորումը</translation>
+<translation id="6259282549512536479">Դուք նախկինում արգելափակել եք <ph name="BLOCKED_URL" /> կայքը</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-ի էջանիշներ</translation>
 <translation id="6264376385120300461">Ներբեռնել</translation>
 <translation id="6264485186158353794">Վերադառնալ անվտանգության</translation>
@@ -3114,6 +3118,7 @@
 <translation id="6465306955648956876">Կառավարել գաղտնաբառերը...</translation>
 <translation id="646789491285795429">Դուք արդեն հետագծում եք այս ապրանքը</translation>
 <translation id="6468485451923838994">Տառատեսակներ</translation>
+<translation id="6469702164109431067">Գաղտնաբառեր և մուտքի բանալիներ</translation>
 <translation id="647261751007945333">Սարքի քաղաքականություններ</translation>
 <translation id="6472874020827012601">Գործվածք (անփայլ)</translation>
 <translation id="647330291963761005">Թարմացումների տեղադրում</translation>
@@ -4357,6 +4362,7 @@
 <translation id="8699041776323235191">HID սարք</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">Մոնտաժային ժապավեն</translation>
+<translation id="8703372953981978786">Այս հղումը չի աշխատում</translation>
 <translation id="8703575177326907206">Ձեր կապակցումը <ph name="DOMAIN" />-ին գաղտնագրված չէ:</translation>
 <translation id="8705331520020532516">Սերիական համարը</translation>
 <translation id="8706806585855470492">Դուք կկարողանաք կիսվել ներդիրների խմբերով, միանալ դրանց և համատեղ աշխատել դրանցում</translation>

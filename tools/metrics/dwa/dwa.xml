@@ -17,6 +17,7 @@ be describing additional metrics about the same event.
 
 <event name="AttributionConversionsCreateReport">
   <owner>zhouzj@google.com</owner>
+  <study name="UMA-Uniformity-Trial-1-Percent"/>
   <metric name="AggregatableStatus"
       enum="ConversionCreateAggregatableReportStatus">
     <summary>

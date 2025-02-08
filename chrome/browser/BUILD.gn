@@ -696,6 +696,8 @@ static_library("browser") {
     "memory/enterprise_memory_limit_pref_observer.h",
     "memory_details.cc",
     "memory_details.h",
+    "metrics/accessibility_state_provider.cc",
+    "metrics/accessibility_state_provider.h",
     "metrics/cached_metrics_profile.cc",
     "metrics/cached_metrics_profile.h",
     "metrics/chrome_browser_main_extra_parts_metrics.cc",
@@ -3399,6 +3401,7 @@ static_library("browser") {
       "//components/sharing_message",
       "//components/signin/internal/identity_manager",  # cf android/signin/DEPS
       "//components/signin/public/android:jni_headers",
+      "//components/signin/public/browser",
       "//components/subresource_filter/android",
       "//components/supervised_user/core/browser",
       "//components/supervised_user/core/browser:fetcher",
@@ -4017,8 +4020,6 @@ static_library("browser") {
       "resource_coordinator/tab_manager.h",
       "resource_coordinator/tab_manager_resource_coordinator_signal_observer.cc",
       "resource_coordinator/tab_manager_resource_coordinator_signal_observer.h",
-      "resource_coordinator/usage_clock.cc",
-      "resource_coordinator/usage_clock.h",
       "resources_integrity.cc",
       "resources_integrity.h",
       "safe_browsing/generated_safe_browsing_pref.cc",
@@ -4584,8 +4585,6 @@ static_library("browser") {
       "accessibility/media_app/ax_media_app_service_factory.h",
       "accessibility/media_app/ax_media_app_untrusted_service.cc",
       "accessibility/media_app/ax_media_app_untrusted_service.h",
-      "apps/digital_goods/digital_goods_ash.cc",
-      "apps/digital_goods/digital_goods_ash.h",
       "apps/digital_goods/digital_goods_factory_impl.cc",
       "apps/digital_goods/digital_goods_factory_impl.h",
       "apps/digital_goods/digital_goods_impl.cc",
@@ -6567,6 +6566,8 @@ static_library("browser") {
       "enterprise/connectors/reporting/realtime_reporting_client.h",
       "enterprise/connectors/reporting/realtime_reporting_client_factory.cc",
       "enterprise/connectors/reporting/realtime_reporting_client_factory.h",
+      "enterprise/connectors/reporting/reporting_event_router.cc",
+      "enterprise/connectors/reporting/reporting_event_router.h",
     ]
   }
 

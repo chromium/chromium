@@ -512,6 +512,8 @@ public class ReorderDelegate {
                 StripLayoutGroupTitle[] stripGroupTitles,
                 StripLayoutView interactingTab,
                 PointF startPoint) {
+            // TODO(crbug.com/394945056): Investigate moving to avoid re-emitting when dragging out,
+            //  then back onto the source tab strip.
             RecordUserAction.record("MobileToolbarStartReorderTab");
             mInteractingTab = (StripLayoutTab) interactingTab;
             interactingTab.setIsForegrounded(/* isForegrounded= */ true);
@@ -873,6 +875,10 @@ public class ReorderDelegate {
                 StripLayoutGroupTitle[] stripGroupTitles,
                 @NonNull StripLayoutView interactingView,
                 PointF startPoint) {
+            // TODO(crbug.com/394945056): Investigate moving to avoid re-emitting when dragging out,
+            //  then back onto the source tab strip.
+            RecordUserAction.record("MobileToolbarStartReorderGroup");
+
             // Store the relevant interacting views. We'll update their offsets as we drag.
             mInteractingGroupTitle = (StripLayoutGroupTitle) interactingView;
             mInteractingViews.add(mInteractingGroupTitle);

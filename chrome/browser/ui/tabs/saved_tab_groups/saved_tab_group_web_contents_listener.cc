@@ -5,12 +5,22 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 
 #include "base/functional/bind.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
+#include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_callback.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -18,6 +28,7 @@
 #include "components/saved_tab_groups/public/utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/page_transition_types.h"
 
 namespace tab_groups {
@@ -65,6 +76,38 @@ bool WasNavigationInitiatedFromSync(
 }
 
 }  // namespace
+
+DeferredTabState::DeferredTabState(tabs::TabInterface* local_tab,
+                                   const GURL& url,
+                                   const std::u16string& title,
+                                   favicon::FaviconService* favicon_service)
+    : local_tab_(local_tab), url_(url), title_(title) {
+  favicon_tracker_ = std::make_unique<base::CancelableTaskTracker>();
+
+  favicon_service->GetFaviconImageForPageURL(
+      url_,
+      base::BindOnce(&DeferredTabState::OnGetFaviconImageResult,
+                     base::Unretained(this)),
+      favicon_tracker_.get());
+}
+DeferredTabState::~DeferredTabState() = default;
+
+void DeferredTabState::OnGetFaviconImageResult(
+    const favicon_base::FaviconImageResult& result) {
+  BrowserWindowInterface* browser_window =
+      local_tab_->GetBrowserWindowInterface();
+  if (!browser_window) {
+    return;
+  }
+
+  if (result.image.IsEmpty()) {
+    return;
+  }
+
+  favicon_ = ui::ImageModel::FromImage(result.image);
+  browser_window->GetTabStripModel()->NotifyTabChanged(local_tab_,
+                                                       TabChangeType::kAll);
+}
 
 void SavedTabGroupWebContentsListener::OnTabDiscarded(
     tabs::TabInterface* tab_interface,
@@ -134,7 +177,15 @@ void SavedTabGroupWebContentsListener::NavigateToUrlInternal(const GURL& url) {
   if (!IsTabGroupsDeferringRemoteNavigations() || local_tab_->IsActivated()) {
     PerformNavigation(url);
   } else {
-    cached_url_ = url;
+    favicon::FaviconService* favicon_service =
+        FaviconServiceFactory::GetForProfile(
+            local_tab_->GetBrowserWindowInterface()->GetProfile(),
+            ServiceAccessType::EXPLICIT_ACCESS);
+
+    g_browser_process->GetTabManager()->DiscardTabByExtension(
+        local_tab_->GetContents());
+    deferred_tab_state_.emplace(local_tab_, url, saved_tab->title(),
+                                favicon_service);
   }
 }
 
@@ -236,9 +287,9 @@ std::optional<SavedTabGroup> SavedTabGroupWebContentsListener::saved_group() {
 
 void SavedTabGroupWebContentsListener::OnTabEnteredForeground(
     tabs::TabInterface* tab_interface) {
-  if (cached_url_.has_value()) {
-    PerformNavigation(cached_url_.value());
-    cached_url_.reset();
+  if (deferred_tab_state_.has_value()) {
+    PerformNavigation(deferred_tab_state_.value().url());
+    deferred_tab_state_.reset();
   }
 }
 

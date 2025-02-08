@@ -272,7 +272,6 @@
 <translation id="1177863135347784049">מותאם אישית</translation>
 <translation id="1178093605842850860">יש הרשאה לקריאה ולשינוי של האתר הזה</translation>
 <translation id="1178581264944972037">השהיה</translation>
-<translation id="1178601482396475810">ניהול הסנכרון במכשיר</translation>
 <translation id="117916940443676133">מפתח האבטחה שלך אינו מוגן באמצעות קוד אימות. כדי לנהל את פרטי הכניסה, צריך תחילה ליצור קוד אימות.</translation>
 <translation id="1179400851034021914">‏מספר ה-IBAN לא תקין</translation>
 <translation id="1179902906564467236">צריך לפעול לפי ההוראות בטלפון או להשתמש באפליקציית המצלמה</translation>
@@ -1468,7 +1467,6 @@
 <translation id="2003596238737586336">התזמון הנוכחי מוגדר לשעות <ph name="SUNRISE" /> עד <ph name="SUNSET" />. ההגדרה הזו מנוהלת על-ידי האדמין.</translation>
 <translation id="2004413981947727241">שימוש בסיסמאות שלך בכל מכשיר</translation>
 <translation id="2004697686368036666">ייתכן שתכונות באתרים מסוימים לא יפעלו</translation>
-<translation id="2005199804247617997">פרופילים אחרים</translation>
 <translation id="2006638907958895361">פתיחת הקישור ב-<ph name="APP" /></translation>
 <translation id="2007404777272201486">דיווח על בעיה...</translation>
 <translation id="200781997903833896">כדי להשתמש בתכונה 'הקראה', צריך לפנות מקום במכשיר</translation>
@@ -1693,7 +1691,6 @@
 <translation id="2158249272743343757">מתבצעת מחיקה של נתוני ההתאמה האישית…</translation>
 <translation id="2158475082070321257">העתקת קישור לטקסט המודגש</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">אפשר לסכם את התוכן או לשאול שאלות המשך.</translation>
 <translation id="2161058806218011758">ההיקף של <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">‏הוספת רשת Wi-Fi...</translation>
 <translation id="2162155940152307086">הסנכרון יתחיל מיד לאחר היציאה מהגדרות הסנכרון</translation>
@@ -1959,7 +1956,6 @@
 <translation id="2333166365943957309">היררכיה של ממשק המשתמש</translation>
 <translation id="233375395665273385">מחיקה ויציאה מהחשבון</translation>
 <translation id="233471714539944337">תוכן רגיש</translation>
-<translation id="2335111415680198280">{0,plural, =1{סגירת חלון אחד (#)}one{סגירת # חלונות}two{סגירת # חלונות}other{סגירת # חלונות}}</translation>
 <translation id="2335758110242123814">פתיחת קבוצה</translation>
 <translation id="2336228925368920074">יצירת סימנייה לכל הכרטיסיות...</translation>
 <translation id="2336258397628212480">דף אחד מודפס על ידי <ph name="APP_NAME" /> במדפסת <ph name="PRINTER_NAME" /></translation>
@@ -3755,7 +3751,6 @@
 <translation id="3629664892718440872">אני רוצה להשתמש באפשרות הזו גם בעתיד</translation>
 <translation id="3630132874740063857">הטלפון שלך</translation>
 <translation id="3630995161997703415">כדי שניתן יהיה תמיד להשתמש באתר הזה יש להוסיף אותו למדף</translation>
-<translation id="3632929818790223729">פיצול הכרטיסייה עם הכרטיסייה הפעילה</translation>
 <translation id="3634652306074934350">פג תוקפה של הבקשה להרשאה</translation>
 <translation id="3635199270495525546">‏זוהה מודול פלטפורמה מהימן (TPM)</translation>
 <translation id="3635353578505343390">‏שליחת משוב ל-Google</translation>
@@ -5880,7 +5875,6 @@
 <translation id="512642543295077915">‏חיפוש + מקש Backspace</translation>
 <translation id="5126611267288187364">צפייה בשינויים</translation>
 <translation id="5127620150973591153">מזהה חיבור בטוח: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">סנכרון כבוי</translation>
 <translation id="5127881134400491887">ניהול חיבורי רשת</translation>
 <translation id="5127934926273826089">פרחים</translation>
 <translation id="5127986747308934633">האדמין שולט במכשיר שלך</translation>
@@ -5969,6 +5963,7 @@
 <translation id="5190926251776387065">הפעלת היציאה</translation>
 <translation id="5190959794678983197">אין מיקרופון</translation>
 <translation id="5191094172448199359">קודי האימות שהזנת לא תואמים.</translation>
+<translation id="5191251636205085390">‏מידע על טכנולוגיות חדשות שמיועדות להחליף קובצי cookie של צד שלישי והוראות לשליטה בהן.</translation>
 <translation id="519185197579575131">‏שימוש ב-QT</translation>
 <translation id="5192062846343383368">‏כדי לראות את הגדרות הפיקוח יש לפתוח את האפליקציה Family Link</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{מפתח גישה אחד}one{‫{COUNT} מפתחות גישה}two{‫{COUNT} מפתחות גישה}other{‫{COUNT} מפתחות גישה}}</translation>
@@ -8924,7 +8919,6 @@
 <translation id="7349010927677336670">הפעלת סרטונים חלקה</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{סיסמה אחת ({COUNT}) שמורה רק במכשיר הזה}one{{COUNT} סיסמאות שמורות רק במכשיר הזה}two{{COUNT} סיסמאות שמורות רק במכשיר הזה}other{{COUNT} סיסמאות שמורות רק במכשיר הזה}}</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
-<translation id="7352664183151911163">‏באפליקציות ובדפדפן Chrome</translation>
 <translation id="7353261921908507769">אנשי הקשר יוכלו לשתף איתך כשהם בקרבת מקום. תהליך ההעברה לא יתחיל לפני שיתקבל ממך אישור.</translation>
 <translation id="7353432112255316844">אימות הזהות שלך</translation>
 <translation id="735361434055555355">‏מתבצעת התקנה של Linux...</translation>
@@ -10070,7 +10064,6 @@
 <translation id="8140869601171867148">‏חשבון Google הוא אותו חשבון שמשמש אותך ב-Gmail, ב-YouTube, ב-Chrome ובמוצרי Google אחרים.
     באמצעות החשבון, קל לגשת לכל הסימניות, הקבצים ועוד.</translation>
 <translation id="8141418916163800697">‏אפשר להגדיר תכונות נוספות בהגדרות Phone Hub</translation>
-<translation id="814156740715940972">פיצול הכרטיסייה עם הכרטיסייה הפעילה</translation>
 <translation id="8141584439523427891">נפתח עכשיו בדפדפן חלופי</translation>
 <translation id="8141725884565838206">ניהול הסיסמאות שלך</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{סרטון}one{# סרטונים}two{# סרטונים}other{# סרטונים}}</translation>
@@ -11206,7 +11199,6 @@
 <translation id="8946359700442089734">תכונות לניפוי באגים לא הופעלו באופן מלא במכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> זה.</translation>
 <translation id="8946954897220903437">כיווץ כל הבקשות בסרגל הכתובות</translation>
 <translation id="894763922177556086">איכות טובה</translation>
-<translation id="8949304443659090542">‏ניהול הסנכרון בדפדפן Chrome</translation>
 <translation id="895054485242522631">אתרים יכולים להשתמש בחיישני תנועה</translation>
 <translation id="8951256747718668828">אירעה שגיאה ולא ניתן להשלים את השחזור</translation>
 <translation id="8951465597020890363">לצאת בכל זאת ממצב אורח?</translation>
@@ -11227,7 +11219,6 @@
 <translation id="8963117664422609631">כניסה להגדרות האתר</translation>
 <translation id="8964927371396953727">עליך לאמת את הזהות שלך כדי להשתמש בסיסמאות ולשמור אותן בחשבון <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">יש להזין את הסיסמה הישנה</translation>
-<translation id="8966809848145604011">פרופילים אחרים</translation>
 <translation id="8967427617812342790">הוספה לרשימת הקריאה</translation>
 <translation id="8967548289042494261">הסרה של <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">‏כותב תמונת המערכת של מערכת ההפעלה של Chrome</translation>

@@ -905,6 +905,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_35_google_apis_x64_tablet",
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",

@@ -347,6 +347,11 @@ class TabStripModel : public TabGroupController {
   // if the WebContents is not in this TabStripModel.
   int GetIndexOfWebContents(const content::WebContents* contents) const;
 
+  // Notify any observers that the tab has changed in some way. See
+  // TabChangeType for details of |change_type|.'
+  void NotifyTabChanged(const tabs::TabInterface* const tab,
+                        TabChangeType change_type);
+
   // Notify any observers that the WebContents at the specified index has
   // changed in some way. See TabChangeType for details of |change_type|.
   void UpdateWebContentsStateAt(int index, TabChangeType change_type);

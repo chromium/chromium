@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
 
@@ -24,14 +25,7 @@ FakeUserManager::FakeUserManager(PrefService* local_state)
 FakeUserManager::~FakeUserManager() = default;
 
 std::string FakeUserManager::GetFakeUsernameHash(const AccountId& account_id) {
-  // Consistent with the
-  // kUserDataDirNameSuffix in fake_userdataauth_client.cc and
-  // UserDataAuthClient::GetStubSanitizedUsername.
-  // TODO(crbug.com/1347837): After resolving the dependent code,
-  // consolidate the all implementation to cryptohome utilities,
-  // and remove this.
-  DCHECK(account_id.is_valid());
-  return account_id.GetUserEmail() + "-hash";
+  return TestHelper::GetFakeUsernameHash(account_id);
 }
 
 void FakeUserManager::UserLoggedIn(const AccountId& account_id,

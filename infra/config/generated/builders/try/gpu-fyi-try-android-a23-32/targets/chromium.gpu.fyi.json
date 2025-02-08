@@ -16,9 +16,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -49,9 +49,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -82,9 +82,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -118,9 +118,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -148,9 +148,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -189,9 +189,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -238,9 +238,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -278,9 +278,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -318,9 +318,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -346,7 +346,7 @@
           "--expected-vendor-id",
           "5143",
           "--expected-device-id",
-          "6010001",
+          "6010901",
           "--jobs=1",
           "--compatibility-mode=dont-require-rooted-device",
           "--initial-find-device-attempts=3"
@@ -362,9 +362,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -411,9 +411,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -452,9 +452,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -492,9 +492,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },
@@ -533,9 +533,9 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "SP1A.210812.016",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
-            "device_type": "a23",
+            "device_type": "a23xq",
             "os": "Android",
             "pool": "chromium.tests.gpu"
           },

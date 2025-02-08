@@ -69,18 +69,13 @@ void RemoteFrameOwner::DispatchLoad() {
   local_frame_host.DispatchLoad();
 }
 
-void RemoteFrameOwner::IntrinsicSizingInfoChanged() {
+void RemoteFrameOwner::NaturalSizingInfoChanged() {
   LocalFrame& local_frame = To<LocalFrame>(*frame_);
-  NaturalSizingInfo intrinsic_sizing_info;
-  bool result =
-      local_frame.View()->GetIntrinsicSizingInfo(intrinsic_sizing_info);
-  // By virtue of having been invoked, GetIntrinsicSizingInfo() should always
-  // succeed here.
-  DCHECK(result);
-
+  std::optional<NaturalSizingInfo> natural_sizing_info =
+      local_frame.View()->GetNaturalDimensions();
   auto sizing_info = mojom::blink::IntrinsicSizingInfo::New(
-      intrinsic_sizing_info.size, intrinsic_sizing_info.aspect_ratio,
-      intrinsic_sizing_info.has_width, intrinsic_sizing_info.has_height);
+      natural_sizing_info->size, natural_sizing_info->aspect_ratio,
+      natural_sizing_info->has_width, natural_sizing_info->has_height);
   WebLocalFrameImpl::FromFrame(local_frame)
       ->FrameWidgetImpl()
       ->IntrinsicSizingInfoChanged(std::move(sizing_info));

@@ -17,7 +17,7 @@
 
 - (void)configureView:(ShopCardItem*)config {
   if (config.shopCardData.shopCardItemType ==
-      ShopCardItemType::kPriceDropOnTab) {
+      ShopCardItemType::kPriceDropForTrackedProducts) {
     // TODO: crbug.com/394638800 - render correct view when data available
   } else if (config.shopCardData.shopCardItemType ==
              ShopCardItemType::kReviews) {

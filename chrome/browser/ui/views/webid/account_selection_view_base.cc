@@ -14,14 +14,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/image_fetcher/core/image_decoder.h"
-#include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
@@ -30,6 +27,7 @@
 #include "third_party/icu/source/i18n/unicode/listformatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -120,47 +118,18 @@ std::u16string GetPermissionFieldsString(
         strings.push_back(l10n_util::GetStringUTF16(
             IDS_ACCOUNT_SELECTION_DATA_SHARING_PICTURE));
         break;
+      case content::IdentityRequestDialogDisclosureField::kPhoneNumber:
+        strings.push_back(l10n_util::GetStringUTF16(
+            IDS_ACCOUNT_SELECTION_DATA_SHARING_PHONE));
+        break;
+      case content::IdentityRequestDialogDisclosureField::kUsername:
+        strings.push_back(l10n_util::GetStringUTF16(
+            IDS_ACCOUNT_SELECTION_DATA_SHARING_USERNAME));
+        break;
     }
   }
   return ListToString(strings);
 }
-
-constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("fedcm_account_profile_image_fetcher",
-                                        R"(
-        semantics {
-          sender: "Profile image fetcher for FedCM Account chooser on desktop."
-          description:
-            "Retrieves profile images for user's accounts in the FedCM login"
-            "flow."
-          trigger:
-            "Triggered when FedCM API is called and account chooser shows up."
-            "The accounts shown are ones for which the user has previously"
-            "signed into the identity provider."
-          data:
-            "Account picture URL of user account, provided by the identity"
-            "provider."
-          destination: WEBSITE
-          internal {
-            contacts {
-                email: "web-identity-eng@google.com"
-            }
-          }
-          user_data {
-            type: USER_CONTENT
-          }
-          last_reviewed: "2024-01-25"
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "You can enable or disable this feature in chrome://settings, under"
-            "'Privacy and security', then 'Site Settings', and finally"
-            "'Third party sign-in'."
-          policy_exception_justification:
-            "Not implemented. This is a feature that sites use for"
-            "Federated Sign-In, for which we do not have an Enterprise policy."
-        })");
 
 class LetterCircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
  public:
@@ -261,7 +230,6 @@ class AccountImageView : public views::ImageView {
 
   // Check image and set it on AccountImageView.
   void SetAccountImage(const content::IdentityRequestAccount& account,
-                       image_fetcher::ImageFetcher& image_fetcher,
                        int image_size) {
     if (account.decoded_picture.IsEmpty()) {
       std::u16string letter = base::UTF8ToUTF16(account.name);
@@ -333,33 +301,23 @@ void AccountHoverButtonSecondaryView::SetDisabledOpacity() {
       kArrowIconSize));
 }
 
-BrandIconImageView::BrandIconImageView(
-    base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
-    int image_size,
-    bool should_circle_crop,
-    std::optional<SkColor> background_color,
-    base::RepeatingClosure on_image_set)
-    : add_image_(std::move(add_image)),
-      image_size_(image_size),
+BrandIconImageView::BrandIconImageView(int image_size,
+                                       bool should_circle_crop,
+                                       std::optional<SkColor> background_color,
+                                       base::RepeatingClosure on_image_set)
+    : image_size_(image_size),
       should_circle_crop_(should_circle_crop),
       background_color_(background_color),
       on_image_set_(std::move(on_image_set)) {}
 
 BrandIconImageView::~BrandIconImageView() = default;
 
-void BrandIconImageView::FetchImage(
-    const GURL& icon_url,
-    image_fetcher::ImageFetcher& image_fetcher) {
-  image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
-                                           kImageFetcherUmaClient);
-  image_fetcher.FetchImage(
-      icon_url,
-      base::BindOnce(&BrandIconImageView::OnImageFetched,
-                     weak_ptr_factory_.GetWeakPtr(), icon_url),
-      std::move(params));
-}
-
-void BrandIconImageView::CropAndSetImage(const gfx::ImageSkia& original_image) {
+void BrandIconImageView::CropAndSetImage(const gfx::Image& image) {
+  if (image.Width() != image.Height() ||
+      image.Width() < (image_size_ / kMaskableWebIconSafeZoneRatio)) {
+    return;
+  }
+  const gfx::ImageSkia& original_image = image.AsImageSkia();
   cropped_idp_image_ =
       should_circle_crop_
           ? CreateCircleCroppedImage(original_image, image_size_)
@@ -376,25 +334,6 @@ void BrandIconImageView::CropAndSetImage(const gfx::ImageSkia& original_image) {
     return;
   }
   std::move(on_image_set_).Run();
-}
-
-void BrandIconImageView::OnImageFetched(
-    const GURL& image_url,
-    const gfx::Image& image,
-    const image_fetcher::RequestMetadata& metadata) {
-  if (image.Width() != image.Height() ||
-      image.Width() < (image_size_ / kMaskableWebIconSafeZoneRatio)) {
-    return;
-  }
-  gfx::ImageSkia skia_image = image.AsImageSkia();
-  CropAndSetImage(skia_image);
-
-  // TODO(crbug.com/327509202): This stops the crashes but should fix to prevent
-  // this from crashing in the first place.
-  if (!add_image_) {
-    return;
-  }
-  std::move(add_image_).Run(image_url, skia_image);
 }
 
 void BrandIconImageView::OnBackgroundColorUpdated(
@@ -541,10 +480,7 @@ AccountSelectionViewBase::AccountSelectionViewBase(
     FedCmAccountSelectionView* owner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::u16string rp_for_display)
-    : owner_(owner), rp_for_display_(rp_for_display) {
-  image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
-      std::make_unique<ImageDecoderImpl>(), std::move(url_loader_factory));
-}
+    : owner_(owner), rp_for_display_(rp_for_display) {}
 
 AccountSelectionViewBase::~AccountSelectionViewBase() = default;
 
@@ -586,8 +522,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   if (clickable_position) {
     BrandIconImageView* brand_icon_image_view_ptr = nullptr;
     if (should_include_idp) {
-      account_image_view->SetAccountImage(*account, *image_fetcher_,
-                                          avatar_size);
+      account_image_view->SetAccountImage(*account, avatar_size);
       // Introduce a border so that the IDP image is a bit past the account
       // image.
       account_image_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
@@ -610,13 +545,11 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
               ui::kColorDialogBackground);
       std::unique_ptr<BrandIconImageView> brand_icon_image_view =
           std::make_unique<BrandIconImageView>(
-              base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
-                             weak_ptr_factory_.GetWeakPtr()),
               kLargeAvatarBadgeSize, /*should_circle_crop=*/true,
               background_color);
       brand_icon_image_view_ptr = brand_icon_image_view.get();
-      ConfigureBrandImageView(brand_icon_image_view_ptr,
-                              idp_data.idp_metadata.brand_icon_url);
+      brand_icon_image_view_ptr->CropAndSetImage(
+          idp_data.idp_metadata.brand_decoded_icon);
 
       icon_container->AddChildView(std::move(brand_icon_image_view));
 
@@ -626,8 +559,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
 
       avatar_view = std::move(background_container);
     } else {
-      account_image_view->SetAccountImage(*account, *image_fetcher_,
-                                          avatar_size);
+      account_image_view->SetAccountImage(*account, avatar_size);
       avatar_view = std::move(account_image_view);
     }
 
@@ -677,7 +609,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   }
   // We should only create non-button account rows for valid accounts.
   CHECK(!account->is_filtered_out);
-  account_image_view->SetAccountImage(*account, *image_fetcher_, avatar_size);
+  account_image_view->SetAccountImage(*account, avatar_size);
   auto row = std::make_unique<views::View>();
   row->SetProperty(views::kElementIdentifierKey,
                    kFedCmAccountChooserDialogAccountElementId);
@@ -708,28 +640,6 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   account_email->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   return row;
-}
-
-void AccountSelectionViewBase::AddIdpImage(const GURL& image_url,
-                                           const gfx::ImageSkia& image) {
-  brand_icon_images_[image_url] = image;
-}
-
-void AccountSelectionViewBase::ConfigureBrandImageView(
-    BrandIconImageView* image_view,
-    const GURL& brand_icon_url) {
-  bool is_valid_icon_url = brand_icon_url.is_valid();
-  if (!is_valid_icon_url) {
-    return;
-  }
-
-  auto it = brand_icon_images_.find(brand_icon_url);
-  if (it != brand_icon_images_.end()) {
-    image_view->CropAndSetImage(it->second);
-    return;
-  }
-
-  image_view->FetchImage(brand_icon_url, *image_fetcher_);
 }
 
 std::unique_ptr<views::StyledLabel>
@@ -855,12 +765,6 @@ AccountSelectionViewBase::GetErrorDialogText(
                      : IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_PROMPT,
                  idp_for_display);
   return {summary, description};
-}
-
-// static
-net::NetworkTrafficAnnotationTag
-AccountSelectionViewBase::GetTrafficAnnotation() {
-  return kTrafficAnnotation;
 }
 
 }  // namespace webid

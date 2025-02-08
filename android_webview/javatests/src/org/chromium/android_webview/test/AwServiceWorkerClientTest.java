@@ -15,8 +15,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
+import org.chromium.android_webview.AsyncShouldInterceptRequestCallback;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
+import org.chromium.android_webview.WebResponseCallback;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.test.util.TestWebServer;
@@ -57,6 +61,23 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
     private static final String SW_HTML = "fetch('fetch.html');";
     private static final String FETCH_HTML = ";)";
 
+    private static class TestAsyncShouldInterceptRequestCallback
+            implements AsyncShouldInterceptRequestCallback {
+        public WebResponseCallback mResponseCallback;
+        private Runnable mCallbackHelper;
+
+        TestAsyncShouldInterceptRequestCallback(Runnable r) {
+            mCallbackHelper = r;
+        }
+
+        @Override
+        public void shouldInterceptRequestAsync(
+                AwContentsClient.AwWebResourceRequest request, WebResponseCallback callback) {
+            mResponseCallback = callback;
+            mCallbackHelper.run();
+        }
+    }
+
     public AwServiceWorkerClientTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
@@ -73,11 +94,17 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
                 .setServiceWorkerClient(mServiceWorkerClient);
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        mAwContents.clearAsyncShouldInterceptRequestCallback();
     }
 
     @After
     public void tearDown() {
         if (mWebServer != null) mWebServer.shutdown();
+        mAwContents.clearAsyncShouldInterceptRequestCallback();
+        mActivityTestRule
+                .getAwBrowserContext()
+                .getServiceWorkerController()
+                .clearAsyncShouldInterceptRequestCallback();
     }
 
     @Test
@@ -96,6 +123,38 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
         Assert.assertEquals(2, requests.size());
         Assert.assertEquals(fullSwUrl, requests.get(0).url);
         Assert.assertEquals(fullFetchUrl, requests.get(1).url);
+    }
+
+    @Test
+    @SmallTest
+    public void testInvokeInterceptCallback_async() throws Throwable {
+        final String fullIndexUrl = mWebServer.setResponse("/index.html", INDEX_HTML, null);
+        mWebServer.setResponse("/sw.js", SW_HTML, null);
+        mWebServer.setResponse("/fetch.html", FETCH_HTML, null);
+
+        TestAwServiceWorkerClient.ShouldInterceptRequestHelper interceptHelper =
+                mServiceWorkerClient.getShouldInterceptRequestHelper();
+        CallbackHelper helper = new CallbackHelper();
+        TestAsyncShouldInterceptRequestCallback asyncCallback =
+                new TestAsyncShouldInterceptRequestCallback(
+                        () -> {
+                            helper.notifyCalled();
+                        });
+        mActivityTestRule
+                .getAwBrowserContext()
+                .getServiceWorkerController()
+                .setAsyncShouldInterceptRequestCallback(asyncCallback);
+
+        int onPageFinishedCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
+        mActivityTestRule.loadUrlAsync(mAwContents, fullIndexUrl);
+        helper.waitForNext(); // wait for shouldInterceptRequestAsync to provide the callback to use
+        asyncCallback.mResponseCallback.intercept(null);
+        mContentsClient.getOnPageFinishedHelper().waitForCallback(onPageFinishedCallCount);
+
+        Assert.assertEquals(fullIndexUrl, mContentsClient.getOnPageFinishedHelper().getUrl());
+
+        // Check that the service worker has been registered successfully.
+        AwActivityTestRule.pollInstrumentationThread(() -> getSuccessFromJs() == 1);
     }
 
     // Verify that WebView ServiceWorker code can properly handle http errors that happened

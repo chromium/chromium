@@ -126,7 +126,7 @@ std::unique_ptr<ash::UserSession> UserToUserSession(const User& user) {
 
 void DoSwitchUser(const AccountId& account_id, bool switch_user) {
   if (switch_user) {
-    UserManager::Get()->SwitchActiveUser(account_id);
+    session_manager::SessionManager::Get()->SwitchActiveSession(account_id);
   }
 }
 

@@ -9403,6 +9403,7 @@ from previous Chrome versions.
   <int value="-1872867546" label="EnumerateAudioDevices:disabled"/>
   <int value="-1872205507" label="ShelfNewUi:enabled"/>
   <int value="-1871552967" label="DesktopPWAsTabStrip:disabled"/>
+  <int value="-1871540097" label="CaptionsOnBrailleDisplay:enabled"/>
   <int value="-1871472551" label="PwaRestoreUi:enabled"/>
   <int value="-1871389939" label="DeskButton:enabled"/>
   <int value="-1871185948" label="VrLaunchIntents:disabled"/>
@@ -11766,6 +11767,7 @@ from previous Chrome versions.
   <int value="-940390151" label="RoundedDisplay:disabled"/>
   <int value="-939676447" label="CrostiniResetLxdDb:enabled"/>
   <int value="-939519091" label="TabStateFlatBuffer:disabled"/>
+  <int value="-938457958" label="CaptionsOnBrailleDisplay:disabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
   <int value="-937430451" label="IntensiveWakeUpThrottling:disabled"/>
   <int value="-936652950"
@@ -22497,7 +22499,7 @@ Called by update_net_error_codes.py.-->
   <int value="82" label="kWindowClosed"/>
   <int value="83" label="kSlowNetwork"/>
   <int value="84" label="kOtherPrerenderedPageActivated"/>
-  <int value="85" label="kV8OptimizerDisabled"/>
+  <int value="85" label="kV8OptimizerDisabled (obsoleted)"/>
   <int value="86" label="kPrerenderFailedDuringPrefetch"/>
 </enum>
 

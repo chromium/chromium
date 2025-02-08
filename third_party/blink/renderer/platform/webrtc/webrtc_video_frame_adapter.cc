@@ -105,12 +105,6 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     return raster_context_provider_->SharedImageInterface();
   }
 
-  gpu::GpuMemoryBufferManager* GpuMemoryBufferManager() const {
-    auto* manager = gpu_factories_->GpuMemoryBufferManager();
-    DCHECK(manager);
-    return manager;
-  }
-
   raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 };
@@ -283,7 +277,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
         // synchronized with the GPU.
         gpu::SyncToken empty_sync_token;
         media::SimpleSyncTokenClient simple_client(empty_sync_token);
-        dst_frame->UpdateAcquireSyncToken(&simple_client);
+        dst_frame->UpdateAcquireSyncToken(empty_sync_token);
         dst_frame->UpdateReleaseSyncToken(&simple_client);
 
         auto vf = ConstructVideoFrameFromGpu(std::move(dst_frame));

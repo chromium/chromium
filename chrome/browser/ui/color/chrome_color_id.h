@@ -793,7 +793,6 @@
   E_CPONLY(kColorTaskManagerTableBackgroundSelectedUnfocused) \
   E_CPONLY(kColorTaskManagerTableHeaderBackground) \
   E_CPONLY(kColorTaskManagerSearchBarBackground) \
-  E_CPONLY(kColorTaskManagerSearchBarHoverOn) \
   E_CPONLY(kColorTaskManagerSearchBarTransparent) \
   E_CPONLY(kColorTaskManagerSearchBarPlaceholderText) \
   /* Thumbnail tab colors. */ \

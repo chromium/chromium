@@ -159,7 +159,8 @@ class CONTENT_EXPORT TraceReportDatabase {
   std::optional<std::string> GetSystemProfile(const base::Token& uuid);
 
   // Returns the number of trace for |scenario_name| since |since|.
-  std::optional<size_t> UploadCountSince(std::string scenario_name,
+  std::optional<size_t> UploadCountSince(const std::string& scenario_name,
+                                         const std::string& upload_rule_name,
                                          base::Time since);
 
   // Returns the saved count per scenario since `since`.

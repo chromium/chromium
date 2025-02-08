@@ -83,4 +83,8 @@ bool IsFedCmLightweightModeEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmLightweightMode);
 }
 
+bool IsFedCmAlternativeIdentifiersEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmAlternativeIdentifiers);
+}
+
 }  // namespace content

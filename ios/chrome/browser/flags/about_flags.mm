@@ -2436,6 +2436,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensGestureTextSelectionDisabledName,
      flag_descriptions::kLensGestureTextSelectionDisabledDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensGestureTextSelectionDisabled)},
+    {"add-address-manually", flag_descriptions::kAddAddressManuallyName,
+     flag_descriptions::kAddAddressManuallyDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAddAddressManually)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

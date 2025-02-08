@@ -2773,7 +2773,8 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
     HeapVector<Member<StyleRuleBase>, 4>* child_rules) {
   DCHECK(child_rules);
 
-  bool is_nested_group_rule = nesting_type == CSSNestingType::kNesting;
+  bool is_nested_group_rule = nesting_type == CSSNestingType::kNesting ||
+                              nesting_type == CSSNestingType::kFunction;
   if (is_nested_group_rule) {
     // This is a nested group rule, which (in addition to rules) allows
     // *declarations* to appear directly within the body of the rule, e.g.:
@@ -2789,7 +2790,15 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
     // Unlike regular style rules, the leading declarations must be wrapped
     // in something that can hold them, because group rules (e.g. @media)
     // can not hold properties directly.
-    ConsumeBlockContents(stream, StyleRule::kStyle, nesting_type,
+    //
+    // RuleType determines which declarations are valid within the rule.
+    // Within @function rules, only local variables and the 'result' descriptor
+    // are allowed. All other cases accept regular properties without special
+    // restrictions.
+    StyleRule::RuleType rule_type = nesting_type == CSSNestingType::kFunction
+                                        ? StyleRule::kFunction
+                                        : StyleRule::kStyle;
+    ConsumeBlockContents(stream, rule_type, nesting_type,
                          parent_rule_for_nesting,
                          /* nested_declarations_start_index */ 0u, child_rules);
   } else {
@@ -2817,6 +2826,8 @@ AllowedRules AllowedNestedRules(StyleRule::RuleType parent_rule_type,
     }
     case StyleRule::kPage:
       return CSSParserImpl::kPageMarginRules;
+    case StyleRule::kFunction:
+      return CSSParserImpl::kConditionalRules;
     default:
       break;
   }

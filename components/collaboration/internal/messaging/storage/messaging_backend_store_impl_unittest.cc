@@ -190,12 +190,13 @@ TEST_F(MessagingBackendStoreTest, ClearDirtyMessageForTab) {
 }
 
 TEST_F(MessagingBackendStoreTest, ClearDirtyTabMessagesForGroup) {
-  // Message 1 and message 2 are from different tabs and they are both dirty.
+  // Message 1 and message 2 are from different tabs and they are both dirty
+  // with DirtyType::kAll.
   auto message1 = CreateMessage(collaboration_pb::TAB_ADDED);
   auto message2 =
       CreateMessage(collaboration_pb::TAB_UPDATED, message1.collaboration_id());
 
-  EXPECT_CALL(*unowned_database_, Update(_)).Times(4);
+  EXPECT_CALL(*unowned_database_, Update(_)).Times(2);
 
   data_sharing::GroupId collaboration_id(message1.collaboration_id());
   EXPECT_EQ(
@@ -208,7 +209,10 @@ TEST_F(MessagingBackendStoreTest, ClearDirtyTabMessagesForGroup) {
       2u,
       store_->GetDirtyMessagesForGroup(collaboration_id, DirtyType::kDotAndChip)
           .size());
+  testing::Mock::VerifyAndClearExpectations(&unowned_database_);
 
+  // Clear the dirty bits for the messages.
+  EXPECT_CALL(*unowned_database_, Update(_)).Times(2);
   auto cleared_messages =
       store_->ClearDirtyTabMessagesForGroup(collaboration_id);
   EXPECT_EQ(

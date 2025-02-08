@@ -43,8 +43,7 @@ class SaveAutofillAiDataControllerImpl
   void OfferSave(autofill::EntityInstance autofill_ai_data,
                  AutofillAiClient::SavePromptAcceptanceCallback
                      save_prompt_acceptance_callback,
-                 LearnMoreClickedCallback learn_more_clicked_callback,
-                 UserFeedbackCallback user_feedback_callback) override;
+                 LearnMoreClickedCallback learn_more_clicked_callback) override;
   void OnSaveButtonClicked() override;
   base::optional_ref<const autofill::EntityInstance> GetAutofillAiData()
       const override;
@@ -82,9 +81,6 @@ class SaveAutofillAiDataControllerImpl
   // Callback to notify that the user clicked the button to learn more about the
   // feature.
   LearnMoreClickedCallback learn_more_clicked_callback_;
-
-  // Callback to notify that the user has given feedback about Autofill with AI.
-  UserFeedbackCallback user_feedback_callback_;
 
   base::WeakPtrFactory<SaveAutofillAiDataControllerImpl> weak_ptr_factory_{
       this};

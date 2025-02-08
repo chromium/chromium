@@ -23,7 +23,6 @@
 #include "cc/paint/record_paint_canvas.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_fill_rule.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_image_smoothing_quality.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -95,8 +94,6 @@ class Canvas2dGPUTransferOption;
 class CanvasPattern;
 class CanvasRenderingContextHost;
 class CanvasResourceProvider;
-class DOMMatrix;
-class DOMMatrixInit;
 class ExceptionState;
 class ExecutionContext;
 class Font;
@@ -118,7 +115,6 @@ class TextCluster;
 class TextClusterOptions;
 class TextMetrics;
 class V8GPUTextureFormat;
-class V8UnionCanvasFilterOrString;
 struct V8CanvasStyle;
 enum class CanvasOps;
 enum class ColorParseResult;
@@ -178,16 +174,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   String shadowColor() const;
   void setShadowColor(const String&);
 
-  // Alpha value that goes from 0 to 1.
-  double globalAlpha() const;
-  void setGlobalAlpha(double);
-
-  String globalCompositeOperation() const;
-  void setGlobalCompositeOperation(const String&);
-
-  const V8UnionCanvasFilterOrString* filter() const;
-  void setFilter(ScriptState*, const V8UnionCanvasFilterOrString* input);
-
   void save();
   void restore(ExceptionState& exception_state);
   // Push state on state stack and creates bitmap for subsequent draw ops.
@@ -206,25 +192,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   int LayerCount() const { return layer_count_; }
   virtual void reset();  // Called by the javascript interface
   void ResetInternal();  // Called from within blink
-
-  void scale(double sx, double sy);
-  void rotate(double angle_in_radians);
-  void translate(double tx, double ty);
-  void transform(double m11,
-                 double m12,
-                 double m21,
-                 double m22,
-                 double dx,
-                 double dy);
-  void setTransform(double m11,
-                    double m12,
-                    double m21,
-                    double m22,
-                    double dx,
-                    double dy);
-  void setTransform(DOMMatrixInit*, ExceptionState&);
-  virtual DOMMatrix* getTransform();
-  virtual void resetTransform();
 
   void beginPath();
 
@@ -359,11 +326,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
                     int dirty_height,
                     ExceptionState&);
 
-  bool imageSmoothingEnabled() const;
-  void setImageSmoothingEnabled(bool);
-  V8ImageSmoothingQuality imageSmoothingQuality() const;
-  void setImageSmoothingQuality(const V8ImageSmoothingQuality&);
-
   // Transfers a canvas' existing back-buffer to a GPUTexture for use in a
   // WebGPU pipeline. The canvas' image can be used as a texture, or the texture
   // can be bound as a color attachment and modified. After its texture is
@@ -398,7 +360,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   // the current color.
   virtual Color GetCurrentColor() const = 0;
 
-  virtual cc::PaintCanvas* GetOrCreatePaintCanvas() = 0;
   virtual const cc::PaintCanvas* GetPaintCanvas() const = 0;
   cc::PaintCanvas* GetPaintCanvas() {
     return const_cast<cc::PaintCanvas*>(
@@ -419,7 +380,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
                         CanvasPerformanceMonitor::DrawType) = 0;
 
   virtual sk_sp<PaintFilter> StateGetFilter() = 0;
-  void SnapshotStateForFilter();
+  void SnapshotStateForFilter() final;
 
   virtual CanvasRenderingContextHost* GetCanvasRenderingContextHost() const {
     return nullptr;
@@ -586,7 +547,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   explicit BaseRenderingContext2D(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  virtual HTMLCanvasElement* HostAsHTMLCanvasElement() const;
   virtual OffscreenCanvas* HostAsOffscreenCanvas() const;
   virtual FontSelector* GetFontSelector() const;
   const Font* AccessFont(HTMLCanvasElement* canvas);
@@ -723,8 +683,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRecordingContext2D {
   void ValidateStateStackImpl(const cc::PaintCanvas* canvas = nullptr) const;
 
   bool ShouldDrawImageAntialiased(const gfx::RectF& dest_rect) const;
-
-  void SetTransform(const AffineTransform&);
 
   AffineTransform GetTransform() const override;
 
@@ -1177,12 +1135,6 @@ void BaseRenderingContext2D::AdjustRectForCanvas(T& x,
     height = -height;
     y -= height;
   }
-}
-
-ALWAYS_INLINE void BaseRenderingContext2D::SetTransform(
-    const AffineTransform& matrix) {
-  GetState().SetTransform(matrix);
-  SetIsTransformInvertible(matrix.IsInvertible());
 }
 
 ALWAYS_INLINE bool BaseRenderingContext2D::IsFullCanvasCompositeMode(

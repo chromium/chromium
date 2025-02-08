@@ -120,8 +120,7 @@ void SwitchToPersonalProfile(Browser* browser,
   std::string default_profile_name =
       profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName();
 
-  CHECK(profile_manager->HasProfileWithName(default_profile_name) ||
-        profile_manager->CanCreateProfileWithName(default_profile_name));
+  CHECK(profile_manager->HasProfileWithName(default_profile_name));
 
   id<ChangeProfileCommands> change_profile_handler =
       HandlerForProtocol(scene_state.profileState.appState.appCommandDispatcher,

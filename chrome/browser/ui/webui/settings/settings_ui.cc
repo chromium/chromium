@@ -578,11 +578,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
              : TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
         {"showComposeControl",
          use_is_setting_visible ? compose_visible : compose_enabled},
-        {"showWallpaperSearchControl",
-         use_is_setting_visible
-             ? customize_chrome::IsWallpaperSearchSettingVisibleForProfile(
-                   profile)
-             : customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
         {"showHistorySearchControl",
          history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
         {"showCompareControl",
@@ -592,11 +587,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
              : commerce::CanFetchProductSpecificationsData(
                    shopping_service->GetAccountChecker())},
         {"showPasswordChangeControl",
-         use_is_setting_visible &&
-             // TODO(crbug.com/391131625): Check if feature is explicitly
-             // enabled.
-             PasswordChangeServiceFactory::GetForProfile(profile)
-                 ->IsPasswordChangeAvailable()},
+         // TODO(crbug.com/391131625): Update accordingly to enterprise
+         // requirements.
+         PasswordChangeServiceFactory::GetForProfile(profile) &&
+         PasswordChangeServiceFactory::GetForProfile(profile)
+             ->IsPasswordChangeAvailable()},
     };
 
     bool show_ai_page = show_ai_settings_for_testing;
@@ -616,8 +611,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
             {UserVisibleFeatureKey::kCompose, "showComposeControl"},
             {UserVisibleFeatureKey::kTabOrganization,
              "showTabOrganizationControl"},
-            {UserVisibleFeatureKey::kWallpaperSearch,
-             "showWallpaperSearchControl"},
             {UserVisibleFeatureKey::kHistorySearch, "showHistorySearchControl"},
         };
     bool is_any_ai_feature_enabled = false;

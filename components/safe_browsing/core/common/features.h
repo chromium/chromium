@@ -133,6 +133,11 @@ extern const base::FeatureParam<int> kDownloadWarningSurveyType;
 // potentially show the survey for ignoring a download bubble warning.
 extern const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds;
 
+// Enabled additional device and network information to RealTimeUrlCheck
+// requests, WP scan requests, and reporting events. These will be visible from
+// the chrome://safe-browsing page.
+BASE_DECLARE_FEATURE(kEnhancedFieldsForSecOps);
+
 // Enables Enhanced Safe Browsing promos for iOS.
 BASE_DECLARE_FEATURE(kEnhancedSafeBrowsingPromo);
 

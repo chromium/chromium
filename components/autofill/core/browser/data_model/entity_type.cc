@@ -68,6 +68,25 @@ FieldType AttributeTypeNameToFieldType(AttributeTypeName a) {
   NOTREACHED();
 }
 
+// static
+bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
+  auto rank = [](const EntityType& t) constexpr {
+    // Lower values indicate a higher priority.
+    // For a deterministic behavior, distinct types should have distinct ranks.
+    switch (t.name()) {
+      case EntityTypeName::kPassport:
+        return 1;
+      case EntityTypeName::kLoyaltyCard:
+        return 2;
+      case EntityTypeName::kCar:
+        return 3;
+      case EntityTypeName::kDriversLicense:
+        return 4;
+    }
+  };
+  return rank(lhs) < rank(rhs);
+}
+
 std::ostream& operator<<(std::ostream& os, AttributeType a) {
   return os << a.name_as_string();
 }

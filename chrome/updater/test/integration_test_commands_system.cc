@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -656,8 +655,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     base::CommandLine helper_command(path);
     helper_command.AppendSwitch(command_switch);
     for (const Param& param : params) {
-      helper_command.AppendSwitchASCII(param.name,
-                                       base::Base64Encode(param.value));
+      helper_command.AppendSwitchASCII(param.name, param.value);
     }
 
     // Avoids the test runner banner about test debugging.

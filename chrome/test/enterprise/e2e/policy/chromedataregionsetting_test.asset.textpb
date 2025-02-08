@@ -37,3 +37,17 @@ windows_machine {
   network_interface { network: "primary" }
   container { ad_domain: "cbcmdrz.com" }
 }
+
+# For the signed-in user test cases, use fresh machines without enrollment
+# tokens set in the managed browser test cases.
+windows_machine {
+  name: "drz-user-nopref"
+  machine_type: "win2022"
+  network_interface { network: "primary" }
+}
+
+windows_machine {
+  name: "drz-user-europe"
+  machine_type: "win2022"
+  network_interface { network: "primary" }
+}

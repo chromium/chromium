@@ -81,6 +81,20 @@ source_set("omnibox_icon_type_constants") {
   ]
 }
 
+# Build target allowed while moving files from ui_bundled to other folders.
+# TODO(crbug.com/394567614): Move model files to model folder.
+source_set("model_interface") {
+  sources = [ "omnibox_view_ios.h" ]
+
+  deps = [
+    ":omnibox_util",
+    "//base",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:location_bar",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup",
+  ]
+}
+
 source_set("omnibox_internal") {
   sources = [
     "chrome_omnibox_client_ios.h",
@@ -145,6 +159,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
@@ -189,6 +204,7 @@ source_set("omnibox_internal") {
     "//url",
   ]
   public_deps = [
+    ":model_interface",
     ":omnibox_icon_type_constants",
     "//components/omnibox/browser",
   ]

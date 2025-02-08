@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">ไม่ใช่ตอนนี้</translation>
 <translation id="100957008357583611">ใช้ตำแหน่งของคุณไหม</translation>
 <translation id="1010200102790553230">โหลดหน้าภายหลัง</translation>
+<translation id="1010225406377140704">ติดต่อผู้ส่งเพื่อขอลิงก์ใหม่</translation>
 <translation id="1011206368273183593">กำลังเตรียมไฟล์</translation>
 <translation id="1014509239502131234">กำลังเลิกทำผลลัพธ์</translation>
 <translation id="1015730422737071372">ให้รายละเอียดเพิ่มเติม</translation>
@@ -3107,6 +3108,7 @@
 <translation id="6465306955648956876">จัดการรหัสผ่าน...</translation>
 <translation id="646789491285795429">คุณติดตามผลิตภัณฑ์นี้อยู่แล้ว</translation>
 <translation id="6468485451923838994">แบบอักษร</translation>
+<translation id="6469702164109431067">รหัสผ่านและพาสคีย์</translation>
 <translation id="647261751007945333">นโยบายอุปกรณ์</translation>
 <translation id="6472874020827012601">ผ้า (ด้าน)</translation>
 <translation id="647330291963761005">กำลังติดตั้งอัปเดต</translation>
@@ -4352,6 +4354,7 @@
 <translation id="8699041776323235191">อุปกรณ์ HID</translation>
 <translation id="8699985386408839112">Envelope Kaku 1</translation>
 <translation id="8702965365666568344">เทปสําหรับติดยึด</translation>
+<translation id="8703372953981978786">ลิงก์นี้ใช้ไม่ได้</translation>
 <translation id="8703575177326907206">การเชื่อมต่อของคุณไปยัง <ph name="DOMAIN" /> ไม่ได้รับการเข้ารหัส</translation>
 <translation id="8705331520020532516">หมายเลขซีเรียล</translation>
 <translation id="8706806585855470492">คุณจะแชร์ เข้าร่วม และทำงานร่วมกันในกลุ่มแท็บได้</translation>

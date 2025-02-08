@@ -544,8 +544,8 @@ void WebPagePopupImpl::SetScreenRects(const gfx::Rect& widget_screen_rect,
   widget_base_->SetScreenRects(widget_screen_rect, window_screen_rect);
 }
 
-gfx::Size WebPagePopupImpl::VisibleViewportSizeInDIPs() {
-  return widget_base_->VisibleViewportSizeInDIPs();
+gfx::Size WebPagePopupImpl::VisibleViewportSize() {
+  return widget_base_->VisibleViewportSize();
 }
 
 bool WebPagePopupImpl::IsHidden() const {
@@ -915,8 +915,7 @@ void WebPagePopupImpl::UpdateVisualProperties(
       visual_properties.local_surface_id.value_or(viz::LocalSurfaceId()),
       visual_properties.compositor_viewport_pixel_rect,
       visual_properties.screen_infos);
-  widget_base_->SetVisibleViewportSizeInDIPs(
-      visual_properties.visible_viewport_size);
+  widget_base_->SetVisibleViewportSize(visual_properties.visible_viewport_size);
 
   // TODO(crbug.com/1155388): Popups are a single "global" object that don't
   // inherit the scale factor of the frame containing the corresponding element

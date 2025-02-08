@@ -159,23 +159,23 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
     switch (interrupt_property) {
       case ax::mojom::AriaNotificationInterrupt::kNone:
         switch (priority_property) {
-          case ax::mojom::AriaNotificationPriority::kNone:
+          case ax::mojom::AriaNotificationPriority::kNormal:
             return NotificationProcessing_All;
-          case ax::mojom::AriaNotificationPriority::kImportant:
+          case ax::mojom::AriaNotificationPriority::kHigh:
             return NotificationProcessing_ImportantAll;
         }
       case ax::mojom::AriaNotificationInterrupt::kAll:
         switch (priority_property) {
-          case ax::mojom::AriaNotificationPriority::kNone:
+          case ax::mojom::AriaNotificationPriority::kNormal:
             return NotificationProcessing_MostRecent;
-          case ax::mojom::AriaNotificationPriority::kImportant:
+          case ax::mojom::AriaNotificationPriority::kHigh:
             return NotificationProcessing_ImportantMostRecent;
         }
       case ax::mojom::AriaNotificationInterrupt::kPending:
         switch (priority_property) {
-          case ax::mojom::AriaNotificationPriority::kNone:
+          case ax::mojom::AriaNotificationPriority::kNormal:
             return NotificationProcessing_CurrentThenMostRecent;
-          case ax::mojom::AriaNotificationPriority::kImportant:
+          case ax::mojom::AriaNotificationPriority::kHigh:
             // This is resolved the same as `AriaNotificationInterrupt::kAll`,
             // but UIA doesn't have a specific enum value for these options yet.
             return NotificationProcessing_ImportantMostRecent;

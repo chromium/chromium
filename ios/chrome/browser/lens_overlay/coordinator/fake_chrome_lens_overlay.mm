@@ -90,7 +90,7 @@
 
   mutableResult.suggestSignals = signals;
   [self.lensOverlayDelegate lensOverlay:self
-        suggestSignalsAvailableOnResult:self.lastResult];
+      hasSuggestSignalsAvailableOnResult:self.lastResult];
 }
 
 #pragma mark - Private

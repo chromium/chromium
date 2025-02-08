@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ui/base/window_open_disposition.h"
+
+struct AutocompleteMatch;
 class AutocompleteResult;
 @class OmniboxAutocompleteController;
 @protocol OmniboxPopupControllerDelegate;
@@ -36,6 +39,26 @@ class AutocompleteResult;
 /// Request suggestions with a number of visible suggestions.
 - (void)requestSuggestionsWithVisibleSuggestionCount:
     (NSUInteger)visibleSuggestionCount;
+
+/// Whether `match` is a starred/bookmarked match.
+- (BOOL)isStarredMatch:(const AutocompleteMatch&)match;
+
+/// Selects `match` for opening.
+- (void)selectMatchForOpening:(const AutocompleteMatch&)match
+                        inRow:(NSUInteger)row
+                       openIn:(WindowOpenDisposition)disposition;
+
+/// Selects `match` for appending.
+- (void)selectMatchForAppending:(const AutocompleteMatch&)match;
+
+/// Deletes `match`.
+- (void)selectMatchForDeletion:(const AutocompleteMatch&)match;
+
+/// Notifies of scroll event.
+- (void)onScroll;
+
+/// Notifies of call action.
+- (void)onCallAction;
 
 @end
 

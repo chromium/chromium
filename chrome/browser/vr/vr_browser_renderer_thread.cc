@@ -8,10 +8,14 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/vr/browser_renderer.h"
 #include "chrome/browser/vr/ui.h"
-#include "chrome/browser/vr/graphics_delegate_win.h"
 #include "ui/gfx/geometry/quaternion.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/vr/graphics_delegate_win.h"
+#endif
 
 // To avoid conflicts with the macro from the Windows SDK...
 #undef DrawState

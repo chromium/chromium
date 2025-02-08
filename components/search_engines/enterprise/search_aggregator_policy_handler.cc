@@ -99,6 +99,8 @@ base::Value SearchAggregatorDictFromPolicyValue(
 
 const char SearchAggregatorPolicyHandler::kIconUrl[] = "icon_url";
 const char SearchAggregatorPolicyHandler::kName[] = "name";
+const char SearchAggregatorPolicyHandler::kRequireShortcut[] =
+    "require_shortcut";
 const char SearchAggregatorPolicyHandler::kSearchUrl[] = "search_url";
 const char SearchAggregatorPolicyHandler::kShortcut[] = "shortcut";
 const char SearchAggregatorPolicyHandler::kSuggestUrl[] = "suggest_url";
@@ -205,6 +207,12 @@ void SearchAggregatorPolicyHandler::ApplyPolicySettings(
   prefs->SetValue(
       EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
       base::Value(std::move(providers)));
+  prefs->SetBoolean(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      policy_value->GetDict()
+          .FindBool(SearchAggregatorPolicyHandler::kRequireShortcut)
+          .value_or(false));
 }
 
 }  // namespace policy

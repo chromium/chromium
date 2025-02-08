@@ -37,6 +37,11 @@ class MultiContentsView : public views::View {
   // inactive_contents_view_.
   void SetWebContents(content::WebContents* web_contents, bool active);
 
+  // Sets the index of the active contents view, as relative to the inactive
+  // contents view. In LTR, a value of 0 will place the active view on the
+  // left.
+  void SetActivePosition(int position);
+
  private:
   raw_ptr<ContentsWebView> active_contents_view_ = nullptr;
   raw_ptr<ContentsWebView> inactive_contents_view_ = nullptr;

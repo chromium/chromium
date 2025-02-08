@@ -34,11 +34,16 @@ std::unique_ptr<TemplateURLData> DictToTemplateURLData(
 const char EnterpriseSearchManager::kSiteSearchSettingsPrefName[] =
     "site_search_settings.template_url_data";
 
-// A dictionary to hold all data related to the site search engines defined by
-// policy.
+// A dictionary to hold all TemplateURL data related to the enterprise search
+// aggregator defined by policy.
 const char
     EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName[] =
         "enterprise_search_aggregator_settings.template_url_data";
+// A boolean to hold whether a shortcut is required for the enterprise search
+// aggregator.
+const char EnterpriseSearchManager::
+    kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName[] =
+        "enterprise_search_aggregator_settings.require_shortcut";
 
 EnterpriseSearchManager::EnterpriseSearchManager(
     PrefService* pref_service,
@@ -67,6 +72,27 @@ void EnterpriseSearchManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kSiteSearchSettingsPrefName);
   registry->RegisterListPref(kEnterpriseSearchAggregatorSettingsPrefName);
+  registry->RegisterBooleanPref(
+      kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName, false);
+}
+
+bool EnterpriseSearchManager::GetRequireShortcutValue() const {
+  // Use the `require_shortcut` preference value if set by policy.
+  const PrefService::Preference* pref = pref_service_->FindPreference(
+      kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName);
+  if (pref && pref->IsManaged()) {
+    return pref->GetValue()->GetBool();
+  }
+
+  // Fallback to mock settings if policy is not set and mock engine is valid.
+  if (omnibox_feature_configs::SearchAggregatorProvider::Get()
+          .AreMockEnginesValid()) {
+    return omnibox_feature_configs::SearchAggregatorProvider::Get()
+        .require_shortcut;
+  }
+
+  // Use the pref's default value if neither policy nor mock settings apply.
+  return pref && pref->GetValue()->GetBool();
 }
 
 void EnterpriseSearchManager::OnPrefChanged() {

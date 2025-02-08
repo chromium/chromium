@@ -63,6 +63,8 @@ extern const base::FeatureParam<double>
     kDevToolsAiAssistancePerformanceAgentTemperature;
 extern const base::FeatureParam<DevToolsFreestylerUserTier>
     kDevToolsAiAssistancePerformanceAgentUserTier;
+extern const base::FeatureParam<bool>
+    kDevToolsAiAssistancePerformanceAgentInsightsEnabled;
 
 BASE_DECLARE_FEATURE(kDevToolsAiAssistanceFileAgent);
 extern const base::FeatureParam<std::string>
@@ -79,6 +81,8 @@ extern const base::FeatureParam<bool> kDevToolsVeLoggingTesting;
 BASE_DECLARE_FEATURE(kDevToolsAnimationStylesInStylesTab);
 
 BASE_DECLARE_FEATURE(kDevToolsImprovedWorkspaces);
+
+BASE_DECLARE_FEATURE(kDevToolsWellKnown);
 
 }  // namespace features
 

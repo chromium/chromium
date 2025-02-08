@@ -112,7 +112,8 @@ class PLATFORM_EXPORT V8PerIsolateData final {
                                  scoped_refptr<base::SingleThreadTaskRunner>,
                                  V8ContextSnapshotMode,
                                  v8::CreateHistogramCallback,
-                                 v8::AddHistogramSampleCallback);
+                                 v8::AddHistogramSampleCallback,
+                                 std::unique_ptr<v8::CppHeap>);
 
   static V8PerIsolateData* From(v8::Isolate* isolate) {
     DCHECK(isolate);
@@ -273,7 +274,8 @@ class PLATFORM_EXPORT V8PerIsolateData final {
                    scoped_refptr<base::SingleThreadTaskRunner>,
                    V8ContextSnapshotMode,
                    v8::CreateHistogramCallback,
-                   v8::AddHistogramSampleCallback);
+                   v8::AddHistogramSampleCallback,
+                   std::unique_ptr<v8::CppHeap>);
   ~V8PerIsolateData();
 
   // A really simple hash function, which makes lookups faster. The set of
@@ -297,6 +299,14 @@ class PLATFORM_EXPORT V8PerIsolateData final {
       const V8TemplateMap& map);
 
   V8ContextSnapshotMode v8_context_snapshot_mode_;
+
+  // The thread_debugger_ has to be destructed after the IsolateHolder, and
+  // therefore has to be defined before the IsolateHolder. The reason is that
+  // when the IsolateHolder gets destructed, all objects allocated on the
+  // CppHeap get deallocated. AsyncTaskContext objects are allocated on the
+  // CppHeap, and these objects load the ThreadDebugger from the
+  // V8PerIsolateData in its destructor.
+  std::unique_ptr<ThreadDebugger> thread_debugger_;
 
   // This isolate_holder_ must be initialized before initializing some other
   // members below.
@@ -328,7 +338,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   bool is_handling_recursion_level_error_ = false;
 
-  std::unique_ptr<ThreadDebugger> thread_debugger_;
   Persistent<ScriptRegexp> password_regexp_;
   Persistent<UserData>
       user_data_[static_cast<size_t>(UserData::Key::kNumberOfKeys)];

@@ -272,7 +272,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1177863135347784049">Tilpasset</translation>
 <translation id="1178093605842850860">Har tilladelse til at læse og ændre dette website</translation>
 <translation id="1178581264944972037">Pause</translation>
-<translation id="1178601482396475810">Administrer enhedssynkronisering</translation>
 <translation id="117916940443676133">Din sikkerhedsnøgle er ikke beskyttet med en pinkode. Opret en pinkode for at administrere logindata.</translation>
 <translation id="1179400851034021914">IBAN er ugyldigt</translation>
 <translation id="1179902906564467236">Følg vejledningen på din telefon, eller brug kameraappen</translation>
@@ -1470,7 +1469,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="2003596238737586336">Den aktuelle tidsplan er indstillet til <ph name="SUNRISE" />-<ph name="SUNSET" />. Denne indstilling administreres af din administrator.</translation>
 <translation id="2004413981947727241">Brug dine adgangskoder på alle enheder</translation>
 <translation id="2004697686368036666">Funktionerne på visse websites virker muligvis ikke</translation>
-<translation id="2005199804247617997">Andre profiler</translation>
 <translation id="2006638907958895361">Åbn linket i <ph name="APP" /></translation>
 <translation id="2007404777272201486">Rapportér et problem...</translation>
 <translation id="200781997903833896">Hvis du vil bruge Oplæsning, skal du frigøre plads på din enhed</translation>
@@ -1695,7 +1693,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2158249272743343757">Slet personligt tilpassede data...</translation>
 <translation id="2158475082070321257">Kopiér link til fremhævning</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">Opsummer indhold, eller stil opfølgende spørgsmål.</translation>
 <translation id="2161058806218011758">Omfang af <ph name="SHORTCUT" /> for <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">Tilføj Wi-Fi...</translation>
 <translation id="2162155940152307086">Synkroniseringen starter, når du forlader indstillingerne for synkronisering</translation>
@@ -1961,7 +1958,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2333166365943957309">Brugerfladehierarki</translation>
 <translation id="233375395665273385">Slet, og log ud</translation>
 <translation id="233471714539944337">Følsomt indhold</translation>
-<translation id="2335111415680198280">{0,plural, =1{Luk # vindue}one{Luk # vindue}other{Luk # vinduer}}</translation>
 <translation id="2335758110242123814">Åbn gruppe</translation>
 <translation id="2336228925368920074">Tilføj alle faner som bogmærker...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> udskriver 1 side til <ph name="PRINTER_NAME" /></translation>
@@ -3757,7 +3753,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3629664892718440872">Husk dette valg</translation>
 <translation id="3630132874740063857">Din telefon</translation>
 <translation id="3630995161997703415">Føj dette website til din hylde for at bruge det når som helst</translation>
-<translation id="3632929818790223729">Vis fane side om side med den aktive fane</translation>
 <translation id="3634652306074934350">Anmodningen om tilladelse udløb</translation>
 <translation id="3635199270495525546">En TPM-enhed (Trusted Platform Module) blev registreret</translation>
 <translation id="3635353578505343390">Send feedback til Google</translation>
@@ -5881,7 +5876,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="512642543295077915">søgetasten + Backspace</translation>
 <translation id="5126611267288187364">Se ændringer</translation>
 <translation id="5127620150973591153">Id for sikker forbindelse: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">Synkronisering er slået fra</translation>
 <translation id="5127881134400491887">Administrere netværksforbindelser</translation>
 <translation id="5127934926273826089">Blomster</translation>
 <translation id="5127986747308934633">Din administrator styrer din enhed</translation>
@@ -5970,6 +5964,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5190926251776387065">Aktivér port</translation>
 <translation id="5190959794678983197">Der er ingen mikrofon</translation>
 <translation id="5191094172448199359">De pinkoder, du har indtastet, stemmer ikke overens</translation>
+<translation id="5191251636205085390">Få indblik i og styr nye teknologier, der har til formål at erstatte tredjepartscookies</translation>
 <translation id="519185197579575131">Brug QT</translation>
 <translation id="5192062846343383368">Åbn Family Link-appen for at se dine indstillinger for forældrestyring</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 adgangsnøgle}one{{COUNT} adgangsnøgle}other{{COUNT} adgangsnøgler}}</translation>
@@ -8923,7 +8918,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7349010927677336670">Videostabilitet</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} adgangskode gemmes kun på denne enhed}one{{COUNT} adgangskode gemmes kun på denne enhed}other{{COUNT} adgangskoder gemmes kun på denne enhed}}</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
-<translation id="7352664183151911163">I alle dine apps og i din Chrome-browser</translation>
 <translation id="7353261921908507769">Dine kontakter kan dele med dig, når de er i nærheden. Overførsler starter først, når du har accepteret dem.</translation>
 <translation id="7353432112255316844">Verificer din identitet</translation>
 <translation id="735361434055555355">Installerer Linux...</translation>
@@ -10067,7 +10061,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8140869601171867148">Din Google-konto er den samme konto, som du bruger til Gmail, YouTube, Chrome og andre Google-produkter.
     Brug din konto til nemt at få adgang til alle dine bogmærker, filer og meget mere.</translation>
 <translation id="8141418916163800697">Du kan konfigurere flere funktioner i indstillingerne for Telefonstyring</translation>
-<translation id="814156740715940972">Vis fane side om side med den aktive fane</translation>
 <translation id="8141584439523427891">Åbner i en alternativ browser nu</translation>
 <translation id="8141725884565838206">Administrer dine adgangskoder</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{en video}one{# video}other{# videoer}}</translation>
@@ -11203,7 +11196,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8946359700442089734">Fejlretningsfunktionerne blev ikke aktiveret korrekt på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enhed.</translation>
 <translation id="8946954897220903437">Skjul alle anmodninger i adresselinjen</translation>
 <translation id="894763922177556086">God</translation>
-<translation id="8949304443659090542">Administrer Chrome-browsersynkronisering</translation>
 <translation id="895054485242522631">Websites kan bruge bevægelsessensorer</translation>
 <translation id="8951256747718668828">Gendannelsen kunne ikke fuldføres på grund af en fejl</translation>
 <translation id="8951465597020890363">Vil du afslutte gæstesessionen?</translation>
@@ -11224,7 +11216,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8963117664422609631">Gå til indstillingerne for websitet</translation>
 <translation id="8964927371396953727">Verificer din identitet for at bruge og gemme adgangskoder på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Angiv den gamle adgangskode</translation>
-<translation id="8966809848145604011">Andre profiler</translation>
 <translation id="8967427617812342790">Føj til læseliste</translation>
 <translation id="8967548289042494261">Fjern <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Værktøj til skrivning af systembillede i ChromeOS</translation>

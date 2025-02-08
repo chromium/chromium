@@ -286,10 +286,6 @@ const gfx::DXGIHandleToken& GpuMemoryBufferImplDXGI::GetToken() const {
 
 void GpuMemoryBufferImplDXGI::SetUsePreMappedMemory(bool use_premapped_memory) {
   use_premapped_memory_ = use_premapped_memory;
-
-  // Not used currently until the media capture code is converted to use
-  // MappableSI.
-  NOTREACHED();
 }
 
 GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(

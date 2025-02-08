@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Jetzt nicht</translation>
 <translation id="100957008357583611">Standort verwenden?</translation>
 <translation id="1010200102790553230">Seite später laden</translation>
+<translation id="1010225406377140704">Bitte den Absender um einen neuen Link</translation>
 <translation id="1011206368273183593">Dateien werden vorbereitet</translation>
 <translation id="1014509239502131234">Aktion wird rückgängig gemacht</translation>
 <translation id="1015730422737071372">Weitere Details angeben</translation>
@@ -1164,6 +1165,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3076865167425975822">Betriebssysteme</translation>
 <translation id="3080254622891793721">Grafik</translation>
 <translation id="3082007635241601060">Zulassen, das Google personalisierte Rabatte für deinen Einkaufswagen findet</translation>
+<translation id="3086269988715347183">Du hast für <ph name="BLOCKED_URL" /> noch keine Erlaubnis erteilt</translation>
 <translation id="3086579638707268289">Deine Aktivitäten im Web werden überwacht</translation>
 <translation id="3087734570205094154">Unten</translation>
 <translation id="3090667236485488075">Glas</translation>
@@ -1239,6 +1241,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3203025201812691413">URL darf nicht leer sein</translation>
 <translation id="320323717674993345">Zahlung abbrechen</translation>
 <translation id="3203366800380907218">Aus dem Web</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> enthält möglicherweise nicht jugendfreie Inhalte</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3208701679386778924">Bitte sende einen Bericht, damit wir ChromeOS-Updates weiter verbessern können.</translation>
 <translation id="3209034400446768650">Auf der Seite wird möglicherweise Geld verlangt</translation>
@@ -2971,6 +2974,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6254436959401408446">Nicht genügend Speicher, um diese Seite zu öffnen</translation>
 <translation id="625463612687472648">Nicht mehr zulassen</translation>
 <translation id="6259156558325130047">&amp;Neu anordnen rückgängig machen</translation>
+<translation id="6259282549512536479">Du hast <ph name="BLOCKED_URL" /> zuvor blockiert</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-Lesezeichen</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
 <translation id="6264485186158353794">Zurück zu sicherer Website</translation>
@@ -3103,6 +3107,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6465306955648956876">Passwörter verwalten…</translation>
 <translation id="646789491285795429">Du beobachtest dieses Produkt bereits</translation>
 <translation id="6468485451923838994">Schriftarten</translation>
+<translation id="6469702164109431067">Passwörter und Passkeys</translation>
 <translation id="647261751007945333">Geräterichtlinien</translation>
 <translation id="6472874020827012601">Stoff (matt)</translation>
 <translation id="647330291963761005">Updates werden installiert</translation>
@@ -4348,6 +4353,7 @@ Weitere Details:
 <translation id="8699041776323235191">HID-Gerät</translation>
 <translation id="8699985386408839112">Umschlag Kaku 1</translation>
 <translation id="8702965365666568344">Klebeband</translation>
+<translation id="8703372953981978786">Dieser Link funktioniert nicht</translation>
 <translation id="8703575177326907206">Die Verbindung zu <ph name="DOMAIN" /> ist nicht verschlüsselt.</translation>
 <translation id="8705331520020532516">Seriennummer</translation>
 <translation id="8706806585855470492">Du kannst dann Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten</translation>

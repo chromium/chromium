@@ -336,6 +336,9 @@
           =1 {{domain} and 1 other}
           other {{domain} and {count} others}}
       </message>
+      <message name="IDS_IOS_AUTOFILL_ACCNAME_ALL_AUTOFILL_DATA" desc="Title of the the button in the keyboard accessory shown when filling out forms used to open the expanded view to see all autofill data when on iPad. [Length: unlimited] [iOS only]">
+        All Autofill
+      </message>
       <message name="IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA" desc="The accessible name for the button in the keyboard accessory shown when filling out forms used to open the expanded view to see all autofill data. This is spoken by VoiceOver. [Length: unlimited] [iOS only]">
         See all autofill data
       </message>

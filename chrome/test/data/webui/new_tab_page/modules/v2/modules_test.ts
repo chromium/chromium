@@ -67,13 +67,13 @@ suite('NewTabPageModulesModulesV2Test', () => {
   }
 
   async function createModulesElementFromDescriptors(
-      descriptors: ModuleDescriptor[], instanceCount: number = 1,
+      enabledDescriptors: ModuleDescriptor[], instanceCount: number = 1,
       disabledDescriptors: ModuleDescriptor[] = []): Promise<HTMLElement> {
     handler.setResultFor('getModulesIdNames', {
-      data: descriptors,
+      data: [...enabledDescriptors, ...disabledDescriptors],
     });
 
-    const modules: Module[] = descriptors.map(descriptor => {
+    const modules: Module[] = enabledDescriptors.map(descriptor => {
       return {
         descriptor: descriptor,
         elements: Array(instanceCount).fill(0).map(_ => createElement()),
@@ -838,9 +838,6 @@ suite('NewTabPageModulesModulesV2Test', () => {
         const enabledDescriptors = [fooDescriptor, barDescriptor];
         const modulesElement = await createModulesElementFromDescriptors(
             enabledDescriptors, /*instanceCount=*/ 1, [bazDescriptor]);
-        handler.setResultFor('getModulesIdNames', {
-          data: enabledDescriptors,
-        });
         const bazReloadPromise = getModulePromise(bazDescriptor);
         moduleRegistry.setResultFor('initializeModuleById', bazReloadPromise);
 
@@ -1010,6 +1007,43 @@ suite('NewTabPageModulesModulesV2Test', () => {
             barDescriptor.id,
             (moduleWrappers[1] as ModuleWrapperElement).module.descriptor.id);
       });
+
+      test(
+          'modules not in `getModulesIdNames()` data are not loaded',
+          async () => {
+            // Arrange.
+            const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+            const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+            handler.setResultFor('getModulesIdNames', {
+              data: [
+                {id: fooDescriptor.id, name: fooDescriptor.id},
+              ],
+            });
+            const modulesElement = await createModulesElement(
+                [{
+                  descriptor: fooDescriptor,
+                  elements: [createElement()],
+                }],
+                true, SAMPLE_SCREEN_WIDTH,
+                /*disabledModuleIds=*/[barDescriptor.id]);
+            await waitAfterNextRender(modulesElement);
+            const barReloadPromise = getModulePromise(barDescriptor);
+            moduleRegistry.setResultFor(
+                'initializeModuleById', barReloadPromise);
+
+            // Act - Enable the bar module by removing it from the disabled
+            // modules list.
+            callbackRouterRemote.setDisabledModules(false, []);
+            await barReloadPromise;
+            await waitAfterNextRender(modulesElement);
+
+            // Assert - Foo module shows and bar module never loaded.
+            const moduleWrappers = modulesElement.shadowRoot!.querySelectorAll(
+                'ntp-module-wrapper');
+            assertEquals(1, moduleWrappers.length);
+            const fooModule = moduleWrappers[0] as ModuleWrapperElement;
+            assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
+          });
     });
 
     suite('Deferrable', () => {

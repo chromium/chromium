@@ -67,39 +67,40 @@ void LayoutSVGRoot::Trace(Visitor* visitor) const {
   LayoutReplaced::Trace(visitor);
 }
 
-void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
-    const SVGRect* override_viewbox,
-    NaturalSizingInfo& intrinsic_sizing_info) const {
+NaturalSizingInfo LayoutSVGRoot::UnscaledNaturalSizingInfo(
+    const SVGRect* override_viewbox) const {
   NOT_DESTROYED();
   // https://www.w3.org/TR/SVG/coords.html#IntrinsicSizing
 
   auto* svg = To<SVGSVGElement>(GetNode());
   DCHECK(svg);
 
-  std::optional<float> intrinsic_width = svg->IntrinsicWidth();
-  std::optional<float> intrinsic_height = svg->IntrinsicHeight();
-  intrinsic_sizing_info.size =
-      gfx::SizeF(intrinsic_width.value_or(0), intrinsic_height.value_or(0));
-  intrinsic_sizing_info.has_width = intrinsic_width.has_value();
-  intrinsic_sizing_info.has_height = intrinsic_height.has_value();
+  std::optional<float> natural_width = svg->IntrinsicWidth();
+  std::optional<float> natural_height = svg->IntrinsicHeight();
 
-  if (!intrinsic_sizing_info.size.IsEmpty()) {
-    intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
+  NaturalSizingInfo sizing_info;
+  sizing_info.size =
+      gfx::SizeF(natural_width.value_or(0), natural_height.value_or(0));
+  sizing_info.has_width = natural_width.has_value();
+  sizing_info.has_height = natural_height.has_value();
+
+  if (!sizing_info.size.IsEmpty()) {
+    sizing_info.aspect_ratio = sizing_info.size;
   } else {
     const SVGRect& view_box =
         override_viewbox ? *override_viewbox : svg->CurrentViewBox();
     const gfx::SizeF view_box_size = view_box.Rect().size();
     if (!view_box_size.IsEmpty()) {
-      // The viewBox can only yield an intrinsic ratio, not an intrinsic size.
-      intrinsic_sizing_info.aspect_ratio = view_box_size;
+      // The viewBox can only yield a natural ratio, not a natural size.
+      sizing_info.aspect_ratio = view_box_size;
     }
   }
+  return sizing_info;
 }
 
 PhysicalNaturalSizingInfo LayoutSVGRoot::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  NaturalSizingInfo sizing_info;
-  UnscaledIntrinsicSizingInfo(sizing_info);
+  NaturalSizingInfo sizing_info = UnscaledNaturalSizingInfo();
   sizing_info.size.Scale(StyleRef().EffectiveZoom());
   return PhysicalNaturalSizingInfo::FromSizingInfo(sizing_info);
 }
@@ -281,7 +282,7 @@ void LayoutSVGRoot::IntrinsicSizingInfoChanged() {
   if (!IsEmbeddedThroughFrameContainingSVGDocument())
     return;
   DCHECK(GetFrame()->Owner());
-  GetFrame()->Owner()->IntrinsicSizingInfoChanged();
+  GetFrame()->Owner()->NaturalSizingInfoChanged();
 }
 
 void LayoutSVGRoot::StyleDidChange(StyleDifference diff,

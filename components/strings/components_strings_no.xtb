@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Ikke nå</translation>
 <translation id="100957008357583611">bruke posisjonen din?</translation>
 <translation id="1010200102790553230">Last inn siden senere</translation>
+<translation id="1010225406377140704">Kontakt avsenderen for å be om en ny link</translation>
 <translation id="1011206368273183593">Klargjør filer</translation>
 <translation id="1014509239502131234">Angrer resultatet</translation>
 <translation id="1015730422737071372">Oppgi flere detaljer</translation>
@@ -3108,6 +3109,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6465306955648956876">Administrer passord…</translation>
 <translation id="646789491285795429">Du sporer allerede dette produktet</translation>
 <translation id="6468485451923838994">Skrifter</translation>
+<translation id="6469702164109431067">Passord og passnøkler</translation>
 <translation id="647261751007945333">Enhetsinnstillinger</translation>
 <translation id="6472874020827012601">Stoff (matt)</translation>
 <translation id="647330291963761005">Installerer oppdateringer</translation>
@@ -4351,6 +4353,7 @@ Mer informasjon:
 <translation id="8699041776323235191">HID-enhet</translation>
 <translation id="8699985386408839112">Kaku 1-konvolutt</translation>
 <translation id="8702965365666568344">Monteringsteip</translation>
+<translation id="8703372953981978786">Denne linken fungerer ikke</translation>
 <translation id="8703575177326907206">Tilkoblingen til <ph name="DOMAIN" /> er ikke kryptert.</translation>
 <translation id="8705331520020532516">Serienummer</translation>
 <translation id="8706806585855470492">Du kan dele, bli med i og samarbeide i fanegrupper</translation>

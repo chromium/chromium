@@ -53,6 +53,8 @@ struct CONTENT_EXPORT CdmInfo {
   };
 
   // If `capability` is nullopt, the `capability` will be lazy initialized.
+  // Note that `version` will be overridden by the version in `capability` to
+  // allow for version determination during lazy initialization.
   CdmInfo(const std::string& key_system,
           Robustness robustness,
           std::optional<media::CdmCapability> capability,
@@ -60,6 +62,13 @@ struct CONTENT_EXPORT CdmInfo {
           const std::string& name,
           const media::CdmType& type,
           const base::Version& version,
+          const base::FilePath& path);
+  CdmInfo(const std::string& key_system,
+          Robustness robustness,
+          std::optional<media::CdmCapability> capability,
+          bool supports_sub_key_systems,
+          const std::string& name,
+          const media::CdmType& type,
           const base::FilePath& path);
   CdmInfo(const std::string& key_system,
           Robustness robustness,

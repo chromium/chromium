@@ -126,9 +126,6 @@
 
 namespace {
 
-// Deprecated 02/24.
-const char kIosPromosManagerImpressions[] = "ios.promos_manager.impressions";
-
 // Deprecated 03/2024.
 const char kObsoleteAccountStorageNewFeatureIconImpressions[] =
     "password_manager.account_storage_new_feature_icon_impressions";
@@ -238,29 +235,6 @@ void MigrateBooleanPref(std::string_view pref_name,
   source_pref_service->ClearPref(pref_name);
 }
 
-// Migrates a list pref from source to target PrefService.
-void MigrateListPref(std::string_view pref_name,
-                     PrefService* target_pref_service,
-                     PrefService* source_pref_service) {
-  const PrefService::Preference* target_pref =
-      target_pref_service->FindPreference(pref_name);
-  CHECK(target_pref);
-
-  const PrefService::Preference* source_pref =
-      source_pref_service->FindPreference(pref_name);
-  CHECK(source_pref);
-
-  // Only migrate the pref if 1. it is not set in target,
-  // 2. it is not the default in source.
-  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
-    target_pref_service->SetList(
-        pref_name, source_pref_service->GetList(pref_name).Clone());
-  }
-
-  // In all cases, clear the pref from source.
-  source_pref_service->ClearPref(pref_name);
-}
-
 // Migrates a integer pref from source to target PrefService.
 void MigrateIntegerPref(std::string_view pref_name,
                         PrefService* target_pref_service,
@@ -351,15 +325,6 @@ void MigrateTimePref(std::string_view pref_name,
 
   // In all cases, clear the pref from source.
   source_pref_service->ClearPref(pref_name);
-}
-
-// Helper function migrating the `list` preference from LocalState prefs to
-// Profile prefs.
-void MigrateListPrefFromLocalStatePrefsToProfilePrefs(
-    std::string_view pref_name,
-    PrefService* profile_pref_service) {
-  MigrateListPref(pref_name, profile_pref_service,
-                  GetApplicationContext()->GetLocalState());
 }
 
 // Helper function migrating the `string` preference from LocalState prefs to
@@ -473,7 +438,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kIosPreRestoreAccountInfo);
 
   registry->RegisterListPref(prefs::kIosPromosManagerActivePromos);
-  registry->RegisterListPref(kIosPromosManagerImpressions);
   registry->RegisterListPref(prefs::kIosPromosManagerSingleDisplayActivePromos);
   registry->RegisterDictionaryPref(
       prefs::kIosPromosManagerSingleDisplayPendingPromos);
@@ -616,8 +580,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
 
   // Prefs migrated to profile prefs.
-  registry->RegisterListPref(prefs::kIosLatestMostVisitedSites,
-                             PrefRegistry::LOSSY_PREF);
   registry->RegisterTimePref(prefs::kTabPickupLastDisplayedTime, base::Time());
   registry->RegisterStringPref(prefs::kTabPickupLastDisplayedURL,
                                std::string());
@@ -1051,9 +1013,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // This function is not allowed to block.
   base::ScopedDisallowBlocking disallow_blocking;
 
-  // Added 02/2024.
-  prefs->ClearPref(kIosPromosManagerImpressions);
-
   // Added 07/2024.
   prefs->ClearPref(prefs::kTabPickupEnabled);
   prefs->ClearPref(prefs::kTabPickupLastDisplayedTime);
@@ -1082,10 +1041,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Added 02/2024.
-  MigrateListPrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kIosLatestMostVisitedSites, prefs);
 
   // Added 03/2024.
   prefs->ClearPref(kObsoleteAccountStorageNewFeatureIconImpressions);
@@ -1205,9 +1160,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
 void MigrateObsoleteUserDefault() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // TODO(b/322004644): Remove in M124+. Added 02/2024.
-  [defaults removeObjectForKey:@"TimestampAppLaunchedOnColdStart"];
 
   // Added 05/2024.
   [defaults removeObjectForKey:@"lastSignificantUserEventVideo"];

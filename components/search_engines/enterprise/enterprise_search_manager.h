@@ -24,6 +24,8 @@ class EnterpriseSearchManager {
  public:
   static const char kSiteSearchSettingsPrefName[];
   static const char kEnterpriseSearchAggregatorSettingsPrefName[];
+  static const char
+      kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName[];
 
   using OwnedTemplateURLDataVector =
       std::vector<std::unique_ptr<TemplateURLData>>;
@@ -50,6 +52,12 @@ class EnterpriseSearchManager {
 
   // Registers prefs needed for tracking the site search engines.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Returns the `require_shortcut` value. If set by policy, the preference
+  // value is returned. Otherwise, if a valid mock search engine is defined, the
+  // mock setting's value is used. Defaults to preference default if neither is
+  // set.
+  bool GetRequireShortcutValue() const;
 
  private:
   // Handles changes to managed prefs due to policy updates. Calls

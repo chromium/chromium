@@ -1355,7 +1355,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     // True when the renderer is currently undergoing a pinch-zoom gesture.
     bool is_pinch_gesture_active = false;
 
-    // The size of the main frame's widget in DIP.
+    // The size of the main frame's widget in device px.
     gfx::Size visible_viewport_size;
 
     gfx::Rect compositor_viewport;

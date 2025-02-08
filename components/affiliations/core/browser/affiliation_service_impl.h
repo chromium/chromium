@@ -56,7 +56,9 @@ enum class GetChangePasswordUrlMetric {
   // Used when a url was used, which corresponds to a site from within same
   // FacetGroup.
   kGroupUrlOverrideUsed = 3,
-  kMaxValue = kGroupUrlOverrideUsed,
+  // Used when change password info was available for the main domain only.
+  kMainDomainUsed = 4,
+  kMaxValue = kMainDomainUsed,
 };
 
 class AffiliationServiceImpl : public AffiliationService,
@@ -65,6 +67,7 @@ class AffiliationServiceImpl : public AffiliationService,
   struct ChangePasswordUrlMatch {
     GURL change_password_url;
     bool group_url_override;
+    bool main_domain_override;
   };
 
   explicit AffiliationServiceImpl(
@@ -87,8 +90,8 @@ class AffiliationServiceImpl : public AffiliationService,
   // map. Creates a unique fetcher and appends it to |pending_fetches_|
   // along with |urls| and |callback|. When prefetch is finished or a fetcher
   // gets destroyed as a result of Clear() a callback is run.
-  void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
-                                  base::OnceClosure callback) override;
+  void PrefetchChangePasswordURL(const GURL& url,
+                                 base::OnceClosure callback) override;
 
   // In case no valid URL was found, a method returns an empty URL.
   GURL GetChangePasswordURL(const GURL& url) const override;

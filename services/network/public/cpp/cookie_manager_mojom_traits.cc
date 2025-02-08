@@ -688,17 +688,15 @@ void ExtractCrashValueFromPartitionKey(
 
   network::mojom::SchemefulSiteDataView schemeful_site_data_view;
   partition_key.GetSiteDataView(&schemeful_site_data_view);
-  crash_value.append(" ");
   if (schemeful_site_data_view.is_null()) {
-    crash_value.append("no_schemeful_site");
+    crash_value.append(" no_schemeful_site");
     return;
   }
 
   url::mojom::OriginDataView origin_data_view;
   schemeful_site_data_view.GetSiteAsOriginDataView(&origin_data_view);
-  crash_value.append(" ");
   if (origin_data_view.is_null()) {
-    crash_value.append("no_site_as_origin");
+    crash_value.append(" no_site_as_origin");
     return;
   }
   crash_value.append(" ");
@@ -710,6 +708,9 @@ void ExtractCrashValueFromPartitionKey(
   if (host_data_view.is_null()) {
     crash_value.append("no_host");
   } else {
+    crash_value.append("host_len=");
+    crash_value.append(base::NumberToString(host_data_view.value().length()));
+    crash_value.append(" ");
     crash_value.append(host_data_view.value());
   }
 

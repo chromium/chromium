@@ -62,6 +62,7 @@
 <translation id="1223498995510244364">สรุป</translation>
 <translation id="123124571410524056">สงสัยว่าเป็นพอร์ทัล</translation>
 <translation id="1232610416724362657">น้ำตก</translation>
+<translation id="1238163879850290856">รีเซ็ตเพื่อป้องกันไม่ให้ผู้อื่นเข้าถึงข้อมูล โปรดใช้เฉพาะวิธีการป้อนข้อมูลที่คุณเชื่อถือเท่านั้น</translation>
 <translation id="1238612778414822719">เวลาในการตอบสนองของ HTTPS</translation>
 <translation id="1252766349417594414">จอยสติ๊ก</translation>
 <translation id="1270369111467284986">สงสัยว่าเป็นแคพทีฟพอร์ทัล</translation>
@@ -766,6 +767,7 @@
 <translation id="4650608062294027130">Shift ขวา</translation>
 <translation id="4654549501020883054">เปลี่ยนทุกวัน</translation>
 <translation id="4655868084888499342">ตั้งรูปภาพเป็นวอลเปเปอร์แล้ว</translation>
+<translation id="4660989616054030633">Generative AI อาจทำผิดพลาดได้ ซึ่งรวมถึงการให้ข้อมูลเกี่ยวกับผู้คน ดังนั้นโปรดตรวจสอบคำตอบอีกครั้ง</translation>
 <translation id="4661249927038176904">เหนือจริง</translation>
 <translation id="4661392828086261436">การอัปเดตนี้ให้บริการโดยผู้ผลิตอุปกรณ์และไม่ได้รับการยืนยันจาก Google</translation>
 <translation id="4664651912255946953">ขนสัตว์</translation>
@@ -1065,6 +1067,7 @@
 <translation id="6074752328838739425">ซ่อนข้อมูลสรุป</translation>
 <translation id="6075872808778243331">(Android) เวลาในการตอบสนองของ HTTP</translation>
 <translation id="6078323886959318429">เพิ่มทางลัด</translation>
+<translation id="6079693086494835199">รีเซ็ตเพื่อให้หน้าแรกเริ่มต้นไม่ใช่เว็บไซต์ฟิชชิง โปรดใช้เฉพาะเว็บไซต์ที่คุณเชื่อถือเท่านั้น</translation>
 <translation id="6091080061796993741">เหลือง</translation>
 <translation id="6104112872696127344">ยกเลิกการสแกนแล้ว</translation>
 <translation id="6106186594183574873">ป้อนรหัสผ่านเดิมเพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
@@ -1088,6 +1091,7 @@
 <translation id="6156030503438652198">น้ำตาลแดงและชมพู</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6185263894115593524">รีเซ็ตเพื่อไม่ให้ผู้อื่นใช้ไมโครโฟนหรือกล้องของคุณ โปรดให้สิทธิ์เฉพาะเว็บไซต์ที่คุณเชื่อถือเท่านั้น</translation>
 <translation id="6188737759358894319">สร้างเมื่อ <ph name="DATE" /></translation>
 <translation id="6189418609903030344">ความจุแบตเตอรี่จะลดลงเมื่อใช้ไปเรื่อยๆ</translation>
 <translation id="6189987971574353264">เล่น</translation>
@@ -1114,6 +1118,7 @@
 <translation id="629550705077076970">การหรี่แสงแป้นพิมพ์</translation>
 <translation id="6302401976930124515">ยกเลิกการทดสอบ<ph name="TEST_NAME" />แล้ว</translation>
 <translation id="631063167932043783">แอป "สำรวจ"</translation>
+<translation id="6314333689576767865">Chromebook รีเซ็ตเป็นค่าเริ่มต้นที่ปลอดภัยแล้ว ซึ่งคุณเปลี่ยนแปลงได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="6318437367327684789">ตลอดไป</translation>
 <translation id="6319207335391420837">อัปเดตเฟิร์มแวร์ใน <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">เปิดโปรแกรมรักษาหน้าจอ</translation>
@@ -1250,6 +1255,7 @@
 <translation id="6862416241246624313">ส่งความคิดเห็นแล้ว</translation>
 <translation id="6866732840889595464">เดซี่</translation>
 <translation id="6871256179359663621">ม่วงอ่อน</translation>
+<translation id="6887967050249348172">ปิดใช้ส่วนขยายอยู่เพื่อป้องกันการเปลี่ยนแปลงการตั้งค่า โปรดเปิดเฉพาะส่วนขยายที่คุณเชื่อถือเท่านั้น</translation>
 <translation id="6889786074662672253">ขณะรีสตาร์ท โปรดอย่าถอดปลั๊กอุปกรณ์ภายนอกเครื่องนี้หรือปิดคอมพิวเตอร์ คุณย่อหน้าต่างนี้ให้เล็กสุดได้ การดำเนินการอาจใช้เวลาสักครู่และอุปกรณ์ภายนอกอาจใช้ไม่ได้ในช่วงเวลานี้</translation>
 <translation id="6899460405678814458">แสดงข้อมูลสรุป</translation>
 <translation id="6900701049656042631">อัลบั้มนี้ไม่มีรูปภาพเลย ไปที่ <ph name="LINK" /> เพื่อเพิ่มรูปภาพ</translation>
@@ -1340,6 +1346,7 @@
 <translation id="7233782086689993269">คืนค่าแป้นพิมพ์ลัดแล้ว</translation>
 <translation id="725133483556299729">เลือกอีเมล</translation>
 <translation id="7255187042098209569">ชมพูและม่วง</translation>
+<translation id="7267918995585557751">รีเซ็ตเพื่อให้หน้าเริ่มต้นใช้งานเริ่มต้นไม่ใช่เว็บไซต์ฟิชชิง โปรดใช้เฉพาะเว็บไซต์ที่คุณเชื่อถือเท่านั้น</translation>
 <translation id="7271000785316964275">คลาสสิก</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
 <translation id="7271932918253517778">แป้นพิมพ์ลัดที่ประกอบด้วยแป้นแถวบนสุดต้องมีแป้น<ph name="META_KEY" />รวมอยู่ด้วย</translation>
@@ -1423,7 +1430,6 @@
 <translation id="7618216277886673749">เลือก <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ปานกลาง</translation>
 <translation id="7620771111601174153">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
-<translation id="7625095758347640998">วอลเปเปอร์ AI</translation>
 <translation id="763165478673169849">เวลารีเซ็ตล่าสุด</translation>
 <translation id="7633068090678117093">ภาพพื้นหลัง</translation>
 <translation id="763873111564339966">คราม</translation>
@@ -1486,6 +1492,7 @@
 <translation id="7903695460270716054">เลือกงานศิลปะและรูปภาพที่ดูแลจัดการ</translation>
 <translation id="7912005977894000746">กลับไปที่หน้าหลัก</translation>
 <translation id="7915220255123750251">จัดการการตั้งค่า APN ของเครือข่าย APN จะเริ่มการเชื่อมต่อระหว่างเครือข่ายมือถือกับอินเทอร์เน็ต</translation>
+<translation id="7915759923880480519">รีเซ็ตเพื่อปกป้องข้อมูลที่ส่งผ่านเครือข่าย โปรดใช้เฉพาะเครือข่ายที่คุณเชื่อถือเท่านั้น</translation>
 <translation id="7936303884198020182">ไม่พบเนมเซิร์ฟเวอร์</translation>
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="7943235353293548836">ระยะเวลาของ Keepalive ต่อเนื่อง</translation>
@@ -1711,6 +1718,7 @@
 <translation id="89945434909472341">หมู่บ้าน</translation>
 <translation id="8997710128084572139">อุปกรณ์มีแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8998289560386111590">ใช้ไม่ได้ในอุปกรณ์ของคุณ</translation>
+<translation id="9000871120886759611">รีเซ็ตเพื่อให้คุณเข้าถึงข้อมูลได้ในภาษาที่ต้องการ ตรวจสอบว่าใช้เฉพาะภาษาที่ต้องการ</translation>
 <translation id="9003499805101629690">พิซซ่า</translation>
 <translation id="9003704114456258138">ความถี่</translation>
 <translation id="901834265349196618">อีเมล</translation>

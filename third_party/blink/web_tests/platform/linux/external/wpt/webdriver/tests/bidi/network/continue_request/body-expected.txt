@@ -1,9 +1,0 @@
-This is a wdspec test.
-[FAIL] test_request_body[{'a': 1}--0]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_request_body[None-{'a': 123}-10]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_request_body[{'a': 1}-{'a': 12345678}-15]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-Harness: the test ran to completion.
-

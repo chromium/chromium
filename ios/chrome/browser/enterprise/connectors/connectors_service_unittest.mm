@@ -112,6 +112,9 @@ TEST_F(ConnectorsServiceTest, GetBrowserDmToken) {
   ASSERT_TRUE(browser_dm_token.has_value());
   ASSERT_EQ(browser_dm_token->value, kTestBrowserDmToken);
   ASSERT_EQ(browser_dm_token->scope, policy::POLICY_SCOPE_MACHINE);
+
+  ASSERT_TRUE(connectors_service.GetBrowserDmToken());
+  ASSERT_EQ(*connectors_service.GetBrowserDmToken(), kTestBrowserDmToken);
 }
 
 TEST_F(ConnectorsServiceTest, ConnectorsEnabled) {

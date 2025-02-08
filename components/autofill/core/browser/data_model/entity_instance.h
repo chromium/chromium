@@ -126,6 +126,11 @@ class EntityInstance final {
   EntityInstance& operator=(EntityInstance&&);
   ~EntityInstance();
 
+  // Comparator that ranks instances by their priority for import on form
+  // submission.
+  // `ImportOrder(x, y) == true` means `x` has higher priority than `y`.
+  static bool ImportOrder(const EntityInstance& lhs, const EntityInstance& rhs);
+
   const EntityType& type() const { return type_; }
 
   // The attributes present in this instance.

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1009406586654360474">Otevřete Správce hesel Google a přejděte na nastavení. Vyberte Importovat a přidejte soubor CSV s exportovanými hesly.</translation>
-<translation id="1010225406377140704">Kontaktujte odesílatele a požádejte ho o nový odkaz</translation>
 <translation id="1011749477052068769">Přesunout sem</translation>
 <translation id="1014147525163127655">V tomto zařízení nejsou pro web <ph name="ORIGIN" /> žádné přístupové klíče</translation>
 <translation id="1016498331642356377">Rychle vyhledávat hlasem. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
@@ -1723,7 +1722,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8683039184091909753">obrázek</translation>
 <translation id="869891660844655955">Datum konce platnosti</translation>
 <translation id="8699120352855309748">Nenabízet překlad do těchto jazyků</translation>
-<translation id="8703372953981978786">Tento odkaz nefunguje</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8723453889042591629">Nechte si tuto stránku rychle přeložit. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>

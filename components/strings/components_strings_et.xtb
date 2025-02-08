@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Mitte praegu</translation>
 <translation id="100957008357583611">Kas kasutada teie asukohta?</translation>
 <translation id="1010200102790553230">Laadi leht hiljem</translation>
+<translation id="1010225406377140704">Võtke uue lingi küsimiseks ühendust saatjaga</translation>
 <translation id="1011206368273183593">Failide ettevalmistamine</translation>
 <translation id="1014509239502131234">Tulemuse tagasivõtmine</translation>
 <translation id="1015730422737071372">Esitage lisateavet</translation>
@@ -3108,6 +3109,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6465306955648956876">Halda paroole …</translation>
 <translation id="646789491285795429">Jälgite juba seda toodet</translation>
 <translation id="6468485451923838994">Fondid</translation>
+<translation id="6469702164109431067">Paroolid ja pääsuvõtmed</translation>
 <translation id="647261751007945333">Seadme reeglid</translation>
 <translation id="6472874020827012601">Kangas (matt)</translation>
 <translation id="647330291963761005">Värskenduste installimine</translation>
@@ -4352,6 +4354,7 @@ Lisateave:
 <translation id="8699041776323235191">HID-seade</translation>
 <translation id="8699985386408839112">Ümbrik Kaku 1</translation>
 <translation id="8702965365666568344">Montaažiteip</translation>
+<translation id="8703372953981978786">See link ei toimi</translation>
 <translation id="8703575177326907206">Teie ühendus <ph name="DOMAIN" />'ga pole krüptitud.</translation>
 <translation id="8705331520020532516">Seerianumber</translation>
 <translation id="8706806585855470492">Vahelehegruppe saate jagada, nendega liituda ja neis koostööd teha</translation>

@@ -628,7 +628,10 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS, true);
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCCTEphemeralMediaViewerExperiment =
-            newCachedFlag(CCT_EPHEMERAL_MEDIA_VIEWER_EXPERIMENT, false);
+            newCachedFlag(
+                    CCT_EPHEMERAL_MEDIA_VIEWER_EXPERIMENT,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCctEphemeralMode = newCachedFlag(CCT_EPHEMERAL_MODE, true);
     public static final CachedFlag sCctFreInSameTask = newCachedFlag(CCT_FRE_IN_SAME_TASK, true);
     public static final CachedFlag sCctIncognitoAvailableToThirdParty =

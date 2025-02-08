@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Боломжгүй байна</translation>
 <translation id="100957008357583611">Байршлаа ашиглах уу?</translation>
 <translation id="1010200102790553230">Хуудсыг дараа ачаалах</translation>
+<translation id="1010225406377140704">Шинэ холбоос хүсэхийн тулд илгээгчтэй холбогдоно уу</translation>
 <translation id="1011206368273183593">Файлуудыг бэлтгэж байна</translation>
 <translation id="1014509239502131234">Үр дүнг гаргахаа больж байна</translation>
 <translation id="1015730422737071372">Дэлгэрэнгүй мэдээлэл өгөх</translation>
@@ -3108,6 +3109,7 @@
 <translation id="6465306955648956876">Нууц үгийг удирдах...</translation>
 <translation id="646789491285795429">Та энэ бүтээгдэхүүнийг аль хэдийн хянаж байна</translation>
 <translation id="6468485451923838994">Фонт</translation>
+<translation id="6469702164109431067">Нууц үг болон passkey</translation>
 <translation id="647261751007945333">Төхөөрөмжийн тохиргоонууд</translation>
 <translation id="6472874020827012601">Даавуу (мaтте)</translation>
 <translation id="647330291963761005">Шинэчлэлтийг суулгаж байна</translation>
@@ -4351,6 +4353,7 @@
 <translation id="8699041776323235191">HID төхөөрөмж</translation>
 <translation id="8699985386408839112">Каку дугтуй 1</translation>
 <translation id="8702965365666568344">Тогтоогч тууз</translation>
+<translation id="8703372953981978786">Энэ холбоос ажиллахгүй байна</translation>
 <translation id="8703575177326907206">Таны <ph name="DOMAIN" /> руу холбогдох холболтыг шифрлээгүй байна.</translation>
 <translation id="8705331520020532516">Сери дугаар</translation>
 <translation id="8706806585855470492">Та табын бүлэг хуваалцах, нэгдэх, хамтран ажиллах боломжтой болно</translation>

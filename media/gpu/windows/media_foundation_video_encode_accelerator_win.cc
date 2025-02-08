@@ -209,6 +209,7 @@ struct MediaFoundationVideoEncodeAccelerator::PendingInput {
   gfx::ColorSpace color_space;
   ComMFSample input_sample;
   bool resolving_shared_image = false;
+  gpu::Mailbox shared_image_token;
 };
 
 class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
@@ -684,6 +685,7 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
   if (!frame->VideoFrame::HasMappableGpuBuffer() && frame->HasSharedImage() &&
       command_buffer_helper_) {
     result.resolving_shared_image = true;
+    result.shared_image_token = frame->shared_image()->mailbox();
     pending_input_queue_.push_back(result);
     auto d3d_device = dxgi_device_manager_->GetDevice();
     if (!d3d_device) {
@@ -2774,12 +2776,21 @@ void MediaFoundationVideoEncodeAccelerator::OnSharedImageSampleAvailable(
     return;
   }
 
-  DCHECK(!pending_input_queue_.empty());
-  auto& next_input = pending_input_queue_.front();
-  next_input.input_sample = sample;
-  next_input.resolving_shared_image = false;
+  // If the encoding client quickly supplies multiple shared texture
+  // frames, there could be multiple shared images being resolved at
+  // the same time.  This sample needs to be linked with the correct
+  // frame in the queue.
+  auto it = pending_input_queue_.begin();
+  for (; it != pending_input_queue_.end(); it++) {
+    if (it->shared_image_token == frame->shared_image()->mailbox()) {
+      it->input_sample = sample;
+      it->resolving_shared_image = false;
+      break;
+    }
+  }
+  DCHECK(it != pending_input_queue_.end());
 
-  HRESULT hr = PopulateInputSampleBuffer(next_input, std::move(frame));
+  HRESULT hr = PopulateInputSampleBuffer(*it, std::move(frame));
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "Failed to populate input sample buffer"});

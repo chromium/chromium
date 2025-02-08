@@ -8,6 +8,9 @@
 #import "base/command_line.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/commerce_types.h"
+#import "components/commerce/core/shopping_service.h"
 #import "components/page_image_service/features.h"
 #import "components/page_image_service/image_service.h"
 #import "components/page_image_service/mojom/page_image_service.mojom.h"
@@ -56,6 +59,7 @@
 #import "ios/chrome/browser/tabs/model/tab_sync_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper_delegate.h"
@@ -227,12 +231,14 @@ NSString* GetOverridenReason(
   // Whether the item is currently presented as Top Module by Magic Stack.
   BOOL _currentlyTopModule;
   PrefBackedBoolean* _tabResumptionDisabled;
+  raw_ptr<commerce::ShoppingService> _shoppingService;
 }
 
 - (instancetype)initWithLocalState:(PrefService*)localState
                        prefService:(PrefService*)prefService
                    identityManager:(signin::IdentityManager*)identityManager
-                           browser:(Browser*)browser {
+                           browser:(Browser*)browser
+                   shoppingService:(commerce::ShoppingService*)shoppingService {
   self = [super init];
   if (self) {
     CHECK(IsTabResumptionEnabled());
@@ -293,6 +299,7 @@ NSString* GetOverridenReason(
       _identityManagerObserverBridge.reset(
           new signin::IdentityManagerObserverBridge(identityManager, self));
     }
+    _shoppingService = shoppingService;
   }
   return self;
 }
@@ -885,8 +892,32 @@ NSString* GetOverridenReason(
     }
   }
 
-  // Fetch the favicon.
-  [self fetchImageForItem:item];
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
+    __weak __typeof(self) weakSelf = self;
+    // TODO(crbug.com/394947595) this currently returns no product info for
+    // any shopping URL on startup, likely because OptimizationGuide hasn't
+    // fetched the URL data yet. Ensure product data is available on first
+    // rendering of the magic stack either by waiting for the OptimziationGudide
+    // fetch or forcing a fetch as part of this call.
+    _shoppingService->GetProductInfoForUrl(
+        visit->url,
+        base::BindOnce(
+            ^(const GURL& url,
+              const std::optional<const commerce::ProductInfo>& product_info) {
+              // A URL is price trackable if it has a cluster ID.
+              if (product_info.has_value() &&
+                  product_info->product_cluster_id.has_value()) {
+                item.shopCardData = [[ShopCardData alloc] init];
+                item.shopCardData.shopCardItemType =
+                    ShopCardItemType::kPriceTrackableProductOnTab;
+              }
+              // Fetch the favicon.
+              [weakSelf fetchImageForItem:item];
+            }));
+  } else {
+    // Fetch the favicon.
+    [self fetchImageForItem:item];
+  }
 }
 
 @end

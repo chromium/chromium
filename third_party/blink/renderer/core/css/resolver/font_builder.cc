@@ -54,12 +54,9 @@ void FontBuilder::DidChangeWritingMode() {
 }
 
 void FontBuilder::DidChangeTextSizeAdjust() {
-  // When `TextSizeAdjustImprovements` is enabled, text-size-adjust affects
-  // font-size during style building, and needs to invalidate the font
-  // description.
-  if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
-    Set(PropertySetFlag::kTextSizeAdjust);
-  }
+  // text-size-adjust affects font-size during style building, and needs to
+  // invalidate the font description.
+  Set(PropertySetFlag::kTextSizeAdjust);
 }
 
 FontFamily FontBuilder::StandardFontFamily() const {
@@ -307,11 +304,9 @@ float FontBuilder::GetComputedSizeFromSpecifiedSize(
   }
 
   if (!builder.GetTextSizeAdjust().IsAuto()) {
-    if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
-      Settings* settings = document_->GetSettings();
-      if (settings && settings->GetTextAutosizingEnabled()) {
-        zoom_factor *= builder.GetTextSizeAdjust().Multiplier();
-      }
+    Settings* settings = document_->GetSettings();
+    if (settings && settings->GetTextAutosizingEnabled()) {
+      zoom_factor *= builder.GetTextSizeAdjust().Multiplier();
     }
   }
 

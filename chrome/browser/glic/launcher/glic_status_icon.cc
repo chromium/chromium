@@ -13,6 +13,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
+#include "chrome/browser/glic/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/launcher/glic_controller.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/status_icons/status_icon.h"
@@ -41,7 +42,9 @@ gfx::ImageSkia GetIconForTheme(const ui::NativeTheme* native_theme) {
 #else
   // On Mac and Linux, theming is handled by the system and does not require
   // different images for light/dark mode.
-  return gfx::CreateVectorIcon(kGlicButtonIcon, SK_ColorWHITE);
+  const auto& icon =
+      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON);
+  return gfx::CreateVectorIcon(icon, SK_ColorWHITE);
 #endif
 }
 }  // namespace
@@ -52,7 +55,6 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
                                StatusTray* status_tray)
     : controller_(controller), status_tray_(status_tray) {
   // TODO(crbug.com/382287104): Use correct icon.
-  // TODO(crbug.com/386839488): Chose color based on system theme.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   status_icon_ = status_tray_->CreateStatusIcon(
       StatusTray::GLIC_ICON, GetIconForTheme(native_theme),
@@ -64,7 +66,8 @@ GlicStatusIcon::GlicStatusIcon(GlicController* controller,
   }
 #if BUILDFLAG(IS_LINUX)
   //  Set a vector icon for proper themeing on Linux.
-  status_icon_->SetIcon(kGlicButtonIcon);
+  status_icon_->SetIcon(
+      GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON));
 #else
   // Linux doesn't activate icon on click so no need to observe.
   status_icon_->AddObserver(this);

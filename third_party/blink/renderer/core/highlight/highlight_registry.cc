@@ -56,6 +56,24 @@ HighlightRegistry* HighlightRegistry::GetHighlightRegistry(const Node* node) {
       ->Supplementable<LocalDOMWindow>::RequireSupplement<HighlightRegistry>();
 }
 
+bool HighlightRegistry::IsAbstractRangePaintable(AbstractRange* abstract_range,
+                                                 Document* document) const {
+  if (abstract_range->OwnerDocument() != document ||
+      abstract_range->collapsed() || !abstract_range->startContainer() ||
+      !abstract_range->startContainer()->isConnected() ||
+      !abstract_range->endContainer() ||
+      !abstract_range->endContainer()->isConnected()) {
+    return false;
+  }
+
+  auto* static_range = DynamicTo<StaticRange>(*abstract_range);
+  if (static_range && !static_range->IsValid()) {
+    return false;
+  }
+
+  return true;
+}
+
 // Deletes all HighlightMarkers and rebuilds them with the contents of
 // highlights_.
 void HighlightRegistry::ValidateHighlightMarkers() {
@@ -108,11 +126,7 @@ void HighlightRegistry::ValidateHighlightMarkers() {
     const auto& highlight_name = highlight_registry_map_entry->highlight_name;
     const auto& highlight = highlight_registry_map_entry->highlight;
     for (const auto& abstract_range : highlight->GetRanges()) {
-      if (abstract_range->OwnerDocument() == document &&
-          !abstract_range->collapsed()) {
-        auto* static_range = DynamicTo<StaticRange>(*abstract_range);
-        if (static_range && !static_range->IsValid())
-          continue;
+      if (IsAbstractRangePaintable(abstract_range, document)) {
         EphemeralRange eph_range(abstract_range);
         markers_controller.AddCustomHighlightMarker(eph_range, highlight_name,
                                                     highlight);

@@ -151,23 +151,14 @@
 
   // After signout, the managed account should be moved into a separate profile.
   [SigninEarlGreyUI signOut];
-  // TODO(crbug.com/355167413): AccountProfileMapper should detect the change in
-  // the primary account, and trigger the re-assignment. But currently it
-  // doesn't do that yet, so as a workaround, add another personal account to
-  // trigger the re-assignment.
-  FakeSystemIdentity* const personalIdentity2 =
-      [FakeSystemIdentity fakeIdentity2];
-  [SigninEarlGrey addFakeIdentity:personalIdentity2];
   {
     NSSet<NSString*>* accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];
-    GREYAssertEqual([accountsInProfile count], 2u,
+    GREYAssertEqual([accountsInProfile count], 1u,
                     @"After signout, only the personal account should remain "
                     @"in the personal profile");
     GREYAssert([accountsInProfile containsObject:personalIdentity.gaiaID],
                @"Personal account should match");
-    GREYAssert([accountsInProfile containsObject:personalIdentity2.gaiaID],
-               @"Second personal account should match");
   }
 }
 

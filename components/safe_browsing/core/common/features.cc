@@ -138,6 +138,10 @@ constexpr base::FeatureParam<int> kDownloadWarningSurveyType{
 constexpr base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds{
     &kDownloadWarningSurvey, "ignore_delay_seconds", 300};
 
+BASE_FEATURE(kEnhancedFieldsForSecOps,
+             "EnhancedFieldsForSecOps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnhancedSafeBrowsingPromo,
              "EnhancedSafeBrowsingPromo",
 #if BUILDFLAG(IS_IOS)
@@ -338,6 +342,7 @@ base::Value::List GetFeatureStatusList() {
       &kDelayedWarnings,
       &kDlpRegionalizedEndpoints,
       &kDownloadTailoredWarnings,
+      &kEnhancedFieldsForSecOps,
       &kEnhancedSafeBrowsingPromo,
       &kEnterprisePasswordReuseUiRefresh,
       &kEnterpriseRealTimeUrlCheckOnAndroid,

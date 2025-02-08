@@ -652,7 +652,7 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringTabGroupEventsFromRemote) {
                                            tab_groups::TriggerSource::REMOTE);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_GROUP_REMOVED,
-                           DirtyType::kTabGroupRemovedAndInstantMessage,
+                           DirtyType::kTombstonedAndInstantMessage,
                            now.ToTimeT());
   EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
 
@@ -732,7 +732,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
   collaboration_pb::Message message3 =
       CreateStoredMessage(collaboration_group_id,
                           collaboration_pb::EventType::TAB_GROUP_NAME_UPDATED,
-                          DirtyType::kNone, now);
+                          DirtyType::kNone, now - base::Seconds(30));
   message3.mutable_tab_group_data()->set_sync_tab_group_id(
       tab_group.saved_guid().AsLowercaseString());
   message3.set_triggering_user_gaia_id("gaia_2");
@@ -768,11 +768,19 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
   params.collaboration_id = collaboration_group_id;
   std::vector<ActivityLogItem> activity_log = service_->GetActivityLog(params);
   ASSERT_EQ(2u, activity_log.size());
+
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_NAME_UPDATED,
             activity_log[0].collaboration_event);
-  EXPECT_EQ(tab_group.title(), activity_log[0].description_text);
+  EXPECT_EQ(u"Given Name 2 changed the group name", activity_log[0].title_text);
+  EXPECT_EQ(u"Tab Group Title", activity_log[0].description_text);
+  EXPECT_EQ(u"Just now", activity_log[0].time_delta_text);
+
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_COLOR_UPDATED,
             activity_log[1].collaboration_event);
+  EXPECT_EQ(u"Given Name 2 changed the group color",
+            activity_log[1].title_text);
+  EXPECT_EQ(u"", activity_log[1].description_text);
+  EXPECT_EQ(u"Just now", activity_log[1].time_delta_text);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
@@ -978,8 +986,8 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEventsFromSync) {
       .WillOnce(SaveArg<0>(&last_persistent_message_dot_tab_group));
   tg_notifier_observer_->OnTabRemoved(tab3, tab_groups::TriggerSource::REMOTE);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
-                           collaboration_pb::TAB_REMOVED, DirtyType::kNone,
-                           now.ToTimeT());
+                           collaboration_pb::TAB_REMOVED,
+                           DirtyType::kTombstoned, now.ToTimeT());
   EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
   EXPECT_EQ(tab3.saved_tab_guid().AsLowercaseString(),
             message.tab_data().sync_tab_id());
@@ -1777,7 +1785,7 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
                                            tab_groups::TriggerSource::REMOTE);
 
   // Verify persistent notification.
-  EXPECT_EQ(PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED,
+  EXPECT_EQ(PersistentNotificationType::TOMBSTONED,
             last_persistent_message.type);
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED,
             last_persistent_message.collaboration_event);
@@ -1792,8 +1800,7 @@ TEST_F(MessagingBackendServiceImplTest, TestTabGroupRemovedInstantMessage) {
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_REMOVED, message.collaboration_event);
   EXPECT_EQ(tab_group.saved_guid(),
             message.attribution.tab_group_metadata->sync_tab_group_id);
-  EXPECT_TRUE(static_cast<int>(DirtyType::kTabGroupRemoved) &
-              db_message.dirty());
+  EXPECT_TRUE(static_cast<int>(DirtyType::kTombstoned) & db_message.dirty());
   EXPECT_TRUE(static_cast<int>(DirtyType::kMessageOnly) & db_message.dirty());
 
   EXPECT_CALL(*unowned_messaging_backend_store_,

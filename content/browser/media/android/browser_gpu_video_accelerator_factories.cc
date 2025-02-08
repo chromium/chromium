@@ -158,11 +158,6 @@ BrowserGpuVideoAcceleratorFactories::SharedImageInterface() {
   NOTREACHED();
 }
 
-gpu::GpuMemoryBufferManager*
-BrowserGpuVideoAcceleratorFactories::GpuMemoryBufferManager() {
-  NOTREACHED();
-}
-
 base::UnsafeSharedMemoryRegion
 BrowserGpuVideoAcceleratorFactories::CreateSharedMemoryRegion(size_t size) {
   return {};

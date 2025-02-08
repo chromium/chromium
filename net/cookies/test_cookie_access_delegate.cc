@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -38,8 +39,10 @@ CookieAccessSemantics TestCookieAccessDelegate::GetAccessSemantics(
 }
 
 CookieScopeSemantics TestCookieAccessDelegate::GetScopeSemantics(
-    const CanonicalCookie& cookie) const {
-  auto it = expectations_scoped_.find(GetKeyForDomainValue(cookie.Domain()));
+    const std::string_view domain) const {
+  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
+      std::string(domain), /*is_https=*/false);
+  auto it = expectations_scoped_.find(SchemefulSite(cookie_domain_url));
   if (it != expectations_scoped_.end()) {
     return it->second;
   }
@@ -135,9 +138,11 @@ void TestCookieAccessDelegate::SetExpectationForCookieDomain(
 }
 
 void TestCookieAccessDelegate::SetExpectationForCookieScope(
-    const std::string& cookie_domain,
+    const std::string_view& cookie_domain,
     CookieScopeSemantics scoped_semantics) {
-  expectations_scoped_[GetKeyForDomainValue(cookie_domain)] = scoped_semantics;
+  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
+      std::string(cookie_domain), /*is_https=*/false);
+  expectations_scoped_[SchemefulSite(cookie_domain_url)] = scoped_semantics;
 }
 
 void TestCookieAccessDelegate::SetIgnoreSameSiteRestrictionsScheme(

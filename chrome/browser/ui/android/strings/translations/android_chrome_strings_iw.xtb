@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1009406586654360474">‏פותחים את מנהל הסיסמאות של Google ועוברים להגדרות. בוחרים באפשרות 'ייבוא' ומוסיפים את קובץ ה-CSV שמכיל את הסיסמאות שיוצאו.</translation>
-<translation id="1010225406377140704">אפשר לפנות אל השולח/ת ולבקש קישור חדש</translation>
 <translation id="1011749477052068769">העברה לכאן</translation>
 <translation id="1014147525163127655">אין מפתחות גישה עבור <ph name="ORIGIN" /> במכשיר הזה</translation>
 <translation id="1016498331642356377">חיפוש מהיר באמצעות הקול. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
@@ -1723,7 +1722,6 @@
 <translation id="8683039184091909753">תמונה</translation>
 <translation id="869891660844655955">תאריך תפוגה</translation>
 <translation id="8699120352855309748">לא להציע לי לתרגם את השפות האלה</translation>
-<translation id="8703372953981978786">הקישור הזה לא עובד</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8723453889042591629">תרגום מהיר של הדף הזה. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>

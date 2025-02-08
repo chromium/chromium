@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="RenderMode">
+  <variant name="DualThread"
+      summary="Dual thread rendering mode. This mode is active when an
+               AudioWorklet is connected to the audio graph. Rendering
+               callbacks are done on both AudioDeviceThread and
+               AudioWorkletThread."/>
+  <variant name="SingleThread"
+      summary="Single thread rendering mode. This mode is used when no
+               AudioWorklet is connected to the audio graph. Rendering
+               callbacks are executed solely on the AudioDevice thread."/>
+</variants>
+
 <variants name="WebAudioCallbackAggregationDuration">
   <variant name=".Intervals"
       summary="Streams ran for more than 1 interval (1000 callbacks)"/>
@@ -192,35 +204,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebAudio.AudioDestination.FIFODelay{LatencyTag}" units="ms"
-    expires_after="2025-08-03">
-  <owner>mjwilson@chromium.org</owner>
-  <owner>hongchan@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
-  <summary>
-    The audio delay in milliseconds based on the number of available frames of
-    the PushPUllFIFO in AudioDestination. Measured and reported at every render
-    callback.
-  </summary>
-  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
-</histogram>
-
-<histogram
-    name="WebAudio.AudioDestination.FIFOUnderrunCount{Duration}{LatencyTag}"
-    units="underruns" expires_after="2025-08-03">
-  <owner>mjwilson@chromium.org</owner>
-  <owner>hongchan@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
-  <summary>
-    The number of times the PushPullFIFO in AudioDestination experienced an
-    underrun. The &quot;Intervals&quot; duration indicates that the metric is
-    measured and logged every 1000 audio render callbacks. For
-    &quot;Short&quot;, it is logged at the end of the audio stream.
-  </summary>
-  <token key="Duration" variants="WebAudioCallbackAggregationDuration"/>
-  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
-</histogram>
-
 <histogram name="WebAudio.AudioDestination.HardwareBufferSize" units="units"
     expires_after="2025-08-03">
   <owner>mjwilson@chromium.org</owner>
@@ -244,15 +227,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebAudio.AudioDestination.TotalPlayoutDelay{LatencyTag}"
+<histogram name="WebAudio.AudioDestination.{ModeTag}.FIFODelay{LatencyTag}"
+    units="ms" expires_after="2025-08-03">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The audio delay in milliseconds based on the number of available frames of
+    the PushPUllFIFO in AudioDestination. Measured and reported at every render
+    callback. This metric is categorized by &quot;ModeTag&quot;, which indicates
+    the rendering mode: DualThread, used when audio worklet is involved. Or
+    SingleThread, used when audio worklet is not involved.
+  </summary>
+  <token key="ModeTag" variants="RenderMode"/>
+  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
+</histogram>
+
+<histogram
+    name="WebAudio.AudioDestination.{ModeTag}.FIFOUnderrunCount{Duration}{LatencyTag}"
+    units="underruns" expires_after="2025-08-03">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The number of times the PushPullFIFO in AudioDestination experienced an
+    underrun. The &quot;Intervals&quot; duration indicates that the metric is
+    measured and logged every 1000 audio render callbacks. For
+    &quot;Short&quot;, it is logged at the end of the audio stream. This metric
+    is categorized by &quot;ModeTag&quot;, which indicates the rendering mode:
+    DualThread, used when audio worklet is involved. Or SingleThread, used when
+    audio worklet is not involved.
+  </summary>
+  <token key="ModeTag" variants="RenderMode"/>
+  <token key="Duration" variants="WebAudioCallbackAggregationDuration"/>
+  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
+</histogram>
+
+<histogram
+    name="WebAudio.AudioDestination.{ModeTag}.TotalPlayoutDelay{LatencyTag}"
     units="ms" expires_after="2025-08-03">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
   <summary>
     The audio delay in milliseconds that covers the whole pipeline from the
-    WebAudio graph to the speaker.
+    WebAudio graph to the speaker. This metric is categorized by
+    &quot;ModeTag&quot;, which indicates the rendering mode: DualThread, used
+    when audio worklet is involved. Or SingleThread, used when audio worklet is
+    not involved.
   </summary>
+  <token key="ModeTag" variants="RenderMode"/>
   <token key="LatencyTag" variants="WebAudioLatencyTag"/>
 </histogram>
 

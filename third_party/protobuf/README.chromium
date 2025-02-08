@@ -234,3 +234,8 @@ Description of the patches:
   buggy. PlacementNew copies RepeatedFields wholesale via memcp, which triggers
   false positive out-of-bounds reads. See
   https://github.com/google/sanitizers/wiki/AddressSanitizerContainerOverflow
+
+- 0053-ignore-compatibility-dir.patch
+
+  Add the compatability dir to .gitignore as it's unnecessary and contains files
+  that trip CheckForTooLargeFiles presubmit.

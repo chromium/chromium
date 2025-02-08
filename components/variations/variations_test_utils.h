@@ -38,18 +38,25 @@ struct SignedSeedData {
   const char* base64_uncompressed_data;
   const char* base64_compressed_data;
   const char* base64_signature;
+  const uint8_t* compressed_data;
+  size_t compressed_data_size;
 
   // Out-of-line constructor/destructor/copy/move required for 'complex'
   // classes.
   SignedSeedData(base::span<const char*> in_study_names,
                  const char* in_base64_uncompressed_data,
                  const char* in_base64_compressed_data,
-                 const char* in_base64_signature);
+                 const char* in_base64_signature,
+                 const uint8_t* in_compressed_data,
+                 size_t in_compressed_data_size);
   ~SignedSeedData();
   SignedSeedData(const SignedSeedData&);
   SignedSeedData(SignedSeedData&&);
   SignedSeedData& operator=(const SignedSeedData&);
   SignedSeedData& operator=(SignedSeedData&&);
+
+  // Converts SignedSeedData's compressed data to a string.
+  std::string_view GetCompressedData() const;
 };
 
 // Packages variations seed pref keys into a tuple for use with StoreSeedInfo().

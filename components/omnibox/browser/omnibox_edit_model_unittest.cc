@@ -1579,3 +1579,62 @@ TEST_F(OmniboxEditModelTest, LogAnswerUsed) {
   histogram_tester.ExpectUniqueSample("Omnibox.SuggestionUsed.AnswerInSuggest",
                                       8, 1);
 }
+
+// Tests `GetPopupRichSuggestionBitmap()` method, verifying that no bitmap is
+// fetched when there is no match with an `associated_keyword`.
+TEST_F(OmniboxEditModelPopupTest,
+       GetPopupRichSuggestionBitmapForMatchWithoutAssociatedKeyword) {
+  // Setup match with no bitmap.
+  ACMatches matches;
+  AutocompleteMatch match_without_associated_keyword(
+      nullptr, 1000, false, AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match_without_associated_keyword.keyword =
+      u"match_without_associated_keyword";
+  matches.push_back(match_without_associated_keyword);
+  auto* result = &controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+
+  const SkBitmap* actual_bitmap = model()->GetPopupRichSuggestionBitmap(
+      u"match_without_associated_keyword");
+
+  EXPECT_FALSE(actual_bitmap);
+}
+
+// Tests `GetPopupRichSuggestionBitmap()` method, verifying that the correct
+// bitmap is fetched when there is a match with an `associated_keyword`.
+TEST_F(OmniboxEditModelPopupTest,
+       GetPopupRichSuggestionBitmapForMatchWithAssociatedKeyword) {
+  SkBitmap expected_bitmap;
+  expected_bitmap.allocN32Pixels(16, 16);
+  expected_bitmap.eraseColor(SK_ColorRED);
+
+  // Setup matches and add to result.
+  ACMatches matches;
+  AutocompleteMatch match_without_bitmap(
+      nullptr, 1000, false, AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match_without_bitmap.keyword = u"match_without_bitmap";
+  match_without_bitmap.associated_keyword =
+      std::make_unique<AutocompleteMatch>(match_without_bitmap);
+  matches.push_back(match_without_bitmap);
+  AutocompleteMatch match_with_bitmap(
+      nullptr, 1000, false, AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match_with_bitmap.keyword = u"match_with_bitmap";
+  match_with_bitmap.associated_keyword =
+      std::make_unique<AutocompleteMatch>(match_with_bitmap);
+  matches.push_back(match_with_bitmap);
+  auto* result = &controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+
+  // Store bitmap for 'match_with_bitmap' match.
+  model()->rich_suggestion_bitmaps_.insert({1, expected_bitmap});
+
+  const SkBitmap* match_without_bitmap_bitmap =
+      model()->GetPopupRichSuggestionBitmap(u"match_without_bitmap");
+  EXPECT_FALSE(match_without_bitmap_bitmap);
+
+  const SkBitmap* match_with_bitmap_bitmap =
+      model()->GetPopupRichSuggestionBitmap(u"match_with_bitmap");
+  EXPECT_TRUE(match_with_bitmap_bitmap);
+  gfx::test::CheckColors(expected_bitmap.getColor(0, 0),
+                         match_with_bitmap_bitmap->getColor(0, 0));
+}

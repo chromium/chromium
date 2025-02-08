@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_options.h"
@@ -211,11 +212,10 @@ std::optional<account_manager::AccountType> FromMojoAccountType(
                     "Underlying enum values must match");
       return account_manager::AccountType::kGaia;
     case crosapi::mojom::AccountType::kActiveDirectory:
-      static_assert(
-          static_cast<int>(crosapi::mojom::AccountType::kActiveDirectory) ==
-              static_cast<int>(account_manager::AccountType::kActiveDirectory),
-          "Underlying enum values must match");
-      return account_manager::AccountType::kActiveDirectory;
+      // TODO(crbug.com/291783005): This account type is no longer supported on
+      // ChromeOS, and the kActiveDirectory enum value can be removed from
+      // crosapi.
+      NOTREACHED();
     default:
       // Don't consider this as as error to preserve forwards compatibility with
       // lacros.
@@ -226,12 +226,12 @@ std::optional<account_manager::AccountType> FromMojoAccountType(
 
 crosapi::mojom::AccountType ToMojoAccountType(
     const account_manager::AccountType& account_type) {
-  switch (account_type) {
-    case account_manager::AccountType::kGaia:
-      return crosapi::mojom::AccountType::kGaia;
-    case account_manager::AccountType::kActiveDirectory:
-      return crosapi::mojom::AccountType::kActiveDirectory;
-  }
+  // Currently, we only support `kGaia` account type. Should a new type be added
+  // in the future, consider removing the `CHECK_EQ()` below and handling the
+  // new type accordingly.
+  CHECK_EQ(account_type, account_manager::AccountType::kGaia);
+
+  return crosapi::mojom::AccountType::kGaia;
 }
 
 std::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(

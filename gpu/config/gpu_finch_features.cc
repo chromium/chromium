@@ -351,7 +351,11 @@ BASE_FEATURE(kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported,
 // --enable-skia-graphite & --disable-skia-graphite.
 BASE_FEATURE(kSkiaGraphite,
              "SkiaGraphite",
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
              base::FEATURE_DISABLED_BY_DEFAULT
+#endif
 );
 
 // Enable Skia Graphite's Pipeline precompilation feature.
@@ -680,9 +684,20 @@ bool IsSkiaGraphiteSupportedByDevice(const base::CommandLine* command_line) {
   }
 #endif  // BUILDFLAG(IS_MAC)
   return true;
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  // Graphite on Android and ChromeOS uses the Dawn Vulkan backend. Only enable
-  // Graphite if device would already be using Ganesh/Vulkan.
+#elif BUILDFLAG(IS_ANDROID)
+  // Desktop Android isn't ready to pick up the fieldtrial_testing_config.json
+  // change that enables graphite. However, it's the same platform as regular
+  // Android and does. Skip enabling the feature there for now.
+  if (base::android::BuildInfo::GetInstance()->is_desktop()) {
+    return false;
+  }
+
+  // Graphite on Android uses the Dawn Vulkan backend. Only enable Graphite if
+  // device would already be using Ganesh/Vulkan.
+  return IsUsingVulkan();
+#elif BUILDFLAG(IS_CHROMEOS)
+  // Graphite on ChromeOS uses the Dawn Vulkan backend. Only enable Graphite if
+  // device would already be using Ganesh/Vulkan.
   return IsUsingVulkan();
 #elif BUILDFLAG(IS_WIN)
   return true;

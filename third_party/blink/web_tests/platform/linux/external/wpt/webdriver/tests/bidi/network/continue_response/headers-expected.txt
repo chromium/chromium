@@ -1,19 +1,7 @@
 This is a wdspec test.
-[FAIL] test_headers[headers0]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_headers[headers1]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_headers[headers2]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_headers_overrides_original_headers[headers0]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_headers_overrides_original_headers[headers1]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_headers_overrides_original_headers[headers2]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_set_cookie_header
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+  assert 0 == 1
 [FAIL] test_set_cookie_header_and_cookies
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+  assert 0 == 2
 Harness: the test ran to completion.
 

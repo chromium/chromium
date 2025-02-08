@@ -1421,10 +1421,6 @@
     "label": "//components/optimization_guide/internal:ondevice_model_benchmark",
     "type": "additional_compile_target",
   },
-  "ondevice_model_example": {
-    "label": "//components/optimization_guide/internal:ondevice_model_example",
-    "type": "additional_compile_target",
-  },
   "ondevice_stability_tests": {
     "label": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
     "type": "generated_script",

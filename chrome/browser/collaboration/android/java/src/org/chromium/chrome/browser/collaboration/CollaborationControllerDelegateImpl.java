@@ -62,7 +62,8 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
             @FlowType int type,
             DataSharingTabManager tabManager,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
-            LoadingFullscreenCoordinator loadingFullscreenCoordinator) {
+            LoadingFullscreenCoordinator loadingFullscreenCoordinator,
+            @Nullable Runnable switchToTabSwitcherRunnable) {
         mNativePtr = CollaborationControllerDelegateImplJni.get().createNativeObject(this);
 
         mActivity = activity;
@@ -76,6 +77,9 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                     () -> {
                         destroy();
                     });
+            if (switchToTabSwitcherRunnable != null) {
+                switchToTabSwitcherRunnable.run();
+            }
         }
     }
 

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1009406586654360474">Abre o xestor de contrasinais de Google e vai á configuración. Selecciona Importar e engade o ficheiro CSV que contén os contrasinais exportados.</translation>
-<translation id="1010225406377140704">Ponte en contacto con quen cha enviou para pedirlle que che mande outra</translation>
 <translation id="1011749477052068769">Mover aquí</translation>
 <translation id="1014147525163127655">Non hai ningunha clave de acceso para <ph name="ORIGIN" /> neste dispositivo</translation>
 <translation id="1016498331642356377">Buscar rapidamente coa voz. Para editar este atallo, mantén premido o botón.</translation>
@@ -1723,7 +1722,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8683039184091909753">imaxe</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>
-<translation id="8703372953981978786">Esta ligazón non funciona</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8723453889042591629">Traduce rapidamente esta páxina. Para editar este atallo, mantén premido o botón.</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>

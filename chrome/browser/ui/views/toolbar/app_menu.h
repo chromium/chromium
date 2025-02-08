@@ -13,10 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
-#include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -31,9 +31,11 @@ class MenuItemView;
 class MenuRunner;
 }  // namespace views
 
+struct BookmarkParentFolder;
+
 // AppMenu adapts the AppMenuModel to view's menu related classes.
 class AppMenu final : public views::MenuDelegate,
-                      public bookmarks::BaseBookmarkModelObserver,
+                      public BookmarkMergedSurfaceServiceObserver,
                       public GlobalErrorObserver {
  public:
   AppMenu(Browser* browser, ui::MenuModel* model, int run_types);
@@ -102,12 +104,24 @@ class AppMenu final : public views::MenuDelegate,
                                               const ui::Event& event) override;
   bool ShouldTryPositioningBesideAnchor() const override;
 
-  // bookmarks::BaseBookmarkModelObserver overrides:
-  void BookmarkModelChanged() override;
-  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
+  // BookmarkMergedSurfaceServiceObserver overrides:
+  void BookmarkMergedSurfaceServiceLoaded() override;
+  void BookmarkMergedSurfaceServiceBeingDeleted() override;
+  void BookmarkNodeAdded(const BookmarkParentFolder& parent,
+                         size_t index) override;
+  void BookmarkNodesRemoved(
+      const BookmarkParentFolder& parent,
+      const base::flat_set<const bookmarks::BookmarkNode*>& nodes) override;
+  void BookmarkNodeMoved(const BookmarkParentFolder& old_parent,
                          size_t old_index,
-                         const bookmarks::BookmarkNode* new_parent,
+                         const BookmarkParentFolder& new_parent,
                          size_t new_index) override;
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeFaviconChanged(
+      const bookmarks::BookmarkNode* node) override {}
+  void BookmarkParentFolderChildrenReordered(
+      const BookmarkParentFolder& folder) override;
+  void BookmarkAllUserNodesRemoved() override;
 
   // GlobalErrorObserver:
   void OnGlobalErrorsChanged() override;
@@ -121,6 +135,8 @@ class AppMenu final : public views::MenuDelegate,
 
   typedef std::pair<ui::MenuModel*, size_t> Entry;
   typedef std::map<int, Entry> CommandIDToEntry;
+
+  void BookmarkMergedSurfaceServiceChanged();
 
   // Populates |parent| with all the child menus in |model|. Recursively invokes
   // |PopulateMenu| for any submenu.

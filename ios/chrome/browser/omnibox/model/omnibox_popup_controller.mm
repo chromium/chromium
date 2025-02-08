@@ -31,4 +31,32 @@
       requestResultsWithVisibleSuggestionCount:visibleSuggestionCount];
 }
 
+- (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
+  return [self.omniboxAutocompleteController isStarredMatch:match];
+}
+
+- (void)selectMatchForOpening:(const AutocompleteMatch&)match
+                        inRow:(NSUInteger)row
+                       openIn:(WindowOpenDisposition)disposition {
+  [self.omniboxAutocompleteController selectMatchForOpening:match
+                                                      inRow:row
+                                                     openIn:disposition];
+}
+
+- (void)selectMatchForAppending:(const AutocompleteMatch&)match {
+  [self.omniboxAutocompleteController selectMatchForAppending:match];
+}
+
+- (void)selectMatchForDeletion:(const AutocompleteMatch&)match {
+  [self.omniboxAutocompleteController selectMatchForDeletion:match];
+}
+
+- (void)onScroll {
+  [self.omniboxAutocompleteController onScroll];
+}
+
+- (void)onCallAction {
+  [self.omniboxAutocompleteController onCallAction];
+}
+
 @end

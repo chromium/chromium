@@ -373,10 +373,7 @@ source_set("run_all_unittests") {
     "//testing/gtest",
   ]
   if (is_chromeos) {
-    deps += [
-      "//ui/aura:test_support",
-      "//ui/gl:test_support",
-    ]
+    deps += [ "//chromeos/ash/components:test_support" ]
     data = [ "$root_out_dir/locales/en-US.pak" ]
     data_deps = [ "//ui/resources:ui_test_pak_data" ]
   }

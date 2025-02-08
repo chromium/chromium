@@ -114,7 +114,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // chooser case.
   std::unique_ptr<views::View> CreateIdpLoginRow(
       const std::u16string& idp_for_display,
-      const content::IdentityProviderMetadata& idp_metadata);
+      const IdentityProviderDataPtr& idp_data);
 
   // Creates the "Use other account" button.
   std::unique_ptr<views::View> CreateUseOtherAccountButton(
@@ -123,9 +123,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       int icon_margin);
 
   // Updates the header title, the header icon visibility and the header back
-  // button visibiltiy. `idp_metadata` is not null when we need to set a header
+  // button visibiltiy. `idp_image` is not empty when we need to set a header
   // image based on the IDP.
-  void UpdateHeader(const content::IdentityProviderMetadata& idp_metadata,
+  void UpdateHeader(const gfx::Image& idp_image,
                     const std::u16string& title,
                     bool show_back_button);
 

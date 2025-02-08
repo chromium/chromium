@@ -23,6 +23,7 @@ class Profile;
 
 namespace ash {
 
+// DEPRECATED: please use UserManagerImpl with TestHelper.
 // Fake chrome user manager with a barebones implementation. Users can be added
 // and set as logged in, and those users can be returned.
 class FakeChromeUserManager : public user_manager::UserManagerImpl {

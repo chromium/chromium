@@ -843,11 +843,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kRetrieveAutofillAi:
-      if (AutofillAiDelegate* delegate =
-              manager_->client().GetAutofillAiDelegate()) {
-        delegate->OnClickedTriggerSuggestion(query_form_, query_field_,
-                                             CreateUpdateSuggestionsCallback());
-      }
       return;
     case SuggestionType::kFillAutofillAi:
       FillAutofillAiData(suggestion);
@@ -943,12 +938,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
           absl::get<AutofillAiSuggestionButtonAction>(button_action);
       switch (action) {
         case AutofillAiSuggestionButtonAction::kThumbsUpClicked:
-          delegate->UserFeedbackReceived(
-              AutofillAiDelegate::UserFeedback::kThumbsUp);
-          break;
         case AutofillAiSuggestionButtonAction::kThumbsDownClicked:
-          delegate->UserFeedbackReceived(
-              AutofillAiDelegate::UserFeedback::kThumbsDown);
           break;
         case AutofillAiSuggestionButtonAction::kLearnMoreClicked:
           delegate->UserClickedLearnMore();
@@ -1184,8 +1174,8 @@ void AutofillExternalDelegate::FillAutofillAiData(
     Suggestion::AutofillAiPayload payload =
         suggestion.GetPayload<Suggestion::AutofillAiPayload>();
     manager_->FillOrPreviewFormWithAutofillAiData(
-        mojom::ActionPersistence::kFill, payload.ignorable_skip_reasons,
-        query_form_, query_field_, payload.values_to_fill);
+        mojom::ActionPersistence::kFill, query_form_, query_field_,
+        payload.values_to_fill);
   }
 }
 

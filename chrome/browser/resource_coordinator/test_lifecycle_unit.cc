@@ -11,17 +11,16 @@ namespace resource_coordinator {
 
 TestLifecycleUnit::TestLifecycleUnit(base::TimeTicks last_focused_time,
                                      bool can_discard)
-    : LifecycleUnitBase(nullptr, content::Visibility::VISIBLE, nullptr),
+    : LifecycleUnitBase(nullptr, content::Visibility::VISIBLE),
       last_focused_time_ticks_(last_focused_time),
       sort_key_(last_focused_time),
       can_discard_(can_discard) {}
 
-TestLifecycleUnit::TestLifecycleUnit(content::Visibility visibility,
-                                     UsageClock* usage_clock)
-    : LifecycleUnitBase(nullptr, visibility, usage_clock) {}
+TestLifecycleUnit::TestLifecycleUnit(content::Visibility visibility)
+    : LifecycleUnitBase(nullptr, visibility) {}
 
 TestLifecycleUnit::TestLifecycleUnit(LifecycleUnitSourceBase* source)
-    : LifecycleUnitBase(source, content::Visibility::VISIBLE, nullptr) {}
+    : LifecycleUnitBase(source, content::Visibility::VISIBLE) {}
 
 TestLifecycleUnit::~TestLifecycleUnit() {
   OnLifecycleUnitDestroyed();

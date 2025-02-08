@@ -104,6 +104,9 @@
   <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_EMPTY" desc="The text on the recent activity bottom sheet screen shown to indicate that there is no recent ativity to show and the list is empty." formatter_data="android_java">
     No recent activity
   </message>
+  <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_JUST_NOW" desc="The timestamp text on a recent activity bottom sheet row when the activity is less than 1 minute ago.">
+    Just now
+  </message>
   <!-- Recent Activity -->
 
 </grit-part>

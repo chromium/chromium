@@ -58,6 +58,11 @@ EntityInstance::EntityInstance(EntityInstance&&) = default;
 EntityInstance& EntityInstance::operator=(EntityInstance&&) = default;
 EntityInstance::~EntityInstance() = default;
 
+bool EntityInstance::ImportOrder(const EntityInstance& lhs,
+                                 const EntityInstance& rhs) {
+  return EntityType::ImportOrder(lhs.type(), rhs.type());
+}
+
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a) {
   os << a.type() << ": " << '"' << a.value() << '"';
   return os;

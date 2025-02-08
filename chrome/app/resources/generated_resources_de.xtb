@@ -272,7 +272,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1177863135347784049">Benutzerdefiniert</translation>
 <translation id="1178093605842850860">Zum Lesen und Ändern dieser Website berechtigt</translation>
 <translation id="1178581264944972037">Pause</translation>
-<translation id="1178601482396475810">Gerätesynchronisierung verwalten</translation>
 <translation id="117916940443676133">Dein Sicherheitsschlüssel ist nicht durch eine PIN geschützt. Erstelle zuerst eine PIN, um die Anmeldedaten zu verwalten.</translation>
 <translation id="1179400851034021914">IBAN ist ungültig</translation>
 <translation id="1179902906564467236">Folge der Anleitung auf deinem Smartphone oder verwende die Kamera</translation>
@@ -1456,7 +1455,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="2003596238737586336">Aktueller Zeitplan: <ph name="SUNRISE" />–<ph name="SUNSET" />. Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="2004413981947727241">Passwörter auf allen Geräten verwenden</translation>
 <translation id="2004697686368036666">Einige Websites funktionieren dann möglicherweise nicht mehr richtig</translation>
-<translation id="2005199804247617997">Weitere Profile</translation>
 <translation id="2006638907958895361">Link in <ph name="APP" /> öffnen</translation>
 <translation id="2007404777272201486">Problem melden...</translation>
 <translation id="200781997903833896">Wenn du die Funktion „Vorlesen“ verwenden möchtest, musst du Speicherplatz auf deinem Gerät freigeben</translation>
@@ -1681,7 +1679,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2158249272743343757">Personalisierungsdaten löschen…</translation>
 <translation id="2158475082070321257">Link zum markierten Text kopieren</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">Du kannst Inhalte zusammenfassen lassen oder Folgefragen stellen.</translation>
 <translation id="2161058806218011758">Geltungsbereich von <ph name="SHORTCUT" /> für <ph name="EXTENSION_NAME" /></translation>
 <translation id="216169395504480358">WLAN hinzufügen...</translation>
 <translation id="2162155940152307086">Die Synchronisierung wird gestartet, sobald du die Synchronisierungseinstellungen verlässt</translation>
@@ -1944,7 +1941,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2333166365943957309">UI-Hierarchie</translation>
 <translation id="233375395665273385">Löschen und abmelden</translation>
 <translation id="233471714539944337">Sensible Inhalte</translation>
-<translation id="2335111415680198280">{0,plural, =1{# Fenster schließen}other{# Fenster schließen}}</translation>
 <translation id="2335758110242123814">Gruppe öffnen</translation>
 <translation id="2336228925368920074">Alle Tabs als Lesezeichen speichern...</translation>
 <translation id="2336258397628212480">„<ph name="APP_NAME" />“ druckt 1 Seite über „<ph name="PRINTER_NAME" />“ aus</translation>
@@ -3738,7 +3734,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3629664892718440872">Auswahl speichern</translation>
 <translation id="3630132874740063857">Mein Smartphone</translation>
 <translation id="3630995161997703415">Füge diese Website deiner Ablage hinzu, um sie jederzeit zu verwenden</translation>
-<translation id="3632929818790223729">Ausgewählten Tab und aktiven Tab nebeneinander zeigen</translation>
 <translation id="3634652306074934350">Berechtigungsanfrage abgelaufen</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) erkannt</translation>
 <translation id="3635353578505343390">Feedback an Google senden</translation>
@@ -4729,6 +4724,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4305402730127028764">Auf <ph name="DEVICE_NAME" /> kopieren</translation>
 <translation id="4305817255990598646">Wechseln</translation>
 <translation id="4306119971288449206">Für Apps muss der Inhaltstyp "<ph name="CONTENT_TYPE" />" bereitgestellt werden</translation>
+<translation id="4306810703452026910">Benachrichtigungen von dieser Website werden in Chrome nicht mehr als Spam gemeldet</translation>
 <translation id="4307992518367153382">Grundeinstellungen</translation>
 <translation id="4309165024397827958">Android-Apps und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Google kann in regelmäßigen Abständen anonymisierte Standortdaten erfassen und diese zur Verbesserung der Standortgenauigkeit und standortbasierter Dienste verwenden.</translation>
 <translation id="4309183709806093061">Auch Audio des Systems teilen. Dieses Gerät wird stummgeschaltet, um eine Rückkopplung zu verhindern.</translation>
@@ -5860,7 +5856,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="512642543295077915">Suchtaste + Rücktaste</translation>
 <translation id="5126611267288187364">Änderungen anzeigen</translation>
 <translation id="5127620150973591153">ID der sicheren Verbindung: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">Synchronisierung ist deaktiviert</translation>
 <translation id="5127881134400491887">Netzwerkverbindungen verwalten</translation>
 <translation id="5127934926273826089">Blumen</translation>
 <translation id="5127986747308934633">Dein Administrator steuert dein Gerät</translation>
@@ -5949,6 +5944,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5190926251776387065">Port aktivieren</translation>
 <translation id="5190959794678983197">Kein Mikrofon</translation>
 <translation id="5191094172448199359">Die eingegebenen PINs stimmen nicht überein</translation>
+<translation id="5191251636205085390">Weitere Informationen zu neuen Technologien als Ersatz für Drittanbieter-Cookies und ihrer Nutzung</translation>
 <translation id="519185197579575131">Qt verwenden</translation>
 <translation id="5192062846343383368">Die Einstellungen für die Elternaufsicht lassen sich in der Family Link App anpassen</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 Passkey}other{{COUNT} Passkeys}}</translation>
@@ -8020,6 +8016,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6713233729292711163">Arbeitsprofil hinzufügen</translation>
 <translation id="6713441551032149301">Launcher-Taste gedrückt halten, um zwischen Funktionstasten und Tasten der obersten Reihe zu wechseln</translation>
 <translation id="6713668088933662563">Für diese Sprachen nie eine Übersetzung anbieten</translation>
+<translation id="6714871567554212732">Weitere Details zu „<ph name="GROUP_NAME" />“ anzeigen</translation>
 <translation id="6715735940363172819">Websites dürfen dein Mikrofon nicht verwenden</translation>
 <translation id="6715803357256707211">Bei der Installation deiner Linux-Anwendung ist ein Fehler aufgetreten. Klicke auf die Benachrichtigung, um Details zu sehen.</translation>
 <translation id="6716049856796700977">Apps, Websites und Systemdienste dürfen deinen Standort nicht verwenden. Apps und Websites können ihn aber möglicherweise anhand deiner IP-Adresse sehen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -8895,7 +8892,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7349010927677336670">Flüssige Wiedergabe</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} Passwort ist nur auf diesem Gerät gespeichert}other{{COUNT} Passwörter sind nur auf diesem Gerät gespeichert}}</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
-<translation id="7352664183151911163">In all deinen Apps und im Chrome-Browser</translation>
 <translation id="7353261921908507769">Deine Kontakte können Daten mit dir teilen, wenn sie in der Nähe sind. Die Übertragung beginnt erst, nachdem du die Einladung angenommen hast.</translation>
 <translation id="7353432112255316844">Identität bestätigen</translation>
 <translation id="735361434055555355">Linux wird installiert…</translation>
@@ -10040,7 +10036,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8140869601171867148">Dein Google-Konto ist dasselbe Konto, das du auch für Gmail, YouTube, Chrome und andere Google-Produkte nutzt.
     Über dieses Konto kannst du ganz einfach auf alle deine Lesezeichen, Dateien und andere Inhalte zugreifen.</translation>
 <translation id="8141418916163800697">In den Phone Hub-Einstellungen kannst du weitere Funktionen einrichten</translation>
-<translation id="814156740715940972">Ausgewählten Tab und aktiven Tab nebeneinander zeigen</translation>
 <translation id="8141584439523427891">Wird in einem alternativen Browser geöffnet</translation>
 <translation id="8141725884565838206">Passwörter verwalten</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{ein Video}other{# Videos}}</translation>
@@ -11174,7 +11169,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8946359700442089734">Die Debugging-Funktionen wurden auf diesem <ph name="IDS_SHORT_PRODUCT_NAME" />-Gerät nicht vollständig aktiviert.</translation>
 <translation id="8946954897220903437">Alle Anfragen in der Adressleiste minimieren</translation>
 <translation id="894763922177556086">Gut</translation>
-<translation id="8949304443659090542">Chrome-Browser-Synchronisierung verwalten</translation>
 <translation id="895054485242522631">Websites dürfen Bewegungssensoren verwenden</translation>
 <translation id="8951256747718668828">Die Wiederherstellung konnte aufgrund eines Fehlers nicht abgeschlossen werden</translation>
 <translation id="8951465597020890363">Gastmodus trotzdem beenden?</translation>
@@ -11195,7 +11189,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8963117664422609631">Website-Einstellungen aufrufen</translation>
 <translation id="8964927371396953727">Bestätige deine Identität, um die Passwörter in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="8965037249707889821">Altes Passwort eingeben</translation>
-<translation id="8966809848145604011">Weitere Profile</translation>
 <translation id="8967427617812342790">Zur Leseliste hinzufügen</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> entfernen</translation>
 <translation id="8968527460726243404">ChromeOS-Systemabbild-Writer</translation>

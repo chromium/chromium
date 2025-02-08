@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1009406586654360474">Open Google Password Manager and go to Settings. Select 'Import' and add the CSV file that contains your exported passwords.</translation>
-<translation id="1010225406377140704">Contact the sender to ask for a new link</translation>
 <translation id="1011749477052068769">Move here</translation>
 <translation id="1014147525163127655">There aren't any passkeys for <ph name="ORIGIN" /> on this device</translation>
 <translation id="1016498331642356377">Quickly search with your voice. To edit this shortcut, touch and hold.</translation>
@@ -1723,7 +1722,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8683039184091909753">image</translation>
 <translation id="869891660844655955">Expiry date</translation>
 <translation id="8699120352855309748">Don’t offer to translate these languages</translation>
-<translation id="8703372953981978786">This link doesn't work</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8723453889042591629">Quickly translate this page. To edit this shortcut, touch and hold.</translation>
 <translation id="8725066075913043281">Try again</translation>

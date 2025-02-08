@@ -71,9 +71,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
   }
 
   gpu::SharedImageInterface* SharedImageInterface() override { return sii_; }
-  gpu::GpuMemoryBufferManager* GpuMemoryBufferManager() override {
-    return nullptr;
-  }
 
   void SetVideoFrameOutputFormat(const OutputFormat video_frame_output_format) {
     video_frame_output_format_ = video_frame_output_format;

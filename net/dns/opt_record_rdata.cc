@@ -25,8 +25,9 @@
 namespace net {
 
 namespace {
-std::string SerializeEdeOpt(uint16_t info_code, std::string_view extra_text) {
-  std::string buf(2 + extra_text.size(), '\0');
+std::vector<uint8_t> SerializeEdeOpt(uint16_t info_code,
+                                     std::string_view extra_text) {
+  std::vector<uint8_t> buf(2 + extra_text.size());
 
   auto writer = base::SpanWriter(base::as_writable_byte_span(buf));
   CHECK(writer.WriteU16BigEndian(info_code));
@@ -36,7 +37,12 @@ std::string SerializeEdeOpt(uint16_t info_code, std::string_view extra_text) {
 }
 }  // namespace
 
-OptRecordRdata::Opt::Opt(std::string data) : data_(std::move(data)) {}
+OptRecordRdata::Opt::~Opt() = default;
+
+OptRecordRdata::Opt::Opt(base::span<const uint8_t> data)
+    : data_(data.begin(), data.end()) {}
+
+OptRecordRdata::Opt::Opt(std::vector<uint8_t> data) : data_(std::move(data)) {}
 
 bool OptRecordRdata::Opt::operator==(const OptRecordRdata::Opt& other) const {
   return IsEqual(other);
@@ -60,7 +66,7 @@ OptRecordRdata::EdeOpt::EdeOpt(uint16_t info_code, std::string extra_text)
 OptRecordRdata::EdeOpt::~EdeOpt() = default;
 
 std::unique_ptr<OptRecordRdata::EdeOpt> OptRecordRdata::EdeOpt::Create(
-    std::string data) {
+    base::span<const uint8_t> data) {
   uint16_t info_code;
   auto edeReader = base::SpanReader(base::as_byte_span(data));
 
@@ -154,10 +160,11 @@ OptRecordRdata::EdeOpt::EdeInfoCode OptRecordRdata::EdeOpt::GetEnumFromInfoCode(
 }
 
 OptRecordRdata::PaddingOpt::PaddingOpt(std::string padding)
-    : Opt(std::move(padding)) {}
+    : Opt(base::as_byte_span(padding)) {}
 
 OptRecordRdata::PaddingOpt::PaddingOpt(uint16_t padding_len)
-    : Opt(std::string(base::checked_cast<size_t>(padding_len), '\0')) {}
+    : Opt(base::span<const uint8_t>(
+          std::vector<uint8_t>(base::checked_cast<size_t>(padding_len)))) {}
 
 OptRecordRdata::PaddingOpt::~PaddingOpt() = default;
 
@@ -177,7 +184,7 @@ OptRecordRdata::UnknownOpt::CreateForTesting(uint16_t code,
 
 OptRecordRdata::UnknownOpt::UnknownOpt(uint16_t code,
                                        base::span<const uint8_t> data)
-    : Opt(std::string(base::as_string_view(data))), code_(code) {
+    : Opt(data), code_(code) {
   CHECK(!base::Contains(kOptsWithDedicatedClasses, code));
 }
 
@@ -226,12 +233,9 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
             std::string(base::as_string_view(opt_data)));
         break;
       case dns_protocol::kEdnsExtendedDnsError:
-        opt = OptRecordRdata::EdeOpt::Create(
-            std::string(base::as_string_view(opt_data)));
+        opt = OptRecordRdata::EdeOpt::Create(opt_data);
         break;
       default:
-        // base::span<const uint8_t> opt_data_span =
-        // base::as_byte_span(opt_data);
         opt = base::WrapUnique(
             new OptRecordRdata::UnknownOpt(opt_code, opt_data));
         break;
@@ -262,7 +266,7 @@ bool OptRecordRdata::IsEqual(const RecordRdata* other) const {
 }
 
 void OptRecordRdata::AddOpt(std::unique_ptr<Opt> opt) {
-  std::string_view opt_data = opt->data();
+  base::span<const uint8_t> opt_data = opt->data();
 
   // Resize buffer to accommodate new OPT.
   const size_t orig_rdata_size = buf_.size();

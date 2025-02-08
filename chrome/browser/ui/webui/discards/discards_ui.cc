@@ -12,6 +12,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -211,27 +212,34 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
   void DiscardById(int32_t id,
                    mojom::LifecycleUnitDiscardReason reason,
                    DiscardByIdCallback callback) override {
+    // Always run `callback` before returning.
+    base::ScopedClosureRunner discard_closure(std::move(callback));
     auto* lifecycle_unit = GetLifecycleUnitById(id);
     if (lifecycle_unit) {
+      content::WebContents* web_contents =
+          lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents();
+      CHECK(web_contents);
+
       // Callback to do the discard with the memory estimate.
       auto discard_callback = base::BindOnce(
-          [](int32_t id, mojom::LifecycleUnitDiscardReason reason,
-             DiscardByIdCallback post_discard_callback,
+          [](base::WeakPtr<performance_manager::PageNode> page_node,
+             mojom::LifecycleUnitDiscardReason reason,
+             base::ScopedClosureRunner discard_closure,
              uint64_t memory_estimate) {
-            // Look up lifecycle_unit by id again, in case it's deleted while
-            // waiting.
-            auto* lifecycle_unit = GetLifecycleUnitById(id);
-            if (lifecycle_unit) {
-              lifecycle_unit->Discard(reason, memory_estimate);
+            // Check if page was deleted while waiting.
+            if (page_node) {
+              performance_manager::user_tuning::DiscardPage(
+                  page_node.get(), reason,
+                  base::DoNothingWithBoundArgs(std::move(discard_closure)));
             }
-            std::move(post_discard_callback).Run();
           },
-          id, reason, std::move(callback));
+          performance_manager::PerformanceManager::
+              GetPrimaryPageNodeForWebContents(web_contents),
+          reason, std::move(discard_closure));
 
       performance_manager::user_tuning::
-          GetDiscardedMemoryEstimateForWebContents(
-              lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
-              std::move(discard_callback));
+          GetDiscardedMemoryEstimateForWebContents(web_contents,
+                                                   std::move(discard_callback));
     }
   }
 
@@ -253,10 +261,8 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
   }
 
   void Discard(DiscardCallback callback) override {
-    resource_coordinator::TabManager* tab_manager =
-        g_browser_process->GetTabManager();
-    tab_manager->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT);
-    std::move(callback).Run();
+    performance_manager::user_tuning::DiscardAnyPage(
+        mojom::LifecycleUnitDiscardReason::URGENT, std::move(callback));
   }
 
   void ToggleBatterySaverMode() override {

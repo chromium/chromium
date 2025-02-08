@@ -261,9 +261,9 @@ void HTMLPlugInElement::AttachLayoutTree(AttachContext& context) {
   dispose_view_ = false;
 }
 
-void HTMLPlugInElement::IntrinsicSizingInfoChanged() {
+void HTMLPlugInElement::NaturalSizingInfoChanged() {
   if (auto* embedded_object = GetLayoutEmbeddedObject())
-    embedded_object->IntrinsicSizeChanged();
+    embedded_object->NaturalSizeChanged();
 }
 
 void HTMLPlugInElement::UpdatePlugin() {

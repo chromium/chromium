@@ -13,10 +13,12 @@ namespace content {
 
 ClientMetadata::ClientMetadata(const GURL& terms_of_service_url,
                                const GURL& privacy_policy_url,
-                               const GURL& brand_icon_url)
+                               const GURL& brand_icon_url,
+                               const gfx::Image& brand_decoded_icon)
     : terms_of_service_url{terms_of_service_url},
       privacy_policy_url(privacy_policy_url),
-      brand_icon_url(brand_icon_url) {}
+      brand_icon_url(brand_icon_url),
+      brand_decoded_icon(brand_decoded_icon) {}
 ClientMetadata::ClientMetadata(const ClientMetadata& other) = default;
 ClientMetadata::~ClientMetadata() = default;
 

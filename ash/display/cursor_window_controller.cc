@@ -620,6 +620,7 @@ void CursorWindowController::UpdateCursorMode() {
   }
 
   if (ShouldUseFastInk()) {
+    delegate_->SetCursorWindow(nullptr);
     cursor_window_.reset();
     UpdateCursorView();
   } else {

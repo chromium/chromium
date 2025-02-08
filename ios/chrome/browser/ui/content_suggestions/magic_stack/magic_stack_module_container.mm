@@ -26,6 +26,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -304,10 +307,12 @@ const CGFloat kSeparatorHeight = 0.5;
   [[self contextMenuInteractionHandler] configureWithType:_type];
 
   _title.text = [MagicStackModuleContainer titleStringForModule:_type
-                                                   inMagicStack:inMagicStack];
+                                                   inMagicStack:inMagicStack
+                                                         config:config];
   _title.accessibilityIdentifier =
       [MagicStackModuleContainer accessibilityIdentifierForModule:_type
-                                                     inMagicStack:inMagicStack];
+                                                     inMagicStack:inMagicStack
+                                                           config:config];
 
   _seeMoreButton.hidden = !config.shouldShowSeeMore;
 
@@ -388,7 +393,8 @@ const CGFloat kSeparatorHeight = 0.5;
 
 // Returns the module's title, if any, given the Magic Stack module `type`.
 + (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type
-                     inMagicStack:(BOOL)inMagicStack {
+                     inMagicStack:(BOOL)inMagicStack
+                           config:(MagicStackModule*)config {
   switch (type) {
     case ContentSuggestionsModuleType::kShortcuts:
       return l10n_util::GetNSString(
@@ -399,8 +405,15 @@ const CGFloat kSeparatorHeight = 0.5;
             IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
       }
       return @"";
-    case ContentSuggestionsModuleType::kTabResumption:
+    case ContentSuggestionsModuleType::kTabResumption: {
+      TabResumptionItem* tabResumptionItem =
+          static_cast<TabResumptionItem*>(config);
+      if (tabResumptionItem.shopCardData) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_TITLE);
+      }
       return l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_TITLE);
+    }
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
@@ -419,6 +432,17 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kSendTabPromo:
       // Send Tab and Price Tracking Promo design do not use title.
       return @"";
+    case ContentSuggestionsModuleType::kShopCard: {
+      ShopCardItem* shopCardItem = static_cast<ShopCardItem*>(config);
+      if (shopCardItem.shopCardData.shopCardItemType ==
+          ShopCardItemType::kPriceDropForTrackedProducts) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_TITLE);
+      } else {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_REVIEWS_TITLE);
+      }
+    }
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
       return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
@@ -429,7 +453,8 @@ const CGFloat kSeparatorHeight = 0.5;
 
 // Returns the accessibility identifier given the Magic Stack module `type`.
 + (NSString*)accessibilityIdentifierForModule:(ContentSuggestionsModuleType)type
-                                 inMagicStack:(BOOL)inMagicStack {
+                                 inMagicStack:(BOOL)inMagicStack
+                                       config:(MagicStackModule*)config {
   switch (type) {
     case ContentSuggestionsModuleType::kTabResumption:
       return kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier;
@@ -437,7 +462,9 @@ const CGFloat kSeparatorHeight = 0.5;
     default:
       // TODO(crbug.com/40946679): the code should use constants for
       // accessibility identifiers, and not localized strings.
-      return [self titleStringForModule:type inMagicStack:inMagicStack];
+      return [self titleStringForModule:type
+                           inMagicStack:inMagicStack
+                                 config:config];
   }
 }
 

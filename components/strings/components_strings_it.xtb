@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Non adesso</translation>
 <translation id="100957008357583611">Usare la tua posizione?</translation>
 <translation id="1010200102790553230">Carica la pagina più tardi</translation>
+<translation id="1010225406377140704">Contatta l'utente che ha inviato l'invito per chiedergli di inviarti un nuovo link</translation>
 <translation id="1011206368273183593">Preparazione file</translation>
 <translation id="1014509239502131234">Annullamento del risultato in corso…</translation>
 <translation id="1015730422737071372">Fornisci ulteriori dettagli</translation>
@@ -3104,6 +3105,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6465306955648956876">Gestisci password…</translation>
 <translation id="646789491285795429">Stai già monitorando questo prodotto</translation>
 <translation id="6468485451923838994">Caratteri</translation>
+<translation id="6469702164109431067">Password e passkey</translation>
 <translation id="647261751007945333">Criteri dispositivo</translation>
 <translation id="6472874020827012601">Tessuto (opaco)</translation>
 <translation id="647330291963761005">Installazione degli aggiornamenti</translation>
@@ -4349,6 +4351,7 @@ Ulteriori dettagli:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8699985386408839112">Busta Kaku 1</translation>
 <translation id="8702965365666568344">Nastro di fissaggio</translation>
+<translation id="8703372953981978786">Questo link non funziona</translation>
 <translation id="8703575177326907206">La connessione a <ph name="DOMAIN" /> non è criptata.</translation>
 <translation id="8705331520020532516">Numero di serie</translation>
 <translation id="8706806585855470492">Potrai partecipare e collaborare a gruppi di schede, nonché condividerli</translation>

@@ -235,6 +235,114 @@ message TriggeredRuleInfo {
   bool has_screenshot_protection = 13;
 }
 
+// Risk level for a url/ip/file
+enum RiskLevel {
+  RISK_LEVEL_UNSPECIFIED = 0;
+
+  // The URI given is risky / mildly suspicious.
+  LOW = 20;
+
+  // Higher (>90%) confidence that the URI given is risky (with no egregious
+  // false positives)
+  MEDIUM = 30;
+
+  // Extremely high (>99%) confidence that the URI given is risky.
+  HIGH = 40;
+}
+
+// RiskInfo proto for url/ip/file
+// This field is considered Enriched/Proprietary, it should only be
+// available to SecOps, and removed for Workspace BIP/SIT, GCP Cloud Pubsub
+// or 3P SIEMs.
+// Next ID: 6
+message RiskInfo {
+  enum ThreatType {
+    THREAT_TYPE_UNSPECIFIED = 0;
+    // Anything related to malware, for either URL or file.
+    MALWARE = 1;
+    // Unwanted software.
+    UNWANTED_SOFTWARE = 2;
+    // Social engineering, including phishing.
+    SOCIAL_ENGINEERING = 3;
+    // Violating data protection/DLP rules.
+    DATA_LOSS = 4;
+    // Violates URL filtering rules.
+    URL_FILTERING = 5;
+  }
+  ThreatType threat_type = 1;
+
+  RiskLevel risk_level = 2;
+
+  // Risk subcategory (malware category/family, phishing brand, etc.)
+  message RiskSubCategory {
+    string key = 1;
+    string value = 2;
+  }
+  repeated RiskSubCategory risk_sub_categories = 3;
+
+  // e.g., Safe Browsing blocklist, or ML models
+  repeated string risk_reasons = 4;
+
+  // RiskIndicators (e.g, contains_macros)
+  // See Safe Browsing entity prevalence doc.
+  message RiskIndicator {
+    // The key of the indicator.
+    string key = 1;
+
+    // The value of the indicator.
+    oneof value {
+      int32 int_value = 2;
+      bool bool_value = 3;
+      string string_value = 4;
+      float float_value = 5;
+    }
+  }
+  repeated RiskIndicator risk_indicators = 5;
+}
+
+// Next ID: 9
+message UrlInfo {
+  // The URL.
+  string url = 1;
+
+  // The URL category according to go/webcat-doc.
+  repeated string url_categories = 2;
+
+  string ip = 3;
+
+  // Type of the URL stored below, reference ResourceType
+  enum URLType {
+    URL_TYPE_UNSPECIFIED = 0;
+    DOWNLOAD_URL = 1;
+    DOWNLOAD_REDIRECT = 2;
+    TAB_URL = 3;
+    TAB_REDIRECT = 4;
+  }
+  URLType type = 4;
+
+  // Per-threat-type-Risk Info, powered by Safe Browsing.
+  repeated RiskInfo risk_infos = 5;
+
+  // Top level risk level for the URL, aggregated over all per-threat-type
+  RiskLevel risk_level = 6;
+
+  message NavigationInitiator {
+    enum InitiatorType {
+      INITIATOR_TYPE_UNSPECIFIED = 0;
+      USER_INITIATIATED_NAVIGATION_OR_CLICK = 1;
+      BROWSER_INITIATED_NAVIGATION_OR_REDIRECT = 2;
+      CHROME_NOTIFICATION = 3;
+    }
+    InitiatorType initiator_type = 1;
+
+    string entity = 2;  // URL of the notification, name of APP, etc.
+  }
+  NavigationInitiator navigation_initiator = 7;
+
+  // The http(s) method via which the URL is requested. e.g. GET, POST, etc.
+  string request_http_method = 8;
+}
+
 // A message for reporting password reuse events.
 // Next ID: 16.
 message SafeBrowsingPasswordReuseEvent {
@@ -1035,4 +1143,65 @@ message ExtensionTelemetryEvent {
 
   // Security agent installed on the device
   repeated SecurityAgent security_agents = 4;
+}
+
+// Event sent when a user navigates to a URL.
+// Next ID: 7
+message UrlNavigationEvent {
+  // Tab URL of the navigation.
+  UrlInfo url_info = 1;
+
+  // The referrers of the webpage that sent the user to this url.
+  repeated UrlInfo referrers = 2;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 3
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USERNAME
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 4
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 5;
+}
+
+// Event for suspicious site visits.
+message SuspiciousURLEvent {
+  // Tab URL of the navigation.
+  UrlInfo url_info = 1;
+
+  // The referrers of the webpage that sent the user to this url.
+  repeated UrlInfo referrers = 2;
+
+  // Username of the profile. This will be an email address.
+  string profile_user_name = 3;
+
+  // Identifier of the profile. On a managed browser this is the path to the
+  // profile storage which must be used in conjunction with the device
+  // identifier. On an unmanaged device, this is the profile identifier
+  // documented here: go/chrome-profile-identifier-dd.
+  string profile_identifier = 4
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_IDENTIFYING_ID
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Security agent installed on the device
+  repeated SecurityAgent security_agents = 5;
 }

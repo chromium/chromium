@@ -83,6 +83,10 @@
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif
+
 using base::UserMetricsAction;
 using content::WebContents;
 

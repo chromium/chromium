@@ -42,9 +42,7 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/pwd_migration/ExportDeletionDialogFragment.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningCoordinator.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningIntroFragment.java",
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningMediator.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningOnClickHandler.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningOptionsFragment.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningProperties.java",
@@ -67,7 +65,6 @@ robolectric_library("junit") {
   testonly = true
 
   sources = [
-    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningMediatorTest.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetCoordinatorFactoryTest.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetMediatorTest.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetModuleTest.java",

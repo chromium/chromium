@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1009406586654360474">Avage Google’i paroolihaldur ja minge seadete menüüsse. Valige „Importimine“ ja lisage eksporditud paroole sisaldav CSV-fail.</translation>
-<translation id="1010225406377140704">Võtke uue lingi küsimiseks ühendust saatjaga</translation>
 <translation id="1011749477052068769">Teisalda siia</translation>
 <translation id="1014147525163127655">Selles seadmes pole saidi <ph name="ORIGIN" /> jaoks ühtegi pääsuvõtit</translation>
 <translation id="1016498331642356377">Otsige kiirelt oma hääle abil. Selle otsetee muutmiseks puudutage pikalt.</translation>
@@ -1723,7 +1722,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8683039184091909753">pilt</translation>
 <translation id="869891660844655955">Aegumiskuupäev</translation>
 <translation id="8699120352855309748">Ära paku nende keelte tõlkimist</translation>
-<translation id="8703372953981978786">See link ei toimi</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8723453889042591629">Selle lehe kiiresti tõlkimine. Selle otsetee muutmiseks puudutage pikalt.</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>

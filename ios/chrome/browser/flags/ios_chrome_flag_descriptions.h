@@ -11,6 +11,11 @@
 
 namespace flag_descriptions {
 
+// Title and description for the flag that enables adding an address manually
+// from Address Settings.
+extern const char kAddAddressManuallyName[];
+extern const char kAddAddressManuallyDescription[];
+
 // Title and description for the flag that disables app background refresh.
 extern const char kAppBackgroundRefreshName[];
 extern const char kAppBackgroundRefreshDescription[];

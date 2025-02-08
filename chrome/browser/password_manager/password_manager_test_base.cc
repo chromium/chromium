@@ -69,8 +69,6 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
 
   void WaitForState(password_manager::ui::State target_state);
 
-  void WaitForFallbackForSaving();
-
   bool WaitForFallbackForSaving(const base::TimeDelta timeout);
 
   bool was_prompt_automatically_shown() {
@@ -155,18 +153,6 @@ void CustomManagePasswordsUIController::WaitForState(
 
   base::RunLoop run_loop;
   target_state_ = target_state;
-  run_loop_ = &run_loop;
-  run_loop_->Run();
-}
-
-void CustomManagePasswordsUIController::WaitForFallbackForSaving() {
-  if (!was_prompt_automatically_shown_ &&
-      GetState() == password_manager::ui::PENDING_PASSWORD_STATE) {
-    return;
-  }
-
-  base::RunLoop run_loop;
-  wait_for_fallback_ = true;
   run_loop_ = &run_loop;
   run_loop_->Run();
 }

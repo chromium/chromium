@@ -99,12 +99,14 @@ void LayoutEmbeddedObject::UpdateAfterLayout() {
 
 PhysicalNaturalSizingInfo LayoutEmbeddedObject::GetNaturalDimensions() const {
   NOT_DESTROYED();
-  NaturalSizingInfo sizing_info;
-  FrameView* frame_view = ChildFrameView();
-  if (frame_view && frame_view->GetIntrinsicSizingInfo(sizing_info)) {
-    // Scale based on our zoom as the embedded document doesn't have that info.
-    sizing_info.size.Scale(StyleRef().EffectiveZoom());
-    return PhysicalNaturalSizingInfo::FromSizingInfo(sizing_info);
+  if (FrameView* frame_view = ChildFrameView()) {
+    if (std::optional<NaturalSizingInfo> sizing_info =
+            frame_view->GetNaturalDimensions()) {
+      // Scale based on our zoom as the embedded document doesn't have that
+      // info.
+      sizing_info->size.Scale(StyleRef().EffectiveZoom());
+      return PhysicalNaturalSizingInfo::FromSizingInfo(*sizing_info);
+    }
   }
   return LayoutEmbeddedContent::GetNaturalDimensions();
 }

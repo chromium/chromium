@@ -58,23 +58,22 @@ const SVGImageViewInfo* SVGImageForContainer::CreateViewInfo(SVGImage& image,
   return nullptr;
 }
 
-bool SVGImageForContainer::GetNaturalDimensions(
+std::optional<NaturalSizingInfo> SVGImageForContainer::GetNaturalDimensions(
     SVGImage& image,
-    const SVGImageViewInfo* info,
-    NaturalSizingInfo& sizing_info) {
-  const SVGViewSpec* override_viewspec = info ? info->ViewSpec() : nullptr;
-  return image.GetIntrinsicSizingInfo(override_viewspec, sizing_info);
+    const SVGImageViewInfo* info) {
+  return image.GetNaturalDimensions(info ? info->ViewSpec() : nullptr);
 }
 
 gfx::SizeF SVGImageForContainer::ConcreteObjectSize(
     SVGImage& image,
     const SVGImageViewInfo* info,
     const gfx::SizeF& default_object_size) {
-  NaturalSizingInfo sizing_info;
-  if (!GetNaturalDimensions(image, info, sizing_info)) {
+  std::optional<NaturalSizingInfo> sizing_info =
+      GetNaturalDimensions(image, info);
+  if (!sizing_info) {
     return default_object_size;
   }
-  return blink::ConcreteObjectSize(sizing_info, default_object_size);
+  return blink::ConcreteObjectSize(*sizing_info, default_object_size);
 }
 
 gfx::Size SVGImageForContainer::SizeWithConfig(SizeConfig config) const {

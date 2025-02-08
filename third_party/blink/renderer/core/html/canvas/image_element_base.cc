@@ -143,12 +143,9 @@ static bool HasDimensionsForImage(SVGImage& svg_image,
   if (options->hasResizeWidth() && options->hasResizeHeight()) {
     return true;
   }
-  NaturalSizingInfo sizing_info;
-  if (SVGImageForContainer::GetNaturalDimensions(svg_image, nullptr,
-                                                 sizing_info)) {
-    return sizing_info.has_width && sizing_info.has_height;
-  }
-  return false;
+  std::optional<NaturalSizingInfo> sizing_info =
+      SVGImageForContainer::GetNaturalDimensions(svg_image, nullptr);
+  return sizing_info && sizing_info->has_width && sizing_info->has_height;
 }
 
 ImageBitmapSourceStatus ImageElementBase::CheckUsability() const {
@@ -164,13 +161,13 @@ ImageBitmapSourceStatus ImageElementBase::CheckUsability() const {
   bool height_is_zero = false;
   Image& image = *image_content->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    NaturalSizingInfo sizing_info;
-    if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, nullptr,
-                                                    sizing_info)) {
+    std::optional<NaturalSizingInfo> sizing_info =
+        SVGImageForContainer::GetNaturalDimensions(*svg_image, nullptr);
+    if (!sizing_info) {
       return base::unexpected(ImageBitmapSourceError::kIncomplete);
     }
-    width_is_zero = sizing_info.has_width && sizing_info.size.width() == 0;
-    height_is_zero = sizing_info.has_height && sizing_info.size.height() == 0;
+    width_is_zero = sizing_info->has_width && sizing_info->size.width() == 0;
+    height_is_zero = sizing_info->has_height && sizing_info->size.height() == 0;
   } else {
     const gfx::Size image_size = image.Size();
     width_is_zero = image_size.width() == 0;

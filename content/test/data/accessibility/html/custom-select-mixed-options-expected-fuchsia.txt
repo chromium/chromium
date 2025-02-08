@@ -9,6 +9,9 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable selected label='only text' actions='{DEFAULT}'
 ++++++++++UNKNOWN hidden focusable label='with img ' actions='{DEFAULT}'
+++++++++++++UNKNOWN hidden
+++++++++++++++STATIC_TEXT hidden label='with img<newline>    '
+++++++++++++++IMAGE hidden
 ++++++UNKNOWN focusable actions='{DEFAULT}' value='only text'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable selected label='only text' actions='{DEFAULT}'

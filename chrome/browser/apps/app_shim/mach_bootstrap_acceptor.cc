@@ -42,7 +42,7 @@ void MachBootstrapAcceptor::Start() {
     return;
   }
 
-  dispatch_source_ = std::make_unique<base::apple::DispatchSourceMach>(
+  dispatch_source_ = std::make_unique<base::apple::DispatchSource>(
       server_name_.c_str(), port(), ^{
         HandleRequest();
       });

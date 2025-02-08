@@ -22,6 +22,7 @@ import org.hamcrest.core.IsInstanceOf;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
@@ -43,6 +44,7 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /** Utility functions for dealing with bookmarks in tests. */
 public class BookmarkTestUtil {
@@ -135,12 +137,24 @@ public class BookmarkTestUtil {
 
     /** Do not read partner bookmarks in setUp(), so that the lazy reading is covered. */
     public static void readPartnerBookmarks(ChromeTabbedActivityTestRule activityTestRule) {
+        CallbackHelper readingKickedOff = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        PartnerBookmarksShim.kickOffReading(
-                                activityTestRule.getActivity(),
-                                activityTestRule.getProfile(false),
-                                AppHooks.get().getPartnerBookmarkIterator()));
+                () -> {
+                    AppHooks.get()
+                            .requestPartnerBookmarkIterator(
+                                    (iterator) -> {
+                                        PartnerBookmarksShim.kickOffReading(
+                                                activityTestRule.getActivity(),
+                                                activityTestRule.getProfile(false),
+                                                iterator);
+                                        readingKickedOff.notifyCalled();
+                                    });
+                });
+        try {
+            readingKickedOff.waitForOnly("Partner Bookmark reading never started");
+        } catch (TimeoutException ex) {
+            throw new RuntimeException(ex);
+        }
         BookmarkTestUtil.waitForBookmarkModelLoaded();
     }
 

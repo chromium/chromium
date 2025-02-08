@@ -27,6 +27,11 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_running_status_callback.mojom-forward.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+struct ResourceRequest;
+}  // namespace network
+
 namespace content {
 class ScopedServiceWorkerClient;
 class ServiceWorkerClientOwner;
@@ -174,11 +179,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // The storage key to be used for `UpdateUrls()`.
   // For other purposes, use `key()` instead.
-  // `isolation_info_from_interceptor` is
-  // `isolation_info_from_interceptor::isolation_info_`.
+  // `isolation_info_from_handle` is
+  // `ServiceWorkerMainResourceHandle::isolation_info_`.
   blink::StorageKey CalculateStorageKeyForUpdateUrls(
       const GURL& url,
-      const net::IsolationInfo& isolation_info_from_interceptor) const;
+      const net::IsolationInfo& isolation_info_from_handle) const;
 
   // For service worker clients. Makes this client be controlled by
   // |registration|'s active worker, or makes this client be not
@@ -280,6 +285,18 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // RenderFrameHost::GetFrameTreeNodeId() for more details.
   NavigationRequest* GetOngoingNavigationRequestBeforeCommit(
       base::PassKey<StoragePartitionImpl>) const;
+
+  // Creates a navigational network URLLoaderFactory for window client. This
+  // should be called before the navigation is committed.
+  enum class CreateNetworkURLLoaderFactoryType {
+    kNavigationPreload,
+    kRaceNetworkRequest,
+    kSyntheticNetworkRequest,
+  };
+  scoped_refptr<network::SharedURLLoaderFactory> CreateNetworkURLLoaderFactory(
+      CreateNetworkURLLoaderFactoryType type,
+      StoragePartitionImpl* storage_partition,
+      const network::ResourceRequest& resource_request);
 
   // For service worker clients.
   // The type of `ongoing_navigation_frame_tree_node_id_` (if any) for metrics.

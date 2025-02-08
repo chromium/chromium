@@ -587,6 +587,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         menu.findItem(R.id.quick_delete_divider_line_id).setVisible(!isIncognito);
 
         menu.findItem(R.id.download_page_id).setVisible(shouldShowDownloadPageMenuItem(currentTab));
+
+        menu.findItem(R.id.ntp_customization_id)
+                .setVisible(ChromeFeatureList.sNewTabPageCustomization.isEnabled());
     }
 
     /**

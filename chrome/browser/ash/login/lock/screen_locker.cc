@@ -11,6 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -280,16 +281,15 @@ void ScreenLocker::OnAuthSuccess(const UserContext& user_context) {
 
   UMA_HISTOGRAM_ENUMERATION("ScreenLocker.AuthenticationSuccess",
                             unlock_attempt_type_, UnlockType::AUTH_COUNT);
-  session_manager::SessionManager::Get()->NotifyUnlockAttempt(
-      /*success*/ true, TransformUnlockType());
+  auto& session_manager = CHECK_DEREF(session_manager::SessionManager::Get());
+  session_manager.NotifyUnlockAttempt(/*success*/ true, TransformUnlockType());
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(user_context.GetAccountId());
   if (user) {
     if (!user->is_active()) {
       saved_ime_state_ = nullptr;
-      user_manager::UserManager::Get()->SwitchActiveUser(
-          user_context.GetAccountId());
+      session_manager.SwitchActiveSession(user_context.GetAccountId());
     }
 
     // Reset the number of PIN attempts available to the user. We always do this

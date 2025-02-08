@@ -305,6 +305,19 @@ gfx::Size RenderWidgetHostViewChildFrame::GetVisibleViewportSize() {
   return requested_rect.size();
 }
 
+gfx::Size RenderWidgetHostViewChildFrame::GetVisibleViewportSizeDevicePx() {
+  // For subframes, the visual viewport corresponds to the main frame size so
+  // this method would not even be called, the main frame's value should be
+  // used instead. However a nested WebContents will have a ChildFrame view used
+  // for the main frame.
+  DCHECK(host()->owner_delegate());
+
+  gfx::Rect requested_rect(GetRequestedRendererSizeDevicePx());
+  auto scaled_insets = ScaleToCeiledInsets(insets_, GetDeviceScaleFactor());
+  requested_rect.Inset(scaled_insets);
+  return requested_rect.size();
+}
+
 void RenderWidgetHostViewChildFrame::SetInsets(const gfx::Insets& insets) {
   // Insets are used only for <webview> and are used to let the UI know it's
   // being obscured (for e.g. by the virtual keyboard).

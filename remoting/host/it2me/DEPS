@@ -1,6 +1,7 @@
 specific_include_rules = {
   "it2me_confirmation_dialog_chromeos.cc": [
     "+chromeos/ui/vector_icons",
+    "+components/session_manager",
     "+ui/message_center/message_center.h",
     "+ui/message_center/public/cpp",
   ],

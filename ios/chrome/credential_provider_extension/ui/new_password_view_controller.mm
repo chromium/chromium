@@ -550,6 +550,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_"
                                         @"PASSWORD_PREVIOUS_FIELD_HINT",
                                         @"Previous field")
+                             manualFillButtonTitle:nil
                 manualFillButtonAccessibilityLabel:nil
         passwordManualFillButtonAccessibilityLabel:nil
       creditCardManualFillButtonAccessibilityLabel:nil

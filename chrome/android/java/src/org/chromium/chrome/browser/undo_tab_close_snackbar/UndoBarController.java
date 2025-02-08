@@ -228,7 +228,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
         Set<Integer> fullyClosingRootIds = new HashSet<>();
         int ungroupedOrPartialGroupTabs = 0;
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
-                filter.getLazyAllTabGroupIdsInComprehensiveModel(closedTabs);
+                filter.getLazyAllTabGroupIds(closedTabs, /* includePendingClosures= */ true);
         for (Tab tab : closedTabs) {
             // We are not deleting a tab group if:
             // 1. Any of the tabs are in a group that is hiding.

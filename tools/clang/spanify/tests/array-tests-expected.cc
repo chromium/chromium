@@ -60,11 +60,11 @@ void fct() {
   buf7[UnsafeIndex()] = nullptr;
 
   // Expected rewrite:
-  // std::array<int(**)[], 16> buf8 = {};
-  std::array<int(**)[], 16> buf8 = {};
+  // std::array<int (**)[], 16> buf8 = {};
+  std::array<int (**)[], 16> buf8 = {};
   buf8[UnsafeIndex()] = nullptr;
 
-  using Arr = int(**)[];
+  using Arr = int (**)[];
   // Expected rewrite:
   // std::array<Arr, buf3[0]> buf9 = {};
   std::array<Arr, buf3[0]> buf9 = {};

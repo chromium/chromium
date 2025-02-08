@@ -71,6 +71,41 @@ FacetURI ConvertGURLToFacet(const GURL& url) {
   }
 }
 
+// Returns FacetURI corresponding to the top level domain of the `facet`. Empty
+// if `facet` is android app, eTLD+1 can't be extracted, or `facet` is already
+// top level domain.
+FacetURI GetFacetForTopLevelDomain(FacetURI facet) {
+  if (!facet.IsValidWebFacetURI()) {
+    return FacetURI();
+  }
+
+  std::string top_domain =
+      GetExtendedTopLevelDomain(GURL(facet.canonical_spec()), {});
+  if (top_domain.empty()) {
+    return FacetURI();
+  }
+
+  FacetURI result =
+      FacetURI::FromPotentiallyInvalidSpec("https://" + top_domain);
+
+  if (!result.is_valid() || result == facet) {
+    return FacetURI();
+  }
+
+  return result;
+}
+
+void LogChangePasswordURLTypeUsed(
+    const AffiliationServiceImpl::ChangePasswordUrlMatch& match) {
+  if (match.group_url_override) {
+    LogFetchResult(GetChangePasswordUrlMetric::kGroupUrlOverrideUsed);
+  } else if (match.main_domain_override) {
+    LogFetchResult(GetChangePasswordUrlMetric::kMainDomainUsed);
+  } else {
+    LogFetchResult(GetChangePasswordUrlMetric::kUrlOverrideUsed);
+  }
+}
+
 }  // namespace
 
 const char kGetChangePasswordURLMetricName[] =
@@ -78,11 +113,22 @@ const char kGetChangePasswordURLMetricName[] =
 
 struct AffiliationServiceImpl::FetchInfo {
   FetchInfo(std::unique_ptr<AffiliationFetcherInterface> pending_fetcher,
-            std::vector<FacetURI> facets,
+            FacetURI facet,
+            FacetURI main_domain_facet,
             base::OnceClosure result_callback)
       : fetcher(std::move(pending_fetcher)),
-        requested_facets(std::move(facets)),
-        callback(std::move(result_callback)) {}
+        requested_facet(std::move(facet)),
+        top_level_domain(std::move(main_domain_facet)),
+        callback(std::move(result_callback)) {
+    std::vector<FacetURI> facets_to_request;
+    facets_to_request.push_back(requested_facet);
+
+    if (top_level_domain.is_valid()) {
+      facets_to_request.push_back(top_level_domain);
+    }
+
+    fetcher->StartRequest(facets_to_request, kChangePasswordUrlRequestInfo);
+  }
 
   FetchInfo(FetchInfo&& other) = default;
 
@@ -96,8 +142,29 @@ struct AffiliationServiceImpl::FetchInfo {
       std::move(callback).Run();
   }
 
+  ChangePasswordUrlMatch GetChangePasswordURL(
+      std::unique_ptr<AffiliationFetcherDelegate::Result> result) {
+    std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch>
+        uri_to_url = CreateFacetUriToChangePasswordUrlMap(result->groupings);
+
+    auto it = uri_to_url.find(requested_facet);
+    if (it != uri_to_url.end()) {
+      return it->second;
+    }
+
+    // Check if change password URL available for the main domain.
+    it = uri_to_url.find(top_level_domain);
+    if (it != uri_to_url.end()) {
+      it->second.main_domain_override = true;
+      return it->second;
+    }
+
+    return ChangePasswordUrlMatch();
+  }
+
   std::unique_ptr<AffiliationFetcherInterface> fetcher;
-  std::vector<FacetURI> requested_facets;
+  FacetURI requested_facet;
+  FacetURI top_level_domain;
   // Callback is passed in PrefetchChangePasswordURLs and is run to indicate the
   // prefetch has finished or got canceled.
   base::OnceClosure callback;
@@ -133,27 +200,17 @@ void AffiliationServiceImpl::Shutdown() {
   }
 }
 
-void AffiliationServiceImpl::PrefetchChangePasswordURLs(
-    const std::vector<GURL>& urls,
+void AffiliationServiceImpl::PrefetchChangePasswordURL(
+    const GURL& url,
     base::OnceClosure callback) {
-  std::vector<FacetURI> facets;
-  for (const auto& url : urls) {
-    FacetURI facet_uri = ConvertGURLToFacet(url);
+  FacetURI facet_uri = ConvertGURLToFacet(url);
 
-    if (!facet_uri.is_valid()) {
-      continue;
-    }
-    if (base::Contains(change_password_urls_, facet_uri)) {
-      continue;
-    }
-    facets.push_back(std::move(facet_uri));
-  }
-
-  if (!facets.empty()) {
+  if (facet_uri.is_valid() &&
+      !base::Contains(change_password_urls_, facet_uri)) {
     auto fetcher = fetcher_factory_->CreateInstance(url_loader_factory_, this);
     if (fetcher) {
-      fetcher->StartRequest(facets, kChangePasswordUrlRequestInfo);
-      pending_fetches_.emplace_back(std::move(fetcher), std::move(facets),
+      pending_fetches_.emplace_back(std::move(fetcher), std::move(facet_uri),
+                                    GetFacetForTopLevelDomain(facet_uri),
                                     std::move(callback));
       return;
     }
@@ -168,16 +225,12 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
 
   auto it = change_password_urls_.find(uri);
   if (it != change_password_urls_.end()) {
-    if (it->second.group_url_override) {
-      LogFetchResult(GetChangePasswordUrlMetric::kGroupUrlOverrideUsed);
-    } else {
-      LogFetchResult(GetChangePasswordUrlMetric::kUrlOverrideUsed);
-    }
+    LogChangePasswordURLTypeUsed(it->second);
     return it->second.change_password_url;
   }
 
   if (std::ranges::any_of(pending_fetches_, [&uri](const auto& info) {
-        return base::Contains(info.requested_facets, uri);
+        return uri == info.requested_facet;
       })) {
     LogFetchResult(GetChangePasswordUrlMetric::kNotFetchedYet);
   } else {
@@ -195,14 +248,8 @@ void AffiliationServiceImpl::OnFetchSucceeded(
   if (processed_fetch == pending_fetches_.end())
     return;
 
-  std::map<FacetURI, AffiliationServiceImpl::ChangePasswordUrlMatch>
-      uri_to_url = CreateFacetUriToChangePasswordUrlMap(result->groupings);
-  for (const auto& requested_facets : processed_fetch->requested_facets) {
-    auto it = uri_to_url.find(requested_facets);
-    if (it != uri_to_url.end()) {
-      change_password_urls_[requested_facets] = it->second;
-    }
-  }
+  change_password_urls_[processed_fetch->requested_facet] =
+      processed_fetch->GetChangePasswordURL(std::move(result));
 
   pending_fetches_.erase(processed_fetch);
 }

@@ -144,3 +144,16 @@ try_.builder(
         ],
     ),
 )
+
+try_.builder(
+    name = "android-desktop-15-x64-fyi-rel",
+    mirrors = [
+        "ci/android-desktop-15-x64-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-15-x64-fyi-rel",
+            "release_try_builder",
+        ],
+    ),
+)

@@ -14007,10 +14007,8 @@ class V8OptimizerContentBrowserClient
 };
 
 // Previously, prerendering a page that had the COOP crashed when the V8
-// optimizer was disabled by the site settings. To prevent it, in the current
-// implementation, prerendering is tentatively disabled when the V8 optimizer is
-// disabled. This is the regression test for the issue. See
-// https://crbug.com/40076091 for details.
+// optimizer was disabled by the site settings. This is the regression test for
+// the issue. See https://crbug.com/40076091 for details.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCOOPWithoutV8Optimizer) {
   // Disable the V8 optimizer.
   V8OptimizerContentBrowserClient test_browser_client(/*disable=*/true);
@@ -14024,30 +14022,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCOOPWithoutV8Optimizer) {
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
 
-  // Start prerendering. This should fail as the optimizer is disabled and not
-  // crash.
-  test::PrerenderHostRegistryObserver observer(*web_contents());
-  AddPrerenderAsync(prerendering_url);
-  observer.WaitForTrigger(prerendering_url);
-  EXPECT_FALSE(HasHostForUrl(prerendering_url));
-  ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kV8OptimizerDisabled);
-
-  // Navigate the primary page to flush the Ukm.
+  FrameTreeNodeId host_id = AddPrerender(prerendering_url);
+  test::PrerenderHostObserver prerender_observer(*web_contents(), host_id);
   NavigatePrimaryPage(prerendering_url);
-  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
-      PrimaryPageSourceId(), PreloadingType::kPrerender,
-      PreloadingEligibility::kV8OptimizerDisabled,
-      PreloadingHoldbackStatus::kUnspecified,
-      PreloadingTriggeringOutcome::kUnspecified,
-      PreloadingFailureReason::kUnspecified,
-      /*accurate=*/true,
-      /*ready_time=*/std::nullopt,
-      blink::mojom::SpeculationEagerness::kEager)});
+  prerender_observer.WaitForActivation();
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
 }
 
 // See the comment on PrerenderCOOPWithoutV8Optimizer test for details. This
-// test ensures that prerendering is disabled regardless of whether the target
+// test ensures that prerendering is enabled regardless of whether the target
 // page has the COOP, when the V8 optimizer is disabled.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderNonCOOPWithoutV8Optimizer) {
@@ -14061,26 +14044,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
 
-  // Start prerendering. This should fail as the optimizer is disabled and not
-  // crash.
-  test::PrerenderHostRegistryObserver observer(*web_contents());
-  AddPrerenderAsync(prerendering_url);
-  observer.WaitForTrigger(prerendering_url);
-  EXPECT_FALSE(HasHostForUrl(prerendering_url));
-  ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kV8OptimizerDisabled);
-
-  // Navigate the primary page to flush the Ukm.
+  FrameTreeNodeId host_id = AddPrerender(prerendering_url);
+  test::PrerenderHostObserver prerender_observer(*web_contents(), host_id);
   NavigatePrimaryPage(prerendering_url);
-  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
-      PrimaryPageSourceId(), PreloadingType::kPrerender,
-      PreloadingEligibility::kV8OptimizerDisabled,
-      PreloadingHoldbackStatus::kUnspecified,
-      PreloadingTriggeringOutcome::kUnspecified,
-      PreloadingFailureReason::kUnspecified,
-      /*accurate=*/true,
-      /*ready_time=*/std::nullopt,
-      blink::mojom::SpeculationEagerness::kEager)});
+  prerender_observer.WaitForActivation();
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
 }
 
 // See the comment on PrerenderCOOPWithoutV8Optimizer test for details. This

@@ -468,10 +468,11 @@ class BrowserView : public BrowserWindow,
   // Getter for the `window.setResizable(bool)` state.
   std::optional<bool> GetCanResizeFromWebAPI() const;
 
-  // Return a pointer to the single tab (if any) that is inactive but part of
-  // a split view. Assumes there is max one split view in the tab strip, it
-  // contains exactly two tabs, and one of those tabs is currently active.
-  const tabs::TabInterface* GetInactiveSplitTab();
+  // Return the tab strip index of the single tab (if any) that is inactive but
+  // part of a split view. Assumes there is max one split view in the tab
+  // strip, it contains exactly two tabs, and one of those tabs is currently
+  // active.
+  int GetInactiveSplitTabIndex();
 
   // Display the current active split view as a series of multiple side-by-side
   // web contents.

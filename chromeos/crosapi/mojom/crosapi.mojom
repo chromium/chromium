@@ -30,7 +30,6 @@ import "chromeos/crosapi/mojom/device_attributes.mojom";
 import "chromeos/crosapi/mojom/device_local_account_extension_service.mojom";
 import "chromeos/crosapi/mojom/device_oauth2_token_service.mojom";
 import "chromeos/crosapi/mojom/diagnostics_service.mojom";
-import "chromeos/crosapi/mojom/digital_goods.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
@@ -238,10 +237,7 @@ interface Crosapi {
   [MinVersion=95] BindDiagnosticsService@99(
     pending_receiver<crosapi.mojom.DiagnosticsService> receiver);
 
-  // Added in M104.
-  [MinVersion=76] BindDigitalGoodsFactory@79(
-    pending_receiver<DigitalGoodsFactory> receiver);
-
+  // BindDigitalGoodsFactory@79 was removed.
   // BindDlp@64 was removed.
 
   // Binds the DocumentScan interface, which allows Lacros to get scanner access

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -116,7 +117,7 @@ public class TabGroupVisualDataManagerUnitTest {
                 .getTabGroupModelFilter(false);
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB2_ID, TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllRootIds(any(), anyBoolean());
         doReturn(mIncognitoTabGroupModelFilter)
                 .when(mTabGroupModelFilterProvider)
                 .getTabGroupModelFilter(true);
@@ -154,7 +155,7 @@ public class TabGroupVisualDataManagerUnitTest {
         // a new root ID).
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllRootIds(any(), anyBoolean());
         mTabModelObserverCaptor
                 .getValue()
                 .onFinishingMultipleTabClosure(List.of(mTab1), /* canRestore= */ true);
@@ -175,7 +176,7 @@ public class TabGroupVisualDataManagerUnitTest {
         // Mock that tab2 is closed and tab2 is not the root tab.
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllRootIds(any(), anyBoolean());
         mTabModelObserverCaptor
                 .getValue()
                 .onFinishingMultipleTabClosure(List.of(mTab2), /* canRestore= */ true);
@@ -192,7 +193,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllRootIds(any(), anyBoolean());
         doReturn(true).when(mTabGroupModelFilter).isTabGroupHiding(GROUP_1_ID);
         mTabModelObserverCaptor
                 .getValue()
@@ -221,7 +222,7 @@ public class TabGroupVisualDataManagerUnitTest {
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(TAB1_ID)).thenReturn(1);
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllRootIds(any(), anyBoolean());
         mTabModelObserverCaptor
                 .getValue()
                 .onFinishingMultipleTabClosure(List.of(mTab2), /* canRestore= */ true);
@@ -232,7 +233,7 @@ public class TabGroupVisualDataManagerUnitTest {
 
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllRootIds(any(), anyBoolean());
         mTabModelObserverCaptor
                 .getValue()
                 .onFinishingMultipleTabClosure(List.of(mTab1), /* canRestore= */ true);
@@ -254,7 +255,7 @@ public class TabGroupVisualDataManagerUnitTest {
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(TAB1_ID)).thenReturn(0);
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
-                .getLazyAllRootIdsInComprehensiveModel(any());
+                .getLazyAllRootIds(any(), anyBoolean());
         mTabModelObserverCaptor
                 .getValue()
                 .onFinishingMultipleTabClosure(List.of(mTab1, mTab2), /* canRestore= */ true);

@@ -209,6 +209,16 @@ bool MediaQueryEvaluator::DidResultsChange(
   return false;
 }
 
+bool MediaQueryEvaluator::DidResultsChange(
+    const HeapHashMap<Member<const MediaQuerySet>, bool>& results) const {
+  for (const auto& [query_set, result] : results) {
+    if (result != Eval(*query_set)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // As per
 // https://w3c.github.io/csswg-drafts/mediaqueries/#false-in-the-negative-range
 static bool HandleNegativeMediaFeatureValue(MediaQueryOperator op) {

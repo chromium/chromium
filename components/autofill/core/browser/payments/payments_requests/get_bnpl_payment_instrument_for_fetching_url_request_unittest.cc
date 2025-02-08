@@ -34,6 +34,26 @@ class GetBnplPaymentInstrumentForFetchingUrlRequestTest : public testing::Test {
         request_details_, /*full_sync_enabled=*/true, mock_callback_.Get());
   }
 
+  Dict GetFullResponse() {
+    return Dict()
+        .SetByDottedPath(
+            "buy_now_pay_later_info.get_redirect_url_response_"
+            "info.redirect_url",
+            "http://redirect-url.test/")
+        .SetByDottedPath(
+            "buy_now_pay_later_info.get_redirect_url_response_"
+            "info.base_success_return_url",
+            "http://success-url.test/")
+        .SetByDottedPath(
+            "buy_now_pay_later_info.get_redirect_url_response_"
+            "info.base_failure_return_url",
+            "http://failure-url.test/")
+        .SetByDottedPath(
+            "buy_now_pay_later_info.get_redirect_url_response_"
+            "info.get_payment_instrument_context_token",
+            "sometestcontexttoken");
+  }
+
   GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details_;
   MockCallback<
       OnceCallback<void(PaymentsRpcResult, const BnplFetchUrlResponseDetails&)>>
@@ -89,11 +109,96 @@ TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
 
 TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
        IsResponseComplete_ParseResponseCalled) {
-  request_->ParseResponse(Dict().SetByDottedPath(
-      "buy_now_pay_later_info.get_redirect_url_response_info.redirect_url",
-      "http://redirect-url.test/"));
+  request_->ParseResponse(GetFullResponse());
 
   EXPECT_TRUE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
+       IsResponseComplete_ParseResponseCalled_NoRedirectUrl) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_redirect_url_response_"
+      "info.redirect_url");
+  request_->ParseResponse(response);
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
+       IsResponseComplete_ParseResponseCalled_InvalidRedirectUrl) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_redirect_url_response_"
+      "info.redirect_url");
+  response.SetByDottedPath(
+      "buy_now_pay_later_info.get_redirect_url_response_"
+      "info.redirect_url",
+      "invalidredirecturl!!$$");
+  request_->ParseResponse(response);
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
+       IsResponseComplete_ParseResponseCalled_NoSuccessUrlPrefix) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_redirect_url_response_"
+      "info.base_success_return_url");
+  request_->ParseResponse(response);
+
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
+       IsResponseComplete_ParseResponseCalled_InvalidSuccessUrlPrefix) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_redirect_url_response_"
+      "info.base_success_return_url");
+  response.SetByDottedPath(
+      "buy_now_pay_later_info.get_redirect_url_response_"
+      "info.base_success_return_url",
+      "invalidsuccessurl!!$$");
+  request_->ParseResponse(response);
+
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
+       IsResponseComplete_ParseResponseCalled_NoFailureUrlPrefix) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_redirect_url_response_"
+      "info.base_failure_return_url");
+  request_->ParseResponse(response);
+
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
+       IsResponseComplete_ParseResponseCalled_InvalidFailureUrlPrefix) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_redirect_url_response_"
+      "info.base_failure_return_url");
+  response.SetByDottedPath(
+      "buy_now_pay_later_info.get_redirect_url_response_"
+      "info.base_failure_return_url",
+      "invalidfailureurl!!$$");
+  request_->ParseResponse(response);
+
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
+       IsResponseComplete_ParseResponseCalled_NoContextToken) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_redirect_url_response_"
+      "info.get_payment_instrument_context_token");
+  request_->ParseResponse(response);
+
+  EXPECT_FALSE(request_->IsResponseComplete());
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest, RespondToDelegate) {

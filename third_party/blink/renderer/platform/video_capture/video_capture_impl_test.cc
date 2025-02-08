@@ -181,9 +181,6 @@ class VideoCaptureImplTest : public ::testing::Test {
         }));
 
     platform_->SetGpuCapabilities(&fake_capabilities_);
-
-    video_capture_impl_->SetGpuMemoryBufferSupportForTesting(
-        std::make_unique<FakeGpuMemoryBufferSupport>());
   }
 
 #if DCHECK_IS_ON()

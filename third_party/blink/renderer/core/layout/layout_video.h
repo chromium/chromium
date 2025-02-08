@@ -59,7 +59,7 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
     return "LayoutVideo";
   }
 
-  void IntrinsicSizeChanged() override;
+  void NaturalSizeChanged() override;
 
   OverflowClipAxes ComputeOverflowClipAxes() const final {
     NOT_DESTROYED();

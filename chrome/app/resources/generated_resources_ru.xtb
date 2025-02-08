@@ -272,7 +272,6 @@
 <translation id="1177863135347784049">Персонализированные</translation>
 <translation id="1178093605842850860">Расширению разрешено просматривать и изменять этот сайт</translation>
 <translation id="1178581264944972037">Пауза</translation>
-<translation id="1178601482396475810">Настройки синхронизации устройств</translation>
 <translation id="117916940443676133">Ваш электронный ключ не защищен PIN-кодом. Чтобы управлять учетными данными, создайте PIN-код.</translation>
 <translation id="1179400851034021914">Недействительный код IBAN.</translation>
 <translation id="1179902906564467236">Следуйте инструкциям на телефоне или используйте приложение "Камера".</translation>
@@ -1367,6 +1366,7 @@
 <translation id="1936157145127842922">Показать в папке</translation>
 <translation id="1936931585862840749">Укажите количество копий для печати, используя цифры (от 1 до <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не удалось импортировать тип архитектуры контейнера <ph name="ARCHITECTURE_CONTAINER" /> на это устройство (<ph name="ARCHITECTURE_DEVICE" />). Вы можете попробовать восстановить этот контейнер на другом устройстве или получить доступ к файлам, открыв образ контейнера в приложении "Файлы".</translation>
+<translation id="1938116692670653897">Текущая цветовая тема</translation>
 <translation id="1938351510777341717">Внешняя клавиша Command</translation>
 <translation id="1940221956626514677">Настроить панель инструментов</translation>
 <translation id="1940546824932169984">Подключенные устройства</translation>
@@ -1461,7 +1461,6 @@
 <translation id="2003596238737586336">Текущее расписание: <ph name="SUNRISE" />–<ph name="SUNSET" />. Этим параметром управляет администратор.</translation>
 <translation id="2004413981947727241">Получайте доступ к паролям на любых устройствах</translation>
 <translation id="2004697686368036666">Функции некоторых сайтов могут стать недоступными</translation>
-<translation id="2005199804247617997">Другие профили</translation>
 <translation id="2006638907958895361">Открыть ссылку в приложении "<ph name="APP" />"</translation>
 <translation id="2007404777272201486">Сообщить о проблеме...</translation>
 <translation id="200781997903833896">Чтобы использовать чтение вслух, освободите место на устройстве.</translation>
@@ -1686,7 +1685,6 @@
 <translation id="2158249272743343757">Удалить данные для персонализации…</translation>
 <translation id="2158475082070321257">Скопировать ссылку на выделенный текст</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">Краткие пересказы и ответы на уточняющие вопросы</translation>
 <translation id="2161058806218011758">Область действия сочетания клавиш <ph name="SHORTCUT" /> для расширения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="216169395504480358">Добавить подключение по Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронизация начнется, когда вы покинете страницу с настройками синхронизации.</translation>
@@ -1949,7 +1947,6 @@
 <translation id="2333166365943957309">Иерархия интерфейса</translation>
 <translation id="233375395665273385">Удалить и выйти</translation>
 <translation id="233471714539944337">Конфиденциальные данные</translation>
-<translation id="2335111415680198280">{0,plural, =1{Закрыть # окно}one{Закрыть # окно}few{Закрыть # окна}many{Закрыть # окон}other{Закрыть # окна}}</translation>
 <translation id="2335758110242123814">Открыть группу</translation>
 <translation id="2336228925368920074">Добавить все вкладки в закладки…</translation>
 <translation id="2336258397628212480">Приложение "<ph name="APP_NAME" />" печатает одну страницу на принтере "<ph name="PRINTER_NAME" />".</translation>
@@ -2136,6 +2133,10 @@
 <translation id="2462332841984057083">Приложение Steam уже устанавливается. Дождитесь завершения процесса.</translation>
 <translation id="2462724976360937186">Идентификатор ключа ЦС</translation>
 <translation id="2462752602710430187">Добавлен принтер <ph name="PRINTER_NAME" /></translation>
+<translation id="2464075479326723132">Рекомендованные файлы помогают легко вернуться к недавним действиям в Microsoft SharePoint и OneDrive.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Вы можете изменить настройки в меню карточки или посмотреть дополнительные параметры на панели "Настроить Chrome".</translation>
 <translation id="2464079411014186876">Мороженое</translation>
 <translation id="2467755475704469005">Нет устройств. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="2467933879189426525">Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и другие пользователи (<ph name="NUM_OTHER_MEMBERS" />)</translation>
@@ -3745,7 +3746,6 @@
 <translation id="3629664892718440872">Запомнить выбор</translation>
 <translation id="3630132874740063857">Телефон</translation>
 <translation id="3630995161997703415">Добавьте этот сайт на панель запуска, чтобы он всегда был у вас под рукой.</translation>
-<translation id="3632929818790223729">Открыть эту и активную вкладку в разделенном окне</translation>
 <translation id="3634652306074934350">Срок действия запроса на разрешение истек</translation>
 <translation id="3635199270495525546">Обнаружен доверенный платформенный модуль (TPM)</translation>
 <translation id="3635353578505343390">Отправка отзыва в Google</translation>
@@ -3998,6 +3998,7 @@
 <translation id="3787434344076711519">Ожидается выполнение перевода</translation>
 <translation id="3788301286821743879">Не удалось запустить киоск-приложение.</translation>
 <translation id="3788401245189148511">Разрешения:</translation>
+<translation id="3789432704615470433">Файлы SharePoint и OneDrive</translation>
 <translation id="3789841737615482174">Установить</translation>
 <translation id="3790417903123637354">Произошла ошибка. Повторите попытку позже.</translation>
 <translation id="379082410132524484">Срок действия карты истек</translation>
@@ -5868,7 +5869,6 @@
 <translation id="512642543295077915">Поиск + Backspace</translation>
 <translation id="5126611267288187364">Посмотреть изменения</translation>
 <translation id="5127620150973591153">Код безопасного подключения: <ph name="TOKEN" />.</translation>
-<translation id="5127805178023152808">Синхронизация выключена</translation>
 <translation id="5127881134400491887">Управление сетевыми подключениями</translation>
 <translation id="5127934926273826089">Цветы</translation>
 <translation id="5127986747308934633">Вашим устройством управляет администратор</translation>
@@ -5957,6 +5957,7 @@
 <translation id="5190926251776387065">Активировать порт</translation>
 <translation id="5190959794678983197">Микрофон недоступен</translation>
 <translation id="5191094172448199359">PIN-коды не совпадают.</translation>
+<translation id="5191251636205085390">Узнайте больше о новых технологиях, которые придут на смену сторонним файлам cookie.</translation>
 <translation id="519185197579575131">Использовать тему QT</translation>
 <translation id="5192062846343383368">Чтобы открыть настройки родительского контроля, запустите приложение Family Link.</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 ключ доступа}one{{COUNT} ключ доступа}few{{COUNT} ключа доступа}many{{COUNT} ключей доступа}other{{COUNT} ключа доступа}}</translation>
@@ -6186,6 +6187,7 @@
 <translation id="5360150013186312835">Показывать на панели инструментов</translation>
 <translation id="5362741141255528695">Выберите файл закрытого ключа.</translation>
 <translation id="536278396489099088">Состояние системы ChromeOS и отчеты о ней</translation>
+<translation id="5362916924854054326">Не показывать файлы SharePoint и OneDrive</translation>
 <translation id="5363109466694494651">Powerwash и откат</translation>
 <translation id="5365881113273618889">Выбранная папка содержит конфиденциальные файлы. Предоставить приложению "<ph name="APP_NAME" />" постоянный доступ для записи данных?</translation>
 <translation id="536638840841140142">Нет</translation>
@@ -8914,7 +8916,6 @@
 <translation id="7349010927677336670">Воспроизведение видео</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} пароль сохранен только на этом устройстве}one{{COUNT} пароль сохранен только на этом устройстве}few{{COUNT} пароля сохранено только на этом устройстве}many{{COUNT} паролей сохранено только на этом устройстве}other{{COUNT} пароля сохранено только на этом устройстве}}</translation>
 <translation id="7352651011704765696">Ошибка</translation>
-<translation id="7352664183151911163">Между приложениями и браузером Chrome</translation>
 <translation id="7353261921908507769">Ваши контакты могут обмениваться с вами контентом, когда находятся поблизости. Передача данных не начинается без вашего согласия.</translation>
 <translation id="7353432112255316844">Подтвердить личность</translation>
 <translation id="735361434055555355">Установка Linux...</translation>
@@ -10058,7 +10059,6 @@
 <translation id="8140869601171867148">Этот аккаунт также используется в других сервисах Google, таких как Gmail, YouTube и Chrome.
     С его помощью вы легко можете получать доступ ко всем закладкам, файлам и многому другому.</translation>
 <translation id="8141418916163800697">Вы можете настроить больше функций в разделе "Управление телефоном".</translation>
-<translation id="814156740715940972">Открыть эту и активную вкладку в разделенном окне</translation>
 <translation id="8141584439523427891">Запуск альтернативного браузера…</translation>
 <translation id="8141725884565838206">Управление паролями</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{видео}one{# видео}few{# видео}many{# видео}other{# видео}}</translation>
@@ -10775,6 +10775,10 @@
 <translation id="865936634714975126">Добавьте в URL параметр запроса, чтобы задать типы при загрузке страницы, например: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Контакты (<ph name="FEATURE_NAME" />)</translation>
 <translation id="8659609431223166673">Окно перемещено вниз</translation>
+<translation id="8660288500924118793">Этот модуль позволяет легко переключаться между мероприятиями в календаре Outlook.
+       <ph name="BREAK" />
+       <ph name="BREAK" />
+       Вы можете изменить настройки в меню карточки или посмотреть дополнительные параметры на панели "Настроить Chrome".</translation>
 <translation id="8661290697478713397">Открыть ссылку в режиме инкогнито</translation>
 <translation id="8662474268934425487">Вход в <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Присоединиться к сети <ph name="TYPE" /></translation>
@@ -11195,7 +11199,6 @@
 <translation id="8946359700442089734">На устройстве <ph name="IDS_SHORT_PRODUCT_NAME" /> включены не все функции отладки.</translation>
 <translation id="8946954897220903437">Свернуть все запросы в адресной строке</translation>
 <translation id="894763922177556086">высокое</translation>
-<translation id="8949304443659090542">Настроить синхронизацию браузера Chrome</translation>
 <translation id="895054485242522631">Разрешить сайтам использовать датчики движения</translation>
 <translation id="8951256747718668828">При восстановлении данных произошла ошибка.</translation>
 <translation id="8951465597020890363">Все равно выйти из гостевого режима?</translation>
@@ -11216,7 +11219,6 @@
 <translation id="8963117664422609631">Открыть настройки сайтов</translation>
 <translation id="8964927371396953727">Подтвердите свою личность, чтобы использовать и сохранять пароли в аккаунте <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="8965037249707889821">Введите старый пароль</translation>
-<translation id="8966809848145604011">Другие профили</translation>
 <translation id="8967427617812342790">Добавить в список для чтения</translation>
 <translation id="8967548289042494261">Удаление <ph name="VM_NAME" /></translation>
 <translation id="8968527460726243404">Системное средство записи изображений в Chrome OS</translation>

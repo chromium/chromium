@@ -40,7 +40,7 @@ class FedCmCUJTest : public InteractiveBrowserTest {
           delegate_.get(), browser()->GetActiveTabInterface());
       idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
           "idp-example.com", content::IdentityProviderMetadata(),
-          content::ClientMetadata(GURL(), GURL(), GURL()),
+          content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
           blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false)};
       accounts_ = {base::MakeRefCounted<Account>(

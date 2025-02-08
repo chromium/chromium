@@ -38,6 +38,17 @@
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
+namespace {
+
+// Different filter states for lens overlay.
+typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
+  LensOverlayFilterStateUnknown = 0,
+  LensOverlayFilterStateSelection,
+  LensOverlayFilterStateTranslate,
+};
+
+}  // namespace
+
 @interface LensOverlayMediator () <LensOverlayNavigationMutator,
                                    SearchEngineObserving>
 
@@ -60,6 +71,8 @@
   base::ElapsedTimer _lensStartSearchRequestTime;
   /// Whether the thumbnail/selection of the `currentLensResult` was removed.
   BOOL _thumbnailRemoved;
+  /// Tracks the Lens filter currently in use.
+  LensOverlayFilterState _currentFilterState;
 }
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
@@ -86,6 +99,7 @@
   _searchEngineObserver.reset();
   _navigationManager.reset();
   _currentLensResult = nil;
+  _currentFilterState = LensOverlayFilterStateUnknown;
 }
 
 #pragma mark - SearchEngineObserving
@@ -195,6 +209,33 @@
   [self.resultConsumer handleSearchRequestStarted];
   _lensStartSearchRequestTime = base::ElapsedTimer();
   [self.toolbarConsumer setOmniboxEnabled:YES];
+
+  // If the filter is still unknown it means this is the first request, so
+  // nothing needs to be done, as the selection area in the zero state is
+  // correctly positioned.
+  if (_currentFilterState != LensOverlayFilterStateUnknown) {
+    BOOL isInTranslate = _currentFilterState == LensOverlayFilterStateTranslate;
+    BOOL willUseTranslate = self.lensHandler.translateFilterActive;
+
+    BOOL switchToTranslate = !isInTranslate && willUseTranslate;
+    BOOL switchToSelection = isInTranslate && !willUseTranslate;
+
+    if (switchToTranslate) {
+      // The translation filter needs the selection area reset as well as the
+      // bottom sheet hidden, as no auto selection happens at this stage.
+      [self.lensHandler resetSelectionAreaToInitialPosition:^{
+      }];
+      [self.presentationDelegate hideBottomSheet];
+    } else if (switchToSelection || willUseTranslate) {
+      // When transitioning to selection the bottom sheet might be hidden. As
+      // auto selection might be on we need to restore it if hidden.
+      [self.presentationDelegate revealBottomSheetIfHidden];
+    }
+  }
+
+  _currentFilterState = self.lensHandler.translateFilterActive
+                            ? LensOverlayFilterStateTranslate
+                            : LensOverlayFilterStateSelection;
 }
 
 // The lens overlay search request produced an error.
@@ -222,6 +263,11 @@
 
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
     suggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result {
+  [self lensOverlay:lensOverlay hasSuggestSignalsAvailableOnResult:result];
+}
+
+- (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
+    hasSuggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result {
   if (result != _currentLensResult) {
     return;
   }
@@ -327,6 +373,12 @@
     self.omniboxClient->SetLensResultHasThumbnail(!result.isTextSelection);
   }
   [self updateOmniboxText:result.queryText];
+
+  if (result.isGeneratedInTranslate) {
+    [self.presentationDelegate didLoadTranslateResult];
+  } else {
+    [self.presentationDelegate didLoadSelectionResult];
+  }
 }
 
 /// Updates the steady state omnibox text.

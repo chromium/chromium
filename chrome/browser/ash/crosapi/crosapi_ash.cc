@@ -14,7 +14,6 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/digital_goods/digital_goods_ash.h"
 #include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -185,8 +184,6 @@ CrosapiAsh::CrosapiAsh()
       device_oauth2_token_service_ash_(
           std::make_unique<DeviceOAuth2TokenServiceAsh>()),
       diagnostics_service_ash_(std::make_unique<ash::DiagnosticsServiceAsh>()),
-      digital_goods_factory_ash_(
-          std::make_unique<apps::DigitalGoodsFactoryAsh>()),
       document_scan_ash_(std::make_unique<DocumentScanAsh>()),
       download_controller_ash_(std::make_unique<DownloadControllerAsh>()),
       drive_integration_service_ash_(
@@ -385,11 +382,6 @@ void CrosapiAsh::BindDeviceOAuth2TokenService(
 void CrosapiAsh::BindDiagnosticsService(
     mojo::PendingReceiver<mojom::DiagnosticsService> receiver) {
   diagnostics_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindDigitalGoodsFactory(
-    mojo::PendingReceiver<mojom::DigitalGoodsFactory> receiver) {
-  digital_goods_factory_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDocumentScan(

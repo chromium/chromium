@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="1009406586654360474">Google Parol Menecerini açın və ayarlara keçin. "İmport" seçin və import edilmiş parollardan ibarət CSV faylını əlavə edin.</translation>
-<translation id="1010225406377140704">Yeni keçid əldə etmək üçün göndərən şəxslə əlaqə saxlayın</translation>
 <translation id="1011749477052068769">Bura köçürün</translation>
 <translation id="1014147525163127655">Bu cihazda <ph name="ORIGIN" /> üçün giriş açarı yoxdur</translation>
 <translation id="1016498331642356377">Səsinizlə sürətlə axtarın. Bu qısayolu redaktə etmək üçün toxunub saxlayın.</translation>
@@ -1721,7 +1720,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8683039184091909753">şəkil</translation>
 <translation id="869891660844655955">Bitmə tarixi</translation>
 <translation id="8699120352855309748">Bu dillərin tərcümə edilməsini təklif etməyin</translation>
-<translation id="8703372953981978786">Bu keçid işləmir</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8723453889042591629">Səhifəni sürətlə tərcümə edin. Qısayolu redaktə etmək üçün toxunub saxlayın.</translation>
 <translation id="8725066075913043281">Yenidən cəhd edin</translation>

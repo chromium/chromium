@@ -15,22 +15,22 @@ using testing::Return;
 namespace blink {
 
 namespace {
-constexpr char kFifoDelay[] = "WebAudio.AudioDestination.FIFODelay";
-constexpr char kTotalPlayoutDelay[] =
-    "WebAudio.AudioDestination.TotalPlayoutDelay";
-constexpr char kFifoUnderrunCountShort[] =
-    "WebAudio.AudioDestination.FIFOUnderrunCount.Short";
-constexpr char kFifoUnderrunCountIntervals[] =
-    "WebAudio.AudioDestination.FIFOUnderrunCount.Intervals";
+constexpr std::string_view kFifoDelayBase = "FIFODelay";
+constexpr std::string_view kTotalPlayoutDelayBase = "TotalPlayoutDelay";
+constexpr std::string_view kFifoUnderrunCountShortBase =
+    "FIFOUnderrunCount.Short";
+constexpr std::string_view kFifoUnderrunCountIntervalsBase =
+    "FIFOUnderrunCount.Intervals";
 }  // namespace
 
 class AudioDestinationUmaReporterTest
     : public ::testing::TestWithParam<
-          std::tuple<WebAudioLatencyHint, std::string>> {
+          std::tuple<WebAudioLatencyHint, bool, std::string>> {
  public:
   AudioDestinationUmaReporterTest()
       : latency_hint_(std::get<0>(GetParam())),
-        latency_tag_(std::get<1>(GetParam())) {
+        is_audio_worklet_set_(std::get<1>(GetParam())),
+        latency_tag_(std::get<2>(GetParam())) {
     uma_reporter_ =
         std::make_unique<AudioDestinationUmaReporter>(latency_hint_);
   }
@@ -41,9 +41,23 @@ class AudioDestinationUmaReporterTest
       const AudioDestinationUmaReporterTest&) = delete;
   ~AudioDestinationUmaReporterTest() override = default;
 
+  void SetUp() override {
+    if (is_audio_worklet_set_) {
+      uma_reporter_->UpdateMetricNameForDualThreadMode();
+    }
+  }
+
  protected:
+  std::string GetExpectedHistogramName(const std::string_view base_name) {
+    return "WebAudio.AudioDestination." +
+           std::string(is_audio_worklet_set_ ? "DualThread."
+                                             : "SingleThread.") +
+           std::string(base_name);
+  }
+
   base::HistogramTester histogram_tester_;
   WebAudioLatencyHint latency_hint_;
+  bool is_audio_worklet_set_;
   std::string latency_tag_;
   std::unique_ptr<AudioDestinationUmaReporter> uma_reporter_;
 };
@@ -57,16 +71,22 @@ TEST_P(AudioDestinationUmaReporterTest, BasicTest) {
     uma_reporter_->Report();
   }
 
-  histogram_tester_.ExpectBucketCount(kFifoDelay, 10, 500);
-  histogram_tester_.ExpectBucketCount(kFifoDelay + latency_tag_, 10, 500);
-  histogram_tester_.ExpectBucketCount(kFifoDelay, 40, 500);
-  histogram_tester_.ExpectBucketCount(kFifoDelay + latency_tag_, 40, 500);
-  histogram_tester_.ExpectBucketCount(kTotalPlayoutDelay, 11, 500);
-  histogram_tester_.ExpectBucketCount(kTotalPlayoutDelay + latency_tag_,
-                                      11, 500);
-  histogram_tester_.ExpectBucketCount(kTotalPlayoutDelay, 50, 500);
-  histogram_tester_.ExpectBucketCount(kTotalPlayoutDelay + latency_tag_,
-                                      50, 500);
+  histogram_tester_.ExpectBucketCount(GetExpectedHistogramName(kFifoDelayBase),
+                                      10, 500);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kFifoDelayBase) + latency_tag_, 10, 500);
+  histogram_tester_.ExpectBucketCount(GetExpectedHistogramName(kFifoDelayBase),
+                                      40, 500);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kFifoDelayBase) + latency_tag_, 40, 500);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kTotalPlayoutDelayBase), 11, 500);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kTotalPlayoutDelayBase) + latency_tag_, 11, 500);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kTotalPlayoutDelayBase), 50, 500);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kTotalPlayoutDelayBase) + latency_tag_, 50, 500);
 
   uma_reporter_.reset();
 }
@@ -82,10 +102,13 @@ TEST_P(AudioDestinationUmaReporterTest, ShortStreamTest) {
   // Needs destruction to report a premature run.
   uma_reporter_.reset();
 
-  histogram_tester_.ExpectBucketCount(kFifoUnderrunCountShort, 50, 1);
-  histogram_tester_.ExpectBucketCount(kFifoUnderrunCountShort + latency_tag_,
-                                      50, 1);
-  histogram_tester_.ExpectTotalCount(kFifoUnderrunCountIntervals, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kFifoUnderrunCountShortBase), 50, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kFifoUnderrunCountShortBase) + latency_tag_, 50,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      GetExpectedHistogramName(kFifoUnderrunCountIntervalsBase), 0);
 }
 
 TEST_P(AudioDestinationUmaReporterTest, LongStreamTest) {
@@ -106,27 +129,48 @@ TEST_P(AudioDestinationUmaReporterTest, LongStreamTest) {
     uma_reporter_->Report();
   }
 
-  histogram_tester_.ExpectBucketCount(kFifoUnderrunCountIntervals, 500, 1);
   histogram_tester_.ExpectBucketCount(
-      kFifoUnderrunCountIntervals + latency_tag_, 500, 1);
-  histogram_tester_.ExpectBucketCount(kFifoUnderrunCountIntervals, 250, 1);
+      GetExpectedHistogramName(kFifoUnderrunCountIntervalsBase), 500, 1);
   histogram_tester_.ExpectBucketCount(
-      kFifoUnderrunCountIntervals + latency_tag_, 250, 1);
+      GetExpectedHistogramName(kFifoUnderrunCountIntervalsBase) + latency_tag_,
+      500, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kFifoUnderrunCountIntervalsBase), 250, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetExpectedHistogramName(kFifoUnderrunCountIntervalsBase) + latency_tag_,
+      250, 1);
 
   uma_reporter_.reset();
-  histogram_tester_.ExpectTotalCount(kFifoUnderrunCountShort, 0);
+  histogram_tester_.ExpectTotalCount(
+      GetExpectedHistogramName(kFifoUnderrunCountShortBase), 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     AudioDestinationUmaReporterTest,
     ::testing::Values(std::make_tuple(WebAudioLatencyHint::kCategoryInteractive,
-                                      ".LatencyInteractive"),
+                                      /*is_audio_worklet_set=*/false,
+                                      /*latency_tag=*/".LatencyInteractive"),
                       std::make_tuple(WebAudioLatencyHint::kCategoryBalanced,
-                                      ".LatencyBalanced"),
+                                      /*is_audio_worklet_set=*/false,
+                                      /*latency_tag=*/".LatencyBalanced"),
                       std::make_tuple(WebAudioLatencyHint::kCategoryPlayback,
-                                      ".LatencyPlayback"),
+                                      /*is_audio_worklet_set=*/false,
+                                      /*latency_tag=*/".LatencyPlayback"),
                       std::make_tuple(WebAudioLatencyHint::kCategoryExact,
-                                      ".LatencyExactMs")));
+                                      /*is_audio_worklet_set=*/false,
+                                      /*latency_tag=*/".LatencyExactMs"),
+                      std::make_tuple(WebAudioLatencyHint::kCategoryInteractive,
+                                      /*is_audio_worklet_set=*/true,
+                                      /*latency_tag=*/".LatencyInteractive"),
+                      std::make_tuple(WebAudioLatencyHint::kCategoryBalanced,
+                                      /*is_audio_worklet_set=*/true,
+                                      /*latency_tag=*/".LatencyBalanced"),
+                      std::make_tuple(WebAudioLatencyHint::kCategoryPlayback,
+                                      /*is_audio_worklet_set=*/true,
+                                      /*latency_tag=*/".LatencyPlayback"),
+                      std::make_tuple(WebAudioLatencyHint::kCategoryExact,
+                                      /*is_audio_worklet_set=*/true,
+                                      /*latency_tag=*/".LatencyExactMs")));
 
 }  // namespace blink

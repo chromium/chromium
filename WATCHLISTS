@@ -629,6 +629,9 @@
                   '|third_party/blink/renderer/core/css/mediaControl' \
                   '|third_party/blink/web_tests/media/track/'
     },
+    'blink_use_counter': {
+      'filepath': 'third_party/blink/public/mojom/use_counter',
+    },
     'blink_viewport_interaction': {
       'filepath': 'third_party/blink/renderer/core/css/.*viewport' \
                   '|third_party/blink/renderer/core/dom/viewport_arguments' \
@@ -2699,6 +2702,7 @@
                     'glenn@chromium.org',
                     'silviapf@chromium.org',
                     'srirama.m@samsung.com'],
+    'blink_use_counter': ['chrome-galaxy-chromium@google.com'],
     'blink_viewport_interaction': ['kenneth.christiansen@gmail.com',
                                    'bokan@chromium.org'],
     'blink_w3ctests': ['blink-reviews-w3ctests@chromium.org'],

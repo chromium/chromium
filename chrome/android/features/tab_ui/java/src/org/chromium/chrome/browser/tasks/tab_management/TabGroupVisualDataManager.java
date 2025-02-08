@@ -47,7 +47,7 @@ public class TabGroupVisualDataManager {
 
                         TabGroupModelFilter filter = filterFromTab(tabs.get(0));
                         LazyOneshotSupplier<Set<Integer>> remainingRootIds =
-                                filter.getLazyAllRootIdsInComprehensiveModel(tabs);
+                                filter.getLazyAllRootIds(tabs, /* includePendingClosures= */ true);
                         Set<Integer> processedRootIds = new HashSet<>();
                         for (Tab tab : tabs) {
                             int rootId = tab.getRootId();

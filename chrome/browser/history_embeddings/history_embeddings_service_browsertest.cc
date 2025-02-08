@@ -26,7 +26,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/mock_answerer.h"
-#include "components/history_embeddings/mock_embedder.h"
 #include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
@@ -62,8 +61,7 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
         base::BindLambdaForTesting([](content::BrowserContext* context) {
           return HistoryEmbeddingsServiceFactory::
               BuildServiceInstanceForBrowserContextForTesting(
-                  context, std::make_unique<MockEmbedder>(),
-                  std::make_unique<MockAnswerer>(),
+                  context, std::make_unique<MockAnswerer>(),
                   std::make_unique<MockIntentClassifier>());
         }));
 

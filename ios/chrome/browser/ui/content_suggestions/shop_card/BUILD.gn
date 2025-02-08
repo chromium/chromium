@@ -9,8 +9,10 @@ source_set("shop_card") {
     "shop_card_view.mm",
   ]
   deps = [
+    ":price_tracking_shop_card",
     ":shop_card_data",
     "//base:base",
+    "//components/commerce/core:feature_list",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
   ]
@@ -22,6 +24,16 @@ source_set("shop_card_data") {
     "shop_card_data.mm",
   ]
   deps = []
+}
+
+source_set("price_tracking_shop_card") {
+  sources = [
+    "shop_card_price_tracking_view.h",
+    "shop_card_price_tracking_view.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/content_suggestions/tab_resumption:tab_resumption",
+  ]
 }
 
 source_set("unit_tests") {

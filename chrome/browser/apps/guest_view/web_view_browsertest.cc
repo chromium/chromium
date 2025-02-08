@@ -901,9 +901,10 @@ class WebViewTest : public WebViewTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Disabled MPArch tests due to failures; see https://crbug.com/394461920.
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          WebViewTest,
-                         testing::Bool(),
+                         testing::Values(false),
                          WebViewTest::DescribeParams);
 
 // The following test suites are created to group tests based on specific

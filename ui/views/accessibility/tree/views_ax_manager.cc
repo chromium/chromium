@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -93,6 +94,15 @@ void ViewsAXManager::Disable() {
   tree_serializer_.reset();
   alert_window_.reset();
   cache_ = std::make_unique<views::AXAuraObjCache>();
+}
+
+void ViewsAXManager::InitIfNeeded() {
+  if (is_enabled_ || !ui::AXPlatform::GetInstance().GetMode().has_mode(
+                         ui::AXMode::kNativeAPIs)) {
+    return;
+  }
+
+  Enable();
 }
 
 void ViewsAXManager::HandleAlert(const std::string& text) {

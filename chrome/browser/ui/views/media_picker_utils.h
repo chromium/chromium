@@ -18,7 +18,8 @@ class Widget;
 
 class Browser;
 
-bool IsMediaPickerModalWindow(content::WebContents* web_contents);
+// Returns whether the media picker dialog can show as a web modal window.
+bool MediaPickerCanShowAsWebModal(content::WebContents* web_contents);
 
 // Creates a dialog and hides an extension popup if present.
 // If `web_contents` is not a background page then the dialog will be shown

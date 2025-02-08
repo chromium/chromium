@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_metrics_helper.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -696,7 +697,7 @@ int OmniboxViewIOS::GetOmniboxTextLength() const {
   return [field_ displayedText].length;
 }
 
-#pragma mark - OmniboxPopupViewSuggestionsDelegate
+#pragma mark - OmniboxAutocompleteController interactions
 
 void OmniboxViewIOS::OnPopupDidScroll() {
   this->HideKeyboard();

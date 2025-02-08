@@ -121,11 +121,10 @@ class ProfileManagerIOSImplTest : public TestWithProfile {
 // Tests that LoadProfileAsync(...) correctly loads a known Profile, and that
 // the load is not blocking the main thread.
 TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
-  // Pretends that a Profile named `kProfileName1` exists. Required as
-  // LoadProfileAsync(...) won't create new Profiles.
-  attributes_storage().AddProfile(kProfileName1);
+  // Reserve a new profile name and mark it as existing.
+  const std::string profile_name = profile_manager().ReserveNewProfileName();
   attributes_storage().UpdateAttributesForProfileWithName(
-      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+      profile_name, base::BindOnce([](ProfileAttributesIOS attrs) {
         attrs.ClearIsNewProfile();
         return attrs;
       }));
@@ -140,7 +139,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
   {
     base::ScopedDisallowBlocking disallow_blocking;
     const bool success = profile_manager().LoadProfileAsync(
-        kProfileName1,
+        profile_name,
         CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
         CaptureParam(&created_profile));
 
@@ -165,11 +164,10 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync) {
 // Tests that calls LoadProfileAsync(...) on a loaded Profile return the Profile
 // immediately and still don't block the main thread.
 TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Reload) {
-  // Pretends that a Profile named `kProfileName1` exists. Required as
-  // LoadProfileAsync(...) won't create new Profiles.
-  attributes_storage().AddProfile(kProfileName1);
+  // Reserve a new profile name and mark it as existing.
+  const std::string profile_name = profile_manager().ReserveNewProfileName();
   attributes_storage().UpdateAttributesForProfileWithName(
-      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+      profile_name, base::BindOnce([](ProfileAttributesIOS attrs) {
         attrs.ClearIsNewProfile();
         return attrs;
       }));
@@ -186,7 +184,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Reload) {
     {
       base::ScopedDisallowBlocking disallow_blocking;
       const bool success = profile_manager().LoadProfileAsync(
-          kProfileName1,
+          profile_name,
           CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
           CaptureParam(&created_profile));
 
@@ -221,7 +219,7 @@ TEST_F(ProfileManagerIOSImplTest, LoadProfileAsync_Reload) {
     {
       base::ScopedDisallowBlocking disallow_blocking;
       const bool success = profile_manager().LoadProfileAsync(
-          kProfileName1,
+          profile_name,
           CaptureParam(&loaded_profile).Then(run_loop.QuitClosure()),
           CaptureParam(&created_profile));
 
@@ -406,24 +404,23 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync_Reload) {
 // Tests that LoadProfile(...) correctly loads a known Profile in a synchronous
 // fashion (i.e. blocks the main thread).
 TEST_F(ProfileManagerIOSImplTest, LoadProfile) {
-  // Pretends that a Profile named `kProfileName1` exists. Required as
-  // LoadProfile(...) won't create new Profiles.
-  attributes_storage().AddProfile(kProfileName1);
+  // Reserve a new profile name and mark it as existing.
+  const std::string profile_name = profile_manager().ReserveNewProfileName();
   attributes_storage().UpdateAttributesForProfileWithName(
-      kProfileName1, base::BindOnce([](ProfileAttributesIOS attrs) {
+      profile_name, base::BindOnce([](ProfileAttributesIOS attrs) {
         attrs.ClearIsNewProfile();
         return attrs;
       }));
 
   // Load the Profile synchronously.
-  ProfileIOS* profile = profile_manager().LoadProfile(kProfileName1);
+  ProfileIOS* profile = profile_manager().LoadProfile(profile_name);
 
   // The Profile should have been successfully loaded and initialized.
   EXPECT_TRUE(profile);
 
   // Calling LoadProfile(...) a second time should return the same
   // object.
-  EXPECT_EQ(profile, profile_manager().LoadProfile(kProfileName1));
+  EXPECT_EQ(profile, profile_manager().LoadProfile(profile_name));
 }
 
 // Tests that LoadProfile(...) fails to load an unknown Profile.
@@ -476,16 +473,17 @@ TEST_F(ProfileManagerIOSImplTest, CreatingProfileDontOverwritePersonalProfile) {
   ASSERT_TRUE(GetLoadedProfileNames().empty());
   ASSERT_TRUE(attributes_storage().GetPersonalProfileName().empty());
 
-  // Mark kProfileName1 as the personal profile.
-  attributes_storage().AddProfile(kProfileName1);
-  attributes_storage().SetPersonalProfileName(kProfileName1);
-  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), kProfileName1);
+  // Reserve a new profile name and mark it as the personal profile.
+  const std::string profile_name1 = profile_manager().ReserveNewProfileName();
+  attributes_storage().SetPersonalProfileName(profile_name1);
+  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), profile_name1);
 
   // Create another profile, this should not change the personal profile.
-  EXPECT_TRUE(profile_manager().CreateProfile(kProfileName2));
+  const std::string profile_name2 = profile_manager().ReserveNewProfileName();
+  EXPECT_TRUE(profile_manager().CreateProfile(profile_name2));
 
   // The personal profile should not have been changed.
-  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), kProfileName1);
+  EXPECT_EQ(attributes_storage().GetPersonalProfileName(), profile_name1);
 }
 
 // Tests that unloading a profile invoke OnProfileUnloaded(...) on the

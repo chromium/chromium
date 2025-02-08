@@ -11,6 +11,11 @@
 
 namespace flag_descriptions {
 
+const char kAddAddressManuallyName[] =
+    "Enable adding an address manually from Address Settings";
+const char kAddAddressManuallyDescription[] =
+    "When enabled, allows users to manually enter and save an address.";
+
 const char kAppBackgroundRefreshName[] = "Enable app background refresh";
 const char kAppBackgroundRefreshDescription[] =
     "Schedules app background refresh after some minimum period of time has "

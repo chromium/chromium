@@ -49,6 +49,8 @@ class ContextualCueingHelper
       std::unique_ptr<ScopedNudgeDecisionRecorder> decision_recorder,
       const std::string& cue_label);
 
+  bool IsBrowserBlockingNudges(ScopedNudgeDecisionRecorder* recorder);
+
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
       nullptr;

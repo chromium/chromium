@@ -10,7 +10,7 @@
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a137f
-#             android-sm-a235m android-sm-s911u1
+#             android-sm-a236b android-sm-s911u1
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
@@ -153,7 +153,7 @@ crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_no_swiftshader_for_webgl_without_
 # Samsung flake that seems to signal visibility too many times
 crbug.com/380269801 [ android android-sm-s911u1 ] GpuProcess_visibility [ Failure ]
 crbug.com/380269801 [ android android-sm-a137f ] GpuProcess_visibility [ RetryOnFailure ]
-crbug.com/380269801 [ android android-sm-a235m ] GpuProcess_visibility [ RetryOnFailure ]
+crbug.com/380269801 [ android android-sm-a236b ] GpuProcess_visibility [ Failure ]
 crbug.com/380269801 [ android android-pixel-4 ] GpuProcess_visibility [ RetryOnFailure ]
 
 

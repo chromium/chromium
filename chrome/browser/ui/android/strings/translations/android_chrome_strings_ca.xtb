@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1009406586654360474">Obre el gestor de contrasenyes de Google i ves a la configuració. Selecciona Importa i, tot seguit, afegeix el fitxer CSV que conté les teves contrasenyes exportades.</translation>
-<translation id="1010225406377140704">Contacta amb el remitent per demanar-li un enllaç nou</translation>
 <translation id="1011749477052068769">Mou aquí</translation>
 <translation id="1014147525163127655">No hi ha cap clau d'accés per a <ph name="ORIGIN" /> en aquest dispositiu</translation>
 <translation id="1016498331642356377">Cerca ràpidament amb la veu. Mantingues premuda aquesta drecera per editar-la.</translation>
@@ -1723,7 +1722,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8683039184091909753">imatge</translation>
 <translation id="869891660844655955">Data de caducitat</translation>
 <translation id="8699120352855309748">No proposis traduir aquests idiomes</translation>
-<translation id="8703372953981978786">Aquest enllaç no funciona</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8723453889042591629">Tradueix ràpidament aquesta pàgina. Mantingues premuda aquesta drecera per editar-la.</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>

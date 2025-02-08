@@ -462,14 +462,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 createDataSharingTabGroupsDelegate();
 
         CollaborationControllerDelegateFactory collaborationControllerDelegateFactory =
-                (type) -> {
+                (type, runnable) -> {
                     assert getDataSharingTabManager() != null;
                     return new CollaborationControllerDelegateImpl(
                             mActivity,
                             type,
                             getDataSharingTabManager(),
                             SigninAndHistorySyncActivityLauncherImpl.get(),
-                            getLoadingFullscreenCoordinator());
+                            getLoadingFullscreenCoordinator(),
+                            runnable);
                 };
 
         mDataSharingTabManager =

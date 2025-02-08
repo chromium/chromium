@@ -1,9 +1,0 @@
-This is a wdspec test.
-[FAIL] test_other_url[beforeRequestSent]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_other_url[responseStarted]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_two_intercepts
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-Harness: the test ran to completion.
-

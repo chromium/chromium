@@ -24426,6 +24426,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileOmniboxClipboardToURL">
+  <owner>christianxu@chromium.org</owner>
+  <description>
+    Emitted when a URL clipboard match is selected in the omnibox.
+  </description>
+</action>
+
 <action name="MobileOmniboxDeleteGesture">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of the metric.</description>
@@ -26903,6 +26910,14 @@ should be able to be added at any place in this file.
 <action name="MobileToolbarStackViewNewTab">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="MobileToolbarStartReorderGroup">
+  <owner>clank-app-team@google.com</owner>
+  <owner>nemco@google.com</owner>
+  <description>
+    User started to drag a group to re-order in tablet tab strip. Android only.
+  </description>
 </action>
 
 <action name="MobileToolbarStartReorderTab">
@@ -34894,6 +34909,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.ThemesEntryPointClick">
+  <obsolete>Deprecated 02/2025. Themes settings row was removed.</obsolete>
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>

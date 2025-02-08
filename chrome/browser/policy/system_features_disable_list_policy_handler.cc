@@ -41,6 +41,8 @@ const char kGoogleDriveFeature[] = "google_drive";
 const char kGoogleKeepFeature[] = "google_keep";
 const char kGoogleCalendarFeature[] = "google_calendar";
 const char kGoogleChatFeature[] = "google_chat";
+const char kYoutubeFeature[] = "youtube";
+const char kGoogleMapsFeature[] = "google_maps";
 
 const char kBlockedDisableMode[] = "blocked";
 const char kHiddenDisableMode[] = "hidden";
@@ -175,6 +177,12 @@ SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(
   }
   if (system_feature == kGoogleChatFeature) {
     return SystemFeature::kGoogleChat;
+  }
+  if (system_feature == kYoutubeFeature) {
+    return SystemFeature::kYoutube;
+  }
+  if (system_feature == kGoogleMapsFeature) {
+    return SystemFeature::kGoogleMaps;
   }
   LOG(ERROR) << "Unsupported system feature: " << system_feature;
   return SystemFeature::kUnknownSystemFeature;

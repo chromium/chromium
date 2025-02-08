@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Agora non</translation>
 <translation id="100957008357583611">Queres usar a túa localización?</translation>
 <translation id="1010200102790553230">Cargar páxina máis tarde</translation>
+<translation id="1010225406377140704">Ponte en contacto con quen cha enviou para pedirlle que che mande outra</translation>
 <translation id="1011206368273183593">Preparando ficheiros</translation>
 <translation id="1014509239502131234">Desfacendo resultado</translation>
 <translation id="1015730422737071372">Proporcionar información adicional</translation>
@@ -1164,6 +1165,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3076865167425975822">Sistemas operativos</translation>
 <translation id="3080254622891793721">Libro gráfico</translation>
 <translation id="3082007635241601060">Permite que Google use os teus carros para atopar descontos personalizados cando haxa algún dispoñible</translation>
+<translation id="3086269988715347183">Non aprobaches <ph name="BLOCKED_URL" /> anteriormente</translation>
 <translation id="3086579638707268289">Estase supervisando a túa actividade na Web</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3090667236485488075">Cristal</translation>
@@ -1239,6 +1241,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3203025201812691413">O URL non pode estar baleiro</translation>
 <translation id="320323717674993345">Cancelar pago</translation>
 <translation id="3203366800380907218">Da Web</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> pode incluír contido non adecuado para menores</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3208701679386778924">Envía un informe para que poidamos mellorar as próximas actualizacións de ChromeOS.</translation>
 <translation id="3209034400446768650">Nesta páxina pódense aplicar cargos</translation>
@@ -2973,6 +2976,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6254436959401408446">Non hai memoria suficiente para abrir esta páxina</translation>
 <translation id="625463612687472648">Deixar de permitir</translation>
 <translation id="6259156558325130047">&amp;Refacer o cambio de orde</translation>
+<translation id="6259282549512536479">Bloqueaches <ph name="BLOCKED_URL" /> anteriormente</translation>
 <translation id="6263376278284652872">Marcadores de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Descargar de todos os modos</translation>
 <translation id="6264485186158353794">Volver para estar a salvo</translation>
@@ -3105,6 +3109,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6465306955648956876">Xestiona os contrasinais…</translation>
 <translation id="646789491285795429">Xa estás facendo un seguimento deste produto</translation>
 <translation id="6468485451923838994">Tipos de letra</translation>
+<translation id="6469702164109431067">Contrasinais e claves de acceso</translation>
 <translation id="647261751007945333">Políticas de dispositivo</translation>
 <translation id="6472874020827012601">Tecido (mate)</translation>
 <translation id="647330291963761005">Instalando actualizacións</translation>
@@ -4348,6 +4353,7 @@ Detalles adicionais:
 <translation id="8699041776323235191">Dispositivo HID</translation>
 <translation id="8699985386408839112">Sobre Kaku-1</translation>
 <translation id="8702965365666568344">Cinta de escuma para montaxe</translation>
+<translation id="8703372953981978786">Esta ligazón non funciona</translation>
 <translation id="8703575177326907206">A túa conexión con <ph name="DOMAIN" /> non está cifrada.</translation>
 <translation id="8705331520020532516">Número de serie</translation>
 <translation id="8706806585855470492">Poderás compartir grupos de pestanas, unirte a eles e colaborar</translation>

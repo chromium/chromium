@@ -4,15 +4,9 @@
 
 module enterprise_companion.mojom;
 
-// Next MinVersion: 2
+import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
 
-// A specific reason for the client to initiate the policy fetch request.
-[Stable, Extensible]
-enum PolicyFetchReason {
-    [Default] UNSPECIFIED = 0,
-    USER_REQUEST,
-    SCHEDULED,
-};
+// Next MinVersion: 2
 
 [Stable] struct Status {
     // The numeric identifier of the status space corresponding to the variant

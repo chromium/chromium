@@ -55,11 +55,17 @@ bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
   if (!input.ReadSessionTypes(&session_types))
     return false;
 
+  base::Version version;
+  if (!input.ReadVersion(&version)) {
+    return false;
+  }
+
   // |encryption_schemes|, |session_types| and |audio_codecs| are converted
   // to a base::flat_map implicitly.
-  *output = media::CdmCapability(
-      std::move(audio_codecs), std::move(video_codecs),
-      std::move(encryption_schemes), std::move(session_types));
+  *output =
+      media::CdmCapability(std::move(audio_codecs), std::move(video_codecs),
+                           std::move(encryption_schemes),
+                           std::move(session_types), std::move(version));
   return true;
 }
 

@@ -2606,16 +2606,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.IsErrorNavigation" enum="Boolean"
-    expires_after="2026-01-29">
+<histogram name="History.Is4xxOr5xxStatusCode" enum="Boolean"
+    expires_after="2026-01-31">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
-    Whether HistoryTabHelper::DidFinishNavigation() returned early due to a
-    navigation resulting in a 4XX - 5XX status code. This value is recorded in
-    both the chrome/ and ios/ code paths. This will help us determine the number
-    of error navigations that could potentially be added to the HistoryDB if the
-    early return is removed.
+    Whether HistoryTabHelper::DidFinishNavigation() encountered a navigation
+    with a 4XX - 5XX status code. This value is recorded in both the chrome/ and
+    ios/ code paths. This will help us determine the number of error navigations
+    that could potentially be added to the HistoryDB if the early return is
+    removed.
   </summary>
 </histogram>
 
@@ -2730,6 +2730,18 @@ chromium-metrics-reviews@google.com.
     Logs the type of the History result clicked from History UI surfaces. Note,
     this does NOT include any results clicked from the omnibox suggest surface,
     even if they are History or @history site search suggestions.
+  </summary>
+</histogram>
+
+<histogram name="History.ShouldUpdateHistory" enum="Boolean"
+    expires_after="2026-01-29">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>janiceliu@chromium.org</owner>
+  <summary>
+    Whether HistoryTabHelper::DidFinishNavigation() returned early due to
+    !ShouldUpdateHistory() in chrome/ or IsError() in ios/. This will help us
+    determine the number of navigations that could potentially be added to the
+    HistoryDB if the early returns are removed.
   </summary>
 </histogram>
 

@@ -124,6 +124,19 @@ void ScrollMarkerPseudoElement::AttachLayoutTree(AttachContext& context) {
   }
 }
 
+void ScrollMarkerPseudoElement::SetHasFocusWithinUpToAncestor(
+    bool has_focus_within,
+    Element* ancestor,
+    bool need_snap_container_search) {
+  DCHECK(scroll_marker_group_);
+  if (this != ancestor) {
+    SetHasFocusWithin(has_focus_within);
+    FocusWithinStateChanged();
+  }
+  scroll_marker_group_->SetHasFocusWithinUpToAncestor(
+      has_focus_within, ancestor, need_snap_container_search);
+}
+
 void ScrollMarkerPseudoElement::Dispose() {
   SetScrollMarkerGroup(nullptr);
   PseudoElement::Dispose();

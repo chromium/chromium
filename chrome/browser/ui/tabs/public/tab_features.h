@@ -153,7 +153,7 @@ class TabFeatures {
   }
 
   tab_groups::SavedTabGroupWebContentsListener*
-  saved_tab_group_web_contents_listener() {
+  saved_tab_group_web_contents_listener() const {
     return saved_tab_group_web_contents_listener_.get();
   }
 

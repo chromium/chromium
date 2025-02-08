@@ -32,10 +32,7 @@ suite('ExperimentalAdvancedPage', function() {
     userAnnotationManager = new TestUserAnnotationsManagerProxyImpl();
     UserAnnotationsManagerProxyImpl.setInstance(userAnnotationManager);
 
-    loadTimeData.overrideValues({
-      showAdvancedFeaturesMainControl: true,
-      showPasswordChangeControl: true,
-    });
+    loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -81,13 +78,12 @@ suite('ExperimentalAdvancedPage', function() {
       showCompareControl: true,
       showComposeControl: true,
       showTabOrganizationControl: false,
-      showWallpaperSearchControl: false,
       showPasswordChangeControl: false,
     });
     resetRouterForTesting();
     await createPage();
 
-    assertEquals(7, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
+    assertEquals(6, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertFalse(isChildVisible(page, '#historySearchRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -104,10 +100,6 @@ suite('ExperimentalAdvancedPage', function() {
     assertFalse(isChildVisible(page, '#tabOrganizationRowV2'));
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.TabOrganization', false);
-
-    assertFalse(isChildVisible(page, '#wallpaperSearchRowV2'));
-    await verifyFeatureVisibilityMetrics(
-        'Settings.AiPage.ElementVisibility.Themes', false);
 
     assertTrue(isChildVisible(page, '#autofillAiRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -136,12 +128,11 @@ suite('ExperimentalAdvancedPage', function() {
       showCompareControl: false,
       showComposeControl: false,
       showTabOrganizationControl: true,
-      showWallpaperSearchControl: true,
       showPasswordChangeControl: true,
     });
     resetRouterForTesting();
     await createPage();
-    assertEquals(7, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
+    assertEquals(6, metricsBrowserProxy.getCallCount('recordBooleanHistogram'));
 
     assertTrue(isChildVisible(page, '#historySearchRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -158,10 +149,6 @@ suite('ExperimentalAdvancedPage', function() {
     assertTrue(isChildVisible(page, '#tabOrganizationRowV2'));
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.TabOrganization', true);
-
-    assertTrue(isChildVisible(page, '#wallpaperSearchRowV2'));
-    await verifyFeatureVisibilityMetrics(
-        'Settings.AiPage.ElementVisibility.Themes', true);
 
     assertFalse(isChildVisible(page, '#autofillAiRowV2'));
     await verifyFeatureVisibilityMetrics(
@@ -360,27 +347,10 @@ suite('ExperimentalAdvancedPage', function() {
     assertEquals(routes.AUTOFILL_AI, Router.getInstance().getCurrentRoute());
   });
 
-  test('WallpaperSearchRow', async () => {
-    loadTimeData.overrideValues({
-      showWallpaperSearchControl: true,
-    });
-    await createPage();
-
-    const wallpaperSearchRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#wallpaperSearchRowV2');
-    assertTrue(!!wallpaperSearchRow);
-    assertTrue(isVisible(wallpaperSearchRow));
-
-    wallpaperSearchRow.click();
-    await verifyFeatureInteractionMetrics(
-        AiPageInteractions.WALLPAPER_SEARCH_CLICK,
-        'Settings.AiPage.ThemesEntryPointClick');
-
-    const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals(url, loadTimeData.getString('wallpaperSearchLearnMoreUrl'));
-  });
-
   test('PasswordChangeRow', async () => {
+    loadTimeData.overrideValues({
+      showPasswordChangeControl: true,
+    });
     await createPage();
 
     const passwordChangeRow =

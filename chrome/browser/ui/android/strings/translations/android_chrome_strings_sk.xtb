@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1009406586654360474">Otvorte Správcu hesiel Google a prejdite do nastavení. Vyberte Importovať a pridajte súbor CSV s exportovanými heslami.</translation>
-<translation id="1010225406377140704">Požiadajte odosielateľa o nový odkaz</translation>
 <translation id="1011749477052068769">Presunúť sem</translation>
 <translation id="1014147525163127655">V tomto zariadení nie sú žiadne prístupové kľúče pre aplikáciu <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Skratka na rýchle vyhľadávanie hlasom. Ak ju chcete upraviť, pridržte ju.</translation>
@@ -1723,7 +1722,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8683039184091909753">obrázok</translation>
 <translation id="869891660844655955">Koniec platnosti</translation>
 <translation id="8699120352855309748">Neponúkať preklad týchto jazykov</translation>
-<translation id="8703372953981978786">Tento odkaz nefunguje</translation>
 <translation id="8712637175834984815">Dobre</translation>
 <translation id="8723453889042591629">Rýchlo preložte túto stránku. Ak chcete túto skratku upraviť, pridržte ju.</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>

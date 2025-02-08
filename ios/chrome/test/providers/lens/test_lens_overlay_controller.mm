@@ -51,4 +51,8 @@
   // NO-OP
 }
 
+- (BOOL)translateFilterActive {
+  return NO;
+}
+
 @end

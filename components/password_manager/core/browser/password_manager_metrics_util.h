@@ -635,23 +635,6 @@ enum class PasswordAccessLossWarningUserActions {
   kMaxValue = kDismissed,
 };
 
-// Represents different causes for showing the password migration warning.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Always keep this enum in sync with the
-// corresponding PasswordMigrationWarningTriggers in enums.xml.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.pwd_migration
-enum class PasswordMigrationWarningTriggers {
-  kChromeStartup = 0,
-  kPasswordSaveUpdateMessage = 1,
-  kPasswordSettings = 2,
-  kTouchToFill = 3,
-  kKeyboardAcessorySheet = 4,
-  kKeyboardAcessoryBar = 5,
-  kAllPasswords = 6,
-  kMaxValue = kAllPasswords,
-};
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class PasswordManagerShortcutMetric {

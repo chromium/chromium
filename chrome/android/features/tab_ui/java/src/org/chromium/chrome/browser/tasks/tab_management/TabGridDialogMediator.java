@@ -72,6 +72,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
+import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.PersistentMessageObserver;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
@@ -275,9 +276,8 @@ public class TabGridDialogMediator
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
         mCollaborationService = CollaborationServiceFactory.getForProfile(mOriginalProfile);
-        // TODO(crbug.com/377366460): This checks only the flag and might break for join only cases.
-        // Figure out what to do here.
-        if (mTabGroupSyncService != null && ChromeFeatureList.isEnabled(DATA_SHARING)) {
+        if (mTabGroupSyncService != null
+                && mCollaborationService.getServiceStatus().isAllowedToJoin()) {
             mDataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
             mTransitiveSharedGroupObserver =
                     new TransitiveSharedGroupObserver(
@@ -1029,7 +1029,7 @@ public class TabGridDialogMediator
     }
 
     private void handleShareClick() {
-        assert ChromeFeatureList.isEnabled(DATA_SHARING);
+        assert mCollaborationService.getServiceStatus().isAllowedToJoin();
 
         saveCurrentGroupModifiedTitle();
         String tabGroupDisplayName = mModel.get(TabGridDialogProperties.HEADER_TITLE);
@@ -1043,8 +1043,7 @@ public class TabGridDialogMediator
         if (mTransitiveSharedGroupObserver == null) return;
 
         boolean isIncognitoBranded = mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded();
-        if (!ChromeFeatureList.isEnabled(DATA_SHARING)
-                || isIncognitoBranded
+        if (isIncognitoBranded
                 || !mCollaborationService.getServiceStatus().isAllowedToJoin()
                 || mCurrentTabId == Tab.INVALID_TAB_ID) {
             mTransitiveSharedGroupObserver.setTabGroupId(/* tabGroupId= */ null);
@@ -1072,7 +1071,7 @@ public class TabGridDialogMediator
     }
 
     private boolean shouldShowSendFeedback() {
-        return ChromeFeatureList.isEnabled(DATA_SHARING)
+        return mCollaborationService.getServiceStatus().isAllowedToJoin()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         DATA_SHARING, SHOW_SEND_FEEDBACK_PARAM, false);
     }
@@ -1341,13 +1340,25 @@ public class TabGridDialogMediator
                 mMessagingBackendService.getMessagesForGroup(
                         eitherGroupId,
                         /* type= */ Optional.of(PersistentNotificationType.DIRTY_TAB));
+
         Map<Integer, Integer> collaborationEventCounts = new HashMap<>();
         for (PersistentMessage message : messages) {
             collaborationEventCounts.merge(message.collaborationEvent, 1, Integer::sum);
         }
         int tabsAdded = collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_ADDED, 0);
         int tabsChanged = collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_UPDATED, 0);
-        int tabsClosed = collaborationEventCounts.getOrDefault(CollaborationEvent.TAB_REMOVED, 0);
+
+        // Query for tombstoned entries from backend and look for the tab removals.
+        List<PersistentMessage> tombstonedMessages =
+                mMessagingBackendService.getMessages(
+                        Optional.of(PersistentNotificationType.TOMBSTONED));
+        int tabsClosed = 0;
+        for (PersistentMessage message : tombstonedMessages) {
+            if (message.collaborationEvent != CollaborationEvent.TAB_REMOVED) continue;
+            if (!currentTabGroupId.equals(MessageUtils.extractTabGroupId(message))) continue;
+            tabsClosed++;
+        }
+
         if (tabsAdded == 0 && tabsChanged == 0 && tabsClosed == 0) {
             removeCollaborationActivityMessageCard();
             return;

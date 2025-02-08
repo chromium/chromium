@@ -88,21 +88,8 @@ std::string GetUnifiedPlatform() {
 #endif
 }
 
-}  // namespace
-
-std::string GetUnifiedPlatformForTesting() {
-  return GetUnifiedPlatform();
-}
-
-// Inaccurately named for historical reasons
-std::string GetWebKitVersion() {
-  return base::StringPrintf("537.36 (%s)", CHROMIUM_GIT_REVISION);
-}
-
-std::string GetChromiumGitRevision() {
-  return CHROMIUM_GIT_REVISION;
-}
-
+// Builds a string that describes the CPU type when available (or blank
+// otherwise).
 std::string BuildCpuInfo() {
   std::string cpuinfo;
 
@@ -141,8 +128,85 @@ std::string BuildCpuInfo() {
   return cpuinfo;
 }
 
-// Return the CPU architecture in Windows/Mac/POSIX/Fuchsia and the empty string
-// on Android or if unknown.
+// Returns the OS version.
+// On Android, the string will only include the build number and model if
+// relevant enums indicate they should be included.
+std::string GetOSVersion(IncludeAndroidBuildNumber include_android_build_number,
+                         IncludeAndroidModel include_android_model) {
+  std::string os_version;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
+  int32_t os_major_version = 0;
+  int32_t os_minor_version = 0;
+  int32_t os_bugfix_version = 0;
+  base::SysInfo::OperatingSystemVersionNumbers(
+      &os_major_version, &os_minor_version, &os_bugfix_version);
+
+#if BUILDFLAG(IS_MAC)
+  // A significant amount of web content breaks if the reported "Mac
+  // OS X" major version number is greater than 10. Continue to report
+  // this as 10_15_7, the last dot release for that macOS version.
+  if (os_major_version > 10) {
+    os_major_version = 10;
+    os_minor_version = 15;
+    os_bugfix_version = 7;
+  }
+#endif
+
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  std::string android_version_str = base::SysInfo::OperatingSystemVersion();
+  std::string android_info_str =
+      GetAndroidOSInfo(include_android_build_number, include_android_model);
+#endif
+
+  base::StringAppendF(&os_version,
+#if BUILDFLAG(IS_WIN)
+                      "%d.%d", os_major_version, os_minor_version
+#elif BUILDFLAG(IS_MAC)
+                      "%d_%d_%d", os_major_version, os_minor_version,
+                      os_bugfix_version
+#elif BUILDFLAG(IS_IOS)
+                      "%d_%d", os_major_version, os_minor_version
+#elif BUILDFLAG(IS_CHROMEOS)
+                      "%d.%d.%d", os_major_version, os_minor_version,
+                      os_bugfix_version
+#elif BUILDFLAG(IS_ANDROID)
+                      "%s%s", android_version_str.c_str(),
+                      android_info_str.c_str()
+#else
+                      ""
+#endif
+  );
+  return os_version;
+}
+
+// Builds a User-agent compatible string that describes the OS and CPU type.
+// On Android, the string will only include the build number and model if
+// relevant enums indicate they should be included.
+std::string BuildOSCpuInfo(
+    IncludeAndroidBuildNumber include_android_build_number,
+    IncludeAndroidModel include_android_model) {
+  return BuildOSCpuInfoFromOSVersionAndCpuType(
+      GetOSVersion(include_android_build_number, include_android_model),
+      BuildCpuInfo());
+}
+
+}  // namespace
+
+std::string GetUnifiedPlatformForTesting() {
+  return GetUnifiedPlatform();
+}
+
+// Inaccurately named for historical reasons
+std::string GetWebKitVersion() {
+  return base::StringPrintf("537.36 (%s)", CHROMIUM_GIT_REVISION);
+}
+
+std::string GetChromiumGitRevision() {
+  return CHROMIUM_GIT_REVISION;
+}
+
 std::string GetCpuArchitecture() {
 #if BUILDFLAG(IS_WIN)
   base::win::OSInfo::WindowsArchitecture windows_architecture =
@@ -194,8 +258,6 @@ std::string GetCpuArchitecture() {
   return std::string();
 }
 
-// Return the CPU bitness in Windows/Mac/POSIX/Fuchsia and the empty string
-// on Android.
 std::string GetCpuBitness() {
 #if BUILDFLAG(IS_WIN)
   return (base::win::OSInfo::GetInstance()->GetArchitecture() ==
@@ -211,64 +273,6 @@ std::string GetCpuBitness() {
 #else
 #error Unsupported platform
 #endif
-}
-
-std::string GetOSVersion(IncludeAndroidBuildNumber include_android_build_number,
-                         IncludeAndroidModel include_android_model) {
-  std::string os_version;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  int32_t os_major_version = 0;
-  int32_t os_minor_version = 0;
-  int32_t os_bugfix_version = 0;
-  base::SysInfo::OperatingSystemVersionNumbers(
-      &os_major_version, &os_minor_version, &os_bugfix_version);
-
-#if BUILDFLAG(IS_MAC)
-  // A significant amount of web content breaks if the reported "Mac
-  // OS X" major version number is greater than 10. Continue to report
-  // this as 10_15_7, the last dot release for that macOS version.
-  if (os_major_version > 10) {
-    os_major_version = 10;
-    os_minor_version = 15;
-    os_bugfix_version = 7;
-  }
-#endif
-
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  std::string android_version_str = base::SysInfo::OperatingSystemVersion();
-  std::string android_info_str =
-      GetAndroidOSInfo(include_android_build_number, include_android_model);
-#endif
-
-  base::StringAppendF(&os_version,
-#if BUILDFLAG(IS_WIN)
-                      "%d.%d", os_major_version, os_minor_version
-#elif BUILDFLAG(IS_MAC)
-                      "%d_%d_%d", os_major_version, os_minor_version,
-                      os_bugfix_version
-#elif BUILDFLAG(IS_IOS)
-                      "%d_%d", os_major_version, os_minor_version
-#elif BUILDFLAG(IS_CHROMEOS)
-                      "%d.%d.%d", os_major_version, os_minor_version,
-                      os_bugfix_version
-#elif BUILDFLAG(IS_ANDROID)
-                      "%s%s", android_version_str.c_str(),
-                      android_info_str.c_str()
-#else
-                      ""
-#endif
-  );
-  return os_version;
-}
-
-std::string BuildOSCpuInfo(
-    IncludeAndroidBuildNumber include_android_build_number,
-    IncludeAndroidModel include_android_model) {
-  return BuildOSCpuInfoFromOSVersionAndCpuType(
-      GetOSVersion(include_android_build_number, include_android_model),
-      BuildCpuInfo());
 }
 
 std::string BuildOSCpuInfoFromOSVersionAndCpuType(const std::string& os_version,
@@ -337,9 +341,7 @@ std::string GetReducedUserAgent(bool mobile, std::string major_version) {
 
 std::string BuildUnifiedPlatformUserAgentFromProduct(
     const std::string& product) {
-  std::string os_info;
-  base::StringAppendF(&os_info, "%s", GetUnifiedPlatform().c_str());
-  return BuildUserAgentFromOSAndProduct(os_info, product);
+  return BuildUserAgentFromOSAndProduct(GetUnifiedPlatform(), product);
 }
 
 std::string BuildUserAgentFromProduct(const std::string& product) {

@@ -222,6 +222,7 @@ const char kSafetyCheck[] = "SafetyCheck";
 const char kTabResumption[] = "TabResumption";
 const char kParcelTracking[] = "ParcelTracking";
 const char kPriceTrackingPromo[] = "PriceTrackingPromo";
+const char kShopCard[] = "ShopCard";
 
 // Input Context keys for freshness for IOS modules.
 const char kMostVisitedTilesFreshness[] = "most_visited_tiles_freshness";

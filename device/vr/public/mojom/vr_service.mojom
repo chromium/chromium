@@ -662,14 +662,34 @@ struct XRTrackedImagesData {
   array<bool>? image_trackable_scores;
 };
 
+// Information required for rendering, used by ImmersiveOverlay.
+struct XRRenderInfo
+{
+  // The frame_id maps frame data to a frame arriving from the compositor. IDs
+  // will be reused after the frame arrives from the compositor. Negative IDs
+  // imply no mapping.
+  int16 frame_id;
+
+  // The viewer pose of this frame may be null if the device lost tracking.
+  VRPose? mojo_from_viewer;
+
+  // Information about all the views in a frame. Views can appear in any order
+  // so it should not be assumed the left eye comes before the right eye. It is
+  // valid for the array to contain multiple views of the same eye. An example
+  // of this scenario are displays that have dominant left/right eyes and inset
+  // left/right eyes. In these scenarios, the dominant views comes before the
+  // inset views in the array.
+  array<XRView> views;
+};
+
 // The data needed for each animation frame of an XRSession.
 struct XRFrameData {
   // General XRSession value
 
-  // The viewer pose of this frame. The pose may be null if the device lost
-  // tracking. The XRFrameData can still have other data, such as pass through
-  // camera image.
-  VRPose? mojo_from_viewer;
+  // Contains information necessary to render the frame. Note that while the
+  // embedded mojo_from_viewer may be null if the device lost tracking, other
+  // data may still be valid.
+  XRRenderInfo render_info;
   // Time delta from an unspecified origin.
   mojo_base.mojom.TimeDelta time_delta;
   // The buffer_shared_image is used for sending imagery data back and forth
@@ -699,19 +719,6 @@ struct XRFrameData {
   gfx.mojom.Transform? mojo_from_floor;
 
   // Exclusive session values
-
-  // The frame_id maps frame data to a frame arriving from the compositor. IDs
-  // will be reused after the frame arrives from the compositor. Negative IDs
-  // imply no mapping.
-  int16 frame_id;
-
-  // Information about all the views in a frame. Views can appear in any order
-  // so it should not be assumed the left eye comes before the right eye. It is
-  // valid for the array to contain multiple views of the same eye. An example
-  // of this scenario are displays that have dominant left/right eyes and inset
-  // left/right eyes. In these scenarios, the dominant views comes before the
-  // inset views in the array.
-  array<XRView> views;
 
   // For immersive sessions only, reports the state of all active input devices
   // at the time of this frame. all controller state, including current

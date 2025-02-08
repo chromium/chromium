@@ -10,6 +10,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/accessibility_state_provider.h"
 #include "chrome/common/channel_info.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_log.h"
@@ -59,6 +60,9 @@ void ChromeBackgroundTracingMetricsProvider::DoInit() {
           metrics::MetricsLogUploader::UMA, cros_system_profile_provider_));
   chromeos_metrics_provider_ = system_profile_providers_.back().get();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  system_profile_providers_.emplace_back(
+      std::make_unique<AccessibilityStateProvider>());
 
   // Metrics service can be null in some testing contexts.
   if (g_browser_process->metrics_service() != nullptr) {

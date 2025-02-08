@@ -46,7 +46,7 @@ StudentHeartbeatRequest ::~StudentHeartbeatRequest() = default;
 GURL StudentHeartbeatRequest::GetURL() const {
   const auto url = GURL(url_base_).Resolve(base::ReplaceStringPlaceholders(
       kStudentHeartbeatUrlTemplate,
-      {session_id_, gaia_id_.ToString(), device_id_},
+      {session_id_, gaia_id_.ToString(), device_id_, student_group_id_},
       /*=offsets*/ nullptr));
   return url;
 }

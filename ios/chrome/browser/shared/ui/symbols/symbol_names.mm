@@ -240,6 +240,7 @@ NSString* const kShippingBoxSymbol = @"shippingbox";
 NSString* const kSliderHorizontalSymbol = @"slider.horizontal.3";
 NSString* const kMacbookAndIPhoneSymbol = @"macbook.and.iphone";
 NSString* const kCheckmarkShieldSymbol = @"checkmark.shield";
+NSString* const kListBulletSymbol = @"list.bullet";
 NSString* const kListBulletClipboardSymbol = @"list.bullet.clipboard";
 NSString* const kListBulletRectangleSymbol = @"list.bullet.rectangle.portrait";
 NSString* const kBoxTruckFillSymbol = @"box.truck.fill";

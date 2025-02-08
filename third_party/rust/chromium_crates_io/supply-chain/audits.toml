@@ -703,6 +703,11 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.23 -> 4.5.27"
 
+[[audits.clap]]
+who = "Liza Burakova <liza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.27 -> 4.5.28"
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -2975,6 +2980,11 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.134 -> 1.0.137"
 
+[[audits.serde_json]]
+who = "Liza Burakova <liza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.137 -> 1.0.138"
+
 [[audits.serde_json_lenient]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -3344,6 +3354,11 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.14 -> 1.0.15"
 notes = "No changes relevant to any of these criteria."
+
+[[audits.unicode-ident]]
+who = "Liza Burakova <liza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.15 -> 1.0.16"
 
 [[audits.unicode-linebreak]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"

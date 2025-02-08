@@ -376,6 +376,7 @@ public class TabGridDialogView extends FrameLayout {
             if (view == TabGridDialogView.this) {
                 continue;
             }
+            // TODO(b/395153186) : Investigate and see if any changes needed for join only flow.
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
                 assert mAccessibilityImportanceMap.containsKey(view);
             }

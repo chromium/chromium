@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="1009406586654360474">Google Нууц үгний менежерийг нээж, тохиргоо руу очно уу. “Импортлох“-ыг сонгож, таны экспортолсон нууц үгнүүдийг агуулсан CSV файлыг нэмнэ үү.</translation>
-<translation id="1010225406377140704">Шинэ холбоос хүсэхийн тулд илгээгчтэй холбогдоно уу</translation>
 <translation id="1011749477052068769">Ийш зөөх</translation>
 <translation id="1014147525163127655">Энэ төхөөрөмжид <ph name="ORIGIN" />-д зориулсан нэвтрэх түлхүүр байхгүй байна</translation>
 <translation id="1016498331642356377">Дуу хоолойгоороо шуурхай хайгаарай. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
@@ -1723,7 +1722,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8683039184091909753">зураг</translation>
 <translation id="869891660844655955">Дуусах хугацаа</translation>
 <translation id="8699120352855309748">Эдгээр хэлийг орчуулахыг бүү санал болго</translation>
-<translation id="8703372953981978786">Энэ холбоос ажиллахгүй байна</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8723453889042591629">Энэ хуудсыг шуурхай орчуулаарай. Энэ товчлолыг засахын тулд хүрээд удаан дарна уу.</translation>
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>

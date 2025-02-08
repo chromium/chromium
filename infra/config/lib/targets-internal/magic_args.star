@@ -59,7 +59,7 @@ _DEVICE_SUBSTITUTIONS = {
 _ANDROID_VULKAN_DEVICES = {
     # Pixel 6 phones map to multiple GPU models.
     "oriole": _gpu_device(vendor = "13b5", device = "92020010,92020000"),
-    "a23": _gpu_device(vendor = "5143", device = "6010001"),
+    "a23xq": _gpu_device(vendor = "5143", device = "6010901"),
 }
 
 def _get_dimensions(spec_value):
@@ -292,6 +292,7 @@ def _gpu_telemetry_no_root_for_unrooted_devices(_, settings, spec_value):
         "a13",
         "a13ve",
         "a23",
+        "a23xq",
         "dm1q",  # Samsung S23.
         "devonn",  # Motorola Moto G Power 5G.
     )

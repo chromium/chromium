@@ -159,7 +159,10 @@ component("policy") {
       "win/sandbox_win.cc",
       "win/sandbox_win.h",
     ]
-    deps += [ "//sandbox/win:sandbox" ]
+    deps += [
+      ":win_hook_util",
+      "//sandbox/win:sandbox",
+    ]
   }
   if (is_fuchsia) {
     sources += [
@@ -201,6 +204,20 @@ buildflag_header("chromecast_sandbox_allowlist_buildflags") {
   flags = [ "ENABLE_CHROMECAST_GPU_SANDBOX_ALLOWLIST=$is_castos" ]
 }
 
+if (is_win) {
+  static_library("win_hook_util") {
+    # This library is used and tested in chrome_elf and must not dep on anything
+    # beyond //base:base_static.
+    sources = [
+      "win/hook_util/hook_util.cc",
+      "win/hook_util/hook_util.h",
+    ]
+    deps = [
+      "//base:base_static",  # pe_image
+    ]
+  }
+}
+
 # TODO(crbug.com/40136586): Figure out a better organization for //sandbox
 # tests.
 source_set("tests") {
@@ -230,6 +247,22 @@ source_set("tests") {
       "//base/test/data/pe_image/pe_image_test_32.dll",
       "//base/test/data/pe_image/pe_image_test_64.dll",
       "//base/test/data/pe_image/pe_image_test_arm64.dll",
+    ]
+  }
+}
+
+source_set("integration_tests") {
+  testonly = true
+  if (is_win) {
+    sources = [ "win/sandbox_warmup_unittest.cc" ]
+    deps = [
+      ":policy",
+      ":sandbox_test_utils",
+      "//base",
+      "//base/test:test_support",
+      "//sandbox/win:sandbox",
+      "//sandbox/win:test_support",
+      "//testing/gtest",
     ]
   }
 }

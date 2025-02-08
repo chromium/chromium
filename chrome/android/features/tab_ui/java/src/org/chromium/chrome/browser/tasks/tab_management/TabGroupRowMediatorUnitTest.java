@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CLUSTER_DATA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DESTROYABLE;
@@ -34,7 +35,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,9 +42,10 @@ import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -64,13 +65,14 @@ public class TabGroupRowMediatorUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private DataSharingService mDataSharingService;
+    @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private CollaborationService mCollaborationService;
+    @Mock private ServiceStatus mServiceStatus;
     @Mock private PaneManager mPaneManager;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private FaviconResolver mFaviconResolver;
-    @Mock private CoreAccountInfo mCoreAccountInfo;
     @Mock private Supplier<Integer> mFetchGroupState;
 
     private GURL mUrl1;
@@ -89,10 +91,15 @@ public class TabGroupRowMediatorUnitTest {
         mUrl3 = JUnitTestGURLs.URL_3;
         mUrl4 = JUnitTestGURLs.BLUE_1;
         mUrl5 = JUnitTestGURLs.BLUE_2;
-        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
+        mSharedGroupTestHelper =
+                new SharedGroupTestHelper(mDataSharingService, mCollaborationService);
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+
+        when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+        when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
     }
 
     private PropertyModel buildTestModel(GURL... urls) {
@@ -118,7 +125,6 @@ public class TabGroupRowMediatorUnitTest {
                         mModalDialogManager,
                         mActionConfirmationManager,
                         mFaviconResolver,
-                        LazyOneshotSupplier.fromValue(mCoreAccountInfo),
                         mFetchGroupState);
         return mediator.getModel();
     }
@@ -202,8 +208,8 @@ public class TabGroupRowMediatorUnitTest {
     @Test
     @SmallTest
     public void testCollaborationButOnlyOneUser() {
-        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
         mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
 
         assertFalse(propertyModel.get(DISPLAY_AS_SHARED));
         assertNull(propertyModel.get(SHARED_IMAGE_TILES_VIEW));
@@ -212,8 +218,8 @@ public class TabGroupRowMediatorUnitTest {
     @Test
     @SmallTest
     public void testShared() {
-        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
         mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
 
         assertTrue(propertyModel.get(DISPLAY_AS_SHARED));
         assertNotNull(propertyModel.get(SHARED_IMAGE_TILES_VIEW));
@@ -222,13 +228,10 @@ public class TabGroupRowMediatorUnitTest {
     @Test
     @SmallTest
     public void testDestroyable() {
+        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
 
-        assertFalse(propertyModel.get(DISPLAY_AS_SHARED));
+        assertTrue(propertyModel.get(DISPLAY_AS_SHARED));
         propertyModel.get(DESTROYABLE).destroy();
-
-        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
-        assertFalse(propertyModel.get(DISPLAY_AS_SHARED));
-        assertNull(propertyModel.get(SHARED_IMAGE_TILES_VIEW));
     }
 }

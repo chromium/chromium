@@ -59,7 +59,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/SharedDataPreview.java",
       "android/java/src/org/chromium/components/data_sharing/SharedTabGroupPreview.java",
       "android/java/src/org/chromium/components/data_sharing/TabPreview.java",
-      "android/java/src/org/chromium/components/data_sharing/configs/AvatarConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingAvatarBitmapConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingCreateUiConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingJoinUiConfig.java",
@@ -69,7 +68,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingRuntimeDataConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingStringConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingUiConfig.java",
-      "android/java/src/org/chromium/components/data_sharing/configs/MemberPickerConfig.java",
     ]
 
     deps = [

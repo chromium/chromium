@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1009406586654360474">‏افتح "مدير كلمات المرور في Google" وانتقِل إلى الإعدادات. اختَر "استيراد" وأضِف ملف CSV الذي يحتوي على كلمات المرور التي تم تصديرها.</translation>
-<translation id="1010225406377140704">يُرجى التواصل مع المُرسِل لطلب رابط جديد</translation>
 <translation id="1011749477052068769">النقل إلى هنا</translation>
 <translation id="1014147525163127655">ما مِن مفاتيح مرور محفوظة على هذا الجهاز لـ "<ph name="ORIGIN" />".</translation>
 <translation id="1016498331642356377">يتيح لك هذا الزر إجراء بحث صوتي بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
@@ -1727,7 +1726,6 @@
 <translation id="8683039184091909753">صورة</translation>
 <translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
 <translation id="8699120352855309748">عدم اقتراح ترجمة لهذه اللغات</translation>
-<translation id="8703372953981978786">هذا الرابط لا يعمل</translation>
 <translation id="8712637175834984815">حسنًا</translation>
 <translation id="8723453889042591629">يمكنك ترجمة هذه الصفحة بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
 <translation id="8725066075913043281">إعادة المحاولة</translation>

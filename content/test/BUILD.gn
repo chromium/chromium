@@ -1650,7 +1650,6 @@ test("content_browsertests") {
     "../browser/shared_storage/shared_storage_private_aggregation_browsertest.cc",
     "../browser/shared_storage/test_shared_storage_observer.cc",
     "../browser/shared_storage/test_shared_storage_observer.h",
-    "../browser/shared_storage/test_shared_storage_observer.h",
     "../browser/shared_storage/test_shared_storage_runtime_manager.cc",
     "../browser/shared_storage/test_shared_storage_runtime_manager.h",
     "../browser/shared_storage/test_shared_storage_worklet_host.cc",

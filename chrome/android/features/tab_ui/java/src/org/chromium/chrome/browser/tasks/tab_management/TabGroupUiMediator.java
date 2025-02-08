@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.os.Handler;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -24,7 +25,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.Bott
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -154,14 +155,15 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                 mThemeColorProvider.getTint(),
                 BrandedColorScheme.APP_DEFAULT);
         Profile originalProfile = mTabModelSelector.getModel(/* incognito= */ false).getProfile();
+        CollaborationService collaborationService =
+                CollaborationServiceFactory.getForProfile(originalProfile);
+        @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(originalProfile)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+                && serviceStatus.isAllowedToJoin()) {
             TabGroupSyncService tabGroupSyncService =
                     TabGroupSyncServiceFactory.getForProfile(originalProfile);
             DataSharingService dataSharingService =
                     DataSharingServiceFactory.getForProfile(originalProfile);
-            CollaborationService collaborationService =
-                    CollaborationServiceFactory.getForProfile(originalProfile);
             mTransitiveSharedGroupObserver =
                     new TransitiveSharedGroupObserver(
                             tabGroupSyncService, dataSharingService, collaborationService);

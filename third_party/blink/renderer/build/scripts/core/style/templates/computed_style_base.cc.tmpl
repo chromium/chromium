@@ -177,13 +177,16 @@ ComputedStyleBuilderBase::ComputedStyleBuilderBase(
   {% for field in computed_style.fields|selectattr('requires_tracing') %}
   {{comma()}}{{field.name}}({{field_source_expression(field, 'source_for_noninherited', 'parent_style')}})
   {% endfor %}
-  {{comma()}}data_{
+{
+  // Workaround for https://github.com/llvm/llvm-project/issues/126212
+  ComputedStyleBase::Data new_data{
     {% set comma = joiner(", ") %}
     {% for field in computed_style.fields|rejectattr('requires_tracing') %}
     {{comma()}}{{field_source_expression(field, 'source_for_noninherited', 'parent_style')}}
     {% endfor %}
-  }
-{
+  };
+  memcpy(&data_, &new_data, sizeof(data_));
+
   {% for subgroup in computed_style.subgroups %}
     {% if subgroup.all_fields|rejectattr("is_inherited")|list|length != 0 and
        subgroup.all_fields|selectattr("is_inherited")|list|length != 0 %}

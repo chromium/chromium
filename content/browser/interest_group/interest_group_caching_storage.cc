@@ -208,7 +208,7 @@ void InterestGroupCachingStorage::UpdateCachedOriginsIfEnabled(
     return;
   }
   scoped_refptr<StorageInterestGroups> groups = cached_groups_it->second.get();
-  if (groups->IsExpired() || groups->size() == 0) {
+  if (!groups || groups->IsExpired() || groups->size() == 0) {
     return;
   }
 

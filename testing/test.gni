@@ -231,45 +231,6 @@ template("mixed_test") {
           [ "--stack_limit_kb=${invoker.fuzztest_stack_limit_kb}" ]
     }
 
-    # If we're building for libfuzzer, we have to pass -undefok=max_len
-    # etc. for every conceivable libfuzzer argument, so that gtest doesn't
-    # get discombobulated by them. List is from https://llvm.org/docs/LibFuzzer.html
-    if (use_libfuzzer) {
-      _known_libfuzzer_args = [
-        "help",
-        "seed",
-        "runs",
-        "max_len",
-        "len_control",
-        "timeout",
-        "rss_limit_mb",
-        "malloc_limit_mb",
-        "timeout_exitcode",
-        "error_exitcode",
-        "max_total_time",
-        "merge",
-        "merge_control_file",
-        "minimize_crash",
-        "reload",
-        "jobs",
-        "workers",
-        "dict",
-        "use_counters",
-        "reduce_inputs",
-        "use_value_profile",
-        "only_ascii",
-        "artifact_prefix",
-        "exact_artifact_path",
-        "print_pcs",
-        "print_final_stats",
-        "detect_leaks",
-        "close_fd_mask",
-        "fork",
-      ]
-      _common_fuzzer_args +=
-          [ "-undefok=" + string_join(",", _known_libfuzzer_args) ]
-    }
-
     # Confirming that the "fuzztests =" directive is correct can only
     # be done on builds where we can confidently run the fuzzing binary.
     # Let's be conservative about that -- so long as any failures are

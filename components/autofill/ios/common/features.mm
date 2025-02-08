@@ -6,6 +6,16 @@
 
 // Features that are exlusive to iOS go here in alphabetical order.
 
+BASE_FEATURE(kAddAddressManually,
+             "AddAdressManually",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAddAddressManuallyEnabled() {
+  return base::FeatureList::IsEnabled(kAddAddressManually) &&
+         base::FeatureList::IsEnabled(
+             kAutofillDynamicallyLoadsFieldsForAddressInput);
+}
+
 // Controls whether to dynamically load the address input fields in the save
 // flow and settings based on the country value.
 // TODO(crbug.com/40281788): Remove once launched.

@@ -1058,6 +1058,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/magic_stack/android:junit",
       "//chrome/browser/mandatory_reauth/android/internal:junit",
       "//chrome/browser/notifications:junit_tests",
+      "//chrome/browser/ntp_customization:junit",
       "//chrome/browser/page_image_service/android:junit",
       "//chrome/browser/partnerbookmarks:junit",
       "//chrome/browser/partnercustomizations:junit",

@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Не сада</translation>
 <translation id="100957008357583611">Желите ли да користите локацију?</translation>
 <translation id="1010200102790553230">Касније учитај страницу</translation>
+<translation id="1010225406377140704">Затражите нови линк од пошиљаоца</translation>
 <translation id="1011206368273183593">Фајлови се припремају</translation>
 <translation id="1014509239502131234">Резултат се опозива</translation>
 <translation id="1015730422737071372">Наведите додатне детаље</translation>
@@ -3107,6 +3108,7 @@
 <translation id="6465306955648956876">Управљајте лозинкама...</translation>
 <translation id="646789491285795429">Већ пратите овај производ</translation>
 <translation id="6468485451923838994">Фонтови</translation>
+<translation id="6469702164109431067">Лозинке и приступни кодови</translation>
 <translation id="647261751007945333">Смернице за уређај</translation>
 <translation id="6472874020827012601">Тканина (мат)</translation>
 <translation id="647330291963761005">Ажурирања се инсталирају</translation>
@@ -4352,6 +4354,7 @@
 <translation id="8699041776323235191">Уређај са интерфејсом</translation>
 <translation id="8699985386408839112">Коверта Kaku 1</translation>
 <translation id="8702965365666568344">Трака за монтирање</translation>
+<translation id="8703372953981978786">Овај линк не ради</translation>
 <translation id="8703575177326907206">Ваша веза са доменом <ph name="DOMAIN" /> није шифрована.</translation>
 <translation id="8705331520020532516">Серијски број</translation>
 <translation id="8706806585855470492">Моћи ћете да делите групе картица, придружујете им се и сарађујете у њима</translation>

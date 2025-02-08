@@ -1276,6 +1276,13 @@
       default_value: "false",
     },
     {
+      // True when @media is used within @function, false otherwise.
+      name: "AffectedByFunctionalMedia",
+      field_template: "monotonic_flag",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
       name: "HasAnchorFunctions",
       field_template: "monotonic_flag",
       field_group: "surround",

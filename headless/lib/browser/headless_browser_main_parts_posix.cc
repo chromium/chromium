@@ -21,7 +21,6 @@
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "build/config/linux/dbus/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

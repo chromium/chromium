@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1009406586654360474">Buka Pengelola Sandi Google dan buka setelan. Pilih “Impor“ dan tambahkan file CSV yang berisi sandi yang diekspor.</translation>
-<translation id="1010225406377140704">Hubungi pengirim untuk meminta link baru</translation>
 <translation id="1011749477052068769">Pindahkan ke sini</translation>
 <translation id="1014147525163127655">Tidak ada kunci sandi untuk <ph name="ORIGIN" /> di perangkat ini</translation>
 <translation id="1016498331642356377">Telusuri dengan cepat menggunakan suara Anda. Sentuh lama untuk mengedit pintasan ini.</translation>
@@ -1723,7 +1722,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8683039184091909753">gambar</translation>
 <translation id="869891660844655955">Masa berlaku</translation>
 <translation id="8699120352855309748">Jangan tawarkan penerjemahan bahasa ini</translation>
-<translation id="8703372953981978786">Link ini tidak berfungsi</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="8723453889042591629">Terjemahkan halaman ini dengan cepat. Sentuh lama untuk mengedit pintasan ini.</translation>
 <translation id="8725066075913043281">Coba lagi</translation>

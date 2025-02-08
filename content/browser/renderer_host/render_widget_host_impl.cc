@@ -1145,13 +1145,18 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   //
   // For non-frame widgets, there is no auto-resize and we behave like the top-
   // level main frame.
-  gfx::Size viewport;
+  gfx::Size viewport_device_px;
+  gfx::Size viewport_dips;
+  float dip_scale = 1 / GetDeviceScaleFactor();
   if (is_child_frame_widget) {
-    viewport = properties_from_parent_local_root_.visible_viewport_size;
+    viewport_device_px =
+        properties_from_parent_local_root_.visible_viewport_size;
+    viewport_dips = gfx::ScaleToCeiledSize(viewport_device_px, dip_scale);
   } else {
-    viewport = view_->GetVisibleViewportSize();
+    viewport_device_px = view_->GetVisibleViewportSizeDevicePx();
+    viewport_dips = view_->GetVisibleViewportSize();
   }
-  visual_properties.visible_viewport_size = viewport;
+  visual_properties.visible_viewport_size = viewport_device_px;
 
   // The root widget's viewport segments are computed here - child frames just
   // use the value provided from the parent.
@@ -1164,14 +1169,12 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
               ? visual_properties.browser_controls_params.top_controls_height
               : visual_properties.browser_controls_params
                     .top_controls_min_height;
-      float dip_scale = 1 / GetDeviceScaleFactor();
       visual_properties.root_widget_viewport_segments =
           display_feature->ComputeViewportSegments(
-              visual_properties.visible_viewport_size,
-              top_controls_height * dip_scale);
+              viewport_dips, top_controls_height * dip_scale);
     } else {
       visual_properties.root_widget_viewport_segments = {
-          gfx::Rect(visual_properties.visible_viewport_size)};
+          gfx::Rect(viewport_dips)};
     }
   } else {
     visual_properties.root_widget_viewport_segments =

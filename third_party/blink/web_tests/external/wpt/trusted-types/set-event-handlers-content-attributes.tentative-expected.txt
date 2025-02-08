@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 509 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 513 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] DIV.setAttribute(onabort, "unsafe_handler()") calls default policy
   assert_equals: expected "Element onabort" but got "Element setAttribute"
 [FAIL] DIV.setAttributeNS(onabort, "unsafe_handler()") calls default policy
@@ -1015,6 +1015,14 @@ Found 509 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] DIV.setAttribute("onbegin", "unsafe_handler()") calls default policy
   assert_equals: expected "Element onbegin" but got "Element setAttribute"
 [FAIL] DIV.setAttribute("onreadystatechange", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+[FAIL] DIV.setAttribute("onvisibilitychange", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+[FAIL] DIV.setAttribute("ondevicemotion", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+[FAIL] DIV.setAttribute("ondeviceorientation", "unsafe_handler()") does not call default policy
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+[FAIL] DIV.setAttribute("ondeviceorientationabsolute", "unsafe_handler()") does not call default policy
   assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
 [FAIL] DIV.setAttribute("onopen", "unsafe_handler()") does not call default policy
   assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"

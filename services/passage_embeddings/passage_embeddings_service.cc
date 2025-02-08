@@ -19,14 +19,20 @@ PassageEmbeddingsService::PassageEmbeddingsService(
 
 PassageEmbeddingsService::~PassageEmbeddingsService() = default;
 
+void PassageEmbeddingsService::OnEmbedderDisconnect() {
+  embedder_.reset();
+}
+
 void PassageEmbeddingsService::LoadModels(
     mojom::PassageEmbeddingsLoadModelsParamsPtr model_params,
     mojom::PassageEmbedderParamsPtr embedder_params,
     mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
     LoadModelsCallback callback) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  embedder_ = std::make_unique<PassageEmbedder>(std::move(receiver),
-                                                std::move(embedder_params));
+  embedder_ = std::make_unique<PassageEmbedder>(
+      std::move(receiver), std::move(embedder_params),
+      base::BindOnce(&PassageEmbeddingsService::OnEmbedderDisconnect,
+                     base::Unretained(this)));
 
   // Load the model files.
   if (model_params->input_window_size == 0 ||

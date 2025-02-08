@@ -1081,11 +1081,14 @@ void VideoEncoder::ProcessEncode(Request* request) {
                                    frame->timestamp());
 
   bool mappable = frame->IsMappable() || frame->HasMappableGpuBuffer();
+  bool can_handle_shared_image =
+      encoder_info_.DoesSupportGpuSharedImages(frame->format()) &&
+      frame->HasSharedImage();
 
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.
   // TODO(crbug.com/1229845): We shouldn't be reading back frames here.
-  if (!mappable) {
+  if (!mappable && !can_handle_shared_image) {
     DCHECK(frame->HasSharedImage());
     // Stall request processing while we wait for the copy to complete. It'd
     // be nice to not have to do this, but currently the request processing
@@ -1118,12 +1121,26 @@ void VideoEncoder::ProcessEncode(Request* request) {
   // Currently underlying encoders can't handle alpha channel, so let's
   // wrap a frame with an alpha channel into a frame without it.
   // For example such frames can come from 2D canvas context with alpha = true.
-  DCHECK(mappable);
+  DCHECK(mappable || can_handle_shared_image);
   if (media::IsYuvPlanar(frame->format()) &&
       !media::IsOpaque(frame->format())) {
     frame = media::VideoFrame::WrapVideoFrame(
         frame, ToOpaqueMediaPixelFormat(frame->format()), frame->visible_rect(),
         frame->natural_size());
+  }
+
+  if (frame->HasSharedImage()) {
+    // This frame might have a sync token.  In order to transmit this sync
+    // token to the gpu process, it must be verified.  This flushes the
+    // renderer side command buffer and ensures tha the sync token is valid
+    // on the gpu process side.  The encoder will actually wait on the sync
+    // token before trying to acquire the shared image.
+    auto wrapper = SharedGpuContext::ContextProviderWrapper();
+    if (wrapper) {
+      gpu::SyncToken token = frame->acquire_sync_token();
+      wrapper->ContextProvider().SharedImageInterface()->VerifySyncToken(token);
+      frame->UpdateAcquireSyncToken(token);
+    }
   }
 
   --requested_encodes_;
@@ -1392,6 +1409,8 @@ void VideoEncoder::OnMediaEncoderInfoChanged(
     ApplyCodecPressure();
   else
     ReleaseCodecPressure();
+
+  encoder_info_ = encoder_info;
 
   media::MediaLog* log = logger_->log();
   log->SetProperty<media::MediaLogProperty::kVideoEncoderName>(

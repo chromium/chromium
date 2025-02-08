@@ -65,7 +65,8 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
         std::move(autocomplete));
 
     controller_ = [[OmniboxAutocompleteController alloc]
-        initWithOmniboxController:omnibox_controller_.get()];
+        initWithOmniboxController:omnibox_controller_.get()
+                   omniboxViewIOS:nullptr];
 
     popup_ = [OCMockObject mockForClass:OmniboxPopupController.class];
     controller_.omniboxPopupController = popup_;

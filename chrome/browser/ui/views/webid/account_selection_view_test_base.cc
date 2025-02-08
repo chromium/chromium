@@ -107,7 +107,7 @@ content::ClientMetadata AccountSelectionViewTestBase::CreateTestClientMetadata(
     const std::string& rp_brand_icon_url) {
   return content::ClientMetadata(GURL(terms_of_service_url),
                                  GURL(privacy_policy_url),
-                                 GURL(rp_brand_icon_url));
+                                 GURL(rp_brand_icon_url), gfx::Image());
 }
 
 std::vector<std::string> AccountSelectionViewTestBase::GetChildClassNames(

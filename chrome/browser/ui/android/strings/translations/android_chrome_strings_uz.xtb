@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1009406586654360474">Google Parollar menejeri va sozlamalarni oching. "Import qilish" bandini tanlang va eksport qilingan parollardan iborat CSV faylini qoʻshing.</translation>
-<translation id="1010225406377140704">Yuboruvchidan yangi havola yuborishni soʻrang</translation>
 <translation id="1011749477052068769">Bu yerga koʻchirish</translation>
 <translation id="1014147525163127655">Bu qurilmada <ph name="ORIGIN" /> uchun hech qanday kod mavjud emas</translation>
 <translation id="1016498331642356377">Ovoz bilan tezda qidiring. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
@@ -1723,7 +1722,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8683039184091909753">rasm</translation>
 <translation id="869891660844655955">Tugash muddati</translation>
 <translation id="8699120352855309748">Quyidagi tillarga tarjima taklif qilinmasin</translation>
-<translation id="8703372953981978786">Bu havola yaroqsiz</translation>
 <translation id="8712637175834984815">Tushunarli</translation>
 <translation id="8723453889042591629">Bu sahifani tezkor tarjima qilish Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
 <translation id="8725066075913043281">Qayta urinib ko‘ring</translation>

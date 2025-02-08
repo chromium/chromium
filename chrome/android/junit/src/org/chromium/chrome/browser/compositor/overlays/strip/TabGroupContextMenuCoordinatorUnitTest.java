@@ -103,9 +103,9 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Before
     public void setUp() {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
-        CollaborationServiceFactory.setForTesting(mCollaborationService);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
-        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+        when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
 
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         LayoutInflater inflater = LayoutInflater.from(activity);
@@ -193,9 +193,9 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     @Feature("Tab Strip Group Context Menu")
     public void testListMenuItems_DataShareDisabled() {
+        when(mServiceStatus.isAllowedToCreate()).thenReturn(false);
         // Build custom view first to setup menu view.
         mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
-
         ModelList modelList = new ModelList();
         mTabGroupContextMenuCoordinator.buildMenuActionItems(
                 modelList,

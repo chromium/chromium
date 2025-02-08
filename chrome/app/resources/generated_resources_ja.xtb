@@ -272,7 +272,6 @@
 <translation id="1177863135347784049">カスタム</translation>
 <translation id="1178093605842850860">このサイトの読み取りと変更を許可しました</translation>
 <translation id="1178581264944972037">一時停止</translation>
-<translation id="1178601482396475810">デバイスの同期を管理</translation>
 <translation id="117916940443676133">セキュリティ キーは PIN で保護されていません。ログインデータを管理するには、まず PIN を作成してください。</translation>
 <translation id="1179400851034021914">IBAN が無効です</translation>
 <translation id="1179902906564467236">スマートフォンに表示される手順に沿って操作するか、カメラアプリを使用してください</translation>
@@ -1456,7 +1455,6 @@
 <translation id="2003596238737586336">現在のスケジュールは <ph name="SUNRISE" />～<ph name="SUNSET" /> に設定されています。この設定は管理者によって管理されています。</translation>
 <translation id="2004413981947727241">任意のデバイスでパスワードを使用する</translation>
 <translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
-<translation id="2005199804247617997">他のプロファイル</translation>
 <translation id="2006638907958895361"><ph name="APP" /> でリンクを開く</translation>
 <translation id="2007404777272201486">問題の報告...</translation>
 <translation id="200781997903833896">読み上げ機能を使用するには、デバイスの空き容量を増やしてください</translation>
@@ -1681,7 +1679,6 @@
 <translation id="2158249272743343757">入力履歴を削除...</translation>
 <translation id="2158475082070321257">選択箇所へのリンクをコピー</translation>
 <translation id="2159488579268505102">USB-C</translation>
-<translation id="2160914605372861978">コンテンツを要約したり、続けて質問したりできます。</translation>
 <translation id="2161058806218011758"><ph name="EXTENSION_NAME" /> の <ph name="SHORTCUT" /> のスコープ</translation>
 <translation id="216169395504480358">Wi-Fi を追加...</translation>
 <translation id="2162155940152307086">同期設定を閉じると同期が開始します</translation>
@@ -1942,7 +1939,6 @@
 <translation id="2333166365943957309">UI 階層</translation>
 <translation id="233375395665273385">削除してログアウト</translation>
 <translation id="233471714539944337">機密コンテンツ</translation>
-<translation id="2335111415680198280">{0,plural, =1{# 個のウィンドウを閉じる}other{# 個のウィンドウを閉じる}}</translation>
 <translation id="2335758110242123814">グループを開く</translation>
 <translation id="2336228925368920074">すべてのタブをブックマークに追加...</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> が <ph name="PRINTER_NAME" /> で 1 ページを印刷しています</translation>
@@ -3734,7 +3730,6 @@
 <translation id="3629664892718440872">この設定を保存</translation>
 <translation id="3630132874740063857">スマートフォン</translation>
 <translation id="3630995161997703415">このサイトをシェルフに追加するといつでも使えるようになります</translation>
-<translation id="3632929818790223729">アクティブなタブでタブを分割</translation>
 <translation id="3634652306074934350">権限のリクエストの有効期限が切れています</translation>
 <translation id="3635199270495525546">Trusted Platform Module（TPM）が検出されました</translation>
 <translation id="3635353578505343390">Google にフィードバックを送信</translation>
@@ -5855,7 +5850,6 @@
 <translation id="512642543295077915">検索+Backspace</translation>
 <translation id="5126611267288187364">変更の表示</translation>
 <translation id="5127620150973591153">安全な接続 ID: <ph name="TOKEN" /></translation>
-<translation id="5127805178023152808">同期は無効です</translation>
 <translation id="5127881134400491887">ネットワーク接続の管理</translation>
 <translation id="5127934926273826089">花</translation>
 <translation id="5127986747308934633">管理者がデバイスを制御しています</translation>
@@ -5943,6 +5937,7 @@
 <translation id="5190926251776387065">ポートを有効にする</translation>
 <translation id="5190959794678983197">マイクがありません</translation>
 <translation id="5191094172448199359">入力した PIN が一致しません</translation>
+<translation id="5191251636205085390">サードパーティの Cookie に代わる新しい技術の詳細と管理方法について</translation>
 <translation id="519185197579575131">QT を使用</translation>
 <translation id="5192062846343383368">管理設定を確認するにはファミリー リンク アプリを開いてください</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 個のパスキー}other{{COUNT} 個のパスキー}}</translation>
@@ -8889,7 +8884,6 @@
 <translation id="7349010927677336670">動画の滑らかさ</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスのみに保存されています}other{{COUNT} 件のパスワードがこのデバイスのみに保存されています}}</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
-<translation id="7352664183151911163">アプリと Chrome ブラウザ</translation>
 <translation id="7353261921908507769">近くにいる連絡先から共有を受けられます。許可するまで転送は行われません。</translation>
 <translation id="7353432112255316844">本人確認</translation>
 <translation id="735361434055555355">Linux をインストールしています...</translation>
@@ -10033,7 +10027,6 @@
 <translation id="8140869601171867148">Google アカウントは、Gmail、YouTube、Chrome などの Google サービスで使用しているのと同じアカウントです。
     ご自分のアカウントを使用して、ブックマークやファイルなどに簡単にアクセスできます。</translation>
 <translation id="8141418916163800697">スマートフォン ハブではその他の機能も設定できます</translation>
-<translation id="814156740715940972">アクティブなタブでタブを分割</translation>
 <translation id="8141584439523427891">まもなく代替ブラウザで開きます</translation>
 <translation id="8141725884565838206">パスワードを管理する</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{動画}other{# 件の動画}}</translation>
@@ -11167,7 +11160,6 @@
 <translation id="8946359700442089734">この <ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスでデバッグ機能が完全に有効になっていませんでした。</translation>
 <translation id="8946954897220903437">アドレスバーのすべてのリクエストを閉じる</translation>
 <translation id="894763922177556086">良い</translation>
-<translation id="8949304443659090542">Chrome ブラウザの同期を管理</translation>
 <translation id="895054485242522631">サイトがモーション センサーを使用できるようにする</translation>
 <translation id="8951256747718668828">エラーが発生したため、復元を完了できませんでした</translation>
 <translation id="8951465597020890363">ゲストモードを終了してもよろしいですか？</translation>
@@ -11188,7 +11180,6 @@
 <translation id="8963117664422609631">サイトの設定に移動</translation>
 <translation id="8964927371396953727">アカウント「<ph name="ACCOUNT_EMAIL" />」のパスワードを使用、保存するには、本人確認を行ってください</translation>
 <translation id="8965037249707889821">古いパスワードを入力</translation>
-<translation id="8966809848145604011">他のプロファイル</translation>
 <translation id="8967427617812342790">リーディング リストに追加</translation>
 <translation id="8967548289042494261"><ph name="VM_NAME" /> を削除</translation>
 <translation id="8968527460726243404">ChromeOS システム イメージ ライター</translation>

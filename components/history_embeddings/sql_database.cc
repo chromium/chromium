@@ -525,11 +525,11 @@ SqlDatabase::MakeUrlDataIterator(std::optional<base::Time> time_range_start) {
         }
         const size_t expected_dimensions =
             sql_database->GetEmbeddingDimensions();
-        if (std::ranges::any_of(data.embeddings,
-                                [=](const Embedding& embedding) {
-                                  return embedding.Dimensions() !=
-                                         expected_dimensions;
-                                })) {
+        if (std::ranges::any_of(
+                data.embeddings,
+                [=](const passage_embeddings::Embedding& embedding) {
+                  return embedding.Dimensions() != expected_dimensions;
+                })) {
           skipped_missized++;
           continue;
         }
@@ -769,7 +769,8 @@ bool SqlDatabase::InsertOrReplaceEmbeddings(const UrlData& url_embeddings) {
   statement.BindTime(2, url_embeddings.visit_time);
 
   proto::EmbeddingsValue value;
-  for (const Embedding& embedding : url_embeddings.embeddings) {
+  for (const passage_embeddings::Embedding& embedding :
+       url_embeddings.embeddings) {
     CHECK_EQ(GetEmbeddingDimensions(), embedding.Dimensions());
     proto::EmbeddingVector* vector = value.add_vectors();
     for (float f : embedding.GetData()) {

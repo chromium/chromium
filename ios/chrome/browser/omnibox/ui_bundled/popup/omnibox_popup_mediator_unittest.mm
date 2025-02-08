@@ -49,31 +49,6 @@ class MockImageDataFetcher : public image_fetcher::ImageDataFetcher {
   MockImageDataFetcher() : image_fetcher::ImageDataFetcher(nullptr) {}
 };
 
-// Mock of OmniboxPopupMediatorDelegate.
-class MockOmniboxPopupMediatorDelegate : public OmniboxPopupMediatorDelegate {
- public:
-  MOCK_METHOD(bool,
-              IsStarredMatch,
-              (const AutocompleteMatch& match),
-              (const, override));
-  MOCK_METHOD(void,
-              OnMatchSelected,
-              (const AutocompleteMatch& match,
-               size_t row,
-               WindowOpenDisposition disposition),
-              (override));
-  MOCK_METHOD(void,
-              OnMatchSelectedForAppending,
-              (const AutocompleteMatch& match),
-              (override));
-  MOCK_METHOD(void,
-              OnMatchSelectedForDeletion,
-              (const AutocompleteMatch& match),
-              (override));
-  MOCK_METHOD(void, OnScroll, (), (override));
-  MOCK_METHOD(void, OnCallActionTap, (), (override));
-};
-
 class OmniboxPopupMediatorTest : public PlatformTest {
  public:
   OmniboxPopupMediatorTest() {}
@@ -99,7 +74,6 @@ class OmniboxPopupMediatorTest : public PlatformTest {
                    faviconLoader:nil
           autocompleteController:autocomplete_controller_.get()
         remoteSuggestionsService:nil
-                        delegate:&delegate_
                          tracker:&tracker];
     mediator_.consumer = mockResultConsumer_;
   }
@@ -112,7 +86,6 @@ class OmniboxPopupMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   OmniboxPopupMediator* mediator_;
-  MockOmniboxPopupMediatorDelegate delegate_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
   id mockResultConsumer_;
 };

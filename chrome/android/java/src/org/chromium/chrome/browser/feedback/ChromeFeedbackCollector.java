@@ -66,6 +66,7 @@ public class ChromeFeedbackCollector extends FeedbackCollector<ChromeFeedbackCol
         sources.add(new HistogramFeedbackSource(initParams.profile));
         sources.add(new LowEndDeviceFeedbackSource());
         sources.add(new IMEFeedbackSource());
+        sources.add(new OmniboxFeedbackSource());
         sources.add(new PermissionFeedbackSource());
         sources.add(new FeedbackContextFeedbackSource(initParams.feedbackContext));
         sources.add(

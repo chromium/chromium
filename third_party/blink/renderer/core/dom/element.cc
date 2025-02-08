@@ -3400,8 +3400,10 @@ void Element::MovedFrom(ContainerNode& old_parent) {
     // The "focus within" flag is set separately on each ancestor, and affects
     // the :focus-within CSS property. We set it to the right value here because
     // we skipped the step that sets it on removal/insertion.
-    old_parent_element->SetHasFocusWithinUpToAncestor(false, common_ancestor);
-    new_parent_element->SetHasFocusWithinUpToAncestor(true, common_ancestor);
+    old_parent_element->SetHasFocusWithinUpToAncestor(
+        false, common_ancestor, /*need_snap_container_search=*/false);
+    new_parent_element->SetHasFocusWithinUpToAncestor(
+        true, common_ancestor, /*need_snap_container_search=*/false);
   }
 }
 
@@ -7196,7 +7198,7 @@ void Element::FocusWithinStateChanged() {
   PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
 }
 
-void Element::SetHasFocusWithinUpToAncestor(bool flag,
+void Element::SetHasFocusWithinUpToAncestor(bool has_focus_within,
                                             Element* ancestor,
                                             bool need_snap_container_search) {
   bool reached_ancestor = false;
@@ -7204,7 +7206,7 @@ void Element::SetHasFocusWithinUpToAncestor(bool flag,
        element && (need_snap_container_search || !reached_ancestor);
        element = FlatTreeTraversal::ParentElement(*element)) {
     if (!reached_ancestor && element != ancestor) {
-      element->SetHasFocusWithin(flag);
+      element->SetHasFocusWithin(has_focus_within);
       element->FocusWithinStateChanged();
     }
     // If |ancestor| or any of its ancestors is a snap container, that snap
@@ -8319,21 +8321,6 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
       return true;
     }
   }
-
-  // The ::picker(select) UA popover element is display:none by default because
-  // it's a popover which would prevent style from being calculated on it and
-  // its descendants without this check. We need it for multiple reasons:
-  // 1. The appearance:auto <select> rendering needs computed style for each of
-  //    its <option>s in order to correctly render the invoker button and for
-  //    option styles that get copied into the native picker.
-  // 2. ::picker(select) needs appearance:base-select from author styles in
-  //    order to opt in to customizable select, and there is a lot of code which
-  //    wants to know whether we have opted into customizable select or not
-  //    without being able to run EnsureComputedStyle to find out.
-  if (HTMLSelectElement::IsPopoverForAppearanceBase(this)) {
-    return true;
-  }
-
   return style.Display() == EDisplay::kContents;
 }
 
@@ -9059,11 +9046,14 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   }
   if (pseudo_id == kPseudoIdCheckMark) {
     // We want to avoid the performance cost of generating the checkmark for
-    // old-style selects.
+    // old-style selects.  While it is technically needed only when we have an
+    // appearance:base picker, we condition it on an appearance:base button
+    // instead, since we can do that without re-entering style recalc.
     auto is_option_in_appearance_base_select = [](const Element* e) {
       if (const auto* option = DynamicTo<HTMLOptionElement>(e)) {
         if (const HTMLSelectElement* select = option->OwnerSelectElement()) {
-          return select->IsAppearanceBasePicker();
+          return select->IsAppearanceBaseButton(
+              HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle);
         }
       }
       return false;

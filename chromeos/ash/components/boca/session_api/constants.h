@@ -51,7 +51,7 @@ inline constexpr char kUpdateViewScreenStateUrlTemplate[] =
     "v1/sessions/$1/viewScreen:updateState";
 
 inline constexpr char kStudentHeartbeatUrlTemplate[] =
-    "v1/sessions/$1/students/$2/devices/$3:heartbeat";
+    "v1/sessions/$1/students/$2/devices/$3:heartbeat?studentGroupId=$4";
 
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";

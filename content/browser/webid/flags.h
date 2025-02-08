@@ -60,6 +60,9 @@ bool IsFedCmShowFilteredAccountsEnabled();
 // Whether lightweight FedCM credentials are enabled.
 bool IsFedCmLightweightModeEnabled();
 
+// Whether phone/username is supported and name/email are optional.
+bool IsFedCmAlternativeIdentifiersEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

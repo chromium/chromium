@@ -873,27 +873,13 @@ void PeopleHandler::HandleTurnOffSync(bool delete_profile,
           signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
     }
 
-    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-      // In Uno, Gaia logout tab invalidating the account will lead to a sign in
-      // paused state. Unset the primary account to ensure it is removed from
-      // chrome. The `AccountReconcilor` will revoke refresh tokens for accounts
-      // not in the Gaia cookie on next reconciliation.
-      identity_manager->GetPrimaryAccountMutator()
-          ->RemovePrimaryAccountButKeepTokens(
-              signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
-    } else {
-      // Only revoke the sync consent.
-      // * If the primary account is still valid, then it will be removed by
-      // the Gaia logout tab (see http://crbug.com/1068978).
-      // * If the account is already invalid, drop the token now because it's
-      // already invalid on the web, so the Gaia logout tab won't affect it
-      // (see http://crbug.com/1114646).
-      //
-      // This operation may delete the current browser that owns |this| if force
-      // signin is enabled (see https://crbug.com/1153120).
-      identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-          signin_metrics::ProfileSignout::kRevokeSyncFromSettings);
-    }
+    // In Uno, Gaia logout tab invalidating the account will lead to a sign in
+    // paused state. Unset the primary account to ensure it is removed from
+    // chrome. The `AccountReconcilor` will revoke refresh tokens for accounts
+    // not in the Gaia cookie on next reconciliation.
+    identity_manager->GetPrimaryAccountMutator()
+        ->RemovePrimaryAccountButKeepTokens(
+            signin_metrics::ProfileSignout::kUserClickedSignoutSettings);
   }
 
   // CAUTION: |this| may be deleted at this point.
@@ -1444,10 +1430,8 @@ void PeopleHandler::HandleSetChromeSigninUserChoice(
 }
 
 void PeopleHandler::UpdateChromeSigninUserChoiceInfo() {
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     FireWebUIListener("chrome-signin-user-choice-info-change",
                       GetChromeSigninUserChoiceInfo());
-  }
 }
 
 void PeopleHandler::HandleSetChromeSigninUserChoiceForTesting(

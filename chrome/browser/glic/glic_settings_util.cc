@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -13,6 +15,31 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+void OpenGlicSettingsPageWithPromo(Profile* profile,
+                                   const base::Feature& feature,
+                                   ShowPromoInPage::Params promo_params) {
+  Browser* browser = chrome::FindTabbedBrowser(profile, false);
+  if (!browser) {
+    // At this point we don't have a browser window open for profile.
+    // User Education resources are initialized when browser view is created,
+    // so create a browser window prior to using the service
+    browser = Browser::Create(Browser::CreateParams(profile, true));
+  }
+
+  const bool show_promo_bubble =
+      UserEducationService::MaybeShowNewBadge(profile, feature);
+  if (show_promo_bubble) {
+    promo_params.target_url = chrome::GetSettingsUrl(chrome::kChromeUIGlicHost);
+    ShowPromoInPage::Start(browser, std::move(promo_params));
+  } else {
+    chrome::ShowSettingsSubPage(browser, chrome::kChromeUIGlicHost);
+  }
+}
+
+}  // namespace
 
 namespace glic {
 
@@ -25,35 +52,24 @@ void OpenGlicSettingsPage(Profile* profile) {
 }
 
 void OpenGlicOsToggleSetting(Profile* profile) {
-  const bool show_promo_bubble =
-      UserEducationService::MaybeShowNewBadge(profile, features::kGlic);
-  if (show_promo_bubble) {
-    ShowPromoInPage::Params params;
-    params.bubble_anchor_id = kGlicOsToggleElementId;
-    params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
-    params.bubble_text =
-        l10n_util::GetStringUTF16(IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE);
-    params.target_url = chrome::GetSettingsUrl(chrome::kChromeUIGlicHost);
-    chrome::ShowPageWithPromoForProfile(profile, std::move(params));
-  } else {
-    chrome::ShowSettingsSubPageForProfile(profile, chrome::kChromeUIGlicHost);
-  }
+  ShowPromoInPage::Params params;
+  params.bubble_anchor_id = kGlicOsToggleElementId;
+  params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
+  params.bubble_text =
+      l10n_util::GetStringUTF16(IDS_GLIC_OS_WIDGET_TOGGLE_HELP_BUBBLE);
+
+  OpenGlicSettingsPageWithPromo(profile, features::kGlic, std::move(params));
 }
 
 void OpenGlicKeyboardShortcutSetting(Profile* profile) {
-  const bool show_promo_bubble = UserEducationService::MaybeShowNewBadge(
-      profile, features::kGlicKeyboardShortcutNewBadge);
-  if (show_promo_bubble) {
-    ShowPromoInPage::Params params;
-    params.bubble_anchor_id = kGlicOsWidgetKeyboardShortcutElementId;
-    params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
-    params.bubble_text = l10n_util::GetStringUTF16(
-        IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE);
-    params.target_url = chrome::GetSettingsUrl(chrome::kChromeUIGlicHost);
-    chrome::ShowPageWithPromoForProfile(profile, std::move(params));
-  } else {
-    chrome::ShowSettingsSubPageForProfile(profile, chrome::kChromeUIGlicHost);
-  }
+  ShowPromoInPage::Params params;
+  params.bubble_anchor_id = kGlicOsWidgetKeyboardShortcutElementId;
+  params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
+  params.bubble_text = l10n_util::GetStringUTF16(
+      IDS_GLIC_OS_WIDGET_KEYBOARD_SHORTCUT_HELP_BUBBLE);
+
+  OpenGlicSettingsPageWithPromo(
+      profile, features::kGlicKeyboardShortcutNewBadge, std::move(params));
 }
 
 }  // namespace glic

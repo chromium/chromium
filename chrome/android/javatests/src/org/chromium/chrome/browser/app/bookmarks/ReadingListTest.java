@@ -53,6 +53,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerTestingDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
@@ -60,7 +61,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
-import org.chromium.chrome.browser.bookmarks.TestingDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
@@ -188,12 +188,8 @@ public class ReadingListTest {
                 () -> mBookmarkModel.setReadStatusForReadingList(id, read));
     }
 
-    private TestingDelegate getTestingDelegate() {
+    private BookmarkManagerTestingDelegate getTestingDelegate() {
         return mBookmarkManagerCoordinator.getTestingDelegate();
-    }
-
-    private BookmarkId getIdByPosition(int pos) {
-        return getTestingDelegate().getIdByPositionForTesting(pos);
     }
 
     private BookmarkDelegate getBookmarkDelegate() {
@@ -368,9 +364,9 @@ public class ReadingListTest {
 
         View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(2).itemView;
         Assert.assertEquals(
-                "The 2nd view should be reading list.",
+                "The first bookmark should be a reading list item.",
                 BookmarkType.READING_LIST,
-                getIdByPosition(2).getType());
+                getTestingDelegate().getBookmarkIdByPositionForTesting(0).getType());
         ThreadUtils.runOnUiThreadBlocking(() -> TouchCommon.singleClickView(readingListRow));
 
         ChromeTabbedActivity activity = BookmarkTestUtil.waitForTabbedActivity();
@@ -405,9 +401,9 @@ public class ReadingListTest {
 
         View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(2).itemView;
         Assert.assertEquals(
-                "The 2nd view should be reading list.",
+                "The 1st bookmark should be a reading list item.",
                 BookmarkType.READING_LIST,
-                getIdByPosition(2).getType());
+                getTestingDelegate().getBookmarkIdByPositionForTesting(1).getType());
         ThreadUtils.runOnUiThreadBlocking(() -> TouchCommon.singleClickView(readingListRow));
 
         ChromeTabbedActivity activity = BookmarkTestUtil.waitForTabbedActivity();

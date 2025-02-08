@@ -29,23 +29,24 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
     static constexpr size_t kHeaderSize = 4;  // sizeof(code) + sizeof(size)
 
     Opt() = delete;
-    explicit Opt(std::string data);
+    explicit Opt(base::span<const uint8_t> data);
+    explicit Opt(std::vector<uint8_t> data);
 
     Opt(const Opt& other) = delete;
     Opt& operator=(const Opt& other) = delete;
     Opt(Opt&& other) = delete;
     Opt& operator=(Opt&& other) = delete;
-    virtual ~Opt() = default;
+    virtual ~Opt();
 
     bool operator==(const Opt& other) const;
     bool operator!=(const Opt& other) const;
 
     virtual uint16_t GetCode() const = 0;
-    std::string_view data() const { return data_; }
+    base::span<const uint8_t> data() const { return data_; }
 
    private:
     bool IsEqual(const Opt& other) const;
-    std::string data_;
+    std::vector<uint8_t> data_;
   };
 
   class NET_EXPORT_PRIVATE EdeOpt : public Opt {
@@ -97,7 +98,7 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
     ~EdeOpt() override;
 
     // Attempts to parse an EDE option from `data`. Returns nullptr on failure.
-    static std::unique_ptr<EdeOpt> Create(std::string data);
+    static std::unique_ptr<EdeOpt> Create(base::span<const uint8_t> data);
 
     uint16_t GetCode() const override;
     uint16_t info_code() const { return info_code_; }

@@ -28,7 +28,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -86,6 +85,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private WindowAndroid mWindowAndroid;
     private boolean mIsMenuShowing;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
+    private CollaborationService mCollaborationService;
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
             new TabGroupModelFilterObserver() {
                 @Override
@@ -130,6 +130,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                     if (!isShowing) updateTabGroupTitle();
                 };
         mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
+        mCollaborationService = collaborationService;
     }
 
     /**
@@ -315,7 +316,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         }
 
         if (!isIncognito
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                && mCollaborationService != null
+                && mCollaborationService.getServiceStatus().isAllowedToCreate()
                 && !hasCollaborationData) {
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(

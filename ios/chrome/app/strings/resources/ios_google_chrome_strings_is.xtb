@@ -121,6 +121,7 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þ
 <translation id="4064699917955374540">Staðfestu að þetta sért þú til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
 <translation id="417201473131094001">Ekki stutt í Chrome Canary</translation>
 <translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
+<translation id="4430797724889237570">Opna tengla frá Gmail, Kortum, YouTube og öðrum forritum í Chrome</translation>
 <translation id="447252321002412580">Hjálpaðu til við að bæta eiginleika og afköst Chrome</translation>
 <translation id="4523886039239821078">Einhverjar viðbætur valda því að Chrome hrynur. Fjarlægðu þær.</translation>
 <translation id="4633328489441962921">Chrome getur ekki leitað að uppfærslum.</translation>
@@ -206,6 +207,7 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skiptir um reikning. Ef
 
 Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
 <translation id="6533470733797826516">Skráðu þig inn í hvelli með sjálfvirkri útfyllingu Chrome</translation>
+<translation id="6536544321553662809">Stilla Chrome sem sjálfgefinn vafra til að deila og opna tengla á auðveldan hátt</translation>
 <translation id="6545449117344801102">Chrome greinir heimilisföng og notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar.</translation>
 <translation id="6636941099779251629">Fyrirtækið þitt krefst þess að þú skráir þig inn til að nota Chrome. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Sendir ruglaðan hluta vefslóðarinnar til Google í gegnum traustan þjón sem felur IP-töluna þína. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir til Google, þar á meðal hluta af efni síðna.</translation>
@@ -291,6 +293,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="8370517070665726704">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
 <translation id="8371138994040262994">Opnar stillingar í Chrome.</translation>
 <translation id="8387459386171870978">Halda áfram að nota Chrome</translation>
+<translation id="8392023217086447677">Opnað í huliðsstillingu Chrome</translation>
 <translation id="840168496893712993">Einhverjar viðbætur valda því að Chrome hrynur. Prófaðu að fjarlægja þær.</translation>
 <translation id="8413500425974960807">Ábending frá Chrome: Færðu Chrome á stikuna</translation>
 <translation id="8413795581997394485">Verndar gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg. Þegar þú opnar vefsvæði sendir Chrome ruglaðan hluta vefslóðarinnar til Google í gegnum traustan þjón sem felur IP-töluna þína. Ef vefsvæði gerir eitthvað grunsamlegt eru heilar vefslóðir og efnisbútar af síðu einnig sendir.</translation>

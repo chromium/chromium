@@ -520,7 +520,6 @@ void FormFiller::FillOrPreviewForm(
     const FillingPayload& filling_payload,
     FormStructure& form_structure,
     AutofillField& autofill_trigger_field,
-    DenseSet<FieldFillingSkipReason> ignorable_skip_reasons,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
   FillingProduct filling_product =
@@ -578,24 +577,13 @@ void FormFiller::FillOrPreviewForm(
   }
 
   // `FormFiller::GetFieldFillingSkipReasons` returns for each field a generic
-  // list of reason for skipping each field. Some of these reasons might not be
-  // relevant for the current context (given `ignorable_skip_reasons`) so we
-  // filter them out from the start.
+  // list of reason for skipping each field.
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
-      base::MakeFlatMap<FieldGlobalId, DenseSet<FieldFillingSkipReason>>(
-          GetFieldFillingSkipReasons(
-              result_fields, form_structure, autofill_trigger_field,
-              refill_context ? refill_context->type_groups_originally_filled
-                             : std::optional<DenseSet<FieldTypeGroup>>(),
-              filling_product, is_refill),
-          {},
-          [&ignorable_skip_reasons](
-              const std::pair<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
-                  field_id_and_skip_reasons) {
-            auto [field_id, field_skip_reasons] = field_id_and_skip_reasons;
-            field_skip_reasons.erase_all(ignorable_skip_reasons);
-            return std::make_pair(field_id, field_skip_reasons);
-          });
+      GetFieldFillingSkipReasons(
+          result_fields, form_structure, autofill_trigger_field,
+          refill_context ? refill_context->type_groups_originally_filled
+                         : std::optional<DenseSet<FieldTypeGroup>>(),
+          filling_product, is_refill);
 
   // This loop sets the values to fill in the `result_fields`. The
   // `result_fields` are sent to the renderer, whereas the very similar
@@ -860,8 +848,7 @@ void FormFiller::TriggerRefill(const FormData& form,
       [&](const auto& profile_or_credit_card) {
         FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                           &profile_or_credit_card, *form_structure,
-                          *autofill_field, /*ignorable_skip_reasons=*/{},
-                          trigger_source,
+                          *autofill_field, trigger_source,
                           /*is_refill=*/true);
       },
       refill_context->profile_or_credit_card);

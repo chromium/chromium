@@ -12,6 +12,8 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/session/guest_session_confirmation_dialog.h"
 #include "base/base64.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -69,11 +71,6 @@ constexpr char kAccountKeyId[] = "id";
 constexpr char kAccountKeyEmail[] = "email";
 constexpr char kAccountKeyFullName[] = "fullName";
 constexpr char kAccountKeyImage[] = "image";
-
-std::string AnonymizeAccountEmail(const std::string& email) {
-  std::string result = base::Base64Encode(crypto::SHA256HashString(email));
-  return result + "@example.com";
-}
 
 // Returns a base64-encoded hash code of "signin_scoped_device_id:gaia_id" for
 // secondary accounts, and `signin_scoped_device_id` for the Device / Primary
@@ -441,13 +438,12 @@ void InlineLoginHandlerImpl::OnGetAccounts(
     const std::vector<::account_manager::Account>& accounts) {
   base::Value::List account_emails;
   for (const auto& account : accounts) {
-    if (account.key.account_type() ==
-        ::account_manager::AccountType::kActiveDirectory) {
-      // Don't send Active Directory account email to Gaia.
-      account_emails.Append(AnonymizeAccountEmail(account.raw_email));
-    } else {
-      account_emails.Append(account.raw_email);
-    }
+    // Currently, we only support `kGaia` account type. Should a new type be
+    // added in the future, consider removing the `CHECK_EQ()` below and
+    // handling the new type accordingly.
+    CHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia);
+
+    account_emails.Append(account.raw_email);
   }
 
   ResolveJavascriptCallback(base::Value(callback_id), account_emails);

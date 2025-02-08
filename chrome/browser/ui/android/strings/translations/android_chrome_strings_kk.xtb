@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1009406586654360474">Google Password Manager қызметін ашып, параметрлерге өтіңіз. "Импорттау" опциясын таңдап, экспортталған құпия сөздерді қамтитын CSV файлын қосыңыз.</translation>
-<translation id="1010225406377140704">Жіберушіге хабарласып, жаңа сілтеме сұраңыз.</translation>
 <translation id="1011749477052068769">Мұнда жылжыту</translation>
 <translation id="1014147525163127655">Бұл құрылғыда <ph name="ORIGIN" /> үшін ешқандай кіру кілті жоқ.</translation>
 <translation id="1016498331642356377">Дауыспен жылдам іздеу. Бұл жылдам пәрменді өзгерту үшін оны басып тұрыңыз.</translation>
@@ -1723,7 +1722,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8683039184091909753">сурет</translation>
 <translation id="869891660844655955">Аяқталу мерзімі</translation>
 <translation id="8699120352855309748">Бұл тілдерді аударуды ұсынбау</translation>
-<translation id="8703372953981978786">Бұл сілтеме жұмыс істемейді</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8723453889042591629">Осы бетті жылдам аударып береді. Бұл жылдам пәрменді өзгерту үшін оны басып тұрыңыз.</translation>
 <translation id="8725066075913043281">Әрекетті қайталау</translation>

@@ -1205,8 +1205,11 @@
     "balance",
 
     // corner-shape
+    // "bevel",
+    "notch",
     // "round",
     "scoop",
+    "squircle",
     "straight",
     "superellipse",
 

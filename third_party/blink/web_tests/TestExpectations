@@ -2701,7 +2701,21 @@ crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-sa
 crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
+[ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
+
 # ====== New tests from wpt-importer added here ======
+crbug.com/394919522 external/wpt/css/css-fonts/font-synthesis-style-oblique-only.html [ Failure ]
+crbug.com/394919522 [ Win10.20h2 ] external/wpt/css/css-fonts/parsing/font-synthesis-computed.html [ Failure Timeout ]
+crbug.com/394920629 [ Mac14 ] external/wpt/css/css-pseudo/active-selection-021.html [ Failure ]
+crbug.com/394932379 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/popup-with-structured-header.https.html [ Crash ]
+crbug.com/394919517 [ Mac11-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/394919517 [ Mac15 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/394919517 [ Mac14-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/394919517 [ Mac14 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/394919517 [ Mac13-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/394919517 [ Mac12-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/394919517 [ Mac12 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/394919517 [ Mac15-arm64 ] external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
 crbug.com/394656809 [ Mac13 ] external/wpt/css/css-overflow/scroll-marker-group-keeps-active-in-view.html [ Failure ]
 crbug.com/394331189 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?7-8 [ Crash Failure ]
 crbug.com/394331189 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/popup-unsafe-none-with-same-origin.https.html [ Crash ]
@@ -2738,8 +2752,6 @@ crbug.com/392927699 external/wpt/css/css-lists/list-style-position-001.html [ Fa
 crbug.com/392927987 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-same-origin.https.html?5-6 [ Crash ]
 crbug.com/392948859 [ Mac15 ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?1-2 [ Crash Failure ]
 crbug.com/392180059 [ Linux ] external/wpt/digital-credentials/disabled-by-permissions-policy.https.sub.html [ Failure Timeout ]
-crbug.com/391975648 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-5-test [ Crash Failure ]
-crbug.com/391975648 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-8-test [ Crash Failure ]
 crbug.com/391728750 [ Win11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.html [ Skip Timeout ]
 crbug.com/391728750 [ Win11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.serviceworker.html [ Skip Timeout ]
 crbug.com/391728750 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.any.serviceworker.html [ Skip Timeout ]
@@ -5992,26 +6004,11 @@ crbug.com/1281792 external/wpt/event-timing/min-duration-threshold.html [ Failur
 crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Failure Pass ]
 
 # These virtual suites enable text autosizing and should pass.
-crbug.com/340389272 virtual/new-text-size-adjust/wpt_internal/css/css-size-adjust/* [ Pass ]
-crbug.com/340389272 virtual/new-text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/* [ Pass ]
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/* [ Pass ]
-crbug.com/340389272 virtual/old-text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/* [ Pass ]
-
-# These tests fail without the new text-size-adjust implementation.
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-with-narrow-page.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-with-narrow-page.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/text-size-adjust-none.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-large.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-large.html [ Failure ]
+crbug.com/340389272 virtual/text-size-adjust/wpt_internal/css/css-size-adjust/* [ Pass ]
+crbug.com/340389272 virtual/text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/* [ Pass ]
 
 # Blocked on https://github.com/w3c/csswg-drafts/issues/4456 resolution.
 crbug.com/373478544 wpt_internal/css/css-overflow/column-scroll-marker-009.html [ Failure ]
-
-# These tests fail because the old text size adjust wasn't applied if the page didn't run the autosizer.
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-nested-change.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size-nested.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/text-size-adjust-affects-font-size.html [ Failure ]
-crbug.com/340389272 virtual/old-text-size-adjust/wpt_internal/css/css-size-adjust/webkit-text-size-adjust-affects-font-size.html [ Failure ]
 
 # Sheriff 2022-01-04
 crbug.com/1283865 external/wpt/webmessaging/without-ports/020.html [ Failure Pass ]
@@ -6182,9 +6179,6 @@ crbug.com/384009734 external/wpt/html/browsers/browsing-the-web/navigating-acros
 # Marked as failing due to different failure output on headless vs content_shell
 crbug.com/341935362 virtual/dialog-close-when-open-removed-disabled/external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-close-via-attribute.tentative.html [ Failure ]
 
-# unicode-bidi invalidation bug
-crbug.com/391865300 fast/forms/select/menulist-appearance-rtl.html [ Failure ]
-
 # CustomizableSelect
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-* [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-* [ Failure ]
@@ -6204,6 +6198,7 @@ crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-open-invalidation.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.tentative.html [ Failure ]
+crbug.com/40146374 virtual/customizable-select-disabled/fast/forms/select-popup/popup-menu-nested-option.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-behavior.tentative.html [ Failure ]
@@ -6238,8 +6233,6 @@ crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semant
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-click-drag-option.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-focus-change-for-hidden-options.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-focus-change-for-hidden-options.tentative.html [ Failure ]
-crbug.com/40146374 virtual/customizable-select-disabled/fast/forms/select-popup/popup-menu-nested-option.html [ Failure ]
-crbug.com/40146374 virtual/select-parser-relaxation/fast/forms/select-popup/popup-menu-nested-option.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-popover-exit-animation.tentative.html [ Failure ]
 crbug.com/40146374 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-popover-exit-animation.tentative.html [ Failure ]
 crbug.com/40146374 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-second-child-button.tentative.html [ Failure ]
@@ -9133,5 +9126,5 @@ crbug.com/389946963 [ Mac13 ] external/wpt/mediacapture-fromelement/capture.html
 crbug.com/394287937 http/tests/devtools/storage-panel-dom-storage-update.js [ Failure Pass ]
 
 # Gardener 2025-02-06
-crbug.com/385054996 external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Pass Crash Timeout ]
-crbug.com/394638725 [ Mac ] external/wpt/css/cssom/getComputedStyle-width-scroll.tentative.html [ Pass Failure ]
+crbug.com/385054996 external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Crash Pass Timeout ]
+crbug.com/394638725 [ Mac ] external/wpt/css/cssom/getComputedStyle-width-scroll.tentative.html [ Failure Pass ]

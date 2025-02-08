@@ -881,6 +881,12 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kGoogleChat:
         disabled_web_apps_.insert(ash::kGoogleChatAppId);
         break;
+      case policy::SystemFeature::kYoutube:
+        disabled_web_apps_.insert(ash::kYoutubeAppId);
+        break;
+      case policy::SystemFeature::kGoogleMaps:
+        disabled_web_apps_.insert(ash::kGoogleMapsAppId);
+        break;
 #else
       case policy::SystemFeature::kCamera:
       case policy::SystemFeature::kOsSettings:

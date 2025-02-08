@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/commerce/core/commerce_feature_list.h"
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_item.h"
 
@@ -39,15 +40,15 @@
 
 - (void)fetchLatestShopCardItem {
   // Populate the item if it is not already initialized.
-  // This is a placeholder and may get replaced when we fetch actual data.
-  if (self->_shopCardItem.shopCardData) {
-    return;
-  }
   _shopCardItem = [[ShopCardItem alloc] init];
   _shopCardItem.shopCardData = [[ShopCardData alloc] init];
-  // TODO: crbug.com/394638800 - set this to the correct type based on
-  // experiment.
-  _shopCardItem.shopCardData.shopCardItemType = ShopCardItemType::kUnknown;
+
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+    _shopCardItem.shopCardData.shopCardItemType =
+        ShopCardItemType::kPriceDropForTrackedProducts;
+  } else if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) {
+    _shopCardItem.shopCardData.shopCardItemType = ShopCardItemType::kReviews;
+  }
 }
 
 - (ShopCardItem*)shopCardItemToShow {

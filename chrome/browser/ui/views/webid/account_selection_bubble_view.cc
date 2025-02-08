@@ -239,7 +239,8 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
                          : std::make_optional<std::u16string>(
                                base::UTF8ToUTF16(idp_list[0]->idp_for_display)),
                      rp_context_);
-  UpdateHeader(idp_list[0]->idp_metadata, title, show_back_button);
+  UpdateHeader(idp_list[0]->idp_metadata.brand_decoded_icon, title,
+               show_back_button);
 
   RemoveNonHeaderChildViews();
   AddSeparatorAndMultipleAccountChooser(accounts, idp_list);
@@ -250,7 +251,8 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
 void AccountSelectionBubbleView::ShowVerifyingSheet(
     const IdentityRequestAccountPtr& account,
     const std::u16string& title) {
-  UpdateHeader(account->identity_provider->idp_metadata, title,
+  UpdateHeader(account->identity_provider->idp_metadata.brand_decoded_icon,
+               title,
                /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
@@ -280,8 +282,8 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
       GetTitle(rp_for_display_,
                base::UTF8ToUTF16(account->identity_provider->idp_for_display),
                rp_context_);
-  UpdateHeader(account->identity_provider->idp_metadata, title,
-               show_back_button);
+  UpdateHeader(account->identity_provider->idp_metadata.brand_decoded_icon,
+               title, show_back_button);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
@@ -293,7 +295,7 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
 void AccountSelectionBubbleView::ShowFailureDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
-  UpdateHeader(idp_metadata,
+  UpdateHeader(idp_metadata.brand_decoded_icon,
                GetTitle(rp_for_display_, idp_for_display, rp_context_),
                /*show_back_button=*/false);
 
@@ -339,7 +341,7 @@ void AccountSelectionBubbleView::ShowErrorDialog(
     const std::optional<TokenError>& error) {
   std::u16string title =
       GetTitle(rp_for_display_, idp_for_display, rp_context_);
-  UpdateHeader(idp_metadata, title,
+  UpdateHeader(idp_metadata.brand_decoded_icon, title,
                /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
@@ -417,9 +419,9 @@ void AccountSelectionBubbleView::ShowSingleReturningAccountDialog(
     const std::vector<IdentityProviderDataPtr>& idp_list) {
   // We currently only invoke this method in the multi IDP case.
   DCHECK_GT(idp_list.size(), 1u);
-  // Since there are multiple IDPs, then the content::IdentityProviderMetadata
-  // passed will be unused since there will be no `header_icon_view_`.
-  UpdateHeader(content::IdentityProviderMetadata(),
+  // Since there are multiple IDPs, then the gfx::Image passed will be unused
+  // since there will be no `header_icon_view_`.
+  UpdateHeader(gfx::Image(),
                GetTitle(rp_for_display_, std::nullopt, rp_context_),
                /*show_back_button=*/false);
 
@@ -495,8 +497,6 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
   // Add the space for the icon.
   if (has_idp_icon) {
     auto image_view = std::make_unique<BrandIconImageView>(
-        base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
-                       weak_ptr_factory_.GetWeakPtr()),
         kBubbleIdpIconSize, /*should_circle_crop=*/true);
     image_view->SetImageSize(gfx::Size(kBubbleIdpIconSize, kBubbleIdpIconSize));
     image_view->SetProperty(views::kMarginsKey,
@@ -679,9 +679,8 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
   size_t num_mismatch_rows = 0;
   for (const auto& idp_data : idp_list) {
     if (idp_data->has_login_status_mismatch) {
-      mismatch_content->AddChildView(
-          CreateIdpLoginRow(base::UTF8ToUTF16(idp_data->idp_for_display),
-                            idp_data->idp_metadata));
+      mismatch_content->AddChildView(CreateIdpLoginRow(
+          base::UTF8ToUTF16(idp_data->idp_for_display), idp_data));
       num_mismatch_rows += 1;
     }
   }
@@ -815,19 +814,18 @@ AccountSelectionBubbleView::CreateSingleReturningAccountChooser(
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
     const std::u16string& idp_for_display,
-    const content::IdentityProviderMetadata& idp_metadata) {
+    const IdentityProviderDataPtr& idp_data) {
   auto image_view = std::make_unique<BrandIconImageView>(
-      base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
-                     weak_ptr_factory_.GetWeakPtr()),
       kMultiIdpIconSize, /*should_circle_crop=*/true);
   image_view->SetImageSize(gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
-  image_view->SetVisible(idp_metadata.brand_icon_url.is_valid());
-  ConfigureBrandImageView(image_view.get(), idp_metadata.brand_icon_url);
+  image_view->SetVisible(!idp_data->idp_metadata.brand_decoded_icon.IsEmpty());
+  image_view->CropAndSetImage(idp_data->idp_metadata.brand_decoded_icon);
 
   auto button = std::make_unique<HoverButton>(
       base::BindRepeating(&FedCmAccountSelectionView::OnLoginToIdP,
-                          base::Unretained(owner_), idp_metadata.config_url,
-                          idp_metadata.idp_login_url),
+                          base::Unretained(owner_),
+                          idp_data->idp_metadata.config_url,
+                          idp_data->idp_metadata.idp_login_url),
       std::move(image_view),
       l10n_util::GetStringFUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_BUTTON_TEXT,
                                  idp_for_display),
@@ -860,20 +858,19 @@ AccountSelectionBubbleView::CreateUseOtherAccountButton(
   return button;
 }
 
-void AccountSelectionBubbleView::UpdateHeader(
-    const content::IdentityProviderMetadata& idp_metadata,
-    const std::u16string& title,
-    bool show_back_button) {
+void AccountSelectionBubbleView::UpdateHeader(const gfx::Image& idp_image,
+                                              const std::u16string& title,
+                                              bool show_back_button) {
   back_button_->SetVisible(show_back_button);
   if (header_icon_view_) {
     // The back button takes the place of the brand icon, if it is shown. By
     // default, we show placeholder brand icon prior to brand icon being fetched
     // so that header text wrapping does not change when brand icon is fetched.
-    // Therefore, we need to hide the brand icon if the URL is invalid.
-    if (show_back_button || !idp_metadata.brand_icon_url.is_valid()) {
+    // Therefore, we need to hide the brand icon if the image is empty.
+    if (show_back_button || idp_image.IsEmpty()) {
       header_icon_view_->SetVisible(false);
     } else {
-      ConfigureBrandImageView(header_icon_view_, idp_metadata.brand_icon_url);
+      header_icon_view_->CropAndSetImage(idp_image);
       header_icon_view_->SetVisible(true);
     }
   }

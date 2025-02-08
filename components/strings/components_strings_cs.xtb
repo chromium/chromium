@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Teď ne</translation>
 <translation id="100957008357583611">Použít určování polohy?</translation>
 <translation id="1010200102790553230">Načíst stránku později</translation>
+<translation id="1010225406377140704">Kontaktujte odesílatele a požádejte ho o nový odkaz</translation>
 <translation id="1011206368273183593">Příprava souborů</translation>
 <translation id="1014509239502131234">Vracení výsledku zpět</translation>
 <translation id="1015730422737071372">Zadejte další podrobnosti</translation>
@@ -1164,6 +1165,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3076865167425975822">Operační systémy</translation>
 <translation id="3080254622891793721">Obrázek</translation>
 <translation id="3082007635241601060">Nechte Google vyhledávat na základě nákupních košíků dostupné personalizované slevy</translation>
+<translation id="3086269988715347183">Web <ph name="BLOCKED_URL" /> jste dříve neschválili</translation>
 <translation id="3086579638707268289">Vaše aktivita na webu je sledována</translation>
 <translation id="3087734570205094154">Až dolů</translation>
 <translation id="3090667236485488075">Sklo</translation>
@@ -1236,6 +1238,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3203025201812691413">Adresa URL nesmí být prázdná</translation>
 <translation id="320323717674993345">Zrušit platbu</translation>
 <translation id="3203366800380907218">Z webu</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> může zahrnovat obsah nevhodný pro děti</translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
 <translation id="3208701679386778924">Pošlete nám hlášení, abychom mohli vylepšit další aktualizace systému ChromeOS.</translation>
 <translation id="3209034400446768650">Stránka může účtovat poplatky</translation>
@@ -2968,6 +2971,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6254436959401408446">K otevření této stránky není k dispozici dostatek paměti</translation>
 <translation id="625463612687472648">Odebrat oprávnění</translation>
 <translation id="6259156558325130047">&amp;Opakovat změnu uspořádání</translation>
+<translation id="6259282549512536479">Web <ph name="BLOCKED_URL" /> jste dříve zablokovali</translation>
 <translation id="6263376278284652872">Záložky webu <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Přesto stáhnout</translation>
 <translation id="6264485186158353794">Zpět na bezpečnější stránku</translation>
@@ -3100,6 +3104,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6465306955648956876">Spravovat hesla...</translation>
 <translation id="646789491285795429">Tento produkt už sledujete.</translation>
 <translation id="6468485451923838994">Písma</translation>
+<translation id="6469702164109431067">Hesla a přístupové klíče</translation>
 <translation id="647261751007945333">Zásady zařízení</translation>
 <translation id="6472874020827012601">Textilie(matná)</translation>
 <translation id="647330291963761005">Instalace aktualizací</translation>
@@ -4344,6 +4349,7 @@ Další podrobnosti:
 <translation id="8699041776323235191">Zařízení HID</translation>
 <translation id="8699985386408839112">Obálka Kaku 1</translation>
 <translation id="8702965365666568344">Montážní páska</translation>
+<translation id="8703372953981978786">Tento odkaz nefunguje</translation>
 <translation id="8703575177326907206">Vaše spojení se serverem <ph name="DOMAIN" /> není šifrované.</translation>
 <translation id="8705331520020532516">Sériové číslo</translation>
 <translation id="8706806585855470492">Budete moct sdílet skupiny karet, připojovat se k nim a spolupracovat na nich</translation>

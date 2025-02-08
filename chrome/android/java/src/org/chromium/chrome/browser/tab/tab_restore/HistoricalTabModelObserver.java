@@ -96,7 +96,8 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
 
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
-                mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(tabs);
+                mTabGroupModelFilter.getLazyAllTabGroupIds(
+                        tabs, /* includePendingClosures= */ true);
         for (Tab tab : tabs) {
             @Nullable Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId != null) {

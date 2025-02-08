@@ -728,6 +728,15 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // handler.
   blink::mojom::ControllerServiceWorkerMode GetControllerMode() const;
 
+  void SetResponseHeadForSyntheticResponse(
+      const network::mojom::URLResponseHead& response_head) {
+    synthetic_response_head_ = response_head.Clone();
+  }
+
+  network::mojom::URLResponseHeadPtr GetResponseHeadForSyntheticResponse() {
+    return synthetic_response_head_.Clone();
+  }
+
   // Timeout for a request to be handled.
   static constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
 
@@ -1298,6 +1307,11 @@ class CONTENT_EXPORT ServiceWorkerVersion
   std::unique_ptr<blink::AssociatedInterfaceRegistry> associated_registry_;
   std::unique_ptr<blink::AssociatedInterfaceProvider>
       associated_interface_provider_;
+
+  // (crbug.com/352578800): Keep the response header which is provided by the
+  // browser initiated network response for SyntheticResponse. In subsequent
+  // navigations, this will be used as the locally returned response header.
+  network::mojom::URLResponseHeadPtr synthetic_response_head_;
 
   base::WeakPtrFactory<ServiceWorkerVersion> weak_factory_{this};
 };

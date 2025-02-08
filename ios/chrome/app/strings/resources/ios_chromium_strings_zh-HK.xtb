@@ -70,6 +70,7 @@
 <translation id="2459183986985456602">在 Chromium 中開啟我的最新分頁。</translation>
 <translation id="2476409803017965813">你可隨時在 Chromium 設定中更新所選項目。</translation>
 <translation id="2478931088402984578">選取 [Chromium]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">將 Chromium 設定為預設瀏覽器，輕鬆分享和開啟連結</translation>
 <translation id="2512597191798760956">按住 Chromium 圖示，然後按一下 [編輯主畫面]</translation>
 <translation id="2517624234762908348">同步您的 Chromium 資料</translation>
 <translation id="2592940277904433508">繼續使用 Chromium</translation>
@@ -167,6 +168,7 @@
 <translation id="5088872414922783602">從主畫面 Dock 更快存取 Chromium。</translation>
 <translation id="5124429847818367226">你現在隨時可使用 Chromium 瀏覽或開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="5131565040785979529">你的機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chromium 的方式。</translation>
+<translation id="5134464247000681876">使用 Chromium 開啟 Gmail、地圖、YouTube 和其他應用程式中的連結</translation>
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
 <translation id="5259423875997548710">在 Chromium 中搜尋影像內容。</translation>
 <translation id="5308226104666789935">Chromium 無法檢查更新</translation>
@@ -260,6 +262,7 @@
 <translation id="7674213385180944843">開啟 [設定] &gt; [私隱權] &gt; [相機] &gt; [Chromium]，然後開啟相機。</translation>
 <translation id="7733418656985455268">Chromium 提示：使用「智能鏡頭」搜尋</translation>
 <translation id="7747820849741499258">在 Chromium 中搜尋</translation>
+<translation id="7753923083404296545">已在 Chromium 無痕模式中開啟</translation>
 <translation id="7762622637388462191">在你離開 Chromium 或切換至其他應用程式時鎖定無痕式分頁。</translation>
 <translation id="7763454117143368771">使用 Chrome 作為預設瀏覽器可保護您免受危險網站威脅，同時確保密碼安全</translation>
 <translation id="7784950022329154821">關閉 Chromium 時鎖定無痕式分頁</translation>

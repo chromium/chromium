@@ -121,6 +121,7 @@ Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi ć
 <translation id="4064699917955374540">Da biste upotrebljavali i spremali podatke iz Chromea na svoj Google račun, potvrdite da ste to vi.</translation>
 <translation id="417201473131094001">Nije podržano u Chrome Canaryju</translation>
 <translation id="424864128008805179">Želite li se odjaviti s Chromea?</translation>
+<translation id="4430797724889237570">Otvorite veze iz Gmaila, Karata, YouTubea i drugih aplikacija u Chromeu</translation>
 <translation id="447252321002412580">Pomozite poboljšati Chromeove značajke i izvedbu</translation>
 <translation id="4523886039239821078">Neki programski dodaci uzrokuju rušenje preglednika Chrome. Deinstalirajte:</translation>
 <translation id="4633328489441962921">Chrome ne može provjeriti ima li ažuriranja</translation>
@@ -206,6 +207,7 @@ Pokušajte pričekati nekoliko minuta prije prebacivanja na drugi račun. Ako sa
 
 Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i spremali podatke Chromea na svojem Google računu.</translation>
 <translation id="6533470733797826516">Brže se prijavite uz automatsko popunjavanje u Chromeu</translation>
+<translation id="6536544321553662809">Postavite Chrome kao zadani preglednik da biste jednostavno dijelili i otvarali veze</translation>
 <translation id="6545449117344801102">Chrome otkriva adrese i upotrebljava Google karte kako bi vam pružio upute i lokalne informacije.</translation>
 <translation id="6636941099779251629">Vaša organizacija zahtijeva da se prijavite da biste koristili Chrome. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Googleu se šalje maskirani dio URL-a putem poslužitelja za zaštitu privatnosti koji skriva vašu IP adresu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može Googleu poslati URL-ove, uključujući dijelove sadržaja web-stranice.</translation>
@@ -291,6 +293,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava pridržana.</translation>
 <translation id="8371138994040262994">Otvara postavke u Chromeu.</translation>
 <translation id="8387459386171870978">Nastavi upotrebljavati Chrome</translation>
+<translation id="8392023217086447677">Otvoreno u anonimnom načinu Chromea</translation>
 <translation id="840168496893712993">Neki programski dodaci uzrokuju rušenje preglednika Chrome. Pokušajte ih deinstalirati.</translation>
 <translation id="8413500425974960807">Savjet za Chrome: premjestite Chrome na donju traku</translation>
 <translation id="8413795581997394485">Štiti od web-lokacija, preuzimanja i proširenja za koje je poznato da su opasni. Kad posjetite neku web-lokaciju, Chrome Googleu šalje maskirani dio URL-a putem poslužitelja za zaštitu privatnosti koji skriva vašu IP adresu. Ako web-lokacija učini nešto sumnjivo, šalju se i potpuni URL-ovi i dijelovi sadržaja.</translation>

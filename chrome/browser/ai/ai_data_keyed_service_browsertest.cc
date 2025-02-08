@@ -35,7 +35,6 @@
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"
 #include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/history_embeddings/mock_answerer.h"
-#include "components/history_embeddings/mock_embedder.h"
 #include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -99,8 +98,7 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
         base::BindLambdaForTesting([](content::BrowserContext* context) {
           return HistoryEmbeddingsServiceFactory::
               BuildServiceInstanceForBrowserContextForTesting(
-                  context, std::make_unique<history_embeddings::MockEmbedder>(),
-                  std::make_unique<history_embeddings::MockAnswerer>(),
+                  context, std::make_unique<history_embeddings::MockAnswerer>(),
                   std::make_unique<history_embeddings::MockIntentClassifier>());
         }));
   }

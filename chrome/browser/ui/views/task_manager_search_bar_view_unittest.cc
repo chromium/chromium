@@ -33,10 +33,6 @@ class MockDelegate : public TaskManagerSearchBarView::Delegate {
               SearchBarOnInputChanged,
               (const std::u16string& text),
               (override));
-  MOCK_METHOD(void,
-              SearchBarOnHoverChange,
-              (const bool is_focus_on),
-              (override));
 };
 class TaskManagerSearchBarViewTest : public ChromeViewsTestBase {
  public:

@@ -83,7 +83,7 @@ function processClientInfo(info: ClientInfo) {
 function initialize() {
   // Timeout to wait for segmentation results.
   const timeoutSec = 3000;
-  setTimeout(() => {
+  const timeoutId = setTimeout(() => {
     openError();
   }, timeoutSec);
 
@@ -91,6 +91,7 @@ function initialize() {
       (clientInfos: ClientInfo[]) => {
         for (let i = 0; i < clientInfos.length; ++i) {
           if (clientInfos[i]!.segmentationKey === 'metrics_clustering') {
+            clearTimeout(timeoutId);
             processClientInfo(clientInfos[i]!);
           }
         }

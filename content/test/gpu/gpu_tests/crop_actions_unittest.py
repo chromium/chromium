@@ -258,7 +258,7 @@ class NonWhiteContentCropAction(unittest.TestCase):
     pixels = [*(RED * 9)]
     image = image_util.FromRGBPixels(3, 3, pixels, bpp=3)
     action = ca.NonWhiteContentCropAction()
-    cropped_image = action.CropScreenshot(image, 1, 'SM-A235M', '')
+    cropped_image = action.CropScreenshot(image, 1, 'SM-A236B', '')
     expected_image = image_util.FromRGBPixels(3, 2, [*(RED * 6)], bpp=3)
     self.assertTrue(
         image_util.AreEqual(cropped_image,

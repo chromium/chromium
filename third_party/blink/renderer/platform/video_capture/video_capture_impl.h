@@ -34,10 +34,6 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace gpu {
-class GpuMemoryBufferSupport;
-}  // namespace gpu
-
 namespace media {
 class GpuVideoAcceleratorFactories;
 }  // namespace media
@@ -119,8 +115,6 @@ class PLATFORM_EXPORT VideoCaptureImpl
       media::mojom::blink::VideoCaptureHost* service) {
     video_capture_host_for_testing_ = service;
   }
-  void SetGpuMemoryBufferSupportForTesting(
-      std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support);
 
   // media::mojom::VideoCaptureObserver implementation.
   void OnStateChanged(
@@ -159,7 +153,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
   bool ProcessBuffer(media::mojom::blink::ReadyBufferPtr ready_buffer);
   static bool BindVideoFrameOnMediaTaskRunner(
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+      gfx::GpuMemoryBufferHandle gmb_handle,
       VideoFrameInitData& video_frame_init_data,
       base::OnceCallback<void()> on_gmb_not_supported);
 
@@ -207,8 +201,9 @@ class PLATFORM_EXPORT VideoCaptureImpl
   void SetGpuFactoriesHandleOnIOTaskRunner(
       media::GpuVideoAcceleratorFactories* gpu_factories);
 
-  // Performs RequirePremappedFrames() and sets `gmb_not_supported_`.
-  void OnGmbNotSupported();
+  // Performs RequirePremappedFrames() and sets
+  // `mappable_buffers_not_supported_`.
+  void OnMappableBuffersNotSupported();
   // Sets fallback mode which will make it always request
   // premapped frames from the capturer.
   void RequirePremappedFrames();
@@ -256,11 +251,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
   raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  bool gmb_not_supported_ = false;
-
-  std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
-
-  scoped_refptr<base::UnsafeSharedMemoryPool> pool_;
+  bool mappable_buffers_not_supported_ = false;
 
   // Stores feedback from the clients, received in |ProcessFeedback()|.
   // Only accessed on the IO thread.

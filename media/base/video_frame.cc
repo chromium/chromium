@@ -1666,17 +1666,13 @@ gpu::SyncToken VideoFrame::UpdateReleaseSyncToken(SyncTokenClient* client) {
   return release_sync_token_;
 }
 
-gpu::SyncToken VideoFrame::UpdateAcquireSyncToken(SyncTokenClient* client) {
-  DCHECK(HasOneRef());
+void VideoFrame::UpdateAcquireSyncToken(gpu::SyncToken token) {
   DCHECK(HasSharedImage());
-  DCHECK(!wrapped_frame_);
-
-  // No lock is required due to the HasOneRef() check.
-  auto& token = acquire_sync_token_;
-  if (token.HasData())
-    client->WaitSyncToken(token);
-  client->GenerateSyncToken(&token);
-  return token;
+  if (wrapped_frame_) {
+    return wrapped_frame_->UpdateAcquireSyncToken(token);
+  }
+  base::AutoLock locker(release_sync_token_lock_);
+  acquire_sync_token_ = token;
 }
 
 std::string VideoFrame::AsHumanReadableString() const {

@@ -832,6 +832,14 @@ void LocationBarView::Layout(PassKey) {
           (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION)) {
         image = extensions::OmniboxAPI::Get(profile_)->GetOmniboxIcon(
             template_url->GetExtensionId());
+      } else if (template_url &&
+                 template_url->policy_origin() ==
+                     TemplateURLData::PolicyOrigin::kSearchAggregator) {
+        const SkBitmap* bitmap =
+            omnibox_view_->model()->GetPopupRichSuggestionBitmap(keyword);
+        if (bitmap) {
+          image = gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+        }
       }
       selected_keyword_view_->SetCustomImage(image);
     }

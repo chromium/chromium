@@ -145,7 +145,8 @@ Element* HTMLButtonElement::commandForElement() {
     return nullptr;
   }
 
-  return GetElementAttribute(html_names::kCommandforAttr);
+  return GetElementAttributeResolvingReferenceTarget(
+      html_names::kCommandforAttr);
 }
 
 AtomicString HTMLButtonElement::command() const {

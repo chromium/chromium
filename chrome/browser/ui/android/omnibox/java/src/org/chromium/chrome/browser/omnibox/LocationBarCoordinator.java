@@ -436,15 +436,6 @@ public class LocationBarCoordinator
     }
 
     @Override
-    public boolean unfocusUrlBarOnBackPressed() {
-        if (mLocationBarMediator.isUrlBarFocused()) {
-            mLocationBarMediator.backKeyPressed();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public void selectAll() {
         mUrlCoordinator.selectAll();
     }

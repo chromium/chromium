@@ -102,20 +102,24 @@ TEST(OptRecordRdataTest, ParseOptRecordWithLongerSizeThanData) {
 TEST(OptRecordRdataTest, CreateEdeOpt) {
   OptRecordRdata::EdeOpt opt0(22, std::string("Don Quixote"));
 
-  ASSERT_EQ(opt0.data(), std::string("\x00\x16"
-                                     "Don Quixote",
-                                     13));
+  std::string expected_data(
+      "\x00\x16"
+      "Don Quixote",
+      13);
+
+  std::string expected_data1(
+      "\x00\x08"
+      "Manhattan",
+      11);
+
+  ASSERT_EQ(opt0.data(), base::as_byte_span(expected_data));
   ASSERT_EQ(opt0.info_code(), 22u);
   ASSERT_EQ(opt0.extra_text(), std::string("Don Quixote"));
 
   std::unique_ptr<OptRecordRdata::EdeOpt> opt1 =
-      OptRecordRdata::EdeOpt::Create(std::string("\x00\x08"
-                                                 "Manhattan",
-                                                 11));
+      OptRecordRdata::EdeOpt::Create(base::as_byte_span(expected_data1));
 
-  ASSERT_EQ(opt1->data(), std::string("\x00\x08"
-                                      "Manhattan",
-                                      11));
+  ASSERT_EQ(opt1->data(), base::as_byte_span(expected_data1));
   ASSERT_EQ(opt1->info_code(), 8u);
   ASSERT_EQ(opt1->extra_text(), std::string("Manhattan"));
 }
@@ -266,10 +270,13 @@ TEST(OptRecordRdataTest, EdeRecordNoExtraText) {
       0x00, 0x05   // Info Code
   };
 
+  std::string expected_data("\x00\x05", 2);
+
   std::unique_ptr<OptRecordRdata> rdata_obj = OptRecordRdata::Create(rdata);
   ASSERT_THAT(rdata_obj, NotNull());
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
-  ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->data(), std::string("\x00\x05", 2));
+  ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->data(),
+            base::as_byte_span(expected_data));
   ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->info_code(), 5u);
   ASSERT_EQ(rdata_obj->GetEdeOpts()[0]->extra_text(), "");
 }
@@ -298,13 +305,16 @@ TEST(OptRecordRdataTest, EdeRecordUnknownInfoCode) {
       'B',  'O',  'S', 'T', 'O', 'N'  // Extra Text ("BOSTON")
   };
 
+  std::string expected_data(
+      "\x00\x44"
+      "BOSTON",
+      8);
+
   std::unique_ptr<OptRecordRdata> rdata_obj = OptRecordRdata::Create(rdata);
   ASSERT_THAT(rdata_obj, NotNull());
   ASSERT_THAT(rdata_obj->GetEdeOpts(), SizeIs(1));
   auto* opt = rdata_obj->GetEdeOpts()[0];
-  ASSERT_EQ(opt->data(), std::string("\x00\x44"
-                                     "BOSTON",
-                                     8));
+  ASSERT_EQ(opt->data(), base::as_byte_span(expected_data));
   ASSERT_EQ(opt->info_code(), 68u);
   ASSERT_EQ(opt->extra_text(), std::string("BOSTON", 6));
   ASSERT_EQ(opt->GetEnumFromInfoCode(),
@@ -315,13 +325,16 @@ TEST(OptRecordRdataTest, CreatePaddingOpt) {
   std::unique_ptr<OptRecordRdata::PaddingOpt> opt0 =
       std::make_unique<OptRecordRdata::PaddingOpt>(12);
 
-  ASSERT_EQ(opt0->data(), std::string(12, '\0'));
+  std::string expected_data(12, '\0');
+  std::string expected_data1("MASSACHUSETTS");
+
+  ASSERT_EQ(opt0->data(), base::as_byte_span(expected_data));
   ASSERT_THAT(opt0->data(), SizeIs(12u));
 
   std::unique_ptr<OptRecordRdata::PaddingOpt> opt1 =
       std::make_unique<OptRecordRdata::PaddingOpt>("MASSACHUSETTS");
 
-  ASSERT_EQ(opt1->data(), std::string("MASSACHUSETTS"));
+  ASSERT_EQ(opt1->data(), base::as_byte_span(expected_data1));
   ASSERT_THAT(opt1->data(), SizeIs(13u));
 }
 
@@ -426,12 +439,18 @@ TEST(OptRecordRdataTest, TestGetOptsOrder) {
   rdata_obj0.AddOpt(OptRecordRdata::UnknownOpt::CreateForTesting(5, data2));
   ASSERT_EQ(rdata_obj0.OptCount(), 3u);
 
+  std::string expected_data("\x11\x11", 2);
+  std::string expected_data1("\x22\x22", 2);
+  std::string expected_data2("\x33\x33", 2);
+
   auto opts = rdata_obj0.GetOpts();
   ASSERT_EQ(opts[0]->data(),
-            std::string("\x11\x11", 2));  // opt code 5 (inserted first)
-  ASSERT_EQ(opts[1]->data(),
-            std::string("\x22\x22", 2));  // opt code 5 (inserted second)
-  ASSERT_EQ(opts[2]->data(), std::string("\x33\x33", 2));  // opt code 10
+            base::as_byte_span(expected_data));  // opt code 5 (inserted first)
+  ASSERT_EQ(
+      opts[1]->data(),
+      base::as_byte_span(expected_data1));  // opt code 5 (inserted second)
+  ASSERT_EQ(opts[2]->data(),
+            base::as_byte_span(expected_data2));  // opt code 10
 }
 
 }  // namespace

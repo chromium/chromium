@@ -4332,15 +4332,6 @@
       status: "stable",
     },
     {
-      // New implementation of text-size-adjust that applies during style rather
-      // than via the text autosizer. This also includes changes such as
-      // directly using percentage values without heuristics, and fully
-      // disabling automatic size adjustments when non-auto values are used.
-      // See: https://crbug.com/340389272.
-      name: "TextSizeAdjustImprovements",
-      status: "stable",
-    },
-    {
       // crbug.com/379254069
       name: "TextTransformAndSecurityFix",
       status: "stable",

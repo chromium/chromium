@@ -107,12 +107,9 @@ BootloaderOverride GetBootloaderOverride() {
 }
 #endif
 
-// When under this experiment avoid running periodic purging or reclaim for the
-// first minute after the first attempt. This is based on the insight that
-// processes often don't live paste this minute.
-static BASE_FEATURE(kDelayFirstPeriodicPAPurgeOrReclaim,
-                    "DelayFirstPeriodicPAPurgeOrReclaim",
-                    base::FEATURE_ENABLED_BY_DEFAULT);
+// Avoid running periodic purging or reclaim for the first minute after the
+// first attempt. This is based on the insight that processes often don't live
+// paste this minute.
 constexpr base::TimeDelta kFirstPAPurgeOrReclaimDelay = base::Minutes(1);
 
 // This is defined in content/public/common/content_switches.h, which is not
@@ -171,6 +168,8 @@ void MemoryReclaimerSupport::Start(scoped_refptr<TaskRunner> task_runner) {
     return;
   }
 
+  task_runner_ = task_runner;
+
   // The caller of the API fully controls where running the reclaim.
   // However there are a few reasons to recommend that the caller runs
   // it on the main thread:
@@ -186,13 +185,7 @@ void MemoryReclaimerSupport::Start(scoped_refptr<TaskRunner> task_runner) {
   // seconds is useful. Since this is meant to run during idle time only, it is
   // a reasonable starting point balancing effectivenes vs cost. See
   // crbug.com/942512 for details and experimental results.
-  TimeDelta delay;
-  if (base::FeatureList::IsEnabled(kDelayFirstPeriodicPAPurgeOrReclaim)) {
-    delay = std::max(delay, kFirstPAPurgeOrReclaimDelay);
-  }
-
-  task_runner_ = task_runner;
-  MaybeScheduleTask(delay);
+  MaybeScheduleTask(kFirstPAPurgeOrReclaimDelay);
 }
 
 void MemoryReclaimerSupport::SetForegrounded(bool in_foreground) {
@@ -253,12 +246,9 @@ void MemoryReclaimerSupport::MaybeScheduleTask(TimeDelta delay) {
 
 void StartThreadCachePeriodicPurge() {
   auto& instance = ::partition_alloc::ThreadCacheRegistry::Instance();
-  TimeDelta delay =
-      Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds());
-
-  if (base::FeatureList::IsEnabled(kDelayFirstPeriodicPAPurgeOrReclaim)) {
-    delay = std::max(delay, kFirstPAPurgeOrReclaimDelay);
-  }
+  TimeDelta delay = std::max(
+      Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds()),
+      kFirstPAPurgeOrReclaimDelay);
 
   SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);

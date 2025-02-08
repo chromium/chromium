@@ -338,8 +338,9 @@ void CardboardRenderLoop::GetFrameData(
 
   base::TimeTicks now = base::TimeTicks::Now();
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
+  frame_data->render_info = mojom::XRRenderInfo::New();
 
-  frame_data->frame_id = webxr_->StartFrameAnimating();
+  frame_data->render_info->frame_id = webxr_->StartFrameAnimating();
   WebXrFrame* xr_frame = webxr_->GetAnimatingFrame();
 
   xr_frame->time_pose = now;
@@ -371,7 +372,7 @@ void CardboardRenderLoop::GetFrameData(
   pose->emulated_position = true;
 
   gfx::Transform mojo_from_viewer = vr_utils::VrPoseToTransform(pose.get());
-  frame_data->mojo_from_viewer = std::move(pose);
+  frame_data->render_info->mojo_from_viewer = std::move(pose);
 
   // Get the view transform for each eye
   left_eye_->mojo_from_view =
@@ -379,8 +380,8 @@ void CardboardRenderLoop::GetFrameData(
   right_eye_->mojo_from_view =
       cardboard_image_transport_->GetMojoFromView(kRight, mojo_from_viewer);
 
-  frame_data->views.push_back(left_eye_.Clone());
-  frame_data->views.push_back(right_eye_.Clone());
+  frame_data->render_info->views.push_back(left_eye_.Clone());
+  frame_data->render_info->views.push_back(right_eye_.Clone());
 
   std::vector<mojom::XRInputSourceStatePtr> input_state;
   input_state.push_back(GetInputSourceState());

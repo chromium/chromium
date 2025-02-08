@@ -134,7 +134,8 @@ class SharedWorkerHostTest : public testing::Test {
             ->service_worker_client_owner()
             .CreateServiceWorkerClientForWorker(
                 mock_render_process_host_->GetDeprecatedID(),
-                ServiceWorkerClientInfo(host->token())));
+                ServiceWorkerClientInfo(host->token())),
+        net::IsolationInfo());
     host->SetServiceWorkerHandle(std::move(service_worker_handle));
 
     TestContentBrowserClient client;

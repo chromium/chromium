@@ -21,37 +21,20 @@ CONTENT_EXPORT std::string GetWebKitVersion();
 
 CONTENT_EXPORT std::string GetChromiumGitRevision();
 
-// Builds a string that describes the CPU type when available (or blank
-// otherwise).
-CONTENT_EXPORT std::string BuildCpuInfo();
-
-// Takes the cpu info (see BuildCpuInfo()) and extracts the architecture for
-// most common cases.
+// Returns the CPU architecture in Windows/Mac/POSIX/Fuchsia and the empty
+// string on Android or if unknown.
 CONTENT_EXPORT std::string GetCpuArchitecture();
 
-// Takes the cpu info (see BuildCpuInfo()) and extracts the CPU bitness for
-// most common cases.
+// Returns the CPU bitness in Windows/Mac/POSIX/Fuchsia and the empty string on
+// Android.
 CONTENT_EXPORT std::string GetCpuBitness();
 
-// Builds a User-agent compatible string that describes the OS and CPU type.
-// On Android, the string will only include the build number and model if
-// relevant enums indicate they should be included.
-CONTENT_EXPORT std::string BuildOSCpuInfo(
-    IncludeAndroidBuildNumber include_android_build_number,
-    IncludeAndroidModel include_android_model);
 // We may also build the same User-agent compatible string describing OS and CPU
 // type by providing our own |os_version| and |cpu_type|. This is primarily
 // useful in testing.
 CONTENT_EXPORT std::string BuildOSCpuInfoFromOSVersionAndCpuType(
     const std::string& os_version,
     const std::string& cpu_type);
-
-// Returns the OS version.
-// On Android, the string will only include the build number and model if
-// relevant enums indicate they should be included.
-CONTENT_EXPORT std::string GetOSVersion(
-    IncludeAndroidBuildNumber include_android_build_number,
-    IncludeAndroidModel include_android_model);
 
 // Returns the reduced User-agent string for
 // https://github.com/WICG/ua-client-hints.

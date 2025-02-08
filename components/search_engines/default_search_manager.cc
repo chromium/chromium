@@ -71,6 +71,7 @@ const char DefaultSearchManager::kDisabledByPolicy[] = "disabled_by_policy";
 const char DefaultSearchManager::kCreatedFromPlayAPI[] =
     "created_from_play_api";
 const char DefaultSearchManager::kFeaturedByPolicy[] = "featured_by_policy";
+const char DefaultSearchManager::kRequireShortcut[] = "require_shortcut";
 const char DefaultSearchManager::kPreconnectToSearchUrl[] =
     "preconnect_to_search_url";
 const char DefaultSearchManager::kPrefetchLikelyNavigations[] =

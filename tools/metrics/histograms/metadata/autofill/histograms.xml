@@ -2365,6 +2365,31 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.EditedDistanceAutofilledFieldAtSubmission.AddressOnTyping"
+    units="units" expires_after="2025-06-22">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The string distance between the filled value and the value submitted.
+    Emitted on form submission for each field where an autofill address
+    suggestion on typing is accepted.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.EditedPercentageAutofilledFieldAtSubmission.AddressOnTyping"
+    units="%" expires_after="2025-06-22">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The ratio between the number of characters edited and the total length of
+    the original string filled. This metric tries to measure the feature overall
+    feature value. Emitted on form submission for each field where an autofill
+    address suggestion on typing is accepted.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.EmailHeuristicOnlyAcceptance"
     enum="BooleanAutofillFillingAcceptance" expires_after="2025-06-22">
   <owner>battre@chromium.org</owner>
@@ -3032,12 +3057,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="FillingSuggestionAfterLoading"
         summary="Given a form where the user triggered FormsAI filling
                  suggestions, records whether filling suggestions where
-                 generated for the form or not."/>
+                 generated for the form or not. (Deprecated)"/>
     <variant name="LoadingAfterSuggestion"
         summary="Given a form where the user saw a FormsAI trigger
                  suggestion, records whether the user accepted the trigger
                  suggestion and went to the state of waiting for filling
-                 suggestions to load, or not."/>
+                 suggestions to load, or not. (Deprecated)"/>
     <variant name="ReadinessAfterEligibility"
         summary="Given a FormsAI-eligible form, this metric records whether
                  the user has stored data to fill the form."/>
@@ -5179,6 +5204,35 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Logs the reason for skipping filling a field in the renderer. Emitted every
     time a field is passed to ShouldSkipFillField in form_autofill_util.cc.
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.RendererLabeledAmountExtractionLatency{RendererAmountExtractionLatencyResult}"
+    units="ms" expires_after="2026-01-01">
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded after attempting to extract a labeled amount from a web page within
+    the renderer process. This metric tracks the duration from the start of the
+    `ExtractLabeledTextNodeValue` method to the end of the amount extraction
+    operation inside the renderer process. It specifically measures the latency
+    of the amount extraction process performed by the renderer, differentiating
+    if the amount was successfully extracted or not.
+
+    The histogram `Autofill.RendererLabeledAmountExtractionLatency.Failure`
+    records the latency when amount extraction fails and
+    `Autofill.RendererLabeledAmountExtractionLatency.Success` records the
+    latency when amount extraction succeeded. This metric aims to provide
+    insight into the latency of the renderer-side amount extraction.
+  </summary>
+  <token key="RendererAmountExtractionLatencyResult">
+    <variant name=".Failure"
+        summary="Labeled amount extraction latency when amount extraction
+                 failed on renderer-side"/>
+    <variant name=".Success"
+        summary="Labeled amount extraction latency when amount extraction
+                 succeeded on renderer-side"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.ResetAutofillPrefToChrome" enum="Boolean"

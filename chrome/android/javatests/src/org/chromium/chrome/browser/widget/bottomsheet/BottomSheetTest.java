@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -231,14 +232,16 @@ public class BottomSheetTest {
                 mTestRule.getActivity().getRootUiCoordinatorForTesting().getToolbarManager();
         showContent(mHighPriorityContent, SheetState.HALF);
 
-        runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(true, 0));
+        runOnUiThreadBlocking(
+                () -> toolbarManager.setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP));
 
         assertEquals(
                 "The bottom sheet should be hidden.",
                 SheetState.HIDDEN,
                 mSheetController.getSheetState());
 
-        runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(false, 0));
+        runOnUiThreadBlocking(
+                () -> toolbarManager.setUrlBarFocus(false, OmniboxFocusReason.OMNIBOX_TAP));
 
         assertNotEquals(
                 "The bottom sheet should not be hidden.",

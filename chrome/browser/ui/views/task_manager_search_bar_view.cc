@@ -52,7 +52,7 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
               IDS_TASK_MANAGER_SEARCH_ACCESSIBILITY_NAME))
           .SetController(this)
           .SetBorder(nullptr)
-          .SetBackgroundColor(kColorTaskManagerSearchBarTransparent)
+          .SetBackgroundColor(kColorTaskManagerSearchBarBackground)
           .SetProperty(views::kElementIdentifierKey, kInputField)
           // Set margins to remove duplicate space between search
           // icon and textfield.
@@ -80,8 +80,6 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
 
   AddChildView(std::move(search_icon));
   input_ = AddChildView(std::move(input));
-  // Search bar has its own hover on/off behavior, so remove hover effect for
-  // textfield.
   input_->RemoveHoverEffect();
   input_changed_subscription_ =
       input_->AddTextChangedCallback(base::BindRepeating(
@@ -93,49 +91,13 @@ TaskManagerSearchBarView::TaskManagerSearchBarView(
   if (input_->GetText().empty()) {
     clear_->SetVisible(false);
   }
-  SetNotifyEnterExitOnChild(true);
 }
 
 TaskManagerSearchBarView::~TaskManagerSearchBarView() = default;
 
-void TaskManagerSearchBarView::AddedToWidget() {
-  GetFocusManager()->AddFocusChangeListener(this);
-}
-
-void TaskManagerSearchBarView::RemovedFromWidget() {
-  GetFocusManager()->RemoveFocusChangeListener(this);
-}
-
-void TaskManagerSearchBarView::OnWillChangeFocus(View* /*focused_before*/,
-                                                 View* /*focused_now*/) {}
-
-void TaskManagerSearchBarView::OnDidChangeFocus(views::View* /*focused_before*/,
-                                                views::View* /*focused_now*/) {
-  UpdateBackground();
-}
-
 void TaskManagerSearchBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateTextfield();
-}
-
-void TaskManagerSearchBarView::UpdateBackground() {
-  // When cursor hovers on input field and other non-icon field of search bar,
-  // update the background color. This behavior is consistent with the omnibox.
-  const bool is_hovered = !input_->HasFocus() && !clear_->IsMouseHovered() &&
-                          (IsMouseHovered() || input_->IsMouseHovered());
-  if (is_hovered_ != is_hovered) {
-    is_hovered_ = is_hovered;
-    delegate_->SearchBarOnHoverChange(is_hovered);
-  }
-}
-
-void TaskManagerSearchBarView::OnMouseEntered(const ui::MouseEvent& /*event*/) {
-  UpdateBackground();
-}
-
-void TaskManagerSearchBarView::OnMouseExited(const ui::MouseEvent& /*event*/) {
-  UpdateBackground();
 }
 
 bool TaskManagerSearchBarView::HandleKeyEvent(views::Textfield* /*sender*/,

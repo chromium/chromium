@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Ei nyt</translation>
 <translation id="100957008357583611">Käytä sijaintiasi?</translation>
 <translation id="1010200102790553230">Lataa sivu myöhemmin</translation>
+<translation id="1010225406377140704">Pyydä uutta linkkiä lähettäjältä</translation>
 <translation id="1011206368273183593">Valmistellaan tiedostoja</translation>
 <translation id="1014509239502131234">Kumotaan tulosta</translation>
 <translation id="1015730422737071372">Lisätietoja</translation>
@@ -1164,6 +1165,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3076865167425975822">Käyttöjärjestelmät</translation>
 <translation id="3080254622891793721">Graafinen</translation>
 <translation id="3082007635241601060">Salli Googlelle pääsy ostoskoreihisi, jotta se voi löytää sinulle personoituja alennuksia</translation>
+<translation id="3086269988715347183">Et ole aiemmin hyväksynyt tätä: <ph name="BLOCKED_URL" /></translation>
 <translation id="3086579638707268289">Toimintaasi verkossa valvotaan</translation>
 <translation id="3087734570205094154">Alaosassa</translation>
 <translation id="3090667236485488075">Lasi</translation>
@@ -1240,6 +1242,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3203025201812691413">URL-osoite ei voi olla tyhjä</translation>
 <translation id="320323717674993345">Peru maksu</translation>
 <translation id="3203366800380907218">Verkosta</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> saattaa sisältää aikuisille suunnattua sisältöä</translation>
 <translation id="3207960819495026254">Kirjanmerkeissä</translation>
 <translation id="3208701679386778924">Lähetä palauteraportti, jotta voimme parantaa ChromeOS:n päivityksiä.</translation>
 <translation id="3209034400446768650">Sivu voi veloittaa</translation>
@@ -2974,6 +2977,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6254436959401408446">Muisti ei riitä sivun avaamiseen</translation>
 <translation id="625463612687472648">Estä</translation>
 <translation id="6259156558325130047">&amp;Toista uudelleenjärjestely</translation>
+<translation id="6259282549512536479"><ph name="BLOCKED_URL" /> on estetty aiemmin</translation>
 <translation id="6263376278284652872">Verkkotunnuksen <ph name="DOMAIN" /> kirjanmerkit</translation>
 <translation id="6264376385120300461">Lataa silti</translation>
 <translation id="6264485186158353794">Takaisin suojaukseen</translation>
@@ -3106,6 +3110,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6465306955648956876">Hallinnoi salasanoja…</translation>
 <translation id="646789491285795429">Seuraat jo tätä tuotetta</translation>
 <translation id="6468485451923838994">Fontit</translation>
+<translation id="6469702164109431067">Salasanat ja avainkoodit</translation>
 <translation id="647261751007945333">Laitekäytännöt</translation>
 <translation id="6472874020827012601">Kangas (matta)</translation>
 <translation id="647330291963761005">Asennetaan päivityksiä</translation>
@@ -4351,6 +4356,7 @@ Lisätietoja:
 <translation id="8699041776323235191">HID-laite</translation>
 <translation id="8699985386408839112">Kirjekuori Kaku 1</translation>
 <translation id="8702965365666568344">Asennusteippi</translation>
+<translation id="8703372953981978786">Linkki ei toimi</translation>
 <translation id="8703575177326907206">Yhteyttäsi verkkotunnukseen <ph name="DOMAIN" /> ei ole salattu.</translation>
 <translation id="8705331520020532516">Sarjanumero</translation>
 <translation id="8706806585855470492">Voit jakaa välilehtiryhmiä, liittyä niihin ja yhteiskäyttää niitä</translation>

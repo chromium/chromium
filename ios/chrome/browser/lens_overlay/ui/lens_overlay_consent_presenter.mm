@@ -42,8 +42,11 @@
   UISheetPresentationController* sheet =
       _presentedConsentViewController.sheetPresentationController;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
+
+  UIWindow* window = _presentingViewController.view.window;
   _detentsManager =
-      [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet];
+      [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet
+                                                      window:window];
   _detentsManager.observer = self;
   [_detentsManager adjustDetentsForState:SheetDetentStateConsentDialog];
   [_presentingViewController

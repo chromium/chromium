@@ -126,8 +126,10 @@ TEST_F(StudentHeartbeatRequestTest, StudentHeartbeatSucceed) {
 
   auto result = future.Get();
 
-  EXPECT_EQ("/v1/sessions/session_id/students/1/devices/device_id:heartbeat",
-            http_request.relative_url);
+  EXPECT_EQ(
+      "/v1/sessions/session_id/students/1/devices/"
+      "device_id:heartbeat?studentGroupId=student_group_id",
+      http_request.relative_url);
   EXPECT_EQ(true, result.value());
 }
 
@@ -155,8 +157,10 @@ TEST_F(StudentHeartbeatRequestTest, StudentHeartbeatFail) {
 
   auto result = future.Get();
 
-  EXPECT_EQ("/v1/sessions/session_id/students/1/devices/device_id:heartbeat",
-            http_request.relative_url);
+  EXPECT_EQ(
+      "/v1/sessions/session_id/students/1/devices/"
+      "device_id:heartbeat?studentGroupId=student_group_id",
+      http_request.relative_url);
   EXPECT_EQ(google_apis::HTTP_INTERNAL_SERVER_ERROR, result.error());
 }
 

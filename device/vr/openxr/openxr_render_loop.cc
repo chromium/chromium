@@ -38,11 +38,11 @@ device::mojom::XRRenderInfoPtr GetRenderInfo(
     const device::mojom::XRFrameData& frame_data) {
   device::mojom::XRRenderInfoPtr result = device::mojom::XRRenderInfo::New();
 
-  result->frame_id = frame_data.frame_id;
-  result->mojo_from_viewer = frame_data.mojo_from_viewer.Clone();
+  result->frame_id = frame_data.render_info->frame_id;
+  result->mojo_from_viewer = frame_data.render_info->mojo_from_viewer.Clone();
 
-  for (size_t i = 0; i < frame_data.views.size(); i++) {
-    result->views.push_back(frame_data.views[i]->Clone());
+  for (size_t i = 0; i < frame_data.render_info->views.size(); i++) {
+    result->views.push_back(frame_data.render_info->views[i]->Clone());
   }
 
   return result;
@@ -621,16 +621,21 @@ void OpenXrRenderLoop::SendFrameData(
 
   // We have posted a message to allow other calls to get through, and now state
   // may have changed.  WebXR may not be presenting any more, or may be hidden.
-  std::move(callback).Run(is_presenting_ && is_visible &&
-                                  (webxr_visible_ || on_webxr_submitted_)
-                              ? std::move(frame_data)
-                              : mojom::XRFrameData::New());
+  if (is_presenting_ && is_visible && (webxr_visible_ || on_webxr_submitted_)) {
+    DCHECK(frame_data->render_info);
+    std::move(callback).Run(std::move(frame_data));
+  } else {
+    auto empty_frame_data = mojom::XRFrameData::New();
+    empty_frame_data->render_info = mojom::XRRenderInfo::New();
+    std::move(callback).Run(std::move(empty_frame_data));
+  }
 }
 
 mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   DVLOG(3) << __func__;
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
-  frame_data->frame_id = next_frame_id_;
+  frame_data->render_info = mojom::XRRenderInfo::New();
+  frame_data->render_info->frame_id = next_frame_id_;
 
   if (XR_FAILED(openxr_->BeginFrame())) {
     return frame_data;
@@ -647,10 +652,10 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   const XrTime frame_time = openxr_->GetPredictedDisplayTime();
 
   frame_data->time_delta = base::Nanoseconds(frame_time);
-  frame_data->views = openxr_->GetViews();
+  frame_data->render_info->views = openxr_->GetViews();
   frame_data->input_state = openxr_->GetInputState();
 
-  frame_data->mojo_from_viewer = openxr_->GetViewerPose();
+  frame_data->render_info->mojo_from_viewer = openxr_->GetViewerPose();
 
   UpdateStageParameters();
 
@@ -678,11 +683,13 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   OpenXRSceneUnderstandingManager* scene_understanding_manager =
       openxr_->GetSceneUnderstandingManager();
 
-  if (scene_understanding_manager && frame_data->mojo_from_viewer->position &&
-      frame_data->mojo_from_viewer->orientation) {
+  if (scene_understanding_manager &&
+      frame_data->render_info->mojo_from_viewer->position &&
+      frame_data->render_info->mojo_from_viewer->orientation) {
     scene_understanding_manager->OnFrameUpdate(frame_time);
-    device::Pose mojo_from_viewer(*frame_data->mojo_from_viewer->position,
-                                  *frame_data->mojo_from_viewer->orientation);
+    device::Pose mojo_from_viewer(
+        *frame_data->render_info->mojo_from_viewer->position,
+        *frame_data->render_info->mojo_from_viewer->orientation);
     // Get results for hit test subscriptions.
     frame_data->hit_test_subscription_results =
         scene_understanding_manager->GetHitTestResults(
@@ -691,7 +698,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 
   OpenXrDepthSensor* depth_sensor = openxr_->GetDepthSensor();
   if (depth_sensor) {
-    depth_sensor->PopulateDepthData(frame_time, frame_data->views);
+    depth_sensor->PopulateDepthData(frame_time, frame_data->render_info->views);
   }
 
   return frame_data;

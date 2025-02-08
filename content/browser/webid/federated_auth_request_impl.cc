@@ -103,6 +103,8 @@ static constexpr double kRejectionLogNormalSigma = 1.4;
 static constexpr char kDefaultFieldName[] = "name";
 static constexpr char kDefaultFieldEmail[] = "email";
 static constexpr char kDefaultFieldPicture[] = "picture";
+static constexpr char kFieldPhoneNumber[] = "phone";
+static constexpr char kFieldUsername[] = "username";
 
 static constexpr char kVcSdJwt[] = "vc+sd-jwt";
 
@@ -125,6 +127,12 @@ std::vector<std::string> DisclosureFieldsToStringList(
         break;
       case IdentityRequestDialogDisclosureField::kPicture:
         list.push_back(kDefaultFieldPicture);
+        break;
+      case IdentityRequestDialogDisclosureField::kPhoneNumber:
+        list.push_back(kFieldPhoneNumber);
+        break;
+      case IdentityRequestDialogDisclosureField::kUsername:
+        list.push_back(kFieldUsername);
         break;
     }
   }
@@ -1428,8 +1436,8 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
           "with the provided background color");
     }
   }
-  FetchAccountPictures(std::move(idp_info), std::move(accounts),
-                       client_metadata);
+  FetchAccountPicturesAndBrandIcons(std::move(idp_info), std::move(accounts),
+                                    std::move(client_metadata));
 }
 
 std::vector<IdentityRequestDialogDisclosureField>
@@ -1465,6 +1473,12 @@ FederatedAuthRequestImpl::GetDisclosureFields(
       list.push_back(IdentityRequestDialogDisclosureField::kEmail);
     } else if (field == kDefaultFieldPicture) {
       list.push_back(IdentityRequestDialogDisclosureField::kPicture);
+    } else if (IsFedCmAlternativeIdentifiersEnabled()) {
+      if (field == kFieldPhoneNumber) {
+        list.push_back(IdentityRequestDialogDisclosureField::kPhoneNumber);
+      } else if (field == kFieldUsername) {
+        list.push_back(IdentityRequestDialogDisclosureField::kUsername);
+      }
     }
   }
   return list;
@@ -1507,7 +1521,8 @@ FederatedAuthRequestImpl::ComputeUseOtherAccountResult(
 void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     std::vector<IdentityRequestAccountPtr>&& accounts,
-    const IdpNetworkRequestManager::ClientMetadata& client_metadata) {
+    const IdpNetworkRequestManager::ClientMetadata& client_metadata,
+    const gfx::Image& rp_brand_icon) {
   fetch_data_.did_succeed_for_at_least_one_idp = true;
 
   const GURL& idp_config_url = idp_info->provider->config->config_url;
@@ -1521,7 +1536,7 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
       idp_for_display, idp_info->metadata,
       ClientMetadata{client_metadata.terms_of_service_url,
                      client_metadata.privacy_policy_url,
-                     client_metadata.brand_icon_url},
+                     client_metadata.brand_icon_url, rp_brand_icon},
       idp_info->rp_context, disclosure_fields,
       /*has_login_status_mismatch=*/false);
   for (auto& account : accounts) {
@@ -1607,7 +1622,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                        std::make_move_iterator(accounts_it->second.end()));
     }
   }
-  LOG(ERROR) << "\n" << accounts_.size() << "\n";
   idp_accounts_.clear();
   std::stable_sort(
       accounts_.begin(), accounts_.end(),
@@ -1883,23 +1897,35 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     return;
   }
 
-  OnIdpMismatch(std::move(idp_info));
+  // We are going to show mismatch UI, so fetch the brand icon URL (needed at
+  // least for passive mode). We currently never need the RP icon for mismatch
+  // UI.
+  GURL idp_brand_icon_url = idp_info->metadata.brand_icon_url;
+  FetchImage(
+      idp_brand_icon_url,
+      base::BindOnce(&FederatedAuthRequestImpl::OnIdpMismatch,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(idp_info)));
 }
 
 void FederatedAuthRequestImpl::OnIdpMismatch(
     std::unique_ptr<IdentityProviderInfo> idp_info) {
   const GURL& idp_config_url = idp_info->provider->config->config_url;
-  fetch_data_.pending_idps.erase(idp_config_url);
 
   const std::string idp_for_display =
       webid::FormatUrlForDisplay(idp_config_url);
+  gfx::Image idp_brand_icon;
+  auto it = downloaded_images_.find(idp_info->metadata.brand_icon_url);
+  if (it != downloaded_images_.end()) {
+    idp_brand_icon = it->second;
+  }
   idp_info->data = base::MakeRefCounted<IdentityProviderData>(
       idp_for_display, idp_info->metadata,
-      ClientMetadata{GURL(), GURL(), GURL()}, idp_info->rp_context,
-      GetDisclosureFields(*idp_info->provider),
+      ClientMetadata{GURL(), GURL(), GURL(), std::move(idp_brand_icon)},
+      idp_info->rp_context, GetDisclosureFields(*idp_info->provider),
       /*has_login_status_mismatch=*/true);
   idp_infos_[idp_config_url] = std::move(idp_info);
 
+  fetch_data_.pending_idps.erase(idp_config_url);
   if (!fetch_data_.pending_idps.empty()) {
     return;
   }
@@ -2167,46 +2193,57 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
                 weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
                 std::move(accounts)));
       } else {
-        FetchAccountPictures(std::move(idp_info), std::move(accounts),
-                             IdpNetworkRequestManager::ClientMetadata());
+        FetchAccountPicturesAndBrandIcons(
+            std::move(idp_info), std::move(accounts),
+            IdpNetworkRequestManager::ClientMetadata());
       }
     }
   }
 }
 
-void FederatedAuthRequestImpl::FetchAccountPictures(
+void FederatedAuthRequestImpl::FetchAccountPicturesAndBrandIcons(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     const std::vector<IdentityRequestAccountPtr>& accounts,
-    const IdpNetworkRequestManager::ClientMetadata& client_metadata) {
+    IdpNetworkRequestManager::ClientMetadata&& client_metadata) {
+  GURL idp_brand_icon_url = idp_info->metadata.brand_icon_url;
+  GURL rp_brand_icon_url = client_metadata.brand_icon_url;
+
   auto callback = BarrierClosure(
-      accounts.size(),
-      base::BindOnce(&FederatedAuthRequestImpl::OnAllAccountPicturesReceived,
+      // Wait for all accounts plus the brand icon URLs.
+      accounts.size() + 2,
+      base::BindOnce(&FederatedAuthRequestImpl::
+                         OnAllAccountPicturesAndBrandIconUrlReceived,
                      weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
-                     accounts, client_metadata));
+                     accounts, std::move(client_metadata)));
   for (const auto& account : accounts) {
-    if (account->picture.is_valid()) {
-      network_manager_->DownloadAndDecodeImage(
-          account->picture,
-          base::BindOnce(&FederatedAuthRequestImpl::OnAccountPictureReceived,
-                         weak_ptr_factory_.GetWeakPtr(), callback,
-                         account->picture));
-    } else {
-      // We have to still call the callback to make sure the barrier
-      // callback gets the right number of calls.
-      callback.Run();
-    }
+    FetchImage(account->picture, callback);
+  }
+  FetchImage(idp_brand_icon_url, callback);
+  FetchImage(rp_brand_icon_url, callback);
+}
+
+void FederatedAuthRequestImpl::FetchImage(const GURL& url,
+                                          base::OnceClosure callback) {
+  if (url.is_valid()) {
+    network_manager_->DownloadAndDecodeImage(
+        url, base::BindOnce(&FederatedAuthRequestImpl::OnImageReceived,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                            url));
+  } else {
+    // We have to still call the callback to make sure the barrier
+    // callback gets the right number of calls.
+    std::move(callback).Run();
   }
 }
 
-void FederatedAuthRequestImpl::OnAccountPictureReceived(
-    base::RepeatingClosure cb,
-    GURL url,
-    const gfx::Image& image) {
+void FederatedAuthRequestImpl::OnImageReceived(base::OnceClosure callback,
+                                               GURL url,
+                                               const gfx::Image& image) {
   downloaded_images_[url] = image;
-  cb.Run();
+  std::move(callback).Run();
 }
 
-void FederatedAuthRequestImpl::OnAllAccountPicturesReceived(
+void FederatedAuthRequestImpl::OnAllAccountPicturesAndBrandIconUrlReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     std::vector<IdentityRequestAccountPtr>&& accounts,
     const IdpNetworkRequestManager::ClientMetadata& client_metadata) {
@@ -2219,9 +2256,21 @@ void FederatedAuthRequestImpl::OnAllAccountPicturesReceived(
     }
   }
 
+  gfx::Image rp_brand_icon;
+  auto it = downloaded_images_.find(client_metadata.brand_icon_url);
+  if (it != downloaded_images_.end()) {
+    rp_brand_icon = it->second;
+  }
+
+  gfx::Image idp_brand_icon;
+  it = downloaded_images_.find(idp_info->metadata.brand_icon_url);
+  if (it != downloaded_images_.end()) {
+    idp_info->metadata.brand_decoded_icon = it->second;
+  }
+
   downloaded_images_.clear();
   OnFetchDataForIdpSucceeded(std::move(idp_info), std::move(accounts),
-                             client_metadata);
+                             client_metadata, rp_brand_icon);
 }
 
 void FederatedAuthRequestImpl::ComputeLoginStates(

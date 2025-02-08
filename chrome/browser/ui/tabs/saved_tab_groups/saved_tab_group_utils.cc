@@ -457,6 +457,7 @@ content::NavigationHandle* SavedTabGroupUtils::OpenTabInBrowser(
   params.tabstrip_index = tabstrip_index.value_or(params.tabstrip_index);
   params.group = local_group_id;
   params.navigation_initiated_from_sync = true;
+  params.window_action = NavigateParams::WindowAction::NO_ACTION;
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
   return handle.get();
 }

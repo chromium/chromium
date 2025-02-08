@@ -44,6 +44,8 @@ extern const base::FeatureParam<bool> kPriceInsightsUseCache;
 BASE_DECLARE_FEATURE(kPriceTrackingPromo);
 BASE_DECLARE_FEATURE(kShopCard);
 
+std::string ShopCardExperiment();
+
 BASE_DECLARE_FEATURE(kProductSpecifications);
 BASE_DECLARE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields);
 BASE_DECLARE_FEATURE(kCompareConfirmationToast);
@@ -175,6 +177,14 @@ constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
     &ntp_features::kNtpChromeCartModule, "checkout-pattern-mapping",
     // Empty JSON string.
     ""};
+
+inline constexpr base::FeatureParam<std::string> kShopCardVariation{
+    &kShopCard, "ShopCardVariant", ""};
+
+extern const char kShopCardArm1[];
+extern const char kShopCardArm2[];
+extern const char kShopCardArm3[];
+extern const char kShopCardArm4[];
 
 // Feature params for product specifications.
 extern const char kProductSpecificationsSetValidForClusteringTimeParam[];

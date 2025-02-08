@@ -70,9 +70,21 @@ void CreateRegistryKey() {
   ASSERT_EQ(res, ERROR_SUCCESS);
 }
 
-void DeleteRegistryKey() {
-  base::win::RegKey key(HKEY_LOCAL_MACHINE);
-  LONG res = key.DeleteKey(kCSAgentRegPath);
+// Overwrite the registry values for both agent and customer ID with empty
+// strings, instead of simply removing the key itself since the mocked registry
+// doesn't work well with local machine environments.
+void DeleteRegistryValues() {
+  base::win::RegKey key;
+  LONG res = key.Open(HKEY_LOCAL_MACHINE, kCSAgentRegPath, KEY_WRITE);
+  ASSERT_EQ(res, ERROR_SUCCESS);
+
+  std::string empty_string = std::string();
+  res = key.WriteValue(kCSCURegKey, empty_string.data(), empty_string.size(),
+                       REG_BINARY);
+  ASSERT_EQ(res, ERROR_SUCCESS);
+
+  res = key.WriteValue(kCSAGRegKey, empty_string.data(), empty_string.size(),
+                       REG_BINARY);
   ASSERT_EQ(res, ERROR_SUCCESS);
 }
 
@@ -336,10 +348,14 @@ TEST_F(CrowdStrikeClientTest, Identifiers_NoFile_RegistryNoCustomerId) {
   EXPECT_EQ(signals->agent_id, base::ToLowerASCII(kFakeHexCSAgentId));
   EXPECT_TRUE(signals->customer_id.empty());
 
-  DeleteRegistryKey();
+  DeleteRegistryValues();
 
   // Expect the value to not have been cached.
-  EXPECT_FALSE(GetSignals());
+  signals = GetSignals();
+
+  ASSERT_TRUE(signals);
+  EXPECT_TRUE(signals->agent_id.empty());
+  EXPECT_TRUE(signals->customer_id.empty());
 }
 
 TEST_F(CrowdStrikeClientTest, Identifiers_FileHasPrecendence) {

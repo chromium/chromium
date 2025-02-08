@@ -926,7 +926,8 @@ void KcerFuzzer::RunImportX509Cert() {
     return;
   }
 
-  if (import_waiter.Get().error() == Error::kInvalidCertificate) {
+  if (!import_waiter.Get().has_value() &&
+      import_waiter.Get().error() == Error::kInvalidCertificate) {
     // `CertBuilder` can generate certs that are not accepted by NSS. Double
     // check that the cert indeed wasn't supposed to be imported and continue.
     EXPECT_TRUE(net::x509_util::CreateCERTCertificateListFromBytes(

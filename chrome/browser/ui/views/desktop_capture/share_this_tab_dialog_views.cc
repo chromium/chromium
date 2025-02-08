@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
+#include "chrome/browser/ui/views/media_picker_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -147,12 +148,9 @@ ShareThisTabDialogView::ShareThisTabDialogView(
                           base::BindOnce(&ShareThisTabDialogView::Activate,
                                          weak_factory_.GetWeakPtr()));
 
-  // If |params.web_contents| is set and it's not a background page then the
-  // picker will be shown modal to the web contents. Otherwise the picker is
-  // shown in a separate window.
-  if (params.web_contents &&
-      !params.web_contents->GetDelegate()->IsNeverComposited(
-          params.web_contents)) {
+  // Make sure web modal dialogs are supported before trying to show the picker
+  // as a web model dialog.
+  if (MediaPickerCanShowAsWebModal(params.web_contents)) {
     const Browser* browser = chrome::FindBrowserWithTab(params.web_contents);
     // Close the extension popup to prevent spoofing.
     if (browser && browser->window() &&

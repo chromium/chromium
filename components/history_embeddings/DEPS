@@ -9,7 +9,6 @@ include_rules = [
   "+mojo/public/cpp/bindings",
   "+services/passage_embeddings",
   "+sql",
-  "+third_party/blink/public/common",
   "+third_party/farmhash",
   "+third_party/zlib",
   "+url",

@@ -296,7 +296,8 @@ void XRFrameProvider::OnImmersiveFrameData(
   if (data.is_null()) {
     DVLOG(2) << __func__ << ": no data, current frame_id=" << frame_id_;
   } else {
-    DVLOG(2) << __func__ << ": have data, frame_id=" << data->frame_id;
+    DVLOG(2) << __func__
+             << ": have data, frame_id=" << data->render_info->frame_id;
   }
 
   // We may have lost the immersive session since the last VSync request.
@@ -335,7 +336,7 @@ void XRFrameProvider::OnImmersiveFrameData(
   // [1] https://immersive-web.github.io/webxr/#xr-animation-frame
   double high_res_now_ms = UpdateImmersiveFrameTime(window, *data);
 
-  frame_id_ = data->frame_id;
+  frame_id_ = data->render_info->frame_id;
   if (data->buffer_shared_image.has_value()) {
     buffer_shared_image_ = gpu::ClientSharedImage::ImportUnowned(
         data->buffer_shared_image.value());
@@ -492,10 +493,11 @@ void XRFrameProvider::ProcessScheduledFrame(
     }
 
     bool emulated_position = false;
-    if (frame_data && frame_data->mojo_from_viewer) {
+    if (frame_data && frame_data->render_info->mojo_from_viewer) {
       DVLOG(3) << __func__ << ": pose available, emulated_position="
-               << frame_data->mojo_from_viewer->emulated_position;
-      emulated_position = frame_data->mojo_from_viewer->emulated_position;
+               << frame_data->render_info->mojo_from_viewer->emulated_position;
+      emulated_position =
+          frame_data->render_info->mojo_from_viewer->emulated_position;
     } else {
       DVLOG(2) << __func__ << ": emulating immersive frame position";
       emulated_position = true;

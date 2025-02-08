@@ -254,19 +254,33 @@ public class DataSharingTabManager {
     /**
      * Initiate the join flow. If successful, the associated tab group view will be opened.
      *
+     * @param activity The current tabbed activity.
      * @param dataSharingUrl The URL associated with the join invitation.
      */
     public void initiateJoinFlow(Activity activity, GURL dataSharingUrl) {
+        initiateJoinFlow(activity, dataSharingUrl, /* switchToTabSwitcherRunnable= */ null);
+    }
+
+    /**
+     * Initiate the join flow. If successful, the associated tab group view will be opened.
+     *
+     * @param activity The current tabbed activity.
+     * @param dataSharingUrl The URL associated with the join invitation.
+     * @param switchToTabSwitcherRunnable The runnable to allow to switch to tab switcher view.
+     */
+    public void initiateJoinFlow(
+            Activity activity, GURL dataSharingUrl, Runnable switchToTabSwitcherRunnable) {
         DataSharingMetrics.recordJoinActionFlowState(
                 DataSharingMetrics.JoinActionStateAndroid.JOIN_TRIGGERED);
         if (mProfile != null) {
-            initiateJoinFlowWithProfile(activity, dataSharingUrl);
+            initiateJoinFlowWithProfile(activity, dataSharingUrl, switchToTabSwitcherRunnable);
             return;
         }
 
         mTasksToRunOnProfileAvailable.addLast(
                 () -> {
-                    initiateJoinFlowWithProfile(activity, dataSharingUrl);
+                    initiateJoinFlowWithProfile(
+                            activity, dataSharingUrl, switchToTabSwitcherRunnable);
                 });
     }
 
@@ -329,14 +343,20 @@ public class DataSharingTabManager {
         return new GURL(LEARN_ABOUT_BLOCKED_ACCOUNTS_URL);
     }
 
-    private void initiateJoinFlowWithProfile(Activity activity, GURL dataSharingUrl) {
+    private void initiateJoinFlowWithProfile(
+            Activity activity, GURL dataSharingUrl, Runnable switchToTabSwitcherRunnable) {
         DataSharingMetrics.recordJoinActionFlowState(
                 DataSharingMetrics.JoinActionStateAndroid.PROFILE_AVAILABLE);
+        if (!mCollaborationService.getServiceStatus().isAllowedToJoin()) {
+            showInvitationFailureDialog();
+        }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.COLLABORATION_FLOW_ANDROID)
                 && mCollaborationControllerDelegateFactory != null) {
             assert mCollaborationService != null;
-            mCurrentDelegate = mCollaborationControllerDelegateFactory.create(FlowType.JOIN);
+            mCurrentDelegate =
+                    mCollaborationControllerDelegateFactory.create(
+                            FlowType.JOIN, switchToTabSwitcherRunnable);
             mCollaborationService.startJoinFlow(mCurrentDelegate, dataSharingUrl);
             return;
         }
@@ -728,7 +748,8 @@ public class DataSharingTabManager {
             // TODO(haileywang): Ensure createGroupFinishedCallback is called when the creation is
             // finished.
             mCurrentDelegate =
-                    mCollaborationControllerDelegateFactory.create(FlowType.SHARE_OR_MANAGE);
+                    mCollaborationControllerDelegateFactory.create(
+                            FlowType.SHARE_OR_MANAGE, /* switchToTabSwitcherRunnable= */ null);
             mCollaborationService.startShareOrManageFlow(mCurrentDelegate, existingGroup.syncId);
             return;
         }

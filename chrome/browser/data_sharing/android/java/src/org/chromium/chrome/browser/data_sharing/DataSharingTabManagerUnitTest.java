@@ -70,6 +70,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
@@ -153,6 +154,7 @@ public class DataSharingTabManagerUnitTest {
     @Mock private DataSharingService mDataSharingService;
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private CollaborationService mCollaborationService;
+    @Mock private ServiceStatus mServiceStatus;
     @Mock private CollaborationControllerDelegate mCollaborationControllerDelegate;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
@@ -190,6 +192,8 @@ public class DataSharingTabManagerUnitTest {
 
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+        when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
         mBottomSheetControllerSupplier = new ObservableSupplierImpl<>(mBottomSheetController);
@@ -197,7 +201,7 @@ public class DataSharingTabManagerUnitTest {
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
 
         CollaborationControllerDelegateFactory collaborationControllerDelegateFactory =
-                (type) -> {
+                (type, runnable) -> {
                     return mCollaborationControllerDelegate;
                 };
 

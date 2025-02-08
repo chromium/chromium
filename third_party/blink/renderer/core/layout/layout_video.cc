@@ -43,10 +43,10 @@ PhysicalSize LayoutVideo::DefaultSize() {
   return PhysicalSize(LayoutUnit(kDefaultWidth), LayoutUnit(kDefaultHeight));
 }
 
-void LayoutVideo::IntrinsicSizeChanged() {
+void LayoutVideo::NaturalSizeChanged() {
   NOT_DESTROYED();
   if (VideoElement()->IsShowPosterFlagSet())
-    LayoutMedia::IntrinsicSizeChanged();
+    LayoutMedia::NaturalSizeChanged();
   UpdateNaturalSize();
 }
 

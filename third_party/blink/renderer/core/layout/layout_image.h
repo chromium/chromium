@@ -94,7 +94,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
     return image_device_pixel_ratio_;
   }
 
-  void IntrinsicSizeChanged() override {
+  void NaturalSizeChanged() override {
     NOT_DESTROYED();
     // The replaced content transform depends on the intrinsic size (see:
     // FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform).

@@ -1090,9 +1090,9 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
       std::move(gpu_channel_host),
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       GetMediaSequencedTaskRunner(), std::move(media_context_provider),
-      std::move(codec_factory), GetGpuMemoryBufferManager(),
-      enable_video_gpu_memory_buffers, enable_media_stream_gpu_memory_buffers,
-      enable_video_decode_accelerator, enable_video_encode_accelerator));
+      std::move(codec_factory), enable_video_gpu_memory_buffers,
+      enable_media_stream_gpu_memory_buffers, enable_video_decode_accelerator,
+      enable_video_encode_accelerator));
 
   gpu_factories_.back()->SetRenderingColorSpace(rendering_color_space_);
   return gpu_factories_.back().get();

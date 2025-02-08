@@ -35,9 +35,6 @@ ci.defaults.set(
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
-    # crbug.com/391160876: fast deps with CrOS toolchain may cause
-    # incorrect results.
-    siso_experiments = ["no-fast-deps"],
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )

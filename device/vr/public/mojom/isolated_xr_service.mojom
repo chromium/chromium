@@ -110,29 +110,6 @@ interface XRRuntime {
       pending_associated_remote<XRRuntimeEventListener> listener);
 };
 
-// Information required for rendering, used by ImmersiveOverlay.
-// TODO(crbug.com/40718594): This struct currently contains subset of
-// data contained by XRFrameData, move it to vr_service.mojom and refactor
-// XRFrameData so that it embeds this struct.
-struct XRRenderInfo
-{
-  // The frame_id maps frame data to a frame arriving from the compositor. IDs
-  // will be reused after the frame arrives from the compositor. Negative IDs
-  // imply no mapping.
-  int16 frame_id;
-
-  // The pose may be null if the device lost tracking.
-  VRPose? mojo_from_viewer;
-
-  // Information about all the views in a frame. Views can appear in any order
-  // so it should not be assumed the left eye comes before the right eye. It is
-  // valid for the array to contain multiple views of the same eye. An example
-  // of this scenario are displays that have dominant left/right eyes and inset
-  // left/right eyes. In these scenarios, the dominant views comes before the
-  // inset views in the array.
-  array<XRView> views;
-};
-
 // Represents an overlay that the browser may show on top of or instead of WebXR
 // content.  Consumed in the browser process, and implemented in the XRRuntime
 // process.

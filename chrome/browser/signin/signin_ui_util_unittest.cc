@@ -215,6 +215,30 @@ class SigninUiUtilTest : public BrowserWithTestWindowTest {
     }
   }
 
+  void TestEnableSyncPromoWithExistingWebOnlyAccount() {
+    CoreAccountId account_id =
+        GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
+            GaiaId(kMainGaiaID), kMainEmail, "refresh_token", false,
+            signin_metrics::AccessPoint::kUnknown,
+            signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+
+    // Verify that the primary account is not set before.
+    ASSERT_FALSE(
+        GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+    ExpectTurnSyncOn(
+        access_point_, signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+        account_id, TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+        /*is_sync_promo=*/true);
+    EnableSync(
+        GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
+        /*is_default_promo_account=*/true);
+
+    // Verify that the primary account has been set.
+    EXPECT_TRUE(
+        GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  }
+
   signin_metrics::AccessPoint access_point_ =
       signin_metrics::AccessPoint::kBookmarkBubble;
 
@@ -673,12 +697,9 @@ TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt) {
   // With explicit signin, `sync_url` is used even though Sync is not going to
   // be enabled. This is because that web page displays additional text
   // explaining to the user that they are signing in to Chrome.
-  EXPECT_TRUE(
-      base::StartsWith(tab->GetVisibleURL().spec(),
-                       switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-                           ? sync_url.spec()
-                           : add_account_url.spec(),
-                       base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_TRUE(base::StartsWith(tab->GetVisibleURL().spec(), sync_url.spec(),
+                               base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_NE(tab->GetVisibleURL().query().find("flow=promo"), std::string::npos);
 }
 
 TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
@@ -766,13 +787,7 @@ TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
             sign_in_tab->GetVisibleURL());
 }
 
-class SigninUiUtilWithUnoDesktopTest : public SigninUiUtilTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
-};
-
-TEST_F(SigninUiUtilWithUnoDesktopTest, EnableSyncWithExistingWebOnlyAccount) {
+TEST_F(SigninUiUtilTest, EnableSyncWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -806,32 +821,23 @@ TEST_F(SigninUiUtilWithUnoDesktopTest, EnableSyncWithExistingWebOnlyAccount) {
   }
 }
 
+TEST_F(SigninUiUtilTest,
+       EnableSyncPromoWithExistingWebOnlyAccountAvatarBubble) {
+  access_point_ = signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
+
+  TestEnableSyncPromoWithExistingWebOnlyAccount();
+}
+
 // Checks that sync is treated as a promo for kSettings.
-TEST_F(SigninUiUtilWithUnoDesktopTest,
-       EnableSyncPromoWithExistingWebOnlyAccount) {
+TEST_F(SigninUiUtilTest, EnableSyncPromoWithExistingWebOnlyAccountSettings) {
   base::test::ScopedFeatureList feature_list{
       switches::kImprovedSettingsUIOnDesktop};
   access_point_ = signin_metrics::AccessPoint::kSettings;
 
-  CoreAccountId account_id =
-      GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
-          kMainGaiaID, kMainEmail, "refresh_token", false,
-          signin_metrics::AccessPoint::kUnknown,
-          signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-
-  ExpectTurnSyncOn(signin_metrics::AccessPoint::kSettings,
-                   signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-                   account_id,
-                   // The account should be kept when cancelling.
-                   TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                   // The button should be "No, thanks", and not "Cancel".
-                   /*is_sync_promo=*/true);
-  EnableSync(
-      GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
-      /*is_default_promo_account=*/true);
+  TestEnableSyncPromoWithExistingWebOnlyAccount();
 }
 
-TEST_F(SigninUiUtilWithUnoDesktopTest, SignInWithExistingWebOnlyAccount) {
+TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
@@ -849,27 +855,7 @@ TEST_F(SigninUiUtilWithUnoDesktopTest, SignInWithExistingWebOnlyAccount) {
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
-TEST_F(SigninUiUtilWithUnoDesktopTest, ShowExtensionSigninPrompt) {
-  Profile* profile = browser()->profile();
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
-                            /*email_hint=*/std::string());
-  EXPECT_EQ(1, tab_strip->count());
-  // Calling the function again reuses the tab.
-  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
-                            /*email_hint=*/std::string());
-  EXPECT_EQ(1, tab_strip->count());
-
-  content::WebContents* tab = tab_strip->GetWebContentsAt(0);
-  ASSERT_TRUE(tab);
-  EXPECT_TRUE(base::StartsWith(
-      tab->GetVisibleURL().spec(),
-      GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec(),
-      base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_NE(tab->GetVisibleURL().query().find("flow=promo"), std::string::npos);
-}
-
-TEST_F(SigninUiUtilWithUnoDesktopTest, ShowExtensionSigninPromptReauth) {
+TEST_F(SigninUiUtilTest, ShowExtensionSigninPromptReauth) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,

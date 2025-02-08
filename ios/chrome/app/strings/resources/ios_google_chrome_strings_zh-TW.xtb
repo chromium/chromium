@@ -121,6 +121,7 @@
 <translation id="4064699917955374540">如要將 Chrome 的資料儲存到 Google 帳戶及使用這類資料，請驗證身分。</translation>
 <translation id="417201473131094001">Chrome Canary 不支援這項功能</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
+<translation id="4430797724889237570">使用 Chrome 開啟 Gmail、Google 地圖、YouTube 和其他應用程式的連結</translation>
 <translation id="447252321002412580">協助改善 Chrome 的功能與效能</translation>
 <translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
@@ -206,6 +207,7 @@
 
 你已使用通關密語對資料進行加密。如要在 Google 帳戶中使用及儲存 Chrome 資料，請輸入通關密語。</translation>
 <translation id="6533470733797826516">使用 Chrome 自動填入功能快速登入</translation>
+<translation id="6536544321553662809">將 Chrome 設為預設瀏覽器，輕鬆分享及開啟連結</translation>
 <translation id="6545449117344801102">Chrome 會偵測地址，並使用 Google 地圖提供路線和當地資訊。</translation>
 <translation id="6636941099779251629">根據貴機構的政策規定，你必須先登入才能使用 Chrome。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站試圖竊取密碼，或你下載的檔案會造成傷害，Chrome 可能也會將網址 (包括部分網頁內容) 傳送給 Google。</translation>
@@ -291,6 +293,7 @@
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="8371138994040262994">在 Chrome 中開啟設定。</translation>
 <translation id="8387459386171870978">繼續使用 Chrome</translation>
+<translation id="8392023217086447677">已在 Chrome 無痕模式中開啟</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>
 <translation id="8413500425974960807">Chrome 提示：將 Chrome 移至 Dock</translation>
 <translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。當你造訪網站時，Chrome 會透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>

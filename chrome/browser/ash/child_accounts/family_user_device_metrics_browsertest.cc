@@ -30,8 +30,6 @@ const AccountId kDefaultOwnerAccountId =
     AccountId::FromUserEmailGaiaId(test::kTestEmail, GaiaId(test::kTestGaiaId));
 const AccountId kManagedUserAccountId =
     AccountId::FromUserEmail("example@example.com");
-const AccountId kActiveDirectoryUserAccountId =
-    AccountId::AdFromUserEmailObjGuid("active@gmail.com", "obj-guid");
 }  // namespace
 
 // Test params:

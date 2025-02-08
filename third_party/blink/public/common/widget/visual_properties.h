@@ -67,12 +67,13 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // The size for the widget, in device pixels.
   gfx::Size new_size_device_px;
 
-  // The size of the area of the widget that is visible to the user, in DIPs.
-  // The visible area may be empty if the visible area does not intersect with
-  // the widget, for example in the case of a child frame that is entirely
-  // scrolled out of the main frame's viewport. It may also be smaller than the
-  // widget's size in |new_size| due to the UI hiding part of the widget, such
-  // as with an on-screen keyboard.
+  // The size of the area of the widget that is visible to the user, in device
+  // pixels. The visible area may be empty if the visible area does not
+  // intersect with the widget, for example in the case of a child frame that
+  // is entirely scrolled out of the main frame's viewport. It may also be
+  // smaller than the widget's size in |new_size| due to the UI hiding part of
+  // the widget, such as with an on-screen keyboard.
+  // TODO(chrishtr): rename to visible_viewport_size_device_px.
   gfx::Size visible_viewport_size;
 
   // The rect of compositor's viewport in device pixels. Note that for top level

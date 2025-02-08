@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/passage_embeddings/embedder.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/content_extraction/inner_text.mojom.h"
@@ -59,6 +60,8 @@ class EmbedderTabObserver : public content::WebContentsObserver {
   Profile* GetProfile();
 
   const raw_ptr<content::WebContents> web_contents_;
+
+  std::unique_ptr<Embedder> embedder_;
 
   // Used to cancel scheduled passage extraction.
   base::WeakPtrFactory<EmbedderTabObserver> weak_ptr_factory_{this};

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1009406586654360474">Öppna Google Lösenordshantering och sedan inställningarna. Välj Importera och lägg till CSV-filen som innehåller dina exporterade lösenord.</translation>
-<translation id="1010225406377140704">Kontakta avsändaren och be om en ny länk</translation>
 <translation id="1011749477052068769">Flytta hit</translation>
 <translation id="1014147525163127655">Det finns inga nycklar för <ph name="ORIGIN" /> på den här enheten</translation>
 <translation id="1016498331642356377">Gör en röstsökning snabbt. Tryck länge om du vill ändra genvägen.</translation>
@@ -1724,7 +1723,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8683039184091909753">bild</translation>
 <translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
-<translation id="8703372953981978786">Den här länken fungerar inte</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8723453889042591629">Översätt sidan snabbt. Tryck länge om du vill ändra det här kortkommandot.</translation>
 <translation id="8725066075913043281">Försök igen</translation>

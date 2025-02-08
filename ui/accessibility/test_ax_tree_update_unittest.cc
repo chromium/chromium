@@ -75,7 +75,7 @@ std::pair<std::string, std::string> ConvertTo(
               "aria_notification_interrupt_properties=pending"};
     case ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties:
       return {"kAriaNotificationPriorityProperties,1",
-              "aria_notification_priority_properties=important"};
+              "aria_notification_priority_properties=high"};
   }
 }
 

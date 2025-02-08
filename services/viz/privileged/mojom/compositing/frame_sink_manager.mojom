@@ -55,6 +55,12 @@ struct RootCompositorFrameSinkParams {
 
   pending_associated_receiver<ExternalBeginFrameController>?
       external_begin_frame_controller;
+
+  // If this value is set, `external_begin_frame_controller` must be set as
+  // well. This field is not required to be set if
+  // `external_begin_frame_controller` is set.
+  pending_associated_remote<ExternalBeginFrameControllerClient>?
+      external_begin_frame_controller_client;
 };
 
 // The FrameSinkManager interface is a privileged interface that allows the

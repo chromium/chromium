@@ -70,6 +70,7 @@ Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka n
 <translation id="2459183986985456602">Buksan ang aking pinakabagong tab sa Chromium.</translation>
 <translation id="2476409803017965813">Puwede mong i-update ang iyong mga pinili anumang oras sa mga setting ng Chromium.</translation>
 <translation id="2478931088402984578">Piliin ang <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2485774047568879945">Itakda ang Chromium bilang iyong default browser para madaling makapag-share at makapagbukas ng mga link</translation>
 <translation id="2512597191798760956">Pindutin nang matagal ang icon ng Chromium at i-click ang "I-edit ang home screen"</translation>
 <translation id="2517624234762908348">I-sync ang iyong data ng Chromium</translation>
 <translation id="2592940277904433508">Ipagpatuloy ang paggamit ng Chromium</translation>
@@ -167,6 +168,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="5088872414922783602">Mas mabilis na i-access ang Chromium mula sa Dock ng iyong Home Screen.</translation>
 <translation id="5124429847818367226">Magagamit mo na ngayon ang Chromium sa tuwing magba-browse o magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="5131565040785979529">Pinapamahalaan ng iyong organisasyon at <ph name="DOMAIN" /> ang account kung saan ka naka-sign in at kung paano ginagamit ang Chromium.</translation>
+<translation id="5134464247000681876">Buksan ang mga link mula sa Gmail, Maps, YouTube, at iba pang app sa Chromium</translation>
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="5259423875997548710">Maghanap ng mga visual sa Chromium.</translation>
 <translation id="5308226104666789935">Hindi matingnan ng Chromium kung may mga update</translation>
@@ -260,6 +262,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="7674213385180944843">Buksan ang Settings &gt; Privacy &gt; Camera &gt; Chromium at i-on ang camera.</translation>
 <translation id="7733418656985455268">Tip sa Chromium: Maghanap gamit ang Lens</translation>
 <translation id="7747820849741499258">Maghanap sa Chromium</translation>
+<translation id="7753923083404296545">Binuksan sa Incognito sa Chromium</translation>
 <translation id="7762622637388462191">I-lock ang iyong mga tab na Incognito kapag umalis ka sa Chromium o lumipat ka sa ibang app.</translation>
 <translation id="7763454117143368771">Gamitin ang Chromium bilang iyong default na browser para manatiling protektado laban sa mga mapanganib na site at mapanatiling ligtas ang mga password mo</translation>
 <translation id="7784950022329154821">I-lock ang mga tab na Incognito kapag isinara mo ang Chromium</translation>

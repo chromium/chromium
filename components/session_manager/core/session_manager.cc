@@ -69,6 +69,12 @@ void SessionManager::CreateSessionForRestart(const AccountId& user_account_id,
                         /*browser_restart=*/true);
 }
 
+void SessionManager::SwitchActiveSession(const AccountId& account_id) {
+  CHECK(user_manager_);
+  CHECK(HasSessionForAccountId(account_id));
+  user_manager_->SwitchActiveUser(account_id);
+}
+
 void SessionManager::OnUserManagerCreated(
     user_manager::UserManager* user_manager) {
   user_manager_ = user_manager;

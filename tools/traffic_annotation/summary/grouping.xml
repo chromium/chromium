@@ -474,7 +474,6 @@ after discussions on the right group.
     </sender>
     <sender name="OAuth 2.0 and FedCM">
       <annotation id="fedcm"/>
-      <annotation id="fedcm_account_profile_image_fetcher"/>
       <annotation id="gaia_auth_check_connection_info"/>
       <annotation id="gaia_auth_exchange_device_id"/>
       <annotation id="gaia_auth_list_accounts"/>

@@ -14,6 +14,7 @@ html_to_wrapper_template = "native"
 build_webui("build") {
   grd_prefix = "data_sharing"
   ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 
   ts_deps = [
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",

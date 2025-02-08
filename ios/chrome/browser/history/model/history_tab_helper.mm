@@ -224,7 +224,9 @@ void HistoryTabHelper::DidFinishNavigation(
 
   // Do not record failed navigation nor 404 to the history (to prevent them
   // from showing up as Most Visited tiles on NTP).
-  UMA_HISTOGRAM_BOOLEAN("History.IsErrorNavigation",
+  UMA_HISTOGRAM_BOOLEAN("History.Is4XXOr5XXStatusCode",
+                        navigation_context->GetError());
+  UMA_HISTOGRAM_BOOLEAN("History.ShouldUpdateHistory",
                         navigation_context->GetError());
   if (navigation_context->GetError()) {
     return;

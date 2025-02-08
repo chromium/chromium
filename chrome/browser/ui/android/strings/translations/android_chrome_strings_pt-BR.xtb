@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1009406586654360474">Abra o Gerenciador de senhas do Google e acesse as configurações. Selecione "Importar" e adicione o arquivo CSV que contém as senhas exportadas.</translation>
-<translation id="1010225406377140704">Entre em contato com o remetente para pedir um novo link</translation>
 <translation id="1011749477052068769">Mover para cá</translation>
 <translation id="1014147525163127655">Não há chaves de acesso para <ph name="ORIGIN" /> neste dispositivo</translation>
 <translation id="1016498331642356377">Pesquisar rapidamente usando sua voz. Para editar este atalho, toque e pressione.</translation>
@@ -1724,7 +1723,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8683039184091909753">imagem</translation>
 <translation id="869891660844655955">Validade</translation>
 <translation id="8699120352855309748">Não oferecer a opção de traduzir estes idiomas</translation>
-<translation id="8703372953981978786">Este link não funciona</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8723453889042591629">Traduza esta página rapidamente. Para editar este atalho, toque e pressione.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>

@@ -185,6 +185,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_navigation_throttle.h"
 #include "chrome/browser/ui/login/http_auth_coordinator.h"
 #include "chrome/browser/ui/login/login_navigation_throttle.h"
@@ -425,6 +426,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/gfx/switches.h"
 #include "ui/native_theme/native_theme.h"
@@ -3946,25 +3948,18 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
   web_prefs->preferred_color_scheme =
       ToBlinkPreferredColorScheme(native_theme->GetPreferredColorScheme());
 
-  bool using_different_colored_frame = false;
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   CHECK(profile);
-  if (ThemeService* theme_service =
-          ThemeServiceFactory::GetForProfile(profile)) {
-    using_different_colored_frame = !theme_service->UsingDefaultTheme() ||
-                                    theme_service->GetUserColor().has_value() ||
-                                    theme_service->UsingDeviceTheme();
-  }
 
-  // Update based on the ColorProvider associated with `web_contents`. Depends
-  // on the browser color mode settings and whether the user profile has set a
-  // custom coloring for the browser ui.
+  // Update the preferred root scrollbar color based on the lightness level of
+  // the toolbar's color.
   web_prefs->preferred_root_scrollbar_color_scheme =
-      web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight ||
-              using_different_colored_frame
-          ? blink::mojom::PreferredColorScheme::kLight
-          : blink::mojom::PreferredColorScheme::kDark;
+      color_utils::IsDark(
+          web_contents->GetColorProvider().GetColor(kColorToolbar))
+          ? blink::mojom::PreferredColorScheme::kDark
+          : blink::mojom::PreferredColorScheme::kLight;
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

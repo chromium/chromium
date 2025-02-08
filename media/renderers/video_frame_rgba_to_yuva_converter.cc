@@ -70,7 +70,7 @@ bool CopyRGBATextureToVideoFrame(
   gpu::SyncToken completion_sync_token;
   ri->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
   SimpleSyncTokenClient simple_client(completion_sync_token);
-  dst_video_frame->UpdateAcquireSyncToken(&simple_client);
+  dst_video_frame->UpdateAcquireSyncToken(completion_sync_token);
   dst_video_frame->UpdateReleaseSyncToken(&simple_client);
   return true;
 }

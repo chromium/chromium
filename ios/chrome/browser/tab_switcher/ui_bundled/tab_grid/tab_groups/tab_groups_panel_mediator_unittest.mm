@@ -59,7 +59,7 @@ const char* kSelectTabGroupsUMA = "MobileTabGridSelectTabGroups";
 PersistentMessage CreateUnavailableTabGroupMessage(
     const std::string& last_known_title) {
   PersistentMessage persistent_message;
-  persistent_message.type = PersistentNotificationType::DIRTY_TAB_GROUP_REMOVED;
+  persistent_message.type = PersistentNotificationType::TOMBSTONED;
   persistent_message.collaboration_event =
       CollaborationEvent::TAB_GROUP_REMOVED;
   TabGroupMessageMetadata tab_group_metadata;

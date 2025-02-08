@@ -210,6 +210,17 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
         base::Seconds(60)};
 
+// Enables or disables Boca student heartbeat interval on ChromeOS.
+BASE_FEATURE(kBocaStudentHeartbeat,
+             "kBocaStudentHeartbeat",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Time interval to do student heartbeat
+constexpr base::FeatureParam<base::TimeDelta>
+    kBocaStudentHeartbeatPeriodicJobIntervalInSeconds{
+        &kBocaStudentHeartbeat, "StudentHeartbeatPeriodicJobIntervalInSeconds",
+        base::Seconds(60)};
+
 // Enables or disables Boca extension consumer experience on ChromeOS.
 BASE_FEATURE(kBocaExtensionConsumer,
              "BocaExtensionConsumer",
@@ -3190,7 +3201,7 @@ BASE_FEATURE(kPeripheralNotification,
 // cursor with possible tearing artifacts.
 BASE_FEATURE(kEnableFastInkForSoftwareCursor,
              "EnableFastInkForSoftwareCursor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the feature deferring vm_concierge startup until all the critical
 // login tasks are finished.
@@ -3336,6 +3347,10 @@ bool IsBocaExtensionConsumerEnabled() {
 
 bool IsBocaCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaCustomPolling);
+}
+
+bool IsBocaStudentHeartbeatEnabled() {
+  return base::FeatureList::IsEnabled(kBocaStudentHeartbeat);
 }
 
 bool IsBocaSpotlightEnabled() {

@@ -57,14 +57,17 @@ namespace passage_embeddings {
 
 PassageEmbedder::PassageEmbedder(
     mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
-    mojom::PassageEmbedderParamsPtr embedder_params)
+    mojom::PassageEmbedderParamsPtr embedder_params,
+    base::OnceCallback<void()> on_disconnect)
     : receiver_(this, std::move(receiver)),
       embeddings_cache_(embedder_params->embedder_cache_size),
       user_initiated_priority_num_threads_(
           embedder_params->user_initiated_priority_num_threads),
       passive_priority_num_threads_(
           embedder_params->passive_priority_num_threads),
-      allow_gpu_execution_(embedder_params->allow_gpu_execution) {}
+      allow_gpu_execution_(embedder_params->allow_gpu_execution) {
+  receiver_.set_disconnect_handler(std::move(on_disconnect));
+}
 
 PassageEmbedder::~PassageEmbedder() = default;
 

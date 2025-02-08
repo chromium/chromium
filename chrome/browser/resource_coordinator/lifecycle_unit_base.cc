@@ -8,21 +8,12 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_base.h"
 #include "chrome/browser/resource_coordinator/time.h"
-#include "chrome/browser/resource_coordinator/usage_clock.h"
 
 namespace resource_coordinator {
 
 LifecycleUnitBase::LifecycleUnitBase(LifecycleUnitSourceBase* source,
-                                     content::Visibility visibility,
-                                     UsageClock* usage_clock)
-    : source_(source),
-      wall_time_when_hidden_(visibility == content::Visibility::VISIBLE
-                                 ? base::TimeTicks::Max()
-                                 : NowTicks()),
-      usage_clock_(usage_clock),
-      chrome_usage_time_when_hidden_(visibility == content::Visibility::VISIBLE
-                                         ? base::TimeDelta::Max()
-                                         : usage_clock_->GetTotalUsageTime()) {
+                                     content::Visibility visibility)
+    : source_(source) {
   if (source_)
     source_->NotifyLifecycleUnitBeingCreated(this);
 }
@@ -46,14 +37,6 @@ LifecycleUnitState LifecycleUnitBase::GetState() const {
 
 base::TimeTicks LifecycleUnitBase::GetStateChangeTime() const {
   return state_change_time_;
-}
-
-base::TimeTicks LifecycleUnitBase::GetWallTimeWhenHidden() const {
-  return wall_time_when_hidden_;
-}
-
-base::TimeDelta LifecycleUnitBase::GetChromeUsageTimeWhenHidden() const {
-  return chrome_usage_time_when_hidden_;
 }
 
 size_t LifecycleUnitBase::GetDiscardCount() const {
@@ -95,17 +78,9 @@ void LifecycleUnitBase::OnLifecycleUnitStateChanged(
 
 void LifecycleUnitBase::OnLifecycleUnitVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::VISIBLE) {
-    wall_time_when_hidden_ = base::TimeTicks::Max();
-    chrome_usage_time_when_hidden_ = base::TimeDelta::Max();
-  } else if (wall_time_when_hidden_.is_max()) {
-    DCHECK(chrome_usage_time_when_hidden_.is_max());
-    wall_time_when_hidden_ = NowTicks();
-    chrome_usage_time_when_hidden_ = usage_clock_->GetTotalUsageTime();
-  }
-
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnLifecycleUnitVisibilityChanged(this, visibility);
+  }
 }
 
 void LifecycleUnitBase::OnLifecycleUnitDestroyed() {

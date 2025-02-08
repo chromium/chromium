@@ -92,6 +92,10 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         &kDevToolsAiAssistancePerformanceAgent, "user_tier",
         /*default_value=*/DevToolsFreestylerUserTier::kPublic,
         &devtools_freestyler_user_tier_options};
+const base::FeatureParam<bool>
+    kDevToolsAiAssistancePerformanceAgentInsightsEnabled{
+        &kDevToolsAiAssistancePerformanceAgent, "insights_enabled",
+        /*default_value=*/false};
 
 // Whether the DevTools AI Assistance File Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistanceFileAgent,
@@ -131,6 +135,12 @@ BASE_FEATURE(kDevToolsAnimationStylesInStylesTab,
 // Whether the new DevTools "Workspaces" features are enabled.
 BASE_FEATURE(kDevToolsImprovedWorkspaces,
              "DevToolsImprovedWorkspaces",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether DevTools will attempt to load project settings from a well-known
+// URI. See https://goo.gle/devtools-json-design for additional details.
+BASE_FEATURE(kDevToolsWellKnown,
+             "DevToolsWellKnown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

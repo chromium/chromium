@@ -60,9 +60,37 @@ chromium-metrics-reviews@google.com.
     The page was eligible for the nudge, but too many nudges have been shown to
     the user recently for the domain.
   </int>
+  <int value="9" label="The Nudge was not shown as IPH was alraedy being Shown">
+    The page was eligible for the nudge, but the user was currently being
+    presented the IPH.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeDecision) -->
+
+<!-- LINT.IfChange(NudgeInteraction) -->
+
+<enum name="ContextualCueingNudgeInteraction">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Shown">
+    The server sent data and we successfully showed the nudge.
+  </int>
+  <int value="2" label="Not Shown due to wrong webcontents">
+    The server sent data, but for a different web contents so we did not nudge.
+  </int>
+  <int value="3" label="Clicked">The user clicked on a shown nudge.</int>
+  <int value="4" label="Dismissed">
+    The user dismissed the nudge with the close button.
+  </int>
+  <int value="5" label="Closed via new tab">
+    The nudge was dismissed by the tab changing.
+  </int>
+  <int value="6" label="Closed via new navigation">
+    The nudge was dismissed by the navigation changing.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:NudgeInteraction) -->
 
 </enums>
 

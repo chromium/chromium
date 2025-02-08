@@ -3,6 +3,7 @@ file://chrome/browser/glic/API_OWNERS
 andreaxg@google.com
 cuianthony@chromium.org
 iwells@chromium.org
+perrier@chromium.org
 
 per-file *test*=dfried@chromium.org
 per-file *.mojom=set noparent

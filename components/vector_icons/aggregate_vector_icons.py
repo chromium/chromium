@@ -102,7 +102,7 @@ def ExtractIconReps(icon_file_name):
   return icon_representations
 
 
-def AggregateVectorIcons(working_directory, file_list, output_cc, output_h):
+def AggregateVectorIcons(working_directory, file_list, output_cc, output_h, output_test_h):
   """Compiles all .icon files in a directory into two C++ files.
 
   Args:
@@ -111,6 +111,10 @@ def AggregateVectorIcons(working_directory, file_list, output_cc, output_h):
       file_list: A file containing the list of vector icon files to process.
       output_cc: The path that should be used to write the .cc file.
       output_h: The path that should be used to write the .h file.
+      output_test_h: The path that should be used for the unittest .h file.
+          This effectively defines unit test checks that parsing of these icon
+          files produces the same result as the icons defined in output_cc and
+          output_h.
   """
 
   # For each file in |file_list|, place it in |path_map| if its extension is
@@ -192,6 +196,36 @@ def AggregateVectorIcons(working_directory, file_list, output_cc, output_h):
 
   output_cc.close()
 
+  if (output_test_h):
+      input_test_cc_template = open(
+          os.path.join(working_directory, "vector_icons_unittest.h.template"))
+      cc_test_template_contents = input_test_cc_template.readlines()
+      input_test_cc_template.close()
+
+      # Write the vector icon unittests.
+      output_test_h = open(output_test_h, "w")
+      for line in cc_test_template_contents:
+        if not TEMPLATE_PLACEHOLDER in line:
+          output_test_h.write(line)
+          continue
+        for icon in path_map:
+          (icon_name, extension) = os.path.splitext(
+                                   os.path.basename(path_map[icon]))
+          formatted_name = GetIconName(icon_name)
+          icon_representations = ExtractIconReps(path_map[icon])
+          icon_representation_strings = []
+          output_test_h.write("""TEST_F(VectorIconsTest, Parse{}) {{ \\
+              std::string s = \\\n""".format(formatted_name[1:]))
+          for i, size in enumerate(sorted(icon_representations, reverse=True)):
+            vector_commands = icon_representations[size]
+            for command in vector_commands.split("\n"):
+                output_test_h.write("\"{} \" \\\n".format(command))
+            output_test_h.write(" \\\n");
+          output_test_h.write("""; \\
+              CheckThatParsedElementsMatch(s, {}); \\
+              }} \\\n \\\n""".format(formatted_name))
+      output_test_h.close()
+
 
 def main():
   parser = optparse.OptionParser()
@@ -205,13 +239,16 @@ def main():
                     help="The path to output the CC file to.")
   parser.add_option("--output_h",
                     help="The path to output the header file to.")
+  parser.add_option("--output_test_h",
+                    help="The path to output the unittest header file to.")
 
   (options, args) = parser.parse_args()
 
   AggregateVectorIcons(options.working_directory,
                        options.file_list,
                        options.output_cc,
-                       options.output_h)
+                       options.output_h,
+                       options.output_test_h)
 
 
 if __name__ == "__main__":

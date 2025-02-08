@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">ليس الآن</translation>
 <translation id="100957008357583611">هل تريد استخدام موقعك الجغرافي؟</translation>
 <translation id="1010200102790553230">تحميل الصفحة لاحقًا</translation>
+<translation id="1010225406377140704">يُرجى التواصل مع المُرسِل لطلب رابط جديد</translation>
 <translation id="1011206368273183593">جارٍ تحضير الملفات</translation>
 <translation id="1014509239502131234">جارٍ التراجع عن تحميل النتيجة</translation>
 <translation id="1015730422737071372">تقديم تفاصيل إضافية</translation>
@@ -3110,6 +3111,7 @@
 <translation id="6465306955648956876">إدارة كلمات المرور...</translation>
 <translation id="646789491285795429">يتم حاليًا تتبُّع سعر هذا المنتج</translation>
 <translation id="6468485451923838994">الخطوط</translation>
+<translation id="6469702164109431067">كلمات المرور ومفاتيح المرور</translation>
 <translation id="647261751007945333">سياسات الأجهزة</translation>
 <translation id="6472874020827012601">نسيج (غير لامع)</translation>
 <translation id="647330291963761005">جارٍ تثبيت التحديثات</translation>
@@ -4357,6 +4359,7 @@
 <translation id="8699041776323235191">‏جهاز HID</translation>
 <translation id="8699985386408839112">‏ظرف Kaku 1</translation>
 <translation id="8702965365666568344">شريط تثبيت</translation>
+<translation id="8703372953981978786">هذا الرابط لا يعمل</translation>
 <translation id="8703575177326907206">الاتصال بالموقع <ph name="DOMAIN" /> غير محميّ بنظام ترميز.</translation>
 <translation id="8705331520020532516">الرقم التسلسلي</translation>
 <translation id="8706806585855470492">سيكون بإمكانك مشاركة مجموعات علامات التبويب والانضمام إليها والتعاون فيها</translation>

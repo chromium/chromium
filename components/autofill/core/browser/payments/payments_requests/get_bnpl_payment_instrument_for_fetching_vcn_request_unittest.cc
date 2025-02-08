@@ -31,6 +31,20 @@ class GetBnplPaymentInstrumentForFetchingVcnRequestTest : public testing::Test {
         request_details_, /*full_sync_enabled=*/true, mock_callback_.Get());
   }
 
+  Dict GetFullResponse() const {
+    return Dict().Set(
+        "buy_now_pay_later_info",
+        Dict().Set(
+            "get_vcn_response_info",
+            Dict().Set("virtual_card_info",
+                       Dict()
+                           .Set("pan", "1234")
+                           .Set("cvv", "123")
+                           .Set("cardholder_name", "Akagi Shigeru")
+                           .Set("expiration",
+                                Dict().Set("month", 1).Set("year", 2025)))));
+  }
+
   GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details_;
   MockCallback<
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
@@ -83,27 +97,66 @@ TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,
 
 TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,
        IsResponseComplete_ParseResponseCalled) {
-  request_->ParseResponse(Dict().SetByDottedPath(
-      "buy_now_pay_later_info.get_vcn_response_info.virtual_card_info.pan",
-      "1234"));
+  request_->ParseResponse(GetFullResponse());
 
   EXPECT_TRUE(request_->IsResponseComplete());
 }
 
-TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, RespondToDelegate) {
-  Dict response_dict = Dict().Set(
-      "buy_now_pay_later_info",
-      Dict().Set(
-          "get_vcn_response_info",
-          Dict().Set("virtual_card_info",
-                     Dict()
-                         .Set("pan", "1234")
-                         .Set("cvv", "123")
-                         .Set("cardholder_name", "Akagi Shigeru")
-                         .Set("expiration",
-                              Dict().Set("month", 1).Set("year", 2025)))));
+TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,
+       IsResponseComplete_ParseResponseCalled_EmptyPan) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_vcn_response_info.virtual_card_info.pan");
+  request_->ParseResponse(response);
 
-  request_->ParseResponse(response_dict);
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,
+       IsResponseComplete_ParseResponseCalled_EmptyCvv) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_vcn_response_info.virtual_card_info.cvv");
+  request_->ParseResponse(response);
+
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,
+       IsResponseComplete_ParseResponseCalled_EmptyCardholderName) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_vcn_response_info.virtual_card_info."
+      "cardholder_name");
+  request_->ParseResponse(response);
+
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,
+       IsResponseComplete_ParseResponseCalled_EmptyExpirationMonth) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_vcn_response_info.virtual_card_info."
+      "expiration.month");
+  request_->ParseResponse(response);
+
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest,
+       IsResponseComplete_ParseResponseCalled_EmptyExpirationYear) {
+  Dict response = GetFullResponse();
+  response.RemoveByDottedPath(
+      "buy_now_pay_later_info.get_vcn_response_info.virtual_card_info."
+      "expiration.year");
+  request_->ParseResponse(response);
+
+  EXPECT_FALSE(request_->IsResponseComplete());
+}
+
+TEST_F(GetBnplPaymentInstrumentForFetchingVcnRequestTest, RespondToDelegate) {
+  request_->ParseResponse(GetFullResponse());
 
   EXPECT_CALL(
       mock_callback_,

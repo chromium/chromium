@@ -44,7 +44,7 @@ DEVICE_SUBSTITUTIONS = {
 ANDROID_VULKAN_DEVICES = {
     # Pixel 6 phones map to multiple GPU models.
     'oriole': GpuDevice('13b5', '92020010,92020000'),
-    'a23': GpuDevice('5143', '6010001'),
+    'a23xq': GpuDevice('5143', '6010901'),
 }
 
 def ChromeOSTelemetryRemote(test_config, _, tester_config):
@@ -335,6 +335,7 @@ def GPUTelemetryNoRootForUnrootedDevices(test_config, _, tester_config):
       'a13',
       'a13ve',
       'a23',
+      'a23xq',
       'dm1q',  # Samsung S23.
       'devonn',  # Motorola Moto G Power 5G.
   }

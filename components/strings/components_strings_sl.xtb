@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Ne zdaj</translation>
 <translation id="100957008357583611">Želite uporabiti lokacijo?</translation>
 <translation id="1010200102790553230">Naloži stran pozneje</translation>
+<translation id="1010225406377140704">Obrnite se na pošiljatelja in ga prosite za novo povezavo</translation>
 <translation id="1011206368273183593">Pripravljanje datotek</translation>
 <translation id="1014509239502131234">Razveljavitev rezultata</translation>
 <translation id="1015730422737071372">Navedite dodatne podrobnosti</translation>
@@ -3108,6 +3109,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6465306955648956876">Upravljanje gesel ...</translation>
 <translation id="646789491285795429">Ta izdelek že spremljate</translation>
 <translation id="6468485451923838994">Pisave</translation>
+<translation id="6469702164109431067">Gesla in ključi za dostop</translation>
 <translation id="647261751007945333">Pravilniki za naprave</translation>
 <translation id="6472874020827012601">Fabric (Matte)</translation>
 <translation id="647330291963761005">Nameščanje posodobitev</translation>
@@ -4352,6 +4354,7 @@ Dodatne podrobnosti:
 <translation id="8699041776323235191">Naprava HID</translation>
 <translation id="8699985386408839112">Kuverta Kaku 1</translation>
 <translation id="8702965365666568344">Mounting Tape</translation>
+<translation id="8703372953981978786">Ta povezava ne deluje</translation>
 <translation id="8703575177326907206">Vaša povezava z <ph name="DOMAIN" /> ni kodirana.</translation>
 <translation id="8705331520020532516">Serijska številka</translation>
 <translation id="8706806585855470492">V skupinah zavihkov boste lahko delili, se pridružili in sodelovali</translation>

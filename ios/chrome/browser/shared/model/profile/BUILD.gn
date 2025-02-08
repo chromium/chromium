@@ -8,6 +8,7 @@ source_set("profile") {
     "profile_attributes_ios.h",
     "profile_attributes_storage_ios.cc",
     "profile_attributes_storage_ios.h",
+    "profile_attributes_storage_observer_ios.h",
     "profile_ios.h",
     "profile_ios.mm",
     "profile_manager_ios.h",

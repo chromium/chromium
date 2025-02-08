@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
 <translation id="1009406586654360474">Abra o Gestor de Palavras-passe da Google e aceda às definições. Selecione "Importar" e adicione o ficheiro CSV que contém as suas palavras-passe exportadas.</translation>
-<translation id="1010225406377140704">Contacte o remetente para pedir um novo link</translation>
 <translation id="1011749477052068769">Mover para aqui</translation>
 <translation id="1014147525163127655">Não existem chaves de acesso para <ph name="ORIGIN" /> neste dispositivo</translation>
 <translation id="1016498331642356377">Pesquise com a sua voz rapidamente. Para editar este atalho, toque sem soltar.</translation>
@@ -1723,7 +1722,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8683039184091909753">imagem</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8699120352855309748">Não se disponibilizar para traduzir estes idiomas</translation>
-<translation id="8703372953981978786">Este link não funciona</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8723453889042591629">Traduza rapidamente esta página. Para editar este atalho, toque sem soltar.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>

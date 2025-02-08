@@ -241,6 +241,24 @@
             ]
         }
     ],
+    "AiSettingsPageEnterpriseDisabledUi": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AiSettingsPageEnterpriseDisabledUi"
+                    ]
+                }
+            ]
+        }
+    ],
     "AiSettingsPageRefresh": [
         {
             "platforms": [
@@ -3670,6 +3688,21 @@
             ]
         }
     ],
+    "CCTEphemeralMediaViewerExperiment": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CCTEphemeralMediaViewerExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "CCTGoogleBottomBar": [
         {
             "platforms": [
@@ -5085,11 +5118,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_M131",
+                    "name": "Enabled",
                     "enable_features": [
                         "EnableLensOverlay",
                         "IPH_iOSLensOverlayEntrypointTip",
+                        "LensClearcutBackgroundUploadEnabled",
                         "LensClearcutLoggerFastQosEnabled",
+                        "LensInkMultiSampleModeDisabled",
                         "LensOverlayEnableLocationBarEntrypoint"
                     ]
                 }
@@ -11060,25 +11095,6 @@
                     },
                     "enable_features": [
                         "HappinessTrackingSystemStability"
-                    ]
-                }
-            ]
-        }
-    ],
-    "HappyEyeballsV3": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HappyEyeballsV3"
                     ]
                 }
             ]
@@ -18140,25 +18156,6 @@
             ]
         }
     ],
-    "PrivacySandboxPrivacyPolicy": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacySandboxPrivacyPolicy"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxSentimentSurvey": [
         {
             "platforms": [
@@ -23618,6 +23615,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ThrottleMainFrameTo60Hz"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ThrottleUnimportantFrameRate": [
+        {
+            "platforms": [
+                "android_webview",
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ThrottleUnimportantFrameRate"
                     ]
                 }
             ]

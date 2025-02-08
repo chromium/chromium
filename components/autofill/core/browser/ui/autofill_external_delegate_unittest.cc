@@ -1164,16 +1164,6 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion_TriggerSource) {
                                           SuggestionPosition{.row = 1});
 }
 
-// Tests that on acceptance of a `kRetrieveAutofillAi` suggestion,
-// the `AutofillAiDelegate::OnClickedTriggerSuggestion()` event handler is
-// called.
-TEST_F(AutofillExternalDelegateTest,
-       DidAcceptRetrieveAutofillAiSuggestionCallsEventHandler) {
-  EXPECT_CALL(*client().GetAutofillAiDelegate(), OnClickedTriggerSuggestion);
-  external_delegate().DidAcceptSuggestion(
-      Suggestion(u"Autocomplete", SuggestionType::kRetrieveAutofillAi), {});
-}
-
 // Tests that on acceptance of a `kFillAutofillAi` suggestion with
 // `Suggestion::AutofillAiPayload` payload, the full form is filled
 // accordingly.
@@ -1193,7 +1183,7 @@ TEST_F(AutofillExternalDelegateTest, DidAcceptFillAutofillAiFillsFullForm) {
   Suggestion fill_suggestion =
       Suggestion(u"Autocomplete", SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(
-      {{field_to_fill->global_id(), value_to_fill}}, {});
+      {{field_to_fill->global_id(), value_to_fill}});
 
   std::vector<FormFieldData> filled_fields;
   EXPECT_CALL(driver(), ApplyFormAction)
@@ -1952,38 +1942,6 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
                                           SuggestionPosition{.row = 0});
   ASSERT_TRUE(reshow_suggestions);
   std::move(reshow_suggestions).Run();
-}
-
-TEST_F(
-    AutofillExternalDelegateTest,
-    AutofillAi_DidPerformButtonAction_ThumbsUpFeedbackIsForwardedToDelegate) {
-  IssueOnQuery();
-
-  // TODO(crbug.com/362468426): Update comment in case it is decided that
-  // feedback will be its own suggestion.
-  EXPECT_CALL(
-      *client().GetAutofillAiDelegate(),
-      UserFeedbackReceived(AutofillAiDelegate::UserFeedback::kThumbsUp));
-
-  external_delegate().DidPerformButtonActionForSuggestion(
-      Suggestion(SuggestionType::kAutofillAiFeedback),
-      AutofillAiSuggestionButtonAction::kThumbsUpClicked);
-}
-
-TEST_F(
-    AutofillExternalDelegateTest,
-    AutofillAi_DidPerformButtonAction_ThumbsDownFeedbackIsForwardedToDelegate) {
-  IssueOnQuery();
-
-  // TODO(crbug.com/362468426): Update comment in case it is decided that
-  // feedback will be its own suggestion.
-  EXPECT_CALL(
-      *client().GetAutofillAiDelegate(),
-      UserFeedbackReceived(AutofillAiDelegate::UserFeedback::kThumbsDown));
-
-  external_delegate().DidPerformButtonActionForSuggestion(
-      Suggestion(SuggestionType::kAutofillAiFeedback),
-      AutofillAiSuggestionButtonAction::kThumbsDownClicked);
 }
 
 TEST_F(AutofillExternalDelegateTest,

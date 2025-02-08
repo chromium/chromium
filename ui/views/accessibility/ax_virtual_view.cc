@@ -50,7 +50,7 @@ AXVirtualView* AXVirtualView::GetFromId(int32_t id) {
   return it != id_map.end() ? it->second : nullptr;
 }
 
-AXVirtualView::AXVirtualView() {
+AXVirtualView::AXVirtualView() : ViewAccessibility(nullptr) {
   GetIdMap()[unique_id_.Get()] = this;
   ax_platform_node_ = ui::AXPlatformNode::Create(this);
   DCHECK(ax_platform_node_);
@@ -165,7 +165,6 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
   children_.erase(children_.begin() +
                   static_cast<ptrdiff_t>(cur_index.value()));
   child->virtual_parent_view_ = nullptr;
-  child->populate_data_callback_.Reset();
 
   if (GetOwnerView()) {
     if (focus_changed) {
@@ -239,15 +238,6 @@ void AXVirtualView::NotifyAccessibilityEventDeprecated(
 
 ui::AXNodeData& AXVirtualView::GetCustomData() {
   return custom_data_;
-}
-
-void AXVirtualView::SetPopulateDataCallback(
-    base::RepeatingCallback<void(ui::AXNodeData*)> callback) {
-  populate_data_callback_ = std::move(callback);
-}
-
-void AXVirtualView::UnsetPopulateDataCallback() {
-  populate_data_callback_.Reset();
 }
 
 // ui::AXPlatformNodeDelegate

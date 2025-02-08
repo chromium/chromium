@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -261,6 +262,8 @@ class GPU_EXPORT ClientSharedImage
     explicit HelperGpuMemoryBufferManager(
         ClientSharedImage* client_shared_image);
 
+    ~HelperGpuMemoryBufferManager() override;
+
     // GpuMemoryBufferManager interface implementation.
     // This method should not be used via this interface. Hence marking it as
     // NOTREACHED.
@@ -285,6 +288,25 @@ class GPU_EXPORT ClientSharedImage
 
     // Allows accessing SharedImageInterface from ClientSharedImage.
     scoped_refptr<SharedImageInterface> GetSharedImageInterface();
+
+    // HelperGpuMemoryBufferManager uses this task runner for
+    // CopyGpuMemoryBufferAsync() operations to prevent deadlocks.
+    //
+    // Deadlock Scenario:
+    // 1. Client thread calls CopyGpuMemoryBufferAsync() with a completion
+    // callback.
+    // 2. Client thread blocks, waiting for an event which is often signaled by
+    // the callback.
+    // 3. If the copy ran on the client thread, the callback would also need to
+    // run on the *same*, now-blocked thread.
+    // 4. The callback can't run, the event isn't signaled, and a deadlock
+    // occurs.
+    //
+    // Solution:
+    // This dedicated task runner ensures the copy and callback execute
+    // independently of the client thread, allowing the callback to signal the
+    // event and prevent the deadlock.
+    std::optional<scoped_refptr<base::SingleThreadTaskRunner>> task_runner_;
   };
 
   // This constructor is used only when importing an owned ClientSharedImage,

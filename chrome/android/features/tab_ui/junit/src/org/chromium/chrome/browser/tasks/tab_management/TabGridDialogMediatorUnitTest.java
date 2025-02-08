@@ -1523,6 +1523,8 @@ public class TabGridDialogMediatorUnitTest {
         CoreAccountInfo coreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL1, GAIA_ID1);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
+                .thenReturn(MemberRole.OWNER);
 
         mMediator.onToolbarMenuItemClick(R.id.delete_shared_group, TAB_GROUP_ID, COLLABORATION_ID1);
         verify(mActionConfirmationManager).processDeleteSharedGroupAttempt(eq(GROUP_TITLE), any());
@@ -1537,6 +1539,8 @@ public class TabGridDialogMediatorUnitTest {
         CoreAccountInfo coreAccountInfo =
                 CoreAccountInfo.createFromEmailAndGaiaId(EMAIL2, GAIA_ID2);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
+                .thenReturn(MemberRole.MEMBER);
 
         mMediator.onToolbarMenuItemClick(R.id.leave_group, TAB_GROUP_ID, COLLABORATION_ID1);
         verify(mActionConfirmationManager).processLeaveGroupAttempt(eq(GROUP_TITLE), any());
@@ -1974,12 +1978,17 @@ public class TabGridDialogMediatorUnitTest {
         for (int i = 0; i < navigated; i++) {
             messageList.add(makePersistentMessage(CollaborationEvent.TAB_UPDATED));
         }
-        for (int i = 0; i < removed; i++) {
-            messageList.add(makePersistentMessage(CollaborationEvent.TAB_REMOVED));
-        }
         when(mMessagingBackendService.getMessagesForGroup(
                         any(), eq(Optional.of(PersistentNotificationType.DIRTY_TAB))))
                 .thenReturn(messageList);
+
+        List<PersistentMessage> tombstonedMessageList = new ArrayList<>();
+        for (int i = 0; i < removed; i++) {
+            tombstonedMessageList.add(makePersistentMessage(CollaborationEvent.TAB_REMOVED));
+        }
+        when(mMessagingBackendService.getMessages(
+                        eq(Optional.of(PersistentNotificationType.TOMBSTONED))))
+                .thenReturn(tombstonedMessageList);
     }
 
     private void verifyClearDirtyMessagesForGroup() {

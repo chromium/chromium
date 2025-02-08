@@ -95,7 +95,8 @@ enum class AuthenticationFlowInProfileState {
 
 - (void)startSignInWithCompletion:
     (signin_ui::SigninCompletionCallback)completion {
-  CHECK_EQ(_state, AuthenticationFlowInProfileState::kBegin);
+  CHECK_EQ(_state, AuthenticationFlowInProfileState::kBegin,
+           base::NotFatalUntil::M138);
   CHECK(completion);
   _selfRetainer = self;
   _signInCompletion = completion;
@@ -280,7 +281,8 @@ enum class AuthenticationFlowInProfileState {
                  atAccessPoint:_accessPoint
                 currentProfile:profile];
   } else {
-    CHECK([currentIdentity isEqual:_identityToSignIn]);
+    CHECK([currentIdentity isEqual:_identityToSignIn],
+          base::NotFatalUntil::M138);
   }
   [self continueFlow];
 }
@@ -288,7 +290,7 @@ enum class AuthenticationFlowInProfileState {
 // Fetches capabilities on successful authentication for the upcoming History
 // Sync Opt-In screen.
 - (void)fetchCapabilitiesStep {
-  CHECK([self shouldFetchCapabilities]);
+  CHECK([self shouldFetchCapabilities], base::NotFatalUntil::M138);
   ProfileIOS* profile = [self originalProfile];
 
   // Create the capability fetcher and start fetching capabilities.
@@ -335,7 +337,7 @@ enum class AuthenticationFlowInProfileState {
 - (void)cleanupBeforeDoneStep {
   // Clean up asynchronously to ensure that `self` does not die while
   // the flow is running.
-  CHECK([NSThread isMainThread]);
+  CHECK([NSThread isMainThread], base::NotFatalUntil::M138);
   dispatch_async(dispatch_get_main_queue(), ^{
     self->_selfRetainer = nil;
   });
@@ -345,13 +347,15 @@ enum class AuthenticationFlowInProfileState {
 #pragma mark - AuthenticationFlowPerformerDelegate
 
 - (void)didSignOut {
-  // TODO(crbug.com/375605482): It might be relevant to split
-  // `AuthenticationFlowPerformer` into 2 classes. This would avoid having
-  // all those NOTREACHED methods.
-  NOTREACHED();
+  CHECK_EQ(AuthenticationFlowInProfileState::kSignOutIfNeeded, _state,
+           base::NotFatalUntil::M138);
+  [self continueFlow];
 }
 
 - (void)didClearData {
+  // TODO(crbug.com/375605482): It might be relevant to split
+  // `AuthenticationFlowPerformer` into 2 classes. This would avoid having
+  // all those NOTREACHED methods.
   NOTREACHED();
 }
 
@@ -375,7 +379,8 @@ enum class AuthenticationFlowInProfileState {
                                    clientID:(NSString*)clientID
                          userAffiliationIDs:
                              (NSArray<NSString*>*)userAffiliationIDs {
-  CHECK_EQ(AuthenticationFlowInProfileState::kRegisterForUserPolicy, _state);
+  CHECK_EQ(AuthenticationFlowInProfileState::kRegisterForUserPolicy, _state,
+           base::NotFatalUntil::M138);
   _dmToken = dmToken;
   _clientID = clientID;
   _userAffiliationIDs = userAffiliationIDs;
@@ -383,7 +388,9 @@ enum class AuthenticationFlowInProfileState {
 }
 
 - (void)didFetchUserPolicyWithSuccess:(BOOL)success {
-  DCHECK_EQ(AuthenticationFlowInProfileState::kFetchUserPolicy, _state);
+  // The result can be ignored, the goal was to prefetch the user policy.
+  CHECK_EQ(AuthenticationFlowInProfileState::kFetchUserPolicy, _state,
+           base::NotFatalUntil::M138);
   DLOG_IF(ERROR, !success) << "Error fetching policy for user";
   [self continueFlow];
 }

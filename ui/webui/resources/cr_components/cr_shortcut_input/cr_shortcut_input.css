@@ -10,15 +10,13 @@
  * #include=cr-icons-lit cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
-#main {
-  position: relative;
+:host {
   width: 200px;
 }
 
-#clear {
-  --cr-icon-button-size: 28px;
+#main {
+  width: 200px;
   position: absolute;
-  right: 2px;
 }
 
 #input {
@@ -32,9 +30,3 @@
 #edit {
   margin-inline-start: var(--cr-icon-ripple-padding);
 }
-
-:host-context([dir='rtl']) #clear {
-  left: -2px;
-  right: inherit;
-}
-

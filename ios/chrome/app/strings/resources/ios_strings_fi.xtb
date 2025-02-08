@@ -23,6 +23,7 @@
 <translation id="1066060668811609597">Synkronointiasetusten määritys</translation>
 <translation id="1076421457278169141">Koodi skannattiin.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} välilehti}other{{count} välilehteä}}</translation>
+<translation id="1082554859195167538">Tuotearvostelut</translation>
 <translation id="1084365883616172403">Facebook-viesti julkaistu.</translation>
 <translation id="1085677983426914530"><ph name="FILENAME" /> ei avautunut</translation>
 <translation id="1086468407802688066"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliä <ph name="USER_EMAIL" /> ja voi nähdä joitakin tietoja. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -342,6 +343,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2384692388811649784">Piilota incognito-välilehdet</translation>
 <translation id="2386793615875593361">1 valittu</translation>
 <translation id="2390457533592708044">Piilota "<ph name="MODULE_NAME" />"</translation>
+<translation id="2393230427496852974">Lue, mitä ihmiset sanovat</translation>
 <translation id="2394659309569789395">Avaa sivusto silti</translation>
 <translation id="2403129868389095715">Pakettia ei voida toimittaa</translation>
 <translation id="2410754283952462441">Valitse tili</translation>
@@ -454,6 +456,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="2894757982205307093">Uusi välilehti ryhmässä</translation>
 <translation id="2902312830803030883">Lisää toimintoja</translation>
 <translation id="2905479111267140204">Sinulla on <ph name="NUMBER_OF_PASSWORDS" /> uudelleenkäytettyä salasanaa, jotka voivat vaarantaa turvallisuutesi.</translation>
+<translation id="29153882450867370">Piilota "Hintaseuranta"</translation>
 <translation id="291754862089661335">Aseta QR- tai viivakoodi tämän kehyksen sisälle.</translation>
 <translation id="2918688092312652908">Merkitse lukemattomaksi</translation>
 <translation id="2920866371965792875">Jos haluat päivityksiä tältä sivustolta, seuraa sitä täältä.</translation>
@@ -905,6 +908,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4989065233040279145">Valitse tallennuspaikka tiedostolle: <ph name="FILENAME" /></translation>
 <translation id="4992255726304765516">Välilehtiryhmän väri on <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopioi salasana</translation>
+<translation id="5012914568031465281">Hintaa ei voitu seurata.</translation>
 <translation id="5016420433031926653">Lähetä tänne: <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Viimeiset 15 minuuttia</translation>
 <translation id="5020732097997376541">Napauta Lens-kuvaketta</translation>
@@ -1668,8 +1672,10 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8211406090763984747">Yhteys on turvallinen</translation>
 <translation id="8214293972734702249">Kiinnitetty, <ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">Näytä offline-versio uudella välilehdellä</translation>
+<translation id="8221665793629393739">Muistutus palata sivulle</translation>
 <translation id="8230355548492839438">Hae edellinen</translation>
 <translation id="8232956427053453090">Säilytä data</translation>
+<translation id="8238711781852526820">Piilota "Hintaseuranta"</translation>
 <translation id="8258999165172757081">Lisätty</translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="82619448491672958">Katso muut välilehdet</translation>
@@ -1790,6 +1796,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8717864919010420084">Kopioi linkki</translation>
 <translation id="8722229818691036192">Tämän laitteen tilit</translation>
 <translation id="8722649775263832315">Hae mitä tahansa Google Lensilla napauttamalla tai korostamalla</translation>
+<translation id="8723088494871522141">Piilota "Sinulle valitut tuotearvostelut"</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
 <translation id="8728922029615312208">Sulje kaikki</translation>
 <translation id="8730621377337864115">Valmis</translation>

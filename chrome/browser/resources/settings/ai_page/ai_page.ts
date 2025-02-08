@@ -70,11 +70,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         value: () => loadTimeData.getBoolean('showTabOrganizationControl'),
       },
 
-      showWallpaperSearchControl_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showWallpaperSearchControl'),
-      },
-
       showPasswordChangeControl_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showPasswordChangeControl'),
@@ -127,7 +122,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   private showCompareControl_: boolean;
   private showHistorySearchControl_: boolean;
   private showTabOrganizationControl_: boolean;
-  private showWallpaperSearchControl_: boolean;
   private showPasswordChangeControl_: boolean;
   private numericUncheckedValues_: FeatureOptInState[];
   private shouldRecordMetrics_: boolean = true;
@@ -161,9 +155,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Settings.AiPage.ElementVisibility.TabOrganization',
         this.showTabOrganizationControl_);
-    this.metricsBrowserProxy_.recordBooleanHistogram(
-        'Settings.AiPage.ElementVisibility.Themes',
-        this.showWallpaperSearchControl_);
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Settings.AiPage.ElementVisibility.PasswordChange',
         this.showPasswordChangeControl_);
@@ -240,15 +231,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('passwordChangeSettingsUrl'));
-  }
-
-  private onWallpaperSearchRowClick_() {
-    this.recordInteractionMetrics_(
-        AiPageInteractions.WALLPAPER_SEARCH_CLICK,
-        'Settings.AiPage.ThemesEntryPointClick');
-
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('wallpaperSearchLearnMoreUrl'));
   }
 
   private recordInteractionMetrics_(

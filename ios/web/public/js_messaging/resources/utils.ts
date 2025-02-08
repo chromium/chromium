@@ -100,5 +100,8 @@ export function sendWebKitMessage(handlerName: string, message: object|string) {
  * @return The string after trimming.
  */
 export function trim(str: string): string {
+  if (!str) {
+    return '';
+  }
   return str.replace(/^\s+|\s+$/g, '');
 };

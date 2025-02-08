@@ -60,6 +60,8 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
   // Disables platform accessibility support for views.
   virtual void Disable();
 
+  void InitIfNeeded();
+
   // Handle a textual alert.
   void HandleAlert(const std::string& text);
 

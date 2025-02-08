@@ -4,16 +4,26 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 
+#include <optional>
+
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include <algorithm>
@@ -84,8 +94,10 @@ std::vector<std::string> GetCannotDiscardReasonsForPageNode(
 #if BUILDFLAG(IS_ANDROID)
   return {};
 #else
-  policies::PageDiscardingHelper* discarding_helper =
-      policies::PageDiscardingHelper::GetFromGraph(page_node->GetGraph());
+  auto* discarding_helper = policies::PageDiscardingHelper::GetFromGraph(
+      PerformanceManager::GetGraph());
+  CHECK(discarding_helper);
+  CHECK(page_node);
 
   std::vector<policies::CannotDiscardReason> cannot_discard_reasons;
   discarding_helper->CanDiscard(
@@ -100,4 +112,36 @@ std::vector<std::string> GetCannotDiscardReasonsForPageNode(
   return results;
 #endif
 }
+
+void DiscardPage(const PageNode* page_node,
+                 ::mojom::LifecycleUnitDiscardReason reason,
+                 base::OnceClosure done_closure) {
+#if BUILDFLAG(IS_ANDROID)
+  std::move(done_closure).Run();
+#else
+  auto* discarding_helper = policies::PageDiscardingHelper::GetFromGraph(
+      PerformanceManager::GetGraph());
+  CHECK(discarding_helper);
+  CHECK(page_node);
+  discarding_helper->ImmediatelyDiscardMultiplePages(
+      {page_node}, reason, policies::kNonVisiblePagesUrgentProtectionTime,
+      base::IgnoreArgs<std::optional<base::TimeTicks>>(
+          std::move(done_closure)));
+#endif
+}
+
+void DiscardAnyPage(::mojom::LifecycleUnitDiscardReason reason,
+                    base::OnceClosure done_closure) {
+#if BUILDFLAG(IS_ANDROID)
+  std::move(done_closure).Run();
+#else
+  auto* discarding_helper = policies::PageDiscardingHelper::GetFromGraph(
+      PerformanceManager::GetGraph());
+  CHECK(discarding_helper);
+  discarding_helper->DiscardAPage(
+      base::IgnoreArgs<std::optional<base::TimeTicks>>(std::move(done_closure)),
+      reason);
+#endif
+}
+
 }  //  namespace performance_manager::user_tuning

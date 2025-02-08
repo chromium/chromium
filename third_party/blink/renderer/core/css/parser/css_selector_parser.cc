@@ -1206,6 +1206,8 @@ bool IsPseudoClassValidAfterPseudoElement(
       return pseudo_class == CSSSelector::kPseudoOnlyChild;
     case CSSSelector::kPseudoSearchText:
       return pseudo_class == CSSSelector::kPseudoCurrent;
+    case CSSSelector::kPseudoScrollMarkerGroup:
+      return pseudo_class == CSSSelector::kPseudoFocusWithin;
     case CSSSelector::kPseudoScrollMarker:
       return pseudo_class == CSSSelector::kPseudoTargetCurrent;
     case CSSSelector::kPseudoScrollButton:

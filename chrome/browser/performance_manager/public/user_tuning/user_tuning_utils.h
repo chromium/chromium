@@ -5,7 +5,17 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_USER_TUNING_UTILS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_USER_TUNING_UTILS_H_
 
-#include "components/performance_manager/public/graph/page_node.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace performance_manager {
+class PageNode;
+}
 
 namespace performance_manager::user_tuning {
 
@@ -32,6 +42,20 @@ void GetDiscardedMemoryEstimateForWebContents(
 // empty list if it can be discarded. This must be invoked on the PM sequence.
 std::vector<std::string> GetCannotDiscardReasonsForPageNode(
     const PageNode* page_node);
+
+// Discards `page_node`, if possible, and invokes `done_closure`. This is a
+// shortcut for the chrome://discards UI - most discards should use the more
+// detailed methods in PageDiscardingHelper.
+void DiscardPage(const performance_manager::PageNode* page_node,
+                 ::mojom::LifecycleUnitDiscardReason reason,
+                 base::OnceClosure done_closure = base::DoNothing());
+
+// Chooses and discards a PageNode, if possible, and invokes `done_closure`.
+// This is a shortcut for the chrome://discards UI - most discards should use
+// the more detailed methods in PageDiscardingHelper.
+void DiscardAnyPage(::mojom::LifecycleUnitDiscardReason reason,
+                    base::OnceClosure done_closure = base::DoNothing());
+
 }  // namespace performance_manager::user_tuning
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_USER_TUNING_UTILS_H_

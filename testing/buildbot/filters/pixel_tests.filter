@@ -74,6 +74,10 @@ BookmarkAccountStorageMoveDialogPixelTest*
 NewTabPageTest.*
 OfferNotificationBubbleViewPixelBrowserTest.*
 OutdatedUpgradeBubbleTest.*
+PageActionPixelIconsHiddenTest.*
+PageActionPixelShowIconTest.*
+PageActionPixelShowChipTest.*
+PageActionPixelTestShowChipReduced.*
 PageInfoBubbleViewAboutThisSiteDialogBrowserTest.*
 PageInfoBubbleViewDialogBrowserTest.*
 PageInfoBubbleViewPrivacySandboxDialogBrowserTest.*

@@ -481,11 +481,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"tabOrganizationSettingConsiderData",
        IDS_SETTINGS_TAB_ORGANIZER_CONSIDER_DATA},
 
-      // Themes strings.
-      {"wallpaperSearchSettingLabel",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL},
-      {"wallpaperSearchSettingSublabelV2", IDS_SETTINGS_AI_THEMES_SUB_LABEL},
-
       // Password Change strings.
       {"passwordChangeSettingLabel", IDS_SETTINGS_PASSWORD_CHANGE_LABEL},
       {"passwordChangeSettingSubLabel", IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL},
@@ -525,10 +520,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
                          chrome::kTabOrganizationLearnMorePageURL);
   html_source->AddString("tabOrganizationLearnMoreManagedUrl",
                          chrome::kTabOrganizationLearnMorePageManagedURL);
-  html_source->AddString("wallpaperSearchLearnMoreUrl",
-                         chrome::kWallpaperSearchLearnMorePageURL);
-  html_source->AddString("wallpaperSearchLearnMoreManagedUrl",
-                         chrome::kWallpaperSearchLearnMorePageManagedURL);
   html_source->AddString("passwordChangeSettingsUrl",
                          chrome::kChromeUiPasswordChangeUrl);
 }
@@ -686,10 +677,6 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE,
           l10n_util::GetStringUTF16(IDS_PASSWORDS_WEB_LINK)));
-
-  html_source->AddBoolean(
-      "unoDesktopEnabled",
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
   html_source->AddBoolean("isImprovedSettingsUIOnDesktopEnabled",
                           switches::IsImprovedSettingsUIOnDesktopEnabled());
@@ -3542,9 +3529,7 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString(
       "siteDataPageClearOnExitRadioSubLabel",
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-          ? IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_WITH_EXCEPTION_RADIO_SUBLABEL
-          : IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_SUBLABEL);
+      IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_WITH_EXCEPTION_RADIO_SUBLABEL);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

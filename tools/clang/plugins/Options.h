@@ -15,13 +15,10 @@ struct Options {
   bool check_blink_data_member_type = false;
   bool check_ipc = false;
   bool check_layout_object_methods = false;
-  bool raw_ref_template_as_trivial_member = false;
-  bool raw_span_template_as_trivial_member = false;
   bool check_stack_allocated = false;
   bool check_ptrs_to_non_string_literals = false;
   bool check_span_fields = false;
   bool enable_match_profiling = false;
-  bool span_ctor_from_string_literal = false;
   std::string exclude_fields_file;
 };
 

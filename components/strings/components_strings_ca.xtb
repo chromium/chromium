@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">Ara no</translation>
 <translation id="100957008357583611">Vols utilitzar la teva ubicació?</translation>
 <translation id="1010200102790553230">Carrega la pàgina més tard</translation>
+<translation id="1010225406377140704">Contacta amb el remitent per demanar-li un enllaç nou</translation>
 <translation id="1011206368273183593">S'estan preparant els fitxers</translation>
 <translation id="1014509239502131234">S'està desfent el resultat</translation>
 <translation id="1015730422737071372">Proporcioneu més informació</translation>
@@ -3108,6 +3109,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6465306955648956876">Gestiona les contrasenyes...</translation>
 <translation id="646789491285795429">Ja estàs fent el seguiment d'aquest producte</translation>
 <translation id="6468485451923838994">Fonts</translation>
+<translation id="6469702164109431067">Contrasenyes i claus d'accés</translation>
 <translation id="647261751007945333">Polítiques de dispositius</translation>
 <translation id="6472874020827012601">Tela (mat)</translation>
 <translation id="647330291963761005">S'estan instal·lant les actualitzacions</translation>
@@ -4352,6 +4354,7 @@ Detalls addicionals:
 <translation id="8699041776323235191">Dispositiu d'interfície humana</translation>
 <translation id="8699985386408839112">Sobre Kaku 1</translation>
 <translation id="8702965365666568344">Cinta de muntatge</translation>
+<translation id="8703372953981978786">Aquest enllaç no funciona</translation>
 <translation id="8703575177326907206">La teva connexió a <ph name="DOMAIN" /> no està xifrada.</translation>
 <translation id="8705331520020532516">Número de sèrie</translation>
 <translation id="8706806585855470492">Podràs compartir grups de pestanyes, unir-t'hi i col·laborar-hi</translation>

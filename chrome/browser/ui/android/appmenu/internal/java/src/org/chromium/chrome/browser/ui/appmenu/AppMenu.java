@@ -9,6 +9,7 @@ import android.animation.AnimatorSet;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -35,6 +36,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
@@ -44,6 +46,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -244,6 +247,17 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
         ViewGroup contentView =
                 (ViewGroup) LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
+
+        if (SysUtils.isLowEndDevice()) {
+            var sharedDrawable = AppCompatResources.getDrawable(context, R.drawable.popup_bg_8dp);
+            if (sharedDrawable != null) {
+                var drawable = sharedDrawable.mutate();
+                drawable.setTint(SemanticColorUtils.getMenuBgColor(context));
+                drawable.setTintMode(PorterDuff.Mode.MULTIPLY);
+                contentView.setBackground(drawable);
+            }
+        }
+
         // Setting android:clipToOutline in xml causes an "attribute not found" error.
         contentView.setClipToOutline(true);
 

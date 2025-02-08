@@ -1,17 +1,7 @@
 This is a wdspec test.
-[FAIL] test_top_context
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_iframe[same_origin]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_iframe[cross_origin]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_fetch[same_origin]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_fetch[cross_origin]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+  AssertionError
 [FAIL] test_image[same_origin]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_image[cross_origin]
-  TypeError: subscribe() got an unexpected keyword argument 'user_contexts'
+  AssertionError
 Harness: the test ran to completion.
 

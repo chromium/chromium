@@ -25,7 +25,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -45,9 +44,6 @@ import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.PersistentNotificationType;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupData;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -76,7 +72,6 @@ public class TabGroupListMediator {
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final @NonNull DataSharingService mDataSharingService;
     private final @NonNull CollaborationService mCollaborationService;
-    private final IdentityManager mIdentityManager;
     private final PaneManager mPaneManager;
     private final TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final ActionConfirmationManager mActionConfirmationManager;
@@ -197,7 +192,6 @@ public class TabGroupListMediator {
      * @param dataSharingService Used to fetch shared group data.
      * @param collaborationService Used to fetch collaboration group data.
      * @param messagingBackendService Used to fetch tab group related messages.
-     * @param identityManager Used to fetch current account information.
      * @param paneManager Used switch panes to show details of a group.
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
      * @param actionConfirmationManager Used to show confirmation dialogs.
@@ -214,7 +208,6 @@ public class TabGroupListMediator {
             @NonNull DataSharingService dataSharingService,
             @NonNull CollaborationService collaborationService,
             @NonNull MessagingBackendService messagingBackendService,
-            IdentityManager identityManager,
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
             ActionConfirmationManager actionConfirmationManager,
@@ -229,7 +222,6 @@ public class TabGroupListMediator {
         mDataSharingService = dataSharingService;
         mCollaborationService = collaborationService;
         mMessagingBackendService = messagingBackendService;
-        mIdentityManager = identityManager;
         mPaneManager = paneManager;
         mTabGroupUiActionHandler = tabGroupUiActionHandler;
         mActionConfirmationManager = actionConfirmationManager;
@@ -303,7 +295,7 @@ public class TabGroupListMediator {
     private List<PropertyModel> getTabGroupRemovedMessageModelList() {
         List<PersistentMessage> messages =
                 mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.DIRTY_TAB_GROUP_REMOVED));
+                        Optional.of(PersistentNotificationType.TOMBSTONED));
 
         List<PropertyModel> tabGroupRemovedMessages = new ArrayList<>();
         for (PersistentMessage message : messages) {
@@ -345,8 +337,6 @@ public class TabGroupListMediator {
 
     private void repopulateModelList() {
         destroyAndClearAllRows();
-        LazyOneshotSupplier<CoreAccountInfo> accountInfoSupplier =
-                LazyOneshotSupplier.fromSupplier(this::getAccountInfo);
 
         for (PropertyModel propertyModel : getTabGroupRemovedMessageModelList()) {
             mModelList.add(new ListItem(RowType.TAB_GROUP_REMOVED_CARD, propertyModel));
@@ -366,7 +356,6 @@ public class TabGroupListMediator {
                             mModalDialogManager,
                             mActionConfirmationManager,
                             mFaviconResolver,
-                            accountInfoSupplier,
                             () -> getState(savedTabGroup));
             ListItem listItem = new ListItem(RowType.TAB_GROUP, rowMediator.getModel());
             mModelList.add(listItem);
@@ -399,7 +388,7 @@ public class TabGroupListMediator {
     private void dismissActionProvider(String messageId) {
         removeMessageCardItemFromModelList(messageId);
         mMessagingBackendService.clearPersistentMessage(
-                messageId, Optional.of(PersistentNotificationType.DIRTY_TAB_GROUP_REMOVED));
+                messageId, Optional.of(PersistentNotificationType.TOMBSTONED));
     }
 
     // TODO(crbug.com/394312504): Make the method general and move to ModelList Util.
@@ -426,9 +415,5 @@ public class TabGroupListMediator {
             }
         }
         mModelList.clear();
-    }
-
-    private CoreAccountInfo getAccountInfo() {
-        return mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
     }
 }

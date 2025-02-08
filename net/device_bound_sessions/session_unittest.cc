@@ -4,6 +4,8 @@
 
 #include "net/device_bound_sessions/session.h"
 
+#include <string_view>
+
 #include "base/test/bind.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
@@ -307,7 +309,7 @@ class InsecureDelegate : public CookieAccessDelegate {
   }
 
   CookieScopeSemantics GetScopeSemantics(
-      const CanonicalCookie& cookie) const override {
+      const std::string_view domain) const override {
     return CookieScopeSemantics::UNKNOWN;
   }
   // Returns whether a cookie should be attached regardless of its SameSite

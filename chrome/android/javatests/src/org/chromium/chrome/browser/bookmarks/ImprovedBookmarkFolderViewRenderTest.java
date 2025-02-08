@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -79,8 +80,8 @@ public class ImprovedBookmarkFolderViewRenderTest {
                     .build();
 
     @Mock private CurrencyFormatter mFormatter;
-    @Mock private BookmarkModel mBookmarkModel;
 
+    private BookmarkModel mBookmarkModel;
     private ImprovedBookmarkFolderView mView;
     private PropertyModel mModel;
     private Bitmap mPrimaryBitmap;
@@ -98,6 +99,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
 
     @Before
     public void setUp() throws Exception {
+        mBookmarkModel = ThreadUtils.runOnUiThreadBlocking(() -> Mockito.mock(BookmarkModel.class));
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
 

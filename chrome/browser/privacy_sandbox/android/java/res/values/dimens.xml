@@ -16,6 +16,12 @@ found in the LICENSE file.
   <dimen name="privacy_sandbox_dialog_title_margin">20dp</dimen>
   <dimen name="privacy_sandbox_chrome_logo_width">40dp</dimen>
   <dimen name="privacy_sandbox_chrome_logo_height">40dp</dimen>
+  <dimen name="privacy_sandbox_card_logo_width">24dp</dimen>
+  <dimen name="privacy_sandbox_card_logo_height">24dp</dimen>
+  <dimen name="privacy_sandbox_notice_dropdown_button_height_v3">20dp</dimen>
+  <dimen name="privacy_sandbox_margin_between_cards">8dp</dimen>
+  <dimen name="privacy_sandbox_card_padding">16dp</dimen>
+  <dimen name="privacy_sandbox_card_text_start_margin">8dp</dimen>
   <dimen name="privacy_sandbox_spinner_dimension">20dp</dimen>
   <dimen name="custom_preference_category_paddingVertical">16dp</dimen>
   <dimen name="custom_preference_category_title_marginBottom">8dp</dimen>

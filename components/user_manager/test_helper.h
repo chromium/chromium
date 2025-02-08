@@ -30,6 +30,10 @@ class TestHelper {
   static void RegisterPersistedUser(PrefService& local_state,
                                     const AccountId& account_id);
 
+  // Returns the fake username hash for testing.
+  // Valid AccountId must be used, otherwise CHECKed.
+  static std::string GetFakeUsernameHash(const AccountId& account_id);
+
   explicit TestHelper(UserManager& user_manager);
   ~TestHelper();
 

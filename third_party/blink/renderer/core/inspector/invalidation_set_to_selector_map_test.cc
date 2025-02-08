@@ -693,4 +693,132 @@ TEST_F(InvalidationSetToSelectorMapTest,
   EXPECT_EQ(found_event_count, 1u);
 }
 
+namespace {
+int CheckResolveStyleEvent(const trace_analyzer::TraceEvent* event,
+                           std::optional<int> expected_node_id,
+                           std::optional<int> expected_parent_id,
+                           PseudoId expected_pseudo_id) {
+  EXPECT_TRUE(event->HasDictArg("data"));
+  base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+  std::optional<int> node_id = data_dict.FindInt("nodeId");
+  EXPECT_TRUE(node_id.has_value());
+  if (expected_node_id.has_value()) {
+    EXPECT_EQ(node_id.value(), expected_node_id.value());
+  }
+  std::optional<int> parent_id = data_dict.FindInt("parentNodeId");
+  EXPECT_TRUE(parent_id.has_value());
+  if (expected_parent_id.has_value()) {
+    EXPECT_EQ(parent_id.value(), expected_parent_id.value());
+  }
+  std::optional<int> pseudo_id = data_dict.FindInt("pseudoId");
+  EXPECT_TRUE(pseudo_id.has_value());
+  EXPECT_EQ(pseudo_id.value(), static_cast<int>(expected_pseudo_id));
+
+  return node_id.value();
+}
+
+}  // anonymous namespace
+
+TEST_F(InvalidationSetToSelectorMapTest,
+       AttributeDescendantsOnSubtreeInvalidation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    .b * {
+      color: blue;
+    }
+    </style>
+    <div id=parent>
+      <span>Here
+        <b>Is</b>
+        <i>Some</i>
+        Content</span>
+    </div>
+  )HTML");
+
+  StartTracing();
+
+  GetElementById("parent")->setAttribute(html_names::kClassAttr,
+                                         AtomicString("b"));
+  UpdateAllLifecyclePhasesForTest();
+  auto analyzer = StopTracing();
+
+  // Validate that we can follow ResolveStyle events to the invalidation root.
+  trace_analyzer::TraceEventVector resolve_events;
+  analyzer->FindEvents(
+      trace_analyzer::Query::EventNameIs("StyleResolver::ResolveStyle"),
+      &resolve_events);
+  ASSERT_EQ(resolve_events.size(), 4u);
+  int root_id = CheckResolveStyleEvent(resolve_events[0], std::nullopt,
+                                       std::nullopt, kPseudoIdNone);
+  int middle_id = CheckResolveStyleEvent(resolve_events[1], std::nullopt,
+                                         root_id, kPseudoIdNone);
+  CheckResolveStyleEvent(resolve_events[2], std::nullopt, middle_id,
+                         kPseudoIdNone);
+  CheckResolveStyleEvent(resolve_events[3], std::nullopt, middle_id,
+                         kPseudoIdNone);
+
+  // Validate we can follow the invalidation root to an invalidation event.
+  trace_analyzer::TraceEventVector invalidation_events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &invalidation_events);
+  ASSERT_EQ(invalidation_events.size(), 1u);
+  base::Value::Dict data_dict =
+      invalidation_events[0]->GetKnownArgAsDict("data");
+  std::optional<int> node_id = data_dict.FindInt("nodeId");
+  EXPECT_EQ(node_id.value_or(-1), root_id);
+  base::Value::List* selector_list = data_dict.FindList("selectors");
+  ASSERT_NE(selector_list, nullptr);
+  EXPECT_EQ(selector_list->size(), 1u);
+  EXPECT_EQ((*selector_list)[0], ".b *");
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, AttributePseudos) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .b p::first-letter {
+        font-size: large;
+      }
+    </style>
+    <div id=target>
+      <p>Here Is Some Content</p>
+    </div>
+  )HTML");
+
+  StartTracing();
+
+  GetElementById("target")->setAttribute(html_names::kClassAttr,
+                                         AtomicString("b"));
+  UpdateAllLifecyclePhasesForTest();
+  auto analyzer = StopTracing();
+
+  // Validate that we can follow ResolveStyle events to the invalidation root.
+  trace_analyzer::TraceEventVector resolve_events;
+  analyzer->FindEvents(
+      trace_analyzer::Query::EventNameIs("StyleResolver::ResolveStyle"),
+      &resolve_events);
+  ASSERT_EQ(resolve_events.size(), 3u);
+  int parent_node_id = CheckResolveStyleEvent(resolve_events[0], std::nullopt,
+                                              std::nullopt, kPseudoIdNone);
+  int base_node_id = CheckResolveStyleEvent(resolve_events[1], std::nullopt,
+                                            parent_node_id, kPseudoIdNone);
+  CheckResolveStyleEvent(resolve_events[2], base_node_id, parent_node_id,
+                         kPseudoIdFirstLetter);
+
+  // Validate we can follow the invalidation root to an invalidation event.
+  trace_analyzer::TraceEventVector invalidation_events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &invalidation_events);
+  ASSERT_EQ(invalidation_events.size(), 1u);
+  base::Value::Dict data_dict =
+      invalidation_events[0]->GetKnownArgAsDict("data");
+  std::optional<int> node_id = data_dict.FindInt("nodeId");
+  EXPECT_EQ(node_id.value_or(-1), parent_node_id);
+  base::Value::List* selector_list = data_dict.FindList("selectors");
+  ASSERT_NE(selector_list, nullptr);
+  EXPECT_EQ(selector_list->size(), 1u);
+  EXPECT_EQ((*selector_list)[0], ".b p::first-letter");
+}
+
 }  // namespace blink

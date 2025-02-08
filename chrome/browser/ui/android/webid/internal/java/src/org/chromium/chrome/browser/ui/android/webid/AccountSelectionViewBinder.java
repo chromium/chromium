@@ -306,6 +306,15 @@ class AccountSelectionViewBinder {
                         fieldStrings.add(
                                 context.getString(R.string.account_selection_data_sharing_picture));
                         break;
+                    case IdentityRequestDialogDisclosureField.PHONE_NUMBER:
+                        fieldStrings.add(
+                                context.getString(R.string.account_selection_data_sharing_phone));
+                        break;
+                    case IdentityRequestDialogDisclosureField.USERNAME:
+                        fieldStrings.add(
+                                context.getString(
+                                        R.string.account_selection_data_sharing_username));
+                        break;
                 }
             }
             ListFormatter formatter = ListFormatter.getInstance(Locale.getDefault());

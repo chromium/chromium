@@ -127,6 +127,7 @@ static_library("content") {
       "secure_payment_confirmation_controller.cc",
       "secure_payment_confirmation_controller.h",
     ]
+    deps += [ "//components/webauthn/content/browser" ]
   }
 }
 

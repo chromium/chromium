@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1009406586654360474">Apri Gestore delle password di Google e vai alle impostazioni. Seleziona "Importa" e aggiungi il file CSV che contiene le password esportate.</translation>
-<translation id="1010225406377140704">Contatta l'utente che ha inviato l'invito per chiedergli di inviarti un nuovo link</translation>
 <translation id="1011749477052068769">Sposta qui</translation>
 <translation id="1014147525163127655">Non sono presenti passkey per <ph name="ORIGIN" /> su questo dispositivo</translation>
 <translation id="1016498331642356377">Cerca rapidamente con la tua voce. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
@@ -1723,7 +1722,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8683039184091909753">immagine</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
-<translation id="8703372953981978786">Questo link non funziona</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8723453889042591629">Traduci rapidamente questa pagina. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="8725066075913043281">Riprova</translation>

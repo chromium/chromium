@@ -8,11 +8,23 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 
+// Feature flag to control whether the Add Address Manually bottom sheet is
+// enabled.
+BASE_DECLARE_FEATURE(kAddAddressManually);
+
+// Returns true if the AddAddressManually feature is enabled
+bool IsAddAddressManuallyEnabled();
+
 BASE_DECLARE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput);
+
 BASE_DECLARE_FEATURE(kAutofillFixPaymentSheetSpam);
+
 BASE_DECLARE_FEATURE(kAutofillIsolatedWorldForJavascriptIos);
+
 BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV2Ios);
+
 BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV3Ios);
+
 BASE_DECLARE_FEATURE(kAutofillStickyInfobarIos);
 
 BASE_DECLARE_FEATURE(kAutofillThrottleDocumentFormScanIos);

@@ -42,7 +42,9 @@ blink::mojom::InnerTextParamsPtr MakeInnerTextParams() {
 }
 
 void OnGotEmbeddings(base::ElapsedTimer embeddings_computation_timer,
-                     std::vector<mojom::PassageEmbeddingsResultPtr> results,
+                     std::vector<std::string> passages,
+                     std::vector<Embedding> embeddings,
+                     Embedder::TaskId task_id,
                      ComputeEmbeddingsStatus status) {
   if (status != ComputeEmbeddingsStatus::kSuccess) {
     return;
@@ -54,7 +56,9 @@ void OnGotEmbeddings(base::ElapsedTimer embeddings_computation_timer,
 }  // namespace
 
 EmbedderTabObserver::EmbedderTabObserver(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      embedder_(
+          ChromePassageEmbeddingsServiceController::Get()->MakeEmbedder()) {}
 
 EmbedderTabObserver::~EmbedderTabObserver() = default;
 
@@ -150,8 +154,8 @@ void EmbedderTabObserver::OnGotPassages(
           << total_text_size;
 
   base::ElapsedTimer embeddings_computation_timer;
-  ChromePassageEmbeddingsServiceController::Get()->GetEmbeddings(
-      std::move(passages), PassagePriority::kPassive,
+  embedder_->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, std::move(passages),
       base::BindOnce(&OnGotEmbeddings,
                      std::move(embeddings_computation_timer)));
 }

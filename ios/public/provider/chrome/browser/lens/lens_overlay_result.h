@@ -23,6 +23,9 @@ class GURL;
 // Whether the result represents a text selection.
 @property(nonatomic, readonly) BOOL isTextSelection;
 
+// Whether the result was generated in the translate filter in Lens.
+@property(nonatomic, readonly) BOOL isGeneratedInTranslate;
+
 // The text selection of the result or `nil` if the result is not a text
 // selection.
 @property(nonatomic, readonly, copy) NSString* queryText;

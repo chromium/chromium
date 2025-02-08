@@ -33,6 +33,8 @@ export const enum LearnMoreUrlType {
   DESCRIPTION_INVITE = 2,
   DESCRIPTION_JOIN = 3,
   BLOCK = 4,
+  SAVE_CHANGES_DIALOG = 5,
+  GLOBAL_ACCESS = 6,
 }
 export const enum ShareAction {
   COPY_LINK,
@@ -225,8 +227,16 @@ export const enum LoggingIntent {
   ACCEPT_JOIN_AND_OPEN = 13,
   ABANDON_JOIN = 14,
 }
+export const enum Progress {
+  UNKNOWN = 0,
+  STARTED = 1,
+  FAILED = 2,
+  SUCCEEDED = 3,
+}
 export declare interface LoggingEvent {
   intentType: LoggingIntent;
+
+  progress: Progress;
 }
 export declare interface Logger {
   onEvent(event: LoggingEvent): void;

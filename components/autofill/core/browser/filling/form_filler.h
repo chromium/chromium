@@ -135,7 +135,6 @@ class FormFiller {
       const FillingPayload& filling_payload,
       FormStructure& form_structure,
       AutofillField& autofill_field,
-      DenseSet<FieldFillingSkipReason> ignorable_skip_reasons,
       AutofillTriggerSource trigger_source,
       bool is_refill = false);
 

@@ -1441,7 +1441,7 @@ views::Widget* BrowserView::GetWidgetForAnchoring() {
   return GetWidget();
 }
 
-const tabs::TabInterface* BrowserView::GetInactiveSplitTab() {
+int BrowserView::GetInactiveSplitTabIndex() {
   // TODO(crbug.com/392951786): Use the Collections API for accessing the tabs
   // in a split view, rather than searching by index.
   int active_index = browser_->tab_strip_model()->active_index();
@@ -1451,21 +1451,22 @@ const tabs::TabInterface* BrowserView::GetInactiveSplitTab() {
     if (index < 0 || index >= browser_->tab_strip_model()->GetTabCount()) {
       continue;
     }
-    const tabs::TabInterface* potential_split_tab =
-        browser_->tab_strip_model()->GetTabAtIndex(index);
-    if (potential_split_tab->IsSplit()) {
-      return potential_split_tab;
+    if (browser_->tab_strip_model()->GetTabAtIndex(index)->IsSplit()) {
+      return index;
     }
   }
-  return nullptr;
+  return -1;
 }
 
 void BrowserView::ShowSplitView() {
   CHECK(multi_contents_view_);
-  const tabs::TabInterface* inactive_split_tab = GetInactiveSplitTab();
-  CHECK(inactive_split_tab != nullptr);
-  multi_contents_view_->SetWebContents(inactive_split_tab->GetContents(),
-                                       false);
+  const int inactive_index = GetInactiveSplitTabIndex();
+  CHECK(inactive_index > -1);
+  int active_index = browser_->tab_strip_model()->active_index();
+  const int active_position = active_index < inactive_index ? 0 : 1;
+  multi_contents_view_->SetActivePosition(active_position);
+  multi_contents_view_->SetWebContents(
+      browser_->tab_strip_model()->GetWebContentsAt(inactive_index), false);
 }
 
 void BrowserView::HideSplitView() {

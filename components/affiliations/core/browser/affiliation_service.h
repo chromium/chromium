@@ -42,8 +42,8 @@ class AffiliationService : public KeyedService {
 
   // Prefetches change password URLs for sites requested. Receives a callback to
   // run when the prefetch finishes.
-  virtual void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
-                                          base::OnceClosure callback) = 0;
+  virtual void PrefetchChangePasswordURL(const GURL& urls,
+                                         base::OnceClosure callback) = 0;
 
   // Returns a URL with change password form for a site requested.
   virtual GURL GetChangePasswordURL(const GURL& url) const = 0;

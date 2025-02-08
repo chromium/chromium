@@ -92,6 +92,7 @@ class Font;
 class FontSelector;
 class HTMLBodyElement;
 class MediaQueryEvaluator;
+class MediaQuerySet;
 class Node;
 class ReferenceFilterOperation;
 class RuleFeatureSet;
@@ -319,6 +320,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Note that this can return nullptr when the associated media query
   // does not match.
   RuleSet* CreateUnconnectedRuleSet(CSSStyleSheet&);
+
+  // A functional @media query is evaluated as a part of some function
+  // during value resolution. This is different from regular media queries,
+  // which are evaluated when building the RuleSet.
+  bool EvaluateFunctionalMediaQuery(const MediaQuerySet&);
   void MediaQueryAffectingValueChanged(MediaValueChange change);
   void UpdateActiveStyle();
 
@@ -416,12 +422,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   }
   // Push all pending invalidations on the document.
   void InvalidateStyle();
-  bool HasViewportDependentMediaQueries() {
-    DCHECK(global_rule_set_);
-    UpdateActiveStyle();
-    return global_rule_set_->GetRuleFeatureSet()
-        .HasViewportDependentMediaQueries();
-  }
+  bool HasViewportDependentMediaQueries();
   bool HasViewportDependentPropertyRegistrations();
 
   class InApplyAnimationUpdateScope {
@@ -967,6 +968,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Initialization value for SkipStyleRecalcScope.
   bool AllowSkipStyleRecalcForScope() const;
 
+  // See EvaluateFunctionalMediaQuery
+  void InvalidateFunctionalMediaDependentStylesIfNeeded();
+
   Member<Document> document_;
 
   // Tree of style containment scopes. Is in charge of the document's quotes.
@@ -1056,6 +1060,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   // True if some data backing env() has changed.
   bool is_env_dirty_{false};
+
+  // Flags collected from all calls to EvaluateFunctionalMediaQuery.
+  MediaQueryResultFlags functional_media_query_result_flags_;
 
   // True if the document has elements referencing env(safe-area-inset-bottom)
   bool has_complex_safe_area_constraints_{false};
@@ -1209,6 +1216,17 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // successful option with position-try-fallbacks referring any of these names
   // will be invalidated.
   HashSet<AtomicString> dirty_position_try_names_;
+
+  // Maps a functional media query to its evaluated result. When media values
+  // change, this can be used to check if we need to invalidate any elements
+  // as a response to that.
+  //
+  // Note that MediaQuerySets are cached during parsing [1], so identical @media
+  // preludes are represented by the same pointer.
+  //
+  // [1] CSSParserImpl::ConsumeMediaRule
+  HeapHashMap<Member<const MediaQuerySet>, bool>
+      functional_media_query_results_;
 };
 
 void PossiblyScheduleNthPseudoInvalidations(Node& node);

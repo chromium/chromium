@@ -56,7 +56,7 @@ TestSearchAggregator kValidTestSearchAggregator = {
     .icon_url = "https://work.com/favicon.ico",
 };
 
-TestSearchAggregator kValidTestSearchAggregatorWithRequireShortcut = {
+TestSearchAggregator kValidTestSearchAggregatorWithRequireShortcutTrue = {
     .name = "work name",
     .shortcut = "work",
     .search_url = "https://work.com/{searchTerms}",
@@ -217,6 +217,8 @@ base::Value::Dict GeneratePolicyEntry(TestSearchAggregator test_case) {
                      test_case.shortcut, &entry);
   SetFieldIfNotEmpty(SearchAggregatorPolicyHandler::kSuggestUrl,
                      test_case.suggest_url, &entry);
+  entry.Set(SearchAggregatorPolicyHandler::kRequireShortcut,
+            test_case.require_shortcut);
   return entry;
 }
 
@@ -352,9 +354,17 @@ TEST(SearchAggregatorPolicyHandlerTest, Valid) {
       ElementsAre(
           IsNonFeaturedSearchAggregatorEntry(kValidTestSearchAggregator),
           IsFeaturedSearchAggregatorEntry(kValidTestSearchAggregator)));
+
+  // Expect the `require_shortcut` pref to be false by default.
+  bool requireShortcut;
+  ASSERT_TRUE(prefs.GetBoolean(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      &requireShortcut));
+  EXPECT_EQ(requireShortcut, false);
 }
 
-TEST(SearchAggregatorPolicyHandlerTest, ValidWithRequireShortcut) {
+TEST(SearchAggregatorPolicyHandlerTest, ValidWithRequireShortcutTrue) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       omnibox::kEnableSearchAggregatorPolicy);
@@ -364,14 +374,12 @@ TEST(SearchAggregatorPolicyHandlerTest, ValidWithRequireShortcut) {
 
   policy::PolicyMap policies;
   base::Value::Dict entry =
-      GeneratePolicyEntry(kValidTestSearchAggregatorWithRequireShortcut);
+      GeneratePolicyEntry(kValidTestSearchAggregatorWithRequireShortcutTrue);
   policies.Set(key::kEnterpriseSearchAggregatorSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD, base::Value(std::move(entry)),
                nullptr);
 
-  // Currently, 'require_shortcut' has no effect on the policy behavior.
-  // As a result, the applied policy should be the same as the valid version.
   PolicyErrorMap errors;
   ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_TRUE(errors.empty());
@@ -386,9 +394,17 @@ TEST(SearchAggregatorPolicyHandlerTest, ValidWithRequireShortcut) {
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(
       providers->GetList(),
-      ElementsAre(
-          IsNonFeaturedSearchAggregatorEntry(kValidTestSearchAggregator),
-          IsFeaturedSearchAggregatorEntry(kValidTestSearchAggregator)));
+      ElementsAre(IsNonFeaturedSearchAggregatorEntry(
+                      kValidTestSearchAggregatorWithRequireShortcutTrue),
+                  IsFeaturedSearchAggregatorEntry(
+                      kValidTestSearchAggregatorWithRequireShortcutTrue)));
+
+  bool requireShortcut;
+  ASSERT_TRUE(prefs.GetBoolean(
+      EnterpriseSearchManager::
+          kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName,
+      &requireShortcut));
+  EXPECT_EQ(requireShortcut, true);
 }
 
 TEST(SearchAggregatorPolicyHandlerTest, Valid_NoIcon) {

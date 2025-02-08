@@ -206,7 +206,6 @@ if (is_android) {
     resources_package = "org.chromium.chrome.browser.data_sharing"
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingImplFactory.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/MemberPickerListenerImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/NoOpDataSharingSDKDelegateImpl.java",
     ]
 

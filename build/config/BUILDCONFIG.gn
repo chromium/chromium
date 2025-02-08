@@ -554,7 +554,8 @@ foreach(_target_type,
         deps = []
       }
 
-      if (!defined(invoker.no_default_deps) || !invoker.no_default_deps) {
+      if (is_clang &&
+          (!defined(invoker.no_default_deps) || !invoker.no_default_deps)) {
         # This is necessary for Clang modules builds.
         deps += [ "//buildtools/third_party/libc++:std" ]
       }
@@ -635,15 +636,17 @@ foreach(_target_type,
         # //build/config:shared_library_deps
         # (This explicit list is so that grepping for these configs finds where
         # they are used.)
-        deps += [
-          "//build/config:${_target_type}_deps",
+        deps += [ "//build/config:${_target_type}_deps" ]
 
+        if (is_clang) {
           # These are necessary for Clang modules builds.
-          "//buildtools/third_party/libc++:_Builtin_limits",
-          "//buildtools/third_party/libc++:_Builtin_stdarg",
-          "//buildtools/third_party/libc++:_Builtin_stddef",
-          "//buildtools/third_party/libc++:std",
-        ]
+          deps += [
+            "//buildtools/third_party/libc++:_Builtin_limits",
+            "//buildtools/third_party/libc++:_Builtin_stdarg",
+            "//buildtools/third_party/libc++:_Builtin_stddef",
+            "//buildtools/third_party/libc++:std",
+          ]
+        }
       }
 
       # On Android, write shared library output file to metadata. We will use

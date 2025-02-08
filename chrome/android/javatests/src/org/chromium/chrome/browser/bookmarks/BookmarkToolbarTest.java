@@ -101,11 +101,10 @@ public class BookmarkToolbarTest {
     @Mock BookmarkDelegate mBookmarkDelegate;
     @Mock SelectionDelegate<BookmarkId> mSelectionDelegate;
     @Mock SearchDelegate mSearchDelegate;
-    @Mock BookmarkModel mBookmarkModel;
-    @Mock BookmarkOpener mBookmarkOpener;
     @Mock Runnable mNavigateBackRunnable;
     @Mock Profile mProfile;
 
+    private BookmarkModel mBookmarkModel;
     private WindowAndroid mWindowAndroid;
     private ViewGroup mContentView;
     private BookmarkToolbar mBookmarkToolbar;
@@ -120,6 +119,7 @@ public class BookmarkToolbarTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        mBookmarkModel = ThreadUtils.runOnUiThreadBlocking(() -> Mockito.mock(BookmarkModel.class));
         when(mBookmarkDelegate.getModel()).thenReturn(mBookmarkModel);
         when(mBookmarkDelegate.getSelectionDelegate()).thenReturn(mSelectionDelegate);
 

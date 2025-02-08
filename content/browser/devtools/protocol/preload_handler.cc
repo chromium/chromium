@@ -189,8 +189,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::SlowNetwork;
     case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
       return Preload::PrerenderFinalStatusEnum::OtherPrerenderedPageActivated;
-    case PrerenderFinalStatus::kV8OptimizerDisabled:
-      return Preload::PrerenderFinalStatusEnum::V8OptimizerDisabled;
     case PrerenderFinalStatus::kPrerenderFailedDuringPrefetch:
       return Preload::PrerenderFinalStatusEnum::PrerenderFailedDuringPrefetch;
   }

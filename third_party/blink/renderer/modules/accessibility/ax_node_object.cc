@@ -4424,7 +4424,8 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     // customizable select, then use the text inside that button:
     // https://github.com/openui/open-ui/issues/1117
     if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
-        select_element->IsAppearanceBaseButton()) {
+        select_element->IsAppearanceBaseButton(
+            HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle)) {
       if (auto* button = select_element->SlottedButton()) {
         if (AXObject* button_object = AXObjectCache().Get(button)) {
           return button_object->TextFromDescendants(visited, nullptr, false);
@@ -5885,6 +5886,34 @@ void AXNodeObject::AddNodeChildren() {
   }
 }
 
+void AXNodeObject::AddMenuListChildren() {
+  // When CustomizableSelect is enabled the <select> has two <slot> elements
+  // which options might be slotted into. In order to make these mappings
+  // consistent, only add the <button> if present and the popover instead of
+  // adding all children.
+  auto* select = DynamicTo<HTMLSelectElement>(GetNode());
+  CHECK(select);
+  if (auto* button = select->SlottedButton()) {
+    if (select->IsAppearanceBaseButton(
+            HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle)) {
+      AddNodeChild(button);
+    }
+  }
+  AddNodeChild(select->PopoverForAppearanceBase());
+}
+
+void AXNodeObject::AddMenuListPopupChildren() {
+  // This mirrors the slotting behavior for the popover in
+  // MenuListSelectType::ManuallyAssignSlots
+  auto* parent_select = DynamicTo<HTMLSelectElement>(ParentObject()->GetNode());
+  CHECK(parent_select);
+  for (Node& child : NodeTraversal::ChildrenOf(*parent_select)) {
+    if (child != parent_select->SlottedButton()) {
+      AddNodeChild(&child);
+    }
+  }
+}
+
 void AXNodeObject::AddOwnedChildren() {
   AXObjectVector owned_children;
   AXObjectCache().ValidatedAriaOwnedChildren(this, owned_children);
@@ -5930,7 +5959,14 @@ void AXNodeObject::AddChildrenImpl() {
     AddValidationMessageChild();
   CHECK_ATTACHED();
 
-  if (HasValidHTMLTableStructureAndLayout()) {
+  auto* select = DynamicTo<HTMLSelectElement>(GetNode());
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && select &&
+      select->UsesMenuList() && !select->IsMultiple()) {
+    AddMenuListChildren();
+  } else if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+             RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
+    AddMenuListPopupChildren();
+  } else if (HasValidHTMLTableStructureAndLayout()) {
     AddTableChildren();
   } else if (GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement()) {
     AddScrollMarkerGroupChildren();

@@ -4569,14 +4569,6 @@
     When you use organize tabs, the titles and URLs of your open tabs are sent to Google to generate suggested tab groups
   </message>
 
-  <!-- Experimental settings - Wallpaper Search -->
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="The primary description for the create themes with AI feature.">
-    Create themes with AI
-  </message>
-  <message name="IDS_SETTINGS_AI_THEMES_SUB_LABEL" desc="This string is the subheading of a setting for ‘Create themes with AI’. This subheading summarizes the user benefit of the Create Themes feature. This is an AI (artificial intelligence) feature that helps users create their own custom Chrome themes/wallpapers by letting users select from a list of options. The tone should be motivating.">
-    Helps you design custom themes for Chrome
-  </message>
-
   <!-- Experimental settings - Compare -->
   <message name="IDS_SETTINGS_COMPARE_SETTING_SUBLABEL" desc="This string is the subheading of a setting for ‘Compare products’. This subheading summarizes the user benefit of the Compare Products feature. This is an AI (artificial intelligence) feature that helps users compare products in open tabs by generating an information table and summarizing key differences. The tone should be motivating.">
     Easily compare similar products

@@ -44,6 +44,16 @@ chromium-metrics-reviews@google.com.
       variants="ContextualCueingOptimizationType"/>
 </histogram>
 
+<histogram name="ContextualCueing.NudgeInteraction"
+    enum="ContextualCueingNudgeInteraction" expires_after="2025-08-30">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>rajendrant@google.com</owner>
+  <summary>
+    The user interaction for a Contextual Cueing Nudge. Recorded when a user is
+    shown or interacts with a contextual nudge.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

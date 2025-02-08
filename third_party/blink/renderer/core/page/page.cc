@@ -1073,12 +1073,9 @@ void Page::SettingsChanged(ChangeType change_type) {
       // We need to update even for remote main frames since this setting
       // could be changed via InternalSettings.
       TextAutosizer::UpdatePageInfoInAllFrames(MainFrame());
-      // The new text-size-adjust implementation requires the text autosizing
-      // setting but applies the adjustment in style rather than via the text
-      // autosizer, so we need to invalidate style.
-      if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
-        InitialStyleChanged();
-      }
+      // The text-size-adjust adjustment in style depends on the text autosizing
+      // setting, so we need to invalidate style.
+      InitialStyleChanged();
       break;
     case ChangeType::kFontFamily:
       for (Frame* frame = MainFrame(); frame;

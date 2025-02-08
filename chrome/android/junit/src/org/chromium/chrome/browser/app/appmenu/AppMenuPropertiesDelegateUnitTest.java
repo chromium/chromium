@@ -1172,6 +1172,21 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION})
+    public void testCustomizeNewTabPageOption() {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions());
+        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        MenuItem item = menu.findItem(R.id.ntp_customization_id);
+        assertTrue(item.isEnabled());
+    }
+
+    @Test
     public void testShouldShowNewMenu_alreadyMaxWindows_returnsFalse() {
         assertFalse(
                 doTestShouldShowNewMenu(

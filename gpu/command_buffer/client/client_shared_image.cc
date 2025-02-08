@@ -10,6 +10,8 @@
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -17,6 +19,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 
@@ -523,6 +526,9 @@ ClientSharedImage::HelperGpuMemoryBufferManager::HelperGpuMemoryBufferManager(
   CHECK(client_shared_image_);
 }
 
+ClientSharedImage::HelperGpuMemoryBufferManager::
+    ~HelperGpuMemoryBufferManager() = default;
+
 std::unique_ptr<gfx::GpuMemoryBuffer>
 ClientSharedImage::HelperGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
@@ -537,13 +543,34 @@ void ClientSharedImage::HelperGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,
     base::OnceCallback<void(bool)> callback) {
+  // Lazily create the |task_runner_|.
+  if (!task_runner_) {
+    task_runner_ =
+        base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
+    CHECK(*task_runner_);
+  }
+
+  if (!(*task_runner_)->BelongsToCurrentThread()) {
+    (*task_runner_)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&ClientSharedImage::HelperGpuMemoryBufferManager::
+                               CopyGpuMemoryBufferAsync,
+                           base::Unretained(this), std::move(buffer_handle),
+                           std::move(memory_region), std::move(callback)));
+    return;
+  }
+
   auto sii = GetSharedImageInterface();
   if (!sii) {
     DLOG(WARNING) << "No SharedImageInterface.";
+    std::move(callback).Run(false);
     return;
   }
   sii->CopyNativeGmbToSharedMemoryAsync(
-      std::move(buffer_handle), std::move(memory_region), std::move(callback));
+      std::move(buffer_handle), std::move(memory_region),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                  /*result=*/false));
 }
 
 bool ClientSharedImage::HelperGpuMemoryBufferManager::IsConnected() {

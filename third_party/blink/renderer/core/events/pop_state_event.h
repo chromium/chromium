@@ -35,6 +35,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class History;
 class SerializedScriptValue;
 

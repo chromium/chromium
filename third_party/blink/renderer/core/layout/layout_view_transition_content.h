@@ -35,7 +35,7 @@ class CORE_EXPORT LayoutViewTransitionContent : public LayoutReplaced {
 
  protected:
   PaintLayerType LayerTypeRequired() const override;
-  void IntrinsicSizeChanged() override { NOT_DESTROYED(); }
+  void NaturalSizeChanged() override { NOT_DESTROYED(); }
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
 

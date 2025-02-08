@@ -1260,15 +1260,9 @@ TEST_F(DiceResponseHandlerTest, SignoutSigninPrimaryAccount) {
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   // Receive signout response including primary and secondary account.
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    RunSignoutTest(dice_params, {secondary_not_signed_out.account_id},
-                   primary_account.account_id,
-                   /*invalid_primary_account=*/true);
-  } else {
-    RunSignoutTest(dice_params, {secondary_not_signed_out.account_id},
-                   /*primary_account=*/CoreAccountId(),
-                   /*invalid_primary_account=*/false);
-  }
+  RunSignoutTest(dice_params, {secondary_not_signed_out.account_id},
+                 primary_account.account_id,
+                 /*invalid_primary_account=*/true);
 }
 
 TEST_F(DiceResponseHandlerTest, SignoutSecondaryAccount) {
@@ -1428,46 +1422,7 @@ TEST_F(DiceResponseHandlerTest,
   EXPECT_EQ(0, reconcilor_unblocked_count_);
 }
 
-class ExplicitBrowserSigninDiceResponseHandlerSignoutTest
-    : public DiceResponseHandlerTest {
- public:
-  ExplicitBrowserSigninDiceResponseHandlerSignoutTest() {
-    feature_list_.InitAndEnableFeature(
-        switches::kExplicitBrowserSigninUIOnDesktop);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ExplicitBrowserSigninDiceResponseHandlerSignoutTest,
-       SignoutSigninPrimaryAccount) {
-  // Setup.
-  // Configure Dice params.
-  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNOUT);
-  const char kSecondarySignedOutEmail[] = "secondary_signed_out@gmail.com";
-  dice_params.signout_info->account_infos.push_back(
-      GetDiceResponseParamsAccountInfo(kSecondarySignedOutEmail));
-  const std::string dice_primary_account_email =
-      dice_params.signout_info->account_infos[0].email;
-  // Configure Chrome.
-  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
-      dice_primary_account_email, signin::ConsentLevel::kSignin);
-  identity_test_env_.MakeAccountAvailable(kSecondarySignedOutEmail);
-  AccountInfo secondary_not_signed_out =
-      identity_test_env_.MakeAccountAvailable("other@gmail.com");
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3U);
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  // Receive signout response including primary and secondary account.
-  RunSignoutTest(dice_params, {secondary_not_signed_out.account_id},
-                 primary_account.account_id,
-                 /*invalid_primary_account=*/true);
-}
-
-TEST_F(ExplicitBrowserSigninDiceResponseHandlerSignoutTest,
-       SignoutImplicitPrimaryAccountSignin) {
+TEST_F(DiceResponseHandlerTest, SignoutImplicitPrimaryAccountSignin) {
   // Setup.
   // Configure Dice params.
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNOUT);

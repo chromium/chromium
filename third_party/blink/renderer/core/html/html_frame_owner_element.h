@@ -116,7 +116,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) final;
   void DispatchLoad() final;
   const FramePolicy& GetFramePolicy() const final { return frame_policy_; }
-  void IntrinsicSizingInfoChanged() override {}
+  void NaturalSizingInfoChanged() override {}
   void SetNeedsOcclusionTracking(bool) override {}
   AtomicString BrowsingContextContainerName() const override {
     return FastGetAttribute(html_names::kNameAttr);

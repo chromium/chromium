@@ -41,5 +41,12 @@ void MultiContentsView::SetWebContents(content::WebContents* web_contents,
   contents_view->SetVisible(web_contents != nullptr);
 }
 
+void MultiContentsView::SetActivePosition(int position) {
+  // Position should never be less than 0 or equal to or greater than the total
+  // number of contents views.
+  CHECK(position >= 0 && position < 2);
+  ReorderChildView(active_contents_view_, position);
+}
+
 BEGIN_METADATA(MultiContentsView)
 END_METADATA

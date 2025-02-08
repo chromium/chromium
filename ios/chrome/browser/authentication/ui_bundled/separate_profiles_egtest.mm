@@ -194,7 +194,13 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
 // Tests signing in with a personal account during the FRE. This shouldn't have
 // any particular side-effects; it mostly exists as a base case for
 // `testSignInWithManagedAccount`.
-- (void)testSignInWithPersonalAccount {
+// TODO(crbug.com/395067901): Test is flaky on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSignInWithPersonalAccount FLAKY_testSignInWithPersonalAccount
+#else
+#define MAYBE_testSignInWithPersonalAccount testSignInWithPersonalAccount
+#endif
+- (void)MAYBE_testSignInWithPersonalAccount {
   FakeSystemIdentity* const personalIdentity =
       [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:personalIdentity];

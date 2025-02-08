@@ -28,6 +28,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
+#include "net/base/tracing.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -650,8 +651,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // the cache transaction completes (or times out).
   std::optional<int> pending_io_result_ = std::nullopt;
 
-  // Used for tracing.
-  const uint64_t trace_id_;
+  // Used for state change trace events.
+  const perfetto::Track track_for_state_change_;
 
   // Initial request with which Start() was invoked.
   raw_ptr<const HttpRequestInfo> initial_request_ = nullptr;

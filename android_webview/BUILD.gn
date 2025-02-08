@@ -565,6 +565,7 @@ android_library("browser_java") {
   sources = [
     "java/src/org/chromium/android_webview/AndroidProtocolHandler.java",
     "java/src/org/chromium/android_webview/AppDefinedDomains.java",
+    "java/src/org/chromium/android_webview/AsyncShouldInterceptRequestCallback.java",
     "java/src/org/chromium/android_webview/AwActionModeCallback.java",
     "java/src/org/chromium/android_webview/AwBrowserContext.java",
     "java/src/org/chromium/android_webview/AwBrowserContextStore.java",

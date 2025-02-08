@@ -6,6 +6,7 @@
 <translation id="1008557486741366299">දැන් නොවේ</translation>
 <translation id="100957008357583611">ඔබේ ස්ථානය භාවිත කරන්නද?</translation>
 <translation id="1010200102790553230">පිටුව පසුව පූරණ කරන්න</translation>
+<translation id="1010225406377140704">නව සබැඳියක් ඉල්ලා සිටීමට යවන්නා අමතන්න</translation>
 <translation id="1011206368273183593">ගොනු සූදානම් කරමින්</translation>
 <translation id="1014509239502131234">ප්‍රතිඵලය නොකිරීම</translation>
 <translation id="1015730422737071372">අමතර විස්තර සපයන්න</translation>
@@ -1164,6 +1165,7 @@
 <translation id="3076865167425975822">මෙහෙයුම් පද්ධති</translation>
 <translation id="3080254622891793721">චිත්‍රක</translation>
 <translation id="3082007635241601060">ලබා ගත හැකි විට පුද්ගලිකකරණය කළ වට්ටම් සොයා ගැනීමට Google හට ඔබගේ කරත්ත භාවිත කිරීමට ඉඩ දෙන්න</translation>
+<translation id="3086269988715347183">ඔබ මීට පෙර <ph name="BLOCKED_URL" /> අනුමත කර නැත</translation>
 <translation id="3086579638707268289">වෙබය මත ඔබේ ක්‍රියාකාරකම නිරීක්‍ෂණ කෙරේ</translation>
 <translation id="3087734570205094154">පතුල</translation>
 <translation id="3090667236485488075">වීදුරු</translation>
@@ -1239,6 +1241,7 @@
 <translation id="3203025201812691413">URL හිස් විය නොහැක</translation>
 <translation id="320323717674993345">ගෙවීම අවලංගු කරන්න</translation>
 <translation id="3203366800380907218">වෙබය වෙතින්</translation>
+<translation id="3207830513221832868"><ph name="BLOCKED_URL" /> හි වැඩිහිටි අන්තර්ගතයන් තිබිය හැක</translation>
 <translation id="3207960819495026254">පිටුසලකුණු කළ</translation>
 <translation id="3208701679386778924">අපට තවදුරටත් ChromeOS යාවත්කාලීන වැඩි දියුණු කළ හැකි පරිදි වාර්තාවක් එවන්න.</translation>
 <translation id="3209034400446768650">පිටුවට මුදල් අය කළ හැකිය</translation>
@@ -2973,6 +2976,7 @@
 <translation id="6254436959401408446">මෙම පිටුව විවෘත කිරීමට ප්‍රමාණවත් තරම් මතකයක් නැත</translation>
 <translation id="625463612687472648">ඉඩ දීම නවත්වන්න</translation>
 <translation id="6259156558325130047">යළි ඇනවුම් කිරීම &amp;යළි කරන්න</translation>
+<translation id="6259282549512536479">ඔබ කලින් <ph name="BLOCKED_URL" /> අවහිර කර ඇත</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> පොත්සලකුණු</translation>
 <translation id="6264376385120300461">කෙසේ වුවත් බාගන්න</translation>
 <translation id="6264485186158353794">ආරක්ෂාව වෙත ආපසු</translation>
@@ -3105,6 +3109,7 @@
 <translation id="6465306955648956876">මුරපද කළමනාකරණය කරන්න...</translation>
 <translation id="646789491285795429">ඔබ දැනටමත් මෙම නිෂ්පාදනය නිරීක්ෂණය කරමින් සිටී</translation>
 <translation id="6468485451923838994">අකුරු</translation>
+<translation id="6469702164109431067">මුරපද සහ මුරයතුරු</translation>
 <translation id="647261751007945333">උපාංග ප්‍රතිපත්ති</translation>
 <translation id="6472874020827012601">රෙදි (මැට්)</translation>
 <translation id="647330291963761005">යාවත්කාලීන ස්ථාපනය කරමින්</translation>
@@ -4348,6 +4353,7 @@
 <translation id="8699041776323235191">HID උපාංගය</translation>
 <translation id="8699985386408839112">ලියුම් කවරය කකු 1</translation>
 <translation id="8702965365666568344">සවි කිරීම් පටි</translation>
+<translation id="8703372953981978786">මෙම සබැඳිය ක්‍රියා නොකරයි</translation>
 <translation id="8703575177326907206"><ph name="DOMAIN" /> වෙත ඔබේ සම්බන්ධතාව සංකේතනය කර නැත.</translation>
 <translation id="8705331520020532516">කාණ්ඩ අංකය</translation>
 <translation id="8706806585855470492">ඔබට පටිති සමූහ තුළ බෙදා ගැනීමට, එක් වීමට සහ සහයෝගයෙන් කටයුතු කිරීමට ලැබෙනු ඇත</translation>

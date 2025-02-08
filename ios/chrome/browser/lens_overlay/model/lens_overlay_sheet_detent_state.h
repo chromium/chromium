@@ -29,4 +29,13 @@ typedef NS_ENUM(NSUInteger, SheetDimensionState) {
   SheetDimensionStateConsent = 4,
 };
 
+// Indicates the presentation strategy of the bottom sheet medium detent based
+// on the current Lens filter.
+typedef NS_ENUM(NSUInteger, SheetDetentPresentationStategy) {
+  // The UI is in selection mode, with the focus on the search result.
+  SheetDetentPresentationStategySelection,
+  // The UI is in translate mode, with the focus on the translated image.
+  SheetDetentPresentationStategyTranslate,
+};
+
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_SHEET_DETENT_STATE_H_

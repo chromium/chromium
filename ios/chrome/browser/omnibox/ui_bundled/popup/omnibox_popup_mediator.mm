@@ -17,7 +17,6 @@
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
-#import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_classification.h"
 #import "components/omnibox/browser/autocomplete_result.h"
@@ -60,7 +59,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_omnibox_consumer.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "net/base/apple/url_conversions.h"
-#import "third_party/omnibox_proto/groups.pb.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -108,8 +106,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   std::unique_ptr<RemoteSuggestionsServiceObserverBridge>
       _remoteSuggestionsServiceObserverBridge;
 
-  raw_ptr<OmniboxPopupMediatorDelegate> _delegate;  // weak
-
   /// Preferred omnibox position, logged in omnibox logs.
   metrics::OmniboxEventProto::OmniboxPosition _preferredOmniboxPosition;
   /// Pref tracking if bottom omnibox is enabled.
@@ -130,13 +126,10 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
                faviconLoader:(FaviconLoader*)faviconLoader
       autocompleteController:(AutocompleteController*)autocompleteController
     remoteSuggestionsService:(RemoteSuggestionsService*)remoteSuggestionsService
-                    delegate:(OmniboxPopupMediatorDelegate*)delegate
                      tracker:(feature_engagement::Tracker*)tracker {
   self = [super init];
   if (self) {
-    DCHECK(delegate);
     DCHECK(autocompleteController);
-    _delegate = delegate;
     _imageFetcher = std::move(imageFetcher);
     _faviconLoader = faviconLoader;
     _open = NO;
@@ -307,8 +300,10 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
       [self logSelectedAutocompleteTile:match];
     }
-
-    _delegate->OnMatchSelected(match, row, WindowOpenDisposition::CURRENT_TAB);
+    [self.popupController
+        selectMatchForOpening:match
+                        inRow:row
+                       openIn:WindowOpenDisposition::CURRENT_TAB];
   } else {
     DUMP_WILL_BE_NOTREACHED()
         << "Suggestion type " << NSStringFromClass(suggestion.class)
@@ -366,8 +361,10 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     const AutocompleteMatch& match =
         autocompleteMatchFormatter.autocompleteMatch;
     if (match.has_tab_match.value_or(false)) {
-      _delegate->OnMatchSelected(match, row,
-                                 WindowOpenDisposition::SWITCH_TO_TAB);
+      [self.popupController
+          selectMatchForOpening:match
+                          inRow:row
+                         openIn:WindowOpenDisposition::SWITCH_TO_TAB];
     } else {
       if (AutocompleteMatch::IsSearchType(match.type)) {
         base::RecordAction(
@@ -376,7 +373,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         base::RecordAction(
             base::UserMetricsAction("MobileOmniboxRefineSuggestion.Url"));
       }
-      _delegate->OnMatchSelectedForAppending(match);
+      [self.popupController selectMatchForAppending:match];
     }
   } else {
     NOTREACHED() << "Suggestion type " << NSStringFromClass(suggestion.class)
@@ -392,7 +389,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         (AutocompleteMatchFormatter*)suggestion;
     const AutocompleteMatch& match =
         autocompleteMatchFormatter.autocompleteMatch;
-    _delegate->OnMatchSelectedForDeletion(match);
+    [self.popupController selectMatchForDeletion:match];
   } else {
     DUMP_WILL_BE_NOTREACHED()
         << "Suggestion type " << NSStringFromClass(suggestion.class)
@@ -402,7 +399,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 - (void)autocompleteResultConsumerDidScroll:
     (id<AutocompleteResultConsumer>)sender {
-  _delegate->OnScroll();
+  [self.popupController onScroll];
 }
 
 #pragma mark AutocompleteResultConsumerDelegate Private
@@ -530,7 +527,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
                               fromResult:(const AutocompleteResult&)result {
   AutocompleteMatchFormatter* formatter =
       [AutocompleteMatchFormatter formatterWithMatch:match];
-  formatter.starred = _delegate->IsStarredMatch(match);
+  formatter.starred = [self.popupController isStarredMatch:match];
   formatter.incognito = _incognito;
   formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
   formatter.pedalData = [self.pedalAnnotator pedalForMatch:match];
@@ -714,7 +711,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 - (void)callActionTapped {
-  _delegate->OnCallActionTap();
+  [self.popupController onCallAction];
 }
 
 #pragma mark - CarouselItemMenuProvider

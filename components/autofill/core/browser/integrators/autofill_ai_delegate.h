@@ -25,22 +25,11 @@ class AutofillAiDelegate {
   using GetSuggestionsCallback =
       base::OnceCallback<void(std::vector<autofill::Suggestion>)>;
 
-  // Specifies the types of feedback users can give.
-  enum class UserFeedback { kThumbsUp, kThumbsDown };
-
   using UpdateSuggestionsCallback =
       base::RepeatingCallback<void(std::vector<Suggestion>,
                                    AutofillSuggestionTriggerSource)>;
 
   virtual ~AutofillAiDelegate() = default;
-
-  // Returns Autofill AI suggestions combined with `autofill_suggestions`. May
-  // return an empty vector.
-  // TODO(crbug.com/389629573): This method is deprecated and should be deleted.
-  virtual std::vector<Suggestion> GetSuggestions(
-      const std::vector<Suggestion>& autofill_suggestions,
-      const FormData& form,
-      const FormFieldData& field) = 0;
 
   // Returns AutofillAi suggestions. These suggestions can be filling
   // suggestions when triggered via left click, or loading suggestions when
@@ -59,19 +48,9 @@ class AutofillAiDelegate {
   // experience.
   virtual bool IsUserEligible() const = 0;
 
-  // Called when a feedback about the feature is given by the user.
-  virtual void UserFeedbackReceived(UserFeedback feedback) = 0;
-
   // Called when users click the "learn more" link.
   // TODO(crbug.com/365512352): Remove if not needed.
   virtual void UserClickedLearnMore() = 0;
-
-  // Called when the `SuggestionType::kRetrieveAutofillAi` suggestion was
-  // accepted.
-  virtual void OnClickedTriggerSuggestion(
-      const FormData& form,
-      const FormFieldData& trigger_field,
-      UpdateSuggestionsCallback update_suggestions_callback) = 0;
 
   // Displays an import bubble for `form` if Autofill AI is interested in the
   // form and then calls `autofill_callback`. It is guaranteed that `form` is

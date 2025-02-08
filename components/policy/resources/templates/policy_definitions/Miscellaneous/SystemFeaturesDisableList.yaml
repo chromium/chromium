@@ -86,6 +86,12 @@ items:
 - caption: Google Chat (supported since version 135)
   name: google_chat
   value: google_chat
+- caption: YouTube (supported since version 135)
+  name: youtube
+  value: youtube
+- caption: Google Maps (supported since version 135)
+  name: google_maps
+  value: google_maps
 owners:
 - file://components/policy/OWNERS
 - ayaelattar@chromium.org
@@ -114,6 +120,8 @@ schema:
     - google_keep
     - google_calendar
     - google_chat
+    - youtube
+    - google_maps
     type: string
   type: array
 supported_on:

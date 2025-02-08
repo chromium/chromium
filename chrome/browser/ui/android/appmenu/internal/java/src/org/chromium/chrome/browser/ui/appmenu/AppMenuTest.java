@@ -25,10 +25,12 @@ import android.widget.TextView;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -37,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
@@ -45,6 +48,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -61,7 +65,10 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.RenderTestRule;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -78,6 +85,12 @@ public class AppMenuTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    @Rule
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
+                    .build();
 
     private static Activity sActivity;
 
@@ -114,6 +127,11 @@ public class AppMenuTest {
         when(mKeyboardDelegate.isKeyboardShowing(any(), any())).thenReturn(false);
         ThreadUtils.runOnUiThreadBlocking(this::setUpTestOnUiThread);
         mLifecycleDispatcher.observerRegisteredCallbackHelper.waitForCallback(0);
+    }
+
+    @After
+    public void tearDown() {
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
     }
 
     private void setUpTestOnUiThread() {
@@ -1200,6 +1218,30 @@ public class AppMenuTest {
                 });
 
         waitForMenuToShow(0);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "RenderTest"})
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
+    public void shadowBackgroundOnLowEndDevices_lightMode() throws IOException, TimeoutException {
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(false);
+        mRenderTestRule.setNightModeEnabled(false);
+        showMenuAndAssert();
+        mRenderTestRule.render(
+                mAppMenuHandler.getAppMenu().getPopup().getContentView(), "app_menu_low_end_light");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "RenderTest"})
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
+    public void shadowBackgroundOnLowEndDevices_darkMode() throws IOException, TimeoutException {
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(true);
+        mRenderTestRule.setNightModeEnabled(true);
+        showMenuAndAssert();
+        mRenderTestRule.render(
+                mAppMenuHandler.getAppMenu().getPopup().getContentView(), "app_menu_low_end_dark");
     }
 
     private void createMenuItem(

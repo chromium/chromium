@@ -40,19 +40,9 @@ struct PhysicalNaturalSizingInfo;
 // such as an image, embedded document, or applet."
 // http://www.w3.org/TR/CSS2/conform.html#defs
 //
-// Blink consider that replaced elements have an intrinsic sizes (e.g. the
-// natural size of an image or a video). The intrinsic size is stored by
-// m_intrinsicSize.
-//
-// The computation sometimes ask for the intrinsic ratio, defined as follow:
-//
-//                      intrinsicWidth
-//   intrinsicRatio = -------------------
-//                      intrinsicHeight
-//
-// The intrinsic ratio is used to keep the same proportion as the intrinsic
-// size (thus avoiding visual distortions if width / height doesn't match
-// the intrinsic value).
+// Blink consider that replaced elements have natural dimensions (e.g. the
+// natural size of an image or a video). The natural dimensions are provided by
+// an implementation of `GetNaturalDimensions()`.
 class CORE_EXPORT LayoutReplaced : public LayoutBox {
  public:
   explicit LayoutReplaced(Element*);
@@ -102,20 +92,25 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   void Paint(const PaintInfo&) const override;
 
   // Compute the natural dimensions of the replaced content. Should not apply
-  // any additional transformations (like 'object-view-box').
+  // any additional transformations (like 'object-view-box'). The natural size
+  // returned should be in "zoomed CSS pixels" (i.e
+  // `ComputedStyle::EffectiveZoom()` should be applied). The natural aspect
+  // ratio needn't be zoomed (but can be).
   virtual PhysicalNaturalSizingInfo GetNaturalDimensions() const = 0;
 
+  // Returns the natural dimensions of the replaced content with any additional
+  // transformations - such as 'object-view-box' - applied.
   // This function is public only so we can call it when computing
   // intrinsic size in LayoutNG.
-  PhysicalNaturalSizingInfo ComputeIntrinsicSizingInfo() const;
+  PhysicalNaturalSizingInfo ComputeNaturalSizingInfo() const;
 
-  // This callback must be invoked whenever the underlying intrinsic size has
-  // changed.
+  // This callback must be invoked whenever the underlying natural dimensions
+  // has changed.
   //
-  // The intrinsic size can change due to the network (from the default
-  // intrinsic size [see above] to the actual intrinsic size) or to some
-  // CSS properties like 'zoom' or 'image-orientation'.
-  virtual void IntrinsicSizeChanged();
+  // The natural dimensions can change due to the network (from the default
+  // natural size [see above] to the actual natural dimensions) or to some CSS
+  // properties like 'zoom' or 'image-orientation'.
+  virtual void NaturalSizeChanged();
 
   bool RespectsCSSOverflow() const override;
 

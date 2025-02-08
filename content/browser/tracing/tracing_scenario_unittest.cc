@@ -92,6 +92,10 @@ class TestTracingScenarioDelegate : public TracingScenario::Delegate {
   MOCK_METHOD(bool, OnScenarioIdle, (TracingScenario * scenario), (override));
   MOCK_METHOD(bool, OnScenarioCloned, (TracingScenario * scenario), (override));
   MOCK_METHOD(void,
+              OnScenarioError,
+              (TracingScenario * scenario, perfetto::TracingError),
+              (override));
+  MOCK_METHOD(void,
               OnScenarioRecording,
               (TracingScenario * scenario),
               (override));

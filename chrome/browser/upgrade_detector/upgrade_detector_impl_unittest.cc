@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/upgrade_detector/installed_version_poller.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "chrome/common/pref_names.h"
@@ -201,6 +202,9 @@ class UpgradeDetectorImplTest : public ::testing::Test {
   }
 
  private:
+  // Override the brand code so that the test appears to be a non-organic brand
+  // in order to suppress the outdated build detector.
+  google_brand::BrandForTesting non_organic_{"BBBB"};
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_;
   InstalledVersionPoller::ScopedDisableForTesting scoped_poller_disabler_;

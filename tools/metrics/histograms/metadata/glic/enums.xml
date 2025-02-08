@@ -26,6 +26,16 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(GlicEntryPointImpression) -->
+
+<enum name="GlicEntryPointImpression">
+  <int value="0" label="User has not completed fre."/>
+  <int value="1" label="User has completed fre and glic is enabled."/>
+  <int value="2" label="User has completed fre and glic is disabled."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:EntryPointImpression) -->
+
 <!-- LINT.IfChange(GlicInvocationSource) -->
 
 <enum name="GlicInvocationSource">

@@ -109,10 +109,9 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
   icon_url = base::FeatureParam<std::string>(&kSearchAggregatorProvider,
                                              "icon_url", "")
                  .Get();
-  trigger_omnibox_blending =
-      base::FeatureParam<bool>(&kSearchAggregatorProvider,
-                               "trigger_omnibox_blending", false)
-          .Get();
+  require_shortcut = base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                                              "require_shortcut", false)
+                         .Get();
   callback_delay =
       base::FeatureParam<base::TimeDelta>(
           &kSearchAggregatorProvider, "callback_delay", base::Milliseconds(0))

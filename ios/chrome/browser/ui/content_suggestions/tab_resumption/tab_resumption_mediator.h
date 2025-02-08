@@ -14,6 +14,10 @@ class PrefService;
 @protocol TabResumptionHelperDelegate;
 @class TabResumptionItem;
 
+namespace commerce {
+class ShoppingService;
+}
+
 namespace signin {
 class IdentityManager;
 }
@@ -38,7 +42,9 @@ class IdentityManager;
 - (instancetype)initWithLocalState:(PrefService*)localState
                        prefService:(PrefService*)prefService
                    identityManager:(signin::IdentityManager*)identityManager
-                           browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+                           browser:(Browser*)browser
+                   shoppingService:(commerce::ShoppingService*)shoppingService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

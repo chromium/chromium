@@ -8,13 +8,16 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-bool IsMediaPickerModalWindow(content::WebContents* web_contents) {
+bool MediaPickerCanShowAsWebModal(content::WebContents* web_contents) {
   return web_contents &&
-         !web_contents->GetDelegate()->IsNeverComposited(web_contents);
+         !web_contents->GetDelegate()->IsNeverComposited(web_contents) &&
+         web_modal::WebContentsModalDialogManager::FromWebContents(
+             web_contents);
 }
 
 views::Widget* CreateMediaPickerDialogWidget(Browser* browser,
@@ -26,7 +29,7 @@ views::Widget* CreateMediaPickerDialogWidget(Browser* browser,
   // modal to the web contents. Otherwise, the picker is shown in a separate
   // window.
   views::Widget* widget = nullptr;
-  if (IsMediaPickerModalWindow(web_contents)) {
+  if (MediaPickerCanShowAsWebModal(web_contents)) {
     // Close the extension popup to prevent spoofing.
     if (browser && browser->window() &&
         browser->window()->GetExtensionsContainer()) {

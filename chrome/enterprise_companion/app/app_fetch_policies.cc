@@ -11,6 +11,7 @@
 #include "chrome/enterprise_companion/app/app_client_base.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
+#include "components/policy/core/common/policy_types.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 

@@ -62,9 +62,6 @@ using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
-using ::testing::Not;
-using ::testing::Pair;
-using ::testing::Pointee;
 using ::testing::Pointer;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -84,25 +81,6 @@ auto HasType(SuggestionType expected_type) {
 auto HasAutofillAiPayload(auto expected_payload) {
   return Field("Suggestion::payload", &Suggestion::payload,
                VariantWith<AutofillAiPayload>(expected_payload));
-}
-
-auto HasValueToFill(const std::u16string& expected_value_to_fill) {
-  return Field("Suggestion::payload", &Suggestion::payload,
-               VariantWith<Suggestion::ValueToFill>(
-                   Suggestion::ValueToFill(expected_value_to_fill)));
-}
-
-auto HasMainText(const std::u16string& expected_main_text) {
-  return Field("Suggestion::main_text", &Suggestion::main_text,
-               Field("Suggestion::Text::value", &Suggestion::Text::value,
-                     expected_main_text));
-}
-
-auto HasLabel(const std::u16string& expected_label) {
-  return Field("Suggestion::labels", &Suggestion::labels,
-               ElementsAre(ElementsAre(Field("Suggestion::Text::value",
-                                             &Suggestion::Text::value,
-                                             expected_label))));
 }
 
 class MockAutofillAiModelExecutor : public AutofillAiModelExecutor {
@@ -253,77 +231,6 @@ TEST_F(AutofillAiManagerTest, RejectedPromptStrikeCounting) {
   EXPECT_FALSE(manager().IsFormBlockedForImport(form2));
 }
 
-// Tests that when the server fails to return suggestions, we show an error
-// suggestion.
-TEST_F(AutofillAiManagerTest, RetrievalFailed_ShowError) {
-  // Empty form, as seen by the user.
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
-      update_suggestions_callback;
-
-  {
-    InSequence s;
-    EXPECT_CALL(update_suggestions_callback,
-                Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
-    EXPECT_CALL(client(), GetAXTree)
-        .WillOnce(
-            RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
-    EXPECT_CALL(model_executor(), GetPredictions)
-        .WillOnce(RunOnceCallback<4>(PredictionsByGlobalId{}, ""));
-    EXPECT_CALL(update_suggestions_callback,
-                Run(ElementsAre(HasType(kAutofillAiError), HasType(kSeparator),
-                                HasType(kAutofillAiFeedback)),
-                    _));
-  }
-
-  manager().OnClickedTriggerSuggestion(form, form.fields().front(),
-                                       update_suggestions_callback.Get());
-  base::test::RunUntil([this]() {
-    return !test_api(manager()).loading_suggestion_timer().IsRunning();
-  });
-}
-
-// Tests that when the server fails to generate suggestions, but we have
-// autofill suggestions stored already, we fallback to autofill and don't show
-// error suggestions.
-TEST_F(AutofillAiManagerTest, RetrievalFailed_FallbackToAutofill) {
-  // Empty form, as seen by the user.
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  std::vector<Suggestion> autofill_suggestions = {Suggestion(kAddressEntry),
-                                                  Suggestion(kSeparator),
-                                                  Suggestion(kManageAddress)};
-  test_api(manager()).SetAutofillSuggestions(autofill_suggestions);
-
-  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  {
-    InSequence s;
-    EXPECT_CALL(update_suggestions_callback,
-                Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
-    EXPECT_CALL(client(), GetAXTree)
-        .WillOnce(
-            RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
-    EXPECT_CALL(model_executor(), GetPredictions)
-        .WillOnce(RunOnceCallback<4>(PredictionsByGlobalId{}, ""));
-    EXPECT_CALL(update_suggestions_callback,
-                Run(ElementsAre(HasType(kAddressEntry), HasType(kSeparator),
-                                HasType(kManageAddress)),
-                    _));
-  }
-
-  manager().OnClickedTriggerSuggestion(form, form.fields().front(),
-                                       update_suggestions_callback.Get());
-  base::test::RunUntil([this]() {
-    return !test_api(manager()).loading_suggestion_timer().IsRunning();
-  });
-}
-
 // Tests that the user receives a filling suggestion when using AutofillAi
 // manual fallback on a field that was previously classified as such. Since the
 // field is already classified, no model call is required.
@@ -404,576 +311,6 @@ TEST_F(
   EXPECT_THAT(suggestions.Take(), ElementsAre(HasType(kFillAutofillAi)));
 }
 
-// Tests that the `update_suggestions_callback` is called eventually with the
-// `kFillAutofillAi` suggestion.
-TEST_F(AutofillAiManagerTest, EndToEnd) {
-  // Empty form, as seen by the user.
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  // Filled form, as returned by the model executor.
-  form_description.host_frame = form.host_frame();
-  form_description.renderer_id = form.renderer_id();
-  form_description.fields[0].value = u"John";
-  form_description.fields[0].host_frame = form.fields().front().host_frame();
-  form_description.fields[0].renderer_id = form.fields().front().renderer_id();
-  autofill::FormData filled_form =
-      autofill::test::GetFormData(form_description);
-  AutofillAiModelExecutor::PredictionsReceivedCallback
-      predictions_received_callback;
-  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
-      update_suggestions_callback;
-
-  const autofill::FormFieldData& filled_field = filled_form.fields().front();
-  {
-    InSequence s;
-    EXPECT_CALL(update_suggestions_callback,
-                Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
-    EXPECT_CALL(client(), GetAXTree)
-        .WillOnce(
-            RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
-    EXPECT_CALL(model_executor(), GetPredictions)
-        .WillOnce(MoveArg<4>(&predictions_received_callback));
-    EXPECT_CALL(
-        update_suggestions_callback,
-        Run(AllOf(ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
-                              HasType(kAutofillAiFeedback)),
-                  FirstElementIs(HasAutofillAiPayload(
-                      Field(&AutofillAiPayload::values_to_fill,
-                            ElementsAre(Pair(filled_field.global_id(),
-                                             filled_field.value()))))),
-                  FirstElementIs(Field(
-                      &Suggestion::children,
-                      ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
-                                  HasType(kFillAutofillAi), HasType(kSeparator),
-                                  HasType(kEditAutofillAiData))))),
-            _));
-  }
-
-  manager().OnClickedTriggerSuggestion(form, form.fields().front(),
-                                       update_suggestions_callback.Get());
-
-  const std::vector<Suggestion> suggestions_while_loading =
-      manager().GetSuggestions({}, filled_form, filled_form.fields().front());
-  ASSERT_FALSE(suggestions_while_loading.empty());
-  EXPECT_THAT(suggestions_while_loading[0], HasType(kAutofillAiLoadingState));
-
-  std::move(predictions_received_callback)
-      .Run(PredictionsByGlobalId{{filled_field.global_id(),
-                                  {filled_field.value(), filled_field.label(),
-                                   filled_field.IsFocusable()}}},
-           "");
-  base::test::RunUntil([this]() {
-    return !test_api(manager()).loading_suggestion_timer().IsRunning();
-  });
-}
-
-// Tests that when the user triggers suggestions on a field having autofill
-// suggestions, but then changes focus while predictions are loading to a field
-// that doesn't have autofill suggestion, the initial autofill suggestions are
-// cleared and not used.
-TEST_F(AutofillAiManagerTest, AutofillSuggestionsAreCachedOnMultipleFocus) {
-  // Empty form, as seen by the user.
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST},
-                 {.role = autofill::NAME_LAST,
-                  .heuristic_type = autofill::NAME_LAST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-
-  AutofillAiModelExecutor::PredictionsReceivedCallback
-      predictions_received_callback;
-  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
-      update_suggestions_callback;
-
-  {
-    InSequence s;
-    EXPECT_CALL(update_suggestions_callback,
-                Run(ElementsAre(HasType(kAutofillAiLoadingState)), _));
-    EXPECT_CALL(client(), GetAXTree)
-        .WillOnce(
-            RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
-    EXPECT_CALL(model_executor(), GetPredictions)
-        .WillOnce(MoveArg<4>(&predictions_received_callback));
-    EXPECT_CALL(update_suggestions_callback,
-                Run(ElementsAre(HasType(kAutofillAiError), HasType(kSeparator),
-                                HasType(kAutofillAiFeedback)),
-                    _));
-  }
-
-  std::vector<Suggestion> autofill_suggestions = {Suggestion(kAddressEntry),
-                                                  Suggestion(kSeparator),
-                                                  Suggestion(kManageAddress)};
-  manager().GetSuggestions(autofill_suggestions, form, form.fields().front());
-  manager().OnClickedTriggerSuggestion(form, form.fields().front(),
-                                       update_suggestions_callback.Get());
-
-  // Simulate the user clicking on a second field AFTER triggering filling
-  // suggestions but BEFORE the server replies with the predictions (hence in
-  // the loading stage).
-  manager().GetSuggestions({}, form, form.fields().back());
-
-  // Simulate empty server response.
-  std::move(predictions_received_callback).Run(PredictionsByGlobalId{}, "");
-  base::test::RunUntil([this]() {
-    return !test_api(manager()).loading_suggestion_timer().IsRunning();
-  });
-}
-
-struct GetSuggestionsFormNotEqualCachedFormTestData {
-  AutofillAiManager::PredictionRetrievalState prediction_retrieval_state;
-  bool trigger_automatically;
-  std::optional<SuggestionType> expected_suggestion_type;
-};
-
-class AutofillAiManagerGetSuggestionsFormNotEqualCachedFormTest
-    : public BaseAutofillAiManagerTest,
-      public ::testing::WithParamInterface<
-          GetSuggestionsFormNotEqualCachedFormTestData> {
- public:
-  AutofillAiManagerGetSuggestionsFormNotEqualCachedFormTest() {
-    const GetSuggestionsFormNotEqualCachedFormTestData& test_data = GetParam();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillAi, {{"skip_allowlist", "true"},
-                      {"trigger_automatically",
-                       test_data.trigger_automatically ? "true" : "false"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that `GetSuggestions()` returns suggestions as expected when the
-// requesting form doesn't match the cached form.
-TEST_P(AutofillAiManagerGetSuggestionsFormNotEqualCachedFormTest,
-       GetSuggestions_ReturnsSuggestionsAsExpected) {
-  autofill::FormData cached_form =
-      autofill::test::GetFormData(autofill::test::FormDescription{});
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  test_api(manager()).SetPredictionRetrievalState(
-      GetParam().prediction_retrieval_state);
-  test_api(manager()).SetLastQueriedFormGlobalId(cached_form.global_id());
-  if (GetParam().expected_suggestion_type) {
-    EXPECT_THAT(manager().GetSuggestions({}, form, form.fields().front()),
-                ElementsAre(HasType(*GetParam().expected_suggestion_type)));
-  } else {
-    EXPECT_THAT(manager().GetSuggestions({}, form, form.fields().front()),
-                ElementsAre());
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    AutofillAiManagerGetSuggestionsFormNotEqualCachedFormTest,
-    testing::Values(
-        GetSuggestionsFormNotEqualCachedFormTestData{
-            .prediction_retrieval_state = AutofillAiManager::
-                PredictionRetrievalState::kIsLoadingPredictions,
-            .trigger_automatically = false,
-            .expected_suggestion_type = std::nullopt},
-        GetSuggestionsFormNotEqualCachedFormTestData{
-            .prediction_retrieval_state =
-                AutofillAiManager::PredictionRetrievalState::kDoneSuccess,
-            .trigger_automatically = false,
-            .expected_suggestion_type = kRetrieveAutofillAi},
-        GetSuggestionsFormNotEqualCachedFormTestData{
-            .prediction_retrieval_state =
-                AutofillAiManager::PredictionRetrievalState::kDoneError,
-            .trigger_automatically = false,
-            .expected_suggestion_type = kRetrieveAutofillAi},
-        GetSuggestionsFormNotEqualCachedFormTestData{
-            .prediction_retrieval_state = AutofillAiManager::
-                PredictionRetrievalState::kIsLoadingPredictions,
-            .trigger_automatically = true,
-            .expected_suggestion_type = std::nullopt},
-        GetSuggestionsFormNotEqualCachedFormTestData{
-            .prediction_retrieval_state =
-                AutofillAiManager::PredictionRetrievalState::kDoneSuccess,
-            .trigger_automatically = true,
-            .expected_suggestion_type = kAutofillAiLoadingState},
-        GetSuggestionsFormNotEqualCachedFormTestData{
-            .prediction_retrieval_state =
-                AutofillAiManager::PredictionRetrievalState::kDoneError,
-            .trigger_automatically = true,
-            .expected_suggestion_type = kAutofillAiLoadingState}));
-
-// Tests that trigger suggestions are returned by `GetSuggestions()` when the
-// class is in `kReady` state.
-TEST_F(AutofillAiManagerTest, GetSuggestions_Ready_ReturnsTriggerSuggestion) {
-  autofill::FormData form;
-  autofill::FormFieldData field;
-  test_api(manager()).SetPredictionRetrievalState(
-      AutofillAiManager::PredictionRetrievalState::kReady);
-  EXPECT_THAT(manager().GetSuggestions({}, form, field),
-              ElementsAre(HasType(kRetrieveAutofillAi)));
-}
-
-// Tests that loading suggestions are returned by `GetSuggestions()` when the
-// class is in `kIsLoadingPredictions` state.
-TEST_F(AutofillAiManagerTest,
-       GetSuggestions_IsLoadingPredictions_ReturnsLoadingSuggestion) {
-  autofill::FormData form;
-  autofill::FormFieldData field;
-  test_api(manager()).SetPredictionRetrievalState(
-      AutofillAiManager::PredictionRetrievalState::kIsLoadingPredictions);
-  EXPECT_THAT(
-      manager().GetSuggestions(/*autofill_suggestions=*/{}, form, field),
-      ElementsAre(HasType(kAutofillAiLoadingState)));
-}
-
-struct FallbackTestData {
-  AutofillAiManager::PredictionRetrievalState prediction_retrieval_state;
-  bool trigger_automatically;
-};
-
-class AutofillAiManagerDoneFallbackTest
-    : public BaseAutofillAiManagerTest,
-      public ::testing::WithParamInterface<FallbackTestData> {
- public:
-  AutofillAiManagerDoneFallbackTest() {
-    const FallbackTestData& test_data = GetParam();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillAi, {{"skip_allowlist", "true"},
-                      {"trigger_automatically",
-                       test_data.trigger_automatically ? "true" : "false"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that an empty vector is returned by `GetSuggestions()` when the
-// class is in `kDoneSuccess` state, there are no prediction improvements for
-// the `field` but there are `autofill_suggestions` to fall back to. Note that
-// returning an empty vector would continue the regular Autofill flow in the
-// BrowserAutofillManager, i.e. show Autofill suggestions in this scenario.
-TEST_P(AutofillAiManagerDoneFallbackTest,
-       GetSuggestions_NoPredictionsWithAutofillSuggestions_ReturnsEmptyVector) {
-  std::vector<Suggestion> autofill_suggestions = {Suggestion(kAddressEntry)};
-  autofill::FormData form;
-  autofill::FormFieldData field;
-  test_api(manager()).SetPredictionRetrievalState(
-      GetParam().prediction_retrieval_state);
-  EXPECT_TRUE(
-      manager().GetSuggestions(autofill_suggestions, form, field).empty());
-}
-
-// Tests that the no info / error suggestion is returned by `GetSuggestions()`
-// when the class is in `kDoneSuccess` state, there are neither prediction
-// improvements for the `field` nor `autofill_suggestions` to fall back to and
-// the no info suggestion wasn't shown yet.
-TEST_P(
-    AutofillAiManagerDoneFallbackTest,
-    GetSuggestions_NoPredictionsNoAutofillSuggestions_ReturnsNoInfoOrErrorSuggestion) {
-  autofill::FormData form;
-  autofill::FormFieldData field;
-  test_api(manager()).SetPredictionRetrievalState(
-      GetParam().prediction_retrieval_state);
-  const std::vector<Suggestion> suggestions =
-      manager().GetSuggestions(/*autofill_suggestions=*/{}, form, field);
-  ASSERT_FALSE(suggestions.empty());
-  EXPECT_THAT(suggestions[0], HasType(kAutofillAiError));
-}
-
-// Tests that the trigger suggestion is returned by `GetSuggestions()` when the
-// class is in `kDoneSuccess` state, there are neither prediction improvements
-// for the `field` nor `autofill_suggestions` to fall back to and the no info
-// suggestion was shown before.
-TEST_P(
-    AutofillAiManagerDoneFallbackTest,
-    GetSuggestions_NoPredictionsNoAutofillSuggestionsNoInfoWasShown_ReturnsTriggerSuggestion) {
-  autofill::FormData form;
-  autofill::FormFieldData field;
-  test_api(manager()).SetPredictionRetrievalState(
-      GetParam().prediction_retrieval_state);
-  test_api(manager()).SetErrorOrNoInfoSuggestionShown(true);
-  EXPECT_THAT(
-      manager().GetSuggestions(/*autofill_suggestions=*/{}, form, field),
-      ElementsAre(HasType(kRetrieveAutofillAi)));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    AutofillAiManagerDoneFallbackTest,
-    testing::Values(
-        FallbackTestData{
-            .prediction_retrieval_state =
-                AutofillAiManager::PredictionRetrievalState::kDoneSuccess,
-            .trigger_automatically = false},
-        FallbackTestData{
-            .prediction_retrieval_state =
-                AutofillAiManager::PredictionRetrievalState::kDoneSuccess,
-            .trigger_automatically = true},
-        FallbackTestData{
-            .prediction_retrieval_state =
-                AutofillAiManager::PredictionRetrievalState::kDoneError,
-            .trigger_automatically = false},
-        FallbackTestData{
-            .prediction_retrieval_state =
-                AutofillAiManager::PredictionRetrievalState::kDoneError,
-            .trigger_automatically = true}));
-
-// Tests that cached filling suggestions for prediction improvements are shown
-// before autofill suggestions.
-TEST_F(
-    AutofillAiManagerTest,
-    GetSuggestions_DoneSuccessWithAutofillSuggestions_AutofillAiSuggestionsShownBeforeAutofill) {
-  std::vector<Suggestion> autofill_suggestions = {Suggestion(kAddressEntry),
-                                                  Suggestion(kSeparator),
-                                                  Suggestion(kManageAddress)};
-  autofill_suggestions[0].payload =
-      Suggestion::AutofillProfilePayload(Suggestion::Guid("guid"));
-  EXPECT_CALL(client(), GetAutofillNameFillingValue).WillOnce(Return(u""));
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  autofill::FormStructure form_structure = autofill::FormStructure(form);
-  test_api(form_structure).SetFieldTypes({autofill::FieldType::NAME_FIRST});
-  ON_CALL(client(), GetCachedFormStructure)
-      .WillByDefault(Return(&form_structure));
-  test_api(manager()).SetAutofillSuggestions(autofill_suggestions);
-  test_api(manager()).SetCache(
-      PredictionsByGlobalId{{form.fields().front().global_id(),
-                             {u"value", u"label", /*is_focusable=*/true}}});
-  test_api(manager()).SetLastQueriedFormGlobalId(form.global_id());
-  test_api(manager()).SetPredictionRetrievalState(
-      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
-
-  EXPECT_THAT(manager().GetSuggestions(autofill_suggestions, form,
-                                       form.fields().front()),
-              ElementsAre(HasType(kFillAutofillAi), HasType(kAddressEntry),
-                          HasType(kSeparator), HasType(kAutofillAiFeedback)));
-}
-
-// Tests that the filling suggestion incl. its children is created as expected
-// if state is `kDoneSuccess`.
-TEST_F(AutofillAiManagerTest,
-       GetSuggestions_DoneSuccess_ReturnsFillingSuggestions) {
-  const std::u16string trigger_field_value = u"Jane";
-  const std::u16string trigger_field_label = u"First name";
-  const std::u16string select_field_value = u"33";
-  const std::u16string select_field_label = u"State";
-  const std::u16string select_field_option_text = u"North Carolina";
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST},
-                 {.role = autofill::ADDRESS_HOME_STATE,
-                  .heuristic_type = autofill::ADDRESS_HOME_STATE,
-                  .form_control_type = autofill::FormControlType::kSelectOne},
-                 // An existing prediction for a non-focusable field won't show
-                 // up in child suggestions.
-                 {.role = autofill::ADDRESS_HOME_CITY,
-                  .heuristic_type = autofill::ADDRESS_HOME_CITY,
-                  .is_focusable = false}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  test_api(manager()).SetCache(PredictionsByGlobalId{
-      {form.fields()[0].global_id(),
-       {trigger_field_value, trigger_field_label,
-        form.fields()[0].IsFocusable()}},
-      {form.fields()[1].global_id(),
-       {select_field_value, select_field_label, form.fields()[1].IsFocusable(),
-        select_field_option_text}},
-      {form.fields()[2].global_id(),
-       {u"value", u"label", form.fields()[2].IsFocusable()}}});
-  test_api(manager()).SetLastQueriedFormGlobalId(form.global_id());
-  test_api(manager()).SetPredictionRetrievalState(
-      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
-
-  EXPECT_THAT(
-      manager().GetSuggestions(/*autofill_suggestions=*/{}, form,
-                               form.fields()[0]),
-      ElementsAre(
-          AllOf(
-              HasType(kFillAutofillAi),
-              HasAutofillAiPayload(Field(
-                  "AutofillAiPayload::values_to_fill",
-                  &AutofillAiPayload::values_to_fill,
-                  ElementsAre(
-                      Pair(form.fields()[0].global_id(), trigger_field_value),
-                      Pair(form.fields()[1].global_id(), select_field_value)))),
-              Field(
-                  "Suggestion::children", &Suggestion::children,
-                  ElementsAre(
-                      AllOf(HasType(kFillAutofillAi), HasAutofillAiPayload(_)),
-                      HasType(kSeparator),
-                      AllOf(HasType(kFillAutofillAi),
-                            HasValueToFill(trigger_field_value),
-                            HasMainText(trigger_field_value),
-                            HasLabel(trigger_field_label)),
-                      AllOf(HasType(kFillAutofillAi),
-                            // For <select> elements expect both value
-                            // to fill and main text to be set to the
-                            // option text, not the value.
-                            HasValueToFill(select_field_option_text),
-                            HasMainText(select_field_option_text),
-                            HasLabel(select_field_label)),
-                      HasType(kSeparator), HasType(kEditAutofillAiData)))),
-          HasType(kSeparator), HasType(kAutofillAiFeedback)));
-}
-
-// Tests that the filling suggestion label is correct when only one field can be
-// filled.
-TEST_F(
-    AutofillAiManagerTest,
-    GetSuggestions_DoneSuccessOneFieldCanBeFilled_CreateLabelThatContainsOnlyOneFieldData) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  test_api(manager()).SetCache(PredictionsByGlobalId{
-      {form.fields()[0].global_id(),
-       {u"Jane", u"First name", form.fields()[0].IsFocusable()}}});
-  test_api(manager()).SetLastQueriedFormGlobalId(form.global_id());
-  test_api(manager()).SetPredictionRetrievalState(
-      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
-
-  const std::vector<Suggestion> suggestions = manager().GetSuggestions(
-      /*autofill_suggestions=*/{}, form, form.fields()[0]);
-  ASSERT_FALSE(suggestions.empty());
-  EXPECT_THAT(suggestions[0], HasLabel(u"Fill First name"));
-}
-
-// Tests that the filling suggestion label is correct when 3 fields can be
-// filled.
-TEST_F(
-    AutofillAiManagerTest,
-    GetSuggestions_DoneSuccessThreeFieldsCanBeFilled_UserSingularAndMoreString) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST},
-                 {.role = autofill::ADDRESS_HOME_STREET_NAME,
-                  .heuristic_type = autofill::ADDRESS_HOME_STREET_NAME},
-                 {.role = autofill::ADDRESS_HOME_STATE,
-                  .heuristic_type = autofill::ADDRESS_HOME_STATE,
-                  .form_control_type = autofill::FormControlType::kSelectOne}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  test_api(manager()).SetCache(PredictionsByGlobalId{
-      {form.fields()[0].global_id(),
-       {u"Jane", u"First name", form.fields()[0].IsFocusable()}},
-      {form.fields()[1].global_id(),
-       {u"Country roads str", u"Street name", form.fields()[1].IsFocusable()}},
-      {form.fields()[2].global_id(),
-       {u"33", u"state", form.fields()[2].IsFocusable(), u"West Virginia"}}});
-  test_api(manager()).SetLastQueriedFormGlobalId(form.global_id());
-  test_api(manager()).SetPredictionRetrievalState(
-      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
-
-  const std::vector<Suggestion> suggestions = manager().GetSuggestions(
-      /*autofill_suggestions=*/{}, form, form.fields()[0]);
-  ASSERT_FALSE(suggestions.empty());
-  EXPECT_THAT(suggestions[0],
-              HasLabel(u"Fill First name, Street name & 1 more field"));
-}
-
-// Tests that the filling suggestion label is correct when more than 3 fields
-// can be filled.
-TEST_F(
-    AutofillAiManagerTest,
-    GetSuggestions_DoneSuccessMoreThanThreeFieldsCanBeFilled_UserPluralAndMoreString) {
-  autofill::test::FormDescription form_description = {
-      .fields = {
-          {.role = autofill::NAME_FIRST,
-           .heuristic_type = autofill::NAME_FIRST},
-          {.role = autofill::NAME_LAST, .heuristic_type = autofill::NAME_LAST},
-          {.role = autofill::ADDRESS_HOME_STREET_NAME,
-           .heuristic_type = autofill::ADDRESS_HOME_STREET_NAME},
-          {.role = autofill::ADDRESS_HOME_STATE,
-           .heuristic_type = autofill::ADDRESS_HOME_STATE,
-           .form_control_type = autofill::FormControlType::kSelectOne}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  test_api(manager()).SetCache(PredictionsByGlobalId{
-      {form.fields()[0].global_id(),
-       {u"Jane", u"First name", form.fields()[0].IsFocusable()}},
-      {form.fields()[1].global_id(),
-       {u"Doe", u"Last name", form.fields()[1].IsFocusable()}},
-      {form.fields()[2].global_id(),
-       {u"Country roads str", u"Street name", form.fields()[2].IsFocusable()}},
-      {form.fields()[3].global_id(),
-       {u"33", u"state", form.fields()[3].IsFocusable(), u"West Virginia"}}});
-  test_api(manager()).SetLastQueriedFormGlobalId(form.global_id());
-  test_api(manager()).SetPredictionRetrievalState(
-      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
-
-  const std::vector<Suggestion> suggestions =
-      manager().GetSuggestions({}, form, form.fields()[0]);
-  ASSERT_FALSE(suggestions.empty());
-  EXPECT_THAT(suggestions[0],
-              HasLabel(u"Fill First name, Last name & 2 more fields"));
-}
-
-// Tests that on field focus the potentially new state of the form fields'
-// focusability is set in the cache.
-TEST_F(AutofillAiManagerTest,
-       GetSuggestions_kDoneSuccess_UpdatesFieldFocusabilityInCache) {
-  // Set up manager to reflect having received predictions successfully for two
-  // form fields, one of which is not focusable at the time of retrieval.
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST, .is_focusable = false},
-                 {.role = autofill::NAME_LAST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  test_api(manager()).SetCache(PredictionsByGlobalId{
-      {form.fields()[0].global_id(),
-       {u"Jane", u"First name", form.fields()[0].IsFocusable()}},
-      {form.fields()[1].global_id(),
-       {u"Doe", u"Last name", form.fields()[1].IsFocusable()}}});
-  test_api(manager()).SetPredictionRetrievalState(
-      AutofillAiManager::PredictionRetrievalState::kDoneSuccess);
-
-  // Now swap focusability of the two form fields.
-  test_api(form).fields()[0].set_is_focusable(!form.fields()[0].IsFocusable());
-  test_api(form).fields()[1].set_is_focusable(!form.fields()[1].IsFocusable());
-
-  // With the above setup, `GetSuggestions()` is expected to call
-  // `UpdateFieldFocusabilityInCache()`.
-  manager().GetSuggestions(/*autofill_suggestions=*/{}, form, form.fields()[0]);
-
-  EXPECT_THAT(test_api(manager()).GetCache(),
-              Optional(ElementsAre(
-                  Pair(form.fields()[0].global_id(),
-                       Field("Prediction::is_focusable",
-                             &AutofillAiModelExecutor::Prediction::is_focusable,
-                             form.fields()[0].IsFocusable())),
-                  Pair(form.fields()[1].global_id(),
-                       Field("Prediction::is_focusable",
-                             &AutofillAiModelExecutor::Prediction::is_focusable,
-                             form.fields()[1].IsFocusable())))));
-}
-
-class AutofillAiManagerUserFeedbackTest
-    : public AutofillAiManagerTest,
-      public testing::WithParamInterface<AutofillAiManager::UserFeedback> {};
-
-// Given a non-null feedback id, tests that an attempt to open the feedback page
-// is only made if `UserFeedback::kThumbsDown` was received.
-TEST_P(AutofillAiManagerUserFeedbackTest,
-       TryToOpenFeedbackPageNeverCalledIfUserFeedbackThumbsDown) {
-  using UserFeedback = AutofillAiManager::UserFeedback;
-  test_api(manager()).SetFormFillingPredictionsModelExecutionId(
-      "randomstringrjb");
-  EXPECT_CALL(client(), TryToOpenFeedbackPage)
-      .Times(GetParam() == UserFeedback::kThumbsDown);
-  manager().UserFeedbackReceived(GetParam());
-}
-
-// Tests that the feedback page will never be opened if no feedback id is set.
-TEST_P(AutofillAiManagerUserFeedbackTest,
-       TryToOpenFeedbackPageNeverCalledIfNoFeedbackIdPresent) {
-  test_api(manager()).SetFormFillingPredictionsModelExecutionId(std::nullopt);
-  EXPECT_CALL(client(), TryToOpenFeedbackPage).Times(0);
-  manager().UserFeedbackReceived(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    AutofillAiManagerUserFeedbackTest,
-    testing::Values(AutofillAiManager::UserFeedback::kThumbsUp,
-                    AutofillAiManager::UserFeedback::kThumbsDown));
-
 class AutofillAiManagerImportFormTest
     : public AutofillAiManagerTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
@@ -1033,8 +370,7 @@ TEST_F(AutofillAiManagerImportFormTest,
   AutofillAiClient::SavePromptAcceptanceCallback save_callback;
   EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
       .WillOnce(
-          testing::DoAll(SaveArg<0>(&entity),  // Capture param 0 by reference
-                         MoveArg<1>(&save_callback)));
+          testing::DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
   base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
       autofill_callback;
   manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
@@ -1157,6 +493,123 @@ TEST_F(AutofillAiManagerImportFormTest, EntityAlreadyStored_DoNotShowPrompt) {
   EXPECT_EQ(saved_entities.size(), 1u);
 }
 
+TEST_F(AutofillAiManagerImportFormTest, NewEntity_ShowPromptAndAccept) {
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {autofill::PASSPORT_NAME_TAG, autofill::PASSPORT_NUMBER,
+       autofill::PHONE_HOME_WHOLE_NUMBER});
+  autofill::EntityInstance existing_entity =
+      autofill::test::GetPassportEntityInstance();
+  test_entity_data_manager_.AddEntityInstance(existing_entity);
+  // Set the filled values to be different to the ones already stored.
+  form->field(0)->set_value(u"Jon Doe");
+  form->field(1)->set_value(u"1234321");
+
+  std::optional<autofill::EntityInstance> entity;
+  AutofillAiClient::SavePromptAcceptanceCallback save_callback;
+  EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
+      .WillOnce(
+          testing::DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
+  base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
+      autofill_callback;
+  manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
+  // Tell the caller the bubble was shown.
+  const bool autofill_ai_shows_bubble = std::get<1>(autofill_callback.Take());
+  EXPECT_TRUE(autofill_ai_shows_bubble);
+
+  // Accept the bubble.
+  AutofillAiClient::SavePromptAcceptanceResult callback_result =
+      AutofillAiClient::SavePromptAcceptanceResult(
+          /*prompt_was_accepted=*/true);
+  callback_result.entity = entity;
+  std::move(save_callback).Run(callback_result);
+  // Tests that the expected entity was saved.
+  base::test::TestFuture<std::vector<autofill::EntityInstance>>
+      saved_instances_callback;
+  test_entity_data_manager_.LoadEntityInstances(
+      saved_instances_callback.GetCallback());
+  std::vector<autofill::EntityInstance> saved_entities =
+      saved_instances_callback.Take();
+  EXPECT_EQ(saved_entities.size(), 2u);
+  EXPECT_EQ(saved_entities[1], *entity);
+  EXPECT_EQ(GetValueFromEntityForAttributeTypeName(
+                saved_entities[1], autofill::AttributeTypeName::kPassportName),
+            u"Jon Doe");
+  EXPECT_EQ(
+      GetValueFromEntityForAttributeTypeName(
+          saved_entities[1], autofill::AttributeTypeName::kPassportNumber),
+      u"1234321");
+}
+
+TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_ShowPromptAndAccept) {
+  // The submitted form will have issue date info.
+  std::unique_ptr<autofill::FormStructure> form = CreateFormStructure(
+      {autofill::PASSPORT_NAME_TAG, autofill::PASSPORT_NUMBER,
+       autofill::PASSPORT_ISSUE_DATE_TAG,
+       autofill::PASSPORT_EXPIRATION_DATE_TAG});
+
+  // The current entity however does not.
+  autofill::test::PassportEntityOptions
+      passport_without_issue_date_and_expiry_date;
+  passport_without_issue_date_and_expiry_date.issue_date = nullptr;
+  passport_without_issue_date_and_expiry_date.expiry_date = "";
+  autofill::EntityInstance existing_entity_without_issue_date =
+      autofill::test::GetPassportEntityInstance(
+          passport_without_issue_date_and_expiry_date);
+  test_entity_data_manager_.AddEntityInstance(
+      existing_entity_without_issue_date);
+
+  // Set the filled values to be the same as the ones already stored in the
+  // existing entity, also fill the issue and expiry dates.
+  form->field(0)->set_value(GetValueFromEntityForFieldType(
+      existing_entity_without_issue_date, autofill::PASSPORT_NAME_TAG));
+  form->field(1)->set_value(GetValueFromEntityForFieldType(
+      existing_entity_without_issue_date, autofill::PASSPORT_NUMBER));
+  // Issue date
+  form->field(2)->set_value(u"01/02/2016");
+  // Expirty date
+  form->field(3)->set_value(u"01/02/2020");
+
+  std::optional<autofill::EntityInstance> entity;
+  AutofillAiClient::SavePromptAcceptanceCallback save_callback;
+  EXPECT_CALL(client(), ShowSaveAutofillAiBubble)
+      .WillOnce(
+          testing::DoAll(SaveArg<0>(&entity), MoveArg<1>(&save_callback)));
+  base::test::TestFuture<std::unique_ptr<autofill::FormStructure>, bool>
+      autofill_callback;
+  manager().MaybeImportForm(std::move(form), autofill_callback.GetCallback());
+  // Tell the caller the bubble was shown.
+  const bool autofill_ai_shows_bubble = std::get<1>(autofill_callback.Take());
+  EXPECT_TRUE(autofill_ai_shows_bubble);
+
+  // Accept the bubble.
+  AutofillAiClient::SavePromptAcceptanceResult callback_result =
+      AutofillAiClient::SavePromptAcceptanceResult(
+          /*prompt_was_accepted=*/true);
+  callback_result.entity = entity;
+  std::move(save_callback).Run(callback_result);
+  // Tests that the expected entity was updated.
+  base::test::TestFuture<std::vector<autofill::EntityInstance>>
+      saved_instances_callback;
+  test_entity_data_manager_.LoadEntityInstances(
+      saved_instances_callback.GetCallback());
+  std::vector<autofill::EntityInstance> saved_entities =
+      saved_instances_callback.Take();
+
+  // Only one entity should exist, as it was updated.
+  EXPECT_EQ(saved_entities.size(), 1u);
+  EXPECT_EQ(saved_entities[0], *entity);
+  EXPECT_EQ(saved_entities[0].guid(),
+            existing_entity_without_issue_date.guid());
+  EXPECT_EQ(
+      GetValueFromEntityForAttributeTypeName(
+          saved_entities[0], autofill::AttributeTypeName::kPassportIssueDate),
+      u"01/02/2016");
+  EXPECT_EQ(
+      GetValueFromEntityForAttributeTypeName(
+          saved_entities[0], autofill::AttributeTypeName::kPassportExpiryDate),
+      u"01/02/2020");
+}
+
 // Tests that `import_form_callback` is run with an empty list of entries when
 // `user_annotations::ShouldAddFormSubmissionForURL()` returns `false`.
 TEST_F(AutofillAiManagerTest,
@@ -1183,67 +636,6 @@ TEST_F(AutofillAiManagerTest,
 TEST_F(AutofillAiManagerTest, OpenSettingsWhenManagePILinkIsClicked) {
   EXPECT_CALL(client(), OpenAutofillAiSettings);
   manager().UserClickedLearnMore();
-}
-
-// Tests that calling `OnLoadingSuggestionShown()` is a no-op if the
-// `kTriggerAutomatically` parameter is disabled.
-TEST_F(AutofillAiManagerTest,
-       OnLoadingSuggestionShownDoesNothingIfParamNotEnabled) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST,
-                  .label = u"First Name",
-                  .value = u"Jane"}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  EXPECT_CALL(update_suggestions_callback, Run).Times(0);
-  EXPECT_CALL(client(), GetAXTree).Times(0);
-  manager().OnSuggestionsShown({kAutofillAiLoadingState}, form,
-                               form.fields().front(),
-                               update_suggestions_callback.Get());
-}
-
-// Tests that the regular Autofill flow continues if predictions are being
-// retrieved for form A, while a field of form B is focused.
-TEST_F(AutofillAiManagerTest,
-       GetSuggestionsReturnsEmptyVectorIfRequestedFromNewFormWhileLoading) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST,
-                  .label = u"First Name",
-                  .value = u"Jane"}}};
-  autofill::FormData form_a = autofill::test::GetFormData(form_description);
-  manager().OnClickedTriggerSuggestion(form_a, form_a.fields().front(),
-                                       base::DoNothing());
-
-  autofill::FormData form_b = autofill::test::GetFormData(form_description);
-
-  EXPECT_TRUE(manager()
-                  .GetSuggestions(/*autofill_suggestions=*/{}, form_b,
-                                  form_b.fields().front())
-                  .empty());
-}
-
-// Tests that the trigger suggestion is shown if predictions were retrieved for
-// form A and now a field of form B is focused.
-TEST_F(
-    AutofillAiManagerTest,
-    GetSuggestionsReturnsTriggerSuggestionIfRequestedFromNewFormAndNotLoading) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST,
-                  .label = u"First Name",
-                  .value = u"Jane"}}};
-  autofill::FormData form_a = autofill::test::GetFormData(form_description);
-  test_api(manager()).SetLastQueriedFormGlobalId(form_a.global_id());
-
-  autofill::FormData form_b = autofill::test::GetFormData(form_description);
-
-  const std::vector<Suggestion> suggestions = manager().GetSuggestions(
-      /*autofill_suggestions=*/{}, form_b, form_b.fields().front());
-  ASSERT_FALSE(suggestions.empty());
-  EXPECT_THAT(suggestions[0], HasType(kRetrieveAutofillAi));
 }
 
 // TODO(crbug.com/376016081): Refactor test to expect if suggestions are
@@ -1276,60 +668,6 @@ TEST_F(AutofillAiManagerTest, ShouldSkipAutofillSuggestion) {
        {u"Doe", u"Last Name", form.fields()[1].IsFocusable()}}};
   EXPECT_TRUE(
       ShouldSkipAutofillSuggestion(client(), cache, form, autofill_suggestion));
-}
-
-class AutofillAiManagerTriggerAutomaticallyTest
-    : public BaseAutofillAiManagerTest,
-      public testing::WithParamInterface<bool> {
- public:
-  AutofillAiManagerTriggerAutomaticallyTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kAutofillAi,
-        {{"skip_allowlist", "true"},
-         {"trigger_automatically", "true"},
-         {"extract_ax_tree_for_predictions", GetParam() ? "true" : "false"}});
-    ON_CALL(client(), GetLastCommittedOrigin)
-        .WillByDefault(ReturnRef(origin()));
-    ON_CALL(client(), GetModelExecutor)
-        .WillByDefault(Return(&model_executor()));
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that calling `OnLoadingSuggestionShown()` results in retrieving the AX
-// tree (implying predictions will be attempted to be retrieved) if the
-// `kTriggerAutomatically` parameter is enabled.
-TEST_P(AutofillAiManagerTriggerAutomaticallyTest,
-       OnLoadingSuggestionShownGetsAXTreeIfParamEnabled) {
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-  base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  if (GetParam()) {
-    EXPECT_CALL(client(), GetAXTree);
-  }
-  manager().OnSuggestionsShown({kAutofillAiLoadingState}, form,
-                               form.fields().front(),
-                               update_suggestions_callback.Get());
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         AutofillAiManagerTriggerAutomaticallyTest,
-                         testing::Bool());
-
-// Tests that the loading suggestion is returned by `GetSuggestions()` when the
-// class is in `kReady` state.
-TEST_P(AutofillAiManagerTriggerAutomaticallyTest,
-       GetSuggestions_Ready_ReturnsLoadingSuggestion) {
-  autofill::FormData form;
-  autofill::FormFieldData field;
-  test_api(manager()).SetPredictionRetrievalState(
-      AutofillAiManager::PredictionRetrievalState::kReady);
-  EXPECT_THAT(manager().GetSuggestions({}, form, field),
-              ElementsAre(HasType(kAutofillAiLoadingState)));
 }
 
 class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {

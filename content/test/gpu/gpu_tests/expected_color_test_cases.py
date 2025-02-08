@@ -192,7 +192,7 @@ def MapsTestCases() -> List[ExpectedColorTestCase]:
               # Samsung A13.
               'SM-A137F': 1.1025,
               # Samsung A23.
-              'SM-A235M': 1.1025,
+              'SM-A236B': 1.1025,
               # Samsung S23.
               'SM-S911U1': 1.1,
               # Motorola Moto G Power 5G.

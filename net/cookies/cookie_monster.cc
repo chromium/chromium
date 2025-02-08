@@ -763,6 +763,10 @@ void CookieMonster::GetCookieListWithOptions(
   CookieAccessResultList included_cookies;
   CookieAccessResultList excluded_cookies;
   if (HasCookieableScheme(url)) {
+    // Retrieve the domain, check this domain to see if this is the first
+    // time it is entering legacy mode, if it is delete all aliasing cookies
+    // within this domain.
+    CheckAndActivateLegacyScopeBehavior(url.host_piece());
     std::vector<CanonicalCookie*> cookie_ptrs;
     if (IncludeUnpartitionedCookies(cookie_partition_key_collection)) {
       cookie_ptrs = FindCookiesForRegistryControlledHost(url);
@@ -872,9 +876,10 @@ bool CookieMonster::MatchCookieDeletionInfo(
   }
 
   return delete_info.Matches(
-      cookie, CookieAccessParams{GetAccessSemanticsForCookie(cookie),
-                                 GetScopeSemanticsForCookie(cookie),
-                                 delegate_treats_url_as_trustworthy});
+      cookie,
+      CookieAccessParams{GetAccessSemanticsForCookie(cookie),
+                         GetScopeSemanticsForCookieDomain(cookie.Domain()),
+                         delegate_treats_url_as_trustworthy});
 }
 
 void CookieMonster::DeleteCanonicalCookie(const CanonicalCookie& cookie,
@@ -1354,9 +1359,10 @@ void CookieMonster::FilterCookiesWithOptions(
     // cookie |options|.
     CookieAccessResult access_result = cookie_ptr->IncludeForRequestURL(
         url, options,
-        CookieAccessParams{GetAccessSemanticsForCookie(*cookie_ptr),
-                           GetScopeSemanticsForCookie(*cookie_ptr),
-                           delegate_treats_url_as_trustworthy});
+        CookieAccessParams{
+            GetAccessSemanticsForCookie(*cookie_ptr),
+            GetScopeSemanticsForCookieDomain(cookie_ptr->Domain()),
+            delegate_treats_url_as_trustworthy});
     cookies_and_access_results.emplace_back(cookie_ptr, access_result);
 
     // Record the names of all origin cookies that would be included if both
@@ -1705,7 +1711,7 @@ void CookieMonster::SetCanonicalCookie(
   CookieAccessResult access_result = cc->IsSetPermittedInContext(
       source_url, options,
       CookieAccessParams(GetAccessSemanticsForCookie(*cc),
-                         GetScopeSemanticsForCookie(*cc),
+                         GetScopeSemanticsForCookieDomain(cc->Domain()),
                          delegate_treats_url_as_trustworthy),
       cookieable_schemes_, cookie_access_result);
 
@@ -1920,10 +1926,11 @@ void CookieMonster::InternalDeleteCookie(CookieMap::iterator it,
   change_dispatcher_.DispatchChange(
       CookieChangeInfo(
           *cc,
-          CookieAccessResult(
-              CookieEffectiveSameSite::UNDEFINED, CookieInclusionStatus(),
-              GetAccessSemanticsForCookie(*cc), GetScopeSemanticsForCookie(*cc),
-              true /* is_allowed_to_access_secure_cookies */),
+          CookieAccessResult(CookieEffectiveSameSite::UNDEFINED,
+                             CookieInclusionStatus(),
+                             GetAccessSemanticsForCookie(*cc),
+                             GetScopeSemanticsForCookieDomain(cc->Domain()),
+                             true /* is_allowed_to_access_secure_cookies */),
           mapping.cause),
       mapping.notify);
 
@@ -1975,10 +1982,11 @@ void CookieMonster::InternalDeletePartitionedCookie(
   change_dispatcher_.DispatchChange(
       CookieChangeInfo(
           *cc,
-          CookieAccessResult(
-              CookieEffectiveSameSite::UNDEFINED, CookieInclusionStatus(),
-              GetAccessSemanticsForCookie(*cc), GetScopeSemanticsForCookie(*cc),
-              true /* is_allowed_to_access_secure_cookies */),
+          CookieAccessResult(CookieEffectiveSameSite::UNDEFINED,
+                             CookieInclusionStatus(),
+                             GetAccessSemanticsForCookie(*cc),
+                             GetScopeSemanticsForCookieDomain(cc->Domain()),
+                             true /* is_allowed_to_access_secure_cookies */),
           mapping.cause),
       mapping.notify);
 
@@ -2594,22 +2602,22 @@ CookieAccessSemantics CookieMonster::GetAccessSemanticsForCookie(
   return CookieAccessSemantics::UNKNOWN;
 }
 
-CookieScopeSemantics CookieMonster::GetScopeSemanticsForCookie(
-    const CanonicalCookie& cookie) const {
+CookieScopeSemantics CookieMonster::GetScopeSemanticsForCookieDomain(
+    const std::string_view domain) const {
   if (cookie_access_delegate()) {
-    return cookie_access_delegate()->GetScopeSemantics(cookie);
+    return cookie_access_delegate()->GetScopeSemantics(domain);
   }
   return CookieScopeSemantics::UNKNOWN;
 }
 
 CookieScopeSemantics CookieMonster::CheckAndActivateLegacyScopeBehavior(
-    const CanonicalCookie& cookie) {
-  const std::string cookie_key = GetKey(cookie.Domain());
+    const std::string_view domain) {
+  const std::string cookie_key = GetKey(domain);
   CookieScopeSemantics cookie_scope_semantic =
-      GetScopeSemanticsForCookie(cookie);
+      GetScopeSemanticsForCookieDomain(domain);
   if (!pref_delegate_dict_) {
-    if (pref_delegate_) {
-      CHECK(pref_delegate_->IsPrefReady());
+    // TODO(crbug.com/378827534) Add CHECK once callbacks are supported.
+    if (pref_delegate_ && pref_delegate_->IsPrefReady()) {
       pref_delegate_dict_ = std::make_unique<base::Value::Dict>(
           pref_delegate_->GetLegacyDomains().Clone());
     } else {

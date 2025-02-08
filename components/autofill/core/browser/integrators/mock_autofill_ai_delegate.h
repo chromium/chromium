@@ -20,12 +20,6 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
   MockAutofillAiDelegate();
   ~MockAutofillAiDelegate() override;
 
-  MOCK_METHOD(std::vector<Suggestion>,
-              GetSuggestions,
-              (const std::vector<Suggestion>& address_suggestions,
-               const FormData& form,
-               const FormFieldData& field),
-              (override));
   MOCK_METHOD(void,
               GetSuggestionsV2,
               (autofill::FormGlobalId form_global_id,
@@ -33,19 +27,12 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
                bool is_manual_fallback,
                GetSuggestionsCallback callback),
               (override));
-  MOCK_METHOD(void, UserFeedbackReceived, (UserFeedback feedback), (override));
   MOCK_METHOD(bool,
               IsEligibleForAutofillAi,
               (const FormStructure& form, const AutofillField& field),
               (const override));
   MOCK_METHOD(bool, IsUserEligible, (), (const override));
   MOCK_METHOD(void, UserClickedLearnMore, (), (override));
-  MOCK_METHOD(void,
-              OnClickedTriggerSuggestion,
-              (const FormData& form,
-               const FormFieldData& trigger_field,
-               UpdateSuggestionsCallback update_suggestions_callback),
-              (override));
   MOCK_METHOD(
       void,
       MaybeImportForm,

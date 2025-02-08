@@ -213,7 +213,8 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
   // on 'cbcs' not being supported.
   return media::CdmCapability(std::move(audio_codecs), std::move(video_codecs),
                               {media::EncryptionScheme::kCenc},
-                              {media::CdmSessionType::kTemporary});
+                              {media::CdmSessionType::kTemporary},
+                              base::Version("0.1.0.0"));
 }
 
 #if BUILDFLAG(IS_WIN)

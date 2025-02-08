@@ -37,7 +37,7 @@
 #endif
 
 #if BUILDFLAG(IS_IOS)
-#include "components/viz/service/frame_sinks/external_begin_frame_source_ios.h"
+#include "components/viz/common/frame_sinks/external_begin_frame_source_ios.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -146,11 +146,16 @@ RootCompositorFrameSinkImpl::Create(
     auto owned_external_begin_frame_source_mojo =
         std::make_unique<ExternalBeginFrameSourceMojo>(
             frame_sink_manager,
-            std::move(params->external_begin_frame_controller), restart_id);
+            std::move(params->external_begin_frame_controller),
+            std::move(params->external_begin_frame_controller_client),
+            restart_id);
     external_begin_frame_source_mojo =
         owned_external_begin_frame_source_mojo.get();
     external_begin_frame_source =
         std::move(owned_external_begin_frame_source_mojo);
+#if BUILDFLAG(IS_IOS)
+    hw_support_for_multiple_refresh_rates = true;
+#endif
   } else {
 #if BUILDFLAG(IS_ANDROID)
     hw_support_for_multiple_refresh_rates = true;

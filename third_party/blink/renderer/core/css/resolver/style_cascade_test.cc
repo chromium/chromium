@@ -3212,7 +3212,6 @@ TEST_F(StyleCascadeTest, NonInitialWritingMode) {
 
 TEST_F(StyleCascadeTest, InitialTextSizeAdjust) {
   GetDocument().GetSettings()->SetTextAutosizingEnabled(true);
-  ScopedTextSizeAdjustImprovementsForTest scoped_feature(true);
 
   TestCascade cascade(GetDocument());
   cascade.Add("font-size:10px");
@@ -3225,7 +3224,6 @@ TEST_F(StyleCascadeTest, InitialTextSizeAdjust) {
 
 TEST_F(StyleCascadeTest, NonInitialTextSizeAdjust) {
   GetDocument().GetSettings()->SetTextAutosizingEnabled(true);
-  ScopedTextSizeAdjustImprovementsForTest scoped_feature(true);
 
   TestCascade cascade(GetDocument());
   cascade.Add("font-size:10px");

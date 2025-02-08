@@ -307,7 +307,7 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   form_fields = form.ExtractFields();
   // Set the third field value as something different from what was autofilled,
   // simulating a correction.
-  form_fields[2].set_value(u"Sansa Stark");
+  form_fields[2].set_value(u"Jon snowy");
   form.set_fields(std::move(form_fields));
 
   SubmitForm(form);
@@ -327,6 +327,17 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Autofill.EditedAutofilledFieldAtSubmission.AddressOnTyping"),
               BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  // One field was accepted without correction (first bucket), another field was
+  // edited to a string that has 1 character distance. "Jon snow" vs "Jon snowy"
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Autofill.EditedDistanceAutofilledFieldAtSubmission.AddressOnTyping"),
+      BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+  // Similar to the method above, however measuring percentage values.
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Autofill.EditedPercentageAutofilledFieldAtSubmission."
+                  "AddressOnTyping"),
+              BucketsAre(base::Bucket(0, 1), base::Bucket(12, 1)));
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AddressSuggestionOnTypingShown.DaysSinceLastUse.Profile",
       kProfileLastUsedInDays, 1);

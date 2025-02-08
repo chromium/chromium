@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1009406586654360474">請開啟 Google 密碼管理工具並前往設定，然後選取「匯入」並新增含有匯出密碼的 CSV 檔案。</translation>
-<translation id="1010225406377140704">請與傳送者聯絡，要求對方提供新連結</translation>
 <translation id="1011749477052068769">移至這裡</translation>
 <translation id="1014147525163127655">這部裝置上沒有 <ph name="ORIGIN" /> 的任何密碼金鑰</translation>
 <translation id="1016498331642356377">快速透過語音進行搜尋。按住這裡即可編輯這個捷徑。</translation>
@@ -1723,7 +1722,6 @@
 <translation id="8683039184091909753">圖片</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699120352855309748">不要詢問是否要翻譯這些語言</translation>
-<translation id="8703372953981978786">這個連結無效</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8723453889042591629">快速翻譯這個網頁，按住這裡即可編輯這個捷徑。</translation>
 <translation id="8725066075913043281">再試一次</translation>

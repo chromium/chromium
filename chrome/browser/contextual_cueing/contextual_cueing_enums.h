@@ -31,11 +31,33 @@ enum class NudgeDecision {
   // The page was eligible for the nudge, but too many nudges have been shown to
   // the user recently for the domain.
   kTooManyNudgesShownToTheUserForDomain = 8,
-
+  // The page was eligible for the nudge, but the user was currently being
+  // presented the IPH.
+  kNudgeNotShownIPH = 9,
   // New values above this line.
-  kMaxValue = kTooManyNudgesShownToTheUserForDomain,
+  kMaxValue = kNudgeNotShownIPH,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:NudgeDecision)
+
+// LINT.IfChange(NudgeInteraction)
+enum class NudgeInteraction {
+  kUnknown = 0,
+  // The server sent data and we successfully showed the nudge.
+  kShown = 1,
+  // The server sent data, but for a different web context so we did not nudge.
+  kNudgeNotShownWebContents = 2,
+  // The user clicked on a shown nudge.
+  kClicked = 3,
+  // The user dismissed the nudge with the close button.
+  kDismissed = 4,
+  // The nudge was dismissed by the tab changing.
+  kIgnoredTabChange = 5,
+  //  The nudge was dismissed by the navigation changing.
+  kIgnoredNavigation = 6,
+  // New values above this line.
+  kMaxValue = kIgnoredNavigation,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:NudgeInteraction)
 
 }  // namespace contextual_cueing
 

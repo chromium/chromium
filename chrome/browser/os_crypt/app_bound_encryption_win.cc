@@ -67,6 +67,22 @@ SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
     return SupportLevel::kNotSystemLevel;
   }
 
+  base::FilePath user_data_dir;
+  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+    return SupportLevel::kApiFailed;
+  }
+
+  base::FilePath default_user_data_dir;
+  if (!chrome::GetDefaultUserDataDirectory(&default_user_data_dir)) {
+    return SupportLevel::kApiFailed;
+  }
+
+  // User data dir can be overridden by policy or by a command line option.
+  if (user_data_dir != default_user_data_dir &&
+      !g_non_standard_user_data_dir_supported_for_testing) {
+    return SupportLevel::kNotUsingDefaultUserDataDir;
+  }
+
   // Policy allows disabling App-Bound encryption. Note, this will not disable
   // decryption of existing data.
   if (local_state->HasPrefPath(prefs::kApplicationBoundEncryptionEnabled) &&
@@ -93,29 +109,11 @@ SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state) {
     }
   }
 
-  base::FilePath user_data_dir;
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
-    return SupportLevel::kApiFailed;
-  }
-
   // If the user data dir is on a network drive, then maybe it is shared between
   // multiple machines, which is unsupported since App-Bound more strongly binds
   // data to the local machine.
   if (user_data_dir.IsNetwork()) {
     return SupportLevel::kUserDataDirNotLocalDisk;
-  }
-
-  base::FilePath default_user_data_dir;
-  if (!chrome::GetDefaultUserDataDirectory(&default_user_data_dir)) {
-    return SupportLevel::kApiFailed;
-  }
-
-  // Overridden by policy or by a command line option. This might mean that the
-  // user data dir could move in future, so disable App-Bound as a matter of
-  // caution.
-  if (user_data_dir != default_user_data_dir &&
-      !g_non_standard_user_data_dir_supported_for_testing) {
-    return SupportLevel::kNotUsingDefaultUserDataDir;
   }
 
   std::string image_path(MAX_PATH, L'\0');

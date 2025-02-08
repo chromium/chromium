@@ -627,23 +627,6 @@ TEST_F(AccountManagerMojoServiceTest, ShowManageAccountSettingsTest) {
 }
 
 TEST_F(AccountManagerMojoServiceTest,
-       FetchingAccessTokenResultsInErrorForActiveDirectoryAccounts) {
-  ASSERT_TRUE(InitializeAccountManager());
-  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
-  account_manager::AccountKey account_key{
-      "1234", account_manager::AccountType::kActiveDirectory};
-  mojom::AccessTokenResultPtr result = FetchAccessToken(account_key);
-
-  ASSERT_TRUE(result->is_error());
-  EXPECT_EQ(mojom::GoogleServiceAuthError::State::kUserNotSignedUp,
-            result->get_error()->state);
-
-  // Check that requests are not leaking.
-  RunAllPendingTasks();
-  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
-}
-
-TEST_F(AccountManagerMojoServiceTest,
        FetchingAccessTokenResultsInErrorForUnknownAccountKey) {
   ASSERT_TRUE(InitializeAccountManager());
   EXPECT_EQ(0, GetNumPendingAccessTokenRequests());

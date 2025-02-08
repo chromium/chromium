@@ -660,6 +660,14 @@ int TabStripModel::GetIndexOfWebContents(const WebContents* contents) const {
   return kNoTab;
 }
 
+void TabStripModel::NotifyTabChanged(const tabs::TabInterface* const tab,
+                                     TabChangeType change_type) {
+  const int index = GetIndexOfTab(tab);
+  for (auto& observer : observers_) {
+    observer.TabChangedAt(tab->GetContents(), index, change_type);
+  }
+}
+
 void TabStripModel::UpdateWebContentsStateAt(int index,
                                              TabChangeType change_type) {
   const tabs::TabInterface* const tab = GetTabAtIndex(index);

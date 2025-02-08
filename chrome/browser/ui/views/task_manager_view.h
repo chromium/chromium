@@ -113,7 +113,6 @@ class TaskManagerView : public TableViewDelegate,
 
   // TaskManagerSearchBarView::Delegate:
   void SearchBarOnInputChanged(const std::u16string& text) override;
-  void SearchBarOnHoverChange(const bool is_hover_on) override;
 
   views::TableView* tab_table_for_testing() { return tab_table_; }
 
@@ -208,9 +207,6 @@ class TaskManagerView : public TableViewDelegate,
   // The tabs which holds different task categories which is not null if task
   // manager refresh is enabled.
   raw_ptr<views::TabbedPaneTabStrip> tabs_ = nullptr;
-
-  // The container which holds search bar icon, textfield and clear button.
-  raw_ptr<views::View> search_bar_ = nullptr;
 
   // This button is not the same as the dialog button. It is only non-null if
   // task manager refresh is enabled.

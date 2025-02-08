@@ -13,13 +13,27 @@
 // Manages the detents for a given bottom sheet.
 @interface LensOverlayDetentsManager : NSObject
 
+// The estimated detent medium detent height, with respect to the current
+// presentation strategy.
+@property(nonatomic, readonly) CGFloat estimatedMediumDetentHeight;
+
 @property(nonatomic, weak) id<LensOverlayDetentsChangeObserver> observer;
 
 // Current sheet dimension.
 @property(nonatomic, readonly) SheetDimensionState sheetDimension;
 
+// The strategy to use when presenting in unrestricted mode.
+@property(nonatomic, assign)
+    SheetDetentPresentationStategy presentationStrategy;
+
 // Creates a new detents manager scoped to the sheet instance.
-- (instancetype)initWithBottomSheet:(UISheetPresentationController*)sheet;
+- (instancetype)initWithBottomSheet:(UISheetPresentationController*)sheet
+                             window:(UIWindow*)window;
+
+- (instancetype)initWithBottomSheet:(UISheetPresentationController*)sheet
+                             window:(UIWindow*)window
+               presentationStrategy:
+                   (SheetDetentPresentationStategy)presentationStrategy;
 
 // Adjust the detents of the given sheet based on the sheet state.
 - (void)adjustDetentsForState:(SheetDetentState)state;
@@ -29,6 +43,7 @@
 
 // Minimize the bottom sheet to the medium detent.
 - (void)requestMinimizeBottomSheet;
+
 @end
 
 // Observes changes in the detents and dimension states.

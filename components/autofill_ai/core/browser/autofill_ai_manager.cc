@@ -12,6 +12,7 @@
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -68,12 +69,6 @@ using autofill::LoggingScope;
 using autofill::LogMessage;
 using autofill::SuggestionType;
 
-// TODO(crbug.com/389629676): Remove this in favour of an implementation that
-// lives in EntityType (or similar), as a way to avoid missing new entities.
-static constexpr auto kEntitiesOrderedByImportPreference =
-    std::array{autofill::EntityType(autofill::EntityTypeName::kPassport),
-               autofill::EntityType(autofill::EntityTypeName::kLoyaltyCard)};
-
 bool CheckIfEntitySatisfiesConstraints(const autofill::EntityInstance& entity) {
   autofill::DenseSet<autofill::AttributeType> attribute_types;
   for (const autofill::AttributeInstance& attribute_instance :
@@ -105,12 +100,16 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
         autofill::AttributeType::FromFieldType(*autofill_ai_server_prediction);
     CHECK(field_attribute_type);
     // TODO(crbug.com/389629676): Save data format.
+    std::u16string value = field->value(autofill::ValueSemantics::kCurrent);
+    base::TrimWhitespace(value, base::TRIM_ALL, &value);
+    if (value.empty()) {
+      continue;
+    }
+
     section_to_entity_types_attributes[field->section()][field_attribute_type
                                                              ->entity_type()]
-        .emplace_back(
-            *field_attribute_type,
-            base::UTF16ToUTF8(field->value(autofill::ValueSemantics::kCurrent)),
-            autofill::AttributeInstance::Context{});
+        .emplace_back(*field_attribute_type, base::UTF16ToUTF8(value),
+                      autofill::AttributeInstance::Context{});
   }
 
   std::vector<autofill::EntityInstance> entities_found_in_form;
@@ -131,16 +130,55 @@ std::vector<autofill::EntityInstance> GetPossibleEntitiesFromSubmittedForm(
   return entities_found_in_form;
 }
 
-bool ShouldEntityBeSaved(
+// Returns true if `entity` cannot be merged in any of the `current_entities`
+// nor is a subset of any of them. This means that a save prompt should be
+// displayed.
+bool ShouldShowNewEntitySavePrompt(
     const autofill::EntityInstance& entity,
     base::span<const autofill::EntityInstance> current_entities) {
-  if (!base::Contains(current_entities, entity.type(),
-                      &autofill::EntityInstance::type)) {
-    return true;
+  return std::ranges::none_of(
+      current_entities, [&](const autofill::EntityInstance& existing_entity) {
+        autofill::EntityInstance::EntityMergeability mergeability =
+            existing_entity.GetEntityMergeability(entity);
+        // If `entity` can be merged into `existing_entity`, a save prompt
+        // should not be shown.
+        if (!mergeability.mergeable_attributes.empty()) {
+          return true;
+        }
+        // If `entity` is a subset of another entity, we should also not show a
+        // save prompt.
+        if (mergeability.is_subset) {
+          return true;
+        }
+        return false;
+      });
+}
+
+// Finds an entity in `current_entities` which `entity` can be merged into.
+// Returns `std::nullopt` if no suitable entity is found.
+std::optional<autofill::EntityInstance> MaybeUpdateEntity(
+    const autofill::EntityInstance& entity,
+    base::span<const autofill::EntityInstance> current_entities) {
+  for (const autofill::EntityInstance& existing_entity : current_entities) {
+    autofill::EntityInstance::EntityMergeability mergeability =
+        existing_entity.GetEntityMergeability(entity);
+    if (mergeability.mergeable_attributes.empty()) {
+      continue;
+    }
+
+    // Merges attributes into `existing_entity` and returns an updated entity
+    // that contains both existing and new attributes.
+    std::vector<autofill::AttributeInstance> new_attributes =
+        base::ToVector(mergeability.mergeable_attributes);
+    for (autofill::AttributeInstance curr_attribute :
+         existing_entity.attributes()) {
+      new_attributes.emplace_back(std::move(curr_attribute));
+    }
+    return autofill::EntityInstance(
+        existing_entity.type(), std::move(new_attributes),
+        existing_entity.guid(), existing_entity.nickname(), base::Time::Now());
   }
-  // TODO(crbug.com/389629676): Handle the entity existing but not being
-  // mergeable.
-  return false;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -218,11 +256,6 @@ AutofillAiManager::GetFieldValueSensitivityMap(
 
 AutofillAiManager::~AutofillAiManager() = default;
 
-bool AutofillAiManager::HasAutofillAiDataForField(
-    const autofill::FormFieldData& field) {
-  return cache_ && cache_->contains(field.global_id());
-}
-
 bool AutofillAiManager::IsEligibleForAutofillAi(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field) const {
@@ -240,216 +273,13 @@ bool AutofillAiManager::IsUserEligible() const {
   return client_->IsUserEligible();
 }
 
-void AutofillAiManager::UpdateFieldFocusabilityInCache(
-    const autofill::FormData& form) {
-  if (!cache_) {
-    return;
-  }
-  for (const autofill::FormFieldData& field : form.fields()) {
-    if (!cache_->contains(field.global_id())) {
-      continue;
-    }
-    cache_->at(field.global_id()).is_focusable = field.IsFocusable();
-  }
-}
-
-std::vector<autofill::Suggestion> AutofillAiManager::GetSuggestions(
-    const std::vector<autofill::Suggestion>& autofill_suggestions,
-    const autofill::FormData& form,
-    const autofill::FormFieldData& field) {
-  // If `form` is not the one currently cashed, `Reset()` the state unless
-  // predictions are currently retrieved.
-  if (last_queried_form_global_id_ &&
-      *last_queried_form_global_id_ != form.global_id()) {
-    if (prediction_retrieval_state_ !=
-        PredictionRetrievalState::kIsLoadingPredictions) {
-      // Reset state if the trigger form global id has changed from the
-      // `last_queried_form_global_id_` while not loading predictions.
-      // TODO(crbug.com/370695713): Reset also for dynamically changed forms
-      // that keep their global id.
-      Reset();
-    } else {
-      // Return an empty vector of suggestions while retrieving predictions for
-      // a different form. This will continue the regular Autofill flow (e.g.
-      // show Autofill or Autocomplete suggestions) in the
-      // `BrowserAutofillManager`.
-      return {};
-    }
-  }
-
-  // Store `autofill_suggestions` to potentially show them with prediction
-  // improvements later.
-  // TODO(crbug.com/370693653): Also store autocomplete suggestions.
-  autofill_suggestions_ = autofill_suggestions;
-
-  switch (prediction_retrieval_state_) {
-    case PredictionRetrievalState::kReady:
-      if (kTriggerAutomatically.Get()) {
-        return CreateLoadingSuggestions();
-      }
-      return CreateTriggerSuggestions();
-    case PredictionRetrievalState::kIsLoadingPredictions:
-      // Keep showing the loading suggestion while prediction improvements are
-      // being retrieved.
-      return CreateLoadingSuggestions();
-    case PredictionRetrievalState::kDoneSuccess:
-      // The `form` fields' focusability states may have changed since the last
-      // `form` field focus event, so they need to be updated in the `cache_`.
-      // This ensures that child suggestions will be created correctly in
-      // `CreateFillingSuggestions()`. This only needs to be done in the
-      // `kDoneSuccess` case because otherwise `cache_` is null.
-      UpdateFieldFocusabilityInCache(form);
-      // Show a cached prediction improvements filling suggestion for `field` if
-      // it exists. This may contain additional `autofill_suggestions`, appended
-      // to the prediction improvements.
-      if (HasAutofillAiDataForField(field)) {
-        return CreateFillingSuggestions(*client_, *cache_, form, field,
-                                        autofill_suggestions);
-      }
-      // If there are no cached predictions for the `field`, continue the
-      // regular Autofill flow if it has data to show.
-      // TODO(crbug.com/370695713): Add check for autocomplete.
-      if (!autofill_suggestions.empty()) {
-        // Returning an empty vector will continue the regular Autofill flow
-        // (e.g. show Autofill or Autocomplete suggestions) in the
-        // `BrowserAutofillManager`.
-        return {};
-      }
-      // Show the no info suggestion exactly once, otherwise show the trigger
-      // suggestion again.
-      // TODO(crbug.com/374715268): Consider not showing the trigger suggestion
-      // again, since this will also result in an error.
-      return error_or_no_info_suggestion_shown_ ? CreateTriggerSuggestions()
-                                                : CreateNoInfoSuggestions();
-    case PredictionRetrievalState::kDoneError:
-      // In the error state, continue the regular Autofill flow if it has data
-      // to show.
-      // TODO(crbug.com/370695713): Add check for autocomplete.
-      if (!autofill_suggestions.empty()) {
-        // Returning an empty vector will continue the regular Autofill flow
-        // (e.g. show Autofill or Autocomplete suggestions) in the
-        // `BrowserAutofillManager`.
-        return {};
-      }
-      // Show the error suggestion exactly once, otherwise show nothing.
-      return error_or_no_info_suggestion_shown_ ? CreateTriggerSuggestions()
-                                                : CreateErrorSuggestions();
-  }
-}
-
-void AutofillAiManager::RetrievePredictions(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field,
-    UpdateSuggestionsCallback update_suggestions_callback,
-    bool update_to_loading_suggestion) {
-  if (prediction_retrieval_state_ ==
-      PredictionRetrievalState::kIsLoadingPredictions) {
-    return;
-  }
-  update_suggestions_callback_ = std::move(update_suggestions_callback);
-  if (update_to_loading_suggestion) {
-    UpdateSuggestions(CreateLoadingSuggestions());
-  }
-  prediction_retrieval_state_ = PredictionRetrievalState::kIsLoadingPredictions;
-  last_queried_form_global_id_ = form.global_id();
-  if (kExtractAXTreeForPredictions.Get()) {
-    client_->GetAXTree(base::BindOnce(&AutofillAiManager::OnReceivedAXTree,
-                                      weak_ptr_factory_.GetWeakPtr(), form,
-                                      trigger_field));
-  } else {
-    optimization_guide::proto::AXTreeUpdate ax_tree_update;
-    OnReceivedAXTree(form, trigger_field, std::move(ax_tree_update));
-  }
-}
-
 void AutofillAiManager::OnReceivedAXTree(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
   client_->GetModelExecutor()->GetPredictions(
       form, /*field_eligibility_map*/ {}, GetFieldValueSensitivityMap(form),
-      std::move(ax_tree_update),
-      base::BindOnce(&AutofillAiManager::OnReceivedPredictions,
-                     weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
-}
-
-void AutofillAiManager::OnReceivedPredictions(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field,
-    AutofillAiModelExecutor::PredictionsOrError predictions_or_error,
-    std::optional<std::string> model_execution_id) {
-  LOG_AF(GetCurrentLogManager())
-      << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
-      << "Received predictions:" <<
-      [&] {
-        LogBuffer buffer;
-        if (!predictions_or_error.has_value()) {
-          buffer << "Error";
-          return buffer;
-        }
-        buffer << autofill::Tag{"table"};
-        for (const auto& [field_id, prediction] :
-             predictions_or_error.value()) {
-          buffer << autofill::Tr{} << field_id << prediction.value;
-        }
-        buffer << autofill::CTag{"table"};
-        return buffer;
-      }();
-
-  form_filling_predictions_model_execution_id_ = model_execution_id;
-
-  if (predictions_or_error.has_value()) {
-    prediction_retrieval_state_ = PredictionRetrievalState::kDoneSuccess;
-    cache_ = std::move(predictions_or_error.value());
-  } else {
-    prediction_retrieval_state_ = PredictionRetrievalState::kDoneError;
-  }
-
-  // Depending on whether predictions where retrieved or not, we need to show
-  // the corresponding suggestions. This is delayed a little bit so that we
-  // don't see a flickering UI.
-  loading_suggestion_timer_.Start(
-      FROM_HERE, kMinTimeToShowLoading,
-      base::BindRepeating(
-          &AutofillAiManager::UpdateSuggestionsAfterReceivedPredictions,
-          weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
-}
-
-void AutofillAiManager::UpdateSuggestionsAfterReceivedPredictions(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field) {
-  switch (prediction_retrieval_state_) {
-    case PredictionRetrievalState::kDoneSuccess:
-      if (HasAutofillAiDataForField(trigger_field)) {
-        UpdateSuggestions(CreateFillingSuggestions(
-            *client_, *cache_, form, trigger_field, autofill_suggestions_));
-      } else {
-        OnFailedToGenerateSuggestions();
-      }
-      break;
-    case PredictionRetrievalState::kDoneError:
-      OnFailedToGenerateSuggestions();
-      break;
-    case PredictionRetrievalState::kReady:
-    case PredictionRetrievalState::kIsLoadingPredictions:
-      NOTREACHED();
-  }
-}
-
-void AutofillAiManager::UserFeedbackReceived(UserFeedback feedback) {
-  if (form_filling_predictions_model_execution_id_ &&
-      feedback == UserFeedback::kThumbsDown) {
-    client_->TryToOpenFeedbackPage(
-        *form_filling_predictions_model_execution_id_);
-  }
-}
-
-void AutofillAiManager::SaveAutofillAiDataUserFeedbackReceived(
-    const std::string& model_execution_id,
-    UserFeedback feedback) {
-  if (feedback == UserFeedback::kThumbsDown) {
-    client_->TryToOpenFeedbackPage(model_execution_id);
-  }
+      std::move(ax_tree_update), base::DoNothing());
 }
 
 // TODO(crbug.com/362468426): Rename this method to
@@ -458,64 +288,12 @@ void AutofillAiManager::UserClickedLearnMore() {
   client_->OpenAutofillAiSettings();
 }
 
-void AutofillAiManager::OnClickedTriggerSuggestion(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field,
-    UpdateSuggestionsCallback update_suggestions_callback) {
-  // Reset the manager's state. This is necessary because the trigger suggestion
-  // may have been shown as a last resort after a failed prediction retrieval.
-  // In this case, the manager might contain stale state (e.g. error state,
-  // previous predictions) that needs to be cleared before starting a new
-  // retrieval.
-  Reset();
-  RetrievePredictions(form, trigger_field,
-                      std::move(update_suggestions_callback),
-                      /*update_to_loading_suggestion=*/true);
-}
-
-void AutofillAiManager::OnLoadingSuggestionShown(
-    const autofill::FormData& form,
-    const autofill::FormFieldData& trigger_field,
-    AutofillAiManager::UpdateSuggestionsCallback update_suggestions_callback) {
-  logger_.OnTriggeredFillingSuggestions(form.global_id());
-  if (kTriggerAutomatically.Get() &&
-      prediction_retrieval_state_ !=
-          PredictionRetrievalState::kIsLoadingPredictions) {
-    RetrievePredictions(form, trigger_field,
-                        std::move(update_suggestions_callback),
-                        /*update_to_loading_suggestion=*/false);
-  } else if (prediction_retrieval_state_ ==
-             PredictionRetrievalState::kIsLoadingPredictions) {
-    // Update the `update_suggestions_callback_` to the current instance. This
-    // is necessary when the loading suggestion was closed (by defocusing the
-    // triggering field) and an eligible form field is focused again, while
-    // retrieving the predictions is still ongoing. In that case the loading
-    // suggestion will be shown again and potentially updated later to error or
-    // filling suggestions.
-    // Note that this might overwrite the original callback set in
-    // `OnClickedTriggerSuggestion()` to one with the same
-    // `AutofillClient::SuggestionUiSessionId`, which doesn't matter though.
-    update_suggestions_callback_ = std::move(update_suggestions_callback);
-  }
-}
-
-void AutofillAiManager::OnErrorOrNoInfoSuggestionShown() {
-  error_or_no_info_suggestion_shown_ = true;
-}
-
 void AutofillAiManager::OnSuggestionsShown(
     const autofill::DenseSet<SuggestionType>& shown_suggestion_types,
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback) {
   logger_.OnSuggestionsShown(form.global_id());
-  if (shown_suggestion_types.contains(
-          SuggestionType::kAutofillAiLoadingState)) {
-    OnLoadingSuggestionShown(form, trigger_field, update_suggestions_callback);
-  }
-  if (shown_suggestion_types.contains(SuggestionType::kAutofillAiError)) {
-    OnErrorOrNoInfoSuggestionShown();
-  }
   if (shown_suggestion_types.contains(SuggestionType::kFillAutofillAi)) {
     logger_.OnFillingSuggestionsShown(form.global_id());
   }
@@ -555,26 +333,6 @@ void AutofillAiManager::OnEditedAutofilledField(
   logger_.OnDidCorrectFillingSuggestion(form_id);
 }
 
-void AutofillAiManager::Reset() {
-  cache_ = std::nullopt;
-  last_queried_form_global_id_ = std::nullopt;
-  update_suggestions_callback_ = base::NullCallback();
-  form_filling_predictions_model_execution_id_ = std::nullopt;
-  loading_suggestion_timer_.Stop();
-  prediction_retrieval_state_ = PredictionRetrievalState::kReady;
-  error_or_no_info_suggestion_shown_ = false;
-}
-
-void AutofillAiManager::UpdateSuggestions(
-    const std::vector<autofill::Suggestion>& suggestions) {
-  loading_suggestion_timer_.Stop();
-  if (update_suggestions_callback_.is_null()) {
-    return;
-  }
-  update_suggestions_callback_.Run(
-      suggestions, autofill::AutofillSuggestionTriggerSource::kAutofillAi);
-}
-
 void AutofillAiManager::MaybeImportForm(
     std::unique_ptr<autofill::FormStructure> form,
     base::OnceCallback<void(std::unique_ptr<autofill::FormStructure> form,
@@ -609,24 +367,27 @@ void AutofillAiManager::MaybeImportForm(
           std::move(autofill_callback).Run(std::move(form), false);
           return;
         }
-        // TODO(crbug.com/389629676): Add proper import logic. For now blindly
-        // import the first instance seen in the form. This should however
-        // depend on `current_entities`.
-        for (const autofill::EntityType& entity_type :
-             kEntitiesOrderedByImportPreference) {
-          for (autofill::EntityInstance& entity : entity_instances_from_form) {
-            if (entity.type() != entity_type) {
-              continue;
-            }
 
-            if (ShouldEntityBeSaved(entity, current_entities)) {
-              self->client_->ShowSaveAutofillAiBubble(
-                  std::move(entity),
-                  BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
-                           AutofillAiManager::EntityUpdateType::kSave));
-              std::move(autofill_callback).Run(std::move(form), true);
-              return;
-            }
+        std::ranges::sort(entity_instances_from_form,
+                          autofill::EntityInstance::ImportOrder);
+
+        for (autofill::EntityInstance& entity : entity_instances_from_form) {
+          if (ShouldShowNewEntitySavePrompt(entity, current_entities)) {
+            self->client_->ShowSaveAutofillAiBubble(
+                std::move(entity),
+                BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
+                         AutofillAiManager::EntityUpdateType::kSave));
+            std::move(autofill_callback).Run(std::move(form), true);
+            return;
+          } else if (std::optional<autofill::EntityInstance>
+                         maybe_entity_to_update =
+                             MaybeUpdateEntity(entity, current_entities)) {
+            self->client_->ShowSaveAutofillAiBubble(
+                std::move(*maybe_entity_to_update),
+                BindOnce(&AutofillAiManager::OnSavePromptAcceptance, self,
+                         AutofillAiManager::EntityUpdateType::kUpdate));
+            std::move(autofill_callback).Run(std::move(form), true);
+            return;
           }
         }
         std::move(autofill_callback).Run(std::move(form), false);
@@ -719,28 +480,6 @@ bool AutofillAiManager::ShouldDisplayIph(
 
 void AutofillAiManager::GoToSettings() const {
   client_->OpenAutofillAiSettings();
-}
-
-void AutofillAiManager::OnFailedToGenerateSuggestions() {
-  if (!autofill_suggestions_.empty()) {
-    // Fallback to regular autofill suggestions if any instead of showing an
-    // error directly.
-    UpdateSuggestions(autofill_suggestions_);
-    return;
-  }
-  // TODO(crbug.com/370693653): Also add logic to fallback to autocomplete
-  // suggestions if possible.
-  switch (prediction_retrieval_state_) {
-    case PredictionRetrievalState::kReady:
-    case PredictionRetrievalState::kIsLoadingPredictions:
-      NOTREACHED();
-    case PredictionRetrievalState::kDoneSuccess:
-      UpdateSuggestions(CreateNoInfoSuggestions());
-      break;
-    case PredictionRetrievalState::kDoneError:
-      UpdateSuggestions(CreateErrorSuggestions());
-      break;
-  }
 }
 
 autofill::LogManager* AutofillAiManager::GetCurrentLogManager() {

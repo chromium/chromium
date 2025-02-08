@@ -2050,14 +2050,12 @@ public class StripLayoutHelper
             SavedTabGroup savedTabGroup =
                     mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
             if (savedTabGroup == null || savedTabGroup.collaborationId == null) return;
-            mDataSharingService.readGroup(
-                    savedTabGroup.collaborationId,
-                    (groupDataOrFailureOutcome) -> {
-                        // Update the group title with avatar and notification bubble.
-                        if (TabShareUtils.hasMultipleCollaborators(groupDataOrFailureOutcome)) {
-                            updateSharedTabGroup(savedTabGroup.collaborationId, groupTitle);
-                        }
-                    });
+
+            GroupData groupData = mCollaborationService.getGroupData(savedTabGroup.collaborationId);
+
+            if (TabShareUtils.hasMultipleCollaborators(groupData)) {
+                updateSharedTabGroup(savedTabGroup.collaborationId, groupTitle);
+            }
         }
     }
 
