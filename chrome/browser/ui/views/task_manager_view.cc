@@ -99,8 +99,7 @@ const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>(
 
 TaskManagerView::~TaskManagerView() {
   // Delete child views now, while our table model still exists.
-  tabs_ = nullptr;             // Destroyed by `container` below.
-  search_bar_ = nullptr;       // Destroyed by `right_aligned_container` below.
+  tabs_ = nullptr;  // Destroyed by `container` below.
   RemoveAllChildViews();
 
   // When the view is destroyed, the lifecycle of the Task Manager is complete.
@@ -351,18 +350,6 @@ void TaskManagerView::SearchBarOnInputChanged(const std::u16string& query) {
   PerformFilter(selected_category, query);
 }
 
-void TaskManagerView::SearchBarOnHoverChange(const bool is_hover_on) {
-  // Only show the hover effect when search bar is in unfocused steady state.
-  const auto background_color_id = is_hover_on && !search_bar_->HasFocus()
-                                       ? kColorTaskManagerSearchBarHoverOn
-                                       : kColorTaskManagerSearchBarBackground;
-  const int search_bar_container_radius =
-      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-          views::ShapeContextTokens::kOmniboxExpandedRadius);
-  search_bar_->SetBackground(views::CreateThemedRoundedRectBackground(
-      background_color_id, search_bar_container_radius));
-}
-
 TaskManagerView::TaskManagerView(StartAction start_action)
     : tab_table_(nullptr),
       tab_table_parent_(nullptr),
@@ -465,7 +452,7 @@ std::unique_ptr<views::View> TaskManagerView::CreateHeaderContent(
   // Compose all parts into header.
   tabs_ = container->AddChildView(std::move(tabs));
   container->AddChildView(std::move(empty_view));
-  search_bar_ = container->AddChildView(std::move(search_bar_container));
+  container->AddChildView(std::move(search_bar_container));
 
   return container;
 }

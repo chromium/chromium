@@ -16,12 +16,10 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 namespace task_manager {
 class TaskManagerSearchBarView : public views::View,
-                                 public views::FocusChangeListener,
                                  public views::TextfieldController {
   METADATA_HEADER(TaskManagerSearchBarView, views::View)
 
@@ -34,9 +32,6 @@ class TaskManagerSearchBarView : public views::View,
     // Called when text in the textfield changes. Calls are throttled with
     // a delay of kInputChangeCallbackDelay to avoid excessive triggering.
     virtual void SearchBarOnInputChanged(const std::u16string& text) = 0;
-    // Called when the controls (textfield and clear button) hover status
-    // changes.
-    virtual void SearchBarOnHoverChange(const bool is_focus_on) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -58,14 +53,6 @@ class TaskManagerSearchBarView : public views::View,
 
   // views::View:
   void OnThemeChanged() override;
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
-  void AddedToWidget() override;
-  void RemovedFromWidget() override;
-
-  // views::FocusChangeListener:
-  void OnWillChangeFocus(View* focused_before, View* focused_now) override;
-  void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
@@ -80,9 +67,6 @@ class TaskManagerSearchBarView : public views::View,
   // Updates related fields on the Textfield.
   void UpdateTextfield();
 
-  // Update background color for the search bar based on its hover status.
-  void UpdateBackground();
-
  private:
   void OnInputChanged();
   void OnClearPressed();
@@ -94,9 +78,6 @@ class TaskManagerSearchBarView : public views::View,
 
   raw_ptr<views::Textfield> input_ = nullptr;
   raw_ptr<views::Button> clear_ = nullptr;
-
-  // Indicate if the search bar is hovered on or not.
-  bool is_hovered_ = false;
 
   base::CallbackListSubscription input_changed_subscription_;
   base::OneShotTimer input_change_notification_timer_;
