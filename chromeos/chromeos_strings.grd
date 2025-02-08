@@ -3538,7 +3538,7 @@
         All created images will automatically appear here.
         </message>
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_TITLE" desc="The title of the introduction dialog displayed on the first time the user enters Sea Pen subpage.">
-          How to create with AI and a few things to keep in mind
+          A few things to keep in mind
         </message>
         <message name="IDS_SEA_PEN_INTRODUCTION_DIALOG_FIRST_PARAGRAPH" desc="Option to fill in the SEA_PEN_INTRO_FIRST_PARAGRAPH of the IDS_SEA_PEN_INTRODUCTION_DIALOG_CONTENT.">
           Choose a theme and then select the underlined words to personalize your AI images.
