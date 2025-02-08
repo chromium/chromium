@@ -13,16 +13,13 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_platform_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
@@ -33,6 +30,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_action_runner.h"
+#endif
+
 using base::UTF8ToUTF16;
 using std::u16string;
 
@@ -41,6 +42,8 @@ namespace extensions {
 namespace {
 
 const char kTestingPage[] = "/extensions/test_file.html";
+
+#if !BUILDFLAG(IS_ANDROID)
 const char kAnonymousFunction[] = "(anonymous function)";
 const char* const kBackgroundPageName =
     extensions::kGeneratedBackgroundPageFilename;
@@ -70,6 +73,7 @@ void CheckStackFrame(const StackFrame& frame,
   EXPECT_EQ(line_number, frame.line_number);
   EXPECT_EQ(column_number, frame.column_number);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify that all properties of a given |error| are correct.
 void CheckError(const ExtensionError* error,
@@ -86,6 +90,7 @@ void CheckError(const ExtensionError* error,
   EXPECT_EQ(base::UTF8ToUTF16(message), error->message());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Verify that all properties of a JS runtime error are correct.
 void CheckRuntimeError(const ExtensionError* error,
                        const std::string& id,
@@ -103,6 +108,7 @@ void CheckRuntimeError(const ExtensionError* error,
   EXPECT_EQ(context, runtime_error->context_url());
   EXPECT_EQ(expected_stack_size, runtime_error->stack_trace().size());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void CheckManifestError(const ExtensionError* error,
                         const std::string& id,
@@ -122,6 +128,7 @@ void CheckManifestError(const ExtensionError* error,
             manifest_error->manifest_specific());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Checks that a given `error` refers to an error for using a deprecated
 // manifest version.
 void CheckDeprecatedManifestVersionError(const ExtensionError* error,
@@ -130,10 +137,11 @@ void CheckDeprecatedManifestVersionError(const ExtensionError* error,
                      manifest_keys::kManifestVersion,
                      std::string() /* no manifest_specific bit */);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
-class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
+class ErrorConsoleBrowserTest : public ExtensionPlatformBrowserTest {
  public:
   ErrorConsoleBrowserTest() : error_console_(nullptr) {}
   ~ErrorConsoleBrowserTest() override = default;
@@ -202,8 +210,11 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
   enum Action {
     // Navigate to a (non-chrome) page to allow a content script to run.
     ACTION_NAVIGATE,
+#if !BUILDFLAG(IS_ANDROID)
     // Simulate a browser action click.
+    // TODO(crbug.com/395160734): Port ExtensionActionRunner to desktop Android.
     ACTION_BROWSER_ACTION,
+#endif
     // Navigate to the new tab page.
     ACTION_NEW_TAB,
     // Do nothing (errors will be caused by a background script,
@@ -212,7 +223,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
   };
 
   void SetUpOnMainThread() override {
-    ExtensionBrowserTest::SetUpOnMainThread();
+    ExtensionPlatformBrowserTest::SetUpOnMainThread();
 
     // Errors are only kept if we have Developer Mode enabled.
     profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
@@ -243,20 +254,26 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
     *extension = LoadExtension(test_data_dir_.AppendASCII(path), options);
     ASSERT_TRUE(*extension);
 
+    content::WebContents* web_contents = GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+
     switch (action) {
       case ACTION_NAVIGATE: {
-        ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
+        ASSERT_TRUE(content::NavigateToURL(web_contents, GetTestURL()));
+        content::WaitForLoadStop(web_contents);
         break;
       }
+#if !BUILDFLAG(IS_ANDROID)
       case ACTION_BROWSER_ACTION: {
-        ExtensionActionRunner::GetForWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents())
+        ExtensionActionRunner::GetForWebContents(web_contents)
             ->RunAction(*extension, true);
         break;
       }
+#endif
       case ACTION_NEW_TAB: {
-        ASSERT_TRUE(ui_test_utils::NavigateToURL(
-            browser(), GURL(chrome::kChromeUINewTabURL)));
+        ASSERT_TRUE(content::NavigateToURL(web_contents,
+                                           GURL(chrome::kChromeUINewTabURL)));
+        content::WaitForLoadStop(web_contents);
         break;
       }
       case ACTION_NONE:
@@ -357,8 +374,11 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
   EXPECT_EQ(0u, error_console()->GetErrorsForExtension(extension->id()).size());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Load an extension which, upon visiting any page, first sends out a console
 // log, and then crashes with a JS TypeError.
+// TODO(crbug.com/395170712): Port to desktop Android once we can capture
+// runtime JS errors.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
                        ContentScriptLogAndRuntimeError) {
   const Extension* extension = nullptr;
@@ -414,6 +434,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
 
 // Catch an error from a BrowserAction; this is more complex than a content
 // script error, since browser actions are routed through our own code.
+// TODO(crbug.com/395160734): Port ExtensionActionRunner to desktop Android.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
@@ -450,6 +471,8 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
 }
 
 // Test that we can catch an error for calling an API with improper arguments.
+// TODO(crbug.com/395170712): Port to desktop Android once we can capture
+// runtime JS errors.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
@@ -480,6 +503,8 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
 
 // Test that we catch an error when we try to call an API method without
 // permission.
+// TODO(crbug.com/395170712): Port to desktop Android once we can capture
+// runtime JS errors.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
@@ -513,6 +538,8 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
 
 // Test that if there is an error in an HTML page loaded by an extension (most
 // common with apps), it is caught and reported by the ErrorConsole.
+// TODO(crbug.com/395170712): Port to desktop Android once we can capture
+// runtime JS errors.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadExtensionPage) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
@@ -560,5 +587,6 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, DISABLED_CatchesLastError) {
   CheckStackFrame(stack_trace[0], source, kAnonymousFunction, line_number,
                   column_number);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
