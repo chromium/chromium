@@ -401,6 +401,7 @@ void GlicWindowController::ShowDetachedForTesting() {
 }
 
 void GlicWindowController::WebUiStateChanged(mojom::WebUiState new_state) {
+  base::UmaHistogramEnumeration("Glic.PanelWebUiState", new_state);
   if (webui_state_ != new_state) {
     // UI State has changed
     webui_state_ = new_state;
@@ -688,11 +689,11 @@ void GlicWindowController::Detach() {
   MaybeCreateHolderWindowAndReparent();
 
   // Move down a little bit when detaching.
-  gfx::Rect new_bounds = glic_widget_->GetWindowBoundsInScreen();
-  new_bounds.set_y(new_bounds.y() + kDetachYDistance);
+  gfx::Point new_position = glic_widget_->GetWindowBoundsInScreen().origin();
+  new_position.set_y(new_position.y() + kDetachYDistance);
 
-  AnimateBounds(
-      new_bounds, base::Milliseconds(kAnimationDurationMs),
+  AnimatePosition(
+      new_position, base::Milliseconds(kAnimationDurationMs),
       base::BindOnce(&GlicWindowController::DetachFinished, GetWeakPtr()));
 }
 
@@ -703,7 +704,7 @@ void GlicWindowController::DetachFinished() {
 void GlicWindowController::AttachToBrowser(Browser* browser) {
   CHECK(GetGlicWidget());
   attached_browser_ = browser;
-  MovePositionToBrowserGlicButton(browser, true);
+  MovePositionToBrowserGlicButton(browser, /*animate=*/true);
   // Close the holder window.
   holder_widget_.reset();
 
@@ -748,7 +749,6 @@ void GlicWindowController::Resize(const gfx::Size& size,
                                   base::OnceClosure callback) {
   glic_size_ = size;
 
-  // If the glic window is not in the ready state, do nothing for now.
   // TODO(https://crbug.com/379164689): Drive resize animations for error states
   // from the browser. For now, we allow animations during the waiting state.
   // TOOD(https://crbug.com/392668958): If the widget is ready and asks for a
@@ -756,7 +756,7 @@ void GlicWindowController::Resize(const gfx::Size& size,
   // animation and resize to the final size. Investigate a smoother way to
   // animate this transition.
   if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad ||
-      state_ == State::kOpenAnimation) {
+      state_ == State::kOpenAnimation || state_ == State::kDetaching) {
     AnimateSize(size, duration, std::move(callback));
   } else {
     // If the glic window is closed, or the widget isn't ready (e.g. because
@@ -771,8 +771,9 @@ void GlicWindowController::AnimateBounds(const gfx::Rect& target_bounds,
                                          base::OnceClosure callback) {
   CHECK(GetGlicWidget());
 
-  // Stop the current animation if any.
   if (window_resize_animation_) {
+    // TODO(394686499): Do something more graceful than jumping to the end.
+    window_resize_animation_->End();
     ResizeFinished();
   }
 
@@ -787,12 +788,33 @@ void GlicWindowController::AnimateBounds(const gfx::Rect& target_bounds,
 void GlicWindowController::AnimateSize(const gfx::Size& target_size,
                                        base::TimeDelta duration,
                                        base::OnceClosure callback) {
-  // Maintain the top-right corner.
-  gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
-  int original_top_right = current_bounds.x() + current_bounds.width();
-  current_bounds.set_size(target_size);
-  current_bounds.set_x(original_top_right - target_size.width());
-  AnimateBounds(current_bounds, duration, std::move(callback));
+  if (window_resize_animation_) {
+    // TODO(394686499): refine how running bounds change animations are updated.
+    window_resize_animation_->UpdateTargetSize(target_size,
+                                               std::move(callback));
+  } else {
+    // Maintain the top-right corner.
+    gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
+    int original_top_right = current_bounds.x() + current_bounds.width();
+    current_bounds.set_size(target_size);
+    current_bounds.set_x(original_top_right - target_size.width());
+    AnimateBounds(current_bounds, duration, std::move(callback));
+  }
+}
+
+void GlicWindowController::AnimatePosition(const gfx::Point& target_position,
+                                           base::TimeDelta duration,
+                                           base::OnceClosure callback) {
+  if (window_resize_animation_) {
+    // TODO(394686499): Refine how running bounds change animations are updated.
+    window_resize_animation_->UpdateTargetPosition(target_position,
+                                                   std::move(callback));
+  } else {
+    // Maintain the size.
+    gfx::Rect new_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
+    new_bounds.set_origin(target_position);
+    AnimateBounds(new_bounds, duration, std::move(callback));
+  }
 }
 
 std::unique_ptr<views::Widget> GlicWindowController::CreateGlicWidget(
@@ -853,6 +875,7 @@ void GlicWindowController::Close() {
     state_ = State::kCloseAnimation;
     GetGlicView()->web_view()->SetWebContents(nullptr);
     GlicButton* glic_button = GetGlicButton(attached_browser_);
+    // The widget is going away so it's fine to replace any existing animation.
     AnimateBounds(
         glic_button->GetBoundsWithInset(),
         base::Milliseconds(kAnimationDurationMs),
@@ -1050,26 +1073,15 @@ void GlicWindowController::MovePositionToBrowserGlicButton(Browser* browser,
   GlicButton* glic_button = GetGlicButton(browser);
   CHECK(glic_button);
   gfx::Point top_right = GetTopRightPositionForAttachedGlicWindow(glic_button);
+  gfx::Point target_position(
+      top_right.x() - GetGlicWidget()->GetWindowBoundsInScreen().width(),
+      top_right.y());
 
-  gfx::Rect current_bounds = GetGlicWidget()->GetWindowBoundsInScreen();
-  gfx::Rect new_bounds = current_bounds;
-  new_bounds.set_x(top_right.x() - current_bounds.width());
-  new_bounds.set_y(top_right.y());
-
-  gfx::Size cur_widget_size(kWidgetDefaultWidth, kWidgetTopBarHeight);
-  if (glic_size_) {
-    cur_widget_size = *glic_size_;
-  }
-  new_bounds.set_width(cur_widget_size.width());
-  new_bounds.set_height(cur_widget_size.height());
   // Avoid conversions between pixels and DIP on non 1.0 scale factor displays
   // changing widget width and height.
-  if (animate) {
-    AnimateBounds(new_bounds, base::Milliseconds(kAnimationDurationMs),
-                  base::DoNothing());
-  } else {
-    GetGlicWidget()->SetBounds(new_bounds);
-  }
+  base::TimeDelta duration = animate ? base::Milliseconds(kAnimationDurationMs)
+                                     : base::Milliseconds(0);
+  AnimatePosition(target_position, duration, base::DoNothing());
   NotifyIfPanelStateChanged();
 }
 

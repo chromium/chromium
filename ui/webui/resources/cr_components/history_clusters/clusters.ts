@@ -369,7 +369,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
    * Called when the scrollable area has been scrolled nearly to the bottom.
    */
   private onScrolledToBottom_() {
-    if (this.shadowRoot!.querySelector(':focus-visible')) {
+    if (this.shadowRoot.querySelector(':focus-visible')) {
       // If some element of ours is keyboard-focused, don't automatically load
       // more clusters. It loses the user's position and messes up screen
       // readers. Let the user manually click the "Load More" button, if needed.
@@ -386,7 +386,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   // Helper methods
   //============================================================================
   private getConfirmationDialog_(): CrDialogElement {
-    const dialog = this.shadowRoot!.querySelector('cr-dialog');
+    const dialog = this.shadowRoot.querySelector('cr-dialog');
     assert(dialog);
     return dialog;
   }

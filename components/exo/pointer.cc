@@ -48,6 +48,8 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/cursor_util.h"
 
@@ -77,7 +79,43 @@ int GetContainerIdForMouseCursor() {
   return ash::kShellWindowId_MouseCursorContainer;
 }
 
+class ScopedCursorUnlocker {
+ public:
+  explicit ScopedCursorUnlocker(aura::client::CursorClient* cursor_client)
+      : cursor_client_(cursor_client) {
+    if (cursor_client_) {
+      cursor_client_->UnlockCursor();
+    }
+  }
+
+  ScopedCursorUnlocker(const ScopedCursorUnlocker&) = delete;
+  ScopedCursorUnlocker& operator=(const ScopedCursorUnlocker&) = delete;
+
+  ~ScopedCursorUnlocker() {
+    if (cursor_client_) {
+      cursor_client_->LockCursor();
+    }
+  }
+
+ private:
+  raw_ptr<aura::client::CursorClient> cursor_client_;
+};
+
 }  // namespace
+
+class Pointer::ScopedCursorLocker {
+ public:
+  explicit ScopedCursorLocker() {
+    WMHelper::GetInstance()->GetCursorClient()->LockCursor();
+  }
+
+  ScopedCursorLocker(const ScopedCursorLocker&) = delete;
+  ScopedCursorLocker& operator=(const ScopedCursorLocker&) = delete;
+
+  ~ScopedCursorLocker() {
+    WMHelper::GetInstance()->GetCursorClient()->UnlockCursor();
+  }
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Pointer, public:
@@ -372,6 +410,11 @@ bool Pointer::EnablePointerCapture(Surface* capture_surface) {
 
   seat_->NotifyPointerCaptureEnabled(this, window);
 
+  cursor_locker_ = std::make_unique<ScopedCursorLocker>();
+  // Ensure the cap to click is not paused when entering the pointer lock.
+  ui::OzonePlatform::GetInstance()->GetInputController()->SetTapToClickPaused(
+      false);
+
   return true;
 }
 
@@ -379,6 +422,8 @@ void Pointer::DisablePointerCapture() {
   // Early out if pointer capture is not enabled.
   if (!capture_window_)
     return;
+
+  cursor_locker_.reset();
 
   // Remove the pre-target handler that consumes all mouse events.
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
@@ -1012,6 +1057,10 @@ void Pointer::UpdateCursor() {
   // for when capture becomes permitted again.
   const ui::Cursor& cursor =
       capture_permitted_ ? cursor_ : ui::mojom::CursorType::kPointer;
+
+  // Temporarily unlock the cursor if the pointer capture is enabled.
+  ScopedCursorUnlocker unlock(capture_window_ ? helper->GetCursorClient()
+                                              : nullptr);
 
   // If there is a focused surface, update its widget as the views framework
   // expect that Widget knows the current cursor. Otherwise update the

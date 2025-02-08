@@ -2221,5 +2221,34 @@ TEST_P(PointerTest, SetCursorBitmapFromBuffer) {
   pointer.reset();
 }
 
+TEST_P(PointerConstraintTest, ConstraintPointerLockPointer) {
+  auto* cursor_client = WMHelper::GetInstance()->GetCursorClient();
+  auto original_cursor = cursor_client->GetCursor();
+  EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
+
+  EXPECT_TRUE(cursor_client->IsCursorLocked());
+  EXPECT_TRUE(cursor_client->IsCursorVisible());
+  EXPECT_EQ(original_cursor.type(), cursor_client->GetCursor().type());
+
+  EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
+  EXPECT_CALL(delegate_, OnPointerFrame()).Times(testing::AtLeast(1));
+  generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
+
+  pointer_->SetCursorType(ui::mojom::CursorType::kNull);
+
+  EXPECT_EQ(ui::mojom::CursorType::kNull, cursor_client->GetCursor().type());
+
+  GetEventGenerator()->PressKey(ui::VKEY_A, 0, 0);
+  EXPECT_TRUE(cursor_client->IsCursorLocked());
+  EXPECT_TRUE(cursor_client->IsCursorVisible());
+
+  pointer_->OnPointerConstraintDelegateDestroying(&constraint_delegate_);
+  EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
+
+  EXPECT_FALSE(cursor_client->IsCursorLocked());
+
+  pointer_.reset();
+}
+
 }  // namespace
 }  // namespace exo

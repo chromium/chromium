@@ -184,7 +184,7 @@ suite('HistoryClustersTest', () => {
         clustersElement.$.clusters.querySelector('history-cluster')!.$.container
             .querySelector('url-visit');
     const urlVisitHeader =
-        urlVisit!.shadowRoot!.querySelector<HTMLElement>('#header');
+        urlVisit!.shadowRoot.querySelector<HTMLElement>('#header');
 
     urlVisitHeader!.click();
 
@@ -205,7 +205,7 @@ suite('HistoryClustersTest', () => {
         clustersElement.$.clusters.querySelector('history-cluster')!.$.container
             .querySelector('url-visit');
     const urlVisitHeader =
-        urlVisit!.shadowRoot!.querySelector<HTMLElement>('#header');
+        urlVisit!.shadowRoot.querySelector<HTMLElement>('#header');
 
     // First url visit is selected.
     urlVisitHeader!.focus();
@@ -259,7 +259,7 @@ suite('HistoryClustersTest', () => {
     assertEquals(urlVisit.visit.normalizedUrl, pageUrl);
 
     // Verify the icon element received the handler's response.
-    const icon = urlVisit.shadowRoot!.querySelector('page-favicon');
+    const icon = urlVisit.shadowRoot.querySelector('page-favicon');
     assertTrue(!!icon);
     const imageUrl = icon.getImageUrlForTesting();
     assertTrue(!!imageUrl);
@@ -334,7 +334,7 @@ suite('HistoryClustersTest', () => {
     // Initial 2 results are rendered.
     assertEquals(
         2,
-        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
+        clustersElement.shadowRoot.querySelectorAll('history-cluster').length);
 
     // More clusters requested. Simulate a response.
     callbackRouterRemote.onClustersQueryResult(Object.assign(
@@ -342,14 +342,14 @@ suite('HistoryClustersTest', () => {
     await microtasksFinished();
     assertEquals(
         4,
-        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
+        clustersElement.shadowRoot.querySelectorAll('history-cluster').length);
   });
 
   test('Cluster removed', async () => {
     const clustersElement = await setupClustersElement();
     assertEquals(
         2,
-        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
+        clustersElement.shadowRoot.querySelectorAll('history-cluster').length);
 
     callbackRouterRemote.onVisitsRemoved([getTestVisit()]);
     await Promise.all([
@@ -362,7 +362,7 @@ suite('HistoryClustersTest', () => {
     // removed one.
     assertEquals(
         1,
-        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
+        clustersElement.shadowRoot.querySelectorAll('history-cluster').length);
   });
 });
 
@@ -453,7 +453,7 @@ suite('HistoryClustersFocusTest', () => {
 
     assertEquals(
         3,
-        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
+        clustersElement.shadowRoot.querySelectorAll('history-cluster').length);
 
     // Visit 1 and visit 2 are removed. This opens up new space for more
     // clusters to be loaded, so more clusters should be requested.
@@ -478,7 +478,7 @@ suite('HistoryClustersFocusTest', () => {
     // removed one. 1 more cluster is added for a total of 3.
     assertEquals(
         3,
-        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
+        clustersElement.shadowRoot.querySelectorAll('history-cluster').length);
   });
 
   test('Scroll to load more clusters', async () => {

@@ -154,12 +154,15 @@ source_set("test_support") {
   sources = [
     "glic_test_environment.cc",
     "glic_test_environment.h",
+    "glic_test_util.cc",
+    "glic_test_util.h",
     "interactive_glic_test.cc",
     "interactive_glic_test.h",
   ]
   deps = [
     ":glic",
     ":impl",
+    "//components/signin/public/identity_manager:test_support",
   ]
   public_deps = [ "//chrome/test:test_support" ]
 }
@@ -176,6 +179,7 @@ source_set("unit_tests") {
   deps = [
     ":glic",
     ":impl",
+    ":test_support",
     "//base/test:test_support",
     "//chrome/browser/glic/launcher:launcher",
     "//chrome/browser/ui",

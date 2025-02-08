@@ -5496,7 +5496,7 @@
   {
     "name": "keyboard-focusable-scrollers",
     "owners": ["dizhangg@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 138
   },
   {
     "name": "keyboard-lock-prompt",

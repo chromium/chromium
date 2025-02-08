@@ -5,11 +5,10 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/content_extraction/inner_text.h"
+#include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,19 +23,9 @@
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/pdf/common/constants.h"
 #include "components/search_engines/template_url_service.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/page_user_data.h"
-#include "pdf/buildflags.h"
-#include "services/metrics/public/cpp/metrics_utils.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
-
-#if BUILDFLAG(ENABLE_PDF)
-#include "components/pdf/browser/pdf_document_helper.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace page_content_annotations {
 
@@ -51,219 +40,7 @@ HistoryVisit CreateHistoryVisitFromWebContents(
   return visit;
 }
 
-#if BUILDFLAG(ENABLE_PDF)
-void RecordPdfPageCountMetrics(
-    ukm::SourceId source_id,
-    pdf::mojom::PdfListener::GetPdfBytesStatus status,
-    const std::vector<uint8_t>& bytes,
-    uint32_t page_count) {
-  if (status == pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed) {
-    return;
-  }
-  ukm::builders::OptimizationGuide_AnnotatedPdfContent(source_id)
-      .SetPdfPageCount(ukm::GetExponentialBucketMinForCounts1000(page_count))
-      .Record(ukm::UkmRecorder::Get());
-}
-#endif  // BUILDFLAG(ENABLE_PDF)
-
 }  // namespace
-
-class PageContentAnnotationsWebContentsObserver::AnnotatedPageContentRequest {
- public:
-  static std::unique_ptr<AnnotatedPageContentRequest> MaybeCreate(
-      content::WebContents* web_contents) {
-    if (!base::FeatureList::IsEnabled(page_content_annotations::features::
-                                          kAnnotatedPageContentExtraction)) {
-      return nullptr;
-    }
-
-    auto request = blink::mojom::AIPageContentOptions::New();
-    request->on_critical_path = page_content_annotations::features::
-        IsAnnotatedPageContentOnCriticalPath();
-    request->include_geometry = page_content_annotations::features::
-        ShouldAnnotatedPageContentIncludeGeometry();
-    request->include_hidden_searchable_content = page_content_annotations::
-        features::ShouldIncludeHiddenButSearchableContent();
-
-    return std::make_unique<AnnotatedPageContentRequest>(web_contents,
-                                                         std::move(request));
-  }
-
-  AnnotatedPageContentRequest(content::WebContents* web_contents,
-                              blink::mojom::AIPageContentOptionsPtr request)
-      : web_contents_(web_contents),
-        request_(std::move(request)),
-        delay_(page_content_annotations::features::
-                   GetAnnotatedPageContentCaptureDelay()),
-        include_inner_text_(
-            page_content_annotations::features::
-                ShouldAnnotatedPageContentStudyIncludeInnerText()) {}
-
-  ~AnnotatedPageContentRequest() = default;
-
-  void PrimaryPageChanged() { ResetForNewNavigation(); }
-
-  void DidFinishNavigation(content::NavigationHandle* navigation_handle) {
-    if (!navigation_handle->IsInPrimaryMainFrame()) {
-      return;
-    }
-
-    // Cross-document navigations are handled in PrimaryPageChanged.
-    if (!navigation_handle->IsSameDocument() ||
-        !navigation_handle->HasCommitted()) {
-      return;
-    }
-
-    // This is a heuristic to tradeoff how frequently the content is updated and
-    // ensuring we have coverage for single-page-apps in the data. If the
-    // navigation will appear in the browser history, it's likely a significant
-    // change in page state.
-    if (!navigation_handle->ShouldUpdateHistory()) {
-      return;
-    }
-
-    ResetForNewNavigation();
-
-    // We don't have reliable load and FCP signals for same-document
-    // navigations. So we assume the content is ready as soon as the navigation
-    // commits.
-    waiting_for_fcp_ = false;
-    waiting_for_load_ = false;
-    RequestContentIfReady();
-  }
-
-  void DidStopLoading() {
-    // Ensure that the main frame's Document has finished loading.
-    if (!web_contents_->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-      return;
-    }
-
-    // Once the main Document has fired the `load` event, wait for all subframes
-    // currently in the FrameTree to also finish loading.
-    if (web_contents_->IsLoading()) {
-      return;
-    }
-
-    if (web_contents_->GetContentsMimeType() == pdf::kPDFMimeType) {
-      // Pdfs don't provide a FirstContentfulPaint signal, so skip waiting for
-      // it for these Documents.
-      waiting_for_fcp_ = false;
-    }
-
-    waiting_for_load_ = false;
-    RequestContentIfReady();
-  }
-
-  void OnFirstContentfulPaintInPrimaryMainFrame() {
-    waiting_for_fcp_ = false;
-    RequestContentIfReady();
-  }
-
- private:
-  void ResetForNewNavigation() {
-    page_content_pending_ = true;
-    waiting_for_fcp_ = true;
-    waiting_for_load_ = true;
-
-    // Drop pending extraction request for the previous page, if any.
-    weak_factory_.InvalidateWeakPtrs();
-  }
-
-  void RequestContentIfReady() {
-    if (!Ready()) {
-      return;
-    }
-
-    if (web_contents_->GetContentsMimeType() == pdf::kPDFMimeType) {
-#if BUILDFLAG(ENABLE_PDF)
-      content::GetUIThreadTaskRunner()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&AnnotatedPageContentRequest::RequestPdfPageCount,
-                         weak_factory_.GetWeakPtr()),
-          page_content_annotations::features::
-              GetAnnotatedPageContentCaptureDelay());
-#endif  // BUILDFLAG(ENABLE_PDF)
-    } else {
-      if (delay_.is_zero()) {
-        RequestAnnotatedPageContentSync();
-        return;
-      }
-      content::GetUIThreadTaskRunner()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              &AnnotatedPageContentRequest::RequestAnnotatedPageContentSync,
-              weak_factory_.GetWeakPtr()),
-          delay_);
-    }
-  }
-
-  void RequestAnnotatedPageContentSync() {
-    optimization_guide::GetAIPageContent(
-        web_contents_, request_.Clone(),
-        base::BindOnce(&AnnotatedPageContentRequest::OnPageContentReceived,
-                       weak_factory_.GetWeakPtr()));
-
-    if (include_inner_text_) {
-      content_extraction::GetInnerText(
-          *web_contents_->GetPrimaryMainFrame(), std::nullopt,
-          base::BindOnce(&AnnotatedPageContentRequest::OnInnerTextReceived,
-                         weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
-    }
-  }
-
-  bool Ready() const {
-    if (!page_content_pending_) {
-      return false;
-    }
-
-    return !waiting_for_fcp_ && !waiting_for_load_;
-  }
-
-  void OnPageContentReceived(
-      std::optional<optimization_guide::proto::AnnotatedPageContent> proto) {}
-
-  void OnInnerTextReceived(
-      base::TimeTicks start_time,
-      std::unique_ptr<content_extraction::InnerTextResult> result) {
-    if (!result) {
-      return;
-    }
-    UMA_HISTOGRAM_TIMES("OptimizationGuide.InnerText.TotalLatency",
-                        base::TimeTicks::Now() - start_time);
-    UMA_HISTOGRAM_CUSTOM_COUNTS("OptimizationGuide.InnerText.TotalSize2",
-                                result->inner_text.length() / 1024, 10, 5000,
-                                50);
-  }
-
-#if BUILDFLAG(ENABLE_PDF)
-  void RequestPdfPageCount() {
-    CHECK(web_contents_->GetContentsMimeType() == pdf::kPDFMimeType);
-    pdf::PDFDocumentHelper* pdf_helper =
-        pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents_);
-    if (pdf_helper) {
-      // Fetch zero PDF bytes to just receive the total page count.
-      pdf_helper->GetPdfBytes(
-          /*size_limit=*/0,
-          base::BindOnce(
-              &RecordPdfPageCountMetrics,
-              web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId()));
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
-
-  const raw_ptr<content::WebContents> web_contents_;
-  const blink::mojom::AIPageContentOptionsPtr request_;
-  const base::TimeDelta delay_;
-  const bool include_inner_text_;
-
-  // Set if a new page was committed and querying it's content is pending.
-  bool page_content_pending_ = false;
-
-  bool waiting_for_load_ = false;
-  bool waiting_for_fcp_ = false;
-
-  base::WeakPtrFactory<AnnotatedPageContentRequest> weak_factory_{this};
-};
 
 PageContentAnnotationsWebContentsObserver::
     PageContentAnnotationsWebContentsObserver(

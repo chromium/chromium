@@ -121,6 +121,10 @@ constexpr int kMinimumLengthToAutocomplete = 2;
 // Border insets for SearchBoxView in bubble launcher.
 constexpr auto kBorderInsetsForAppListBubble = gfx::Insets::TLBR(4, 4, 4, 0);
 
+// The size the of the `kLensColorIcon` used for the sunfish button. Larger than
+// the regular search box icon size to accommodate for the Lens icon's padding.
+constexpr int kLensColorIconSize = 24;
+
 // The default PlaceholderTextTypes used for productivity launcher. Randomly
 // selected when placeholder text would be shown.
 constexpr SearchBoxView::PlaceholderTextType kDefaultPlaceholders[] = {
@@ -815,7 +819,9 @@ void SearchBoxView::OnThemeChanged() {
         views::ImageButton::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
             features::IsSunfishFeatureEnabled() ? kLensColorIcon : kScannerIcon,
-            button_icon_color, GetSearchBoxIconSize()));
+            button_icon_color,
+            features::IsSunfishFeatureEnabled() ? kLensColorIconSize
+                                                : GetSearchBoxIconSize()));
   }
   assistant_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,

@@ -392,6 +392,8 @@ source_set("extensions") {
       "chrome_extension_function_details.h",
       "chrome_extension_host_delegate.cc",
       "chrome_extension_host_delegate.h",
+      "chrome_extension_registrar_delegate.cc",
+      "chrome_extension_registrar_delegate.h",
       "chrome_extension_system.cc",
       "chrome_extension_system.h",
       "chrome_extension_system_factory.cc",

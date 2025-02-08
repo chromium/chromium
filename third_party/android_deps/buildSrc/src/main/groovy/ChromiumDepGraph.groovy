@@ -24,7 +24,6 @@ class ChromiumDepGraph {
     // Some libraries don't properly fill their POM with the appropriate licensing information. It is provided here from
     // manual lookups. Note that licenseUrl must provide textual content rather than be an html page.
     static final Map<String, PropertyOverride> PROPERTY_OVERRIDES = [
-        androidx_annotation_annotation: new PropertyOverride(testOnly: false),
         androidx_multidex_multidex: new PropertyOverride(
             url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
         com_google_android_datatransport_transport_api: new PropertyOverride(
@@ -321,11 +320,9 @@ class ChromiumDepGraph {
         Map<String, List<ResolvedArtifact>> resolvedArtifacts = [:]
         String[] configNames = [
             'compile',
-            'compileLatest',
             'buildCompile',
             'testCompile',
             'androidTestCompile',
-            'androidTestCompileLatest',
             'buildCompileNoDeps'
         ]
         for (Project project : projects) {
@@ -350,30 +347,38 @@ class ChromiumDepGraph {
         resolvedArtifacts['testCompile'].each { artifact ->
             String id = makeModuleId(artifact)
             DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name} (${id})"
+            assert dep : "No dependency collected for artifact ${artifact.name}"
             dep.testOnly = true
         }
 
-        (resolvedArtifacts['androidTestCompile'] + resolvedArtifacts['androidTestCompileLatest']).each { artifact ->
-            String id = makeModuleId(artifact)
-            DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name} (${id})"
+        resolvedArtifacts['androidTestCompile'].each { artifact ->
+            DependencyDescription dep = dependencies.get(makeModuleId(artifact))
+            assert dep : "No dependency collected for artifact ${artifact.name} (${makeModuleId(artifact)})"
             dep.supportsAndroid = true
             dep.testOnly = true
         }
 
-        (resolvedArtifacts['buildCompile'] + resolvedArtifacts['buildCompileNoDeps']).each { artifact ->
+        resolvedArtifacts['buildCompile'].each { artifact ->
             String id = makeModuleId(artifact)
             DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name} (${id})"
+            assert dep : "No dependency collected for artifact ${artifact.name}"
             dep.usedInBuild = true
             dep.testOnly = false
         }
 
-        (resolvedArtifacts['compile'] + resolvedArtifacts['compileLatest']).each { artifact ->
+        resolvedArtifacts['buildCompileNoDeps'].each { artifact ->
             String id = makeModuleId(artifact)
             DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name} (${id})"
+            assert dep : "No dependency collected for artifact ${artifact.name}"
+            dep.usedInBuild = true
+            dep.testOnly = false
+        }
+
+        List<ResolvedArtifact> compileResolvedArtifacts = resolvedArtifacts['compile']
+        compileResolvedArtifacts.each { artifact ->
+            String id = makeModuleId(artifact)
+            DependencyDescription dep = dependencies.get(id)
+            assert dep : "No dependency collected for artifact ${artifact.name}"
             dep.supportsAndroid = true
             dep.testOnly = false
             dep.isShipped = true
@@ -406,11 +411,6 @@ class ChromiumDepGraph {
                     recursivelyOverrideLatestVersion(dep)
                 }
                 dep.versionFilter = overrides.versionFilter
-                // Generally this should not be necessary but temporarily needed until
-                // https://crbug.com/394878886 is fixed.
-                if (overrides.testOnly != null) {
-                    dep.testOnly = overrides.testOnly
-                }
             } else {
                 logger.warn('PROPERTY_OVERRIDES has stale dep: ' + id)
             }
@@ -781,8 +781,8 @@ class ChromiumDepGraph {
 
     // Checks if currentVersion is lower than versionInQuestion.
     private boolean isVersionLower(String currentVersion, String versionInQuestion) {
-        List verA = currentVersion.tokenize('.-')
-        List verB = versionInQuestion.tokenize('.-')
+        List verA = currentVersion.tokenize('.')
+        List verB = versionInQuestion.tokenize('.')
         int commonIndices = Math.min(verA.size(), verB.size())
         for (int i = 0; i < commonIndices; ++i) {
             // toInteger could fail as some versions are 2.11.alpha-06.
@@ -860,7 +860,6 @@ class ChromiumDepGraph {
         Boolean generateTarget
         Boolean overrideLatest
         String versionFilter
-        Boolean testOnly
 
     }
 

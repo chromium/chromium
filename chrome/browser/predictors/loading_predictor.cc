@@ -538,7 +538,8 @@ void LoadingPredictor::MaybePrewarmResources(
   }
 
   prewarm_http_disk_cache_manager_->MaybePrewarmResources(
-      top_frame_main_resource_url, PredictFetchedSubresourceUrls(*lcpp_stat));
+      initiator_origin, top_frame_main_resource_url,
+      PredictFetchedSubresourceUrls(*lcpp_stat));
 }
 
 }  // namespace predictors

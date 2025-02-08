@@ -69,6 +69,7 @@ FORWARD_DECLARE_TEST(BlocklistedExtensionSyncServiceTest,
                      SyncBlocklistedExtension);
 
 namespace extensions {
+class ChromeExtensionRegistrarDelegate;
 class ComponentLoader;
 class CrxInstaller;
 class ExtensionActionStorageManager;
@@ -172,7 +173,6 @@ class ExtensionService : public ExtensionServiceInterface,
                          public CWSInfoService::Observer,
                          public ExtensionManagement::Observer,
                          public UpgradeObserver,
-                         public ExtensionRegistrar::Delegate,
                          public ExtensionHostRegistry::Observer,
                          public ProfileManagerObserver {
  public:
@@ -237,13 +237,9 @@ class ExtensionService : public ExtensionServiceInterface,
   // Initialize and start all installed extensions.
   void Init();
 
-  // Called when the associated Profile is going to be destroyed.
+  // Called when the associated Profile is going to be destroyed, as part of
+  // KeyedService two-phase shutdown.
   void Shutdown();
-
-  // Called when reloading an unpacked extension fails.
-  void OnUnpackedReloadFailure(const Extension* extension,
-                               const base::FilePath& file_path,
-                               const std::string& error);
 
   // Reloads the specified extension, sending the onLaunched() event to it if it
   // currently has any window showing.
@@ -427,6 +423,9 @@ class ExtensionService : public ExtensionServiceInterface,
   bool UserCanDisableInstalledExtension(
       const std::string& extension_id) override;
 
+  // Removes an extension from the delayed installs list.
+  void RemoveDelayedInstall(scoped_refptr<const Extension> extension);
+
   //////////////////////////////////////////////////////////////////////////////
   // Simple Accessors
 
@@ -439,6 +438,8 @@ class ExtensionService : public ExtensionServiceInterface,
   content::BrowserContext* GetBrowserContext() const;
 
   bool extensions_enabled() const { return extensions_enabled_; }
+
+  bool block_extensions() const { return block_extensions_; }
 
   const base::FilePath& install_directory() const { return install_directory_; }
   const base::FilePath& unpacked_install_directory() const {
@@ -469,6 +470,10 @@ class ExtensionService : public ExtensionServiceInterface,
   }
 
   ExtensionAllowlist* allowlist() { return &allowlist_; }
+
+  const std::set<std::string>& disable_flag_exempted_extensions() const {
+    return disable_flag_exempted_extensions_;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // For Testing
@@ -548,29 +553,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // UpgradeObserver implementation.
   void OnUpgradeRecommended() override;
 
-  // ExtensionRegistrar::Delegate implementation.
-  void PreAddExtension(const Extension* extension,
-                       const Extension* old_extension) override;
-  void PostActivateExtension(scoped_refptr<const Extension> extension) override;
-  void PostDeactivateExtension(
-      scoped_refptr<const Extension> extension) override;
-  void PreUninstallExtension(scoped_refptr<const Extension> extension) override;
-  void PostUninstallExtension(scoped_refptr<const Extension> extension,
-                              base::OnceClosure done_callback) override;
-  void PostNotifyUninstallExtension(
-      scoped_refptr<const Extension> extension) override;
-  void LoadExtensionForReload(
-      const ExtensionId& extension_id,
-      const base::FilePath& path,
-      ExtensionRegistrar::LoadErrorBehavior load_error_behavior) override;
-  void ShowExtensionDisabledError(const Extension* extension,
-                                  bool is_remote_install) override;
-  void FinishDelayedInstallationsIfAny() override;
-  bool CanAddExtension(const Extension* extension) override;
-  bool CanEnableExtension(const Extension* extension) override;
-  bool CanDisableExtension(const Extension* extension) override;
-  bool ShouldBlockExtension(const Extension* extension) override;
-
   // ProfileManagerObserver implementation.
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
 
@@ -608,14 +590,6 @@ class ExtensionService : public ExtensionServiceInterface,
                                 const std::string& install_parameter,
                                 base::Value::Dict ruleset_install_prefs);
 
-  // Disables the extension if the privilege level has increased
-  // (e.g., due to an upgrade).
-  void CheckPermissionsIncrease(const Extension* extension,
-                                bool is_extension_loaded);
-
-  // Helper that updates the active extension list used for crash reporting.
-  void UpdateActiveExtensionsInCrashReporter();
-
   // Helper to get the disable reasons for an installed (or upgraded) extension.
   // Returning an empty set indicates that we should enable this extension
   // initially.
@@ -645,14 +619,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // the actual profile objects to be destroyed.
   void OnProfileDestructionStarted();
 
-  // Called on file task runner thread to uninstall extension.
-  static void UninstallExtensionOnFileThread(
-      const std::string& id,
-      const std::string& profile_user_name,
-      const base::FilePath& install_dir,
-      const base::FilePath& extension_path,
-      const base::FilePath& profile_dir);
-
   // Called when the initial extensions load has completed.
   void OnInstalledExtensionsLoaded();
 
@@ -674,19 +640,19 @@ class ExtensionService : public ExtensionServiceInterface,
   // other disable reasons associated with them.
   void OnDeveloperModePrefChanged();
 
-  raw_ptr<const base::CommandLine, DanglingUntriaged> command_line_ = nullptr;
+  raw_ptr<const base::CommandLine> command_line_ = nullptr;
 
   // The normal profile associated with this ExtensionService.
   raw_ptr<Profile> profile_ = nullptr;
 
   // The ExtensionSystem for the profile above.
-  raw_ptr<ExtensionSystem, AcrossTasksDanglingUntriaged> system_ = nullptr;
+  raw_ptr<ExtensionSystem> system_ = nullptr;
 
   // Preferences for the owning profile.
-  raw_ptr<ExtensionPrefs, DanglingUntriaged> extension_prefs_ = nullptr;
+  raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
 
   // Blocklist for the owning profile.
-  raw_ptr<Blocklist, DanglingUntriaged> blocklist_ = nullptr;
+  raw_ptr<Blocklist> blocklist_ = nullptr;
 
   ExtensionAllowlist allowlist_;
 
@@ -698,7 +664,7 @@ class ExtensionService : public ExtensionServiceInterface,
       extension_telemetry_service_verdict_handler_;
 
   // Sets of enabled/disabled/terminated/blocklisted extensions. Not owned.
-  raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_ = nullptr;
+  raw_ptr<ExtensionRegistry> registry_ = nullptr;
 
   // Set of allowlisted enabled extensions loaded from the
   // --disable-extensions-except command line flag.
@@ -783,6 +749,9 @@ class ExtensionService : public ExtensionServiceInterface,
   std::unique_ptr<SharedModuleService> shared_module_service_;
 
   base::ObserverList<UpdateObserver, true>::Unchecked update_observers_;
+
+  std::unique_ptr<ChromeExtensionRegistrarDelegate>
+      extension_registrar_delegate_;
 
   // Helper to register and unregister extensions.
   ExtensionRegistrar extension_registrar_;

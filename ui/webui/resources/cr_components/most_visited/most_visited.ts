@@ -198,7 +198,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   private get tileElements_() {
     return Array.from(
-        this.shadowRoot!.querySelectorAll<HTMLElement>('.tile:not([hidden])'));
+        this.shadowRoot.querySelectorAll<HTMLElement>('.tile:not([hidden])'));
   }
 
   constructor() {
@@ -335,7 +335,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private clearForceHover_() {
-    const forceHover = this.shadowRoot!.querySelector('.force-hover');
+    const forceHover = this.shadowRoot.querySelector('.force-hover');
     if (forceHover) {
       forceHover.classList.remove('force-hover');
     }
@@ -437,9 +437,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.dragOffset_ = null;
 
     const dragElement =
-        this.shadowRoot!.querySelector<HTMLElement>('.tile.dragging');
+        this.shadowRoot.querySelector<HTMLElement>('.tile.dragging');
     const droppedElement =
-        this.shadowRoot!.querySelector<HTMLElement>('.tile.dropped');
+        this.shadowRoot.querySelector<HTMLElement>('.tile.dropped');
 
     if (!dragElement && !droppedElement) {
       this.reordering_ = false;
@@ -478,7 +478,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
 
     const dragElement =
-        this.shadowRoot!.querySelector<HTMLElement>('.tile.dragging');
+        this.shadowRoot.querySelector<HTMLElement>('.tile.dragging');
     if (!dragElement) {
       return;
     }
@@ -511,7 +511,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
    */
   private dragOver_(x: number, y: number) {
     const dragElement =
-        this.shadowRoot!.querySelector<HTMLElement>('.tile.dragging');
+        this.shadowRoot.querySelector<HTMLElement>('.tile.dragging');
     if (!dragElement) {
       this.reordering_ = false;
       return;

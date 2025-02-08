@@ -4,9 +4,10 @@
 
 #include "chrome/browser/glic/glic_window_resize_animation.h"
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
@@ -21,7 +22,15 @@
 namespace glic {
 namespace {
 
-constexpr int kTestAnimationDuration = 300;
+constexpr base::TimeDelta kTestAnimationDuration = base::Milliseconds(300);
+
+void Append(std::string* a, const char* b) {
+  *a += b;
+}
+
+base::OnceClosure BindAppend(std::string* a, const char* b) {
+  return base::BindOnce(&Append, a, b);
+}
 
 class GlicWindowResizeAnimationTest : public InProcessBrowserTest {
  public:
@@ -32,11 +41,12 @@ class GlicWindowResizeAnimationTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    // Mark the glic FRE as accepted by default.
-    // TODO(cuianthony): Move this logic to glic_test_util.h after
-    // https://chromium-review.googlesource.com/c/chromium/src/+/6197534 lands.
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetBoolean(prefs::kGlicCompletedFre, true);
+    InProcessBrowserTest::SetUpOnMainThread();
+    SetFRECompletion(browser()->profile(), true);
+
+    window_controller().Toggle(nullptr, /*prevent_close=*/false,
+                               InvocationSource::kOsButton);
+    ASSERT_TRUE(window_controller().GetGlicWidget());
   }
 
   void ExpectRectBetween(const gfx::Rect& current_rect,
@@ -48,6 +58,22 @@ class GlicWindowResizeAnimationTest : public InProcessBrowserTest {
                        final_rect.width());
     ExpectValueBetween(current_rect.height(), initial_rect.height(),
                        final_rect.height());
+  }
+
+  std::pair<std::unique_ptr<GlicWindowResizeAnimation>,
+            std::unique_ptr<gfx::AnimationTestApi>>
+  MakeAnimation(const gfx::Rect& target_bounds,
+                base::TimeDelta duration,
+                base::OnceClosure callback) {
+    auto animation = std::make_unique<GlicWindowResizeAnimation>(
+        &window_controller(), target_bounds, duration, std::move(callback));
+    auto test_api = std::make_unique<gfx::AnimationTestApi>(animation.get());
+    test_api->SetStartTime(animation_creation_time_);
+    return {std::move(animation), std::move(test_api)};
+  }
+
+  gfx::Rect GetWidgetBounds() {
+    return window_controller().GetGlicWidget()->GetWindowBoundsInScreen();
   }
 
  protected:
@@ -79,90 +105,123 @@ class GlicWindowResizeAnimationTest : public InProcessBrowserTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ExpandsWidgetSize) {
-  window_controller().Toggle(nullptr, /*prevent_close=*/false,
-                             InvocationSource::kOsButton);
-  ASSERT_TRUE(window_controller().GetGlicWidget());
-
-  gfx::Rect test_initial_bounds =
-      window_controller().GetGlicWidget()->GetWindowBoundsInScreen();
+  gfx::Rect test_initial_bounds = GetWidgetBounds();
   gfx::Rect test_new_bounds;
   test_new_bounds.set_origin(test_initial_bounds.origin());
   test_new_bounds.set_size(gfx::Size(400, 800));
-  auto animation = std::make_unique<GlicWindowResizeAnimation>(
-      window_controller().GetWeakPtr().get(), test_new_bounds,
-      base::Milliseconds(kTestAnimationDuration), base::DoNothing());
 
-  auto animation_api = std::make_unique<gfx::AnimationTestApi>(animation.get());
-  animation_api->SetStartTime(animation_creation_time());
-  animation_api->Step(animation_creation_time() +
-                      base::Milliseconds(kTestAnimationDuration - 100));
-  ExpectRectBetween(
-      window_controller().GetGlicWidget()->GetWindowBoundsInScreen(),
-      test_initial_bounds, test_new_bounds);
+  auto [animation, test_api] =
+      MakeAnimation(test_new_bounds, kTestAnimationDuration, base::DoNothing());
+  test_api->Step(animation_creation_time() + kTestAnimationDuration -
+                 base::Milliseconds(100));
+  ExpectRectBetween(GetWidgetBounds(), test_initial_bounds, test_new_bounds);
 
-  animation_api->Step(animation_creation_time() +
-                      base::Milliseconds(kTestAnimationDuration));
-  EXPECT_EQ(test_new_bounds,
-            window_controller().GetGlicWidget()->GetWindowBoundsInScreen());
+  test_api->Step(animation_creation_time() + kTestAnimationDuration);
+  EXPECT_EQ(test_new_bounds, GetWidgetBounds());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ShrinksWidgetSize) {
-  window_controller().Toggle(nullptr, /*prevent_close=*/false,
-                             InvocationSource::kOsButton);
-  ASSERT_TRUE(window_controller().GetGlicWidget());
+  gfx::Rect test_initial_bounds = GetWidgetBounds();
+  gfx::Rect test_new_bounds(test_initial_bounds.origin(), gfx::Size(1, 1));
 
-  gfx::Rect test_initial_bounds =
-      window_controller().GetGlicWidget()->GetWindowBoundsInScreen();
-  gfx::Rect test_new_bounds;
-  test_new_bounds.set_origin(test_initial_bounds.origin());
-  test_new_bounds.set_size(gfx::Size(1, 1));
-  auto animation = std::make_unique<GlicWindowResizeAnimation>(
-      window_controller().GetWeakPtr().get(), test_new_bounds,
-      base::Milliseconds(kTestAnimationDuration), base::DoNothing());
+  auto [animation, test_api] =
+      MakeAnimation(test_new_bounds, kTestAnimationDuration, base::DoNothing());
+  test_api->Step(animation_creation_time() + kTestAnimationDuration -
+                 base::Milliseconds(100));
+  ExpectRectBetween(GetWidgetBounds(), test_initial_bounds, test_new_bounds);
 
-  auto animation_api = std::make_unique<gfx::AnimationTestApi>(animation.get());
-  animation_api->SetStartTime(animation_creation_time());
-  animation_api->Step(animation_creation_time() +
-                      base::Milliseconds(kTestAnimationDuration - 100));
-  ExpectRectBetween(
-      window_controller().GetGlicWidget()->GetWindowBoundsInScreen(),
-      test_initial_bounds, test_new_bounds);
-
-  animation_api->Step(animation_creation_time() +
-                      base::Milliseconds(kTestAnimationDuration));
-  EXPECT_EQ(test_new_bounds,
-            window_controller().GetGlicWidget()->GetWindowBoundsInScreen());
+  test_api->Step(animation_creation_time() + kTestAnimationDuration);
+  EXPECT_EQ(test_new_bounds, GetWidgetBounds());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest,
                        MovesAndChangesWidgetSize) {
-  window_controller().Toggle(browser(), /*prevent_close=*/false,
-                             InvocationSource::kOsButton);
-  ASSERT_TRUE(window_controller().GetGlicWidget());
+  gfx::Rect test_initial_bounds = GetWidgetBounds();
+  gfx::Rect test_new_bounds(
+      gfx::Point(test_initial_bounds.x() + 10, test_initial_bounds.y() + 10),
+      gfx::Size(1, 80));
 
-  gfx::Rect test_initial_bounds =
-      window_controller().GetGlicWidget()->GetWindowBoundsInScreen();
-  gfx::Rect test_new_bounds;
+  auto [animation, test_api] =
+      MakeAnimation(test_new_bounds, kTestAnimationDuration, base::DoNothing());
+  test_api->Step(animation_creation_time() + kTestAnimationDuration -
+                 base::Milliseconds(100));
+  ExpectRectBetween(GetWidgetBounds(), test_initial_bounds, test_new_bounds);
 
-  test_new_bounds.set_origin(
-      gfx::Point(test_initial_bounds.x() + 10, test_initial_bounds.y() + 10));
-  test_new_bounds.set_size(gfx::Size(1, 80));
-  auto animation = std::make_unique<GlicWindowResizeAnimation>(
-      window_controller().GetWeakPtr().get(), test_new_bounds,
-      base::Milliseconds(kTestAnimationDuration), base::DoNothing());
+  test_api->Step(animation_creation_time() + kTestAnimationDuration);
+  EXPECT_EQ(test_new_bounds, GetWidgetBounds());
+}
 
-  auto animation_api = std::make_unique<gfx::AnimationTestApi>(animation.get());
-  animation_api->SetStartTime(animation_creation_time());
-  animation_api->Step(animation_creation_time() +
-                      base::Milliseconds(kTestAnimationDuration - 100));
-  ExpectRectBetween(
-      window_controller().GetGlicWidget()->GetWindowBoundsInScreen(),
-      test_initial_bounds, test_new_bounds);
+IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, UpdateTargetPosition) {
+  gfx::Rect initial_bounds = GetWidgetBounds();
+  gfx::Rect target_bounds_1(10, 10, 20, 20);
 
-  animation_api->Step(animation_creation_time() +
-                      base::Milliseconds(kTestAnimationDuration));
-  EXPECT_EQ(test_new_bounds,
-            window_controller().GetGlicWidget()->GetWindowBoundsInScreen());
+  // Start changing size and position
+  auto [animation, test_api] =
+      MakeAnimation(target_bounds_1, kTestAnimationDuration, base::DoNothing());
+  test_api->Step(animation_creation_time() + kTestAnimationDuration -
+                 base::Milliseconds(100));
+  ExpectRectBetween(GetWidgetBounds(), initial_bounds, target_bounds_1);
+
+  // Update position, advance to the end
+  gfx::Point new_target_point(50, 50);
+  animation->UpdateTargetPosition(new_target_point, base::DoNothing());
+  test_api->Step(animation_creation_time() + kTestAnimationDuration);
+
+  // Widget should now have the latest target origin and size.
+  EXPECT_EQ(gfx::Rect(new_target_point, target_bounds_1.size()),
+            GetWidgetBounds());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, UpdateTargetSize) {
+  gfx::Rect initial_bounds = GetWidgetBounds();
+  gfx::Rect target_bounds_1(100, 100, 20, 20);
+
+  // Start changing size and position
+  auto [animation, test_api] =
+      MakeAnimation(target_bounds_1, kTestAnimationDuration, base::DoNothing());
+  test_api->Step(animation_creation_time() + kTestAnimationDuration -
+                 base::Milliseconds(100));
+  ExpectRectBetween(GetWidgetBounds(), initial_bounds, target_bounds_1);
+
+  // Update size, advance to the end
+  gfx::Size new_target_size(50, 50);
+  animation->UpdateTargetSize(new_target_size, base::DoNothing());
+  test_api->Step(animation_creation_time() + kTestAnimationDuration);
+
+  // Widget should now have the latest target origin and size.
+  EXPECT_EQ(gfx::Rect(target_bounds_1.origin(), new_target_size),
+            GetWidgetBounds());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, AllCallbacksRunInOrder) {
+  gfx::Rect initial_bounds = GetWidgetBounds();
+  gfx::Rect target_bounds_1(10, 10, 20, 20);
+
+  std::string call_log;
+
+  // Start animating
+  auto [animation, test_api] = MakeAnimation(
+      target_bounds_1, kTestAnimationDuration, BindAppend(&call_log, "1"));
+  test_api->Step(animation_creation_time() + kTestAnimationDuration -
+                 base::Milliseconds(100));
+  ExpectRectBetween(GetWidgetBounds(), initial_bounds, target_bounds_1);
+
+  // Make some updates
+  animation->UpdateTargetSize(gfx::Size(50, 50), BindAppend(&call_log, " 2"));
+  animation->UpdateTargetSize(gfx::Size(60, 60), BindAppend(&call_log, " 3"));
+  animation->UpdateTargetPosition(gfx::Point(100, 100),
+                                  BindAppend(&call_log, " 4"));
+
+  // Advance to the end. Widget should be at its final bounds.
+  test_api->Step(animation_creation_time() + kTestAnimationDuration);
+  EXPECT_EQ(gfx::Rect(100, 100, 60, 60), GetWidgetBounds());
+
+  // Callbacks should run in the order in which they were added.
+  test_api.reset();
+  animation.reset();
+  // TODO: Find another way to wait for the tasks to finish.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ("1 2 3 4", call_log);
 }
 
 }  // namespace glic

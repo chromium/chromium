@@ -175,7 +175,7 @@ export class LocalizedLinkElement extends CrLitElement {
         'tabindex',
       ],
     });
-    const anchorTag = this.shadowRoot!.querySelector('a');
+    const anchorTag = this.shadowRoot.querySelector('a');
     if (anchorTag) {
       anchorTag.addEventListener(
           'click', (event) => this.onAnchorTagClick_(event));
@@ -204,7 +204,7 @@ export class LocalizedLinkElement extends CrLitElement {
    *  disabled.
    */
   private updateAnchorTagTabIndex_() {
-    const anchorTag = this.shadowRoot!.querySelector('a');
+    const anchorTag = this.shadowRoot.querySelector('a');
     if (!anchorTag) {
       return;
     }

@@ -16,7 +16,9 @@ class VectorIconsTest : public ::testing::Test {
                                     const gfx::VectorIcon& icon) {
     std::vector<std::vector<gfx::PathElement>> path_elements;
     gfx::ParsePathElements(s, path_elements);
+    EXPECT_EQ(icon.reps.size(), path_elements.size());
     for (size_t i = 0; i < path_elements.size(); ++i) {
+      EXPECT_EQ(icon.reps[i].path.size(), path_elements[i].size());
       for (size_t j = 0; j < path_elements[i].size(); ++j) {
         EXPECT_EQ(0, memcmp(&path_elements[i][j], &icon.reps[i].path[j],
                             sizeof(gfx::PathElement)));

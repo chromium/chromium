@@ -86,6 +86,9 @@
   <message name="IDS_PROFILES_DICE_SIGNIN_BUTTON" desc="Button in the profile user menu to sign in and turn on Sync.">
     Turn on sync...
   </message>
+  <message name="IDS_EXTENSIONS_EXPLICIT_SIGNIN_BUTTON" desc="Button in the profile user menu to explicitly sign in.">
+    Sign in
+  </message>
   <message name="IDS_EXTENSIONS_EXPLICIT_SIGNIN_BUTTON_WITH_ACCOUNT_AWARENESS" desc="Button in the profile user menu to explicitly sign in for the current user">
     Continue as <ph name="USERNAME">$1<ex>Bob</ex></ph>
   </message>

@@ -152,6 +152,8 @@ class Pointer : public SurfaceTreeHost,
   }
 
  private:
+  class ScopedCursorLocker;
+
   // Remove |delegate| from |constraints_|.
   void RemoveConstraintDelegate(PointerConstraintDelegate* delegate);
 
@@ -305,6 +307,8 @@ class Pointer : public SurfaceTreeHost,
   // Bitmask of the button event flags that started the drag and drop operation.
   // Used to send the release events upon drop.
   int button_flags_on_drag_drop_start_ = 0;
+
+  std::unique_ptr<ScopedCursorLocker> cursor_locker_;
 
   // Weak pointer factory used for cursor capture callbacks.
   base::WeakPtrFactory<Pointer> cursor_capture_weak_ptr_factory_{this};

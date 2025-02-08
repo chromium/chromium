@@ -28,7 +28,7 @@ let callbackRouterRemote: MostVisitedPageRemote;
 const mediaListenerLists: Map<number, FakeMediaQueryList> = new Map();
 
 function queryAll<E extends Element = Element>(q: string): E[] {
-  return Array.from(mostVisited.shadowRoot!.querySelectorAll<E>(q));
+  return Array.from(mostVisited.shadowRoot.querySelectorAll<E>(q));
 }
 
 function queryTiles(): HTMLAnchorElement[] {

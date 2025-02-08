@@ -6,6 +6,7 @@
 
 #include "base/memory/memory_pressure_monitor.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -95,6 +96,7 @@ class GlicProfileManagerPreloadingTest : public testing::TestWithParam<bool> {
   void SetUp() override {
     GlicProfileManager::ForceProfileForLaunchForTesting(profile());
     GlicProfileManager::ForceMemoryPressureForTesting(&memory_pressure_);
+    ForceSigninAndModelExecutionCapability(profile());
   }
 
   void TearDown() override {

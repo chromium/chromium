@@ -4,17 +4,17 @@
 
 #include "remoting/host/it2me/it2me_host.h"
 
-#include <array>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -108,21 +108,19 @@ template <typename... T>
 class OrderedDestruction {
  public:
   explicit OrderedDestruction(std::unique_ptr<T>... objects)
-      : destruction_callbacks_{base::OnceClosure(base::DoNothingWithBoundArgs(
-            std::forward<std::unique_ptr<T>>(objects)))...} {}
+      : objects_{std::move(objects)...} {}
 
   OrderedDestruction(OrderedDestruction&&) = default;
 
   ~OrderedDestruction() {
-    for (base::OnceClosure& callback : destruction_callbacks_) {
-      callback.Reset();
-    }
+    // Reset the to-be-destroyed pointers in passed order.
+    [&]<std::size_t... I>(std::index_sequence<I...>) {
+      (get<I>(objects_).reset(), ...);
+    }(std::index_sequence_for<T...>());
   }
 
  private:
-  // We use OnceClosure to hold the objects to be deleted, since unique_ptr does
-  // not have a non-generic base class.
-  std::array<base::OnceClosure, sizeof...(T)> destruction_callbacks_;
+  std::tuple<std::unique_ptr<T>...> objects_;
 };
 
 }  // namespace
