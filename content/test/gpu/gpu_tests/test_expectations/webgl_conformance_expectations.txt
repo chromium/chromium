@@ -10,7 +10,7 @@
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a137f
-#             android-sm-a235m android-sm-s911u1
+#             android-sm-a236b android-sm-s911u1
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
@@ -633,29 +633,29 @@ crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/misc/
 crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/40241621 [ android android-sm-a137f no-passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 
-crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/1372149 [ android android-sm-a236b no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/40241618 [ android android-sm-s911u1 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough renderer-skia-vulkan ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/40939890 [ android android-sm-s911u1 no-passthrough renderer-skia-vulkan ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/extensions/oes-texture-float.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough renderer-skia-vulkan ] conformance/extensions/oes-texture-float.html [ Failure ]
 crbug.com/40939890 [ android android-sm-s911u1 no-passthrough renderer-skia-vulkan ] conformance/extensions/oes-texture-float.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-crbug.com/1499000 [ android android-sm-a235m no-passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a236b no-passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 crbug.com/331489774 [ android android-sm-s911u1 no-passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
