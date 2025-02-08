@@ -8,7 +8,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
-#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_color_params.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_params.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
