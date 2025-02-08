@@ -102,7 +102,7 @@ suite('cluster element', () => {
   });
 
   test('Fires events for url visit actions', async () => {
-    const menu = cluster.shadowRoot!.querySelector('cluster-menu');
+    const menu = cluster.shadowRoot.querySelector('cluster-menu');
     assertTrue(!!menu);
     // Open cluster action menu.
     menu.$.actionMenuButton.click();
@@ -110,7 +110,7 @@ suite('cluster element', () => {
 
     const hideEvent = eventToPromise('hide-visits', cluster);
     const hideAllButton =
-        menu.shadowRoot!.querySelector<HTMLButtonElement>('#hideAllButton');
+        menu.shadowRoot.querySelector<HTMLButtonElement>('#hideAllButton');
     assertTrue(!!hideAllButton);
     hideAllButton.click();
     await hideEvent;
@@ -120,7 +120,7 @@ suite('cluster element', () => {
     menu.$.actionMenuButton.click();
     await microtasksFinished();
     const removeAllButton =
-        menu.shadowRoot!.querySelector<HTMLButtonElement>('#removeAllButton');
+        menu.shadowRoot.querySelector<HTMLButtonElement>('#removeAllButton');
     assertTrue(!!removeAllButton);
     const removeEvent = eventToPromise('remove-visits', cluster);
     removeAllButton.click();
@@ -131,14 +131,14 @@ suite('cluster element', () => {
     menu.$.actionMenuButton.click();
     await microtasksFinished();
     const openAllButton =
-        menu.shadowRoot!.querySelector<HTMLButtonElement>('#openAllButton');
+        menu.shadowRoot.querySelector<HTMLButtonElement>('#openAllButton');
     assertTrue(!!openAllButton);
     openAllButton.click();
     await handler.whenCalled('openVisitUrlsInTabGroup');
   });
 
   test('displays search queries', async () => {
-    const queries = cluster.shadowRoot!.querySelectorAll('search-query');
+    const queries = cluster.shadowRoot.querySelectorAll('search-query');
     assertEquals(2, queries.length);
 
     queries[0]!.$.searchQueryLink.click();

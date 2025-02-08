@@ -86,7 +86,7 @@ suite('CrShortcutInputTest', function() {
     // Test clearing the shortcut.
     const clearShortcutPromise = eventToPromise('shortcut-updated', input);
     input.$.edit.click();
-    assertEquals(input.$.input, input.shadowRoot!.activeElement);
+    assertEquals(input.$.input, input.shadowRoot.activeElement);
     event = await clearShortcutPromise;
     await microtasksFinished();
     assertEquals('', event.detail);
