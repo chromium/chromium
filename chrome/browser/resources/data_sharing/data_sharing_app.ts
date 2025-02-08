@@ -231,10 +231,12 @@ export function createTranslationMap(): TranslationMap {
           params: DynamicMessageParams,
           ) =>
           loadTimeData.getStringF(
-              'ownerRemoveMemberDialogBody', params.displayedUser!.name!,
+              'blockDialogBody', params.displayedUser!.name!,
               params.displayedUser!.email!, getTabGroupName()),
-      [DynamicMessageKey.GET_BLOCK_AND_LEAVE_DIALOG_CONTENT]: () =>
-          loadTimeData.getStringF('leaveDialogBody', getTabGroupName()),
+      [DynamicMessageKey.GET_BLOCK_AND_LEAVE_DIALOG_CONTENT]:
+          (params: DynamicMessageParams) => loadTimeData.getStringF(
+              'blockLeaveDialogBody', getTabGroupName(),
+              params.displayedUser!.name!, params.displayedUser!.email!),
       /** Chrome Specific Content */
       [DynamicMessageKey.GET_INVITE_FLOW_HEADER]: () =>
           loadTimeData.getStringF('shareGroupTitle', getTabGroupName()),

@@ -12248,11 +12248,14 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name ="IDS_DATA_SHARING_BLOCK_DIALOG_TITLE" desc="The title of the block dialog.">
           Block <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph>?
         </message>
+        <message name="IDS_DATA_SHARING_BLOCK_DIALOG_BODY" desc="The body for the block and leave group dialog.">
+          <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph> (<ph name="EMAIL">$2<ex>johndoe@gmail.com</ex></ph>) will immediately lose access to the “<ph name="GROUP_NAME">$3<ex>Vacation</ex></ph>” tab group, and will no longer be able to interact with you across Google services.
+        </message>
       <!-- /Data Sharing Block Dialog -->
 
       <!-- Data Sharing Block and Leave Dialog -->
         <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_BODY" desc="The body for the block and leave group dialog.">
-          You’ll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and <ph name="BLOCKED_MEMBER_FULL_NAME">$1<ex>Ali Connors</ex></ph> (<ph name="BLOCKED_MEMBER_EMAIL">$2<ex>ali.connors@gmail.com</ex></ph>) will no longer be able to interact with you across Google services.
+          You’ll immediately lose access to the “<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>” tab group, and <ph name="BLOCKED_MEMBER_FULL_NAME">$2<ex>Ali Connors</ex></ph> (<ph name="BLOCKED_MEMBER_EMAIL">$3<ex>ali.connors@gmail.com</ex></ph>) will no longer be able to interact with you across Google services.
         </message>
         <message name="IDS_DATA_SHARING_BLOCK_LEAVE_LEARN_MORE" desc="The text for the learn more link for the block and leave group dialog.">
           Learn about blocked accounts

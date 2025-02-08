@@ -152,6 +152,8 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
        IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_BODY},
       {"leaveDialogBody", IDS_DATA_SHARING_LEAVE_DIALOG_BODY},
       {"blockDialogTitle", IDS_DATA_SHARING_BLOCK_DIALOG_TITLE},
+      {"blockDialogBody", IDS_DATA_SHARING_BLOCK_DIALOG_BODY},
+      {"blockLeaveDialogBody", IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_BODY},
       {"ownerRemoveMemberDialogBody",
        IDS_DATA_SHARING_OWNER_REMOVE_MEMBER_DIALOG_BODY},
       {"leaveDialogBody", IDS_DATA_SHARING_LEAVE_DIALOG_BODY},
