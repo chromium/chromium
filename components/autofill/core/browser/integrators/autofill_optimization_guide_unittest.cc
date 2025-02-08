@@ -805,7 +805,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
   // abercrombie.com is in the allowlist.
   EXPECT_TRUE(guide().IsEligibleForBuyNowPayLater(
-      /*issuer_id=*/"affirm", GURL("https://www.abercrombie.com")));
+      kBnplAffirmIssuerId, GURL("https://www.abercrombie.com")));
 }
 
 // Test that we do not allow BNPL for Affirm on a non-allowlisted URL.
@@ -823,7 +823,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
   // abc.com is not in the allowlist.
   EXPECT_FALSE(guide().IsEligibleForBuyNowPayLater(
-      /*issuer_id=*/"affirm", GURL("https://www.abc.com")));
+      kBnplAffirmIssuerId, GURL("https://www.abc.com")));
 }
 
 // Test that we allow BNPL for Zip on an allowlisted URL.
@@ -841,7 +841,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
   // abercrombie.com is in the allowlist.
   EXPECT_TRUE(guide().IsEligibleForBuyNowPayLater(
-      /*issuer_id=*/"zip", GURL("https://www.abercrombie.com")));
+      kBnplZipIssuerId, GURL("https://www.abercrombie.com")));
 }
 
 // Test that we do not allow BNPL for Zip on a non-allowlisted URL.
@@ -859,7 +859,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
   // abc.com is not in the allowlist.
   EXPECT_FALSE(guide().IsEligibleForBuyNowPayLater(
-      /*issuer_id=*/"zip", GURL("https://www.abc.com")));
+      kBnplZipIssuerId, GURL("https://www.abc.com")));
 }
 
 // Test that we do not allow BNPL for unknown issuer id.
