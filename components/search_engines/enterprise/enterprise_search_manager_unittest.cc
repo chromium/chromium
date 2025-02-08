@@ -329,6 +329,11 @@ class EnterpriseSearchManagerProviderInjectionTest
     scoped_config_.Get().response_type = response_type;
   }
 
+  void InitScopedConfig(bool enabled, bool require_shortcut) {
+    scoped_config_.Get().enabled = enabled;
+    scoped_config_.Get().require_shortcut = require_shortcut;
+  }
+
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::SearchAggregatorProvider>
       scoped_config_;
@@ -364,9 +369,13 @@ TEST_P(EnterpriseSearchManagerProviderInjectionTest, Verify) {
 
   // Configure mock settings for test case.
   if (test_case.mock_setting_status == MockSettingStatus::kDisabled) {
-    scoped_config_.Get().enabled = false;
+    InitScopedConfig(
+        /*enabled=*/false,
+        /*require_shortcut=*/true);
+
     EXPECT_FALSE(scoped_config_.Get().enabled);
     EXPECT_FALSE(scoped_config_.Get().AreMockEnginesValid());
+    EXPECT_TRUE(scoped_config_.Get().require_shortcut);
   } else {
     // Use empty shortcut for invalid mock engine.
     InitScopedConfig(

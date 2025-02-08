@@ -191,8 +191,8 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   std::string suggest_url;
   // The URL to an imanage that will be used on search suggestions.
   std::string icon_url;
-  // If true, Chrome will only show search aggregator suggestions in keyword
-  // mode.
+  // If enabled, Chrome will blend search suggestions with other Omnibox
+  // suggestions without requiring keyword mode.
   bool require_shortcut;
   // The amount of time to wait before calling the callback function after
   // making a request to get enterprise suggestions.

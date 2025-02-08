@@ -25,6 +25,7 @@ class AutocompleteProviderClient;
 class AutocompleteProviderDebouncer;
 class AutocompleteProviderListener;
 class TemplateURL;
+class TemplateURLService;
 
 class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
  public:
@@ -131,6 +132,8 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
 
   // Loader used to retrieve results.
   std::unique_ptr<network::SimpleURLLoader> loader_;
+
+  raw_ptr<TemplateURLService> template_url_service_;
 
   base::WeakPtrFactory<EnterpriseSearchAggregatorProvider> weak_ptr_factory_{
       this};

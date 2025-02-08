@@ -454,24 +454,39 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
 
 // Test things work when using an unfeatured keyword.
 TEST_F(EnterpriseSearchAggregatorProviderTest, UnfeaturedKeyword) {
+  // Unfeatured keyword must match a featured keyword according to current
+  // design.
   TemplateURLData turl_data;
-  turl_data.SetShortName(u"unfeatured");
-  turl_data.SetKeyword(u"unfeatured");
-  turl_data.SetURL("http://www.unfeatured.com/{searchTerms}");
+  turl_data.SetShortName(u"keyword");
+  turl_data.SetKeyword(u"keyword");
+  turl_data.SetURL("http://www.yahoo.com/{searchTerms}");
   turl_data.is_active = TemplateURLData::ActiveStatus::kTrue;
   turl_data.featured_by_policy = false;
   turl_data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
   client_->GetTemplateURLService()->Add(
       std::make_unique<TemplateURL>(turl_data));
-  AutocompleteInput input(u"unfeatured query",
-                          metrics::OmniboxEventProto::OTHER,
+  AutocompleteInput input(u"yahoo query", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
 
   provider_->Start(input, false);
   provider_->RequestCompleted(nullptr, 200,
                               std::make_unique<std::string>(kGoodJsonResponse));
-  EXPECT_THAT(GetMatches(), testing::ElementsAre(
-                                u"http://www.unfeatured.com/Document%201",
-                                u"http://www.unfeatured.com/john@example.com",
-                                u"https://www.example.com"));
+  EXPECT_THAT(GetMatches(),
+              testing::ElementsAre(u"http://www.yahoo.com/Document%201",
+                                   u"http://www.yahoo.com/john@example.com",
+                                   u"https://www.example.com"));
+}
+
+// Test things work in unscoped mode.
+TEST_F(EnterpriseSearchAggregatorProviderTest, UnscopedMode) {
+  AutocompleteInput input(u"query", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+
+  provider_->Start(input, false);
+  provider_->RequestCompleted(nullptr, 200,
+                              std::make_unique<std::string>(kGoodJsonResponse));
+  EXPECT_THAT(GetMatches(),
+              testing::ElementsAre(u"http://www.yahoo.com/Document%201",
+                                   u"http://www.yahoo.com/john@example.com",
+                                   u"https://www.example.com"));
 }

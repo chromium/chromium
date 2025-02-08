@@ -307,6 +307,9 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   TemplateURLService::TemplateURLVector GetFeaturedEnterpriseSearchEngines()
       const;
+  // Returns the TemplateURL created by the EnterpriseSearchAggregatorSettings
+  // policy.
+  TemplateURL* GetEnterpriseSearchAggregatorEngine() const;
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the list prepopulated template URLs for `country_code`.

@@ -23,6 +23,7 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -37,6 +38,17 @@ std::string ptr_to_string(const std::string* ptr) {
   return ptr ? *ptr : "";
 }
 
+// Helper for getting the correct TemplateURL based on the input.
+// If the user is in keyword mode, the input should not include the keyword.
+const TemplateURL* AdjustTemplateURL(AutocompleteInput* input,
+                                     TemplateURLService* turl_service) {
+  DCHECK(turl_service);
+  return input->InKeywordMode()
+             ? AutocompleteInput::GetSubstitutingTemplateURLForInput(
+                   turl_service, input)
+             : turl_service->GetEnterpriseSearchAggregatorEngine();
+}
+
 }  // namespace
 
 EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider(
@@ -45,7 +57,8 @@ EnterpriseSearchAggregatorProvider::EnterpriseSearchAggregatorProvider(
     : AutocompleteProvider(
           AutocompleteProvider::TYPE_ENTERPRISE_SEARCH_AGGREGATOR),
       client_(client),
-      debouncer_(std::make_unique<AutocompleteProviderDebouncer>(true, 300)) {
+      debouncer_(std::make_unique<AutocompleteProviderDebouncer>(true, 300)),
+      template_url_service_(client_->GetTemplateURLService()) {
   AddListener(listener);
 }
 
@@ -106,8 +119,8 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
 void EnterpriseSearchAggregatorProvider::Run() {
   auto adjusted_input = input_;
   const TemplateURL* template_url =
-      AutocompleteInput::GetSubstitutingTemplateURLForInput(
-          client_->GetTemplateURLService(), &adjusted_input);
+      AdjustTemplateURL(&adjusted_input, template_url_service_);
+
   CHECK(template_url);
   CHECK(template_url->policy_origin() ==
         TemplateURLData::PolicyOrigin::kSearchAggregator);
@@ -170,11 +183,8 @@ bool EnterpriseSearchAggregatorProvider::UpdateResults(
 void EnterpriseSearchAggregatorProvider::
     ParseEnterpriseSearchAggregatorSearchResults(const base::Value& root_val) {
   CHECK(root_val.is_dict());
-
-  auto adjusted_input = input_;
   const TemplateURL* template_url =
-      AutocompleteInput::GetSubstitutingTemplateURLForInput(
-          client_->GetTemplateURLService(), &adjusted_input);
+      template_url_service_->GetEnterpriseSearchAggregatorEngine();
 
   // Parse the results.
   const base::Value::List* queryResults =
