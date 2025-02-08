@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
@@ -99,6 +100,7 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -142,11 +144,6 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
-#endif
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
-#include "components/lens/lens_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1907,14 +1904,18 @@ void AppMenuModel::Build() {
 
   AddItemWithStringIdAndVectorIcon(this, IDC_PRINT, IDS_PRINT, kPrintMenuIcon);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (browser()
           ->GetFeatures()
           .lens_overlay_entry_point_controller()
           ->IsEnabled()) {
-    AddItemWithStringIdAndVectorIcon(
-        this, IDC_CONTENT_CONTEXT_LENS_OVERLAY, IDS_SHOW_LENS_OVERLAY,
-        vector_icons::kGoogleLensMonochromeLogoIcon);
+    const gfx::VectorIcon& icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+        vector_icons::kSearchChromeRefreshIcon;
+#endif
+    AddItemWithStringIdAndVectorIcon(this, IDC_CONTENT_CONTEXT_LENS_OVERLAY,
+                                     IDS_SHOW_LENS_OVERLAY, icon);
     const int lens_command_index =
         GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY).value();
     SetElementIdentifierAt(lens_command_index, kShowLensOverlay);
@@ -1922,7 +1923,6 @@ void AppMenuModel::Build() {
                       browser()->window()->MaybeShowNewBadgeFor(
                           lens::features::kLensOverlay));
   }
-#endif
 
   AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE,
                                    kTranslateIcon);
