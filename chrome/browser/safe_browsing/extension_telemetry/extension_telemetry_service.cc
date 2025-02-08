@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
@@ -1365,8 +1366,11 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
 
   // TODO(crbug.com/372186532): Update ExtensionInfo to include DisableReasonSet
   // instead of a bitflag.
-  extensions::DisableReasonSet disable_reasons =
-      extension_prefs_->GetDisableReasons(extension.id());
+  // Use the GetRawDisableReasons() getter here as we want all the disable
+  // reasons (known and unknown).
+  extensions::ExtensionPrefs::DisableReasonRawManipulationPasskey passkey;
+  base::flat_set<int> disable_reasons =
+      extension_prefs_->GetRawDisableReasons(passkey, extension.id());
   int disable_reasons_bitflag =
       extensions::IntegerSetToBitflag(disable_reasons);
   extension_info->set_disable_reasons(disable_reasons_bitflag);

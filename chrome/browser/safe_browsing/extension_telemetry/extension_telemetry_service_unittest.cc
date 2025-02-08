@@ -840,6 +840,24 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
                     extensions::disable_reason::DISABLE_USER_ACTION |
                     extensions::disable_reason::DISABLE_CORRUPTED));
     }
+    // Unknown disable reasons should also be reported.
+    constexpr int kUnknownDisableReason =
+        extensions::disable_reason::DISABLE_REASON_LAST << 1;
+    ASSERT_FALSE(extensions::IsValidDisableReason(kUnknownDisableReason));
+
+    extensions::ExtensionPrefs::DisableReasonRawManipulationPasskey passkey;
+    extension_prefs_->AddRawDisableReasons(passkey, extension->id(),
+                                           {kUnknownDisableReason});
+    {
+      std::unique_ptr<ExtensionInfo> extension_pb =
+          GetExtensionInfo(*extension);
+      EXPECT_TRUE(extension_pb->has_disable_reasons());
+      EXPECT_EQ(extension_pb->disable_reasons(),
+                static_cast<uint32_t>(
+                    extensions::disable_reason::DISABLE_USER_ACTION |
+                    extensions::disable_reason::DISABLE_CORRUPTED |
+                    kUnknownDisableReason));
+    }
   }
 
   {
