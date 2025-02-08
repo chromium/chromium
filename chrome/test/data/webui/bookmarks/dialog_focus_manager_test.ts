@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import type {BookmarksCommandManagerElement, BookmarksItemElement, BookmarksListElement} from 'chrome://bookmarks/bookmarks.js';
-import {DialogFocusManager, MenuSource} from 'chrome://bookmarks/bookmarks.js';
+import {Command, DialogFocusManager, MenuSource} from 'chrome://bookmarks/bookmarks.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestCommandManager} from './test_command_manager.js';
 import {TestStore} from './test_store.js';
@@ -86,8 +86,11 @@ suite('DialogFocusManager', function() {
     const dropdown = commandManager.$.dropdown.getIfExists();
     assertTrue(!!dropdown);
 
-    const editDialog = commandManager.$.editDialog.get();
-    editDialog.showEditDialog(store.data.nodes['2']!);
+    commandManager.handle(Command.EDIT, new Set(['2']));
+    await microtasksFinished();
+    const editDialog =
+        commandManager.shadowRoot.querySelector('bookmarks-edit-dialog');
+    assertTrue(!!editDialog);
     dropdown.close();
     assertNotEquals(focusedItem, getDeepActiveElement());
 
