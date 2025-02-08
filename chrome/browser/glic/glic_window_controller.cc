@@ -401,6 +401,7 @@ void GlicWindowController::ShowDetachedForTesting() {
 }
 
 void GlicWindowController::WebUiStateChanged(mojom::WebUiState new_state) {
+  base::UmaHistogramEnumeration("Glic.PanelWebUiState", new_state);
   if (webui_state_ != new_state) {
     // UI State has changed
     webui_state_ = new_state;
