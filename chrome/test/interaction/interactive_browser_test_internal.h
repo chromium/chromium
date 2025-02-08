@@ -17,6 +17,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
 
@@ -123,8 +124,7 @@ struct JsValueExtractor<std::string> {
 //
 template <typename T>
 struct JsResultChecker {
-  using V = std::remove_cvref_t<T>;
-  using M = testing::Matcher<V>;
+  using M = testing::Matcher<ui::test::internal::MatcherTypeFor<T>>;
   static ui::InteractionSequence::StepBuilder CheckJsResult(
       ui::ElementIdentifier webcontents_id,
       const std::string& function,

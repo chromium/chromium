@@ -169,6 +169,13 @@ struct MatcherTypeHelper<C*> {
   using ActualType = std::basic_string<std::remove_const_t<C>>;
 };
 
+// Map string_view-like types to strings to avoid storing dangling references in
+// matchers.
+template <typename CharT, typename Traits>
+struct MatcherTypeHelper<std::basic_string_view<CharT, Traits>> {
+  using ActualType = std::basic_string<CharT, Traits>;
+};
+
 // Gets the appropriate matchable type for `T`. This affects string-like types
 // (e.g. `const char*`) as the corresponding `Matcher` should match a
 // `std::string` or `std::u16string`.
