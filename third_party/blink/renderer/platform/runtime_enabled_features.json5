@@ -2234,6 +2234,11 @@
       status: "stable",
       base_feature: "none",
     },
+    // Killswitch M135.
+    {
+      name: "ForceDelayedIntersectionUpdate",
+      status: "stable",
+    },
     {
       // This is used in tests to perform memory measurement without
       // waiting for GC.

@@ -261,6 +261,8 @@ class CORE_EXPORT LocalFrameView final
 
   void ForceUpdateViewportIntersections();
 
+  void ScheduleDelayedIntersection(base::TimeDelta);
+
   void SetPaintArtifactCompositorNeedsUpdate();
 
   // Methods for getting/setting the size Blink should use to layout the
@@ -976,6 +978,8 @@ class CORE_EXPORT LocalFrameView final
   void RunIntersectionObserverSteps();
   void RenderThrottlingStatusChanged();
 
+  void DelayedIntersectionTimerFired(TimerBase*);
+
   // Methods to do point conversion via layoutObjects, in order to take
   // transforms into account.
   gfx::Rect ConvertToContainingEmbeddedContentView(const gfx::Rect&) const;
@@ -1166,6 +1170,7 @@ class CORE_EXPORT LocalFrameView final
 
   IntersectionObservationState intersection_observation_state_;
   gfx::Vector2dF accumulated_scroll_delta_since_last_intersection_update_;
+  HeapTaskRunnerTimer<LocalFrameView> delayed_intersection_timer_;
 
   mojom::blink::ViewportIntersectionState last_intersection_state_;
 
