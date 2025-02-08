@@ -25,6 +25,7 @@ class Page;
 
 namespace page_content_annotations {
 
+class AnnotatedPageContentRequest;
 class PageContentAnnotationsService;
 
 // This class is used to dispatch page content to the
@@ -46,8 +47,6 @@ class PageContentAnnotationsWebContentsObserver
       content::WebContents* web_contents);
 
  private:
-  class AnnotatedPageContentRequest;
-
   friend class content::WebContentsUserData<
       PageContentAnnotationsWebContentsObserver>;
   friend class PageContentAnnotationsWebContentsObserverTest;
