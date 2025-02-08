@@ -317,6 +317,15 @@ BASE_FEATURE(kPreloadingConfig,
              "PreloadingConfig",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// A misunderstanding when fixing crbug.com/40076091 meant that non-speculative
+// RFHs were being created with a provisional RenderFrame in the renderer. This
+// is nominally harmless, but can crash prerenders if devtool's network
+// overrides feature is enabled. Guarded by a feature since fixing this new bug
+// might reintroduce the previous crashes.
+BASE_FEATURE(kPrerenderMoreCorrectSpeculativeRFHCreation,
+             "PrerenderMoreCorrectSpeculativeRFHCreation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // This feature makes it so that having pending views increase the priority of a
 // RenderProcessHost even when there is a priority override.
 BASE_FEATURE(kPriorityOverridePendingViews,
