@@ -82,6 +82,10 @@ namespace net {
 // Base class, never instantiated, does not own the buffer.
 class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
  public:
+  // Returns the length from bytes() to the end of the buffer. Many methods that
+  // take an IOBuffer also take a size indicated the number of IOBuffer bytes to
+  // use from the start of bytes(). That number must be no more than the size()
+  // of the passed in IOBuffer.
   int size() const { return size_; }
 
   char* data() { return data_; }
@@ -127,6 +131,21 @@ class NET_EXPORT IOBufferWithSize : public IOBuffer {
   base::HeapArray<char> storage_;
 };
 
+// This is like IOBufferWithSize, except its constructor takes a vector.
+// IOBufferWithSize uses a HeapArray instead of a vector so that it can avoid
+// initializing its data. VectorIOBuffer is primarily useful useful for writing
+// data, while IOBufferWithSize is primarily useful for reading data.
+class NET_EXPORT VectorIOBuffer : public IOBuffer {
+ public:
+  explicit VectorIOBuffer(std::vector<uint8_t> vector);
+  explicit VectorIOBuffer(base::span<uint8_t> span);
+
+ private:
+  ~VectorIOBuffer() override;
+
+  std::vector<uint8_t> vector_;
+};
+
 // This is a read only IOBuffer.  The data is stored in a string and
 // the IOBuffer interface does not provide a proper way to modify it.
 class NET_EXPORT StringIOBuffer : public IOBuffer {
@@ -140,7 +159,8 @@ class NET_EXPORT StringIOBuffer : public IOBuffer {
 };
 
 // This version wraps an existing IOBuffer and provides convenient functions
-// to progressively read all the data.
+// to progressively read all the data. The values returned by size() and bytes()
+// are updated as bytes are consumed from the buffer.
 //
 // DrainableIOBuffer is useful when you have an IOBuffer that contains data
 // to be written progressively, and Write() function takes an IOBuffer rather
@@ -158,6 +178,10 @@ class NET_EXPORT StringIOBuffer : public IOBuffer {
 //
 class NET_EXPORT DrainableIOBuffer : public IOBuffer {
  public:
+  // `base` should be treated as exclusively owned by the DrainableIOBuffer as
+  // long as the latter exists. Specifically, the span pointed to by `base`,
+  // including its size, must not change, as the `DrainableIOBuffer` maintains a
+  // copy of them internally.
   DrainableIOBuffer(scoped_refptr<IOBuffer> base, size_t size);
 
   // DidConsume() changes the |data_| pointer so that |data_| always points
@@ -181,7 +205,9 @@ class NET_EXPORT DrainableIOBuffer : public IOBuffer {
   int used_ = 0;
 };
 
-// This version provides a resizable buffer and a changeable offset.
+// This version provides a resizable buffer and a changeable offset. The values
+// returned by size() and bytes() are updated whenever the offset of the buffer
+// is set, or the buffer's capacity is changed.
 //
 // GrowableIOBuffer is useful when you read data progressively without
 // knowing the total size in advance. GrowableIOBuffer can be used as
@@ -206,9 +232,14 @@ class NET_EXPORT GrowableIOBuffer : public IOBuffer {
   void SetCapacity(int capacity);
   int capacity() { return capacity_; }
 
-  // |offset| moves the |data_| pointer, allowing "seeking" in the data.
+  // `offset` moves the `data_` pointer, allowing "seeking" in the data.
   void set_offset(int offset);
   int offset() { return offset_; }
+
+  // Advances the offset by `bytes`. It's equivalent to `set_offset(offset() +
+  // bytes)`, though does not accept negative values, as they likely indicate a
+  // bug.
+  void DidConsume(int bytes);
 
   int RemainingCapacity();
 

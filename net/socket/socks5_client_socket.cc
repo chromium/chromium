@@ -13,9 +13,9 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "net/base/sys_addrinfo.h"
 #include "net/base/tracing.h"
@@ -336,7 +336,7 @@ int SOCKS5ClientSocket::DoGreetReadComplete(int result) {
 
 scoped_refptr<DrainableIOBuffer> SOCKS5ClientSocket::BuildHandshakeWriteBuffer()
     const {
-  std::string handshake;
+  std::vector<uint8_t> handshake;
   handshake.reserve(7 + destination_.host().size());
 
   handshake.push_back(kSOCKS5Version);
@@ -347,16 +347,16 @@ scoped_refptr<DrainableIOBuffer> SOCKS5ClientSocket::BuildHandshakeWriteBuffer()
 
   // First add the size of the hostname, followed by the hostname. The length of
   // the hostname must fit within one byte.
-  handshake.push_back(base::checked_cast<uint8_t>(destination_.host().size()));
-  handshake.append(destination_.host());
+  const auto& host = destination_.host();
+  handshake.push_back(base::checked_cast<uint8_t>(host.size()));
+  handshake.insert(handshake.end(), host.begin(), host.end());
 
-  uint16_t nw_port = base::HostToNet16(destination_.port());
-  handshake.append(reinterpret_cast<char*>(&nw_port), sizeof(nw_port));
+  auto nw_port = base::U16ToBigEndian(destination_.port());
+  handshake.insert(handshake.end(), nw_port.begin(), nw_port.end());
 
-  auto string_buffer =
-      base::MakeRefCounted<StringIOBuffer>(std::move(handshake));
-  return base::MakeRefCounted<DrainableIOBuffer>(std::move(string_buffer),
-                                                 string_buffer->size());
+  auto base_buffer = base::MakeRefCounted<VectorIOBuffer>(std::move(handshake));
+  return base::MakeRefCounted<DrainableIOBuffer>(std::move(base_buffer),
+                                                 base_buffer->size());
 }
 
 // Writes the SOCKS handshake data to the underlying socket connection.
