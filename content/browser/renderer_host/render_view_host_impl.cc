@@ -542,9 +542,19 @@ bool RenderViewHostImpl::CreateRenderView(
               mojom::CreateProvisionalLocalMainFrameParams::New(
                   std::move(local_frame_params),
                   frame_tree_node->current_frame_host()->GetFrameToken()));
-    } else if (frame_tree_->is_prerendering()) {
-      // During a prerender navigation, a local main frame for a new
-      // RenderViewHost must always start as a provisinonal RenderFrame in the
+    } else if (frame_tree_->is_prerendering() &&
+               (!base::FeatureList::IsEnabled(
+                    features::kPrerenderMoreCorrectSpeculativeRFHCreation) ||
+                main_rfh->lifecycle_state() ==
+                    RenderFrameHostImpl::LifecycleStateImpl::kSpeculative)) {
+      // During prerender, the browser may need to create new speculative local
+      // main frames. Normally, creating a speculative local main frame is a
+      // two step process: the browser first creates a RenderViewHost with a
+      // main RenderFrameProxyHost and then creates the speculative main
+      // RenderFrameHost.
+      //
+      // Prerender skips the RenderFrameProxyHost creation step, but the new
+      // RenderViewHost must still start with a provisional RenderFrame in the
       // renderer. Otherwise, discarding a speculative RFH during prerender
       // navigation causes the browser and the renderer to go out of sync. See
       // https://crbug.com/40076091 for more background and details.
