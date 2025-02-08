@@ -2,18 +2,17 @@ rootWebArea focusable htmlTag='#document'
 ++genericContainer ignored
 ++++genericContainer htmlTag='body'
 ++++++comboBoxSelect collapsed focusable className='currency-select' htmlTag='select' name='Currency for purchase' value='USD' setSize=5 posInSet=3 haspopup=menu
-++++++++genericContainer ignored invisible
-++++++++++button ignored invisible
+++++++++button ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++image ignored invisible
 ++++++++++++genericContainer ignored invisible
-++++++++++++++image ignored invisible
 ++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
+++++++++++++++++staticText ignored invisible
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++++staticText ignored invisible
 ++++++++++++genericContainer ignored invisible
+++++++++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible
 ++++++++menuListPopup invisible htmlTag='div' setSize=5 ispopup=auto
 ++++++++++genericContainer invisible className='datalist' htmlTag='div'
 ++++++++++++menuListOption focusable invisible htmlTag='option' name='EUR Euro' setSize=5 posInSet=1 selected=false
