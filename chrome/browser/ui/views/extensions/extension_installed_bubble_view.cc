@@ -52,13 +52,22 @@
 namespace {
 
 const int kRightColumnWidth = 285;
+
+// When used, the entire bubble will be approximately 448px in width.
+const int kExplicitSigninRightColumnWidth = 348;
 constexpr gfx::Size kMaxIconSize{43, 43};
+
+int GetRightColumnWidth() {
+  return extensions::sync_util::IsExtensionsExplicitSigninEnabled()
+             ? kExplicitSigninRightColumnWidth
+             : kRightColumnWidth;
+}
 
 views::Label* CreateLabel(const std::u16string& text) {
   views::Label* label = new views::Label(text);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SizeToFit(kRightColumnWidth);
+  label->SizeToFit(GetRightColumnWidth());
   return label;
 }
 
@@ -190,7 +199,7 @@ void ExtensionInstalledBubbleView::Init() {
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
-  layout->set_minimum_cross_axis_size(kRightColumnWidth);
+  layout->set_minimum_cross_axis_size(GetRightColumnWidth());
   // Indent by the size of the icon.
   layout->set_inside_border_insets(
       gfx::Insets::TLBR(0,

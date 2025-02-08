@@ -46,6 +46,7 @@ using signin_util::SignedInState;
 namespace {
 
 constexpr int kTitleMaxWidth = 218;
+constexpr int kExtensionsExplicitSigninTitleMaxWidth = 318;
 
 int GetSubtitleID(signin_metrics::AccessPoint access_point,
                   SignedInState signed_in_state,
@@ -175,9 +176,11 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   signin_metrics::PromoAction promo_action =
       GetPromoAction(is_autofill_promo, signed_in_state);
 
+  int title_max_width = kTitleMaxWidth;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (access_point == signin_metrics::AccessPoint::kExtensionInstallBubble) {
     if (extensions::sync_util::IsExtensionsExplicitSigninEnabled()) {
+      title_max_width = kExtensionsExplicitSigninTitleMaxWidth;
       button_text =
           account.given_name.empty()
               ? l10n_util::GetStringUTF16(IDS_EXTENSIONS_EXPLICIT_SIGNIN_BUTTON)
@@ -200,7 +203,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
     title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     title->SetMultiLine(true);
     if (orientation == views::LayoutOrientation::kHorizontal) {
-      title->SetMaximumWidth(kTitleMaxWidth);
+      title->SetMaximumWidth(title_max_width);
     } else {
       title->SetProperty(
           views::kMarginsKey,
