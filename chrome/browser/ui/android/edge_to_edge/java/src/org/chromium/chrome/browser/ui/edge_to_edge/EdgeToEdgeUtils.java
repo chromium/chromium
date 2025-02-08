@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import android.app.Activity;
+import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.view.Window;
 
@@ -13,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.ViewportFit;
@@ -33,6 +36,8 @@ import java.lang.annotation.RetentionPolicy;
  * when necessary.
  */
 public class EdgeToEdgeUtils {
+    private static final String TAG = "E2E_Utils";
+    private static Boolean sIsTargetSdkEnforceEdgeToEdge;
     private static boolean sAlwaysDrawWebEdgeToEdgeForTesting;
 
     private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible";
@@ -86,7 +91,18 @@ public class EdgeToEdgeUtils {
 
     /** Whether edge-to-edge should be enabled everywhere. */
     public static boolean isEdgeToEdgeEverywhereEnabled() {
-        return ChromeFeatureList.sEdgeToEdgeEverywhere.isEnabled();
+        if (ChromeFeatureList.sEdgeToEdgeEverywhere.isEnabled()) {
+            return true;
+        }
+
+        if (sIsTargetSdkEnforceEdgeToEdge == null) {
+            // TODO(crbug.com/394945134): Switch to SDK_INT / BuildCompat when it's available.
+            sIsTargetSdkEnforceEdgeToEdge =
+                    ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion >= 36
+                            && VERSION.SDK_INT >= 36;
+            Log.i(TAG, "sIsTargetSdkEnforceEdgeToEdge " + sIsTargetSdkEnforceEdgeToEdge);
+        }
+        return sIsTargetSdkEnforceEdgeToEdge;
     }
 
     /** Whether turn on the debug paint for edge to edge layout. */
