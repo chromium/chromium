@@ -268,6 +268,12 @@ void CollaborationServiceImpl::RefreshServiceStatus() {
 
 void CollaborationServiceImpl::ExitConflictingFlows(
     base::OnceCallback<void()> finish_callback) {
+  if (join_controllers_.empty() && share_controllers_.empty()) {
+    // Don't post task if we can already start the flow.
+    std::move(finish_callback).Run();
+    return;
+  }
+
   for (const auto& [token, controller] : join_controllers_) {
     controller->Exit();
   }

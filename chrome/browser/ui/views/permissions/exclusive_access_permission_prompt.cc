@@ -76,7 +76,9 @@ void ExclusiveAccessPermissionPrompt::ClosePrompt() {
   if (auto* prompt_view = static_cast<ExclusiveAccessPermissionPromptView*>(
           prompt_view_tracker_.view())) {
     prompt_view->PrepareToClose();
-    prompt_view->GetWidget()->Close();
+    if (views::Widget* widget = prompt_view->GetWidget()) {
+      widget->Close();
+    }
     prompt_view_tracker_.SetView(nullptr);
   }
 

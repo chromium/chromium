@@ -7081,6 +7081,9 @@ crbug.com/1395552 webaudio/codec-tests/vorbis/vbr-128kbps-44khz.html [ Failure P
 # Sheriff 2022-12-07
 crbug.com/1396185 accessibility/reach-and-scroll-overflow-div-without-mouse.html [ Pass Timeout ]
 
+# Should pass when SetIntervalWithoutClamp is turned on.
+crbug.com/6240888 external/wpt/html/webappapis/timers/setinterval-settimeout-clamping.html [ Failure ]
+
 # TODO(crbug.com/1401396): Re-enable this test
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
 

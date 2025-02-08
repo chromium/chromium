@@ -35,6 +35,9 @@ namespace blink {
 
 class IntersectionObserverTest : public SimTest {
  protected:
+  IntersectionObserverTest()
+      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void TestScrollMargin(int scroll_margin,
                         bool is_intersecting,
                         double intersectionRatio) {
@@ -3273,6 +3276,338 @@ TEST_F(IntersectionObserverTest, ScrollMarginEmptyString) {
       exception_state);
   ASSERT_FALSE(exception_state.HadException());
   EXPECT_EQ(observer->scrollMargin(), "0px 0px 0px 0px");
+}
+
+TEST_F(IntersectionObserverTest, DelayedIntersection) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(
+      "<div id=target style='position: absolute'>Hello world!</div>");
+  Compositor().BeginFrame();
+
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
+      *observer_delegate, std::nullopt,
+      IntersectionObserver::Params{.thresholds = {0},
+                                   .delay = base::Seconds(1)});
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  observer->observe(target);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+
+  target->SetInlineStyleProperty(CSSPropertyID::kTop, "2000px");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+
+  task_environment().FastForwardUntilNoTasksRemain();
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 2);
+  EXPECT_EQ(observer_delegate->EntryCount(), 2);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+
+  target->SetInlineStyleProperty(CSSPropertyID::kTop, "0");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 2);
+
+  task_environment().FastForwardUntilNoTasksRemain();
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 3);
+  EXPECT_EQ(observer_delegate->EntryCount(), 3);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+}
+
+TEST_F(IntersectionObserverTest, DelayedAndNonDelayedIntersections) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+     <div id="delayed" style="position: absolute">Delayed</div>
+     <div id="non-delayed" style="position: absolute">Not Delayed</div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  TestIntersectionObserverDelegate* delayed_observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* delayed_observer =
+      MakeGarbageCollected<IntersectionObserver>(
+          *delayed_observer_delegate, std::nullopt,
+          IntersectionObserver::Params{.thresholds = {0},
+                                       .delay = base::Seconds(1)});
+  TestIntersectionObserverDelegate* non_delayed_observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* non_delayed_observer =
+      MakeGarbageCollected<IntersectionObserver>(
+          *non_delayed_observer_delegate, std::nullopt,
+          IntersectionObserver::Params{.thresholds = {0}});
+
+  Element* delayed = GetDocument().getElementById(AtomicString("delayed"));
+  ASSERT_TRUE(delayed);
+  delayed_observer->observe(delayed);
+  Element* non_delayed = GetDocument().getElementById(AtomicString("delayed"));
+  ASSERT_TRUE(non_delayed);
+  non_delayed_observer->observe(non_delayed);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(delayed_observer_delegate->CallCount(), 1);
+  EXPECT_EQ(delayed_observer_delegate->EntryCount(), 1);
+  EXPECT_TRUE(delayed_observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 1);
+  EXPECT_EQ(non_delayed_observer_delegate->EntryCount(), 1);
+  EXPECT_TRUE(non_delayed_observer_delegate->LastEntry()->isIntersecting());
+
+  delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "2000px");
+  non_delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "2000px");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(delayed_observer_delegate->CallCount(), 1);
+  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 2);
+  EXPECT_EQ(non_delayed_observer_delegate->EntryCount(), 2);
+  EXPECT_FALSE(non_delayed_observer_delegate->LastEntry()->isIntersecting());
+
+  task_environment().FastForwardUntilNoTasksRemain();
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(delayed_observer_delegate->CallCount(), 2);
+  EXPECT_EQ(delayed_observer_delegate->EntryCount(), 2);
+  EXPECT_FALSE(delayed_observer_delegate->LastEntry()->isIntersecting());
+
+  delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "0");
+  non_delayed->SetInlineStyleProperty(CSSPropertyID::kTop, "0");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(delayed_observer_delegate->CallCount(), 2);
+  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 3);
+  EXPECT_EQ(non_delayed_observer_delegate->EntryCount(), 3);
+  EXPECT_TRUE(non_delayed_observer_delegate->LastEntry()->isIntersecting());
+
+  task_environment().FastForwardUntilNoTasksRemain();
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(delayed_observer_delegate->CallCount(), 3);
+  EXPECT_EQ(delayed_observer_delegate->EntryCount(), 3);
+  EXPECT_TRUE(delayed_observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(non_delayed_observer_delegate->CallCount(), 3);
+}
+
+TEST_F(IntersectionObserverTest, IntersectionWithMarginInThrottledFrame) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest iframe_resource("https://example.com/iframe.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <iframe id="iframe" src="iframe.html" sandbox style="position: absolute">
+    </iframe>
+  )HTML");
+  iframe_resource.Complete("<div id='target'>Hello, world!</div>");
+  Compositor().BeginFrame();
+
+  Document* iframe_document = To<WebLocalFrameImpl>(MainFrame().FirstChild())
+                                  ->GetFrame()
+                                  ->GetDocument();
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
+      *observer_delegate, std::nullopt,
+      IntersectionObserver::Params{.margin = {Length::Fixed(200)},
+                                   .thresholds = {0},
+                                   .always_report_root_bounds = true});
+  Element* target = iframe_document->getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  observer->observe(target);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_FALSE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+
+  // Move the iframe out of view, but the target is still in the margin.
+  GetDocument()
+      .getElementById(AtomicString("iframe"))
+      ->SetInlineStyleProperty(CSSPropertyID::kTop, "600px");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+
+  // Move the iframe further down, to move the target out of the margin.
+  GetDocument()
+      .getElementById(AtomicString("iframe"))
+      ->SetInlineStyleProperty(CSSPropertyID::kTop, "1000px");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 2);
+  EXPECT_EQ(observer_delegate->EntryCount(), 2);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+
+  // Move the iframe up, still out of view, but the target will be in the
+  // margin.
+  GetDocument()
+      .getElementById(AtomicString("iframe"))
+      ->SetInlineStyleProperty(CSSPropertyID::kTop, "600px");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 3);
+  EXPECT_EQ(observer_delegate->EntryCount(), 3);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+
+  // Move the iframe down a bit. Though the target may still in the margin,
+  // the iframe's view is marked needing layout somehow, and we will create a
+  // degenerate "not intersecting" notification.
+  GetDocument()
+      .getElementById(AtomicString("iframe"))
+      ->SetInlineStyleProperty(CSSPropertyID::kTop, "610px");
+  iframe_document->View()->SetNeedsLayout();
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 4);
+  EXPECT_EQ(observer_delegate->EntryCount(), 4);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+}
+
+TEST_F(IntersectionObserverTest,
+       DelayedIntersectionWithMarginInThrottledFrame) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest iframe_resource("https://example.com/iframe.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <iframe id="iframe" src="iframe.html" sandbox style="position: absolute">
+    </iframe>
+  )HTML");
+  iframe_resource.Complete("<div id='target'>Hello, world!</div>");
+  Compositor().BeginFrame();
+
+  Document* iframe_document = To<WebLocalFrameImpl>(MainFrame().FirstChild())
+                                  ->GetFrame()
+                                  ->GetDocument();
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
+      *observer_delegate, std::nullopt,
+      IntersectionObserver::Params{.margin = {Length::Fixed(200)},
+                                   .thresholds = {0},
+                                   .delay = base::Seconds(1),
+                                   .always_report_root_bounds = true});
+  Element* target = iframe_document->getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  observer->observe(target);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_FALSE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+
+  // Move the iframe out of view, but the target is still in the margin.
+  GetDocument()
+      .getElementById(AtomicString("iframe"))
+      ->SetInlineStyleProperty(CSSPropertyID::kTop, "600px");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+
+  task_environment().FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(
+      LocalFrameView::kRequired,
+      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  // `target` is still in the intersection margin.
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(
+      LocalFrameView::kNotNeeded,
+      iframe_document->View()->GetIntersectionObservationStateForTesting());
+
+  // Move the iframe further down, to move the target out of the margin.
+  GetDocument()
+      .getElementById(AtomicString("iframe"))
+      ->SetInlineStyleProperty(CSSPropertyID::kTop, "1000px");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+
+  task_environment().FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(
+      LocalFrameView::kRequired,
+      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 2);
+  EXPECT_EQ(observer_delegate->EntryCount(), 2);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(
+      LocalFrameView::kNotNeeded,
+      iframe_document->View()->GetIntersectionObservationStateForTesting());
+
+  // Move the iframe up, still out of view, but the target will be in the
+  // margin.
+  GetDocument()
+      .getElementById(AtomicString("iframe"))
+      ->SetInlineStyleProperty(CSSPropertyID::kTop, "600px");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 2);
+
+  task_environment().FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(
+      LocalFrameView::kRequired,
+      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 3);
+  EXPECT_EQ(observer_delegate->EntryCount(), 3);
+  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(
+      LocalFrameView::kNotNeeded,
+      iframe_document->View()->GetIntersectionObservationStateForTesting());
+
+  // Move the iframe down again and mark the iframe's view needs layout.
+  GetDocument()
+      .getElementById(AtomicString("iframe"))
+      ->SetInlineStyleProperty(CSSPropertyID::kTop, "1000px");
+  iframe_document->View()->SetNeedsLayout();
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 3);
+
+  task_environment().FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(
+      LocalFrameView::kRequired,
+      iframe_document->View()->GetIntersectionObservationStateForTesting());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(iframe_document->View()->IsHiddenForThrottling());
+  EXPECT_EQ(observer_delegate->CallCount(), 4);
+  EXPECT_EQ(observer_delegate->EntryCount(), 4);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(
+      LocalFrameView::kNotNeeded,
+      iframe_document->View()->GetIntersectionObservationStateForTesting());
 }
 
 }  // namespace blink

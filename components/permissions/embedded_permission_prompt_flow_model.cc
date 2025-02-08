@@ -283,4 +283,27 @@ EmbeddedPermissionPromptFlowModel::GetPromptVariants() const {
   return variants;
 }
 
+void EmbeddedPermissionPromptFlowModel::SetDelegateAction(
+    DelegateAction action) {
+  if (action_.has_value()) {
+    return;
+  }
+
+  action_ = action;
+  switch (action) {
+    case DelegateAction::kAllow:
+      delegate_->Accept();
+      break;
+    case DelegateAction::kAllowThisTime:
+      delegate_->AcceptThisTime();
+      break;
+    case DelegateAction::kDeny:
+      delegate_->Deny();
+      break;
+    case DelegateAction::kDismiss:
+      delegate_->Dismiss();
+      break;
+  }
+}
+
 }  // namespace permissions

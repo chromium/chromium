@@ -50,6 +50,12 @@ namespace prefs {
 class DictionaryValueUpdate;
 }
 
+namespace safe_browsing {
+class ExtensionTelemetryService;
+FORWARD_DECLARE_TEST(ExtensionTelemetryServiceTest,
+                     TestExtensionInfoProtoConstruction);
+}  // namespace safe_browsing
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -173,11 +179,14 @@ class ExtensionPrefs : public KeyedService {
     friend class ExtensionPrefs;
     friend class ExtensionRegistrar;
     friend class ExtensionService;
+    friend class safe_browsing::ExtensionTelemetryService;
     friend class UpdateDataProviderTest;
     FRIEND_TEST_ALL_PREFIXES(ExtensionPrefsSimpleTest,
                              DisableReasonsRawManipulation);
     FRIEND_TEST_ALL_PREFIXES(::ExtensionSyncServiceTest,
                              ProcessSyncDataEnableDisable);
+    FRIEND_TEST_ALL_PREFIXES(safe_browsing::ExtensionTelemetryServiceTest,
+                             TestExtensionInfoProtoConstruction);
   };
 
   // Creates an ExtensionPrefs object.

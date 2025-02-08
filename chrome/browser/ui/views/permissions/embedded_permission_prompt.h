@@ -106,8 +106,6 @@ class EmbeddedPermissionPrompt
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       requests_;
 
-  std::optional<Action> sent_action_ = std::nullopt;
-
   std::unique_ptr<permissions::EmbeddedPermissionPromptFlowModel> prompt_model_;
   base::WeakPtrFactory<EmbeddedPermissionPrompt> weak_factory_{this};
 };
