@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_variant.h"
@@ -58,6 +59,7 @@
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
+#include "chrome/updater/win/win_constants.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
 
@@ -413,6 +415,19 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
     if (!is_install_) {
       VLOG(1) << __func__ << ": !is_install_, app not pre-registered";
+      return S_OK;
+    }
+
+    const HKEY root = UpdaterScopeToHKeyRoot(GetUpdaterScope());
+    if (base::win::RegKey(root, GetAppClientsKey(app_id).c_str(),
+                          Wow6432(KEY_QUERY_VALUE))
+            .HasValue(kRegValuePV)) {
+      VLOG(1) << __func__ << ": app is already registered";
+
+      // Always update ap.
+      if (!ap.empty()) {
+        SetRegistryKey(root, GetAppClientStateKey(app_id), kRegValueAP, ap);
+      }
       return S_OK;
     }
 
