@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_channel.h"
 
 #include <limits.h>  // for INT_MAX
@@ -14,6 +9,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include <ostream>
 #include <string_view>
@@ -83,24 +79,21 @@ constexpr size_t kMaximumCloseReasonLength = 125 - kWebSocketCloseCodeLength;
 // cannot be set explicitly by Javascript but the renderer uses it to indicate
 // we should send a Close frame with no payload.
 bool IsStrictlyValidCloseStatusCode(int code) {
-  static constexpr int kInvalidRanges[] = {
+  static constexpr auto kInvalidRanges = std::array{
       // [BAD, OK)
       0,    1000,   // 1000 is the first valid code
       1006, 1007,   // 1006 MUST NOT be set.
       1014, 3000,   // 1014 unassigned; 1015 up to 2999 are reserved.
       5000, 65536,  // Codes above 5000 are invalid.
   };
-  const int* const kInvalidRangesEnd =
-      kInvalidRanges + std::size(kInvalidRanges);
 
   DCHECK_GE(code, 0);
   DCHECK_LT(code, 65536);
-  const int* upper = std::upper_bound(kInvalidRanges, kInvalidRangesEnd, code);
-  DCHECK_NE(kInvalidRangesEnd, upper);
-  DCHECK_GT(upper, kInvalidRanges);
+  const auto upper = std::ranges::upper_bound(kInvalidRanges, code);
+  DCHECK(upper != kInvalidRanges.end());
   DCHECK_GT(*upper, code);
   DCHECK_LE(*(upper - 1), code);
-  return ((upper - kInvalidRanges) % 2) == 0;
+  return ((upper - kInvalidRanges.begin()) % 2) == 0;
 }
 
 // Sets |name| to the name of the frame type for the given |opcode|. Note that
@@ -144,22 +137,6 @@ base::Value::Dict NetLogFailParam(uint16_t code,
   dict.Set("internal_reason", message);
   return dict;
 }
-
-class DependentIOBuffer : public WrappedIOBuffer {
- public:
-  DependentIOBuffer(scoped_refptr<IOBufferWithSize> buffer, size_t offset)
-      : WrappedIOBuffer(buffer->span().subspan(offset)),
-        buffer_(std::move(buffer)) {}
-
- private:
-  ~DependentIOBuffer() override {
-    // Prevent `data_` from dangling should this destructor remove the
-    // last reference to `buffer_`.
-    data_ = nullptr;
-  }
-
-  scoped_refptr<IOBufferWithSize> buffer_;
-};
 
 }  // namespace
 
@@ -337,8 +314,8 @@ WebSocketChannel::ChannelState WebSocketChannel::SendFrame(
   if (op_code == WebSocketFrameHeader::kOpCodeText ||
       (op_code == WebSocketFrameHeader::kOpCodeContinuation &&
        sending_text_message_)) {
-    StreamingUtf8Validator::State state = outgoing_utf8_validator_.AddBytes(
-        base::span(buffer->bytes(), buffer_size));
+    StreamingUtf8Validator::State state =
+        outgoing_utf8_validator_.AddBytes(buffer->span());
     if (state == StreamingUtf8Validator::INVALID ||
         (state == StreamingUtf8Validator::VALID_MIDPOINT && fin)) {
       // TODO(ricea): Kill renderer.
@@ -739,8 +716,8 @@ ChannelState WebSocketChannel::HandleFrameByState(
     case WebSocketFrameHeader::kOpCodePing:
       DVLOG(1) << "Got Ping of size " << payload.size();
       if (state_ == CONNECTED) {
-        auto buffer = base::MakeRefCounted<IOBufferWithSize>(payload.size());
-        std::ranges::copy(payload, buffer->data());
+        auto buffer = base::MakeRefCounted<VectorIOBuffer>(
+            std::vector<uint8_t>(payload.begin(), payload.end()));
         return SendFrameInternal(true, WebSocketFrameHeader::kOpCodePong,
                                  std::move(buffer), payload.size());
       }
