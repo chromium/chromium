@@ -1160,6 +1160,28 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = "does-not-implement-crypto"
 delta = "1.0.129 -> 1.0.130"
 
+[[audits.data-encoding]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = "ub-risk-3"
+version = "2.7.0"
+notes = """
+https://github.com/ia0/data-encoding/issues/75 was partially addressed via
+`#[doc(hidden)]` added in https://github.com/ia0/data-encoding/pull/76, but the
+original repro from issue #75 can still trigger Undefined Behavior through
+public APIs exposed by the `data-encoding` crate (without using `unsafe`, and
+without using APIs named something like `internal_field_do_not_use`).
+
+Additionally, the discussion in
+https://github.com/ia0/data-encoding/issues/124 leans toward `unsafe`
+encapsulation at a crate level, requiring crate-**global** reasoning to
+prove soundness of public crate APIs.  Specifically, the crate currently
+has a internal function that can cause Undefined Behavior if the caller
+doesn't uphold certain (implied, not explicitly documented) safety
+requirements.  The fact that such function is not marked as `unsafe`
+effectively means that safety audit can't terminate and use **local**
+reasoning near `unsafe` expression boundaries.
+"""
+
 [[audits.diplomat]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
