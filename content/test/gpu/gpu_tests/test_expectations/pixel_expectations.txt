@@ -458,8 +458,9 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4
 crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
-# Flaky on Mac ASAN
+# Flaky on Mac ASAN and AMD Radeon Pro 555X
 crbug.com/372055518 [ angle-metal asan intel-0x3e9b mac ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
+crbug.com/372055518 [ mac amd-0x67ef angle-opengl graphite-disabled ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ RetryOnFailure ]
 
 # Flaky failure on Pixel 6
 crbug.com/371019880 [ android android-pixel-6 graphite-disabled renderer-skia-vulkan ] Pixel_Video_HEVC [ Failure ]
