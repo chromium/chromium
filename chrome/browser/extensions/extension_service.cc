@@ -503,6 +503,12 @@ void ExtensionService::Shutdown() {
   extension_registrar_delegate_->Shutdown();
   pref_change_registrar_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
+  // Avoid dangling pointers.
+  command_line_ = nullptr;
+  system_ = nullptr;
+  extension_prefs_ = nullptr;
+  blocklist_ = nullptr;
+  registry_ = nullptr;
 }
 
 void ExtensionService::Init() {
@@ -1661,6 +1667,10 @@ void ExtensionService::OnRenderProcessHostCreated(
 
 void ExtensionService::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
+  // If you hit this from a KeyedService you might be missing a DependsOn()
+  // for ChromeExtensionSystemFactory.
+  CHECK(registry_) << "ExtensionService used after Shutdown()";
+
   host_observation_.RemoveObservation(host);
 
   Profile* host_profile =
