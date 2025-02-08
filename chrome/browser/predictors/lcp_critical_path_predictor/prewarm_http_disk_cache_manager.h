@@ -41,13 +41,20 @@ class PrewarmHttpDiskCacheManager
       delete;
 
   void MaybePrewarmResources(
+      const std::optional<url::Origin>& initiator_origin,
       const GURL& top_frame_main_resource_url,
       const std::vector<GURL>& top_frame_subresource_urls);
+
+  using PrewarmJob = std::tuple<std::optional<url::Origin>,
+                                url::Origin,
+                                GURL,
+                                net::IsolationInfo::RequestType>;
 
  private:
   friend class PrewarmHttpDiskCacheManagerTest;
 
-  void MaybeAddPrewarmJob(const url::Origin& top_frame_origin,
+  void MaybeAddPrewarmJob(const std::optional<url::Origin>& initiator_origin,
+                          const url::Origin& top_frame_origin,
                           const GURL& url,
                           net::IsolationInfo::RequestType request_type);
   void MaybeProcessNextQueuedJob();
@@ -66,14 +73,11 @@ class PrewarmHttpDiskCacheManager
   void DoComplete();
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::queue<std::tuple<url::Origin, GURL, net::IsolationInfo::RequestType>>
-      queued_jobs_;
+  std::queue<PrewarmJob> queued_jobs_;
   // Keeps recent warm-up history to prevent excessive duplicate
   // warm-up. The maximum size of prewarm_history_ must be large enough
   // to avoid excessive duplicated warm-up requests.
-  base::LRUCache<std::tuple<url::Origin, GURL, net::IsolationInfo::RequestType>,
-                 base::TimeTicks>
-      prewarm_history_;
+  base::LRUCache<PrewarmJob, base::TimeTicks> prewarm_history_;
   const base::TimeDelta reprewarm_period_;
   const bool use_read_and_discard_body_option_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
