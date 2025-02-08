@@ -15,6 +15,7 @@ import("//tools/typescript/ts_library.gni")
 import("//tools/typescript/webui_path_mappings.gni")
 import("//ui/webui/resources/tools/bundle_js.gni")
 import("//ui/webui/resources/tools/bundle_js_excludes.gni")
+import("//ui/webui/resources/tools/eslint_ts.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
 import("//ui/webui/webui_features.gni")
@@ -170,17 +171,16 @@ template("build_webui") {
 
   # Specifically the order in which these targets are executed is:
   #
-  #  1) preprocess_if_expr()
-  #  2) create_js_source_maps() (only if |invoker.enable_source_maps| flag is
-  #     true)
-  #  3) html_to_wrapper(), css_to_wrapper()
-  #  4) ts_library()
-  #  5) merge_js_source_maps() (only if the |invoker.enable_source_maps| flag is
-  #     true)
-  #  6) optimize_webui() (only if invoker.optimize && defined(invoker.optimize_webui_in_files))
-  #  7) minify_js() (only if invoker.optimize && !defined(invoker.optimize_webui_in_files))
-  #  8) generate_grd()
-  #  9) grit()
+  #   1) preprocess_if_expr()
+  #   2) create_js_source_maps() (only if `invoker.enable_source_maps=true`)
+  #   3) html_to_wrapper(), css_to_wrapper()
+  #   4) ts_library()
+  #   5) eslint_ts() (only if `invoker.enable_type_aware_eslint_checks=true`)
+  #   6) merge_js_source_maps() (only if `invoker.enable_source_maps=true`)
+  #   7) optimize_webui() (only if invoker.optimize && defined(invoker.optimize_webui_in_files))
+  #   8) minify_js() (only if invoker.optimize && !defined(invoker.optimize_webui_in_files))
+  #   9) generate_grd()
+  #  10) grit()
 
   if (defined(invoker.static_files)) {
     preprocess_if_expr("preprocess_static_files") {
@@ -200,6 +200,7 @@ template("build_webui") {
       visibility = [
         ":build_ts",
         ":html_wrapper_files",
+        ":lint",
       ]
       if (enable_source_maps) {
         visibility += [ ":create_source_maps" ]
@@ -344,6 +345,7 @@ template("build_webui") {
         ":$generate_grd_target_name",
         ":build_bundle",
         ":build_min_js",
+        ":lint",
       ]
 
       if (enable_source_maps) {
@@ -442,6 +444,22 @@ template("build_webui") {
 
     if (defined(invoker.ts_extra_deps)) {
       extra_deps += invoker.ts_extra_deps
+    }
+  }
+
+  enable_type_aware_eslint_checks =
+      defined(invoker.enable_type_aware_eslint_checks) &&
+      invoker.enable_type_aware_eslint_checks
+
+  if (enable_type_aware_eslint_checks) {
+    eslint_ts("lint") {
+      in_folder = preprocess_dir
+      in_files = filter_exclude(ts_files, [ "*.js" ])
+      tsconfig = "$target_gen_dir/tsconfig_build_ts.json"
+      deps = [
+        ":build_ts",
+        ":preprocess_ts_files",
+      ]
     }
   }
 
@@ -556,6 +574,12 @@ template("build_webui") {
 
     if (defined(invoker.grd_resource_path_prefix)) {
       resource_path_prefix = invoker.grd_resource_path_prefix
+    }
+
+    if (enable_type_aware_eslint_checks) {
+      # Adding as a dependency so that it runs as part of the build, even though
+      # this `generate_grd()` target does not use any outputs from it.
+      deps += [ ":lint" ]
     }
   }
 
